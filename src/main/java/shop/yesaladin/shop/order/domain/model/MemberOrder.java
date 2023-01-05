@@ -32,7 +32,7 @@ public class MemberOrder {
 
     @Id
     @Column(name = "order_id", nullable = false)
-    private Long orderId;
+    private long orderId;
 
     @ManyToOne
     @JoinColumn(name = "member_address_id", nullable = false)
