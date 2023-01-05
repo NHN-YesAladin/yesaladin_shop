@@ -1,7 +1,0 @@
-eureka:
-  client:
-    enabled: false
-
-spring:
-  application:
-    name: yesaladin-shop
