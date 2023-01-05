@@ -12,18 +12,24 @@ import org.junit.jupiter.api.Test;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.repository.CommandCategoryRepository;
 import shop.yesaladin.shop.category.dto.CategoryCreateDto;
+import shop.yesaladin.shop.category.dto.CategoryUpdateDto;
 import shop.yesaladin.shop.category.service.impl.CommandCategoryServiceImpl;
 
 class CommandCategoryServiceTest {
 
     private CommandCategoryRepository commandCategoryRepository;
+    private QueryCategoryService queryCategoryService;
     private CommandCategoryService commandCategoryService;
 
     @BeforeEach
     void setUp() {
         commandCategoryRepository = mock(CommandCategoryRepository.class);
+        queryCategoryService = mock(QueryCategoryService.class);
 
-        commandCategoryService = new CommandCategoryServiceImpl(commandCategoryRepository);
+        commandCategoryService = new CommandCategoryServiceImpl(
+                commandCategoryRepository,
+                queryCategoryService
+        );
     }
 
     @Test
@@ -42,4 +48,45 @@ class CommandCategoryServiceTest {
 
         verify(commandCategoryRepository, times(1)).save(any());
     }
+
+    @Test
+    void update() {
+        // given
+        Long parentId = 1L;
+        String parentName = "국내도서";
+
+        Long id = 2L;
+        String name = "소설";
+        boolean isShown = true;
+        Category parent = Category.builder()
+                .id(parentId)
+                .name(parentName)
+                .order(null)
+                .isShown(true)
+                .parent(null)
+                .build();
+
+        CategoryUpdateDto updateDto = new CategoryUpdateDto(
+                id,
+                name,
+                isShown,
+                null,
+                parent.getId()
+        );
+        Category toEntity = updateDto.toEntity(parent);
+
+        when(queryCategoryService.findCategoryById(updateDto.getParentId())).thenReturn(parent);
+        when(commandCategoryRepository.save(any())).thenReturn(toEntity);
+
+        // when
+        Category update = commandCategoryService.update(updateDto);
+
+        // then
+        assertThat(update.getParent()).isEqualTo(parent);
+        assertThat(update.getId()).isEqualTo(toEntity.getId());
+
+        verify(queryCategoryService, times(1)).findCategoryById(updateDto.getParentId());
+        verify(commandCategoryRepository, times(1)).save(any());
+    }
+
 }
