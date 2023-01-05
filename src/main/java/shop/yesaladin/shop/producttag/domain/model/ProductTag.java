@@ -45,8 +45,9 @@ public class ProductTag {
     private Tag tag;
 
     @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
+    @Builder
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @EqualsAndHashCode
     @Embeddable
     public static class Pk implements Serializable {
