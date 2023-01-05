@@ -27,7 +27,7 @@ public class MemberGrade {
     @Id
     private Integer id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 15)
     private String name;
 
     @Column(name = "base_order_amount", nullable = false)

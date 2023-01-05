@@ -1,9 +1,7 @@
 package shop.yesaladin.shop.member.domain.model;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 
 /**
@@ -13,10 +11,9 @@ import lombok.NoArgsConstructor;
  * @since : 1.0
  */
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 public enum MemberGenderCode {
     MALE(1), FEMALE(2);
 
-    private Integer gender;
+    private final int gender;
 }

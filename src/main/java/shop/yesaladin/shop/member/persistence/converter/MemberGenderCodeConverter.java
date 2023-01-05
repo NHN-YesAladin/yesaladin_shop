@@ -44,7 +44,7 @@ public class MemberGenderCodeConverter implements AttributeConverter<MemberGende
         }
 
         return Stream.of(MemberGenderCode.values())
-                .filter(g -> g.getGender().equals(gender))
+                .filter(g -> gender.equals(g.getGender()))
                 .findFirst()
                 .orElseThrow(IllegalAccessError::new);
     }

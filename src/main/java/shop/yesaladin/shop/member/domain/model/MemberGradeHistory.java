@@ -1,6 +1,6 @@
 package shop.yesaladin.shop.member.domain.model;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -35,7 +35,7 @@ public class MemberGradeHistory {
     private Long id;
 
     @Column(name = "update_date", nullable = false)
-    private LocalDateTime updateDate;
+    private LocalDate updateDate;
 
     @Column(name = "previous_paid_amount", nullable = false)
     private Long previousPaidAmount;

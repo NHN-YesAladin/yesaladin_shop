@@ -1,7 +1,8 @@
 package shop.yesaladin.shop.member.domain.model;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -15,6 +16,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import shop.yesaladin.shop.member.persistence.converter.MemberGenderCodeConverter;
 
 /**
  * 회원의 엔티티 클래스 입니다.
@@ -59,10 +61,10 @@ public class Member {
     private String email;
 
     @Column(name = "sign_up_date", nullable = false)
-    private LocalDateTime signUpDate;
+    private LocalDate signUpDate;
 
     @Column(name = "withdrawal_date")
-    private LocalDateTime withdrawalDate;
+    private LocalDate withdrawalDate;
 
     @Column(name = "is_withdrawal", nullable = false)
     private boolean isWithdrawal;
@@ -71,11 +73,12 @@ public class Member {
     private boolean isBlocked;
 
     @Column(nullable = false)
-    private Long point;
+    private long point;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_grade_id")
     private MemberGrade memberGrade;
 
+    @Convert(converter = MemberGenderCodeConverter.class)
     private MemberGenderCode memberGenderCode;
 }

@@ -1,6 +1,7 @@
 package shop.yesaladin.shop.member.domain.model;
 
 import java.io.Serializable;
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
@@ -36,9 +37,9 @@ public class MemberRole {
     @JoinColumn(name = "member_Id", nullable = false, unique = true)
     private Member member;
 
-    @MapsId("authorityId")
+    @MapsId("roleId")
     @ManyToOne
-    @JoinColumn(name = "authority_Id", nullable = false, unique = true)
+    @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
     /**
@@ -53,7 +54,10 @@ public class MemberRole {
     @Getter
     @Embeddable
     public static class Pk implements Serializable {
+        @Column(name = "member_id", nullable = false)
         private Long memberId;
-        private Integer authorityId;
+
+        @Column(name = "role_id", nullable = false)
+        private Integer roleId;
     }
 }
