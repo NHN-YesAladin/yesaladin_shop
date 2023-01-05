@@ -44,11 +44,12 @@ public class ProductTag {
     @JoinColumn(name = "tag_id")
     private Tag tag;
 
+    @Getter
     @NoArgsConstructor
     @AllArgsConstructor
     @EqualsAndHashCode
     @Embeddable
-    private static class Pk implements Serializable {
+    public static class Pk implements Serializable {
         @Column(name = "product_id", nullable = false)
         private Long productId;
 
