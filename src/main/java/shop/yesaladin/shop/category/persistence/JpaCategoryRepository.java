@@ -1,7 +1,10 @@
 package shop.yesaladin.shop.category.persistence;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.Repository;
 import shop.yesaladin.shop.category.domain.model.Category;
+import shop.yesaladin.shop.category.domain.repository.CommandCategoryRepository;
+import shop.yesaladin.shop.category.domain.repository.QueryCategoryRepository;
+
 
 /**
  * Category 엔티티를 위한 Jpa repository 구현체
@@ -10,6 +13,9 @@ import shop.yesaladin.shop.category.domain.model.Category;
  * @since 1.0
  */
 
-public interface JpaCategoryRepository extends JpaRepository<Category, Long> {
+
+public interface JpaCategoryRepository extends Repository<Category, Long>,
+        CommandCategoryRepository, QueryCategoryRepository {
+
 
 }
