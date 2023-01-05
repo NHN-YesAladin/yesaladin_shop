@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.category.exception;
 
-
 /**
  * 찾고자하는 category 가 없을때 발생하는 예외
  *
