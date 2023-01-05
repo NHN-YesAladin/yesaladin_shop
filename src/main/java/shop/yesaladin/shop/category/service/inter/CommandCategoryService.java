@@ -2,6 +2,7 @@ package shop.yesaladin.shop.category.service.inter;
 
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.dto.CategoryCreateDto;
+import shop.yesaladin.shop.category.dto.CategoryDeleteDto;
 import shop.yesaladin.shop.category.dto.CategoryUpdateDto;
 
 /**
@@ -17,4 +18,5 @@ public interface CommandCategoryService {
 
     Category update(CategoryUpdateDto updateDto);
 
+    void delete(CategoryDeleteDto deleteDto);
 }

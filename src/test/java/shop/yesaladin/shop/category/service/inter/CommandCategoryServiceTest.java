@@ -1,17 +1,22 @@
 package shop.yesaladin.shop.category.service.inter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.repository.CommandCategoryRepository;
 import shop.yesaladin.shop.category.dto.CategoryCreateDto;
+import shop.yesaladin.shop.category.dto.CategoryDeleteDto;
 import shop.yesaladin.shop.category.dto.CategoryUpdateDto;
 import shop.yesaladin.shop.category.service.impl.CommandCategoryServiceImpl;
 
@@ -89,4 +94,15 @@ class CommandCategoryServiceTest {
         verify(commandCategoryRepository, times(1)).save(any());
     }
 
+    @Test
+    void delete() {
+        // given
+        long id = 1L;
+        CategoryDeleteDto deleteDto = new CategoryDeleteDto(id);
+        doNothing().when(commandCategoryRepository).deleteById(deleteDto.getId());
+
+        // then
+        assertThatCode(() -> commandCategoryService.delete(deleteDto)).doesNotThrowAnyException();
+
+    }
 }
