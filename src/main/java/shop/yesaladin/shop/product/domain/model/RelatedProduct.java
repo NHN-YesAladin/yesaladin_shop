@@ -44,11 +44,13 @@ public class RelatedProduct {
     private Product productSub;
 
 
-    @NoArgsConstructor
-    @AllArgsConstructor
+    @Getter
+    @Builder
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @EqualsAndHashCode
     @Embeddable
-    private static class Pk implements Serializable {
+    public static class Pk implements Serializable {
         @Column(name = "product_main_id", nullable = false)
         private Long productMainId;
 

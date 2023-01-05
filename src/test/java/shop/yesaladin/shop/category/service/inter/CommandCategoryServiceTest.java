@@ -32,13 +32,12 @@ class CommandCategoryServiceTest {
         String name = "국내도서";
         CategoryCreateDto createDto = new CategoryCreateDto(name);
         Category toEntity = createDto.toEntity();
-
-        //when
         when(commandCategoryRepository.save(any())).thenReturn(toEntity);
 
-        //then
+        //when
         Category category = commandCategoryService.create(createDto);
 
+        //then
         assertThat(category.getName()).isEqualTo(toEntity.getName());
 
         verify(commandCategoryRepository, times(1)).save(any());
