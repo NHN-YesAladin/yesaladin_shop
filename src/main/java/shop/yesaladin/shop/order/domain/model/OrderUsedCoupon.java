@@ -59,9 +59,9 @@ public class OrderUsedCoupon {
     public static class Pk implements Serializable {
 
         @Column(name = "order_id", nullable = false)
-        private Long orderId;
+        private long orderId;
 
         @Column(name = "coupon_issuance_id", nullable = false)
-        private Long couponIssuanceId;
+        private long couponIssuanceId;
     }
 }

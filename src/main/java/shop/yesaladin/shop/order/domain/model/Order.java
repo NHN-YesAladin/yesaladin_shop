@@ -9,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,10 +34,9 @@ public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false)
     private Long id;
 
-    @Column(name = "order_number", length = 18, nullable = false)
+    @Column(name = "order_number", length = 18, nullable = false, unique = true)
     private String orderNumber;
 
     @Column(name = "order_datetime", nullable = false)
@@ -49,13 +49,13 @@ public class Order {
     private boolean isHidden;
 
     @Column(name = "used_point", nullable = false)
-    private Long usedPoint;
+    private long usedPoint;
 
     @Column(name = "shipping_fee", nullable = false)
-    private Long shippingFee;
+    private int shippingFee;
 
     @Column(name = "wrapping_fee", nullable = false)
-    private Long wrappingFee;
+    private int wrappingFee;
 
     @Column(name = "order_code_id")
     @Convert(converter = OrderCodeConverter.class)
