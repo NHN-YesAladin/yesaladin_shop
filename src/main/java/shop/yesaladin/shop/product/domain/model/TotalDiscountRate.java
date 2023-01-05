@@ -11,7 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * 전체 할인율의 엔터티 클래스이다.
+ * 전체 할인율의 엔터티 클래스입니다.
  *
  * @author : 이수정
  * @since : 1.0

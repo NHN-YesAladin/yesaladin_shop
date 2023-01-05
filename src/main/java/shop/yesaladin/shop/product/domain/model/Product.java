@@ -1,6 +1,6 @@
 package shop.yesaladin.shop.product.domain.model;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 import shop.yesaladin.shop.file.domain.model.File;
 
 /**
- * 상품의 엔터티 클래스이다.
+ * 상품의 엔터티 클래스입니다.
  *
  * @author : 이수정
  * @since : 1.0
@@ -67,7 +67,7 @@ public class Product {
     @Column(nullable = false)
     private Long quantity;
     @Column(name = "published_date")
-    private LocalDateTime publishedDate;
+    private LocalDate publishedDate;
     @Column(name = "preferential_show_ranking", nullable = false)
     private int preferentialShowRanking;
 

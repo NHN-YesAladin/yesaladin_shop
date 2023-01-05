@@ -14,7 +14,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * 파일의 엔터티 클래스이다.
+ * 파일의 엔터티 클래스입니다.
  *
  * @author : 이수정
  * @since : 1.0

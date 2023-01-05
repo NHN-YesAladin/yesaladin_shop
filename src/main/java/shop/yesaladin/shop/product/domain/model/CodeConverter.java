@@ -6,7 +6,7 @@ import javax.persistence.Converter;
 import shop.yesaladin.shop.product.exception.ProductTypeCodeNotFoundException;
 
 /**
- * Enum 클래스로 만들어진 ProductTypeCode 테이블을 entity와 DB 사이의 변환하기 위한 클래스이다.
+ * Enum 클래스로 만들어진 ProductTypeCode 테이블을 entity와 DB 사이의 변환하기 위한 클래스입니다.
  *
  * @author : 이수정
  * @since : 1.0

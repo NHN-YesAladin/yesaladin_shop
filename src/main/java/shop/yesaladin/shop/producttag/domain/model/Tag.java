@@ -1,4 +1,4 @@
-package shop.yesaladin.shop.product.domain.model;
+package shop.yesaladin.shop.producttag.domain.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,7 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * 정기구독 상품의 엔터티 클래스입니다.
+ * 태그의 엔터티 클래스입니다.
  *
  * @author : 이수정
  * @since : 1.0
@@ -22,15 +22,14 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "subscribe_products")
+@Table(name = "tags")
 @Entity
-public class SubscribeProduct {
+public class Tag {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 9)
-    private String ISSN;
-
+    @Column(nullable = false, length = 15)
+    private String name;
 }
