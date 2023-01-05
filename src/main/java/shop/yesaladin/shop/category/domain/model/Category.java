@@ -38,12 +38,12 @@ public class Category {
 
     // mysql : tinyint -> java : boolean 으로 변환 가능
     // 0 -> false / 1 -> true
+    @Builder.Default
     @Column(name = "is_shown", nullable = false)
     private boolean isShown = true;
 
     @Column(name = "`order`")
     private Integer order;
-
 
     @ToString.Exclude
     @ManyToOne
