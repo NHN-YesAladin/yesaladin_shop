@@ -30,7 +30,7 @@ public class NonMemberOrder {
 
     @Id
     @Column(name = "order_id")
-    private Long orderId;
+    private long orderId;
 
     @Column(nullable = false)
     private String address;

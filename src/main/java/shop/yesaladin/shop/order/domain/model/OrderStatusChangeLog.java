@@ -60,7 +60,7 @@ public class OrderStatusChangeLog {
     public static class Pk implements Serializable {
 
         @Column(name = "order_id", nullable = false)
-        private Long orderId;
+        private long orderId;
         @Column(name = "change_datetime", nullable = false)
         private LocalDateTime changeDateTime;
     }

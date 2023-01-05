@@ -65,9 +65,9 @@ public class SubscribeOrder {
     public static class Pk implements Serializable {
 
         @Column(name = "order_id", nullable = false)
-        private Long orderId;
+        private long orderId;
 
         @Column(name = "subscribe_id", nullable = false)
-        private Long subscribeId;
+        private long subscribeId;
     }
 }
