@@ -2,6 +2,7 @@ package shop.yesaladin.shop.order.domain.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -12,13 +13,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import shop.yesaladin.shop.order.domain.dummy.Member;
+import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.order.domain.dummy.MemberAddress;
 
 /**
  * 회원 주문 엔티티입니다.
  *
- * @author 최예린
+ * @author 최예린, 송학현
  * @since 1.0
  */
 
@@ -34,11 +35,11 @@ public class MemberOrder {
     @Column(name = "order_id", nullable = false)
     private long orderId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_address_id", nullable = false)
     private MemberAddress memberAddress;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
