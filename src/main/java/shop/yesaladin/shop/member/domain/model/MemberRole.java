@@ -41,6 +41,12 @@ public class MemberRole {
     @JoinColumn(name = "authority_Id", nullable = false, unique = true)
     private Role role;
 
+    /**
+     * 회원 권한에 사용한 복합키 입니다.
+     *
+     * @author : 송학현
+     * @since : 1.0
+     */
     @AllArgsConstructor
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     @EqualsAndHashCode

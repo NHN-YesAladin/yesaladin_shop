@@ -9,6 +9,6 @@ import shop.yesaladin.shop.member.domain.model.Role;
  * @author : 송학현
  * @since : 1.0
  */
-public interface RoleRepository extends Repository<Role, Integer> {
+public interface JpaRoleRepository extends Repository<Role, Integer> {
 
 }

@@ -9,6 +9,6 @@ import shop.yesaladin.shop.member.domain.model.Member;
  * @author : 송학현
  * @since : 1.0
  */
-public interface MemberRepository extends Repository<Member, Long> {
+public interface JpaMemberRepository extends Repository<Member, Long> {
 
 }

@@ -10,6 +10,6 @@ import shop.yesaladin.shop.member.domain.model.MemberRole.Pk;
  * @author : 송학현
  * @since : 1.0
  */
-public interface MemberRoleRepository extends Repository<MemberRole, Pk> {
+public interface JpaMemberRoleRepository extends Repository<MemberRole, Pk> {
 
 }
