@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.exception.CategoryNotFoundException;
 
+
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class JpaCategoryRepositoryTest {
@@ -31,6 +32,7 @@ class JpaCategoryRepositoryTest {
     @Test
     void save() {
         //when
+
         Category save = jpaCategoryRepository.save(sample);
 
         //then
@@ -47,6 +49,7 @@ class JpaCategoryRepositoryTest {
         Category category = jpaCategoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryNotFoundException(id));
 
+
         //then
         assertThat(category.getName()).isEqualTo(name);
         assertThat(category.getId()).isEqualTo(id);
@@ -54,6 +57,7 @@ class JpaCategoryRepositoryTest {
 
     @Test
     void findAll() {
+
         //when
         List<Category> all = jpaCategoryRepository.findAll();
 
