@@ -1,7 +1,8 @@
-package shop.yesaladin.shop.category.domain.model;
+package shop.yesaladin.shop.order.domain.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -13,41 +14,37 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
+import shop.yesaladin.shop.product.domain.model.Product;
 
 /**
- * 카테고리 엔티티
+ * 주문상품 엔터티
  *
- * @author 배수한
+ * @author 서민지
  * @since 1.0
  */
-
 @Getter
 @Builder
-@ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "categories")
+@Table(name = "order_products")
 @Entity
-public class Category {
+public class OrderProduct {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 30, nullable = false)
-    private String name;
+    @Column(nullable = false)
+    private int quantity;
 
-    // mysql : tinyint -> java : boolean 으로 변환 가능
-    // 0 -> false / 1 -> true
-    @Builder.Default
-    @Column(name = "is_shown", nullable = false)
-    private boolean isShown = true;
+    @Column(name = "is_cancelled", nullable = false)
+    private boolean isCancelled;
 
-    @Column(name = "`order`")
-    private Integer order;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
 
-    @ToString.Exclude
-    @ManyToOne
-    @JoinColumn(name = "parent_id")
-    private Category parent;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", nullable = false)
+    private Order order;
 }
