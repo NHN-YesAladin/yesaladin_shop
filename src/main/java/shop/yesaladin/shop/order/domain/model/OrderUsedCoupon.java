@@ -24,7 +24,6 @@ import shop.yesaladin.shop.order.domain.dummy.CouponIssuance;
  * @since 1.0
  */
 @Getter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @Entity
@@ -52,7 +51,7 @@ public class OrderUsedCoupon {
      */
     @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    @AllArgsConstructor
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @EqualsAndHashCode
     @Embeddable
     public static class Pk implements Serializable {
@@ -62,5 +61,10 @@ public class OrderUsedCoupon {
 
         @Column(name = "coupon_issuance_id", nullable = false)
         private long couponIssuanceId;
+    }
+
+    public static OrderUsedCoupon create(Order order, CouponIssuance couponIssuance) {
+        Pk pk = new Pk(order.getId(), couponIssuance.getId());
+        return new OrderUsedCoupon(pk, order, couponIssuance);
     }
 }

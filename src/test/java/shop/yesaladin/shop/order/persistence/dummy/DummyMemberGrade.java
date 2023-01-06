@@ -3,6 +3,7 @@ package shop.yesaladin.shop.order.persistence.dummy;
 import shop.yesaladin.shop.member.domain.model.MemberGrade;
 
 public class DummyMemberGrade {
+
     public static MemberGrade memberGrade = MemberGrade.builder()
             .id(1)
             .name("silver")

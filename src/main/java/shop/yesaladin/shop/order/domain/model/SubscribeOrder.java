@@ -2,7 +2,6 @@ package shop.yesaladin.shop.order.domain.model;
 
 import java.time.LocalDate;
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -39,5 +38,4 @@ public class SubscribeOrder extends Order {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subscribe_id", nullable = false)
     private Subscribe subscribe;
-
 }

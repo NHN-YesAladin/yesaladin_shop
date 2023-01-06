@@ -8,15 +8,9 @@ import shop.yesaladin.shop.order.domain.model.OrderUsedCoupon.Pk;
 public class DummyOrderUsedCoupon {
 
     public static OrderUsedCoupon orderUsedCoupon(
-            Long orderId,
-            Long couponIssuanceId,
             Order order,
             CouponIssuance couponIssuance
     ) {
-        return OrderUsedCoupon.builder()
-                .pk(new Pk(orderId, couponIssuanceId))
-                .order(order)
-                .couponIssuance(couponIssuance).build();
+        return OrderUsedCoupon.create(order, couponIssuance);
     }
-
 }

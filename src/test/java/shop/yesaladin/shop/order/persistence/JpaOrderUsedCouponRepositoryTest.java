@@ -17,7 +17,6 @@ import shop.yesaladin.shop.order.domain.model.OrderUsedCoupon;
 import shop.yesaladin.shop.order.domain.model.OrderUsedCoupon.Pk;
 import shop.yesaladin.shop.order.persistence.dummy.DummyCouponIssuance;
 import shop.yesaladin.shop.order.persistence.dummy.DummyOrder;
-import shop.yesaladin.shop.order.persistence.dummy.DummyOrderUsedCoupon;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
@@ -31,43 +30,36 @@ class JpaOrderUsedCouponRepositoryTest {
 
     private Order order;
     private CouponIssuance couponIssuance;
+
     private OrderUsedCoupon orderUsedCoupon;
 
 
     @BeforeEach
     void setUp() {
-        Long orderId = 1L;
-        Long couponIssuanceId = 1L;
         order = DummyOrder.nonMemberOrder();
         couponIssuance = DummyCouponIssuance.couponIssuance;
-        orderUsedCoupon = DummyOrderUsedCoupon.orderUsedCoupon(
-                orderId,
-                couponIssuanceId,
-                order,
-                couponIssuance
-        );
+
+        entityManager.persist(order);
+        entityManager.persist(couponIssuance);
+
+        orderUsedCoupon = OrderUsedCoupon.create(order, couponIssuance);
     }
 
     @Test
     void save() {
-        //given
-        entityManager.persist(order);
-        entityManager.persist(couponIssuance);
-
         //when
         OrderUsedCoupon savedOrderUsedCoupon = orderUsedCouponRepository.save(orderUsedCoupon);
 
         //then
-        assertThat(savedOrderUsedCoupon).isNotNull();
+        assertThat(savedOrderUsedCoupon.getOrder()).isEqualTo(order);
+        assertThat(savedOrderUsedCoupon.getCouponIssuance()).isEqualTo(couponIssuance);
     }
 
     @Test
     void findById() {
         //given
-        entityManager.persist(order);
-        entityManager.persist(couponIssuance);
-
-        Pk pk = orderUsedCouponRepository.save(orderUsedCoupon).getPk();
+        entityManager.persist(orderUsedCoupon);
+        Pk pk = orderUsedCoupon.getPk();
 
         //when
         Optional<OrderUsedCoupon> foundOrderUsedCoupon = orderUsedCouponRepository.findById(pk);
@@ -75,5 +67,7 @@ class JpaOrderUsedCouponRepositoryTest {
         //then
         assertThat(foundOrderUsedCoupon).isPresent();
         assertThat(foundOrderUsedCoupon.get().getPk()).isEqualTo(pk);
+        assertThat(foundOrderUsedCoupon.get().getOrder()).isEqualTo(order);
+        assertThat(foundOrderUsedCoupon.get().getCouponIssuance()).isEqualTo(couponIssuance);
     }
 }

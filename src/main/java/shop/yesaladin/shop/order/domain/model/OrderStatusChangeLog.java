@@ -26,7 +26,6 @@ import shop.yesaladin.shop.order.persistence.converter.OrderStatusCodeConverter;
  * @since 1.0
  */
 @Getter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Entity
@@ -53,7 +52,7 @@ public class OrderStatusChangeLog {
      */
     @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    @AllArgsConstructor
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @EqualsAndHashCode
     @Embeddable
     public static class Pk implements Serializable {
@@ -62,6 +61,15 @@ public class OrderStatusChangeLog {
         private long orderId;
         @Column(name = "change_datetime", nullable = false)
         private LocalDateTime changeDateTime;
+    }
+
+    public static OrderStatusChangeLog create(
+            Order order,
+            LocalDateTime changeDateTime,
+            OrderStatusCode orderStatusCode
+    ) {
+        Pk pk = new Pk(order.getId(), changeDateTime);
+        return new OrderStatusChangeLog(pk, orderStatusCode, order);
     }
 }
 

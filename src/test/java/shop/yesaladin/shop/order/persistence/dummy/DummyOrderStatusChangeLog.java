@@ -7,12 +7,8 @@ import shop.yesaladin.shop.order.domain.model.OrderStatusChangeLog.Pk;
 import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
 
 public class DummyOrderStatusChangeLog {
-    public static OrderStatusChangeLog orderStatusChangeLog(Long orderId, Order order) {
-        return OrderStatusChangeLog.builder()
-                .pk(new Pk(orderId, LocalDateTime.now()))
-                .orderStatusCode(OrderStatusCode.ORDER)
-                .order(order)
-                .build();
+    public static OrderStatusChangeLog orderStatusChangeLog(Order order) {
+        return OrderStatusChangeLog.create(order, LocalDateTime.now(), OrderStatusCode.ORDER);
     }
 
 }
