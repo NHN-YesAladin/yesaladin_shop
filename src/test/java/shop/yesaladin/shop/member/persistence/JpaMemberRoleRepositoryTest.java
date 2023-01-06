@@ -54,7 +54,8 @@ class JpaMemberRoleRepositoryTest {
         MemberRole savedMemberRole = memberRoleRepository.save(memberRole);
 
         //then
-        assertThat(savedMemberRole).isNotNull();
+        assertThat(savedMemberRole.getRole().getName()).isEqualTo(role.getName());
+        assertThat(savedMemberRole.getMember().getName()).isEqualTo(member.getName());
     }
 
     @Test
@@ -75,5 +76,9 @@ class JpaMemberRoleRepositoryTest {
 
         //then
         assertThat(optionalMemberRole).isPresent();
+        assertThat(optionalMemberRole.get().getMember().getName()).isEqualTo(memberRole.getMember()
+                .getName());
+        assertThat(optionalMemberRole.get().getRole().getName()).isEqualTo(memberRole.getRole()
+                .getName());
     }
 }
