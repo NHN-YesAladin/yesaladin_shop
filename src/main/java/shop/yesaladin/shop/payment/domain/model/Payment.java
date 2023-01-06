@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.payment.domain.model;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -32,18 +33,19 @@ import shop.yesaladin.shop.payment.persistence.converter.PaymentCodeConverter;
 public class Payment {
 
     @Id
+    @Column(length = 200)
     private String id;
 
-    @Column(name = "last_transaction_key", nullable = false)
+    @Column(name = "last_transaction_key", nullable = false, length = 64)
     private String lastTransactionKey;
 
-    @Column(name = "order_name", nullable = false)
+    @Column(name = "order_name", nullable = false, length = 100)
     private String orderName;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
     private String method;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 3)
     private String currency;
 
     @Column(name = "total_amount", nullable = false)
@@ -61,14 +63,14 @@ public class Payment {
     @Column(nullable = false)
     private long vat;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 20)
     private String status;
 
     @Column(name = "requested_datetime", nullable = false)
-    private LocalDateTime requestedDatetime;
+    private LocalDate requestedDatetime;
 
     @Column(name = "approved_datetime", nullable = false)
-    private LocalDateTime approvedDatetime;
+    private LocalDate approvedDatetime;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)

@@ -14,7 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import shop.yesaladin.shop.order.domain.dummy.Product;
+import shop.yesaladin.shop.product.domain.model.Product;
 
 /**
  * 주문상품 엔터티
