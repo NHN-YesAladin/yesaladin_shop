@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.product.persistence;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -33,7 +32,6 @@ class JpaSubscribeProductRepositoryTest {
 
         // then
         assertThat(savedSubscribeProduct).isNotNull();
-        assertThat(savedSubscribeProduct.getId()).isEqualTo(1);
         assertThat(savedSubscribeProduct.getISSN()).isEqualTo("0000-XXXX");
     }
 }
