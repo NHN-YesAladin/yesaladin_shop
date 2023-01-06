@@ -6,5 +6,5 @@ import shop.yesaladin.shop.member.domain.model.MemberRole.Pk;
 
 public interface QueryMemberRoleRepository {
 
-    Optional<MemberRole> findById(Pk id);
+    Optional<MemberRole> findById(Pk pk);
 }
