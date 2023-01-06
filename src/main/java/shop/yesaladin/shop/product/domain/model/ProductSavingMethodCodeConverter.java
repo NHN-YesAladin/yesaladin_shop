@@ -3,6 +3,7 @@ package shop.yesaladin.shop.product.domain.model;
 import java.util.Arrays;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
+import shop.yesaladin.shop.product.exception.ProductSavingMethodCodeNotFoundException;
 import shop.yesaladin.shop.product.exception.ProductTypeCodeNotFoundException;
 
 /**
@@ -42,6 +43,6 @@ public class ProductSavingMethodCodeConverter implements AttributeConverter<Prod
         return Arrays.stream(ProductSavingMethodCode.values())
                 .filter(code -> id.equals(code.getId()))
                 .findAny()
-                .orElseThrow(() -> new ProductTypeCodeNotFoundException(id));
+                .orElseThrow(() -> new ProductSavingMethodCodeNotFoundException(id));
     }
 }

@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.producttag.persistence;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import javax.persistence.EntityManager;
@@ -21,6 +20,9 @@ import shop.yesaladin.shop.producttag.domain.model.Tag;
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class JpaProductTagRepositoryTest {
 
+    private final String ISBN = "00001-...";
+    private final String TAG_NAME = "눈물나는";
+
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -31,8 +33,8 @@ class JpaProductTagRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        Product product = DummyProduct.dummy("00001-...");
-        Tag tag = Tag.builder().name("눈물나는").build();
+        Product product = DummyProduct.dummy(ISBN);
+        Tag tag = Tag.builder().name(TAG_NAME).build();
 
         entityManager.persist(product);
         entityManager.persist(tag);

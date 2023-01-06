@@ -4,6 +4,6 @@ import shop.yesaladin.shop.product.domain.model.ProductTypeCode;
 
 public class DummyProductTypeCode {
     public static ProductTypeCode dummy() {
-        return ProductTypeCode.NULL;
+        return ProductTypeCode.NONE;
     }
 }

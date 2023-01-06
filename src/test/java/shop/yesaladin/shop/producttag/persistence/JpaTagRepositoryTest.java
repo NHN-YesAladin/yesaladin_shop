@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.producttag.persistence;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +14,8 @@ import shop.yesaladin.shop.producttag.domain.model.Tag;
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class JpaTagRepositoryTest {
 
+    private final String TAG_NAME = "감동적인";
+
     @Autowired
     private JpaTagRepository jpaTagRepository;
 
@@ -22,7 +23,7 @@ class JpaTagRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        tag = Tag.builder().name("감동적인").build();
+        tag = Tag.builder().name(TAG_NAME).build();
     }
 
     @Test
