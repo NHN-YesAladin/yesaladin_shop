@@ -20,7 +20,7 @@ public class ControllerAdvice {
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseEntity handleException(Exception ex) {
+    public ResponseEntity<String> handleException(Exception ex) {
         log.error("INTERNAL_SERVER_ERROR : {} ", ex);
         return ResponseEntity.internalServerError().build();
     }

@@ -38,7 +38,7 @@ public class CategoryController {
     private final CommandCategoryService commandCategoryService;
 
     @PostMapping
-    public ResponseEntity createCategory(
+    public ResponseEntity<CategoryCreateDto> createCategory(
             @Valid @RequestBody CategoryCreateDto createDto
     ) throws URISyntaxException {
         Category category = commandCategoryService.create(createDto);
@@ -46,7 +46,7 @@ public class CategoryController {
     }
 
     @PutMapping("/{categoryId}")
-    public ResponseEntity updateCategory(
+    public ResponseEntity<CategoryUpdateDto> updateCategory(
             @PathVariable Long categoryId,
             @Valid @RequestBody CategoryUpdateDto updateDto
     ) {
