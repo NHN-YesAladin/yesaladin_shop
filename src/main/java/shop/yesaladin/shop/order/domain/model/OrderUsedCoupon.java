@@ -11,7 +11,6 @@ import javax.persistence.MapsId;
 import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -43,6 +42,11 @@ public class OrderUsedCoupon {
     @JoinColumn(name = "coupon_issuance_id", nullable = false)
     private CouponIssuance couponIssuance;
 
+    public static OrderUsedCoupon create(Order order, CouponIssuance couponIssuance) {
+        Pk pk = new Pk(order.getId(), couponIssuance.getId());
+        return new OrderUsedCoupon(pk, order, couponIssuance);
+    }
+
     /**
      * 주문에 사용한 쿠폰의 복합키입니다.
      *
@@ -61,10 +65,5 @@ public class OrderUsedCoupon {
 
         @Column(name = "coupon_issuance_id", nullable = false)
         private long couponIssuanceId;
-    }
-
-    public static OrderUsedCoupon create(Order order, CouponIssuance couponIssuance) {
-        Pk pk = new Pk(order.getId(), couponIssuance.getId());
-        return new OrderUsedCoupon(pk, order, couponIssuance);
     }
 }
