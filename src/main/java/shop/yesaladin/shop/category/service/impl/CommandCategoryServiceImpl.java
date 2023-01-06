@@ -6,6 +6,7 @@ import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.repository.CommandCategoryRepository;
 import shop.yesaladin.shop.category.domain.repository.QueryCategoryRepository;
 import shop.yesaladin.shop.category.dto.CategoryCreateDto;
+import shop.yesaladin.shop.category.dto.CategoryDeleteDto;
 import shop.yesaladin.shop.category.dto.CategoryUpdateDto;
 import shop.yesaladin.shop.category.service.inter.CommandCategoryService;
 import shop.yesaladin.shop.category.service.inter.QueryCategoryService;
@@ -32,5 +33,10 @@ public class CommandCategoryServiceImpl implements CommandCategoryService {
     public Category update(CategoryUpdateDto updateDto) {
         Category parentCategory = queryCategoryService.findCategoryById(updateDto.getParentId());
         return commandCategoryRepository.save(updateDto.toEntity(parentCategory));
+    }
+
+    @Override
+    public void delete(CategoryDeleteDto deleteDto) {
+        commandCategoryRepository.deleteById(deleteDto.getId());
     }
 }

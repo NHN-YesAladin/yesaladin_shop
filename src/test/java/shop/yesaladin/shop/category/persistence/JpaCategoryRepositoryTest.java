@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -84,6 +85,25 @@ class JpaCategoryRepositoryTest {
 
         //then
         assertThat(all.size() > 0).isTrue();
+    }
+
+    @Test
+    void deleteById() {
+        // given
+        sample = Category.builder()
+                .name(name)
+                .order(null)
+                .isShown(true)
+                .parent(null)
+                .build();
+        Category save = jpaCategoryRepository.save(sample);
+
+        // when
+        jpaCategoryRepository.deleteById(save.getId());
+        Category category = jpaCategoryRepository.findById(save.getId()).orElse(null);
+
+        // then
+        assertThat(category).isNull();
     }
 }
 

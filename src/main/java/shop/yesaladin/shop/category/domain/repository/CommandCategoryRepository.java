@@ -14,4 +14,6 @@ import shop.yesaladin.shop.category.domain.model.Category;
 public interface CommandCategoryRepository {
 
     Category save(Category category);
+
+    void deleteById(Long id);
 }
