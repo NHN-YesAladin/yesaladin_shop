@@ -18,7 +18,7 @@ public enum ProductTypeCode {
     NEWBOOK(3),
     POPULARITY(4),
     DISCOUNTS(5),
-    NULL(6);
+    NONE(6);
 
     private final int id;
 }

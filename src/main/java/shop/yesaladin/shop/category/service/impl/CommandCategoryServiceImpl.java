@@ -1,10 +1,10 @@
 package shop.yesaladin.shop.category.service.impl;
 
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.repository.CommandCategoryRepository;
-import shop.yesaladin.shop.category.domain.repository.QueryCategoryRepository;
 import shop.yesaladin.shop.category.dto.CategoryCreateDto;
 import shop.yesaladin.shop.category.dto.CategoryDeleteDto;
 import shop.yesaladin.shop.category.dto.CategoryUpdateDto;
@@ -31,7 +31,11 @@ public class CommandCategoryServiceImpl implements CommandCategoryService {
 
     @Override
     public Category update(CategoryUpdateDto updateDto) {
-        Category parentCategory = queryCategoryService.findCategoryById(updateDto.getParentId());
+        Category parentCategory = null;
+        if (Objects.nonNull(updateDto.getParentId())) {
+            parentCategory = queryCategoryService.findCategoryById(updateDto.getParentId());
+        }
+
         return commandCategoryRepository.save(updateDto.toEntity(parentCategory));
     }
 

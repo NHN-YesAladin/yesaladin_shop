@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -17,6 +18,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.yesaladin.shop.file.domain.model.File;
+import shop.yesaladin.shop.publisher.domain.model.Publisher;
 
 /**
  * 상품의 엔터티 클래스입니다.
@@ -47,7 +49,7 @@ public class Product {
     private String description;
 
     @Column(name = "actual_price", nullable = false)
-    private Long actualPrice;
+    private long actualPrice;
     @Column(name = "discount_rate")
     private int discountRate;
     @Column(name = "is_separately_discount", nullable = false)
@@ -65,14 +67,14 @@ public class Product {
     private boolean isForcedOutOfStock;
 
     @Column(nullable = false)
-    private Long quantity;
+    private long quantity;
     @Column(name = "published_date")
     private LocalDate publishedDate;
     @Column(name = "preferential_show_ranking", nullable = false)
     private int preferentialShowRanking;
 
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subscribe_product_id")
     private SubscribeProduct subscribeProduct;
 
@@ -80,12 +82,12 @@ public class Product {
     @JoinColumn(name = "publisher_id")
     private Publisher publisher;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "file_id")
-    private File files;
+    private File file;
 
     @Column(name = "product_type_code_id")
-    @Convert(converter = CodeConverter.class)
+    @Convert(converter = ProductTypeCodeConverter.class)
     private ProductTypeCode productTypeCode;
 
     @OneToOne
@@ -93,7 +95,7 @@ public class Product {
     private TotalDiscountRate totalDiscountRate;
 
     @Column(name = "product_saving_method_code_id")
-    @Convert(converter = CodeConverter.class)
+    @Convert(converter = ProductSavingMethodCodeConverter.class)
     private ProductSavingMethodCode productSavingMethodCode;
 
 }

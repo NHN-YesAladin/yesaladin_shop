@@ -1,8 +1,9 @@
 package shop.yesaladin.shop.category.dto;
 
+import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.hibernate.validator.constraints.Length;
+import lombok.NoArgsConstructor;
 import shop.yesaladin.shop.category.domain.model.Category;
 
 /**
@@ -13,10 +14,10 @@ import shop.yesaladin.shop.category.domain.model.Category;
  */
 
 @Getter
+@NoArgsConstructor
 @AllArgsConstructor
 public class CategoryCreateDto {
-
-    @Length(min = 1)
+    @NotBlank
     private String name;
 
     public Category toEntity() {
