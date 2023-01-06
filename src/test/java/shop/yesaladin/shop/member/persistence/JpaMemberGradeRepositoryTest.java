@@ -42,11 +42,10 @@ class JpaMemberGradeRepositoryTest {
     @Test
     void findById() throws Exception {
         //given
-        int id = 1;
-        entityManager.persist(memberGrade);
+        MemberGrade savedMemberGrade = entityManager.persist(memberGrade);
 
         //when
-        Optional<MemberGrade> optionalMemberGrade = repository.findById(id);
+        Optional<MemberGrade> optionalMemberGrade = repository.findById(savedMemberGrade.getId());
 
         //then
         assertThat(optionalMemberGrade).isPresent();
