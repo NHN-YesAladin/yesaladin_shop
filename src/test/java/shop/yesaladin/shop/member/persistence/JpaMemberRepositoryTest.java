@@ -51,12 +51,11 @@ class JpaMemberRepositoryTest {
     @Test
     void findById() throws Exception {
         //given
-        long id = 1L;
         entityManager.persist(grade);
-        entityManager.persist(member);
+        Member savedMember = entityManager.persist(member);
 
         //when
-        Optional<Member> optionalMember = repository.findById(id);
+        Optional<Member> optionalMember = repository.findById(savedMember.getId());
 
         //then
         assertThat(optionalMember).isPresent();
