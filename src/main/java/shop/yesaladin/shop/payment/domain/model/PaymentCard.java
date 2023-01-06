@@ -31,7 +31,7 @@ import shop.yesaladin.shop.payment.persistence.converter.PaymentCodeConverter;
 public class PaymentCard {
 
     @Id
-    @Column(name = "payment_id")
+    @Column(name = "payment_id", length = 200)
     private String id;
 
     @MapsId
@@ -42,31 +42,31 @@ public class PaymentCard {
     @Column(nullable = false)
     private long amount;
 
-    @Column(name = "issuer_code", nullable = false)
+    @Column(name = "issuer_code", nullable = false, length = 50)
     private String issuerCode;
 
-    @Column(name = "acquirer_code", nullable = false)
+    @Column(name = "acquirer_code", nullable = false, length = 50)
     private String acquirerCode;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 20)
     private String number;
 
     @Column(name = "installment_plan_months", nullable = false)
     private int installmentPlanMonths;
 
-    @Column(name = "approve_no", nullable = false)
+    @Column(name = "approve_no", nullable = false, length = 8)
     private String approveNo;
 
     @Column(name = "use_card_point", nullable = false)
     private boolean useCardPoint;
 
-    @Column(name = "acquire_status", nullable = false)
+    @Column(name = "acquire_status", nullable = false, length = 20)
     private String acquireStatus;
 
     @Column(name = "is_interest_free", nullable = false)
     private boolean isInterestFree;
 
-    @Column(name = "interest_payer", nullable = false)
+    @Column(name = "interest_payer", nullable = false, length = 20)
     private String interestPayer;
 
     @Column(name = "card_code_id")

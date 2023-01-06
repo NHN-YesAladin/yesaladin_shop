@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.payment.domain.model;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -31,7 +32,7 @@ import lombok.NoArgsConstructor;
 public class PaymentCancel {
 
     @Id
-    @Column(name = "payment_id")
+    @Column(name = "payment_id", length = 200)
     private String id;
 
     @MapsId
@@ -42,7 +43,7 @@ public class PaymentCancel {
     @Column(name = "cancel_amount", nullable = false)
     private long cancelAmount;
 
-    @Column(name = "cancel_reason", nullable = false)
+    @Column(name = "cancel_reason", nullable = false, length = 200)
     private String cancelReason;
 
     @Column(name = "tax_free_amount", nullable = false)
@@ -58,8 +59,8 @@ public class PaymentCancel {
     private long easyPayDiscountAmount;
 
     @Column(name = "canceled_datetime", nullable = false)
-    private LocalDateTime canceledDatetime;
+    private LocalDate canceledDatetime;
 
-    @Column(name = "transaction_key", nullable = false)
+    @Column(name = "transaction_key", nullable = false, length = 64)
     private String transactionKey;
 }
