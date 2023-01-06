@@ -52,9 +52,8 @@ public class OrderStatusChangeLog {
      * @since 1.0
      */
     @Getter
-    @Builder
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @AllArgsConstructor
     @EqualsAndHashCode
     @Embeddable
     public static class Pk implements Serializable {
