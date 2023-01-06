@@ -12,13 +12,6 @@ import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.exception.CategoryNotFoundException;
 
 
-/**
- * 카테고리 레파지토리 테스트
- *
- * @author 배수한
- * @since 1.0
- */
-
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class JpaCategoryRepositoryTest {
