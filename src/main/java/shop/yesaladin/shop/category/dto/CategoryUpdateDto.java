@@ -20,7 +20,7 @@ import shop.yesaladin.shop.category.domain.model.Category;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CategoryUpdateDto {
-    private Long id;
+    private long id;
 
     @NotBlank
     private String name;
@@ -36,7 +36,7 @@ public class CategoryUpdateDto {
         return Category.builder().id(this.id).name(this.name).isShown(this.isShown).order(this.order).parent(parent).build();
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 }

@@ -35,6 +35,7 @@ public class CommandCategoryServiceImpl implements CommandCategoryService {
         if (Objects.nonNull(updateDto.getParentId())) {
             parentCategory = queryCategoryService.findCategoryById(updateDto.getParentId());
         }
+
         return commandCategoryRepository.save(updateDto.toEntity(parentCategory));
     }
 
