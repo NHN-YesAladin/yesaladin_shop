@@ -12,7 +12,7 @@ import shop.yesaladin.shop.product.exception.ProductTypeCodeNotFoundException;
  * @since : 1.0
  */
 @Converter
-public class CodeConverter implements AttributeConverter<ProductTypeCode, Integer> {
+public class ProductTypeCodeConverter implements AttributeConverter<ProductTypeCode, Integer> {
 
     /**
      * 주어진 enum 상수를 DB에 어떤 값으로 넣을 것인지 찾아 리턴합니다.
