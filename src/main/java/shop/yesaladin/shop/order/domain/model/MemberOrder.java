@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.order.domain.model;
 
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;

@@ -62,7 +62,8 @@ class JpaMemberGradeHistoryRepositoryTest {
         MemberGradeHistory savedMemberGradeHistory = entityManager.persist(memberGradeHistory);
 
         //when
-        Optional<MemberGradeHistory> optionalMemberGradeHistory = repository.findById(savedMemberGradeHistory.getId());
+        Optional<MemberGradeHistory> optionalMemberGradeHistory = repository.findById(
+                savedMemberGradeHistory.getId());
 
         //then
         assertThat(optionalMemberGradeHistory).isPresent();

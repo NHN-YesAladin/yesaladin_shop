@@ -29,8 +29,8 @@ class JpaOrderStatusChangeLogRepositoryTest {
     private JpaOrderStatusChangeLogRepository orderStatusChangeLogRepository;
 
     private NonMemberOrder order;
-    private LocalDateTime changeDateTime = LocalDateTime.now();
-    private OrderStatusCode orderStatusCode = OrderStatusCode.ORDER;
+    private final LocalDateTime changeDateTime = LocalDateTime.now();
+    private final OrderStatusCode orderStatusCode = OrderStatusCode.ORDER;
 
     private OrderStatusChangeLog orderStatusChangeLog;
 

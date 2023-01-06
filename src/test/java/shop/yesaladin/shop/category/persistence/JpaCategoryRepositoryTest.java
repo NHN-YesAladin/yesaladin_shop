@@ -20,7 +20,7 @@ class JpaCategoryRepositoryTest {
     private JpaCategoryRepository jpaCategoryRepository;
 
     private Category sample;
-    private String name = "국내도서";
+    private final String name = "국내도서";
 
 
     @BeforeEach
@@ -48,7 +48,6 @@ class JpaCategoryRepositoryTest {
                 .parent(null)
                 .build();
         Category save = jpaCategoryRepository.save(sample);
-
 
         //when
         Category category = jpaCategoryRepository.findById(save.getId())

@@ -51,6 +51,7 @@ public class ProductTag {
     @EqualsAndHashCode
     @Embeddable
     public static class Pk implements Serializable {
+
         @Column(name = "product_id", nullable = false)
         private Long productId;
 

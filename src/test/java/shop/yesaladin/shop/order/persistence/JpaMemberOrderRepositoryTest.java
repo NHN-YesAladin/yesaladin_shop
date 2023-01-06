@@ -31,14 +31,14 @@ class JpaMemberOrderRepositoryTest {
     @Autowired
     private JpaOrderRepository<MemberOrder> memberOrderRepository;
 
-    private String orderNumber = "1234-5678";
-    private LocalDateTime orderDateTime = LocalDateTime.now();
-    private LocalDate expectedTransportDate = LocalDate.now();
-    private boolean isHidden = false;
-    private long usedPoint = 0;
-    private int shippingFee = 0;
-    private int wrappingFee = 0;
-    private OrderCode orderCode = OrderCode.NON_MEMBER_ORDER;
+    private final String orderNumber = "1234-5678";
+    private final LocalDateTime orderDateTime = LocalDateTime.now();
+    private final LocalDate expectedTransportDate = LocalDate.now();
+    private final boolean isHidden = false;
+    private final long usedPoint = 0;
+    private final int shippingFee = 0;
+    private final int wrappingFee = 0;
+    private final OrderCode orderCode = OrderCode.NON_MEMBER_ORDER;
     private Member member;
     private MemberAddress memberAddress;
 

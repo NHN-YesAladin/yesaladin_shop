@@ -9,5 +9,6 @@ import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
  * @since : 1.0
  */
 public interface CommandTotalDiscountRateRepository {
+
     TotalDiscountRate save(TotalDiscountRate totalDiscountRate);
 }

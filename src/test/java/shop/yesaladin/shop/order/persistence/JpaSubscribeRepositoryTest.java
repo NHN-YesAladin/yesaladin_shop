@@ -32,8 +32,8 @@ class JpaSubscribeRepositoryTest {
     @Autowired
     private JpaSubscribeRepository subscribeRepository;
 
-    private int intervalMonth = 6;
-    private LocalDate nextRenewalDate = LocalDate.now();
+    private final int intervalMonth = 6;
+    private final LocalDate nextRenewalDate = LocalDate.now();
     private MemberAddress memberAddress;
     private Member member;
     private SubscribeProduct subscribeProduct;

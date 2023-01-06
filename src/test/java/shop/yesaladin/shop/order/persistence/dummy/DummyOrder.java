@@ -12,9 +12,9 @@ import shop.yesaladin.shop.order.domain.model.SubscribeOrder;
 
 public class DummyOrder {
 
-    private static String orderNumber = "20230106-3942JE84";
-    private static LocalDateTime orderDateTime = LocalDateTime.now();
-    private static LocalDate expectedTransportDate = LocalDate.now();
+    private static final String orderNumber = "20230106-3942JE84";
+    private static final LocalDateTime orderDateTime = LocalDateTime.now();
+    private static final LocalDate expectedTransportDate = LocalDate.now();
 
     public static NonMemberOrder nonMemberOrder() {
         return NonMemberOrder.builder()

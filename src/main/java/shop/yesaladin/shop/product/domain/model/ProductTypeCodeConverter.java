@@ -19,7 +19,6 @@ public class ProductTypeCodeConverter implements AttributeConverter<ProductTypeC
      *
      * @param productTypeCode : enum 상수
      * @return : enum 상수에 따른 id
-     *
      * @author : 이수정
      * @since : 1.0
      */
@@ -33,7 +32,6 @@ public class ProductTypeCodeConverter implements AttributeConverter<ProductTypeC
      *
      * @param id : DB에서 읽힌 id
      * @return : id에 따라 매치되는 enum 상수
-     *
      * @author : 이수정
      * @since : 1.0
      */

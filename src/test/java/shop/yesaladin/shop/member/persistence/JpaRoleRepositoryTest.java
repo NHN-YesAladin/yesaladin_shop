@@ -38,7 +38,7 @@ class JpaRoleRepositoryTest {
         //then
         assertThat(savedRole.getName()).isEqualTo(role.getName());
     }
-    
+
     @Test
     void findById() throws Exception {
         //given
