@@ -5,9 +5,11 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.print.attribute.standard.MediaSize.NA;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +17,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * 결제 카드 정보 엔터티
+ * 결제 취소 정보 엔터티
  *
  * @author 서민지
  * @since 1.0
@@ -27,9 +29,14 @@ import lombok.NoArgsConstructor;
 @Table(name = "payment_cards")
 @Entity
 public class PaymentCancel {
+
     @Id
+    @Column(name = "payment_id")
+    private String id;
+
     @MapsId
     @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "payment_id")
     private Payment payment;
 
     @Column(name = "cancel_amount", nullable = false)

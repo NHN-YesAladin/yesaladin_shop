@@ -5,6 +5,7 @@ import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -28,9 +29,14 @@ import shop.yesaladin.shop.payment.persistence.converter.PaymentCodeConverter;
 @Table(name = "payment_cards")
 @Entity
 public class PaymentCard {
+
     @Id
+    @Column(name = "payment_id")
+    private String id;
+
     @MapsId
     @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "payment_id")
     private Payment payment;
 
     @Column(nullable = false)

@@ -29,12 +29,13 @@ import shop.yesaladin.shop.order.domain.dummy.Product;
 @Table(name = "order_products")
 @Entity
 public class OrderProduct {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
-    private Integer quantity;
+    private int quantity;
 
     @Column(name = "is_cancelled", nullable = false)
     private boolean isCancelled;

@@ -30,6 +30,7 @@ import shop.yesaladin.shop.payment.persistence.converter.PaymentCodeConverter;
 @Table(name = "payments")
 @Entity
 public class Payment {
+
     @Id
     private String id;
 
