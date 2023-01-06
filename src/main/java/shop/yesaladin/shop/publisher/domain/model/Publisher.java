@@ -1,4 +1,4 @@
-package shop.yesaladin.shop.product.domain.model;
+package shop.yesaladin.shop.publisher.domain.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
