@@ -1,7 +1,7 @@
 package shop.yesaladin.shop.member.persistence;
 
 import org.springframework.data.repository.Repository;
-import shop.yesaladin.shop.member.domain.model.MemberGrade;
+import shop.yesaladin.shop.member.domain.model.MemberGradeHistory;
 import shop.yesaladin.shop.member.domain.repository.CommandMemberGradeHistoryRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberGradeHistoryRepository;
 
@@ -11,7 +11,7 @@ import shop.yesaladin.shop.member.domain.repository.QueryMemberGradeHistoryRepos
  * @author : 송학현
  * @since : 1.0
  */
-public interface JpaMemberGradeHistoryRepository extends Repository<MemberGrade, Integer>,
+public interface JpaMemberGradeHistoryRepository extends Repository<MemberGradeHistory, Long>,
         CommandMemberGradeHistoryRepository, QueryMemberGradeHistoryRepository {
 
 }

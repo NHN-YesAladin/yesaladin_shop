@@ -42,11 +42,10 @@ class JpaRoleRepositoryTest {
     @Test
     void findById() throws Exception {
         //given
-        int id = 1;
-        entityManager.persist(role);
+        Role savedRole = entityManager.persist(role);
 
         //when
-        Optional<Role> optionalRole = repository.findById(id);
+        Optional<Role> optionalRole = repository.findById(savedRole.getId());
 
         //then
         assertThat(optionalRole).isPresent();
