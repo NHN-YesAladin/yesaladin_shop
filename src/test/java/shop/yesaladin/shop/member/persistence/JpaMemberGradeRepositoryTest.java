@@ -36,7 +36,9 @@ class JpaMemberGradeRepositoryTest {
         MemberGrade savedMemberGrade = repository.save(memberGrade);
 
         //then
-        assertThat(savedMemberGrade).isNotNull();
+        assertThat(savedMemberGrade.getName()).isEqualTo(savedMemberGrade.getName());
+        assertThat(savedMemberGrade.getBaseGivenPoint()).isEqualTo(savedMemberGrade.getBaseGivenPoint());
+        assertThat(savedMemberGrade.getBaseOrderAmount()).isEqualTo(savedMemberGrade.getBaseOrderAmount());
     }
 
     @Test
@@ -49,5 +51,8 @@ class JpaMemberGradeRepositoryTest {
 
         //then
         assertThat(optionalMemberGrade).isPresent();
+        assertThat(optionalMemberGrade.get().getName()).isEqualTo(savedMemberGrade.getName());
+        assertThat(optionalMemberGrade.get().getBaseGivenPoint()).isEqualTo(savedMemberGrade.getBaseGivenPoint());
+        assertThat(optionalMemberGrade.get().getBaseOrderAmount()).isEqualTo(savedMemberGrade.getBaseOrderAmount());
     }
 }

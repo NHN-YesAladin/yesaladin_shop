@@ -49,5 +49,6 @@ class JpaRoleRepositoryTest {
 
         //then
         assertThat(optionalRole).isPresent();
+        assertThat(optionalRole.get().getName()).isEqualTo(savedRole.getName());
     }
 }
