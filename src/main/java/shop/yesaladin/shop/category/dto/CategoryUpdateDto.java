@@ -20,7 +20,7 @@ import shop.yesaladin.shop.category.domain.model.Category;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CategoryUpdateDto {
-    private long id;
+    private Long id;
 
     @NotBlank
     private String name;
