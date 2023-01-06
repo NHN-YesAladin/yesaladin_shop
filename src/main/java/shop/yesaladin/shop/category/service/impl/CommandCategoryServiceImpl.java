@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.repository.CommandCategoryRepository;
-import shop.yesaladin.shop.category.domain.repository.QueryCategoryRepository;
 import shop.yesaladin.shop.category.dto.CategoryCreateDto;
 import shop.yesaladin.shop.category.dto.CategoryDeleteDto;
 import shop.yesaladin.shop.category.dto.CategoryUpdateDto;
