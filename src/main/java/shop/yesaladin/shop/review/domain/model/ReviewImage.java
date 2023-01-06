@@ -15,7 +15,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import shop.yesaladin.shop.review.domain.dummy.File;
+import shop.yesaladin.shop.file.domain.model.File;
 
 /**
  * 리뷰사진 엔터티
