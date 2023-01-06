@@ -3,6 +3,7 @@ package shop.yesaladin.shop.order.domain.model;
 import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -36,16 +37,15 @@ public class Subscribe {
 
     @Column(name = "next_renewal_date", nullable = false)
     private LocalDate nextRenewalDate;
-
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_address_id", nullable = false)
     private MemberAddress memberAddress;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subscribe_product_id", nullable = false)
     private SubscribeProduct subscribeProduct;
 }
