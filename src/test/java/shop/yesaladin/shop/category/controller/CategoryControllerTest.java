@@ -1,13 +1,17 @@
 package shop.yesaladin.shop.category.controller;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,6 +26,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.dto.CategoryCreateDto;
+import shop.yesaladin.shop.category.dto.CategoryUpdateDto;
 import shop.yesaladin.shop.category.service.inter.CommandCategoryService;
 
 
@@ -77,15 +82,70 @@ class CategoryControllerTest {
         CategoryCreateDto createDto = new CategoryCreateDto(null);
 
         //when
-        ResultActions perform = mockMvc.perform(post("/v1/categories").accept(MediaType.APPLICATION_JSON)
+        ResultActions perform = mockMvc.perform(post("/v1/categories").contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createDto)));
 
         //then
         perform.andDo(print()).andExpect(status().is5xxServerError());
 
         verify(commandCategoryService, never()).create(any());
-
     }
 
+    @Test
+    @DisplayName("카테고리 수정 성공")
+    void updateCategory() throws Exception {
+        // given
+        String changeName = "중고서적";
+        CategoryUpdateDto updateDto = new CategoryUpdateDto(
+                category.getId(),
+                changeName,
+                category.isShown(),
+                category.getOrder(),
+                null
+        );
+        Category toEntity = updateDto.toEntity(null);
+        given(commandCategoryService.update(any())).willReturn(toEntity);
+
+        // when
+        ResultActions perform = mockMvc.perform(put(
+                "/v1/categories/" + toEntity.getId()).contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateDto)));
+
+        // then
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id", equalTo(toEntity.getId().intValue())))
+                .andExpect(jsonPath("$.name", equalTo(toEntity.getName())))
+                .andExpect(jsonPath("$.isShown", equalTo(toEntity.isShown())));
+
+        verify(commandCategoryService, times(1)).update(any());
+    }
+
+    @Test
+    @DisplayName("카테고리 수정 실패 - name이 null 인 경우")
+    void updateCategory_invalidatedData_fail() throws Exception {
+        // given
+        String nullName = null;
+        CategoryUpdateDto updateDto = new CategoryUpdateDto(
+                category.getId(),
+                nullName,
+                category.isShown(),
+                category.getOrder(),
+                null
+        );
+        Category toEntity = updateDto.toEntity(null);
+        given(commandCategoryService.update(any())).willReturn(toEntity);
+
+        // when
+        ResultActions perform = mockMvc.perform(put(
+                "/v1/categories/" + toEntity.getId()).contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateDto)));
+
+        // then
+        perform.andDo(print()).andExpect(status().is5xxServerError());
+
+        verify(commandCategoryService, never()).update(any());
+    }
 
 }

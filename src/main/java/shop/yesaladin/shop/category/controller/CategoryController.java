@@ -5,17 +5,16 @@ import java.net.URISyntaxException;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.dto.CategoryCreateDto;
-import shop.yesaladin.shop.category.exception.ValidationFailedException;
+import shop.yesaladin.shop.category.dto.CategoryUpdateDto;
 import shop.yesaladin.shop.category.service.inter.CommandCategoryService;
 
 /**
@@ -32,15 +31,19 @@ public class CategoryController {
 
     @PostMapping
     public ResponseEntity createCategory(
-            @Valid @RequestBody CategoryCreateDto createDto,
-            BindingResult bindingResult
+            @Valid @RequestBody CategoryCreateDto createDto
     ) throws URISyntaxException {
-        if (bindingResult.hasErrors()) {
-            throw new ValidationFailedException(bindingResult);
-        }
-
         Category category = commandCategoryService.create(createDto);
         return ResponseEntity.created(new URI(category.getId().toString())).build();
     }
 
+    @PutMapping("/{categoryId}")
+    public ResponseEntity updateCategory(
+            @PathVariable Long categoryId,
+            @Valid @RequestBody CategoryUpdateDto updateDto
+    ) {
+        updateDto.setId(categoryId);
+        commandCategoryService.update(updateDto);
+        return ResponseEntity.ok(updateDto);
+    }
 }
