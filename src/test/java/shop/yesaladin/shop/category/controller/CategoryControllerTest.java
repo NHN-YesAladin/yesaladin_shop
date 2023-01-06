@@ -3,9 +3,11 @@ package shop.yesaladin.shop.category.controller;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -26,6 +28,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.dto.CategoryCreateDto;
+import shop.yesaladin.shop.category.dto.CategoryDeleteDto;
 import shop.yesaladin.shop.category.dto.CategoryUpdateDto;
 import shop.yesaladin.shop.category.service.inter.CommandCategoryService;
 
@@ -146,6 +149,22 @@ class CategoryControllerTest {
         perform.andDo(print()).andExpect(status().is5xxServerError());
 
         verify(commandCategoryService, never()).update(any());
+    }
+
+    @Test
+    @DisplayName("카테고리 삭제 성공")
+    void deleteCategory() throws Exception {
+        // given
+        willDoNothing().given(commandCategoryService)
+                .delete(new CategoryDeleteDto(category.getId()));
+        // when
+        ResultActions perform = mockMvc.perform(delete(
+                "/v1/categories/" + category.getId()));
+
+        // then
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.result", equalTo("Success")));
     }
 
 }
