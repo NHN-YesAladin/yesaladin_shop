@@ -5,5 +5,5 @@ import shop.yesaladin.shop.member.domain.model.MemberGradeHistory;
 
 public interface QueryMemberGradeHistoryRepository {
 
-    Optional<MemberGradeHistory> findById(Integer id);
+    Optional<MemberGradeHistory> findById(Long id);
 }
