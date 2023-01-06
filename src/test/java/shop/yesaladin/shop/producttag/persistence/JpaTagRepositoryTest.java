@@ -1,4 +1,4 @@
-package shop.yesaladin.shop.product.persistence;
+package shop.yesaladin.shop.producttag.persistence;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -9,30 +9,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
-import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
+import shop.yesaladin.shop.producttag.domain.model.Tag;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-class JpaTotalDiscountRateRepositoryTest {
+class JpaTagRepositoryTest {
 
     @Autowired
-    private JpaTotalDiscountRateRepository jpaTotalDiscountRateRepository;
+    private JpaTagRepository jpaTagRepository;
 
-    private TotalDiscountRate totalDiscountRate;
+    private Tag tag;
 
     @BeforeEach
     void setUp() {
-        totalDiscountRate = DummyTotalDiscountRate.dummy();
+        tag = Tag.builder().name("감동적인").build();
     }
 
     @Test
     void save() {
         // when
-        TotalDiscountRate savedTotalDiscountRate = jpaTotalDiscountRateRepository.save(totalDiscountRate);
+        Tag savedTag = jpaTagRepository.save(tag);
 
         // then
-        assertThat(savedTotalDiscountRate).isNotNull();
-        assertThat(savedTotalDiscountRate.getDiscountRate()).isEqualTo(10);
+        assertThat(savedTag).isNotNull();
+        assertThat(savedTag.getName()).isEqualTo("감동적인");
     }
 }
