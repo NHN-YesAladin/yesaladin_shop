@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.member.persistence;
 
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 
@@ -11,54 +10,45 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import shop.yesaladin.shop.member.domain.model.Member;
-import shop.yesaladin.shop.member.domain.model.MemberGrade;
-import shop.yesaladin.shop.member.dummy.MemberDummy;
-import shop.yesaladin.shop.member.dummy.MemberGradeDummy;
+import shop.yesaladin.shop.member.domain.model.Role;
+import shop.yesaladin.shop.member.dummy.RoleDummy;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-class JpaMemberRepositoryTest {
+class JpaRoleRepositoryTest {
 
     @Autowired
     TestEntityManager entityManager;
 
     @Autowired
-    JpaMemberRepository repository;
+    JpaRoleRepository repository;
 
-    private MemberGrade grade;
-    private Member member;
+    private Role role;
 
     @BeforeEach
     void setUp() {
-        grade = MemberGradeDummy.dummy();
-        member = MemberDummy.dummy();
+        role = RoleDummy.dummy();
     }
 
     @Test
     void save() throws Exception {
-        //given
-        entityManager.persist(grade);
-
         //when
-        Member savedMember = repository.save(member);
+        Role savedRole = repository.save(role);
 
         //then
-        assertThat(savedMember).isNotNull();
-        assertThat(savedMember.getMemberGrade().getName()).isEqualTo(grade.getName());
+        assertThat(savedRole.getName()).isEqualTo(role.getName());
     }
-
+    
     @Test
     void findById() throws Exception {
         //given
-        long id = 1L;
-        entityManager.persist(grade);
-        entityManager.persist(member);
+        int id = 1;
+        entityManager.persist(role);
 
         //when
-        Optional<Member> optionalMember = repository.findById(id);
+        Optional<Role> optionalRole = repository.findById(id);
 
         //then
-        assertThat(optionalMember).isPresent();
+        assertThat(optionalRole).isPresent();
     }
 }
