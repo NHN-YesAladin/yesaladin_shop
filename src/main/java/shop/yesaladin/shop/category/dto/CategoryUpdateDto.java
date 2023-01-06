@@ -10,8 +10,9 @@ import shop.yesaladin.shop.category.domain.model.Category;
 
 /**
  * 카테고리 수정을 위한 Dto
- *
+ * <p>
  * id는 명시적으로 작성하여도 되고 null도 가능하다.
+ *
  * @author 배수한
  * @since 1.0
  */
@@ -21,6 +22,7 @@ import shop.yesaladin.shop.category.domain.model.Category;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CategoryUpdateDto {
+
     private Long id;
 
     @NotBlank
@@ -34,7 +36,13 @@ public class CategoryUpdateDto {
     private Long parentId;
 
     public Category toEntity(Category parent) {
-        return Category.builder().id(this.id).name(this.name).isShown(this.isShown).order(this.order).parent(parent).build();
+        return Category.builder()
+                .id(this.id)
+                .name(this.name)
+                .isShown(this.isShown)
+                .order(this.order)
+                .parent(parent)
+                .build();
     }
 
     public void setId(long id) {

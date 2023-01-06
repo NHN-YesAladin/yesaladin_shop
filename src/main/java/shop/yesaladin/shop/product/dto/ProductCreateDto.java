@@ -1,2 +1,5 @@
-package shop.yesaladin.shop.product.dto;public class ProductCreateDto {
+package shop.yesaladin.shop.product.dto;
+
+public class ProductCreateDto {
+
 }

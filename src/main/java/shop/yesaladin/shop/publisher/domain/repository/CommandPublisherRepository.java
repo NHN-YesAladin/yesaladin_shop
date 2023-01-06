@@ -9,5 +9,6 @@ import shop.yesaladin.shop.publisher.domain.model.Publisher;
  * @since : 1.0
  */
 public interface CommandPublisherRepository {
+
     Publisher save(Publisher publisher);
 }

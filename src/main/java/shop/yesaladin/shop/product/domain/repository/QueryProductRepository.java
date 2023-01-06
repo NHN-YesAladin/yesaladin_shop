@@ -10,5 +10,6 @@ import shop.yesaladin.shop.product.domain.model.Product;
  * @since : 1.0
  */
 public interface QueryProductRepository {
+
     Optional<Product> findById(Long id);
 }

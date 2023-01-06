@@ -10,5 +10,6 @@ import shop.yesaladin.shop.category.domain.model.Category;
  */
 
 public interface QueryCategoryService {
+
     Category findCategoryById(long id);
 }

@@ -51,6 +51,7 @@ public class RelatedProduct {
     @EqualsAndHashCode
     @Embeddable
     public static class Pk implements Serializable {
+
         @Column(name = "product_main_id", nullable = false)
         private Long productMainId;
 
