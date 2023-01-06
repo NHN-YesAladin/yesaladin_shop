@@ -139,6 +139,11 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.5</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/*shop.yesaladin.shop.*Application.class</exclude>
+                    </excludes>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>
@@ -151,6 +156,26 @@
                         <goals>
                             <goal>report</goal>
                         </goals>
+                    </execution>
+                    <execution>
+                        <id>jacoco-check</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <rule>
+                                    <element>BUNDLE</element>
+                                    <limits>
+                                        <limit>
+                                            <counter>BRANCH</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>0.60</minimum>
+                                        </limit>
+                                    </limits>
+                                </rule>
+                            </rules>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
