@@ -52,7 +52,9 @@ class JpaMemberGradeRepositoryTest {
         //then
         assertThat(optionalMemberGrade).isPresent();
         assertThat(optionalMemberGrade.get().getName()).isEqualTo(savedMemberGrade.getName());
-        assertThat(optionalMemberGrade.get().getBaseGivenPoint()).isEqualTo(savedMemberGrade.getBaseGivenPoint());
-        assertThat(optionalMemberGrade.get().getBaseOrderAmount()).isEqualTo(savedMemberGrade.getBaseOrderAmount());
+        assertThat(optionalMemberGrade.get()
+                .getBaseGivenPoint()).isEqualTo(savedMemberGrade.getBaseGivenPoint());
+        assertThat(optionalMemberGrade.get()
+                .getBaseOrderAmount()).isEqualTo(savedMemberGrade.getBaseOrderAmount());
     }
 }
