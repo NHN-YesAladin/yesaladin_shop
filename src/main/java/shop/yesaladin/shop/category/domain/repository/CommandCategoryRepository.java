@@ -15,5 +15,5 @@ public interface CommandCategoryRepository {
 
     Category save(Category category);
 
-    void deleteById(long id);
+    void deleteById(Long id);
 }
