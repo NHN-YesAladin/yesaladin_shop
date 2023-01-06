@@ -15,10 +15,16 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import shop.yesaladin.shop.order.domain.dummy.Member;
+import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.order.domain.dummy.MemberAddress;
-import shop.yesaladin.shop.order.domain.dummy.SubscribeProduct;
+import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 
+/**
+ * 구독 엔티티 입니다.
+ *
+ * @author : 최예린, 송학현
+ * @since : 1.0
+ */
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -37,6 +43,7 @@ public class Subscribe {
 
     @Column(name = "next_renewal_date", nullable = false)
     private LocalDate nextRenewalDate;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_address_id", nullable = false)
     private MemberAddress memberAddress;
