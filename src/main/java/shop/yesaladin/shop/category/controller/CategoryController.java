@@ -23,7 +23,10 @@ import shop.yesaladin.shop.category.dto.ResultCode;
 import shop.yesaladin.shop.category.service.inter.CommandCategoryService;
 
 /**
- * Rest Controller 구현
+ * 카테고리 생성,수정,삭제를 api를 통하여 동작하기 위한 rest controller
+ *
+ * @author 배수한
+ * @since 1.0
  */
 
 @Slf4j
