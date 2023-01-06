@@ -55,15 +55,14 @@ class JpaMemberGradeHistoryRepositoryTest {
     @Test
     void findById() throws Exception {
         //given
-        int id = 1;
         entityManager.persist(memberGrade);
         member = MemberDummy.dummy();
         entityManager.persist(member);
         memberGradeHistory = MemberGradeHistoryDummy.dummy();
-        entityManager.persist(memberGradeHistory);
+        MemberGradeHistory savedMemberGradeHistory = entityManager.persist(memberGradeHistory);
 
         //when
-        Optional<MemberGradeHistory> optionalMemberGradeHistory = repository.findById(id);
+        Optional<MemberGradeHistory> optionalMemberGradeHistory = repository.findById(savedMemberGradeHistory.getId());
 
         //then
         assertThat(optionalMemberGradeHistory).isPresent();
