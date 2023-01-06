@@ -14,7 +14,7 @@ public interface CommandRoleRepository {
      * 권한에 대한 데이터를 등록합니다.
      *
      * @param role
-     * @return
+     * @return 등록된 권한
      * @author : 송학현
      * @since : 1.0
      */
