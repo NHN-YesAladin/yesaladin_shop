@@ -3,6 +3,7 @@ package shop.yesaladin.shop.category.service.impl;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.repository.CommandCategoryRepository;
 import shop.yesaladin.shop.category.dto.CategoryCreateDto;
@@ -24,11 +25,12 @@ public class CommandCategoryServiceImpl implements CommandCategoryService {
 
     private final CommandCategoryRepository commandCategoryRepository;
     private final QueryCategoryService queryCategoryService;
+    @Transactional
     @Override
     public Category create(CategoryCreateDto createDto) {
         return commandCategoryRepository.save(createDto.toEntity());
     }
-
+    @Transactional
     @Override
     public Category update(CategoryUpdateDto updateDto) {
         Category parentCategory = null;
@@ -38,7 +40,7 @@ public class CommandCategoryServiceImpl implements CommandCategoryService {
 
         return commandCategoryRepository.save(updateDto.toEntity(parentCategory));
     }
-
+    @Transactional
     @Override
     public void delete(CategoryDeleteDto deleteDto) {
         commandCategoryRepository.deleteById(deleteDto.getId());

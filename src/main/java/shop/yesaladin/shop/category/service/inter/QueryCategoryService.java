@@ -1,5 +1,7 @@
 package shop.yesaladin.shop.category.service.inter;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.category.domain.model.Category;
 
 /**
@@ -10,5 +12,8 @@ import shop.yesaladin.shop.category.domain.model.Category;
  */
 
 public interface QueryCategoryService {
+
+    Page<Category> findCategories(Pageable pageable);
+
     Category findCategoryById(long id);
 }

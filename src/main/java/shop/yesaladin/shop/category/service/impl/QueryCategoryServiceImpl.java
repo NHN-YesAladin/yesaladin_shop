@@ -1,7 +1,10 @@
 package shop.yesaladin.shop.category.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.repository.QueryCategoryRepository;
 import shop.yesaladin.shop.category.exception.CategoryNotFoundException;
@@ -19,7 +22,13 @@ import shop.yesaladin.shop.category.service.inter.QueryCategoryService;
 public class QueryCategoryServiceImpl implements QueryCategoryService {
 
     private final QueryCategoryRepository queryCategoryRepository;
+    @Transactional(readOnly = true)
+    @Override
+    public Page<Category> findCategories(Pageable pageable) {
+        return queryCategoryRepository.findAll(pageable);
+    }
 
+    @Transactional(readOnly = true)
     @Override
     public Category findCategoryById(long id) {
         return queryCategoryRepository.findById(id)
