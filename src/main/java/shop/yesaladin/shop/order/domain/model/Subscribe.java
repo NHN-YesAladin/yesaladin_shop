@@ -34,7 +34,6 @@ import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 public class Subscribe {
 
     @Id
-    @Column(nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
