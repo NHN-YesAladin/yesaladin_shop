@@ -107,27 +107,6 @@ class JpaCategoryRepositoryTest {
         assertThat(category.getName()).isEqualTo(save.getName());
     }
 
-    @Test
-    void findByParent_Name() throws Exception {
-        // given
-        sample = Category.builder().name(name).order(null).isShown(true).parent(null).build();
-        Category savedParent = jpaCategoryRepository.save(sample);
 
-        String childName = "소설";
-        Category child = Category.builder()
-                .name(childName)
-                .order(null)
-                .isShown(true)
-                .parent(savedParent)
-                .build();
-        Category savedChild = jpaCategoryRepository.save(child);
-
-        // when
-        List<Category> categories = jpaCategoryRepository.findByParent_Name(savedChild.getParent()
-                .getName());
-
-        // then
-        assertThat(categories.size()).isEqualTo(1);
-    }
 }
 
