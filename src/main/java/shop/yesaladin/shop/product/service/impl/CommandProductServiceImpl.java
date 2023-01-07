@@ -1,7 +1,5 @@
 package shop.yesaladin.shop.product.service.impl;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -10,19 +8,15 @@ import shop.yesaladin.shop.file.service.inter.CommandFileService;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.product.domain.model.Product;
-import shop.yesaladin.shop.product.domain.model.ProductTypeCode;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
 import shop.yesaladin.shop.product.domain.repository.CommandProductRepository;
-import shop.yesaladin.shop.product.domain.repository.CommandTotalDiscountRateRepository;
 import shop.yesaladin.shop.product.dto.ProductCreateDto;
 import shop.yesaladin.shop.product.service.inter.CommandProductService;
 import shop.yesaladin.shop.product.service.inter.CommandSubscribeProductService;
 import shop.yesaladin.shop.product.service.inter.CommandTotalDiscountRateService;
 import shop.yesaladin.shop.publisher.domain.model.Publisher;
 import shop.yesaladin.shop.publisher.service.inter.CommandPublisherService;
-import shop.yesaladin.shop.writing.domain.model.Writing;
-import shop.yesaladin.shop.writing.domain.repository.CommandWritingRepository;
 import shop.yesaladin.shop.writing.service.inter.CommandWritingService;
 
 /**
@@ -74,7 +68,7 @@ public class CommandProductServiceImpl implements CommandProductService {
         Product product = commandProductRepository.save(dto.toProductEntity(publisher, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate));
 
         // Writing
-        queryMemberService.
+        Member member = queryMemberService.findMemberByLoginId(dto.getLoginId());
         commandWritingService.create(dto.getWriterName(), product, member);
 
         return product;
