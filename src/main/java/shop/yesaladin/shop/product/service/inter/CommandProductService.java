@@ -1,7 +1,7 @@
 package shop.yesaladin.shop.product.service.inter;
 
-import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.dto.ProductCreateDto;
+import shop.yesaladin.shop.product.dto.ProductResponseDto;
 
 /**
  * 상품 생성을 위한 Service Interface 입니다.
@@ -11,5 +11,5 @@ import shop.yesaladin.shop.product.dto.ProductCreateDto;
  */
 public interface CommandProductService {
 
-    Product create(ProductCreateDto dto);
+    ProductResponseDto create(ProductCreateDto dto);
 }

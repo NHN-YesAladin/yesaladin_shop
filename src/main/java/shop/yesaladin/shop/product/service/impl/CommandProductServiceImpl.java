@@ -12,6 +12,7 @@ import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
 import shop.yesaladin.shop.product.domain.repository.CommandProductRepository;
 import shop.yesaladin.shop.product.dto.ProductCreateDto;
+import shop.yesaladin.shop.product.dto.ProductResponseDto;
 import shop.yesaladin.shop.product.service.inter.CommandProductService;
 import shop.yesaladin.shop.product.service.inter.CommandSubscribeProductService;
 import shop.yesaladin.shop.product.service.inter.CommandTotalDiscountRateService;
@@ -49,7 +50,7 @@ public class CommandProductServiceImpl implements CommandProductService {
      */
     @Transactional
     @Override
-    public Product create(ProductCreateDto dto) {
+    public ProductResponseDto create(ProductCreateDto dto) {
 
         // Publisher
         Publisher publisher = commandPublisherService.register(dto.toPublisherEntity());
@@ -68,9 +69,14 @@ public class CommandProductServiceImpl implements CommandProductService {
         Product product = commandProductRepository.save(dto.toProductEntity(publisher, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate));
 
         // Writing
-        Member member = queryMemberService.findMemberByLoginId(dto.getLoginId());
+        Member member = null;
+        if (!dto.getLoginId().equals("")) {
+            member = queryMemberService.findMemberByLoginId(dto.getLoginId());
+        }
         commandWritingService.create(dto.getWriterName(), product, member);
 
-        return product;
+        ProductResponseDto productResponseDto = new ProductResponseDto();
+        productResponseDto.setId(product.getId());
+        return productResponseDto;
     }
 }

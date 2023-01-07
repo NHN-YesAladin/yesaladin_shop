@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.file.service.impl;
 
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import shop.yesaladin.shop.file.domain.model.File;
@@ -7,7 +8,7 @@ import shop.yesaladin.shop.file.domain.repository.CommandFileRepository;
 import shop.yesaladin.shop.file.service.inter.CommandFileService;
 
 /**
- * 파 등록을 위한 Service 구현체입니다.
+ * 파일 등록을 위한 Service 구현체입니다.
  *
  * @author 이수정
  * @since 1.0
@@ -26,6 +27,7 @@ public class CommandFileServiceImpl implements CommandFileService {
      * @author 이수정
      * @since 1.0
      */
+    @Transactional
     @Override
     public File register(File file) {
         return commandFileRepository.save(file);

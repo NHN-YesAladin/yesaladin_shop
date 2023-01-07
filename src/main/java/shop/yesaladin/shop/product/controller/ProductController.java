@@ -1,5 +1,7 @@
 package shop.yesaladin.shop.product.controller;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.dto.ProductCreateDto;
+import shop.yesaladin.shop.product.dto.ProductResponseDto;
 import shop.yesaladin.shop.product.service.inter.CommandProductService;
 
 /**
@@ -34,9 +37,10 @@ public class ProductController {
      * @since 1.0
      */
     @PostMapping
-    public ResponseEntity registerProduct(@Valid @RequestBody ProductCreateDto productCreateDto) {
-        Product product = commandProductService.create(productCreateDto);
+    public ResponseEntity registerProduct(@Valid @RequestBody ProductCreateDto productCreateDto)
+            throws URISyntaxException {
+        ProductResponseDto productResponseDto = commandProductService.create(productCreateDto);
 
-        return new ResponseEntity(product, HttpStatus.CREATED);
+        return ResponseEntity.created(new URI(productResponseDto.getId().toString())).body(productResponseDto);
     }
 }

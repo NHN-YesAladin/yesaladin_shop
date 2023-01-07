@@ -7,6 +7,7 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PositiveOrZero;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 import shop.yesaladin.shop.file.domain.model.File;
@@ -25,6 +26,7 @@ import shop.yesaladin.shop.publisher.domain.model.Publisher;
  */
 @Getter
 @Setter
+@NoArgsConstructor
 public class ProductCreateDto {
 
     @NotBlank
@@ -43,7 +45,6 @@ public class ProductCreateDto {
     // 저자, 출판사
     @NotBlank
     private String writerName;
-    @NotBlank
     private String loginId;
     @NotBlank
     private String publisherName;
@@ -61,14 +62,13 @@ public class ProductCreateDto {
     private Boolean isGivenPoint;
 
     // 구독 상품 관련
-    @NotBlank
     @Length(max = 9)
     private String ISSN;
     private Boolean isSubscriptionAvailable;
 
     // 판매 여부, 강제품절 여부
     private Boolean isSale;
-    private Boolean isForcedOutOfStock;
+//    private Boolean isForcedOutOfStock;
 
     // 수량, 출간일, 노출우선순위
     @PositiveOrZero
@@ -122,7 +122,7 @@ public class ProductCreateDto {
                 .isGivenPoint(isGivenPoint)
                 .isSubscriptionAvailable(isSubscriptionAvailable)
                 .isSale(isSale)
-                .isForcedOutOfStock(isForcedOutOfStock)
+                .isForcedOutOfStock(false)
                 .quantity(quantity)
                 .publishedDate(LocalDate.parse(publishedDate, DateTimeFormatter.ISO_DATE))
                 .preferentialShowRanking(preferentialShowRanking)
@@ -194,6 +194,6 @@ public class ProductCreateDto {
      * @since 1.0
      */
     public TotalDiscountRate toTotalDiscountRateEntity() {
-        return TotalDiscountRate.builder().discountRate(discountRate).build();
+        return TotalDiscountRate.builder().id(1).discountRate(discountRate).build();
     }
 }
