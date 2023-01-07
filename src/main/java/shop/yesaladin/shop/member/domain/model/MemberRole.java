@@ -29,6 +29,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "member_roles")
 @Entity
 public class MemberRole {
+
     @EmbeddedId
     private Pk id;
 
@@ -54,6 +55,7 @@ public class MemberRole {
     @Getter
     @Embeddable
     public static class Pk implements Serializable {
+
         @Column(name = "member_id", nullable = false)
         private Long memberId;
 
