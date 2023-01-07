@@ -15,14 +15,14 @@ import shop.yesaladin.shop.order.domain.model.OrderCode;
  */
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class OrderSummaryResponseDto {
+public class OrderSummaryDto {
 
     private final String orderNumber;
     private final LocalDateTime orderDateTime;
     private final OrderCode orderCode;
 
-    public static OrderSummaryResponseDto fromEntity(Order order) {
-        return new OrderSummaryResponseDto(
+    public static OrderSummaryDto fromEntity(Order order) {
+        return new OrderSummaryDto(
                 order.getOrderNumber(),
                 order.getOrderDateTime(),
                 order.getOrderCode()
