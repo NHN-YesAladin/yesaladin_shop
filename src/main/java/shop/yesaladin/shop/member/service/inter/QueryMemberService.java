@@ -12,4 +12,8 @@ import shop.yesaladin.shop.member.domain.model.Member;
 public interface QueryMemberService {
 
     Member findMemberById(long id);
+
+    Member findMemberByLoginId(String loginId);
+
+    Member findMemberByNickname(String nickname);
 }

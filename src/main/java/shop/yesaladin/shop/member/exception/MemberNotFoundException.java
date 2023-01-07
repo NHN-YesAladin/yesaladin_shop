@@ -9,7 +9,7 @@ package shop.yesaladin.shop.member.exception;
  */
 public class MemberNotFoundException extends RuntimeException {
 
-    public MemberNotFoundException(long id) {
-        super("Member not found" + id);
+    public MemberNotFoundException(String message) {
+        super("Member not found - " + message);
     }
 }
