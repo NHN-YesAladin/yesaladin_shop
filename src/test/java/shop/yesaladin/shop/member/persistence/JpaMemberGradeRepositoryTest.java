@@ -36,19 +36,25 @@ class JpaMemberGradeRepositoryTest {
         MemberGrade savedMemberGrade = repository.save(memberGrade);
 
         //then
-        assertThat(savedMemberGrade).isNotNull();
+        assertThat(savedMemberGrade.getName()).isEqualTo(savedMemberGrade.getName());
+        assertThat(savedMemberGrade.getBaseGivenPoint()).isEqualTo(savedMemberGrade.getBaseGivenPoint());
+        assertThat(savedMemberGrade.getBaseOrderAmount()).isEqualTo(savedMemberGrade.getBaseOrderAmount());
     }
 
     @Test
     void findById() throws Exception {
         //given
-        int id = 1;
-        entityManager.persist(memberGrade);
+        MemberGrade savedMemberGrade = entityManager.persist(memberGrade);
 
         //when
-        Optional<MemberGrade> optionalMemberGrade = repository.findById(id);
+        Optional<MemberGrade> optionalMemberGrade = repository.findById(savedMemberGrade.getId());
 
         //then
         assertThat(optionalMemberGrade).isPresent();
+        assertThat(optionalMemberGrade.get().getName()).isEqualTo(savedMemberGrade.getName());
+        assertThat(optionalMemberGrade.get()
+                .getBaseGivenPoint()).isEqualTo(savedMemberGrade.getBaseGivenPoint());
+        assertThat(optionalMemberGrade.get()
+                .getBaseOrderAmount()).isEqualTo(savedMemberGrade.getBaseOrderAmount());
     }
 }

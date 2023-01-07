@@ -49,23 +49,37 @@ class JpaMemberGradeHistoryRepositoryTest {
         MemberGradeHistory savedMemberGradeHistory = repository.save(memberGradeHistory);
 
         //then
-        assertThat(savedMemberGradeHistory).isNotNull();
+        assertThat(savedMemberGradeHistory.getMember()
+                .getName()).isEqualTo(savedMemberGradeHistory.getMember().getName());
+        assertThat(savedMemberGradeHistory.getMemberGrade().getName()).isEqualTo(
+                savedMemberGradeHistory.getMemberGrade().getName());
+        assertThat(savedMemberGradeHistory.getPreviousPaidAmount()).isEqualTo(
+                savedMemberGradeHistory.getPreviousPaidAmount());
+        assertThat(savedMemberGradeHistory.getUpdateDate()).isEqualTo(savedMemberGradeHistory.getUpdateDate());
     }
 
     @Test
     void findById() throws Exception {
         //given
-        int id = 1;
         entityManager.persist(memberGrade);
         member = MemberDummy.dummy();
         entityManager.persist(member);
         memberGradeHistory = MemberGradeHistoryDummy.dummy();
-        entityManager.persist(memberGradeHistory);
+        MemberGradeHistory savedMemberGradeHistory = entityManager.persist(memberGradeHistory);
 
         //when
-        Optional<MemberGradeHistory> optionalMemberGradeHistory = repository.findById(id);
+        Optional<MemberGradeHistory> optionalMemberGradeHistory = repository.findById(
+                savedMemberGradeHistory.getId());
 
         //then
         assertThat(optionalMemberGradeHistory).isPresent();
+        assertThat(optionalMemberGradeHistory.get().getMemberGrade().getName()).isEqualTo(
+                savedMemberGradeHistory.getMemberGrade().getName());
+        assertThat(optionalMemberGradeHistory.get().getMember().getName()).isEqualTo(
+                savedMemberGradeHistory.getMember().getName());
+        assertThat(optionalMemberGradeHistory.get().getPreviousPaidAmount()).isEqualTo(
+                savedMemberGradeHistory.getPreviousPaidAmount());
+        assertThat(optionalMemberGradeHistory.get().getUpdateDate()).isEqualTo(
+                savedMemberGradeHistory.getUpdateDate());
     }
 }

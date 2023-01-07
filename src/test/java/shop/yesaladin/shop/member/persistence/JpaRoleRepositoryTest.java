@@ -38,17 +38,17 @@ class JpaRoleRepositoryTest {
         //then
         assertThat(savedRole.getName()).isEqualTo(role.getName());
     }
-    
+
     @Test
     void findById() throws Exception {
         //given
-        int id = 1;
-        entityManager.persist(role);
+        Role savedRole = entityManager.persist(role);
 
         //when
-        Optional<Role> optionalRole = repository.findById(id);
+        Optional<Role> optionalRole = repository.findById(savedRole.getId());
 
         //then
         assertThat(optionalRole).isPresent();
+        assertThat(optionalRole.get().getName()).isEqualTo(savedRole.getName());
     }
 }

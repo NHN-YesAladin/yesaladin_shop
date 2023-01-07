@@ -13,7 +13,6 @@ import javax.persistence.MapsId;
 import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,7 +25,6 @@ import shop.yesaladin.shop.order.persistence.converter.OrderStatusCodeConverter;
  * @since 1.0
  */
 @Getter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Entity
@@ -45,6 +43,15 @@ public class OrderStatusChangeLog {
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
+    public static OrderStatusChangeLog create(
+            Order order,
+            LocalDateTime changeDateTime,
+            OrderStatusCode orderStatusCode
+    ) {
+        Pk pk = new Pk(order.getId(), changeDateTime);
+        return new OrderStatusChangeLog(pk, orderStatusCode, order);
+    }
+
     /**
      * 주문 상태 변경 이력의 복합키입니다.
      *
@@ -52,7 +59,6 @@ public class OrderStatusChangeLog {
      * @since 1.0
      */
     @Getter
-    @Builder
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @EqualsAndHashCode
