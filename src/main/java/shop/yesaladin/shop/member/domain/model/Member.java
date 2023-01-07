@@ -1,6 +1,7 @@
 package shop.yesaladin.shop.member.domain.model;
 
 import java.time.LocalDate;
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -81,4 +82,39 @@ public class Member {
 
     @Convert(converter = MemberGenderCodeConverter.class)
     private MemberGenderCode memberGenderCode;
+
+    /**
+     * Member entity 의 memberId 값을 비교 하는 기능 입니다.
+     *
+     * @param compare 비교 대상 Member entity 입니다.
+     * @return loginId가 중복 인지에 대한 결과
+     * @author : 송학현
+     * @since : 1.0
+     */
+    public boolean isSameLoginId(Member compare) {
+        return Objects.equals(this.loginId, compare.getLoginId());
+    }
+
+    /**
+     * Member entity 의 nickname 값을 비교 하는 기능 입니다.
+     *
+     * @param compare 비교 대상 Member entity 입니다.
+     * @return nickname 이 중복 인지에 대한 결과
+     * @author : 송학현
+     * @since : 1.0
+     */
+    public boolean isSameNickname(Member compare) {
+        return Objects.equals(this.nickname, compare.getNickname());
+    }
+
+    /**
+     * Member entity 의 password 를 encrypted 된 값으로 변경 하기 위한 기능 입니다.
+     *
+     * @param encryptedPassword password 가 encrypted 된 파라미터입니다.
+     * @author : 송학현
+     * @since : 1.0
+     */
+    public void setEncryptedPassword(String encryptedPassword) {
+        this.password = encryptedPassword;
+    }
 }

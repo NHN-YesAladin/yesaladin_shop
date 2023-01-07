@@ -21,4 +21,7 @@ public interface QueryMemberRepository {
      */
     Optional<Member> findById(Long id);
 
+    Optional<Member> findMemberByNickname(String nickname);
+
+    Optional<Member> findMemberByLoginId(String loginId);
 }
