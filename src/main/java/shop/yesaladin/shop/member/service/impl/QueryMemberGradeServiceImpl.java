@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import shop.yesaladin.shop.member.domain.model.MemberGrade;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberGradeRepository;
+import shop.yesaladin.shop.member.exception.MemberGradeNotFoundException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberGradeService;
 
 /**
@@ -20,6 +21,6 @@ public class QueryMemberGradeServiceImpl implements QueryMemberGradeService {
 
     @Override
     public MemberGrade findById(int id) {
-        return queryMemberGradeRepository.findById(id).orElseThrow(RuntimeException::new);
+        return queryMemberGradeRepository.findById(id).orElseThrow(() -> new MemberGradeNotFoundException(id));
     }
 }
