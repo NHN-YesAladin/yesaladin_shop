@@ -1,7 +1,9 @@
 package shop.yesaladin.shop.category.controller;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,5 +31,11 @@ public class QueryCategoryController {
     @GetMapping("/{categoryId}")
     public CategoryResponseDto getCategoryById(@PathVariable Long categoryId) {
         return queryCategoryService.findCategoryById(categoryId);
+    }
+
+    @GetMapping
+    public List<CategoryResponseDto> getCategories(Pageable pageable) {
+//        return queryCategoryService.findCategories(pageable);
+        return null;
     }
 }

@@ -9,6 +9,7 @@ import static org.mockito.Mockito.verify;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -21,6 +22,7 @@ import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 import shop.yesaladin.shop.category.service.impl.QueryCategoryServiceImpl;
 
 
+@Slf4j
 class QueryCategoryServiceTest {
 
     private QueryCategoryRepository queryCategoryRepository;
@@ -47,25 +49,26 @@ class QueryCategoryServiceTest {
             list.add(category);
         }
 
-        int size = 2;
-        PageRequest pageRequest = PageRequest.of(1, size);
+        int size = 3;
+        PageRequest pageRequest = PageRequest.of(0, size);
 
         int start = (int) pageRequest.getOffset();
         int end = Math.min((start + pageRequest.getPageSize()), list.size());
-        Page<Category> page = new PageImpl<>(
+        Page<Category> categoryPage = new PageImpl<>(
                 list.subList(start, end),
                 pageRequest,
                 list.size()
         );
 
-        given(queryCategoryRepository.findAll(any())).willReturn(page);
+        given(queryCategoryRepository.findAll(any())).willReturn(categoryPage);
 
         //when
-        Page<Category> categories = queryCategoryService.findCategories(pageRequest);
-
+        Page<CategoryResponseDto> categoryResponseDtoPage = queryCategoryService.findCategories(pageRequest);
+        log.info("categoryPage.getTotalElements() : {}",categoryPage.getTotalElements());
+        log.info("categoryResponseDtoPage.getTotalElements() : {}",categoryResponseDtoPage.getTotalElements());
         //then
-        assertThat(categories.getTotalElements()).isEqualTo(list.size());
-        assertThat(categories.getContent().size()).isEqualTo(page.getContent().size());
+        assertThat(categoryResponseDtoPage.getPageable()).isEqualTo(pageRequest);
+        assertThat(categoryResponseDtoPage.getContent().size()).isEqualTo(categoryPage.getContent().size());
 
         verify(queryCategoryRepository, times(1)).findAll(any());
     }

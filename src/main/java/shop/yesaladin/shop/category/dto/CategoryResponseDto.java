@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import shop.yesaladin.shop.category.domain.model.Category;
 
 /**
@@ -15,6 +16,7 @@ import shop.yesaladin.shop.category.domain.model.Category;
  */
 
 @Getter
+@ToString
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

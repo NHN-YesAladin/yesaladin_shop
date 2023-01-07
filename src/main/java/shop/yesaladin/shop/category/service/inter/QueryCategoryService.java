@@ -14,7 +14,7 @@ import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 
 public interface QueryCategoryService {
 
-    Page<Category> findCategories(Pageable pageable);
+    Page<CategoryResponseDto> findCategories(Pageable pageable);
 
     CategoryResponseDto findCategoryById(long id);
 }
