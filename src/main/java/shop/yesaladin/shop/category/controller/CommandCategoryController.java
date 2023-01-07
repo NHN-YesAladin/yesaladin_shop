@@ -33,7 +33,7 @@ import shop.yesaladin.shop.category.service.inter.CommandCategoryService;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/v1/categories")
-public class CategoryController {
+public class CommandCategoryController {
 
     private final CommandCategoryService commandCategoryService;
 

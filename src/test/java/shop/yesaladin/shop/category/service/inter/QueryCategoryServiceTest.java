@@ -1,7 +1,6 @@
 package shop.yesaladin.shop.category.service.inter;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
@@ -50,7 +49,7 @@ class QueryCategoryServiceTest {
         int size = 2;
         PageRequest pageRequest = PageRequest.of(1, size);
 
-        int start = (int)pageRequest.getOffset();
+        int start = (int) pageRequest.getOffset();
         int end = Math.min((start + pageRequest.getPageSize()), list.size());
         Page<Category> page = new PageImpl<>(
                 list.subList(start, end),

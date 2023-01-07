@@ -22,6 +22,7 @@ import shop.yesaladin.shop.category.service.inter.QueryCategoryService;
 public class QueryCategoryServiceImpl implements QueryCategoryService {
 
     private final QueryCategoryRepository queryCategoryRepository;
+
     @Transactional(readOnly = true)
     @Override
     public Page<Category> findCategories(Pageable pageable) {

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -43,14 +44,8 @@ class JpaCategoryRepositoryTest {
     @Test
     void findById() {
         //given
-        sample = Category.builder()
-                .name(name)
-                .order(null)
-                .isShown(true)
-                .parent(null)
-                .build();
+        sample = Category.builder().name(name).order(null).isShown(true).parent(null).build();
         Category save = jpaCategoryRepository.save(sample);
-
 
         //when
         Category category = jpaCategoryRepository.findById(save.getId())
@@ -87,12 +82,7 @@ class JpaCategoryRepositoryTest {
     @Test
     void deleteById() {
         // given
-        sample = Category.builder()
-                .name(name)
-                .order(null)
-                .isShown(true)
-                .parent(null)
-                .build();
+        sample = Category.builder().name(name).order(null).isShown(true).parent(null).build();
         Category save = jpaCategoryRepository.save(sample);
 
         // when
@@ -101,6 +91,43 @@ class JpaCategoryRepositoryTest {
 
         // then
         assertThat(category).isNull();
+    }
+
+    @Test
+    void findByName() {
+        // given
+        sample = Category.builder().name(name).order(null).isShown(true).parent(null).build();
+        Category save = jpaCategoryRepository.save(sample);
+
+        // when
+        Category category = jpaCategoryRepository.findByName(name)
+                .orElseThrow(() -> new CategoryNotFoundException(name));
+
+        // then
+        assertThat(category.getName()).isEqualTo(save.getName());
+    }
+
+    @Test
+    void findByParent_Name() throws Exception {
+        // given
+        sample = Category.builder().name(name).order(null).isShown(true).parent(null).build();
+        Category savedParent = jpaCategoryRepository.save(sample);
+
+        String childName = "소설";
+        Category child = Category.builder()
+                .name(childName)
+                .order(null)
+                .isShown(true)
+                .parent(savedParent)
+                .build();
+        Category savedChild = jpaCategoryRepository.save(child);
+
+        // when
+        List<Category> categories = jpaCategoryRepository.findByParent_Name(savedChild.getParent()
+                .getName());
+
+        // then
+        assertThat(categories.size()).isEqualTo(1);
     }
 }
 

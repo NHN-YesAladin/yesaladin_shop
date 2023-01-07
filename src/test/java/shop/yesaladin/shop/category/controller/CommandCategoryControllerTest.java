@@ -33,15 +33,13 @@ import shop.yesaladin.shop.category.dto.CategoryUpdateDto;
 import shop.yesaladin.shop.category.service.inter.CommandCategoryService;
 
 
-@WebMvcTest(CategoryController.class)
-class CategoryControllerTest {
-
-    @Autowired
-    private MockMvc mockMvc;
+@WebMvcTest(CommandCategoryController.class)
+class CommandCategoryControllerTest {
 
     @Autowired
     ObjectMapper objectMapper;
-
+    @Autowired
+    private MockMvc mockMvc;
     @MockBean
     private CommandCategoryService commandCategoryService;
 

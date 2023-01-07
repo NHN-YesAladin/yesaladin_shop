@@ -13,7 +13,7 @@ import shop.yesaladin.shop.category.service.inter.CommandCategoryService;
 import shop.yesaladin.shop.category.service.inter.QueryCategoryService;
 
 /**
- *  카테고리 CUD용 카테고리 서비스 구현체
+ * 카테고리 CUD용 카테고리 서비스 구현체
  *
  * @author 배수한
  * @since 1.0
@@ -25,11 +25,13 @@ public class CommandCategoryServiceImpl implements CommandCategoryService {
 
     private final CommandCategoryRepository commandCategoryRepository;
     private final QueryCategoryService queryCategoryService;
+
     @Transactional
     @Override
     public Category create(CategoryCreateDto createDto) {
         return commandCategoryRepository.save(createDto.toEntity());
     }
+
     @Transactional
     @Override
     public Category update(CategoryUpdateDto updateDto) {
@@ -40,6 +42,7 @@ public class CommandCategoryServiceImpl implements CommandCategoryService {
 
         return commandCategoryRepository.save(updateDto.toEntity(parentCategory));
     }
+
     @Transactional
     @Override
     public void delete(CategoryDeleteDto deleteDto) {
