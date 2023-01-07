@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.product.controller;
 
-import java.io.Writer;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.dto.ProductCreateDto;
 import shop.yesaladin.shop.product.service.inter.CommandProductService;
-import shop.yesaladin.shop.product.service.inter.CommandWriterService;
 
 /**
  * 상품 등록을 위한 RestController 입니다.
@@ -22,11 +20,10 @@ import shop.yesaladin.shop.product.service.inter.CommandWriterService;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/products")
+@RequestMapping("/v1/products")
 public class ProductController {
 
     private final CommandProductService commandProductService;
-    private final CommandWriterService commandWriterService;
 
     /**
      * [POST /products] 요청을 받아 상품을 생성하고 생성된 상품 객체를 리턴합니다.
@@ -38,17 +35,8 @@ public class ProductController {
      */
     @PostMapping
     public ResponseEntity registerProduct(@Valid @RequestBody ProductCreateDto productCreateDto) {
-        Writer writer = commandWriterService.create(productCreateDto.getWriter());
-
-        Product product = commandProductService.create(
-                productCreateDto,
-                null,
-                null,
-                null,
-                null,
-                null
-        );
+        Product product = commandProductService.create(productCreateDto);
 
         return new ResponseEntity(product, HttpStatus.CREATED);
-    } // !!미완!!
+    }
 }

@@ -31,11 +31,8 @@ public class File {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 50)
-    private String uuid;
-
-    @Column(nullable = false, length = 10)
-    private String extension;
+    @Column(name = "file_name", nullable = false, length = 50)
+    private String fileName;
 
     @Column(name = "upload_datetime", nullable = false)
     private LocalDateTime uploadDateTime;
