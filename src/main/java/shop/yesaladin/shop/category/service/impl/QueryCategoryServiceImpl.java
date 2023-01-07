@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.repository.QueryCategoryRepository;
+import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 import shop.yesaladin.shop.category.exception.CategoryNotFoundException;
 import shop.yesaladin.shop.category.service.inter.QueryCategoryService;
 
@@ -31,9 +32,10 @@ public class QueryCategoryServiceImpl implements QueryCategoryService {
 
     @Transactional(readOnly = true)
     @Override
-    public Category findCategoryById(long id) {
-        return queryCategoryRepository.findById(id)
+    public CategoryResponseDto findCategoryById(long id) {
+        Category category = queryCategoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryNotFoundException(id));
+        return CategoryResponseDto.fromEntity(category);
     }
 
 }

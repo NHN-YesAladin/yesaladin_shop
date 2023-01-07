@@ -43,7 +43,7 @@ class CommandCategoryControllerTest {
     @MockBean
     private CommandCategoryService commandCategoryService;
 
-    private long id;
+    private Long id;
     private String name;
     private Category category;
 
@@ -60,15 +60,15 @@ class CommandCategoryControllerTest {
     @Test
     @DisplayName("카테고리 생성 성공")
     void createCategory() throws Exception {
-        //given
+        // given
         CategoryCreateDto createDto = new CategoryCreateDto(name);
         given(commandCategoryService.create(any())).willReturn(category);
 
-        //when
+        // when
         ResultActions perform = mockMvc.perform(post("/v1/categories").contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createDto)));
 
-        //then
+        // then
         perform.andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(header().longValue("Location", id));
@@ -79,14 +79,14 @@ class CommandCategoryControllerTest {
     @Test
     @DisplayName("카테고리 생성 실패 - name이 null 인 경우")
     void createCategory_invalidatedData_fail() throws Exception {
-        //given
+        // given
         CategoryCreateDto createDto = new CategoryCreateDto(null);
 
         //when
         ResultActions perform = mockMvc.perform(post("/v1/categories").contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createDto)));
 
-        //then
+        // then
         perform.andDo(print()).andExpect(status().is5xxServerError());
 
         verify(commandCategoryService, never()).create(any());

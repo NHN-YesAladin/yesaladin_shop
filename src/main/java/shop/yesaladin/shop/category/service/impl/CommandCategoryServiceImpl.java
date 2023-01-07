@@ -8,6 +8,7 @@ import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.repository.CommandCategoryRepository;
 import shop.yesaladin.shop.category.dto.CategoryCreateDto;
 import shop.yesaladin.shop.category.dto.CategoryDeleteDto;
+import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 import shop.yesaladin.shop.category.dto.CategoryUpdateDto;
 import shop.yesaladin.shop.category.service.inter.CommandCategoryService;
 import shop.yesaladin.shop.category.service.inter.QueryCategoryService;
@@ -35,12 +36,13 @@ public class CommandCategoryServiceImpl implements CommandCategoryService {
     @Transactional
     @Override
     public Category update(CategoryUpdateDto updateDto) {
-        Category parentCategory = null;
+        CategoryResponseDto responseParentDto = null;
         if (Objects.nonNull(updateDto.getParentId())) {
-            parentCategory = queryCategoryService.findCategoryById(updateDto.getParentId());
+            responseParentDto = queryCategoryService.findCategoryById(updateDto.getParentId());
         }
 
-        return commandCategoryRepository.save(updateDto.toEntity(parentCategory));
+        //TODO service 단의 return 값을 모두 dto로 바꿀때 변경
+        return commandCategoryRepository.save(updateDto.toEntity(null));
     }
 
     @Transactional

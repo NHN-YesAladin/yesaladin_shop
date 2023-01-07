@@ -2,8 +2,12 @@ package shop.yesaladin.shop.category.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import shop.yesaladin.shop.category.dto.CategoryResponseDto;
+import shop.yesaladin.shop.category.service.inter.QueryCategoryService;
 
 /**
  * 카테고리 조회를 api를 통하여 동작하기 위한 rest controller
@@ -20,4 +24,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/v1/categories")
 public class QueryCategoryController {
 
+    private final QueryCategoryService queryCategoryService;
+
+    @GetMapping("/{categoryId}")
+    public CategoryResponseDto getCategoryById(@PathVariable Long categoryId) {
+        return queryCategoryService.findCategoryById(categoryId);
+    }
 }

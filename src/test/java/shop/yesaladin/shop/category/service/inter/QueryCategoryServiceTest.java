@@ -17,6 +17,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.repository.QueryCategoryRepository;
+import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 import shop.yesaladin.shop.category.service.impl.QueryCategoryServiceImpl;
 
 
@@ -85,11 +86,11 @@ class QueryCategoryServiceTest {
         given(queryCategoryRepository.findById(any())).willReturn(Optional.of(category));
 
         //when
-        Category categoryById = queryCategoryService.findCategoryById(id);
+        CategoryResponseDto responseDto = queryCategoryService.findCategoryById(id);
 
         //then
-        assertThat(categoryById.getId()).isEqualTo(id);
-        assertThat(categoryById.getName()).isEqualTo(name);
+        assertThat(responseDto.getId()).isEqualTo(id);
+        assertThat(responseDto.getName()).isEqualTo(name);
 
         verify(queryCategoryRepository, times(1)).findById(any());
     }
