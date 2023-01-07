@@ -23,8 +23,8 @@ import shop.yesaladin.shop.publisher.domain.model.Publisher;
 /**
  * 상품의 엔터티 클래스입니다.
  *
- * @author : 이수정
- * @since : 1.0
+ * @author 이수정
+ * @since 1.0
  */
 @Getter
 @Builder

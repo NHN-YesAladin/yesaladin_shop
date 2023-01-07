@@ -20,8 +20,8 @@ import shop.yesaladin.shop.product.domain.model.Product;
 /**
  * 상품 태그 관계의 엔터티 클래스입니다.
  *
- * @author : 이수정
- * @since : 1.0
+ * @author 이수정
+ * @since 1.0
  */
 @Getter
 @Builder

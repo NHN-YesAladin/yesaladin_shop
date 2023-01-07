@@ -10,8 +10,8 @@ import org.hibernate.validator.constraints.Length;
 /**
  * 상품 등록을 위한 DTO 입니다.
  *
- * @author : 이수정
- * @since : 1.0
+ * @author 이수정
+ * @since 1.0
  */
 @Getter
 @Setter
