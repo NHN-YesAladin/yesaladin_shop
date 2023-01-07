@@ -21,7 +21,23 @@ public interface QueryMemberRepository {
      */
     Optional<Member> findById(Long id);
 
+    /**
+     * 회원의 nickname 을 통해 회원을 조회 합니다.
+     *
+     * @param nickname 회원의 nickname 입니다.
+     * @return 조회된 회원
+     * @author : 송학현
+     * @since : 1.0
+     */
     Optional<Member> findMemberByNickname(String nickname);
 
+    /**
+     * 회원의 login 시 사용 하는 ID를 통해 회원을 조회 합니다.
+     *
+     * @param loginId 회원의 loginId 입니다.
+     * @return 조회된 회원
+     * @author : 송학현
+     * @since : 1.0
+     */
     Optional<Member> findMemberByLoginId(String loginId);
 }

@@ -20,7 +20,13 @@ public class QueryMemberServiceImpl implements QueryMemberService {
 
     private final QueryMemberRepository queryMemberRepository;
 
-    @Transactional
+    /**
+     * 회원을 조회 하기 위한 메서드 입니다.
+     *
+     * @param id member의 primary key
+     * @return 회원 조회 결과
+     */
+    @Transactional(readOnly = true)
     @Override
     public Member findMemberById(long id) {
         return queryMemberRepository.findById(id)
