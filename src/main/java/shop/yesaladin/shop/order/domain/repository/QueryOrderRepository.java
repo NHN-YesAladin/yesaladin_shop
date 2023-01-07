@@ -36,7 +36,7 @@ public interface QueryOrderRepository<T extends Order> {
      * @author 김홍대
      * @since 1.0
      */
-    List<OrderSummaryDto> findAllOrdersInPeriodOfTime(
+    List<OrderSummaryDto> findAllOrdersInPeriod(
             LocalDate startDate,
             LocalDate endDate,
             int size,
@@ -52,5 +52,5 @@ public interface QueryOrderRepository<T extends Order> {
      * @author 김홍대
      * @since 1.0
      */
-    int getCountOfOrdersInPeriodOfTime(LocalDate startDate, LocalDate endDate);
+    int getCountOfOrdersInPeriod(LocalDate startDate, LocalDate endDate);
 }

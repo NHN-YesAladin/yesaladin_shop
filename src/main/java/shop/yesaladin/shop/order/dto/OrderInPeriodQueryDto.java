@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class OrderInPeriodOfTimeQueryDto {
+public class OrderInPeriodQueryDto {
 
     private LocalDate startDate;
     private LocalDate endDate;
