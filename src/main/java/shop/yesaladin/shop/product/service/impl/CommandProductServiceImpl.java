@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.file.service.inter.CommandFileService;
 import shop.yesaladin.shop.member.domain.model.Member;
+import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.ProductTypeCode;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
@@ -41,6 +42,7 @@ public class CommandProductServiceImpl implements CommandProductService {
     private final CommandFileService commandFileService;
     private final CommandTotalDiscountRateService commandTotalDiscountRateService;
     private final CommandWritingService commandWritingService;
+    private final QueryMemberService queryMemberService;
 
 
     /**
@@ -72,7 +74,8 @@ public class CommandProductServiceImpl implements CommandProductService {
         Product product = commandProductRepository.save(dto.toProductEntity(publisher, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate));
 
         // Writing
-//        commandWritingService.create(dto.getWriterName(), product, member);
+        queryMemberService.
+        commandWritingService.create(dto.getWriterName(), product, member);
 
         return product;
     }
