@@ -80,6 +80,7 @@ public class Member {
     @JoinColumn(name = "member_grade_id")
     private MemberGrade memberGrade;
 
+    @Column(name = "gender_code")
     @Convert(converter = MemberGenderCodeConverter.class)
     private MemberGenderCode memberGenderCode;
 

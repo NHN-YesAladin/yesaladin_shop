@@ -7,7 +7,7 @@ import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberGrade;
 import shop.yesaladin.shop.member.domain.repository.CommandMemberRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
-import shop.yesaladin.shop.member.dto.MemberCreateDto;
+import shop.yesaladin.shop.member.dto.MemberCreateRequest;
 import shop.yesaladin.shop.member.exception.MemberProfileAlreadyExistException;
 import shop.yesaladin.shop.member.service.inter.CommandMemberService;
 import shop.yesaladin.shop.member.service.inter.QueryMemberGradeService;
@@ -36,7 +36,7 @@ public class CommandMemberServiceImpl implements CommandMemberService {
      */
     @Transactional
     @Override
-    public Member create(MemberCreateDto createDto) {
+    public Member create(MemberCreateRequest createDto) {
         if (queryMemberRepository.findMemberByLoginId(createDto.getLoginId()).isPresent()) {
             throw new MemberProfileAlreadyExistException("id");
         }

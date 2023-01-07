@@ -9,7 +9,7 @@ import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberGrade;
 import shop.yesaladin.shop.member.domain.repository.CommandMemberRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
-import shop.yesaladin.shop.member.dto.MemberCreateDto;
+import shop.yesaladin.shop.member.dto.MemberCreateRequest;
 import shop.yesaladin.shop.member.service.inter.QueryMemberGradeService;
 
 class CommandMemberServiceImplTest {
@@ -38,7 +38,7 @@ class CommandMemberServiceImplTest {
         String loginId = "loginId";
         String nickname = "nickname";
 
-        MemberCreateDto createDto = Mockito.mock(MemberCreateDto.class);
+        MemberCreateRequest createDto = Mockito.mock(MemberCreateRequest.class);
         MemberGrade memberGrade = Mockito.mock(MemberGrade.class);
         Member member = Member.builder()
                 .loginId(loginId)

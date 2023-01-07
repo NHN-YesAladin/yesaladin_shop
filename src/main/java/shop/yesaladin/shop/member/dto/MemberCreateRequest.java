@@ -15,7 +15,7 @@ import shop.yesaladin.shop.member.domain.model.MemberGrade;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MemberCreateDto {
+public class MemberCreateRequest {
 
     @NotBlank
     @Size(min = 2, max = 50)
@@ -28,7 +28,7 @@ public class MemberCreateDto {
 
     @NotBlank
     @Size(min = 8, max = 15)
-    @Pattern(regexp = "^[a-zA-Z]{8,15}[0-9]*$", message = "영문(필수)과 숫자(옵션) 순서 로만 가능 합니다")
+    @Pattern(regexp = "^[a-zA-Z]+[0-9]*$", message = "영문(필수)과 숫자(옵션) 순서 로만 가능 합니다")
     private String loginId;
 
     @NotBlank
@@ -49,7 +49,6 @@ public class MemberCreateDto {
     private String email;
 
     @NotBlank
-    // TODO: MALE, FEMALE
     private String gender;
 
     public Member toEntity(MemberGrade memberGrade) {
@@ -57,6 +56,7 @@ public class MemberCreateDto {
                 .name(name)
                 .nickname(nickname)
                 .loginId(loginId)
+                .password(password)
                 .birthYear(Integer.parseInt(birth.substring(0, 4)))
                 .birthMonth(Integer.parseInt(birth.substring(4, 6)))
                 .birthDay(Integer.parseInt(birth.substring(6)))

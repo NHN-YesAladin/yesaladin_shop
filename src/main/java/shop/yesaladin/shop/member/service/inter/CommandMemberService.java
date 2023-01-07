@@ -1,7 +1,7 @@
 package shop.yesaladin.shop.member.service.inter;
 
 import shop.yesaladin.shop.member.domain.model.Member;
-import shop.yesaladin.shop.member.dto.MemberCreateDto;
+import shop.yesaladin.shop.member.dto.MemberCreateRequest;
 
 /**
  * Create, Update, Delete 를 Controller Layer에서 사용하기 위한 service interface
@@ -11,5 +11,5 @@ import shop.yesaladin.shop.member.dto.MemberCreateDto;
  */
 public interface CommandMemberService {
 
-    Member create(MemberCreateDto createDto);
+    Member create(MemberCreateRequest createDto);
 }
