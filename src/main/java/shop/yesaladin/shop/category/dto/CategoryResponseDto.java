@@ -21,7 +21,7 @@ import shop.yesaladin.shop.category.domain.model.Category;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CategoryResponseDto {
-    //TODO front 서버에서 id가 필요할지 고민 필요
+
     private Long id;
 
     private String name;

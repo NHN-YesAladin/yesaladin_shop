@@ -41,7 +41,7 @@ public class CommandCategoryServiceImpl implements CommandCategoryService {
             responseParentDto = queryCategoryService.findCategoryById(updateDto.getParentId());
         }
 
-        //TODO service 단의 return 값을 모두 dto로 바꿀때 변경
+        //TODO service 단의 return 값을 모두 dto로 바꿀때 변경 -> null 임시 값
         return commandCategoryRepository.save(updateDto.toEntity(null));
     }
 

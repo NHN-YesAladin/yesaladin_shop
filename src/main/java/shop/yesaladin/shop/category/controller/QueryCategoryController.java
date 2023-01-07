@@ -1,6 +1,7 @@
 package shop.yesaladin.shop.category.controller;
 
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -35,7 +36,6 @@ public class QueryCategoryController {
 
     @GetMapping
     public List<CategoryResponseDto> getCategories(Pageable pageable) {
-//        return queryCategoryService.findCategories(pageable);
-        return null;
+        return queryCategoryService.findCategories(pageable).getContent();
     }
 }

@@ -21,6 +21,4 @@ public interface QueryCategoryRepository {
 
     Optional<Category> findByName(String name);
 
-    //TODO N+1 문제 발생으로 인한 Querydsl 사용 필요 확인
-    List<Category> findByParent_Name(String parent);
 }
