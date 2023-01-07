@@ -27,7 +27,7 @@ public class MemberController {
     private final CommandMemberService commandMemberService;
 
     /**
-     *
+     * 회원 가입을 위한 Post 요청을 처리 하는 기능 입니다.
      *
      * @param createDto 회원 가입을 위한 요청 파라미터의 모음입니다.
      * @return ResponseEntity로 회원 등록 성공 이후 등록된 일부 데이터들을 반환합니다.
