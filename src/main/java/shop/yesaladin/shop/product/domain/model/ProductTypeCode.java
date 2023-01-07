@@ -7,8 +7,8 @@ import lombok.RequiredArgsConstructor;
 /**
  * 상품 유형 코드의 enum 클래스압나다.
  *
- * @author : 이수정
- * @since : 1.0
+ * @author 이수정
+ * @since 1.0
  */
 @Getter
 @RequiredArgsConstructor
