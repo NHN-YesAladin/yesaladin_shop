@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import shop.yesaladin.shop.product.domain.model.Product;
 
 public class DummyProduct {
+
     public static Product dummy(String ISBN) {
         return Product.builder()
                 .ISBN(ISBN)

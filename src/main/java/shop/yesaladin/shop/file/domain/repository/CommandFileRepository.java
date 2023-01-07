@@ -9,5 +9,6 @@ import shop.yesaladin.shop.file.domain.model.File;
  * @since 1.0
  */
 public interface CommandFileRepository {
+
     File save(File file);
 }

@@ -33,7 +33,6 @@ public class ProductController {
      *
      * @param productCreateDto 관리자에게서 입력받은 상품 생성정보
      * @return 생성된 상품을 담은 ResponseEntity
-     *
      * @author 이수정
      * @since 1.0
      */
@@ -41,7 +40,14 @@ public class ProductController {
     public ResponseEntity registerProduct(@Valid @RequestBody ProductCreateDto productCreateDto) {
         Writer writer = commandWriterService.create(productCreateDto.getWriter());
 
-        Product product = commandProductService.create(productCreateDto, null, null, null, null, null);
+        Product product = commandProductService.create(
+                productCreateDto,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
 
         return new ResponseEntity(product, HttpStatus.CREATED);
     } // !!미완!!

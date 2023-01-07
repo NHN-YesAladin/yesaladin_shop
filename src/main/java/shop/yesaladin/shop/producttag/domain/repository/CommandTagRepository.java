@@ -9,5 +9,6 @@ import shop.yesaladin.shop.producttag.domain.model.Tag;
  * @since 1.0
  */
 public interface CommandTagRepository {
+
     Tag save(Tag tag);
 }
