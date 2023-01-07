@@ -59,5 +59,6 @@ class JpaMemberRepositoryTest {
 
         //then
         assertThat(optionalMember).isPresent();
+        assertThat(optionalMember.get().getName()).isEqualTo(savedMember.getName());
     }
 }
