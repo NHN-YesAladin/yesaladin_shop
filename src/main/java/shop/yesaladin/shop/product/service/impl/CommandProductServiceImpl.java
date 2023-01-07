@@ -3,7 +3,6 @@ package shop.yesaladin.shop.product.service.impl;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.product.domain.model.Product;
@@ -32,12 +31,18 @@ public class CommandProductServiceImpl implements CommandProductService {
      *
      * @param dto 관리자에게서 입력받은 상품 생성정보
      * @return 생성된 상품
-     *
      * @author 이수정
      * @since 1.0
      */
     @Override
-    public Product create(ProductCreateDto dto, Publisher publisher, SubscribeProduct subscribeProduct, File file, ProductTypeCode productTypeCode, ProductSavingMethodCode productSavingMethodCode) {
+    public Product create(
+            ProductCreateDto dto,
+            Publisher publisher,
+            SubscribeProduct subscribeProduct,
+            File file,
+            ProductTypeCode productTypeCode,
+            ProductSavingMethodCode productSavingMethodCode
+    ) {
         Product product = Product.builder()
                 .ISBN(dto.getISBN())
                 .title(dto.getTitle())

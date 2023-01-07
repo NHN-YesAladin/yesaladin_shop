@@ -5,6 +5,7 @@ import java.util.UUID;
 import shop.yesaladin.shop.file.domain.model.File;
 
 public class DummyFile {
+
     public static File dummy() {
         return File.builder()
                 .uuid(UUID.randomUUID().toString())

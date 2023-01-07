@@ -9,5 +9,6 @@ import shop.yesaladin.shop.product.domain.model.Product;
  * @since 1.0
  */
 public interface CommandProductRepository {
+
     Product save(Product product);
 }

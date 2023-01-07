@@ -79,14 +79,14 @@ public class Product {
     private SubscribeProduct subscribeProduct;
 
     @OneToOne
-    @JoinColumn(name = "publisher_id")
+    @JoinColumn(name = "publisher_id", nullable = false)
     private Publisher publisher;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "file_id")
+    @JoinColumn(name = "file_id", nullable = false)
     private File file;
 
-    @Column(name = "product_type_code_id")
+    @Column(name = "product_type_code_id", nullable = false)
     @Convert(converter = ProductTypeCodeConverter.class)
     private ProductTypeCode productTypeCode;
 
@@ -94,7 +94,7 @@ public class Product {
     @JoinColumn(name = "discount_rate_id")
     private TotalDiscountRate totalDiscountRate;
 
-    @Column(name = "product_saving_method_code_id")
+    @Column(name = "product_saving_method_code_id", nullable = false)
     @Convert(converter = ProductSavingMethodCodeConverter.class)
     private ProductSavingMethodCode productSavingMethodCode;
 

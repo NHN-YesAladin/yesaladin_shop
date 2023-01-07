@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.file.persistence;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +14,8 @@ import shop.yesaladin.shop.product.dummy.DummyFile;
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class JpaFileRepositoryTest {
+
+    private final String EXTENSION = ".jpg";
 
     @Autowired
     private JpaFileRepository jpaFileRepository;
@@ -33,6 +34,6 @@ class JpaFileRepositoryTest {
 
         // then
         assertThat(savedFile).isNotNull();
-        assertThat(savedFile.getExtension()).isEqualTo(".jpg");
+        assertThat(savedFile.getExtension()).isEqualTo(EXTENSION);
     }
 }

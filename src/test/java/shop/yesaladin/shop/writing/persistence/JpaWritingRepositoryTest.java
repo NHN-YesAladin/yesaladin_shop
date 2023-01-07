@@ -1,4 +1,4 @@
-package shop.yesaladin.shop.product.persistence;
+package shop.yesaladin.shop.writing.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -10,44 +10,45 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import shop.yesaladin.shop.member.domain.model.Member;
+import shop.yesaladin.shop.member.dummy.MemberDummy;
 import shop.yesaladin.shop.product.domain.model.Product;
-import shop.yesaladin.shop.product.domain.model.RelatedProduct;
 import shop.yesaladin.shop.product.dummy.DummyProduct;
-import shop.yesaladin.shop.product.dummy.DummyRelatedProduct;
+import shop.yesaladin.shop.writing.domain.model.Writing;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-class JpaRelatedProductRepositoryTest {
+class JpaWritingRepositoryTest {
+
+    private final String AUTHOR_NAME = "홍길동";
+    private final String ISBN = "00001-...";
 
     @PersistenceContext
     private EntityManager entityManager;
 
     @Autowired
-    private JpaRelatedProductRepository jpaRelatedProductRepository;
+    private JpaWritingRepository jpaWritingRepository;
 
-    private RelatedProduct relatedProduct;
-
-    private Product product1;
-    private Product product2;
-
+    private Writing writing;
 
     @BeforeEach
     void setUp() {
-        product1 = DummyProduct.dummy("0001-...");
-        product2 = DummyProduct.dummy("0002-...");
+        Product product = DummyProduct.dummy(ISBN);
+        Member member = MemberDummy.dummy();
 
-        entityManager.persist(product1);
-        entityManager.persist(product2);
+        entityManager.persist(product);
+        entityManager.persist(member);
 
-        relatedProduct = DummyRelatedProduct.dummy(product1, product2);
+        writing = Writing.builder().authorName(AUTHOR_NAME).product(product).member(member).build();
     }
 
     @Test
     void save() {
         // when
-        RelatedProduct savedRelatedProduct = jpaRelatedProductRepository.save(relatedProduct);
+        Writing savedWriting = jpaWritingRepository.save(writing);
 
         // then
-        assertThat(savedRelatedProduct).isNotNull();
+        assertThat(savedWriting).isNotNull();
+        assertThat(savedWriting.getAuthorName()).isEqualTo(AUTHOR_NAME);
     }
 }

@@ -15,6 +15,8 @@ import shop.yesaladin.shop.product.dummy.DummySubscribeProduct;
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class JpaSubscribeProductRepositoryTest {
 
+    private final String ISSN = "0000-XXXX";
+
     @Autowired
     private JpaSubscribeProductRepository jpaSubscribeProductRepository;
 
@@ -32,6 +34,6 @@ class JpaSubscribeProductRepositoryTest {
 
         // then
         assertThat(savedSubscribeProduct).isNotNull();
-        assertThat(savedSubscribeProduct.getISSN()).isEqualTo("0000-XXXX");
+        assertThat(savedSubscribeProduct.getISSN()).isEqualTo(ISSN);
     }
 }
