@@ -1,8 +1,9 @@
 package shop.yesaladin.shop.member.controller;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,10 +36,11 @@ public class MemberController {
      * @since : 1.0
      */
     @PostMapping
-    public ResponseEntity signUpMember(@Valid @RequestBody MemberCreateRequest createDto) {
+    public ResponseEntity signUpMember(@Valid @RequestBody MemberCreateRequest createDto)
+            throws URISyntaxException {
         Member member = commandMemberService.create(createDto);
         MemberCreateResponse response = MemberCreateResponse.fromEntity(member);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.created(new URI(member.getId().toString())).body(response);
     }
 }
