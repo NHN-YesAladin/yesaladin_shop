@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.member.service.impl;
 
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +27,8 @@ public class CommandMemberServiceImpl implements CommandMemberService {
     private final QueryMemberRepository queryMemberRepository;
     private final QueryMemberGradeService queryMemberGradeService;
 
+    private static final int WHITE_GRADE_ID = 1;
+
     /**
      * 회원 등록을 위한 기능 입니다.
      *
@@ -37,18 +40,22 @@ public class CommandMemberServiceImpl implements CommandMemberService {
     @Transactional
     @Override
     public Member create(MemberCreateRequest createDto) {
-        if (queryMemberRepository.findMemberByLoginId(createDto.getLoginId()).isPresent()) {
-            throw new MemberProfileAlreadyExistException("id");
-        }
+        checkUniqueData(queryMemberRepository.findMemberByLoginId(createDto.getLoginId()), "id");
+        checkUniqueData(
+                queryMemberRepository.findMemberByNickname(createDto.getNickname()),
+                "nickname"
+        );
 
-        if (queryMemberRepository.findMemberByNickname(createDto.getNickname()).isPresent()) {
-            throw new MemberProfileAlreadyExistException("nickname");
-        }
-
-        MemberGrade memberGrade = queryMemberGradeService.findById(1);
+        MemberGrade memberGrade = queryMemberGradeService.findById(WHITE_GRADE_ID);
 
         Member member = createDto.toEntity(memberGrade);
 
         return commandMemberRepository.save(member);
+    }
+
+    private void checkUniqueData(Optional<Member> member, String target) {
+        if (member.isPresent()) {
+            throw new MemberProfileAlreadyExistException(target);
+        }
     }
 }
