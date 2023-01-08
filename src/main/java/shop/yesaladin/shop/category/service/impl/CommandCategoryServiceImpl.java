@@ -6,10 +6,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.repository.CommandCategoryRepository;
-import shop.yesaladin.shop.category.dto.CategoryCreateRequest;
+import shop.yesaladin.shop.category.dto.CategoryRequest;
 import shop.yesaladin.shop.category.dto.CategoryDeleteDto;
 import shop.yesaladin.shop.category.dto.CategoryResponse;
-import shop.yesaladin.shop.category.dto.CategoryUpdateDto;
 import shop.yesaladin.shop.category.service.inter.CommandCategoryService;
 import shop.yesaladin.shop.category.service.inter.QueryCategoryService;
 
@@ -29,7 +28,7 @@ public class CommandCategoryServiceImpl implements CommandCategoryService {
 
     @Transactional
     @Override
-    public CategoryResponse create(CategoryCreateRequest createRequest) {
+    public CategoryResponse create(CategoryRequest createRequest) {
         Category parentCategory = null;
         if (Objects.nonNull(createRequest.getParentId())) {
             parentCategory = queryCategoryService.findParentCategoryById(createRequest.getParentId());
@@ -38,16 +37,19 @@ public class CommandCategoryServiceImpl implements CommandCategoryService {
         return CategoryResponse.fromEntity(category);
     }
 
+
     @Transactional
     @Override
-    public Category update(CategoryUpdateDto updateDto) {
-        CategoryResponse responseParentDto = null;
-        if (Objects.nonNull(updateDto.getParentId())) {
-            responseParentDto = queryCategoryService.findCategoryById(updateDto.getParentId());
+    public CategoryResponse update(Long id, CategoryRequest createRequest) {
+        Category parentCategory = null;
+        if (Objects.nonNull(createRequest.getParentId())) {
+            parentCategory = queryCategoryService.findParentCategoryById(createRequest.getParentId());
         }
-
-        //TODO service 단의 return 값을 모두 dto로 바꿀때 변경 -> null 임시 값
-        return commandCategoryRepository.save(updateDto.toEntity(null));
+        Category category = commandCategoryRepository.save(createRequest.toEntity(
+                id,
+                parentCategory
+        ));
+        return CategoryResponse.fromEntity(category);
     }
 
     @Transactional

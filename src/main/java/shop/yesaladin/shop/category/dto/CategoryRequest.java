@@ -17,7 +17,7 @@ import shop.yesaladin.shop.category.domain.model.Category;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoryCreateRequest {
+public class CategoryRequest {
 
     @NotBlank
     private String name;
@@ -25,10 +25,19 @@ public class CategoryCreateRequest {
     @NotNull
     private Boolean isShown;
 
-    private Integer parentId;
+    private Long parentId;
 
     public Category toEntity(Category parent) {
         return Category.builder().name(this.name).isShown(this.isShown).parent(parent).build();
+    }
+
+    public Category toEntity(Long id, Category parent) {
+        return Category.builder()
+                .id(id)
+                .name(this.name)
+                .isShown(this.isShown)
+                .parent(parent)
+                .build();
     }
 
 }

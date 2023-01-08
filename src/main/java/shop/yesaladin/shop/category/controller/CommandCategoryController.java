@@ -15,11 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import shop.yesaladin.shop.category.domain.model.Category;
-import shop.yesaladin.shop.category.dto.CategoryCreateRequest;
+import shop.yesaladin.shop.category.dto.CategoryRequest;
 import shop.yesaladin.shop.category.dto.CategoryDeleteDto;
 import shop.yesaladin.shop.category.dto.CategoryResponse;
-import shop.yesaladin.shop.category.dto.CategoryUpdateDto;
 import shop.yesaladin.shop.category.dto.ResultCode;
 import shop.yesaladin.shop.category.service.inter.CommandCategoryService;
 
@@ -40,20 +38,22 @@ public class CommandCategoryController {
 
     @PostMapping
     public ResponseEntity<CategoryResponse> createCategory(
-            @Valid @RequestBody CategoryCreateRequest createDto
+            @Valid @RequestBody CategoryRequest categoryRequest
     ) throws URISyntaxException {
-        CategoryResponse categoryResponse = commandCategoryService.create(createDto);
+        CategoryResponse categoryResponse = commandCategoryService.create(categoryRequest);
         return ResponseEntity.created(new URI(categoryResponse.getId().toString())).build();
     }
 
     @PutMapping("/{categoryId}")
-    public ResponseEntity<CategoryUpdateDto> updateCategory(
+    public ResponseEntity<CategoryResponse> updateCategory(
             @PathVariable Long categoryId,
-            @Valid @RequestBody CategoryUpdateDto updateDto
+            @Valid @RequestBody CategoryRequest categoryRequest
     ) {
-        updateDto.setId(categoryId);
-        commandCategoryService.update(updateDto);
-        return ResponseEntity.ok(updateDto);
+        CategoryResponse categoryResponse = commandCategoryService.update(
+                categoryId,
+                categoryRequest
+        );
+        return ResponseEntity.ok(categoryResponse);
     }
 
     @DeleteMapping("/{categoryId}")

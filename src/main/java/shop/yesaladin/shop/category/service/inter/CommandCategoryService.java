@@ -1,10 +1,8 @@
 package shop.yesaladin.shop.category.service.inter;
 
-import shop.yesaladin.shop.category.domain.model.Category;
-import shop.yesaladin.shop.category.dto.CategoryCreateRequest;
+import shop.yesaladin.shop.category.dto.CategoryRequest;
 import shop.yesaladin.shop.category.dto.CategoryDeleteDto;
 import shop.yesaladin.shop.category.dto.CategoryResponse;
-import shop.yesaladin.shop.category.dto.CategoryUpdateDto;
 
 /**
  * Create, Update, Delete 를 controller 단에서 사용하기 위해 서비스 인터페이스
@@ -15,9 +13,9 @@ import shop.yesaladin.shop.category.dto.CategoryUpdateDto;
 
 public interface CommandCategoryService {
 
-    CategoryResponse create(CategoryCreateRequest createDto);
+    CategoryResponse create(CategoryRequest createRequest);
 
-    Category update(CategoryUpdateDto updateDto);
+    CategoryResponse update(Long id, CategoryRequest createRequest);
 
     void delete(CategoryDeleteDto deleteDto);
 }
