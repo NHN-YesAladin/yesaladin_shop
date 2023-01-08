@@ -31,7 +31,7 @@ public class File {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "file_name", nullable = false, length = 50)
+    @Column(name = "name", nullable = false, length = 50)
     private String fileName;
 
     @Column(name = "upload_datetime", nullable = false)
