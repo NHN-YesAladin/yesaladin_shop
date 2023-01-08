@@ -16,6 +16,7 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import shop.yesaladin.shop.product.domain.model.Product;
 
 /**
@@ -26,15 +27,16 @@ import shop.yesaladin.shop.product.domain.model.Product;
  */
 
 @Getter
-@Builder
+@ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "product_categories")
 @Entity
 public class ProductCategory {
 
+    @ToString.Exclude
     @EmbeddedId
-    private Pk id;
+    private Pk pk;
 
     @MapsId("categoryId")
     @ManyToOne(fetch = FetchType.LAZY)
@@ -64,5 +66,12 @@ public class ProductCategory {
 
         @Column(name = "product_id", nullable = false)
         private Long productId;
+    }
+
+    public ProductCategory(Category category, Product product) {
+        this.category = category;
+        this.product = product;
+        this.pk = new Pk(category.getId(), product.getId());
+
     }
 }
