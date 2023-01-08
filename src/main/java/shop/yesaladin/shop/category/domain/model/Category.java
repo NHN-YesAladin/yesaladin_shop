@@ -11,6 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,6 +36,7 @@ import lombok.ToString;
 public class Category {
 
     @Id
+    //TODO Category autoIncrement off 이후 삭제 예정
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -55,6 +57,7 @@ public class Category {
     @JoinColumn(name = "parent_id")
     private Category parent;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "parent")
     private List<Category> children;
 
