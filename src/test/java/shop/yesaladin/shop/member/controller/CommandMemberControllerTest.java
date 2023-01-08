@@ -24,10 +24,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.dto.MemberCreateRequest;
+import shop.yesaladin.shop.member.dto.MemberCreateResponse;
 import shop.yesaladin.shop.member.service.inter.CommandMemberService;
 
-@WebMvcTest(MemberController.class)
-class MemberControllerTest {
+@WebMvcTest(CommandMemberController.class)
+class CommandMemberControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -39,6 +40,7 @@ class MemberControllerTest {
     private CommandMemberService commandMemberService;
 
     private Member member;
+    private MemberCreateResponse response;
 
     private final String NAME = "Ramos";
     private final String NICKNAME = "Ramos";
@@ -53,6 +55,7 @@ class MemberControllerTest {
     void setUp() {
         long id = 1L;
         member = Member.builder().id(id).name(NAME).nickname(NICKNAME).loginId(LOGIN_ID).build();
+        response = MemberCreateResponse.fromEntity(member);
     }
 
     @Test
@@ -60,7 +63,7 @@ class MemberControllerTest {
     void signUpMember_withInvalidInputData() throws Exception {
         //given
         MemberCreateRequest request = new MemberCreateRequest();
-        given(commandMemberService.create(any())).willReturn(member);
+        given(commandMemberService.create(any())).willReturn(response);
 
         //when
         ResultActions perform = mockMvc.perform(post("/v1/members").contentType(MediaType.APPLICATION_JSON)
@@ -85,7 +88,7 @@ class MemberControllerTest {
                 EMAIL,
                 GENDER
         );
-        given(commandMemberService.create(any())).willReturn(member);
+        given(commandMemberService.create(any())).willReturn(response);
 
         //when
         ResultActions perform = mockMvc.perform(post("/v1/members").contentType(MediaType.APPLICATION_JSON)
@@ -112,7 +115,7 @@ class MemberControllerTest {
         );
         Member member = request.toEntity(null);
 
-        given(commandMemberService.create(any())).willReturn(this.member);
+        given(commandMemberService.create(any())).willReturn(response);
 
         //when
         ResultActions perform = mockMvc.perform(post("/v1/members").contentType(MediaType.APPLICATION_JSON)

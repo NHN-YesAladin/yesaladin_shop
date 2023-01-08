@@ -25,6 +25,8 @@ public class QueryMemberServiceImpl implements QueryMemberService {
      *
      * @param id member의 primary key
      * @return 회원 조회 결과
+     * @author : 송학현
+     * @since : 1.0
      */
     @Transactional(readOnly = true)
     @Override
@@ -59,6 +61,7 @@ public class QueryMemberServiceImpl implements QueryMemberService {
     @Transactional(readOnly = true)
     @Override
     public Member findMemberByNickname(String nickname) {
-        return queryMemberRepository.findMemberByNickname(nickname).orElseThrow(() -> new MemberNotFoundException("Member Nickname: " + nickname));
+        return queryMemberRepository.findMemberByNickname(nickname)
+                .orElseThrow(() -> new MemberNotFoundException("Member Nickname: " + nickname));
     }
 }
