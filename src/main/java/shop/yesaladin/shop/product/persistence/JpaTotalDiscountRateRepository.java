@@ -7,8 +7,8 @@ import shop.yesaladin.shop.product.domain.repository.CommandTotalDiscountRateRep
 /**
  * 전체 할인율 repository 구현체입니다.
  *
- * @author : 이수정
- * @since : 1.0
+ * @author 이수정
+ * @since 1.0
  */
 public interface JpaTotalDiscountRateRepository extends Repository<TotalDiscountRate, Integer>,
         CommandTotalDiscountRateRepository {

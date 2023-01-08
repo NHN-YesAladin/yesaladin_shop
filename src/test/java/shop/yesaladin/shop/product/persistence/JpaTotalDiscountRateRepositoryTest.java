@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.product.persistence;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -29,7 +28,8 @@ class JpaTotalDiscountRateRepositoryTest {
     @Test
     void save() {
         // when
-        TotalDiscountRate savedTotalDiscountRate = jpaTotalDiscountRateRepository.save(totalDiscountRate);
+        TotalDiscountRate savedTotalDiscountRate = jpaTotalDiscountRateRepository.save(
+                totalDiscountRate);
 
         // then
         assertThat(savedTotalDiscountRate).isNotNull();

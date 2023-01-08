@@ -1,7 +1,6 @@
 package shop.yesaladin.shop.publisher.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +14,8 @@ import shop.yesaladin.shop.publisher.domain.model.Publisher;
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class JpaPublisherRepositoryTest {
+
+    private final String PUBLISHER_NAME = "길벗";
 
     @Autowired
     private JpaPublisherRepository jpaPublisherRepository;
@@ -33,7 +34,7 @@ class JpaPublisherRepositoryTest {
 
         // then
         assertThat(savedPublisher).isNotNull();
-        assertThat(savedPublisher.getName()).isEqualTo("길벗");
+        assertThat(savedPublisher.getName()).isEqualTo(PUBLISHER_NAME);
     }
 
 }
