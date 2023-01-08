@@ -6,10 +6,9 @@ import shop.yesaladin.shop.file.domain.model.File;
 
 public class DummyFile {
 
-    public static File dummy() {
+    public static File dummy(String extension) {
         return File.builder()
-                .uuid(UUID.randomUUID().toString())
-                .extension(".jpg")
+                .fileName("UUID." + extension)
                 .uploadDateTime(LocalDateTime.now())
                 .build();
     }

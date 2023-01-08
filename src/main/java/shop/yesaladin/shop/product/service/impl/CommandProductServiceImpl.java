@@ -75,8 +75,6 @@ public class CommandProductServiceImpl implements CommandProductService {
         }
         commandWritingService.create(dto.getWriterName(), product, member);
 
-        ProductResponseDto productResponseDto = new ProductResponseDto();
-        productResponseDto.setId(product.getId());
-        return productResponseDto;
+        return new ProductResponseDto(product.getId());
     }
 }

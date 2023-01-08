@@ -15,7 +15,7 @@ import shop.yesaladin.shop.product.dummy.DummyFile;
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class JpaFileRepositoryTest {
 
-    private final String EXTENSION = ".jpg";
+    private final String FILE_NAME = "UUID.png";
 
     @Autowired
     private JpaFileRepository jpaFileRepository;
@@ -24,7 +24,7 @@ class JpaFileRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        file = DummyFile.dummy();
+        file = DummyFile.dummy("png");
     }
 
     @Test
@@ -34,6 +34,6 @@ class JpaFileRepositoryTest {
 
         // then
         assertThat(savedFile).isNotNull();
-        assertThat(savedFile.getExtension()).isEqualTo(EXTENSION);
+        assertThat(savedFile.getFileName()).isEqualTo(FILE_NAME);
     }
 }

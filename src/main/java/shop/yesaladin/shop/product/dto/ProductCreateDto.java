@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PositiveOrZero;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,6 +28,7 @@ import shop.yesaladin.shop.publisher.domain.model.Publisher;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class ProductCreateDto {
 
     @NotBlank
