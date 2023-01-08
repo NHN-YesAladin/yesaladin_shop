@@ -52,5 +52,5 @@ public interface QueryOrderRepository<T extends Order> {
      * @author 김홍대
      * @since 1.0
      */
-    int getCountOfOrdersInPeriod(LocalDate startDate, LocalDate endDate);
+    long getCountOfOrdersInPeriod(LocalDate startDate, LocalDate endDate);
 }
