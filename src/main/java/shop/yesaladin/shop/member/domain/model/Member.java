@@ -90,8 +90,8 @@ public class Member {
     /**
      * Member entity의 memberId 값을 비교 하는 기능 입니다.
      *
-     * @paramcompare 비교 대상Member entity 입니다.
-     * @return loginId가 중복 인지에 대한 결과
+     * @param compare 비교 대상 Member entity 입니다.
+     * @return loginId 가 중복 인지에 대한 결과
      * @author : 송학현
      * @since : 1.0
      */
@@ -103,7 +103,7 @@ public class Member {
      * Member entity 의 nickname 값을 비교 하는 기능 입니다.
      *
      * @param compare 비교 대상 Member entity 입니다.
-     * @return nickname이 중복 인지에 대한 결과
+     * @return nickname 이 중복 인지에 대한 결과
      * @author :송학현
      * @since : 1.0
      */
