@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import shop.yesaladin.shop.common.exception.InvalidPeriodConditionException;
 import shop.yesaladin.shop.common.exception.PageOffsetOutOfBoundsException;
-import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
 import shop.yesaladin.shop.order.dto.OrderInPeriodQueryDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
@@ -20,7 +19,7 @@ import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 class QueryOrderServiceImplTest {
 
     private QueryOrderServiceImpl service;
-    private QueryOrderRepository<? extends Order> repository;
+    private QueryOrderRepository repository;
     private final Clock clock = Clock.fixed(
             Instant.parse("2023-01-01T00:00:00.000Z"),
             ZoneId.of("UTC")

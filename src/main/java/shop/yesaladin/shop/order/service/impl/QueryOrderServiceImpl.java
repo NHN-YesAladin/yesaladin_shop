@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.common.exception.InvalidPeriodConditionException;
 import shop.yesaladin.shop.common.exception.PageOffsetOutOfBoundsException;
 import shop.yesaladin.shop.common.exception.type.InvalidPeriodConditionType;
-import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
 import shop.yesaladin.shop.order.dto.OrderInPeriodQueryDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
@@ -25,7 +24,7 @@ import shop.yesaladin.shop.order.service.inter.QueryOrderService;
 @Service
 public class QueryOrderServiceImpl implements QueryOrderService {
 
-    private final QueryOrderRepository<? extends Order> queryOrderRepository;
+    private final QueryOrderRepository queryOrderRepository;
     private final Clock clock;
 
     @Override
