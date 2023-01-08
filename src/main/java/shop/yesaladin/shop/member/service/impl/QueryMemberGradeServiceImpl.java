@@ -31,6 +31,7 @@ public class QueryMemberGradeServiceImpl implements QueryMemberGradeService {
     @Transactional(readOnly = true)
     @Override
     public MemberGrade findById(int id) {
-        return queryMemberGradeRepository.findById(id).orElseThrow(() -> new MemberGradeNotFoundException(id));
+        return queryMemberGradeRepository.findById(id)
+                .orElseThrow(() -> new MemberGradeNotFoundException(id));
     }
 }

@@ -9,13 +9,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.dto.MemberCreateRequest;
 import shop.yesaladin.shop.member.dto.MemberCreateResponse;
 import shop.yesaladin.shop.member.service.inter.CommandMemberService;
 
 /**
- * 회원에 관련한 RestController 입니다.
+ * 회원에 관련된 RestController 입니다.
  *
  * @author : 송학현
  * @since : 1.0
@@ -23,7 +22,7 @@ import shop.yesaladin.shop.member.service.inter.CommandMemberService;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/v1/members")
-public class MemberController {
+public class CommandMemberController {
 
     private final CommandMemberService commandMemberService;
 
@@ -38,9 +37,8 @@ public class MemberController {
     @PostMapping
     public ResponseEntity signUpMember(@Valid @RequestBody MemberCreateRequest createDto)
             throws URISyntaxException {
-        Member member = commandMemberService.create(createDto);
-        MemberCreateResponse response = MemberCreateResponse.fromEntity(member);
+        MemberCreateResponse response = commandMemberService.create(createDto);
 
-        return ResponseEntity.created(new URI(member.getId().toString())).body(response);
+        return ResponseEntity.created(new URI(response.getId().toString())).body(response);
     }
 }

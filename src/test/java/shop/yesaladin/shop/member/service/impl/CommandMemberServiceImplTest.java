@@ -10,6 +10,7 @@ import shop.yesaladin.shop.member.domain.model.MemberGrade;
 import shop.yesaladin.shop.member.domain.repository.CommandMemberRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
 import shop.yesaladin.shop.member.dto.MemberCreateRequest;
+import shop.yesaladin.shop.member.dto.MemberCreateResponse;
 import shop.yesaladin.shop.member.service.inter.QueryMemberGradeService;
 
 class CommandMemberServiceImplTest {
@@ -55,7 +56,7 @@ class CommandMemberServiceImplTest {
         Mockito.when(commandMemberRepository.save(member)).thenReturn(member);
 
         //when
-        Member actualMember = service.create(createDto);
+        MemberCreateResponse actualMember = service.create(createDto);
 
         //then
         assertThat(actualMember.getLoginId()).isEqualTo(loginId);

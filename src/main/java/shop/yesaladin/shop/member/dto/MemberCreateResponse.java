@@ -17,6 +17,7 @@ import shop.yesaladin.shop.member.domain.model.MemberGrade;
 @AllArgsConstructor
 public class MemberCreateResponse {
 
+    private Long id;
     private String name;
     private String nickname;
     private String loginId;
@@ -32,6 +33,7 @@ public class MemberCreateResponse {
      */
     public static MemberCreateResponse fromEntity(Member member) {
         return new MemberCreateResponse(
+                member.getId(),
                 member.getName(),
                 member.getNickname(),
                 member.getLoginId(),
