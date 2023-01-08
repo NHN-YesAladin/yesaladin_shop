@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.repository.CommandCategoryRepository;
 import shop.yesaladin.shop.category.dto.CategoryRequest;
-import shop.yesaladin.shop.category.dto.CategoryDeleteDto;
+import shop.yesaladin.shop.category.dto.CategoryOnlyId;
 import shop.yesaladin.shop.category.dto.CategoryResponse;
 import shop.yesaladin.shop.category.dummy.CategoryDummy;
 import shop.yesaladin.shop.category.service.impl.CommandCategoryServiceImpl;
@@ -81,7 +81,7 @@ class CommandCategoryServiceTest {
     void delete() {
         // given
         long id = 1L;
-        CategoryDeleteDto deleteDto = new CategoryDeleteDto(id);
+        CategoryOnlyId deleteDto = new CategoryOnlyId(id);
         doNothing().when(commandCategoryRepository).deleteById(deleteDto.getId());
 
         // then

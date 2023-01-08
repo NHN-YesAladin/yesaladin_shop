@@ -1,7 +1,7 @@
 package shop.yesaladin.shop.category.service.inter;
 
 import shop.yesaladin.shop.category.dto.CategoryRequest;
-import shop.yesaladin.shop.category.dto.CategoryDeleteDto;
+import shop.yesaladin.shop.category.dto.CategoryOnlyId;
 import shop.yesaladin.shop.category.dto.CategoryResponse;
 
 /**
@@ -17,5 +17,5 @@ public interface CommandCategoryService {
 
     CategoryResponse update(Long id, CategoryRequest createRequest);
 
-    void delete(CategoryDeleteDto deleteDto);
+    void delete(CategoryOnlyId onlyId);
 }

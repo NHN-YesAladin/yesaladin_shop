@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.shop.category.dto.CategoryRequest;
-import shop.yesaladin.shop.category.dto.CategoryDeleteDto;
+import shop.yesaladin.shop.category.dto.CategoryOnlyId;
 import shop.yesaladin.shop.category.dto.CategoryResponse;
 import shop.yesaladin.shop.category.dto.ResultCode;
 import shop.yesaladin.shop.category.service.inter.CommandCategoryService;
@@ -59,7 +59,7 @@ public class CommandCategoryController {
     @DeleteMapping("/{categoryId}")
     @ResponseStatus(HttpStatus.OK)
     public ResultCode deleteCategory(@PathVariable Long categoryId) {
-        commandCategoryService.delete(new CategoryDeleteDto(categoryId));
+        commandCategoryService.delete(new CategoryOnlyId(categoryId));
         return new ResultCode("Success");
     }
 }

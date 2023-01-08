@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.repository.CommandCategoryRepository;
 import shop.yesaladin.shop.category.dto.CategoryRequest;
-import shop.yesaladin.shop.category.dto.CategoryDeleteDto;
+import shop.yesaladin.shop.category.dto.CategoryOnlyId;
 import shop.yesaladin.shop.category.dto.CategoryResponse;
 import shop.yesaladin.shop.category.service.inter.CommandCategoryService;
 import shop.yesaladin.shop.category.service.inter.QueryCategoryService;
@@ -54,7 +54,7 @@ public class CommandCategoryServiceImpl implements CommandCategoryService {
 
     @Transactional
     @Override
-    public void delete(CategoryDeleteDto deleteDto) {
-        commandCategoryRepository.deleteById(deleteDto.getId());
+    public void delete(CategoryOnlyId onlyId) {
+        commandCategoryRepository.deleteById(onlyId.getId());
     }
 }

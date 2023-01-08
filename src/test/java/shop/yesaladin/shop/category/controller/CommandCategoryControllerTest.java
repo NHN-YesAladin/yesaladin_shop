@@ -28,7 +28,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.dto.CategoryRequest;
-import shop.yesaladin.shop.category.dto.CategoryDeleteDto;
+import shop.yesaladin.shop.category.dto.CategoryOnlyId;
 import shop.yesaladin.shop.category.dto.CategoryResponse;
 import shop.yesaladin.shop.category.service.inter.CommandCategoryService;
 
@@ -144,7 +144,7 @@ class CommandCategoryControllerTest {
     void deleteCategory() throws Exception {
         // given
         willDoNothing().given(commandCategoryService)
-                .delete(new CategoryDeleteDto(category.getId()));
+                .delete(new CategoryOnlyId(category.getId()));
         // when
         ResultActions perform = mockMvc.perform(delete(
                 "/v1/categories/" + category.getId()));

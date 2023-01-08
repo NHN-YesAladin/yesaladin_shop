@@ -13,7 +13,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class CategoryDeleteDto {
+public class CategoryOnlyId {
 
     @NotNull
     private long id;
