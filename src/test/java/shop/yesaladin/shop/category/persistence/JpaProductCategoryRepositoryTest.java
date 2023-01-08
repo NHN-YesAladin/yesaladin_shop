@@ -17,20 +17,24 @@ import shop.yesaladin.shop.category.domain.model.ProductCategory.Pk;
 import shop.yesaladin.shop.category.dummy.CategoryDummy;
 import shop.yesaladin.shop.category.dummy.ProductCategoryDummy;
 import shop.yesaladin.shop.category.exception.ProductCategoryNotFoundException;
+import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.product.domain.model.Product;
+import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
+import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
 import shop.yesaladin.shop.product.dummy.DummyFile;
 import shop.yesaladin.shop.product.dummy.DummyProduct;
 import shop.yesaladin.shop.product.dummy.DummyPublisher;
 import shop.yesaladin.shop.product.dummy.DummySubscribeProduct;
 import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
+import shop.yesaladin.shop.publisher.domain.model.Publisher;
 
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class JpaProductCategoryRepositoryTest {
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    @Autowired
+    private TestEntityManager entityManager;
 
     @Autowired
     private JpaProductCategoryRepository repository;
@@ -42,12 +46,18 @@ class JpaProductCategoryRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        entityManager.persist(DummySubscribeProduct.dummy());
-        entityManager.persist(DummyPublisher.dummy());
-        entityManager.persist(DummyFile.dummy());
-        entityManager.persist(DummyTotalDiscountRate.dummy());
+        SubscribeProduct subscribeProduct = entityManager.persist(DummySubscribeProduct.dummy());
+        Publisher publisher = entityManager.persist(DummyPublisher.dummy());
+        File thumbNailFile = entityManager.persist(DummyFile.dummy(".png"));
+        File ebookFile = entityManager.persist(DummyFile.dummy(".pdf"));
+        TotalDiscountRate totalDiscountRate = entityManager.persist(DummyTotalDiscountRate.dummy());
 
-        Product product = DummyProduct.dummy(isbn);
+        Product product = DummyProduct.dummy(isbn,
+                subscribeProduct,
+                publisher,
+                thumbNailFile,
+                ebookFile,
+                totalDiscountRate);
         Category category = CategoryDummy.dummyParent();
 
         entityManager.persist(product);
@@ -74,8 +84,6 @@ class JpaProductCategoryRepositoryTest {
     void findByPk() throws Exception {
         // given
         entityManager.persist(productCategory);
-        entityManager.flush();
-        entityManager.clear();
 
         // when
         ProductCategory foundProductCategory = repository.findByPk(new Pk(

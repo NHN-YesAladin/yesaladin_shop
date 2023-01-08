@@ -1,6 +1,7 @@
 package shop.yesaladin.shop.category.domain.repository;
 
 import shop.yesaladin.shop.category.domain.model.ProductCategory;
+import shop.yesaladin.shop.category.domain.model.ProductCategory.Pk;
 
 /**
  * 상품카테고리 CUD용 레포지토리 인터페이스
