@@ -1,6 +1,7 @@
 package shop.yesaladin.shop.category.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -11,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.model.ProductCategory;
 import shop.yesaladin.shop.category.domain.model.ProductCategory.Pk;
@@ -44,13 +47,19 @@ class JpaProductCategoryRepositoryTest {
 
     ProductCategory productCategory;
 
+    SubscribeProduct subscribeProduct;
+    Publisher publisher;
+    File thumbNailFile;
+    File ebookFile;
+    TotalDiscountRate totalDiscountRate;
+
     @BeforeEach
     void setUp() {
-        SubscribeProduct subscribeProduct = entityManager.persist(DummySubscribeProduct.dummy());
-        Publisher publisher = entityManager.persist(DummyPublisher.dummy());
-        File thumbNailFile = entityManager.persist(DummyFile.dummy(".png"));
-        File ebookFile = entityManager.persist(DummyFile.dummy(".pdf"));
-        TotalDiscountRate totalDiscountRate = entityManager.persist(DummyTotalDiscountRate.dummy());
+        subscribeProduct = entityManager.persist(DummySubscribeProduct.dummy());
+        publisher = entityManager.persist(DummyPublisher.dummy());
+        thumbNailFile = entityManager.persist(DummyFile.dummy(".png"));
+        ebookFile = entityManager.persist(DummyFile.dummy(".pdf"));
+        totalDiscountRate = entityManager.persist(DummyTotalDiscountRate.dummy());
 
         Product product = DummyProduct.dummy(isbn,
                 subscribeProduct,
@@ -94,5 +103,55 @@ class JpaProductCategoryRepositoryTest {
         // then
         assertThat(foundProductCategory.getCategory()).isEqualTo(productCategory.getCategory());
         assertThat(foundProductCategory.getProduct()).isEqualTo(productCategory.getProduct());
+    }
+
+    @Test
+    void deletedByPk() throws Exception {
+        // given
+        entityManager.persist(productCategory);
+
+        // when
+        repository.deleteByPk(new Pk(
+                productCategory.getCategory().getId(),
+                productCategory.getProduct().getId()
+        ));
+
+        // then
+        assertThatThrownBy(() -> repository.findByPk(new Pk(
+                        productCategory.getCategory().getId(),
+                        productCategory.getProduct().getId()
+                ))
+                .orElseThrow(() -> new ProductCategoryNotFoundException(productCategory.getPk()))).isInstanceOf(
+                ProductCategoryNotFoundException.class);
+    }
+
+    @Test
+    void findAll_pageable() throws Exception {
+        // given
+        int size = 3;
+        for (int i = 0; i < 5; i++) {
+            Product product = DummyProduct.dummy(
+                    isbn + i,
+                    subscribeProduct,
+                    publisher,
+                    thumbNailFile,
+                    ebookFile,
+                    totalDiscountRate
+            );
+            Category category = CategoryDummy.dummyParent();
+
+            entityManager.persist(product);
+            entityManager.persist(category);
+
+            productCategory = ProductCategoryDummy.dummy(category, product);
+            entityManager.persist(productCategory);
+        }
+        PageRequest pageRequest = PageRequest.of(0, size);
+
+        // when
+        Page<ProductCategory> productCategoryPage = repository.findAll(pageRequest);
+
+        // then
+        assertThat(productCategoryPage.getContent().size()).isEqualTo(size);
     }
 }

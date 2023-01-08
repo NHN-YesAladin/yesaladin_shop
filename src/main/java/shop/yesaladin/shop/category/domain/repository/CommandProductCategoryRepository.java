@@ -13,4 +13,6 @@ public interface CommandProductCategoryRepository {
 
     ProductCategory save(ProductCategory productCategory);
 
+    void deleteByPk(Pk pk);
+
 }

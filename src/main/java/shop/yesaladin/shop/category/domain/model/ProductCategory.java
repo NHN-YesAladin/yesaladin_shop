@@ -49,11 +49,11 @@ public class ProductCategory {
     private Product product;
 
     /**
-     * 상품 카테고리에 사용한 복합키 입니다.
+     * 상품 카테고리에 사용한 복합키
      *
      * @author : 배수한
      * @since : 1.0
-     */
+     */ 
     @AllArgsConstructor
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     @EqualsAndHashCode
