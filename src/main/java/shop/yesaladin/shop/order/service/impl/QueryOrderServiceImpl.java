@@ -52,7 +52,7 @@ public class QueryOrderServiceImpl implements QueryOrderService {
     private void checkRequestedOffsetInBounds(
             LocalDate startDate, LocalDate endDate, int size, int page
     ) {
-        int countOfOrder = queryOrderRepository.getCountOfOrdersInPeriod(startDate, endDate);
+        long countOfOrder = queryOrderRepository.getCountOfOrdersInPeriod(startDate, endDate);
         int offset = size * (page - 1);
         if (countOfOrder <= offset) {
             throw new PageOffsetOutOfBoundsException(offset, countOfOrder);

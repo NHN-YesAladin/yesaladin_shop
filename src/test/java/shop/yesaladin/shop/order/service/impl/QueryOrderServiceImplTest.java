@@ -39,7 +39,7 @@ class QueryOrderServiceImplTest {
         OrderInPeriodQueryDto queryDto = Mockito.mock(OrderInPeriodQueryDto.class);
         List<OrderSummaryDto> expectedValue = List.of(Mockito.mock(OrderSummaryDto.class));
         Mockito.when(repository.getCountOfOrdersInPeriod(Mockito.any(), Mockito.any()))
-                .thenReturn(1);
+                .thenReturn(1L);
         Mockito.when(repository.findAllOrdersInPeriod(
                         Mockito.any(),
                         Mockito.any(),
@@ -80,7 +80,7 @@ class QueryOrderServiceImplTest {
         OrderInPeriodQueryDto queryDto = Mockito.mock(OrderInPeriodQueryDto.class);
         Mockito.when(queryDto.getEndDateOrDefaultValue(clock)).thenReturn(LocalDate.now(clock));
         Mockito.when(repository.getCountOfOrdersInPeriod(Mockito.any(), Mockito.any()))
-                .thenReturn(1);
+                .thenReturn(1L);
         Mockito.when(queryDto.getSize()).thenReturn(10);
         Mockito.when(queryDto.getPage()).thenReturn(2);
 
