@@ -27,8 +27,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.category.domain.model.Category;
-import shop.yesaladin.shop.category.dto.CategoryCreateDto;
+import shop.yesaladin.shop.category.dto.CategoryCreateRequest;
 import shop.yesaladin.shop.category.dto.CategoryDeleteDto;
+import shop.yesaladin.shop.category.dto.CategoryResponse;
 import shop.yesaladin.shop.category.dto.CategoryUpdateDto;
 import shop.yesaladin.shop.category.service.inter.CommandCategoryService;
 
@@ -61,8 +62,8 @@ class CommandCategoryControllerTest {
     @DisplayName("카테고리 생성 성공")
     void createCategory() throws Exception {
         // given
-        CategoryCreateDto createDto = new CategoryCreateDto(name);
-        given(commandCategoryService.create(any())).willReturn(category);
+        CategoryCreateRequest createDto = new CategoryCreateRequest(name, true, null);
+        given(commandCategoryService.create(any())).willReturn(CategoryResponse.fromEntity(category));
 
         // when
         ResultActions perform = mockMvc.perform(post("/v1/categories").contentType(MediaType.APPLICATION_JSON)
@@ -80,7 +81,7 @@ class CommandCategoryControllerTest {
     @DisplayName("카테고리 생성 실패 - name이 null 인 경우")
     void createCategory_invalidatedData_fail() throws Exception {
         // given
-        CategoryCreateDto createDto = new CategoryCreateDto(null);
+        CategoryCreateRequest createDto = new CategoryCreateRequest(null, true, null);
 
         //when
         ResultActions perform = mockMvc.perform(post("/v1/categories").contentType(MediaType.APPLICATION_JSON)

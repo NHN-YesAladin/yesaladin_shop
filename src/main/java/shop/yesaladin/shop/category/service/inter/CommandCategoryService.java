@@ -1,8 +1,9 @@
 package shop.yesaladin.shop.category.service.inter;
 
 import shop.yesaladin.shop.category.domain.model.Category;
-import shop.yesaladin.shop.category.dto.CategoryCreateDto;
+import shop.yesaladin.shop.category.dto.CategoryCreateRequest;
 import shop.yesaladin.shop.category.dto.CategoryDeleteDto;
+import shop.yesaladin.shop.category.dto.CategoryResponse;
 import shop.yesaladin.shop.category.dto.CategoryUpdateDto;
 
 /**
@@ -14,7 +15,7 @@ import shop.yesaladin.shop.category.dto.CategoryUpdateDto;
 
 public interface CommandCategoryService {
 
-    Category create(CategoryCreateDto createDto);
+    CategoryResponse create(CategoryCreateRequest createDto);
 
     Category update(CategoryUpdateDto updateDto);
 

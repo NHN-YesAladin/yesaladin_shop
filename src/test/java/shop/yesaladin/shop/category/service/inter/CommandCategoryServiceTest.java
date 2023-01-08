@@ -13,9 +13,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.repository.CommandCategoryRepository;
-import shop.yesaladin.shop.category.dto.CategoryCreateDto;
+import shop.yesaladin.shop.category.dto.CategoryCreateRequest;
 import shop.yesaladin.shop.category.dto.CategoryDeleteDto;
-import shop.yesaladin.shop.category.dto.CategoryResponseDto;
+import shop.yesaladin.shop.category.dto.CategoryResponse;
 import shop.yesaladin.shop.category.dto.CategoryUpdateDto;
 import shop.yesaladin.shop.category.service.impl.CommandCategoryServiceImpl;
 
@@ -40,15 +40,15 @@ class CommandCategoryServiceTest {
     void create() {
         //given
         String name = "국내도서";
-        CategoryCreateDto createDto = new CategoryCreateDto(name);
-        Category toEntity = createDto.toEntity();
+        CategoryCreateRequest createDto = new CategoryCreateRequest(name, true, null);
+        Category toEntity = createDto.toEntity(null);
         when(commandCategoryRepository.save(any())).thenReturn(toEntity);
 
         //when
-        Category category = commandCategoryService.create(createDto);
+        CategoryResponse categoryResponse = commandCategoryService.create(createDto);
 
         //then
-        assertThat(category.getName()).isEqualTo(toEntity.getName());
+        assertThat(categoryResponse.getName()).isEqualTo(toEntity.getName());
 
         verify(commandCategoryRepository, times(1)).save(any());
     }
@@ -80,7 +80,7 @@ class CommandCategoryServiceTest {
         Category toEntity = updateDto.toEntity(parent);
 
         when(queryCategoryService.findCategoryById(updateDto.getParentId())).thenReturn(
-                CategoryResponseDto.fromEntity(parent));
+                CategoryResponse.fromEntity(parent));
         when(commandCategoryRepository.save(any())).thenReturn(toEntity);
 
         // when

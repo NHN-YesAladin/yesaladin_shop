@@ -20,7 +20,7 @@ import shop.yesaladin.shop.category.domain.model.Category;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoryResponseDto {
+public class CategoryResponse {
 
     private Long id;
 
@@ -34,17 +34,17 @@ public class CategoryResponseDto {
 
     private String parentName;
 
-    public static CategoryResponseDto fromEntity(Category category) {
-        CategoryResponseDtoBuilder dtoBuilder = CategoryResponseDto.builder()
+    public static CategoryResponse fromEntity(Category category) {
+        CategoryResponseBuilder builder = CategoryResponse.builder()
                 .id(category.getId())
                 .name(category.getName())
                 .isShown(category.isShown())
                 .order(category.getOrder());
 
         if (Objects.isNull(category.getParent())) {
-            return dtoBuilder.build();
+            return builder.build();
         }
-        return dtoBuilder.parentId(category.getParent().getId())
+        return builder.parentId(category.getParent().getId())
                 .parentName(category.getParent().getName())
                 .build();
     }

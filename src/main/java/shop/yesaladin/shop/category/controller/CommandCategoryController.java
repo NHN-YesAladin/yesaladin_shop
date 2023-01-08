@@ -16,8 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.shop.category.domain.model.Category;
-import shop.yesaladin.shop.category.dto.CategoryCreateDto;
+import shop.yesaladin.shop.category.dto.CategoryCreateRequest;
 import shop.yesaladin.shop.category.dto.CategoryDeleteDto;
+import shop.yesaladin.shop.category.dto.CategoryResponse;
 import shop.yesaladin.shop.category.dto.CategoryUpdateDto;
 import shop.yesaladin.shop.category.dto.ResultCode;
 import shop.yesaladin.shop.category.service.inter.CommandCategoryService;
@@ -38,11 +39,11 @@ public class CommandCategoryController {
     private final CommandCategoryService commandCategoryService;
 
     @PostMapping
-    public ResponseEntity<CategoryCreateDto> createCategory(
-            @Valid @RequestBody CategoryCreateDto createDto
+    public ResponseEntity<CategoryResponse> createCategory(
+            @Valid @RequestBody CategoryCreateRequest createDto
     ) throws URISyntaxException {
-        Category category = commandCategoryService.create(createDto);
-        return ResponseEntity.created(new URI(category.getId().toString())).build();
+        CategoryResponse categoryResponse = commandCategoryService.create(createDto);
+        return ResponseEntity.created(new URI(categoryResponse.getId().toString())).build();
     }
 
     @PutMapping("/{categoryId}")

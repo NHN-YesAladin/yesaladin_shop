@@ -6,9 +6,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.repository.CommandCategoryRepository;
-import shop.yesaladin.shop.category.dto.CategoryCreateDto;
+import shop.yesaladin.shop.category.dto.CategoryCreateRequest;
 import shop.yesaladin.shop.category.dto.CategoryDeleteDto;
-import shop.yesaladin.shop.category.dto.CategoryResponseDto;
+import shop.yesaladin.shop.category.dto.CategoryResponse;
 import shop.yesaladin.shop.category.dto.CategoryUpdateDto;
 import shop.yesaladin.shop.category.service.inter.CommandCategoryService;
 import shop.yesaladin.shop.category.service.inter.QueryCategoryService;
@@ -29,14 +29,19 @@ public class CommandCategoryServiceImpl implements CommandCategoryService {
 
     @Transactional
     @Override
-    public Category create(CategoryCreateDto createDto) {
-        return commandCategoryRepository.save(createDto.toEntity());
+    public CategoryResponse create(CategoryCreateRequest createRequest) {
+        Category parentCategory = null;
+        if (Objects.nonNull(createRequest.getParentId())) {
+            parentCategory = queryCategoryService.findParentCategoryById(createRequest.getParentId());
+        }
+        Category category = commandCategoryRepository.save(createRequest.toEntity(parentCategory));
+        return CategoryResponse.fromEntity(category);
     }
 
     @Transactional
     @Override
     public Category update(CategoryUpdateDto updateDto) {
-        CategoryResponseDto responseParentDto = null;
+        CategoryResponse responseParentDto = null;
         if (Objects.nonNull(updateDto.getParentId())) {
             responseParentDto = queryCategoryService.findCategoryById(updateDto.getParentId());
         }

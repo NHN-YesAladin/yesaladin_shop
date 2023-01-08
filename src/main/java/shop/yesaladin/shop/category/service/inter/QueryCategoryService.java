@@ -3,7 +3,7 @@ package shop.yesaladin.shop.category.service.inter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.category.domain.model.Category;
-import shop.yesaladin.shop.category.dto.CategoryResponseDto;
+import shop.yesaladin.shop.category.dto.CategoryResponse;
 
 /**
  * 카테고리 조회용 서비스 인터페이스
@@ -14,7 +14,9 @@ import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 
 public interface QueryCategoryService {
 
-    Page<CategoryResponseDto> findCategories(Pageable pageable);
+    Page<CategoryResponse> findCategories(Pageable pageable);
 
-    CategoryResponseDto findCategoryById(long id);
+    CategoryResponse findCategoryById(long id);
+
+    Category findParentCategoryById(long id);
 }
