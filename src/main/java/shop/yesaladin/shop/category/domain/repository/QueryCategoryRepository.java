@@ -2,6 +2,8 @@ package shop.yesaladin.shop.category.domain.repository;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.category.domain.model.Category;
 
 /**
@@ -13,7 +15,10 @@ import shop.yesaladin.shop.category.domain.model.Category;
 
 public interface QueryCategoryRepository {
 
-    List<Category> findAll();
+    Page<Category> findAll(Pageable pageable);
 
     Optional<Category> findById(Long id);
+
+    Optional<Category> findByName(String name);
+
 }

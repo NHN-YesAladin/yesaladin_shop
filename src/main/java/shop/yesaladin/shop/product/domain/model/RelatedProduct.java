@@ -19,8 +19,8 @@ import lombok.NoArgsConstructor;
 /**
  * 연관상품의 엔터티 클래스입니다.
  *
- * @author : 이수정
- * @since : 1.0
+ * @author 이수정
+ * @since 1.0
  */
 @Getter
 @Builder
@@ -51,6 +51,7 @@ public class RelatedProduct {
     @EqualsAndHashCode
     @Embeddable
     public static class Pk implements Serializable {
+
         @Column(name = "product_main_id", nullable = false)
         private Long productMainId;
 

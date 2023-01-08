@@ -1,6 +1,9 @@
 package shop.yesaladin.shop.category.service.inter;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.category.domain.model.Category;
+import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 
 /**
  * 카테고리 조회용 서비스 인터페이스
@@ -10,5 +13,8 @@ import shop.yesaladin.shop.category.domain.model.Category;
  */
 
 public interface QueryCategoryService {
-    Category findCategoryById(long id);
+
+    Page<CategoryResponseDto> findCategories(Pageable pageable);
+
+    CategoryResponseDto findCategoryById(long id);
 }

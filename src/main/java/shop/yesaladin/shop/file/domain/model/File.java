@@ -16,8 +16,8 @@ import lombok.NoArgsConstructor;
 /**
  * 파일의 엔터티 클래스입니다.
  *
- * @author : 이수정
- * @since : 1.0
+ * @author 이수정
+ * @since 1.0
  */
 @Getter
 @Builder
@@ -31,11 +31,8 @@ public class File {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 50)
-    private String uuid;
-
-    @Column(nullable = false, length = 10)
-    private String extension;
+    @Column(name = "name", nullable = false, length = 50)
+    private String fileName;
 
     @Column(name = "upload_datetime", nullable = false)
     private LocalDateTime uploadDateTime;

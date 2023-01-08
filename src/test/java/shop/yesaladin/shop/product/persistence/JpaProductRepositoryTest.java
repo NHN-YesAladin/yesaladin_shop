@@ -11,9 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
+import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.dummy.DummyFile;
 import shop.yesaladin.shop.product.dummy.DummyProduct;
-import shop.yesaladin.shop.product.domain.model.Product;
+import shop.yesaladin.shop.product.dummy.DummyProductTypeCode;
 import shop.yesaladin.shop.product.dummy.DummyPublisher;
 import shop.yesaladin.shop.product.dummy.DummySubscribeProduct;
 import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
@@ -21,6 +23,8 @@ import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class JpaProductRepositoryTest {
+
+    private final String ISBN = "00000-000XX-XXX-XXX";
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -32,12 +36,13 @@ class JpaProductRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        entityManager.persist(DummySubscribeProduct.dummy());
-        entityManager.persist(DummyPublisher.dummy());
-        entityManager.persist(DummyFile.dummy());
-        entityManager.persist(DummyTotalDiscountRate.dummy());
+//        entityManager.persist(DummySubscribeProduct.dummy());
+//        entityManager.persist(DummyPublisher.dummy());
+//        entityManager.persist(DummyFile.dummy(".png"));
+//        entityManager.persist(DummyFile.dummy(".pdf"));
+//        entityManager.persist(DummyTotalDiscountRate.dummy());
 
-        product = DummyProduct.dummy("00000-000XX-XXX-XXX");
+        product = DummyProduct.dummy(ISBN);
     }
 
     @Test
@@ -47,6 +52,7 @@ class JpaProductRepositoryTest {
 
         // then
         assertThat(savedProduct).isNotNull();
+        assertThat(savedProduct.getISBN()).isEqualTo(ISBN);
     }
 
     @Test
@@ -59,6 +65,7 @@ class JpaProductRepositoryTest {
 
         // then
         assertThat(foundProduct).isPresent();
+        assertThat(foundProduct.get().getISBN()).isEqualTo(ISBN);
     }
 
 }
