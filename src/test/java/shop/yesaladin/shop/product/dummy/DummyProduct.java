@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import shop.yesaladin.shop.product.domain.model.Product;
 
 public class DummyProduct {
+
     public static Product dummy(String ISBN) {
         return Product.builder()
                 .ISBN(ISBN)
@@ -23,7 +24,8 @@ public class DummyProduct {
                 .preferentialShowRanking(2)
                 .subscribeProduct(DummySubscribeProduct.dummy())
                 .publisher(DummyPublisher.dummy())
-                .file(DummyFile.dummy())
+                .thumbnailFile(DummyFile.dummy("png"))
+                .ebookFile(DummyFile.dummy("pdf"))
                 .productTypeCode(DummyProductTypeCode.dummy())
                 .totalDiscountRate(DummyTotalDiscountRate.dummy())
                 .productSavingMethodCode(DummyProductSavingMethodCode.dummy())
