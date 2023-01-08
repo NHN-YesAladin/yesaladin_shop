@@ -17,6 +17,7 @@ import shop.yesaladin.shop.category.domain.model.Category;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CategoryCreateDto {
+
     @NotBlank
     private String name;
 

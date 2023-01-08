@@ -15,6 +15,7 @@ import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.repository.CommandCategoryRepository;
 import shop.yesaladin.shop.category.dto.CategoryCreateDto;
 import shop.yesaladin.shop.category.dto.CategoryDeleteDto;
+import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 import shop.yesaladin.shop.category.dto.CategoryUpdateDto;
 import shop.yesaladin.shop.category.service.impl.CommandCategoryServiceImpl;
 
@@ -78,7 +79,8 @@ class CommandCategoryServiceTest {
         );
         Category toEntity = updateDto.toEntity(parent);
 
-        when(queryCategoryService.findCategoryById(updateDto.getParentId())).thenReturn(parent);
+        when(queryCategoryService.findCategoryById(updateDto.getParentId())).thenReturn(
+                CategoryResponseDto.fromEntity(parent));
         when(commandCategoryRepository.save(any())).thenReturn(toEntity);
 
         // when

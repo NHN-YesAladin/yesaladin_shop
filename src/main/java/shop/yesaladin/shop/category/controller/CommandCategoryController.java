@@ -33,12 +33,12 @@ import shop.yesaladin.shop.category.service.inter.CommandCategoryService;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/v1/categories")
-public class CategoryController {
+public class CommandCategoryController {
 
     private final CommandCategoryService commandCategoryService;
 
     @PostMapping
-    public ResponseEntity createCategory(
+    public ResponseEntity<CategoryCreateDto> createCategory(
             @Valid @RequestBody CategoryCreateDto createDto
     ) throws URISyntaxException {
         Category category = commandCategoryService.create(createDto);
@@ -46,7 +46,7 @@ public class CategoryController {
     }
 
     @PutMapping("/{categoryId}")
-    public ResponseEntity updateCategory(
+    public ResponseEntity<CategoryUpdateDto> updateCategory(
             @PathVariable Long categoryId,
             @Valid @RequestBody CategoryUpdateDto updateDto
     ) {
