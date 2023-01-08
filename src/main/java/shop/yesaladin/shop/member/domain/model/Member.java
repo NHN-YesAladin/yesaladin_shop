@@ -104,7 +104,7 @@ public class Member {
      *
      * @param compare 비교 대상 Member entity 입니다.
      * @return nickname 이 중복 인지에 대한 결과
-     * @author :송학현
+     * @author : 송학현
      * @since : 1.0
      */
     public boolean isSameNickname(Member compare) {
