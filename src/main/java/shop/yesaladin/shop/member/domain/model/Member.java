@@ -61,6 +61,9 @@ public class Member {
     @Column(unique = true, length = 100, nullable = false)
     private String email;
 
+    @Column(length = 11, nullable = false)
+    private String phone;
+
     @Column(name = "sign_up_date", nullable = false)
     private LocalDate signUpDate;
 
@@ -85,9 +88,9 @@ public class Member {
     private MemberGenderCode memberGenderCode;
 
     /**
-     * Member entity 의 memberId 값을 비교 하는 기능 입니다.
+     * Member entity의 memberId 값을 비교 하는 기능 입니다.
      *
-     * @param compare 비교 대상 Member entity 입니다.
+     * @paramcompare 비교 대상Member entity 입니다.
      * @return loginId가 중복 인지에 대한 결과
      * @author : 송학현
      * @since : 1.0
@@ -100,22 +103,11 @@ public class Member {
      * Member entity 의 nickname 값을 비교 하는 기능 입니다.
      *
      * @param compare 비교 대상 Member entity 입니다.
-     * @return nickname 이 중복 인지에 대한 결과
-     * @author : 송학현
+     * @return nickname이 중복 인지에 대한 결과
+     * @author :송학현
      * @since : 1.0
      */
     public boolean isSameNickname(Member compare) {
         return Objects.equals(this.nickname, compare.getNickname());
-    }
-
-    /**
-     * Member entity 의 password 를 encrypted 된 값으로 변경 하기 위한 기능 입니다.
-     *
-     * @param encryptedPassword password 가 encrypted 된 파라미터입니다.
-     * @author : 송학현
-     * @since : 1.0
-     */
-    public void setEncryptedPassword(String encryptedPassword) {
-        this.password = encryptedPassword;
     }
 }

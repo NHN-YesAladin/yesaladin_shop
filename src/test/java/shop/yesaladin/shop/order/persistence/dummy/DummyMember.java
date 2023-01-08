@@ -17,6 +17,7 @@ public class DummyMember {
                 .birthMonth(1)
                 .birthDay(6)
                 .email("member@yesaladin.shop")
+                .phone("01012345678")
                 .signUpDate(LocalDate.now())
                 .withdrawalDate(null)
                 .isWithdrawal(false)
