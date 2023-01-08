@@ -1,6 +1,7 @@
 package shop.yesaladin.shop.member.domain.model;
 
 import java.time.LocalDate;
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -60,6 +61,9 @@ public class Member {
     @Column(unique = true, length = 100, nullable = false)
     private String email;
 
+    @Column(length = 11, nullable = false)
+    private String phone;
+
     @Column(name = "sign_up_date", nullable = false)
     private LocalDate signUpDate;
 
@@ -79,6 +83,31 @@ public class Member {
     @JoinColumn(name = "member_grade_id")
     private MemberGrade memberGrade;
 
+    @Column(name = "gender_code")
     @Convert(converter = MemberGenderCodeConverter.class)
     private MemberGenderCode memberGenderCode;
+
+    /**
+     * Member entity의 memberId 값을 비교 하는 기능 입니다.
+     *
+     * @param compare 비교 대상 Member entity 입니다.
+     * @return loginId 가 중복 인지에 대한 결과
+     * @author : 송학현
+     * @since : 1.0
+     */
+    public boolean isSameLoginId(Member compare) {
+        return Objects.equals(this.loginId, compare.getLoginId());
+    }
+
+    /**
+     * Member entity 의 nickname 값을 비교 하는 기능 입니다.
+     *
+     * @param compare 비교 대상 Member entity 입니다.
+     * @return nickname 이 중복 인지에 대한 결과
+     * @author : 송학현
+     * @since : 1.0
+     */
+    public boolean isSameNickname(Member compare) {
+        return Objects.equals(this.nickname, compare.getNickname());
+    }
 }

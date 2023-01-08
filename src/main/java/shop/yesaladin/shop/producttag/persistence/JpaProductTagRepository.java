@@ -8,8 +8,8 @@ import shop.yesaladin.shop.producttag.domain.repository.CommandProductTagReposit
 /**
  * 상품 태그 관계 repository 구현체입니다.
  *
- * @author : 이수정
- * @since : 1.0
+ * @author 이수정
+ * @since 1.0
  */
 public interface JpaProductTagRepository extends Repository<ProductTag, Pk>,
         CommandProductTagRepository {

@@ -35,7 +35,7 @@ public class MemberRole {
 
     @MapsId("memberId")
     @ManyToOne
-    @JoinColumn(name = "member_Id", nullable = false, unique = true)
+    @JoinColumn(name = "member_id", nullable = false, unique = true)
     private Member member;
 
     @MapsId("roleId")

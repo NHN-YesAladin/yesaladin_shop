@@ -23,8 +23,8 @@ import shop.yesaladin.shop.publisher.domain.model.Publisher;
 /**
  * 상품의 엔터티 클래스입니다.
  *
- * @author : 이수정
- * @since : 1.0
+ * @author 이수정
+ * @since 1.0
  */
 @Getter
 @Builder
@@ -83,8 +83,12 @@ public class Product {
     private Publisher publisher;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "file_id")
-    private File file;
+    @JoinColumn(name = "thumbnail_file_id")
+    private File thumbnailFile;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ebook_file_id")
+    private File ebookFile;
 
     @Column(name = "product_type_code_id")
     @Convert(converter = ProductTypeCodeConverter.class)

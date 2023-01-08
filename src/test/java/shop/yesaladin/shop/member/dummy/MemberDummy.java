@@ -15,6 +15,7 @@ public class MemberDummy {
         int birthMonth = 1;
         int birthYear = 1996;
         long point = 0L;
+        String phone = "01012345678";
 
         return Member.builder()
                 .nickname(ramos)
@@ -25,6 +26,7 @@ public class MemberDummy {
                 .birthMonth(birthMonth)
                 .birthDay(birthDay)
                 .email(email)
+                .phone(phone)
                 .signUpDate(LocalDate.now())
                 .isBlocked(false)
                 .point(point)
@@ -41,6 +43,7 @@ public class MemberDummy {
         int birthMonth = 1;
         int birthYear = 1996;
         long point = 0L;
+        String phone = "01012345678";
 
         return Member.builder()
                 .nickname(ramos)
@@ -51,6 +54,7 @@ public class MemberDummy {
                 .birthMonth(birthMonth)
                 .birthDay(birthDay)
                 .email(email)
+                .phone(phone)
                 .signUpDate(LocalDate.now())
                 .isBlocked(false)
                 .point(point)
