@@ -1,6 +1,7 @@
 package shop.yesaladin.shop.category.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,8 +35,7 @@ public class QueryCategoryServiceImpl implements QueryCategoryService {
     public Page<CategoryResponseDto> findCategories(Pageable pageable) {
         Page<Category> categoryPage = queryCategoryRepository.findAll(pageable);
 
-        //TODO 동시성 이슈로 인해 Collections.synchronizedList(new ArrayList<>()); 써야하는지 고려
-        List<CategoryResponseDto> responseDtos = new ArrayList<>();
+        List<CategoryResponseDto> responseDtos = Collections.synchronizedList(new ArrayList<>());
         for (Category category : categoryPage) {
             responseDtos.add(CategoryResponseDto.fromEntity(category));
         }
