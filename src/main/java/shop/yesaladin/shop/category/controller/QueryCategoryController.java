@@ -28,11 +28,23 @@ public class QueryCategoryController {
 
     private final QueryCategoryService queryCategoryService;
 
+    /**
+     * 카테고리 단일 조회 기능
+     *
+     * @param categoryId 조회하고자 하는 카테고리의 id
+     * @return 카테고리의 일부 데이터를 반환
+     */
     @GetMapping("/{categoryId}")
     public CategoryResponse getCategoryById(@PathVariable Long categoryId) {
         return queryCategoryService.findCategoryById(categoryId);
     }
 
+    /**
+     * 카테고리 리스트 조회를 paging하여 조회하는 기능
+     *
+     * @param pageable page 와 size를 자동으로 parsing 하여줌
+     * @return 카테고리의 일부 데이터를 List 화 하여 전달
+     */
     @GetMapping
     public List<CategoryResponse> getCategories(Pageable pageable) {
         return queryCategoryService.findCategories(pageable).getContent();

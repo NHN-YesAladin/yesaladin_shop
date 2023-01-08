@@ -13,9 +13,28 @@ import shop.yesaladin.shop.category.dto.CategoryResponse;
 
 public interface CommandCategoryService {
 
+    /**
+     * 카테고리 생성을 위한 기능
+     *
+     * @param createRequest 카테고리의 일부 정보를 담은 request Dto
+     * @return CategoryResponse 카테고리의 일부 정보를 담은 response Dto
+     */
     CategoryResponse create(CategoryRequest createRequest);
 
+    /**
+     * 카테고리 수정을 위한 기능
+     *
+     * @param id 수정하고자 하는 카테고리 id
+     * @param createRequest 카테고리의 일부 정보를 담은 request Dto
+     * @return CategoryResponse 카테고리의 일부 정보를 담은 response Dto
+     */
     CategoryResponse update(Long id, CategoryRequest createRequest);
 
-    void delete(CategoryOnlyId onlyId);
+
+    /**
+     * 카테고리 삭제를 위한 기능
+     *
+     * @param id 삭제하고자 하는 카테고리 id
+     */
+    void delete(Long id);
 }

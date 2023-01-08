@@ -26,6 +26,14 @@ public class CommandCategoryServiceImpl implements CommandCategoryService {
     private final CommandCategoryRepository commandCategoryRepository;
     private final QueryCategoryService queryCategoryService;
 
+
+    /**
+     * 카테고리 생성을 위한 기능
+     *  요청 dto에 부모 카테고리의 id가 있는 경우 id를 통한 카테고리 조회 추가 실행
+     *
+     * @param createRequest 카테고리의 일부 정보를 담은 request Dto
+     * @return CategoryResponse 카테고리의 일부 정보를 담은 response Dto
+     */
     @Transactional
     @Override
     public CategoryResponse create(CategoryRequest createRequest) {
@@ -37,7 +45,14 @@ public class CommandCategoryServiceImpl implements CommandCategoryService {
         return CategoryResponse.fromEntity(category);
     }
 
-
+    /**
+     * 카테고리 수정을 위한 기능
+     *  요청 dto에 부모 카테고리의 id가 있는 경우 id를 통한 카테고리 조회 추가 실행
+     *
+     * @param id 수정하고자 하는 카테고리 id
+     * @param createRequest 카테고리의 일부 정보를 담은 request Dto
+     * @return CategoryResponse 카테고리의 일부 정보를 담은 response Dto
+     */
     @Transactional
     @Override
     public CategoryResponse update(Long id, CategoryRequest createRequest) {
@@ -52,9 +67,14 @@ public class CommandCategoryServiceImpl implements CommandCategoryService {
         return CategoryResponse.fromEntity(category);
     }
 
+    /**
+     * 카테고리 삭제를 위한 기능
+     *
+     * @param id 삭제하고자 하는 카테고리 id
+     */
     @Transactional
     @Override
-    public void delete(CategoryOnlyId onlyId) {
-        commandCategoryRepository.deleteById(onlyId.getId());
+    public void delete(Long id) {
+        commandCategoryRepository.deleteById(id);
     }
 }

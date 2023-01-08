@@ -36,6 +36,14 @@ public class CommandCategoryController {
 
     private final CommandCategoryService commandCategoryService;
 
+
+    /**
+     * 카테고리를 생성하기위해 Post 요청을 처리하는 기능
+     *
+     * @param categoryRequest 생성시 필요한 이름, 노출 여부, 상위 카테고리 id가 존재
+     * @return ResponseEntity로 카테고리 생성 성공시 201 코드 및 생성된 카테고리의 id를 반환
+     * @throws URISyntaxException
+     */
     @PostMapping
     public ResponseEntity<CategoryResponse> createCategory(
             @Valid @RequestBody CategoryRequest categoryRequest
@@ -44,6 +52,13 @@ public class CommandCategoryController {
         return ResponseEntity.created(new URI(categoryResponse.getId().toString())).build();
     }
 
+    /**
+     * 카테고리를 수정하기위해 Put 요청을 처리하는 기능
+     *
+     * @param categoryId 수정하고자 하는 카테고리의 id
+     * @param categoryRequest 생성시 필요한 이름, 노출 여부, 상위 카테고리 id가 존재
+     * @return ResponseEntity로 카테고리 수정 성공시 200 코드 및 카테고리의 일부 데이터 반환
+     */
     @PutMapping("/{categoryId}")
     public ResponseEntity<CategoryResponse> updateCategory(
             @PathVariable Long categoryId,
@@ -56,10 +71,16 @@ public class CommandCategoryController {
         return ResponseEntity.ok(categoryResponse);
     }
 
+    /**
+     * 카테고리를 삭제하기위해 Delete 요청을 처리하는 기능
+     *
+     * @param categoryId 삭제하고자하는 카테고리의 id
+     * @return 결과를 출력해주는 String result를 가지는  객체
+     */
     @DeleteMapping("/{categoryId}")
     @ResponseStatus(HttpStatus.OK)
     public ResultCode deleteCategory(@PathVariable Long categoryId) {
-        commandCategoryService.delete(new CategoryOnlyId(categoryId));
+        commandCategoryService.delete(categoryId);
         return new ResultCode("Success");
     }
 }

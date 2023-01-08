@@ -14,9 +14,28 @@ import shop.yesaladin.shop.category.dto.CategoryResponse;
 
 public interface QueryCategoryService {
 
+    /**
+     * 페이징된 카테고리 리스트 조회를 위한 기능
+     *
+     * @param pageable 페이징 처리를 위한 객체
+     * @return 페이징 된 CategoryResponse Page 객체
+     */
     Page<CategoryResponse> findCategories(Pageable pageable);
 
+    /**
+     * 단일 카테고리 조회를 위한 기능
+     *
+     * @param id 조회하고자 하는 카테고리 id
+     * @return CategoryResponse 카테고리의 일부 정보를 담고 있는 dto
+     */
     CategoryResponse findCategoryById(long id);
 
+    /**
+     * 카테고리 id를 통해 부모 카테고리를 조회 하기위한 기능
+     *  1차 카테고리를 찾기 위해 내부적으로 사용
+     *
+     * @param id 부모 카테고리의 id
+     * @return 조회된 부모 Category
+     */
     Category findParentCategoryById(long id);
 }

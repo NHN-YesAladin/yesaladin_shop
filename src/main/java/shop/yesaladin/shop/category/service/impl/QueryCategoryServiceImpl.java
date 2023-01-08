@@ -30,6 +30,13 @@ public class QueryCategoryServiceImpl implements QueryCategoryService {
 
     private final QueryCategoryRepository queryCategoryRepository;
 
+    /**
+     * 페이징된 카테고리 리스트 조회를 위한 기능
+     *  동시성 이슈를 해결하기위해 Collections.synchronizedList를 사용
+     *
+     * @param pageable 페이징 처리를 위한 객체
+     * @return 페이징 된 CategoryResponse Page 객체
+     */
     @Transactional(readOnly = true)
     @Override
     public Page<CategoryResponse> findCategories(Pageable pageable) {
@@ -43,6 +50,13 @@ public class QueryCategoryServiceImpl implements QueryCategoryService {
         return new PageImpl<>(responseDtos, pageable, responseDtos.size());
     }
 
+    /**
+     * 단일 카테고리 조회를 위한 기능
+     * @throws CategoryNotFoundException 해당하는 id의 카테고리가 없을 경우
+     *
+     * @param id 조회하고자 하는 카테고리 id
+     * @return CategoryResponse 카테고리의 일부 정보를 담고 있는 dto
+     */
     @Transactional(readOnly = true)
     @Override
     public CategoryResponse findCategoryById(long id) {
@@ -51,7 +65,14 @@ public class QueryCategoryServiceImpl implements QueryCategoryService {
         return CategoryResponse.fromEntity(category);
     }
 
-    //TODO 테스트 필요
+    /**
+     * 카테고리 id를 통해 부모 카테고리를 조회 하기위한 기능
+     * @throws CategoryNotFoundException 해당하는 id의 부모 카테고리가 없을 경우
+     *
+     * @param id 부모 카테고리의 id
+     * @return 조회된 부모 Category
+     */
+    //TODO 테스트 필요 - 카테고리 자기 참조 구현시 테스트 예정
     @Override
     public Category findParentCategoryById(long id) {
         return queryCategoryRepository.findById(id)

@@ -81,11 +81,10 @@ class CommandCategoryServiceTest {
     void delete() {
         // given
         long id = 1L;
-        CategoryOnlyId deleteDto = new CategoryOnlyId(id);
-        doNothing().when(commandCategoryRepository).deleteById(deleteDto.getId());
+        doNothing().when(commandCategoryRepository).deleteById(id);
 
         // then
-        assertThatCode(() -> commandCategoryService.delete(deleteDto)).doesNotThrowAnyException();
+        assertThatCode(() -> commandCategoryService.delete(id)).doesNotThrowAnyException();
 
     }
 }

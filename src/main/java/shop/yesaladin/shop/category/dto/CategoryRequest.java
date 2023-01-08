@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import shop.yesaladin.shop.category.domain.model.Category;
 
 /**
- * 카테고리 생성을 위한 Dto
+ * 카테고리 생성 및 수정을 위해 사용하는 dto
  *
  * @author 배수한
  * @since 1.0
@@ -27,10 +27,23 @@ public class CategoryRequest {
 
     private Long parentId;
 
+    /**
+     * 카테고리 생성을 위해 해당 dto 를 Category 로 변환
+     *
+     * @param parent 2차 카테고리일 경우 사용, 1차 카테고리일 경우 null 입력
+     * @return Category
+     */
     public Category toEntity(Category parent) {
         return Category.builder().name(this.name).isShown(this.isShown).parent(parent).build();
     }
 
+    /**
+     * 카테고리 수정을 위해 해당 dto 를 Category 로 변환
+     *
+     * @param id 카테고리 id
+     * @param parent 2차 카테고리일 경우 사용, 1차 카테고리일 경우 null 입력
+     * @return Category
+     */
     public Category toEntity(Long id, Category parent) {
         return Category.builder()
                 .id(id)

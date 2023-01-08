@@ -143,8 +143,7 @@ class CommandCategoryControllerTest {
     @DisplayName("카테고리 삭제 성공")
     void deleteCategory() throws Exception {
         // given
-        willDoNothing().given(commandCategoryService)
-                .delete(new CategoryOnlyId(category.getId()));
+        willDoNothing().given(commandCategoryService).delete(category.getId());
         // when
         ResultActions perform = mockMvc.perform(delete(
                 "/v1/categories/" + category.getId()));
