@@ -13,12 +13,10 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import shop.yesaladin.shop.member.domain.model.Member;
-import shop.yesaladin.shop.member.domain.model.MemberGrade;
 import shop.yesaladin.shop.order.domain.dummy.MemberAddress;
 import shop.yesaladin.shop.order.domain.model.Subscribe;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMemberAddress;
-import shop.yesaladin.shop.order.persistence.dummy.DummyMemberGrade;
 import shop.yesaladin.shop.order.persistence.dummy.DummySubscribeProduct;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 
@@ -42,12 +40,10 @@ class JpaSubscribeRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        MemberGrade memberGrade = DummyMemberGrade.memberGrade;
-        member = DummyMember.member(memberGrade);
+        member = DummyMember.member();
         memberAddress = DummyMemberAddress.address(member);
         subscribeProduct = DummySubscribeProduct.subscribeProduct();
 
-        entityManager.persist(memberGrade);
         entityManager.persist(member);
         entityManager.persist(memberAddress);
         entityManager.persist(subscribeProduct);

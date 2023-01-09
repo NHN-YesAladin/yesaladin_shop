@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.member.domain.model.Member;
-import shop.yesaladin.shop.member.domain.model.MemberGrade;
 import shop.yesaladin.shop.member.domain.repository.CommandMemberRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
 import shop.yesaladin.shop.member.dto.MemberBlockResponseDto;
@@ -16,7 +15,6 @@ import shop.yesaladin.shop.member.dto.MemberUpdateResponseDto;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.exception.MemberProfileAlreadyExistException;
 import shop.yesaladin.shop.member.service.inter.CommandMemberService;
-import shop.yesaladin.shop.member.service.inter.QueryMemberGradeService;
 
 /**
  * 회원 등록/수정/삭제용 서비스 구현체 입니다.
@@ -28,10 +26,8 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberGradeService;
 @Service
 public class CommandMemberServiceImpl implements CommandMemberService {
 
-    private static final int WHITE_GRADE_ID = 1;
     private final CommandMemberRepository commandMemberRepository;
     private final QueryMemberRepository queryMemberRepository;
-    private final QueryMemberGradeService queryMemberGradeService;
 
     /**
      * 회원 등록을 위한 기능 입니다.
@@ -50,8 +46,7 @@ public class CommandMemberServiceImpl implements CommandMemberService {
                 "nickname"
         );
 
-        MemberGrade memberGrade = queryMemberGradeService.findById(WHITE_GRADE_ID);
-        Member member = createDto.toEntity(memberGrade);
+        Member member = createDto.toEntity();
         Member savedMember = commandMemberRepository.save(member);
 
         return MemberCreateResponseDto.fromEntity(savedMember);

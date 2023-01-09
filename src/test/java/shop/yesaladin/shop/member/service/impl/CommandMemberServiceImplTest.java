@@ -1,8 +1,6 @@
 package shop.yesaladin.shop.member.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -12,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.mockito.Mockito;
 import shop.yesaladin.shop.member.domain.model.Member;
-import shop.yesaladin.shop.member.domain.model.MemberGrade;
 import shop.yesaladin.shop.member.domain.repository.CommandMemberRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
 import shop.yesaladin.shop.member.dto.MemberBlockResponseDto;
@@ -20,24 +17,20 @@ import shop.yesaladin.shop.member.dto.MemberCreateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberCreateResponseDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateResponseDto;
-import shop.yesaladin.shop.member.service.inter.QueryMemberGradeService;
 
 class CommandMemberServiceImplTest {
 
     private CommandMemberServiceImpl service;
     private CommandMemberRepository commandMemberRepository;
     private QueryMemberRepository queryMemberRepository;
-    private QueryMemberGradeService queryMemberGradeService;
 
     @BeforeEach
     void setUp() {
         commandMemberRepository = Mockito.mock(CommandMemberRepository.class);
         queryMemberRepository = Mockito.mock(QueryMemberRepository.class);
-        queryMemberGradeService = Mockito.mock(QueryMemberGradeService.class);
         service = new CommandMemberServiceImpl(
                 commandMemberRepository,
-                queryMemberRepository,
-                queryMemberGradeService
+                queryMemberRepository
         );
     }
 
@@ -49,18 +42,17 @@ class CommandMemberServiceImplTest {
         String nickname = "nickname";
 
         MemberCreateRequestDto createDto = Mockito.mock(MemberCreateRequestDto.class);
-        MemberGrade memberGrade = Mockito.mock(MemberGrade.class);
+//        MemberGrade memberGrade = Mockito.mock(MemberGrade.class);
         Member member = Member.builder()
                 .loginId(loginId)
                 .nickname(nickname)
-                .memberGrade(memberGrade)
+//                .memberGrade(memberGrade)
                 .build();
 
         Mockito.when(queryMemberRepository.findMemberByLoginId(loginId)).thenReturn(Optional.empty());
         Mockito.when(queryMemberRepository.findMemberByNickname(nickname)).thenReturn(Optional.empty());
-        Mockito.when(queryMemberGradeService.findById(id)).thenReturn(memberGrade);
 
-        Mockito.when(createDto.toEntity(memberGrade)).thenReturn(member);
+        Mockito.when(createDto.toEntity()).thenReturn(member);
 
         Mockito.when(commandMemberRepository.save(member)).thenReturn(member);
 
@@ -70,7 +62,7 @@ class CommandMemberServiceImplTest {
         //then
         assertThat(actualMember.getLoginId()).isEqualTo(loginId);
         assertThat(actualMember.getNickname()).isEqualTo(nickname);
-        assertThat(actualMember.getMemberGrade()).isEqualTo(memberGrade);
+//        assertThat(actualMember.getMemberGrade()).isEqualTo(memberGrade);
     }
 
     @Test

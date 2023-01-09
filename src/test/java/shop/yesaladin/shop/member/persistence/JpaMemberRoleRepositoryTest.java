@@ -11,11 +11,9 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import shop.yesaladin.shop.member.domain.model.Member;
-import shop.yesaladin.shop.member.domain.model.MemberGrade;
 import shop.yesaladin.shop.member.domain.model.MemberRole;
 import shop.yesaladin.shop.member.domain.model.Role;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
-import shop.yesaladin.shop.member.dummy.MemberGradeDummy;
 import shop.yesaladin.shop.member.dummy.MemberRoleDummy;
 import shop.yesaladin.shop.member.dummy.RoleDummy;
 
@@ -29,22 +27,19 @@ class JpaMemberRoleRepositoryTest {
     @Autowired
     JpaMemberRoleRepository memberRoleRepository;
 
-    private MemberGrade grade;
     private Member member;
     private Role role;
     private MemberRole memberRole;
 
     @BeforeEach
     void setUp() {
-        grade = MemberGradeDummy.dummy();
         role = RoleDummy.dummy();
     }
 
     @Test
     void save() throws Exception {
         //given
-        MemberGrade savedMemberGrade = entityManager.persist(grade);
-        member = MemberDummy.dummy(savedMemberGrade);
+        member = MemberDummy.dummy();
 
         Member savedMember = entityManager.persist(member);
         Role savedRole = entityManager.persist(role);
@@ -61,7 +56,6 @@ class JpaMemberRoleRepositoryTest {
     @Test
     void findById() throws Exception {
         //given
-        entityManager.persist(grade);
         member = MemberDummy.dummy();
         Member savedMember = entityManager.persist(member);
         Role savedRole = entityManager.persist(role);

@@ -133,7 +133,7 @@ class CommandMemberControllerTest {
                 BIRTH,
                 GENDER
         );
-        Member member = request.toEntity(null);
+        Member member = request.toEntity();
 
         given(commandMemberService.create(any())).willReturn(createResponse);
 

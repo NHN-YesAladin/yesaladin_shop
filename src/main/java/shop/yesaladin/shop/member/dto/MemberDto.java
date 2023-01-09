@@ -40,8 +40,8 @@ public class MemberDto {
     public static MemberDto fromEntity(Member member) {
         return new MemberDto(
                 member.getId(),
-                member.getName(),
                 member.getNickname(),
+                member.getName(),
                 member.getLoginId(),
                 member.getPassword(),
                 member.getBirthYear(),

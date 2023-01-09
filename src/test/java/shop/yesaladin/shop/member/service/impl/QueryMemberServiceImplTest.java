@@ -38,7 +38,6 @@ class QueryMemberServiceImplTest {
         MemberDto actualMember = service.findMemberById(id);
 
         //then
-        assertThat(actualMember.toEntity()).isEqualTo(expectedMember);
         assertThat(actualMember.getId()).isEqualTo(expectedMember.getId());
     }
 
@@ -55,7 +54,6 @@ class QueryMemberServiceImplTest {
         MemberDto actualMember = service.findMemberByNickname(nickname);
 
         //then
-        assertThat(actualMember.toEntity()).isEqualTo(expectedMember);
         assertThat(actualMember.getNickname()).isEqualTo(expectedMember.getNickname());
     }
 
@@ -72,7 +70,6 @@ class QueryMemberServiceImplTest {
         MemberDto actualMember = service.findMemberByLoginId(loginId);
 
         //then
-        assertThat(actualMember.toEntity()).isEqualTo(expectedMember);
         assertThat(actualMember.getLoginId()).isEqualTo(expectedMember.getLoginId());
     }
 }

@@ -14,14 +14,12 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import shop.yesaladin.shop.member.domain.model.Member;
-import shop.yesaladin.shop.member.domain.model.MemberGrade;
 import shop.yesaladin.shop.order.domain.dummy.MemberAddress;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
 import shop.yesaladin.shop.order.domain.model.Subscribe;
 import shop.yesaladin.shop.order.domain.model.SubscribeOrder;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMemberAddress;
-import shop.yesaladin.shop.order.persistence.dummy.DummyMemberGrade;
 import shop.yesaladin.shop.order.persistence.dummy.DummySubscribe;
 import shop.yesaladin.shop.order.persistence.dummy.DummySubscribeProduct;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
@@ -51,13 +49,11 @@ class JpaSubscribeOrderRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        MemberGrade memberGrade = DummyMemberGrade.memberGrade;
-        Member member = DummyMember.member(memberGrade);
+        Member member = DummyMember.member();
         MemberAddress memberAddress = DummyMemberAddress.address(member);
         SubscribeProduct subscribeProduct = DummySubscribeProduct.subscribeProduct();
         subscribe = DummySubscribe.subscribe(memberAddress, member, subscribeProduct);
 
-        entityManager.persist(memberGrade);
         entityManager.persist(member);
         entityManager.persist(memberAddress);
         entityManager.persist(subscribeProduct);
