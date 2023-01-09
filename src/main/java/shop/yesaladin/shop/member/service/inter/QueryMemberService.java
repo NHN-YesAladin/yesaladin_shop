@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.member.service.inter;
 
-import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.dto.MemberResponse;
 
 

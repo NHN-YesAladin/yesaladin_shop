@@ -9,10 +9,17 @@ import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberGenderCode;
 import shop.yesaladin.shop.member.domain.model.MemberGrade;
 
+/**
+ * 회원 엔티티를 위한 dto 클래스입니다.
+ *
+ * @author 최예린
+ * @since 1.0
+ */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class MemberResponse {
+
     private Long id;
     private String nickname;
     private String name;
@@ -29,6 +36,27 @@ public class MemberResponse {
     private long point;
     private MemberGrade memberGrade;
     private MemberGenderCode memberGenderCode;
+
+    public static MemberResponse fromEntity(Member member) {
+        return new MemberResponse(
+                member.getId(),
+                member.getName(),
+                member.getNickname(),
+                member.getLoginId(),
+                member.getPassword(),
+                member.getBirthYear(),
+                member.getBirthMonth(),
+                member.getBirthDay(),
+                member.getEmail(),
+                member.getSignUpDate(),
+                member.getWithdrawalDate(),
+                member.isWithdrawal(),
+                member.isBlocked(),
+                member.getPoint(),
+                member.getMemberGrade(),
+                member.getMemberGenderCode()
+        );
+    }
 
     public Member toEntity() {
         return Member.builder()
@@ -49,25 +77,5 @@ public class MemberResponse {
                 .memberGrade(memberGrade)
                 .memberGenderCode(memberGenderCode)
                 .build();
-    }
-    public static MemberResponse fromEntity(Member member) {
-        return new MemberResponse(
-                member.getId(),
-                member.getName(),
-                member.getNickname(),
-                member.getLoginId(),
-                member.getPassword(),
-                member.getBirthYear(),
-                member.getBirthMonth(),
-                member.getBirthDay(),
-                member.getEmail(),
-                member.getSignUpDate(),
-                member.getWithdrawalDate(),
-                member.isWithdrawal(),
-                member.isBlocked(),
-                member.getPoint(),
-                member.getMemberGrade(),
-                member.getMemberGenderCode()
-        );
     }
 }

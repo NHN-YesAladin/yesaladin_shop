@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.yesaladin.shop.member.domain.model.Member;
-import shop.yesaladin.shop.member.domain.model.MemberGrade;
 
 /**
  * 회원 차단/해지 이후 MemberController 에서 클라이언트 에게 반환하기 위한 결과 DTO 입니다.

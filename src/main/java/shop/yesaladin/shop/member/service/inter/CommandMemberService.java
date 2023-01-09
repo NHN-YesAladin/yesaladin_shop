@@ -38,7 +38,7 @@ public interface CommandMemberService {
     /**
      * 회원을 차단 하기 위한 기능입니다.
      *
-     * @param id      차단할 회원 id
+     * @param id 차단할 회원 id
      * @author 최예린
      * @since 1.0
      */
@@ -47,7 +47,7 @@ public interface CommandMemberService {
     /**
      * 회원 차단해지를 위한 기능 입니다.
      *
-     * @param id      차단해지할 회원 id
+     * @param id 차단해지할 회원 id
      * @author 최예린
      * @since 1.0
      */

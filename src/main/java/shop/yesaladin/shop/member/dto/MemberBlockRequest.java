@@ -2,7 +2,6 @@ package shop.yesaladin.shop.member.dto;
 
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

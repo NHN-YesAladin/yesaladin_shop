@@ -28,11 +28,10 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberGradeService;
 @Service
 public class CommandMemberServiceImpl implements CommandMemberService {
 
+    private static final int WHITE_GRADE_ID = 1;
     private final CommandMemberRepository commandMemberRepository;
     private final QueryMemberRepository queryMemberRepository;
     private final QueryMemberGradeService queryMemberGradeService;
-
-    private static final int WHITE_GRADE_ID = 1;
 
     /**
      * 회원 등록을 위한 기능 입니다.
@@ -84,7 +83,7 @@ public class CommandMemberServiceImpl implements CommandMemberService {
     /**
      * 회원 차단을 위한 기능 입니다.
      *
-     * @param id      차단할 회원 id
+     * @param id 차단할 회원 id
      * @author 최예린
      * @since 1.0
      */
@@ -101,7 +100,7 @@ public class CommandMemberServiceImpl implements CommandMemberService {
     /**
      * 회원 차단해지를 위한 기능 입니다.
      *
-     * @param id      차단해지할 회원 id
+     * @param id 차단해지할 회원 id
      * @author 최예린
      * @since 1.0
      */
