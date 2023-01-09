@@ -13,10 +13,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.repository.CommandCategoryRepository;
-import shop.yesaladin.shop.category.dto.CategoryCreateDto;
-import shop.yesaladin.shop.category.dto.CategoryDeleteDto;
-import shop.yesaladin.shop.category.dto.CategoryResponseDto;
-import shop.yesaladin.shop.category.dto.CategoryUpdateDto;
+import shop.yesaladin.shop.category.dto.CategoryRequest;
+import shop.yesaladin.shop.category.dto.CategoryOnlyId;
+import shop.yesaladin.shop.category.dto.CategoryResponse;
+import shop.yesaladin.shop.category.dummy.CategoryDummy;
 import shop.yesaladin.shop.category.service.impl.CommandCategoryServiceImpl;
 
 class CommandCategoryServiceTest {
@@ -40,15 +40,15 @@ class CommandCategoryServiceTest {
     void create() {
         //given
         String name = "국내도서";
-        CategoryCreateDto createDto = new CategoryCreateDto(name);
-        Category toEntity = createDto.toEntity();
+        CategoryRequest createDto = new CategoryRequest(name, true, null);
+        Category toEntity = createDto.toEntity(null);
         when(commandCategoryRepository.save(any())).thenReturn(toEntity);
 
         //when
-        Category category = commandCategoryService.create(createDto);
+        CategoryResponse categoryResponse = commandCategoryService.create(createDto);
 
         //then
-        assertThat(category.getName()).isEqualTo(toEntity.getName());
+        assertThat(categoryResponse.getName()).isEqualTo(toEntity.getName());
 
         verify(commandCategoryRepository, times(1)).save(any());
     }
@@ -56,41 +56,24 @@ class CommandCategoryServiceTest {
     @Test
     void update() {
         // given
-        Long parentId = 1L;
-        String parentName = "국내도서";
-
-        Long id = 2L;
+        Long parentId = 10000L;
         String name = "소설";
-        boolean isShown = true;
-        Category parent = Category.builder()
-                .id(parentId)
-                .name(parentName)
-                .order(null)
-                .isShown(true)
-                .parent(null)
-                .build();
+        Category parent = CategoryDummy.dummyParent(parentId);
 
-        CategoryUpdateDto updateDto = new CategoryUpdateDto(
-                id,
-                name,
-                isShown,
-                null,
-                parent.getId()
-        );
-        Category toEntity = updateDto.toEntity(parent);
+        CategoryRequest categoryRequest = new CategoryRequest(name, true, parent.getId());
+        Category toEntity = categoryRequest.toEntity(parent);
 
-        when(queryCategoryService.findCategoryById(updateDto.getParentId())).thenReturn(
-                CategoryResponseDto.fromEntity(parent));
+        when(queryCategoryService.findParentCategoryById(parentId)).thenReturn(parent);
         when(commandCategoryRepository.save(any())).thenReturn(toEntity);
 
         // when
-        Category update = commandCategoryService.update(updateDto);
+        CategoryResponse categoryResponse = commandCategoryService.update(toEntity.getId(), categoryRequest);
 
         // then
-        assertThat(update.getParent()).isEqualTo(parent);
-        assertThat(update.getId()).isEqualTo(toEntity.getId());
+        assertThat(categoryResponse.getParentId()).isEqualTo(parent.getId());
+        assertThat(categoryResponse.getName()).isEqualTo(toEntity.getName());
 
-        verify(queryCategoryService, times(1)).findCategoryById(updateDto.getParentId());
+        verify(queryCategoryService, times(1)).findParentCategoryById(parentId);
         verify(commandCategoryRepository, times(1)).save(any());
     }
 
@@ -98,11 +81,10 @@ class CommandCategoryServiceTest {
     void delete() {
         // given
         long id = 1L;
-        CategoryDeleteDto deleteDto = new CategoryDeleteDto(id);
-        doNothing().when(commandCategoryRepository).deleteById(deleteDto.getId());
+        doNothing().when(commandCategoryRepository).deleteById(id);
 
         // then
-        assertThatCode(() -> commandCategoryService.delete(deleteDto)).doesNotThrowAnyException();
+        assertThatCode(() -> commandCategoryService.delete(id)).doesNotThrowAnyException();
 
     }
 }

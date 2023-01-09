@@ -7,11 +7,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -25,7 +22,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.category.domain.model.Category;
-import shop.yesaladin.shop.category.dto.CategoryResponseDto;
+import shop.yesaladin.shop.category.dto.CategoryResponse;
 import shop.yesaladin.shop.category.service.inter.QueryCategoryService;
 
 @WebMvcTest(QueryCategoryController.class)
@@ -53,7 +50,7 @@ class QueryCategoryControllerTest {
     void getCategoryById() throws Exception {
         // given
         Category category = Category.builder().id(id).name(name).isShown(true).build();
-        CategoryResponseDto responseDto = CategoryResponseDto.fromEntity(category);
+        CategoryResponse responseDto = CategoryResponse.fromEntity(category);
         given(queryCategoryService.findCategoryById(id)).willReturn(responseDto);
 
         // when
@@ -71,16 +68,16 @@ class QueryCategoryControllerTest {
     @DisplayName("페이징을 통한 카테고리 조회 성공")
     void getCategories() throws Exception {
         // given
-        List<CategoryResponseDto> dtoList = new ArrayList<>();
+        List<CategoryResponse> dtoList = new ArrayList<>();
         for (int i = 1; i <= 5; i++) {
             Category category = Category.builder()
                     .id((long) i)
                     .name(name + i)
                     .isShown(true)
                     .build();
-            dtoList.add(CategoryResponseDto.fromEntity(category));
+            dtoList.add(CategoryResponse.fromEntity(category));
         }
-        Page<CategoryResponseDto> dtoPage = new PageImpl<>(dtoList);
+        Page<CategoryResponse> dtoPage = new PageImpl<>(dtoList);
         given(queryCategoryService.findCategories(any())).willReturn(dtoPage);
 
         // when
