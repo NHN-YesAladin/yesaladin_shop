@@ -25,8 +25,8 @@ public class CommandWritingServiceImpl implements CommandWritingService {
      * 집필을 생성하고 집필 테이블에 저장합니다. 생성된 집필 객체를 리턴합니다.
      *
      * @param authorName 저자명
-     * @param product 저자가 쓴 책 객체
-     * @param member 저자가 회원이라면 회원 객체
+     * @param product    저자가 쓴 책 객체
+     * @param member     저자가 회원이라면 회원 객체
      * @return 생성된 집필 객체
      * @author 이수정
      * @since 1.0
@@ -34,7 +34,11 @@ public class CommandWritingServiceImpl implements CommandWritingService {
     @Transactional
     @Override
     public Writing create(String authorName, Product product, Member member) {
-        Writing writing = Writing.builder().authorName(authorName).product(product).member(member).build();
+        Writing writing = Writing.builder()
+                .authorName(authorName)
+                .product(product)
+                .member(member)
+                .build();
 
         return commandWritingRepository.save(writing);
     }

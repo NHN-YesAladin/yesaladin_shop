@@ -2,6 +2,7 @@ package shop.yesaladin.shop.file.persistence;
 
 import org.springframework.data.repository.Repository;
 import shop.yesaladin.shop.file.domain.repository.CommandFileRepository;
+import shop.yesaladin.shop.file.domain.repository.QueryFileRepository;
 import shop.yesaladin.shop.product.domain.model.Product;
 
 /**
@@ -11,6 +12,6 @@ import shop.yesaladin.shop.product.domain.model.Product;
  * @since 1.0
  */
 public interface JpaFileRepository extends Repository<Product, Long>,
-        CommandFileRepository {
+        CommandFileRepository, QueryFileRepository {
 
 }

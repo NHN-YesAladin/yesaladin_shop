@@ -5,7 +5,7 @@ import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
-import shop.yesaladin.shop.publisher.domain.model.Publisher;
+import shop.yesaladin.shop.publish.domain.model.Publisher;
 
 public class DummyProduct {
 

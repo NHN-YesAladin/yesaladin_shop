@@ -11,5 +11,6 @@ import shop.yesaladin.shop.writing.domain.model.Writing;
  * @since 1.0
  */
 public interface CommandWritingService {
+
     Writing create(String authorName, Product product, Member member);
 }
