@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
+import shop.yesaladin.shop.member.dto.MemberDto;
 
 class QueryMemberServiceImplTest {
 
@@ -34,10 +35,10 @@ class QueryMemberServiceImplTest {
         Mockito.when(expectedMember.getId()).thenReturn(id);
 
         //when
-        Member actualMember = service.findMemberById(id);
+        MemberDto actualMember = service.findMemberById(id);
 
         //then
-        assertThat(actualMember).isEqualTo(expectedMember);
+        assertThat(actualMember.toEntity()).isEqualTo(expectedMember);
         assertThat(actualMember.getId()).isEqualTo(expectedMember.getId());
     }
 
@@ -51,10 +52,10 @@ class QueryMemberServiceImplTest {
         Mockito.when(expectedMember.getNickname()).thenReturn(nickname);
 
         //when
-        Member actualMember = service.findMemberByNickname(nickname);
+        MemberDto actualMember = service.findMemberByNickname(nickname);
 
         //then
-        assertThat(actualMember).isEqualTo(expectedMember);
+        assertThat(actualMember.toEntity()).isEqualTo(expectedMember);
         assertThat(actualMember.getNickname()).isEqualTo(expectedMember.getNickname());
     }
 
@@ -68,10 +69,10 @@ class QueryMemberServiceImplTest {
         Mockito.when(expectedMember.getLoginId()).thenReturn(loginId);
 
         //when
-        Member actualMember = service.findMemberByLoginId(loginId);
+        MemberDto actualMember = service.findMemberByLoginId(loginId);
 
         //then
-        assertThat(actualMember).isEqualTo(expectedMember);
+        assertThat(actualMember.toEntity()).isEqualTo(expectedMember);
         assertThat(actualMember.getLoginId()).isEqualTo(expectedMember.getLoginId());
     }
 }

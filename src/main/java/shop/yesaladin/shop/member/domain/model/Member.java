@@ -17,12 +17,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import shop.yesaladin.shop.member.exception.AlreadyBlockedMemberException;
+import shop.yesaladin.shop.member.exception.AlreadyUnblockedMemberException;
 import shop.yesaladin.shop.member.persistence.converter.MemberGenderCodeConverter;
 
 /**
  * 회원의 엔티티 클래스 입니다.
  *
- * @author : 송학현
+ * @author : 송학현, 최예린
  * @since : 1.0
  */
 @Getter
@@ -109,5 +111,42 @@ public class Member {
      */
     public boolean isSameNickname(Member compare) {
         return Objects.equals(this.nickname, compare.getNickname());
+    }
+
+    /**
+     * Member entity 의 blocked 를 false 로 변경하기 위한 기능입니다.
+     *
+     * @author 최예린
+     * @since 1.0
+     */
+    public void unblockMember() {
+        if (!this.isBlocked) {
+            throw new AlreadyUnblockedMemberException(this.id);
+        }
+        this.isBlocked = false;
+    }
+
+    /**
+     * Member entity 의 blocked 를 true 로 변경하기 위한 기능입니다.
+     *
+     * @author 최예린
+     * @since 1.0
+     */
+    public void blockMember() {
+        if (this.isBlocked) {
+            throw new AlreadyBlockedMemberException(this.id);
+        }
+        this.isBlocked = true;
+    }
+
+    /**
+     * Member entity 의 nickname 을 수정하기 위한 기능입니다.
+     *
+     * @param newNickname 새로운 nickname
+     * @author 최예린
+     * @since 1.0
+     */
+    public void changeNickname(String newNickname) {
+        this.nickname = newNickname;
     }
 }

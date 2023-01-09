@@ -21,7 +21,7 @@ import shop.yesaladin.shop.member.domain.model.MemberGrade;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MemberCreateRequest {
+public class MemberCreateRequestDto {
 
     @NotBlank
     @Size(min = 2, max = 50)
