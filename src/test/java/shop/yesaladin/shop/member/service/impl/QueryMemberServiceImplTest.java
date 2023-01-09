@@ -36,7 +36,6 @@ class QueryMemberServiceImplTest {
 
         //when
         MemberDto actualMember = service.findMemberById(id);
-        System.out.println(actualMember);
 
         //then
         assertThat(actualMember.getId()).isEqualTo(expectedMember.getId());
@@ -45,18 +44,17 @@ class QueryMemberServiceImplTest {
     @Test
     void findMemberByNickname() throws Exception {
         //given
-//        String nickname = "Ramos";
-//
-//        Mockito.when(repository.findMemberByNickname(nickname))
-//                .thenReturn(Optional.of(expectedMember));
-//        Mockito.when(expectedMember.getNickname()).thenReturn(nickname);
-//
-//        //when
-//        MemberDto actualMember = service.findMemberByNickname(nickname);
-//
-//        //then
-//        System.out.println(actualMember);
-//        assertThat(actualMember.getNickname()).isEqualTo(expectedMember.getNickname());
+        String nickname = "Ramos";
+
+        Mockito.when(repository.findMemberByNickname(nickname))
+                .thenReturn(Optional.of(expectedMember));
+        Mockito.when(expectedMember.getNickname()).thenReturn(nickname);
+
+        //when
+        MemberDto actualMember = service.findMemberByNickname(nickname);
+
+        //then
+        assertThat(actualMember.getNickname()).isEqualTo(expectedMember.getNickname());
     }
 
     @Test
@@ -70,7 +68,6 @@ class QueryMemberServiceImplTest {
 
         //when
         MemberDto actualMember = service.findMemberByLoginId(loginId);
-        System.out.println(actualMember);
 
         //then
         assertThat(actualMember.getLoginId()).isEqualTo(expectedMember.getLoginId());
