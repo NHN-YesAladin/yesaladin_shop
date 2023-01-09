@@ -17,6 +17,7 @@
     <properties>
         <java.version>11</java.version>
         <spring-cloud.version>2021.0.5</spring-cloud.version>
+        <querydsl.version>5.0.0</querydsl.version>
     </properties>
     <dependencies>
         <dependency>
@@ -57,7 +58,13 @@
         <dependency>
             <groupId>com.querydsl</groupId>
             <artifactId>querydsl-jpa</artifactId>
-            <version>5.0.0</version>
+            <version>${querydsl.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.querydsl</groupId>
+            <artifactId>querydsl-apt</artifactId>
+            <version>${querydsl.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -131,7 +138,7 @@
                     <dependency>
                         <groupId>com.querydsl</groupId>
                         <artifactId>querydsl-apt</artifactId>
-                        <version>5.0.0</version>
+                        <version>${querydsl.version}</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -139,6 +146,11 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.5</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/*shop.yesaladin.shop.*Application.class</exclude>
+                    </excludes>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>
@@ -151,6 +163,26 @@
                         <goals>
                             <goal>report</goal>
                         </goals>
+                    </execution>
+                    <execution>
+                        <id>jacoco-check</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <rule>
+                                    <element>BUNDLE</element>
+                                    <limits>
+                                        <limit>
+                                            <counter>BRANCH</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>0.60</minimum>
+                                        </limit>
+                                    </limits>
+                                </rule>
+                            </rules>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
