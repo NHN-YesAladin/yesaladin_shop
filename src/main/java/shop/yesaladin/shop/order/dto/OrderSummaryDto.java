@@ -1,7 +1,6 @@
 package shop.yesaladin.shop.order.dto;
 
 import java.time.LocalDateTime;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import shop.yesaladin.shop.order.domain.model.Order;
@@ -14,7 +13,7 @@ import shop.yesaladin.shop.order.domain.model.OrderCode;
  * @since 1.0
  */
 @Getter
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 public class OrderSummaryDto {
 
     private final String orderNumber;
