@@ -6,8 +6,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.Test;
 import shop.yesaladin.shop.member.exception.AlreadyBlockedMemberException;
 import shop.yesaladin.shop.member.exception.AlreadyUnblockedMemberException;
-import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
-import shop.yesaladin.shop.order.persistence.dummy.DummyMemberGrade;
 
 class MemberTest {
 

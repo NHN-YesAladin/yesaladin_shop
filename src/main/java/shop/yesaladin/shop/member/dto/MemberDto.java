@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberGenderCode;
 import shop.yesaladin.shop.member.domain.model.MemberGrade;
@@ -15,6 +16,7 @@ import shop.yesaladin.shop.member.domain.model.MemberGrade;
  * @author 최예린
  * @since 1.0
  */
+@ToString
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)

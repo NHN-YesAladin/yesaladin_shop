@@ -30,36 +30,9 @@ public class MemberDummy {
                 .signUpDate(LocalDate.now())
                 .isBlocked(false)
                 .point(point)
-                .memberGrade(MemberGradeDummy.dummy())
+                .memberGrade(MemberGrade.WHITE)
                 .memberGenderCode(MemberGenderCode.MALE)
                 .build();
     }
 
-    public static Member dummy(MemberGrade memberGrade) {
-        String ramos = "Ramos";
-        String password = "password";
-        String email = "test@test.com";
-        int birthDay = 19;
-        int birthMonth = 1;
-        int birthYear = 1996;
-        long point = 0L;
-        String phone = "01012345678";
-
-        return Member.builder()
-                .nickname(ramos)
-                .name(ramos)
-                .loginId(ramos)
-                .password(password)
-                .birthYear(birthYear)
-                .birthMonth(birthMonth)
-                .birthDay(birthDay)
-                .email(email)
-                .phone(phone)
-                .signUpDate(LocalDate.now())
-                .isBlocked(false)
-                .point(point)
-                .memberGrade(memberGrade)
-                .memberGenderCode(MemberGenderCode.MALE)
-                .build();
-    }
 }

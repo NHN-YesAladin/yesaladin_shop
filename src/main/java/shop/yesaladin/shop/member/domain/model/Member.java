@@ -5,12 +5,9 @@ import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -20,6 +17,7 @@ import lombok.NoArgsConstructor;
 import shop.yesaladin.shop.member.exception.AlreadyBlockedMemberException;
 import shop.yesaladin.shop.member.exception.AlreadyUnblockedMemberException;
 import shop.yesaladin.shop.member.persistence.converter.MemberGenderCodeConverter;
+import shop.yesaladin.shop.member.persistence.converter.MemberGradeCodeConverter;
 
 /**
  * 회원의 엔티티 클래스 입니다.
@@ -63,7 +61,7 @@ public class Member {
     @Column(unique = true, length = 100, nullable = false)
     private String email;
 
-    @Column(length = 11, nullable = false)
+    @Column(length = 11, unique = true, nullable = false)
     private String phone;
 
     @Column(name = "sign_up_date", nullable = false)
@@ -81,8 +79,8 @@ public class Member {
     @Column(nullable = false)
     private long point;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_grade_id")
+    @Column(name = "member_grade_id")
+    @Convert(converter = MemberGradeCodeConverter.class)
     private MemberGrade memberGrade;
 
     @Column(name = "gender_code")

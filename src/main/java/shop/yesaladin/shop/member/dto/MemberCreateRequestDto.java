@@ -61,12 +61,11 @@ public class MemberCreateRequestDto {
     /**
      * MemberCreateRequest DTO를 Member Entity로 변한하기 위한 메서드 입니다.
      *
-     * @param memberGrade 회원에 등록할 회원 등급 입니다.
      * @return RequestDto를 Entity로 변환된 결과 입니다.
      * @author : 송학현
      * @since : 1.0
      */
-    public Member toEntity(MemberGrade memberGrade) {
+    public Member toEntity() {
         return Member.builder()
                 .name(name)
                 .nickname(nickname)
@@ -81,7 +80,7 @@ public class MemberCreateRequestDto {
                 .isWithdrawal(false)
                 .isBlocked(false)
                 .point(0)
-                .memberGrade(memberGrade)
+                .memberGrade(MemberGrade.WHITE)
                 .memberGenderCode(MemberGenderCode.valueOf(gender))
                 .build();
     }
