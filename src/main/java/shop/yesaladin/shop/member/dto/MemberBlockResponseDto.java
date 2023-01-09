@@ -13,9 +13,9 @@ import shop.yesaladin.shop.member.domain.model.Member;
  * @since 1.0
  */
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class MemberBlockResponse {
+public class MemberBlockResponseDto {
 
     private Long id;
     private String name;
@@ -30,8 +30,8 @@ public class MemberBlockResponse {
      * @author 최예린
      * @since 1.0
      */
-    public static MemberBlockResponse fromEntity(Member member) {
-        return new MemberBlockResponse(
+    public static MemberBlockResponseDto fromEntity(Member member) {
+        return new MemberBlockResponseDto(
                 member.getId(),
                 member.getName(),
                 member.getLoginId(),

@@ -2,8 +2,6 @@ package shop.yesaladin.shop.member.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -17,11 +15,11 @@ import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberGrade;
 import shop.yesaladin.shop.member.domain.repository.CommandMemberRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
-import shop.yesaladin.shop.member.dto.MemberBlockResponse;
-import shop.yesaladin.shop.member.dto.MemberCreateRequest;
-import shop.yesaladin.shop.member.dto.MemberCreateResponse;
-import shop.yesaladin.shop.member.dto.MemberUpdateRequest;
-import shop.yesaladin.shop.member.dto.MemberUpdateResponse;
+import shop.yesaladin.shop.member.dto.MemberBlockResponseDto;
+import shop.yesaladin.shop.member.dto.MemberCreateRequestDto;
+import shop.yesaladin.shop.member.dto.MemberCreateResponseDto;
+import shop.yesaladin.shop.member.dto.MemberUpdateRequestDto;
+import shop.yesaladin.shop.member.dto.MemberUpdateResponseDto;
 import shop.yesaladin.shop.member.service.inter.QueryMemberGradeService;
 
 class CommandMemberServiceImplTest {
@@ -50,7 +48,7 @@ class CommandMemberServiceImplTest {
         String loginId = "loginId";
         String nickname = "nickname";
 
-        MemberCreateRequest createDto = Mockito.mock(MemberCreateRequest.class);
+        MemberCreateRequestDto createDto = Mockito.mock(MemberCreateRequestDto.class);
         MemberGrade memberGrade = Mockito.mock(MemberGrade.class);
         Member member = Member.builder()
                 .loginId(loginId)
@@ -67,7 +65,7 @@ class CommandMemberServiceImplTest {
         Mockito.when(commandMemberRepository.save(member)).thenReturn(member);
 
         //when
-        MemberCreateResponse actualMember = service.create(createDto);
+        MemberCreateResponseDto actualMember = service.create(createDto);
 
         //then
         assertThat(actualMember.getLoginId()).isEqualTo(loginId);
@@ -81,7 +79,7 @@ class CommandMemberServiceImplTest {
         long id = 1;
         String name = "name";
         String nickname = "nickname";
-        MemberUpdateRequest request = ReflectionUtils.newInstance(MemberUpdateRequest.class, nickname);
+        MemberUpdateRequestDto request = ReflectionUtils.newInstance(MemberUpdateRequestDto.class, nickname);
 
         Member member = Member.builder()
                 .id(id)
@@ -92,15 +90,15 @@ class CommandMemberServiceImplTest {
         Mockito.when(queryMemberRepository.findMemberByNickname(nickname)).thenReturn(Optional.empty());
 
         //when
-        MemberUpdateResponse actualMember = service.update(id, request);
+        MemberUpdateResponseDto actualMember = service.update(id, request);
 
         //then
         assertThat(actualMember.getId()).isEqualTo(id);
         assertThat(actualMember.getNickname()).isEqualTo(nickname);
         assertThat(actualMember.getName()).isEqualTo(name);
 
-        verify(queryMemberRepository, times(1)).findById(eq(id));
-        verify(queryMemberRepository, times(1)).findMemberByNickname(eq(nickname));
+        verify(queryMemberRepository, times(1)).findById(id);
+        verify(queryMemberRepository, times(1)).findMemberByNickname(nickname);
     }
 
     @Test
@@ -120,7 +118,7 @@ class CommandMemberServiceImplTest {
         Mockito.when(queryMemberRepository.findById(id)).thenReturn(Optional.of(member));
 
         //when
-        MemberBlockResponse actualMember = service.block(id);
+        MemberBlockResponseDto actualMember = service.block(id);
 
         //then
         assertThat(actualMember.getId()).isEqualTo(id);
@@ -128,7 +126,7 @@ class CommandMemberServiceImplTest {
         assertThat(actualMember.getLoginId()).isEqualTo(loginId);
         assertThat(actualMember.isBlocked()).isTrue();
 
-        verify(queryMemberRepository, times(1)).findById(eq(id));
+        verify(queryMemberRepository, times(1)).findById(id);
     }
 
     @Test
@@ -148,7 +146,7 @@ class CommandMemberServiceImplTest {
         Mockito.when(queryMemberRepository.findById(id)).thenReturn(Optional.of(member));
 
         //when
-        MemberBlockResponse actualMember = service.unblock(id);
+        MemberBlockResponseDto actualMember = service.unblock(id);
 
         //then
         assertThat(actualMember.getId()).isEqualTo(id);
@@ -156,6 +154,6 @@ class CommandMemberServiceImplTest {
         assertThat(actualMember.getLoginId()).isEqualTo(loginId);
         assertThat(actualMember.isBlocked()).isFalse();
 
-        verify(queryMemberRepository, times(1)).findById(eq(id));
+        verify(queryMemberRepository, times(1)).findById(id);
     }
 }

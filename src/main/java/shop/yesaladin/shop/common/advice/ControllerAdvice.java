@@ -25,7 +25,7 @@ public class ControllerAdvice {
     @ExceptionHandler(value = {CategoryNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<String> handleNotFoundException(Exception ex) {
-        log.error("[NOT_FOUND] handleNotFoundException : {} ", ex);
+        log.error("[NOT_FOUND] handleNotFoundException", ex);
         return ResponseEntity.notFound().build();
     }
 
@@ -34,14 +34,14 @@ public class ControllerAdvice {
             MemberNotFoundException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<String> handleValidationException(Exception ex) {
-        log.error("[BAD_REQUEST] handleValidationException : {}", ex);
+        log.error("[BAD_REQUEST] handleValidationException", ex);
         return ResponseEntity.badRequest().build();
     }
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<String> handleException(Exception ex) {
-        log.error("[INTERNAL_SERVER_ERROR] handleException : {} ", ex);
+        log.error("[INTERNAL_SERVER_ERROR] handleException", ex);
         return ResponseEntity.internalServerError().build();
     }
 }

@@ -1,10 +1,10 @@
 package shop.yesaladin.shop.member.service.inter;
 
-import shop.yesaladin.shop.member.dto.MemberBlockResponse;
-import shop.yesaladin.shop.member.dto.MemberCreateRequest;
-import shop.yesaladin.shop.member.dto.MemberCreateResponse;
-import shop.yesaladin.shop.member.dto.MemberUpdateRequest;
-import shop.yesaladin.shop.member.dto.MemberUpdateResponse;
+import shop.yesaladin.shop.member.dto.MemberBlockResponseDto;
+import shop.yesaladin.shop.member.dto.MemberCreateRequestDto;
+import shop.yesaladin.shop.member.dto.MemberCreateResponseDto;
+import shop.yesaladin.shop.member.dto.MemberUpdateRequestDto;
+import shop.yesaladin.shop.member.dto.MemberUpdateResponseDto;
 
 /**
  * Create, Update, Delete 를 Controller Layer에서 사용하기 위한 service interface
@@ -22,7 +22,7 @@ public interface CommandMemberService {
      * @author : 송학현
      * @since : 1.0
      */
-    MemberCreateResponse create(MemberCreateRequest createDto);
+    MemberCreateResponseDto create(MemberCreateRequestDto createDto);
 
     /**
      * 회원 정보 수정을 위한 기능입니다.
@@ -33,7 +33,7 @@ public interface CommandMemberService {
      * @author 최예린
      * @since 1.0
      */
-    MemberUpdateResponse update(Long id, MemberUpdateRequest updateDto);
+    MemberUpdateResponseDto update(Long id, MemberUpdateRequestDto updateDto);
 
     /**
      * 회원을 차단 하기 위한 기능입니다.
@@ -42,7 +42,7 @@ public interface CommandMemberService {
      * @author 최예린
      * @since 1.0
      */
-    MemberBlockResponse block(Long id);
+    MemberBlockResponseDto block(Long id);
 
     /**
      * 회원 차단해지를 위한 기능 입니다.
@@ -51,5 +51,5 @@ public interface CommandMemberService {
      * @author 최예린
      * @since 1.0
      */
-    MemberBlockResponse unblock(Long id);
+    MemberBlockResponseDto unblock(Long id);
 }

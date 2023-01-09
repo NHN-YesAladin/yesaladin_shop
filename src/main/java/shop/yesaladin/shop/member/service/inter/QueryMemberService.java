@@ -1,6 +1,6 @@
 package shop.yesaladin.shop.member.service.inter;
 
-import shop.yesaladin.shop.member.dto.MemberResponse;
+import shop.yesaladin.shop.member.dto.MemberDto;
 
 
 /**
@@ -19,7 +19,7 @@ public interface QueryMemberService {
      * @author : 송학현, 최예린
      * @since : 1.0
      */
-    MemberResponse findMemberById(long id);
+    MemberDto findMemberById(long id);
 
     /**
      * 회원을 unique column인 loginId를 기준 으로 조회 하기 위한 메서드 입니다.
@@ -29,7 +29,7 @@ public interface QueryMemberService {
      * @author : 송학현, 최예린
      * @since : 1.0
      */
-    MemberResponse findMemberByLoginId(String loginId);
+    MemberDto findMemberByLoginId(String loginId);
 
     /**
      * 회원을 unique column인 nickname을 기준 으로 조회 하기 위한 메서드 입니다.
@@ -39,5 +39,5 @@ public interface QueryMemberService {
      * @author : 송학현, 최예린
      * @since : 1.0
      */
-    MemberResponse findMemberByNickname(String nickname);
+    MemberDto findMemberByNickname(String nickname);
 }

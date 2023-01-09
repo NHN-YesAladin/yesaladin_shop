@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
-import shop.yesaladin.shop.member.dto.MemberResponse;
+import shop.yesaladin.shop.member.dto.MemberDto;
 
 class QueryMemberServiceImplTest {
 
@@ -35,7 +35,7 @@ class QueryMemberServiceImplTest {
         Mockito.when(expectedMember.getId()).thenReturn(id);
 
         //when
-        MemberResponse actualMember = service.findMemberById(id);
+        MemberDto actualMember = service.findMemberById(id);
 
         //then
         assertThat(actualMember.toEntity()).isEqualTo(expectedMember);
@@ -52,7 +52,7 @@ class QueryMemberServiceImplTest {
         Mockito.when(expectedMember.getNickname()).thenReturn(nickname);
 
         //when
-        MemberResponse actualMember = service.findMemberByNickname(nickname);
+        MemberDto actualMember = service.findMemberByNickname(nickname);
 
         //then
         assertThat(actualMember.toEntity()).isEqualTo(expectedMember);
@@ -69,7 +69,7 @@ class QueryMemberServiceImplTest {
         Mockito.when(expectedMember.getLoginId()).thenReturn(loginId);
 
         //when
-        MemberResponse actualMember = service.findMemberByLoginId(loginId);
+        MemberDto actualMember = service.findMemberByLoginId(loginId);
 
         //then
         assertThat(actualMember.toEntity()).isEqualTo(expectedMember);

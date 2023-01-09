@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
@@ -25,7 +24,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,11 +33,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.member.domain.model.Member;
-import shop.yesaladin.shop.member.dto.MemberBlockResponse;
-import shop.yesaladin.shop.member.dto.MemberCreateRequest;
-import shop.yesaladin.shop.member.dto.MemberCreateResponse;
-import shop.yesaladin.shop.member.dto.MemberUpdateRequest;
-import shop.yesaladin.shop.member.dto.MemberUpdateResponse;
+import shop.yesaladin.shop.member.dto.MemberBlockResponseDto;
+import shop.yesaladin.shop.member.dto.MemberCreateRequestDto;
+import shop.yesaladin.shop.member.dto.MemberCreateResponseDto;
+import shop.yesaladin.shop.member.dto.MemberUpdateRequestDto;
+import shop.yesaladin.shop.member.dto.MemberUpdateResponseDto;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.CommandMemberService;
 
@@ -56,9 +54,9 @@ class CommandMemberControllerTest {
     private CommandMemberService commandMemberService;
 
     private Member member;
-    private MemberCreateResponse createResponse;
-    private MemberUpdateResponse updateResponse;
-    private MemberBlockResponse blockResponse;
+    private MemberCreateResponseDto createResponse;
+    private MemberUpdateResponseDto updateResponse;
+    private MemberBlockResponseDto blockResponse;
 
     private final String NAME = "Ramos";
     private final String NICKNAME = "Ramos";
@@ -74,15 +72,15 @@ class CommandMemberControllerTest {
     void setUp() {
         long id = 1L;
         member = Member.builder().id(id).name(NAME).nickname(NICKNAME).loginId(LOGIN_ID).build();
-        createResponse = MemberCreateResponse.fromEntity(member);
-        updateResponse = MemberUpdateResponse.fromEntity(member);
+        createResponse = MemberCreateResponseDto.fromEntity(member);
+        updateResponse = MemberUpdateResponseDto.fromEntity(member);
     }
 
     @Test
     @DisplayName("회원 등록 요청 시 입력 데이터가 null거나 @Valid 검증 조건에 맞지 않은 경우 요청에 실패 한다.")
     void signUpMember_withInvalidInputData() throws Exception {
         //given
-        MemberCreateRequest request = new MemberCreateRequest();
+        MemberCreateRequestDto request = new MemberCreateRequestDto();
         given(commandMemberService.create(any())).willReturn(createResponse);
 
         //when
@@ -99,7 +97,7 @@ class CommandMemberControllerTest {
     @DisplayName("회원 등록 요청 시 nickname, loginId, password에 걸려있는 정규 표현식에 부합하지 않는 경우 요청에 실패 한다.")
     void signUpMember_withInvalidInputData_invalidRegex() throws Exception {
         //given
-        MemberCreateRequest request = new MemberCreateRequest(
+        MemberCreateRequestDto request = new MemberCreateRequestDto(
                 NAME,
                 NICKNAME,
                 LOGIN_ID,
@@ -125,7 +123,7 @@ class CommandMemberControllerTest {
     @DisplayName("회원 가입 성공")
     void signUpMember() throws Exception {
         //given
-        MemberCreateRequest request = new MemberCreateRequest(
+        MemberCreateRequestDto request = new MemberCreateRequestDto(
                 NAME,
                 NICKNAME,
                 LOGIN_ID,
@@ -174,8 +172,8 @@ class CommandMemberControllerTest {
     void updateMember_withInvalidInputData(String nickname, String info) throws Exception {
         //given
         Long memberId = 1L;
-        MemberUpdateRequest request = ReflectionUtils.newInstance(
-                MemberUpdateRequest.class,
+        MemberUpdateRequestDto request = ReflectionUtils.newInstance(
+                MemberUpdateRequestDto.class,
                 nickname
         );
 
@@ -205,12 +203,12 @@ class CommandMemberControllerTest {
     void updateMember_withInvalidMemberId() throws Exception {
         //given
         Long invalidMemberId = 1L;
-        MemberUpdateRequest request = ReflectionUtils.newInstance(
-                MemberUpdateRequest.class,
+        MemberUpdateRequestDto request = ReflectionUtils.newInstance(
+                MemberUpdateRequestDto.class,
                 NICKNAME
         );
-        ArgumentCaptor<MemberUpdateRequest> requestArgumentCaptor = ArgumentCaptor.forClass(
-                MemberUpdateRequest.class);
+        ArgumentCaptor<MemberUpdateRequestDto> requestArgumentCaptor = ArgumentCaptor.forClass(
+                MemberUpdateRequestDto.class);
 
         given(commandMemberService.update(eq(invalidMemberId), any())).willThrow(
                 MemberNotFoundException.class);
@@ -234,12 +232,12 @@ class CommandMemberControllerTest {
     void updateMember() throws Exception {
         //given
         Long memberId = 1L;
-        MemberUpdateRequest request = ReflectionUtils.newInstance(
-                MemberUpdateRequest.class,
+        MemberUpdateRequestDto request = ReflectionUtils.newInstance(
+                MemberUpdateRequestDto.class,
                 NICKNAME
         );
-        ArgumentCaptor<MemberUpdateRequest> requestArgumentCaptor = ArgumentCaptor.forClass(
-                MemberUpdateRequest.class);
+        ArgumentCaptor<MemberUpdateRequestDto> requestArgumentCaptor = ArgumentCaptor.forClass(
+                MemberUpdateRequestDto.class);
 
         given(commandMemberService.update(eq(memberId), any())).willReturn(updateResponse);
 
@@ -260,7 +258,7 @@ class CommandMemberControllerTest {
     void blockMember_withInvalidMemberId() throws Exception {
         //given
         Long memberId = 1L;
-        given(commandMemberService.block(eq(memberId))).willThrow(MemberNotFoundException.class);
+        given(commandMemberService.block(memberId)).willThrow(MemberNotFoundException.class);
 
         //when
         ResultActions perform = mockMvc.perform(put("/v1/members/{memberId}/block", memberId));
@@ -277,7 +275,7 @@ class CommandMemberControllerTest {
     void blockMember() throws Exception {
         //given
         Long memberId = 1L;
-        given(commandMemberService.block(eq(memberId))).willReturn(blockResponse);
+        given(commandMemberService.block(memberId)).willReturn(blockResponse);
 
         //when
         ResultActions perform = mockMvc.perform(put("/v1/members/{memberId}/block", memberId));
@@ -293,7 +291,7 @@ class CommandMemberControllerTest {
     void unblockMember_withInvalidMemberId() throws Exception {
         //given
         Long memberId = 1L;
-        given(commandMemberService.unblock(eq(memberId))).willThrow(MemberNotFoundException.class);
+        given(commandMemberService.unblock(memberId)).willThrow(MemberNotFoundException.class);
 
         //when
         ResultActions perform = mockMvc.perform(put(
@@ -312,7 +310,7 @@ class CommandMemberControllerTest {
     void unblockMember() throws Exception {
         //given
         Long memberId = 1L;
-        given(commandMemberService.unblock(eq(memberId))).willReturn(blockResponse);
+        given(commandMemberService.unblock(memberId)).willReturn(blockResponse);
 
         //when
         ResultActions perform = mockMvc.perform(put(

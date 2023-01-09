@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
-import shop.yesaladin.shop.member.dto.MemberResponse;
+import shop.yesaladin.shop.member.dto.MemberDto;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 
@@ -31,10 +31,10 @@ public class QueryMemberServiceImpl implements QueryMemberService {
      */
     @Transactional(readOnly = true)
     @Override
-    public MemberResponse findMemberById(long id) {
+    public MemberDto findMemberById(long id) {
         Member member = queryMemberRepository.findById(id)
                 .orElseThrow(() -> new MemberNotFoundException("Member Id: " + id));
-        return MemberResponse.fromEntity(member);
+        return MemberDto.fromEntity(member);
     }
 
     /**
@@ -47,10 +47,10 @@ public class QueryMemberServiceImpl implements QueryMemberService {
      */
     @Transactional(readOnly = true)
     @Override
-    public MemberResponse findMemberByLoginId(String loginId) {
+    public MemberDto findMemberByLoginId(String loginId) {
         Member member = queryMemberRepository.findMemberByLoginId(loginId)
                 .orElseThrow(() -> new MemberNotFoundException("Member Login Id: " + loginId));
-        return MemberResponse.fromEntity(member);
+        return MemberDto.fromEntity(member);
     }
 
     /**
@@ -63,9 +63,9 @@ public class QueryMemberServiceImpl implements QueryMemberService {
      */
     @Transactional(readOnly = true)
     @Override
-    public MemberResponse findMemberByNickname(String nickname) {
+    public MemberDto findMemberByNickname(String nickname) {
         Member member = queryMemberRepository.findMemberByNickname(nickname)
                 .orElseThrow(() -> new MemberNotFoundException("Member Nickname: " + nickname));
-        return MemberResponse.fromEntity(member);
+        return MemberDto.fromEntity(member);
     }
 }

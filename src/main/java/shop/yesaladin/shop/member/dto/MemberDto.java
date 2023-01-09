@@ -16,9 +16,9 @@ import shop.yesaladin.shop.member.domain.model.MemberGrade;
  * @since 1.0
  */
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class MemberResponse {
+public class MemberDto {
 
     private Long id;
     private String nickname;
@@ -37,8 +37,8 @@ public class MemberResponse {
     private MemberGrade memberGrade;
     private MemberGenderCode memberGenderCode;
 
-    public static MemberResponse fromEntity(Member member) {
-        return new MemberResponse(
+    public static MemberDto fromEntity(Member member) {
+        return new MemberDto(
                 member.getId(),
                 member.getName(),
                 member.getNickname(),

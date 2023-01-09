@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import shop.yesaladin.shop.member.dto.MemberCreateRequest;
-import shop.yesaladin.shop.member.dto.MemberCreateResponse;
-import shop.yesaladin.shop.member.dto.MemberUpdateRequest;
-import shop.yesaladin.shop.member.dto.MemberUpdateResponse;
+import shop.yesaladin.shop.member.dto.MemberCreateRequestDto;
+import shop.yesaladin.shop.member.dto.MemberCreateResponseDto;
+import shop.yesaladin.shop.member.dto.MemberUpdateRequestDto;
+import shop.yesaladin.shop.member.dto.MemberUpdateResponseDto;
 import shop.yesaladin.shop.member.service.inter.CommandMemberService;
 
 /**
@@ -41,9 +41,9 @@ public class CommandMemberController {
      * @since : 1.0
      */
     @PostMapping
-    public ResponseEntity<MemberCreateResponse> signUpMember(@Valid @RequestBody MemberCreateRequest createDto)
+    public ResponseEntity<MemberCreateResponseDto> signUpMember(@Valid @RequestBody MemberCreateRequestDto createDto)
             throws URISyntaxException {
-        MemberCreateResponse response = commandMemberService.create(createDto);
+        MemberCreateResponseDto response = commandMemberService.create(createDto);
 
         return ResponseEntity.created(new URI(response.getId().toString())).body(response);
     }
@@ -57,12 +57,11 @@ public class CommandMemberController {
      * @since 1.0
      */
     @PutMapping("/{memberId}")
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<MemberUpdateResponse> updateMember(
-            @Valid @RequestBody MemberUpdateRequest updateDto,
+    public ResponseEntity<MemberUpdateResponseDto> updateMember(
+            @Valid @RequestBody MemberUpdateRequestDto updateDto,
             @PathVariable("memberId") Long id
     ) {
-        MemberUpdateResponse response = commandMemberService.update(id, updateDto);
+        MemberUpdateResponseDto response = commandMemberService.update(id, updateDto);
 
         return ResponseEntity.ok(response);
     }

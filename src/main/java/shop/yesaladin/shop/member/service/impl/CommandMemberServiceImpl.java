@@ -8,11 +8,11 @@ import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberGrade;
 import shop.yesaladin.shop.member.domain.repository.CommandMemberRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
-import shop.yesaladin.shop.member.dto.MemberBlockResponse;
-import shop.yesaladin.shop.member.dto.MemberCreateRequest;
-import shop.yesaladin.shop.member.dto.MemberCreateResponse;
-import shop.yesaladin.shop.member.dto.MemberUpdateRequest;
-import shop.yesaladin.shop.member.dto.MemberUpdateResponse;
+import shop.yesaladin.shop.member.dto.MemberBlockResponseDto;
+import shop.yesaladin.shop.member.dto.MemberCreateRequestDto;
+import shop.yesaladin.shop.member.dto.MemberCreateResponseDto;
+import shop.yesaladin.shop.member.dto.MemberUpdateRequestDto;
+import shop.yesaladin.shop.member.dto.MemberUpdateResponseDto;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.exception.MemberProfileAlreadyExistException;
 import shop.yesaladin.shop.member.service.inter.CommandMemberService;
@@ -43,7 +43,7 @@ public class CommandMemberServiceImpl implements CommandMemberService {
      */
     @Transactional
     @Override
-    public MemberCreateResponse create(MemberCreateRequest createDto) {
+    public MemberCreateResponseDto create(MemberCreateRequestDto createDto) {
         checkUniqueData(queryMemberRepository.findMemberByLoginId(createDto.getLoginId()), "id");
         checkUniqueData(
                 queryMemberRepository.findMemberByNickname(createDto.getNickname()),
@@ -54,7 +54,7 @@ public class CommandMemberServiceImpl implements CommandMemberService {
         Member member = createDto.toEntity(memberGrade);
         Member savedMember = commandMemberRepository.save(member);
 
-        return MemberCreateResponse.fromEntity(savedMember);
+        return MemberCreateResponseDto.fromEntity(savedMember);
     }
 
     /**
@@ -68,8 +68,8 @@ public class CommandMemberServiceImpl implements CommandMemberService {
      */
     @Transactional
     @Override
-    public MemberUpdateResponse update(Long id, MemberUpdateRequest updateDto) {
-        Member member = getInvalidMember(id);
+    public MemberUpdateResponseDto update(Long id, MemberUpdateRequestDto updateDto) {
+        Member member = tryGetMemberById(id);
 
         checkUniqueData(
                 queryMemberRepository.findMemberByNickname(updateDto.getNickname()),
@@ -77,7 +77,7 @@ public class CommandMemberServiceImpl implements CommandMemberService {
         );
         member.changeNickname(updateDto.getNickname());
 
-        return MemberUpdateResponse.fromEntity(member);
+        return MemberUpdateResponseDto.fromEntity(member);
     }
 
     /**
@@ -89,12 +89,12 @@ public class CommandMemberServiceImpl implements CommandMemberService {
      */
     @Transactional
     @Override
-    public MemberBlockResponse block(Long id) {
-        Member member = getInvalidMember(id);
+    public MemberBlockResponseDto block(Long id) {
+        Member member = tryGetMemberById(id);
 
         member.blockMember();
 
-        return MemberBlockResponse.fromEntity(member);
+        return MemberBlockResponseDto.fromEntity(member);
     }
 
     /**
@@ -106,15 +106,15 @@ public class CommandMemberServiceImpl implements CommandMemberService {
      */
     @Transactional
     @Override
-    public MemberBlockResponse unblock(Long id) {
-        Member member = getInvalidMember(id);
+    public MemberBlockResponseDto unblock(Long id) {
+        Member member = tryGetMemberById(id);
 
         member.unblockMember();
 
-        return MemberBlockResponse.fromEntity(member);
+        return MemberBlockResponseDto.fromEntity(member);
     }
 
-    private Member getInvalidMember(Long id) {
+    private Member tryGetMemberById(Long id) {
         return queryMemberRepository.findById(id)
                 .orElseThrow(() -> new MemberNotFoundException("Member Id: " + id));
     }
