@@ -11,7 +11,19 @@ import shop.yesaladin.shop.category.domain.model.Category;
 
 public interface CommandCategoryRepository {
 
+
+    /**
+     * 카테고리를 생성 및 수정
+     *
+     * @param category
+     * @return 등록된 카테고리
+     */
     Category save(Category category);
 
+    /**
+     * id를 통해 조회하여 카테고리를 삭제
+     *
+     * @param id 카테고리 id
+     */
     void deleteById(Long id);
 }

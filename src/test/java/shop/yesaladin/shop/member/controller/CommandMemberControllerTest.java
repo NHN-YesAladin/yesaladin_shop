@@ -54,6 +54,7 @@ class CommandMemberControllerTest {
     private final String NAME = "Ramos";
     private final String NICKNAME = "Ramos";
     private final String LOGIN_ID = "testloginid";
+    private final String PHONE = "01012345678";
     private final String INVALID_PASSWORD = "asdfasdf";
     private final String PASSWORD = "testPassword12@";
     private final String BIRTH = "20230107";
@@ -94,6 +95,7 @@ class CommandMemberControllerTest {
                 NICKNAME,
                 LOGIN_ID,
                 INVALID_PASSWORD,
+                PHONE,
                 BIRTH,
                 EMAIL,
                 GENDER
@@ -118,9 +120,10 @@ class CommandMemberControllerTest {
                 NAME,
                 NICKNAME,
                 LOGIN_ID,
+                EMAIL,
+                PHONE,
                 PASSWORD,
                 BIRTH,
-                EMAIL,
                 GENDER
         );
         Member member = request.toEntity(null);

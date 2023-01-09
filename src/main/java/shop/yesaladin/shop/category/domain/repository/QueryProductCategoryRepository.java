@@ -16,7 +16,19 @@ import shop.yesaladin.shop.category.domain.model.ProductCategory.Pk;
 
 public interface QueryProductCategoryRepository {
 
+    /**
+     * 상품 카테고리 list 조회
+     *
+     * @param pageable size 와 page 를 가진 객체
+     * @return paging 되어있는 ProductCategory Page 객체
+     */
     Page<ProductCategory> findAll(Pageable pageable);
 
+    /**
+     * 상품 카테고리 조회
+     *
+     * @param pk 상품 id, 카테고리 id
+     * @return Optional 처리된 ProductCategory
+     */
     Optional<ProductCategory> findByPk(Pk pk);
 }

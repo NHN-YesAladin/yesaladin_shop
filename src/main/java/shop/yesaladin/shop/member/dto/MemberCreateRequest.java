@@ -37,10 +37,16 @@ public class MemberCreateRequest {
     @Pattern(regexp = "^[a-zA-Z]+[0-9]*$", message = "영문(필수)과 숫자(옵션) 순서 로만 가능 합니다")
     private String loginId;
 
+    @Email
     @NotBlank
-    @Size(min = 8)
-    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$",
-            message = "최소 8자, 하나 이상의 문자와 하나의 숫자 및 하나의 특수 문자")
+    @Size(max = 100)
+    private String email;
+
+    @NotBlank
+    @Size(min = 11, max = 11)
+    private String phone;
+
+    @NotBlank
     private String password;
 
     @NotBlank
@@ -48,11 +54,6 @@ public class MemberCreateRequest {
     // TODO: 정규식 수정할 것
     @Pattern(regexp = "^[0-9]{8}")
     private String birth;
-
-    @Email
-    @NotBlank
-    @Size(max = 100)
-    private String email;
 
     @NotBlank
     private String gender;
@@ -75,6 +76,7 @@ public class MemberCreateRequest {
                 .birthMonth(Integer.parseInt(birth.substring(4, 6)))
                 .birthDay(Integer.parseInt(birth.substring(6)))
                 .email(email)
+                .phone(phone)
                 .signUpDate(LocalDate.now())
                 .isWithdrawal(false)
                 .isBlocked(false)
