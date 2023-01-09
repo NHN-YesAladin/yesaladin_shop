@@ -4,19 +4,26 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import shop.yesaladin.shop.member.dto.MemberBlockResponse;
 import shop.yesaladin.shop.member.dto.MemberCreateRequest;
 import shop.yesaladin.shop.member.dto.MemberCreateResponse;
+import shop.yesaladin.shop.member.dto.MemberUpdateRequest;
+import shop.yesaladin.shop.member.dto.MemberUpdateResponse;
 import shop.yesaladin.shop.member.service.inter.CommandMemberService;
 
 /**
  * 회원에 관련된 RestController 입니다.
  *
- * @author : 송학현
+ * @author : 송학현, 최예린
  * @since : 1.0
  */
 @RequiredArgsConstructor
@@ -35,10 +42,54 @@ public class CommandMemberController {
      * @since : 1.0
      */
     @PostMapping
-    public ResponseEntity signUpMember(@Valid @RequestBody MemberCreateRequest createDto)
+    public ResponseEntity<MemberCreateResponse> signUpMember(@Valid @RequestBody MemberCreateRequest createDto)
             throws URISyntaxException {
         MemberCreateResponse response = commandMemberService.create(createDto);
 
         return ResponseEntity.created(new URI(response.getId().toString())).body(response);
+    }
+
+    /**
+     * 회원 정보 수정을 위한 Post 요청을 처리하는 기능입니다.
+     *
+     * @param updateDto 회원 정보 수정을 위한 요청 파라미
+     * @return 수정된 회원 정보를 담은 ResponseEntity
+     * @author 최예린
+     * @since 1.0
+     */
+    @PutMapping("/{memberId}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<MemberUpdateResponse> updateMember(
+            @PathVariable("memberId") Long id,
+            @Valid @RequestBody MemberUpdateRequest updateDto
+    ) {
+        MemberUpdateResponse response = commandMemberService.update(id, updateDto);
+
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 회원 차단 해지를 위한 Post 요청을 처리하는 기능입니다.
+     *
+     * @param id 차단 해지할 회원 아이디
+     * @author 최예린
+     * @since 1.0
+     */
+    @PutMapping("/{memberId}/block")
+    @ResponseStatus(HttpStatus.OK)
+    public void blockOffMember(@PathVariable("memberId") Long id) {
+        commandMemberService.updateBlocked(id, false);
+    }
+
+    /**
+     * 회원 차단을 위한 Post 요청을 처리하는 기능입니다.
+     *
+     * @param id 차단할 회원 아이디
+     * @author 최예린
+     * @since 1.0
+     */
+    @PutMapping("/{memberId}/unblock")
+    public void blockOnMember(@PathVariable("memberId") Long id) {
+        commandMemberService.updateBlocked(id, true);
     }
 }

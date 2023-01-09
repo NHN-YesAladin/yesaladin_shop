@@ -22,7 +22,7 @@ import shop.yesaladin.shop.member.persistence.converter.MemberGenderCodeConverte
 /**
  * 회원의 엔티티 클래스 입니다.
  *
- * @author : 송학현
+ * @author : 송학현, 최예린
  * @since : 1.0
  */
 @Getter
@@ -117,5 +117,27 @@ public class Member {
      */
     public void setEncryptedPassword(String encryptedPassword) {
         this.password = encryptedPassword;
+    }
+
+    /**
+     * Member entity 의 blocked 를 true/false 로 변경하기 위한 기능입니다.
+     *
+     * @param isBlocked blocked 의 유무
+     * @author 최예린
+     * @since 1.0
+     */
+    public void setMemberBlocked(boolean isBlocked) {
+        this.isBlocked = isBlocked;
+    }
+
+    /**
+     * Member entity 의 nickname 을 수정하기 위한 기능입니다.
+     *
+     * @param newNickname 새로운 nickname
+     * @author 최예린
+     * @since 1.0
+     */
+    public void setNewNickname(String newNickname) {
+        this.nickname = newNickname;
     }
 }

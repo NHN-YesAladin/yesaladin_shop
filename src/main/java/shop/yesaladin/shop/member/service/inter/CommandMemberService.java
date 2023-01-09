@@ -1,12 +1,15 @@
 package shop.yesaladin.shop.member.service.inter;
 
+import shop.yesaladin.shop.member.dto.MemberBlockResponse;
 import shop.yesaladin.shop.member.dto.MemberCreateRequest;
 import shop.yesaladin.shop.member.dto.MemberCreateResponse;
+import shop.yesaladin.shop.member.dto.MemberUpdateRequest;
+import shop.yesaladin.shop.member.dto.MemberUpdateResponse;
 
 /**
  * Create, Update, Delete 를 Controller Layer에서 사용하기 위한 service interface
  *
- * @author : 송학현
+ * @author : 송학현, 최예
  * @since : 1.0
  */
 public interface CommandMemberService {
@@ -20,4 +23,25 @@ public interface CommandMemberService {
      * @since : 1.0
      */
     MemberCreateResponse create(MemberCreateRequest createDto);
+
+    /**
+     * 회원 정보 수정을 위한 기능입니다.
+     *
+     * @param id        정보를 수정한 회원 id
+     * @param updateDto 수정한 회원 정보 dto
+     * @return 수정된 결과를 반환할 dto
+     * @author 최예린
+     * @since 1.0
+     */
+    MemberUpdateResponse update(Long id, MemberUpdateRequest updateDto);
+
+    /**
+     * 회원을 차단/해지 하기 위한 기능입니다.
+     *
+     * @param id      차단/해재 할 회원 id
+     * @param blocked 차단(true)/해지(false)
+     * @author 최예린
+     * @since 1.0
+     */
+    MemberBlockResponse updateBlocked(Long id, boolean blocked);
 }
