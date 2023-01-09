@@ -1,7 +1,7 @@
 package shop.yesaladin.shop.order.persistence.dummy;
 
 import shop.yesaladin.shop.member.domain.model.Member;
-import shop.yesaladin.shop.order.domain.dummy.MemberAddress;
+import shop.yesaladin.shop.member.domain.model.MemberAddress;
 
 public class DummyMemberAddress {
 

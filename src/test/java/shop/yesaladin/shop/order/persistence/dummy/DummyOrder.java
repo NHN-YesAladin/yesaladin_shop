@@ -3,7 +3,7 @@ package shop.yesaladin.shop.order.persistence.dummy;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import shop.yesaladin.shop.member.domain.model.Member;
-import shop.yesaladin.shop.order.domain.dummy.MemberAddress;
+import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.order.domain.model.MemberOrder;
 import shop.yesaladin.shop.order.domain.model.NonMemberOrder;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
