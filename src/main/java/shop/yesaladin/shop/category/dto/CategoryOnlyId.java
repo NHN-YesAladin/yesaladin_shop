@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * 카테고리 삭제를 위한 Dto
+ * 카테고리 id만 전달하기위해 사용하는 dto
  *
  * @author 배수한
  * @since 1.0
@@ -13,7 +13,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class CategoryDeleteDto {
+public class CategoryOnlyId {
 
     @NotNull
     private long id;

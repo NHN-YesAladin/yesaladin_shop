@@ -2,13 +2,15 @@ package shop.yesaladin.shop.category.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import shop.yesaladin.shop.category.domain.model.Category;
+import shop.yesaladin.shop.category.dummy.CategoryDummy;
 import shop.yesaladin.shop.category.exception.CategoryNotFoundException;
 
 
@@ -25,7 +27,7 @@ class JpaCategoryRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        sample = Category.builder().name(name).order(null).isShown(true).parent(null).build();
+        sample = CategoryDummy.dummyParent();
     }
 
     @Test
@@ -41,14 +43,7 @@ class JpaCategoryRepositoryTest {
     @Test
     void findById() {
         //given
-        sample = Category.builder()
-                .name(name)
-                .order(null)
-                .isShown(true)
-                .parent(null)
-                .build();
         Category save = jpaCategoryRepository.save(sample);
-
 
         //when
         Category category = jpaCategoryRepository.findById(save.getId())
@@ -60,32 +55,31 @@ class JpaCategoryRepositoryTest {
     }
 
     @Test
-    void findAll() {
+    void findAll_pageable() {
         //given
-        sample = Category.builder()
-                .name(name)
-                .order(null)
-                .isShown(true)
-                .parent(null)
-                .build();
-        Category save = jpaCategoryRepository.save(sample);
+        int size = 3;
+        for (int i = 0; i < 5; i++) {
+            sample = Category.builder()
+                    .name(name + "1")
+                    .order(null)
+                    .isShown(true)
+                    .parent(null)
+                    .build();
+            jpaCategoryRepository.save(sample);
+        }
+
+        PageRequest pageRequest = PageRequest.of(0, size);
 
         //when
-        List<Category> all = jpaCategoryRepository.findAll();
+        Page<Category> page = jpaCategoryRepository.findAll(pageRequest);
 
         //then
-        assertThat(all.size() > 0).isTrue();
+        assertThat(page.getContent().size()).isEqualTo(size);
     }
 
     @Test
     void deleteById() {
         // given
-        sample = Category.builder()
-                .name(name)
-                .order(null)
-                .isShown(true)
-                .parent(null)
-                .build();
         Category save = jpaCategoryRepository.save(sample);
 
         // when
@@ -95,5 +89,20 @@ class JpaCategoryRepositoryTest {
         // then
         assertThat(category).isNull();
     }
+
+    @Test
+    void findByName() {
+        // given
+        Category save = jpaCategoryRepository.save(sample);
+
+        // when
+        Category category = jpaCategoryRepository.findByName(name)
+                .orElseThrow(() -> new CategoryNotFoundException(name));
+
+        // then
+        assertThat(category.getName()).isEqualTo(save.getName());
+    }
+
+
 }
 

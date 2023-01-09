@@ -29,12 +29,13 @@ import lombok.NoArgsConstructor;
 @Table(name = "member_roles")
 @Entity
 public class MemberRole {
+
     @EmbeddedId
     private Pk id;
 
     @MapsId("memberId")
     @ManyToOne
-    @JoinColumn(name = "member_Id", nullable = false, unique = true)
+    @JoinColumn(name = "member_id", nullable = false, unique = true)
     private Member member;
 
     @MapsId("roleId")
@@ -54,6 +55,7 @@ public class MemberRole {
     @Getter
     @Embeddable
     public static class Pk implements Serializable {
+
         @Column(name = "member_id", nullable = false)
         private Long memberId;
 

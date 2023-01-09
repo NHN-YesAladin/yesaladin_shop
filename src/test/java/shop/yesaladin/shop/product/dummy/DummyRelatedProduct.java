@@ -5,6 +5,7 @@ import shop.yesaladin.shop.product.domain.model.RelatedProduct;
 import shop.yesaladin.shop.product.domain.model.RelatedProduct.Pk;
 
 public class DummyRelatedProduct {
+
     public static RelatedProduct dummy(Product product1, Product product2) {
         Pk pk = Pk.builder()
                 .productMainId(product1.getId())

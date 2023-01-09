@@ -1,13 +1,17 @@
 package shop.yesaladin.shop.category.domain.model;
 
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,7 +34,9 @@ import lombok.ToString;
 @Table(name = "categories")
 @Entity
 public class Category {
+
     @Id
+    //TODO Category autoIncrement off 이후 삭제 예정
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -47,7 +53,12 @@ public class Category {
     private Integer order;
 
     @ToString.Exclude
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
     private Category parent;
+
+    @ToString.Exclude
+    @OneToMany(mappedBy = "parent")
+    private List<Category> children;
+
 }

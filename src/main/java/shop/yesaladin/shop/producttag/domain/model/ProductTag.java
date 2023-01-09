@@ -20,8 +20,8 @@ import shop.yesaladin.shop.product.domain.model.Product;
 /**
  * 상품 태그 관계의 엔터티 클래스입니다.
  *
- * @author : 이수정
- * @since : 1.0
+ * @author 이수정
+ * @since 1.0
  */
 @Getter
 @Builder
@@ -51,6 +51,7 @@ public class ProductTag {
     @EqualsAndHashCode
     @Embeddable
     public static class Pk implements Serializable {
+
         @Column(name = "product_id", nullable = false)
         private Long productId;
 
