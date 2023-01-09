@@ -9,5 +9,6 @@ import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
  * @since 1.0
  */
 public interface CommandSubscribeProductService {
+
     SubscribeProduct register(SubscribeProduct subscribeProduct);
 }

@@ -11,5 +11,5 @@ import shop.yesaladin.shop.product.domain.model.Product;
  */
 public interface QueryProductRepository {
 
-    Optional<Product> findById(Long id);
+    Optional<Product> findByISBN(String ISBN);
 }

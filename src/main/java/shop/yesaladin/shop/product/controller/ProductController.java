@@ -4,13 +4,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.dto.ProductCreateDto;
 import shop.yesaladin.shop.product.dto.ProductResponseDto;
 import shop.yesaladin.shop.product.service.inter.CommandProductService;
@@ -41,6 +39,7 @@ public class ProductController {
             throws URISyntaxException {
         ProductResponseDto productResponseDto = commandProductService.create(productCreateDto);
 
-        return ResponseEntity.created(new URI(productResponseDto.getId().toString())).body(productResponseDto);
+        return ResponseEntity.created(new URI(productResponseDto.getId().toString()))
+                .body(productResponseDto);
     }
 }

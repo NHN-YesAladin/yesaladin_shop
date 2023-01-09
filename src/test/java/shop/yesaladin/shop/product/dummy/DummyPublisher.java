@@ -1,6 +1,6 @@
 package shop.yesaladin.shop.product.dummy;
 
-import shop.yesaladin.shop.publisher.domain.model.Publisher;
+import shop.yesaladin.shop.publish.domain.model.Publisher;
 
 public class DummyPublisher {
 

@@ -10,16 +10,14 @@ import org.junit.jupiter.api.Test;
 import shop.yesaladin.shop.file.service.inter.CommandFileService;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.product.domain.model.Product;
-import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
 import shop.yesaladin.shop.product.domain.repository.CommandProductRepository;
 import shop.yesaladin.shop.product.dto.ProductCreateDto;
 import shop.yesaladin.shop.product.dto.ProductResponseDto;
-import shop.yesaladin.shop.product.dummy.DummyProduct;
 import shop.yesaladin.shop.product.dummy.DummyProductCreateDto;
 import shop.yesaladin.shop.product.service.inter.CommandProductService;
 import shop.yesaladin.shop.product.service.inter.CommandSubscribeProductService;
 import shop.yesaladin.shop.product.service.inter.CommandTotalDiscountRateService;
-import shop.yesaladin.shop.publisher.service.inter.CommandPublisherService;
+import shop.yesaladin.shop.publish.service.inter.CommandPublisherService;
 import shop.yesaladin.shop.writing.service.inter.CommandWritingService;
 
 class CommandProductServiceImplTest {
