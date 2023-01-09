@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.member.domain.model.Member;
-import shop.yesaladin.shop.member.domain.model.MemberGrade;
 import shop.yesaladin.shop.order.domain.dummy.MemberAddress;
 import shop.yesaladin.shop.order.domain.model.MemberOrder;
 import shop.yesaladin.shop.order.domain.model.NonMemberOrder;
@@ -25,7 +24,6 @@ import shop.yesaladin.shop.order.domain.model.SubscribeOrder;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMemberAddress;
-import shop.yesaladin.shop.order.persistence.dummy.DummyMemberGrade;
 import shop.yesaladin.shop.order.persistence.dummy.DummyOrder;
 import shop.yesaladin.shop.order.persistence.dummy.DummySubscribe;
 import shop.yesaladin.shop.order.persistence.dummy.DummySubscribeProduct;
@@ -47,14 +45,12 @@ class QueryDslOrderQueryRepositoryTest {
     @BeforeEach
     void setUp() throws NoSuchFieldException, IllegalAccessException {
         nonMemberOrder = DummyOrder.nonMemberOrder();
-        MemberGrade memberGrade = DummyMemberGrade.memberGrade;
-        Member member = DummyMember.member(memberGrade);
+        Member member = DummyMember.member();
         MemberAddress memberAddress = DummyMemberAddress.address(member);
         SubscribeProduct subscribeProduct = DummySubscribeProduct.subscribeProduct();
         memberOrder = DummyOrder.memberOrder(member, memberAddress);
         Subscribe subscribe = DummySubscribe.subscribe(memberAddress, member, subscribeProduct);
         subscribeOrder = DummyOrder.subscribeOrder(subscribe);
-        entityManager.persist(memberGrade);
         entityManager.persist(member);
         entityManager.persist(memberAddress);
         entityManager.persist(nonMemberOrder);
