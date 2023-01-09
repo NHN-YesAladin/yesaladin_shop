@@ -9,7 +9,7 @@ import shop.yesaladin.shop.member.dto.MemberUpdateResponse;
 /**
  * Create, Update, Delete 를 Controller Layer에서 사용하기 위한 service interface
  *
- * @author : 송학현, 최예
+ * @author : 송학현, 최예린
  * @since : 1.0
  */
 public interface CommandMemberService {
@@ -36,12 +36,20 @@ public interface CommandMemberService {
     MemberUpdateResponse update(Long id, MemberUpdateRequest updateDto);
 
     /**
-     * 회원을 차단/해지 하기 위한 기능입니다.
+     * 회원을 차단 하기 위한 기능입니다.
      *
-     * @param id      차단/해재 할 회원 id
-     * @param blocked 차단(true)/해지(false)
+     * @param id      차단할 회원 id
      * @author 최예린
      * @since 1.0
      */
-    MemberBlockResponse updateBlocked(Long id, boolean blocked);
+    MemberBlockResponse block(Long id);
+
+    /**
+     * 회원 차단해지를 위한 기능 입니다.
+     *
+     * @param id      차단해지할 회원 id
+     * @author 최예린
+     * @since 1.0
+     */
+    MemberBlockResponse unblock(Long id);
 }

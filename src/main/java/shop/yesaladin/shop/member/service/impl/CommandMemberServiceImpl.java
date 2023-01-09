@@ -70,38 +70,54 @@ public class CommandMemberServiceImpl implements CommandMemberService {
     @Transactional
     @Override
     public MemberUpdateResponse update(Long id, MemberUpdateRequest updateDto) {
-        Member member = queryMemberRepository.findById(id)
-                .orElseThrow(() -> new MemberNotFoundException("Member Id: " + id));
+        Member member = getInvalidMember(id);
 
         checkUniqueData(
                 queryMemberRepository.findMemberByNickname(updateDto.getNickname()),
                 "nickname"
         );
+        member.changeNickname(updateDto.getNickname());
 
-        member.setNewNickname(updateDto.getNickname());
-        Member updatedMember = commandMemberRepository.save(member);
-
-        return MemberUpdateResponse.fromEntity(updatedMember);
+        return MemberUpdateResponse.fromEntity(member);
     }
 
     /**
-     * 회원 차단/해지를 위한 기능 입니다.
+     * 회원 차단을 위한 기능 입니다.
      *
-     * @param id      차단/해지할 회원 id
-     * @param blocked 차단(ture)/해지(false)
+     * @param id      차단할 회원 id
      * @author 최예린
      * @since 1.0
      */
     @Transactional
     @Override
-    public MemberBlockResponse updateBlocked(Long id, boolean blocked) {
-        Member member = queryMemberRepository.findById(id)
+    public MemberBlockResponse block(Long id) {
+        Member member = getInvalidMember(id);
+
+        member.blockMember();
+
+        return MemberBlockResponse.fromEntity(member);
+    }
+
+    /**
+     * 회원 차단해지를 위한 기능 입니다.
+     *
+     * @param id      차단해지할 회원 id
+     * @author 최예린
+     * @since 1.0
+     */
+    @Transactional
+    @Override
+    public MemberBlockResponse unblock(Long id) {
+        Member member = getInvalidMember(id);
+
+        member.unblockMember();
+
+        return MemberBlockResponse.fromEntity(member);
+    }
+
+    private Member getInvalidMember(Long id) {
+        return queryMemberRepository.findById(id)
                 .orElseThrow(() -> new MemberNotFoundException("Member Id: " + id));
-
-        member.setMemberBlocked(blocked);
-        Member updatedMember = commandMemberRepository.save(member);
-
-        return MemberBlockResponse.fromEntity(updatedMember);
     }
 
     private void checkUniqueData(Optional<Member> member, String target) {

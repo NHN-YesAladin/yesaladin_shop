@@ -17,6 +17,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import shop.yesaladin.shop.member.exception.AlreadyBlockedMemberException;
+import shop.yesaladin.shop.member.exception.AlreadyUnblockedMemberException;
 import shop.yesaladin.shop.member.persistence.converter.MemberGenderCodeConverter;
 
 /**
@@ -112,25 +114,29 @@ public class Member {
     }
 
     /**
-     * Member entity 의 password 를 encrypted 된 값으로 변경 하기 위한 기능 입니다.
+     * Member entity 의 blocked 를 false 로 변경하기 위한 기능입니다.
      *
-     * @param encryptedPassword password 가 encrypted 된 파라미터입니다.
-     * @author : 송학현
-     * @since : 1.0
-     */
-    public void setEncryptedPassword(String encryptedPassword) {
-        this.password = encryptedPassword;
-    }
-
-    /**
-     * Member entity 의 blocked 를 true/false 로 변경하기 위한 기능입니다.
-     *
-     * @param isBlocked blocked 의 유무
      * @author 최예린
      * @since 1.0
      */
-    public void setMemberBlocked(boolean isBlocked) {
-        this.isBlocked = isBlocked;
+    public void unblockMember() {
+        if (!this.isBlocked) {
+            throw new AlreadyUnblockedMemberException(this.id);
+        }
+        this.isBlocked = false;
+    }
+
+    /**
+     * Member entity 의 blocked 를 true 로 변경하기 위한 기능입니다.
+     *
+     * @author 최예린
+     * @since 1.0
+     */
+    public void blockMember() {
+        if (this.isBlocked) {
+            throw new AlreadyBlockedMemberException(this.id);
+        }
+        this.isBlocked = true;
     }
 
     /**
@@ -140,7 +146,7 @@ public class Member {
      * @author 최예린
      * @since 1.0
      */
-    public void setNewNickname(String newNickname) {
+    public void changeNickname(String newNickname) {
         this.nickname = newNickname;
     }
 }

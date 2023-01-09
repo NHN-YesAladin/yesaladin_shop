@@ -2,10 +2,14 @@ package shop.yesaladin.shop.member.controller;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Objects;
 import javax.validation.Valid;
+import javax.validation.ValidationException;
+import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -13,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import shop.yesaladin.shop.member.dto.MemberBlockResponse;
 import shop.yesaladin.shop.member.dto.MemberCreateRequest;
 import shop.yesaladin.shop.member.dto.MemberCreateResponse;
 import shop.yesaladin.shop.member.dto.MemberUpdateRequest;
@@ -60,8 +63,8 @@ public class CommandMemberController {
     @PutMapping("/{memberId}")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<MemberUpdateResponse> updateMember(
-            @PathVariable("memberId") Long id,
-            @Valid @RequestBody MemberUpdateRequest updateDto
+            @Valid @RequestBody MemberUpdateRequest updateDto,
+            @PathVariable("memberId") Long id
     ) {
         MemberUpdateResponse response = commandMemberService.update(id, updateDto);
 
@@ -77,8 +80,8 @@ public class CommandMemberController {
      */
     @PutMapping("/{memberId}/block")
     @ResponseStatus(HttpStatus.OK)
-    public void blockOffMember(@PathVariable("memberId") Long id) {
-        commandMemberService.updateBlocked(id, false);
+    public void blockMember(@PathVariable("memberId") Long id) {
+        commandMemberService.block(id);
     }
 
     /**
@@ -89,7 +92,8 @@ public class CommandMemberController {
      * @since 1.0
      */
     @PutMapping("/{memberId}/unblock")
-    public void blockOnMember(@PathVariable("memberId") Long id) {
-        commandMemberService.updateBlocked(id, true);
+    public void unblockMember(@PathVariable("memberId") Long id) {
+        commandMemberService.unblock(id);
     }
+
 }

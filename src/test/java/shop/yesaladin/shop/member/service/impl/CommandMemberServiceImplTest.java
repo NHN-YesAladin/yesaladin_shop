@@ -4,13 +4,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.util.Optional;
-import javax.swing.text.html.Option;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.platform.commons.util.ReflectionUtils;
 import org.mockito.Mockito;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberGrade;
@@ -80,32 +81,30 @@ class CommandMemberServiceImplTest {
         long id = 1;
         String name = "name";
         String nickname = "nickname";
-        MemberUpdateRequest updateRequest = new MemberUpdateRequest(nickname);
+        MemberUpdateRequest request = ReflectionUtils.newInstance(MemberUpdateRequest.class, nickname);
 
         Member member = Member.builder()
                 .id(id)
                 .name(name)
                 .nickname(nickname)
                 .build();
-        Mockito.when(queryMemberRepository.findById(id)).thenReturn(Optional.ofNullable(member));
+        Mockito.when(queryMemberRepository.findById(id)).thenReturn(Optional.of(member));
         Mockito.when(queryMemberRepository.findMemberByNickname(nickname)).thenReturn(Optional.empty());
-        Mockito.when(commandMemberRepository.save(member)).thenReturn(member);
 
         //when
-        MemberUpdateResponse actualMember = service.update(id, updateRequest);
+        MemberUpdateResponse actualMember = service.update(id, request);
 
         //then
         assertThat(actualMember.getId()).isEqualTo(id);
         assertThat(actualMember.getNickname()).isEqualTo(nickname);
         assertThat(actualMember.getName()).isEqualTo(name);
 
-        verify(queryMemberRepository, times(1)).findById(anyLong());
-        verify(queryMemberRepository, times(1)).findMemberByNickname(anyString());
-        verify(commandMemberRepository, times(1)).save(any());
+        verify(queryMemberRepository, times(1)).findById(eq(id));
+        verify(queryMemberRepository, times(1)).findMemberByNickname(eq(nickname));
     }
 
     @Test
-    void updateBlocked() {
+    void block() {
         //given
         long id = 1;
         boolean blocked = false;
@@ -118,19 +117,45 @@ class CommandMemberServiceImplTest {
                 .loginId(loginId)
                 .isBlocked(blocked)
                 .build();
-        Mockito.when(queryMemberRepository.findById(id)).thenReturn(Optional.ofNullable(member));
-        Mockito.when(commandMemberRepository.save(member)).thenReturn(member);
+        Mockito.when(queryMemberRepository.findById(id)).thenReturn(Optional.of(member));
 
         //when
-        MemberBlockResponse actualMember = service.updateBlocked(id, blocked);
+        MemberBlockResponse actualMember = service.block(id);
 
         //then
         assertThat(actualMember.getId()).isEqualTo(id);
         assertThat(actualMember.getName()).isEqualTo(name);
         assertThat(actualMember.getLoginId()).isEqualTo(loginId);
-        assertThat(actualMember.isBlocked()).isEqualTo(blocked);
+        assertThat(actualMember.isBlocked()).isTrue();
 
-        verify(queryMemberRepository, times(1)).findById(anyLong());
-        verify(commandMemberRepository, times(1)).save(any());
+        verify(queryMemberRepository, times(1)).findById(eq(id));
+    }
+
+    @Test
+    void unblock() {
+        //given
+        long id = 1;
+        boolean blocked = true;
+        String name = "name";
+        String loginId = "loginId";
+
+        Member member = Member.builder()
+                .id(id)
+                .name(name)
+                .loginId(loginId)
+                .isBlocked(blocked)
+                .build();
+        Mockito.when(queryMemberRepository.findById(id)).thenReturn(Optional.of(member));
+
+        //when
+        MemberBlockResponse actualMember = service.unblock(id);
+
+        //then
+        assertThat(actualMember.getId()).isEqualTo(id);
+        assertThat(actualMember.getName()).isEqualTo(name);
+        assertThat(actualMember.getLoginId()).isEqualTo(loginId);
+        assertThat(actualMember.isBlocked()).isFalse();
+
+        verify(queryMemberRepository, times(1)).findById(eq(id));
     }
 }

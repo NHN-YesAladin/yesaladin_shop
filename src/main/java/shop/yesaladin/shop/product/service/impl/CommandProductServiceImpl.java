@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.file.service.inter.CommandFileService;
 import shop.yesaladin.shop.member.domain.model.Member;
+import shop.yesaladin.shop.member.dto.MemberResponse;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
@@ -71,7 +72,7 @@ public class CommandProductServiceImpl implements CommandProductService {
         // Writing
         Member member = null;
         if (!dto.getLoginId().equals("")) {
-            member = queryMemberService.findMemberByLoginId(dto.getLoginId());
+            member = queryMemberService.findMemberByLoginId(dto.getLoginId()).toEntity();
         }
         commandWritingService.create(dto.getWriterName(), product, member);
 

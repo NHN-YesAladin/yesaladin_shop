@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.member.dto;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,8 +14,8 @@ import shop.yesaladin.shop.member.domain.model.MemberGrade;
  * @since 1.0
  */
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class MemberUpdateResponse {
 
     private Long id;
