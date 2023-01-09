@@ -1,5 +1,9 @@
 package shop.yesaladin.shop.order.persistence;
 
+import java.lang.reflect.Field;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import javax.persistence.EntityManager;
 import org.assertj.core.api.Assertions;
@@ -18,6 +22,7 @@ import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
 import shop.yesaladin.shop.order.domain.model.Subscribe;
 import shop.yesaladin.shop.order.domain.model.SubscribeOrder;
+import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMemberAddress;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMemberGrade;
@@ -40,18 +45,14 @@ class QueryDslOrderQueryRepositoryTest {
 
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws NoSuchFieldException, IllegalAccessException {
         nonMemberOrder = DummyOrder.nonMemberOrder();
         MemberGrade memberGrade = DummyMemberGrade.memberGrade;
         Member member = DummyMember.member(memberGrade);
         MemberAddress memberAddress = DummyMemberAddress.address(member);
         SubscribeProduct subscribeProduct = DummySubscribeProduct.subscribeProduct();
         memberOrder = DummyOrder.memberOrder(member, memberAddress);
-        Subscribe subscribe = DummySubscribe.subscribe(
-                memberAddress,
-                member,
-                subscribeProduct
-        );
+        Subscribe subscribe = DummySubscribe.subscribe(memberAddress, member, subscribeProduct);
         subscribeOrder = DummyOrder.subscribeOrder(subscribe);
         entityManager.persist(memberGrade);
         entityManager.persist(member);
@@ -61,6 +62,33 @@ class QueryDslOrderQueryRepositoryTest {
         entityManager.persist(subscribeProduct);
         entityManager.persist(subscribe);
         entityManager.persist(subscribeOrder);
+
+        for (int i = 1; i <= 30; i++) {
+            NonMemberOrder nonO = DummyOrder.nonMemberOrder();
+            MemberOrder memberO = DummyOrder.memberOrder(member, memberAddress);
+            subscribe = DummySubscribe.subscribe(memberAddress, member, subscribeProduct);
+            SubscribeOrder subO = DummyOrder.subscribeOrder(subscribe);
+
+            LocalDateTime orderDateTime = LocalDateTime.of(2023, 1, i, 0, 0);
+            Field orderDateTimeField = Order.class.getDeclaredField("orderDateTime");
+            Field orderNumberField = Order.class.getDeclaredField("orderNumber");
+            orderDateTimeField.setAccessible(true);
+            orderNumberField.setAccessible(true);
+
+            orderDateTimeField.set(nonO, orderDateTime);
+            orderDateTimeField.set(memberO, orderDateTime);
+            orderDateTimeField.set(subO, orderDateTime);
+            orderNumberField.set(nonO, i + "n");
+            orderNumberField.set(memberO, i + "m");
+            orderNumberField.set(subO, i + "s");
+
+            entityManager.persist(memberAddress);
+            entityManager.persist(nonO);
+            entityManager.persist(memberO);
+            entityManager.persist(subscribe);
+            entityManager.persist(subO);
+        }
+
         entityManager.flush();
     }
 
@@ -88,8 +116,7 @@ class QueryDslOrderQueryRepositoryTest {
         Assertions.assertThat(actual).isPresent();
         Assertions.assertThat(actual.get().getOrderNumber())
                 .isEqualTo(memberOrder.getOrderNumber());
-        Assertions.assertThat(actual.get())
-                .isInstanceOf(OrderCode.MEMBER_ORDER.getOrderClass());
+        Assertions.assertThat(actual.get()).isInstanceOf(OrderCode.MEMBER_ORDER.getOrderClass());
     }
 
     @Test
@@ -104,6 +131,48 @@ class QueryDslOrderQueryRepositoryTest {
                 .isEqualTo(subscribeOrder.getOrderNumber());
         Assertions.assertThat(actual.get())
                 .isInstanceOf(OrderCode.MEMBER_SUBSCRIBE.getOrderClass());
+    }
+
+    @Test
+    @DisplayName("특정 기간 내 주문 기록 조회에 성공한다.")
+    void findAllOrdersInPeriod() {
+        // when
+        List<OrderSummaryDto> actual = queryRepository.findAllOrdersInPeriod(LocalDate.of(
+                2023,
+                1,
+                1
+        ), LocalDate.of(2023, 1, 2), 10, 1);
+
+        // then
+        Assertions.assertThat(actual).hasSize(9);
+    }
+
+    @Test
+    @DisplayName("특정 기간 내 주문 기록이 페이지네이션 되어 조회된다.")
+    void findAllOrdersInPeriodWithPagination() {
+        // when
+        List<OrderSummaryDto> actual = queryRepository.findAllOrdersInPeriod(LocalDate.of(
+                2023,
+                1,
+                1
+        ), LocalDate.of(2023, 1, 3), 10, 1);
+
+        // then
+        Assertions.assertThat(actual).hasSize(10);
+    }
+
+    @Test
+    @DisplayName("특정 기간 내 주문 수가 반환된다.")
+    void getCountOrdersInPeriod() {
+        // when
+        long actual = queryRepository.getCountOfOrdersInPeriod(LocalDate.of(
+                2023,
+                1,
+                1
+        ), LocalDate.of(2023, 1, 3));
+
+        // then
+        Assertions.assertThat(actual).isEqualTo(12);
     }
 
 
