@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.repository.QueryCategoryRepository;
-import shop.yesaladin.shop.category.dto.CategoryResponse;
+import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 import shop.yesaladin.shop.category.exception.CategoryNotFoundException;
 import shop.yesaladin.shop.category.service.inter.QueryCategoryService;
 
@@ -39,12 +39,12 @@ public class QueryCategoryServiceImpl implements QueryCategoryService {
      */
     @Transactional(readOnly = true)
     @Override
-    public Page<CategoryResponse> findCategories(Pageable pageable) {
+    public Page<CategoryResponseDto> findCategories(Pageable pageable) {
         Page<Category> categoryPage = queryCategoryRepository.findAll(pageable);
 
-        List<CategoryResponse> responseDtos = Collections.synchronizedList(new ArrayList<>());
+        List<CategoryResponseDto> responseDtos = Collections.synchronizedList(new ArrayList<>());
         for (Category category : categoryPage) {
-            responseDtos.add(CategoryResponse.fromEntity(category));
+            responseDtos.add(CategoryResponseDto.fromEntity(category));
         }
 
         return new PageImpl<>(responseDtos, pageable, responseDtos.size());
@@ -59,10 +59,10 @@ public class QueryCategoryServiceImpl implements QueryCategoryService {
      */
     @Transactional(readOnly = true)
     @Override
-    public CategoryResponse findCategoryById(long id) {
+    public CategoryResponseDto findCategoryById(long id) {
         Category category = queryCategoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryNotFoundException(id));
-        return CategoryResponse.fromEntity(category);
+        return CategoryResponseDto.fromEntity(category);
     }
 
     /**

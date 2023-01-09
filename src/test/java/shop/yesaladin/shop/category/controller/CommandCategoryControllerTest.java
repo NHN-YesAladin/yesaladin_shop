@@ -27,9 +27,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.category.domain.model.Category;
-import shop.yesaladin.shop.category.dto.CategoryRequest;
-import shop.yesaladin.shop.category.dto.CategoryOnlyId;
-import shop.yesaladin.shop.category.dto.CategoryResponse;
+import shop.yesaladin.shop.category.dto.CategoryRequestDto;
+import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 import shop.yesaladin.shop.category.service.inter.CommandCategoryService;
 
 
@@ -61,8 +60,8 @@ class CommandCategoryControllerTest {
     @DisplayName("카테고리 생성 성공")
     void createCategory() throws Exception {
         // given
-        CategoryRequest createDto = new CategoryRequest(name, true, null);
-        given(commandCategoryService.create(any())).willReturn(CategoryResponse.fromEntity(category));
+        CategoryRequestDto createDto = new CategoryRequestDto(name, true, null);
+        given(commandCategoryService.create(any())).willReturn(CategoryResponseDto.fromEntity(category));
 
         // when
         ResultActions perform = mockMvc.perform(post("/v1/categories").contentType(MediaType.APPLICATION_JSON)
@@ -80,7 +79,7 @@ class CommandCategoryControllerTest {
     @DisplayName("카테고리 생성 실패 - name이 null 인 경우")
     void createCategory_invalidatedData_fail() throws Exception {
         // given
-        CategoryRequest createDto = new CategoryRequest(null, true, null);
+        CategoryRequestDto createDto = new CategoryRequestDto(null, true, null);
 
         //when
         ResultActions perform = mockMvc.perform(post("/v1/categories").contentType(MediaType.APPLICATION_JSON)
@@ -97,15 +96,16 @@ class CommandCategoryControllerTest {
     void updateCategory() throws Exception {
         // given
         String changeName = "중고서적";
-        CategoryRequest categoryRequest = new CategoryRequest(name, true, null);
-        Category toEntity = categoryRequest.toEntity(id, null);
-        given(commandCategoryService.update(any(), any())).willReturn(CategoryResponse.fromEntity(
+        CategoryRequestDto categoryRequestDto = new CategoryRequestDto(name, true, null);
+        //TODO 수정 필요
+        Category toEntity = categoryRequestDto.toEntity(id, 0,null);
+        given(commandCategoryService.update(any(), any())).willReturn(CategoryResponseDto.fromEntity(
                 toEntity));
 
         // when
         ResultActions perform = mockMvc.perform(put(
                 "/v1/categories/" + toEntity.getId()).contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(categoryRequest)));
+                .content(objectMapper.writeValueAsString(categoryRequestDto)));
 
         // then
         perform.andDo(print())
@@ -123,15 +123,16 @@ class CommandCategoryControllerTest {
     void updateCategory_invalidatedData_fail() throws Exception {
         // given
         String nullName = null;
-        CategoryRequest categoryRequest = new CategoryRequest(nullName, true, null);
-        Category toEntity = categoryRequest.toEntity(id, null);
-        given(commandCategoryService.update(any(), any())).willReturn(CategoryResponse.fromEntity(
+        CategoryRequestDto categoryRequestDto = new CategoryRequestDto(nullName, true, null);
+        //TODO 수정 필요
+        Category toEntity = categoryRequestDto.toEntity(id, 0, null);
+        given(commandCategoryService.update(any(), any())).willReturn(CategoryResponseDto.fromEntity(
                 toEntity));
 
         // when
         ResultActions perform = mockMvc.perform(put(
                 "/v1/categories/" + toEntity.getId()).contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(categoryRequest)));
+                .content(objectMapper.writeValueAsString(categoryRequestDto)));
 
         // then
         perform.andDo(print()).andExpect(status().is5xxServerError());

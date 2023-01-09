@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ResultCode {
+public class ResultCodeDto {
 
     private String result;
 }

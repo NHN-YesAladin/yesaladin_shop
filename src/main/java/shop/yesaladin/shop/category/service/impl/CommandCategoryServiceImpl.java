@@ -6,9 +6,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.repository.CommandCategoryRepository;
-import shop.yesaladin.shop.category.dto.CategoryRequest;
-import shop.yesaladin.shop.category.dto.CategoryOnlyId;
-import shop.yesaladin.shop.category.dto.CategoryResponse;
+import shop.yesaladin.shop.category.domain.repository.QueryDslCategoryRepository;
+import shop.yesaladin.shop.category.dto.CategoryRequestDto;
+import shop.yesaladin.shop.category.dto.CategoryOnlyIdDto;
+import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 import shop.yesaladin.shop.category.service.inter.CommandCategoryService;
 import shop.yesaladin.shop.category.service.inter.QueryCategoryService;
 
@@ -24,25 +25,64 @@ import shop.yesaladin.shop.category.service.inter.QueryCategoryService;
 public class CommandCategoryServiceImpl implements CommandCategoryService {
 
     private final CommandCategoryRepository commandCategoryRepository;
+    private final QueryDslCategoryRepository queryDslCategoryRepository;
     private final QueryCategoryService queryCategoryService;
 
 
     /**
      * 카테고리 생성을 위한 기능
      *  요청 dto에 부모 카테고리의 id가 있는 경우 id를 통한 카테고리 조회 추가 실행
+     *    부모 id가 null이 아닌 경우 : 동일한 parentId를 가지는 카테고리중 id에 100L을 더하여 엔티티 생성
+     *    부모 id가 null인 경우 : 카테고리 id에 10000L 더하여 엔티티 생성
+     *
+     *    *  해당 save() 메서드는 기본키 생성이 데이터베이스에 없기 때문에 select문이 한 번 실행되어
+     *      *   해당하는 pk 값이 없는지 확인 후 insert 한다.
      *
      * @param createRequest 카테고리의 일부 정보를 담은 request Dto
      * @return CategoryResponse 카테고리의 일부 정보를 담은 response Dto
      */
     @Transactional
     @Override
-    public CategoryResponse create(CategoryRequest createRequest) {
-        Category parentCategory = null;
+    public CategoryResponseDto create(CategoryRequestDto createRequest) {
         if (Objects.nonNull(createRequest.getParentId())) {
-            parentCategory = queryCategoryService.findParentCategoryById(createRequest.getParentId());
+            return saveCategoryByAddingChildId(createRequest);
         }
-        Category category = commandCategoryRepository.save(createRequest.toEntity(parentCategory));
-        return CategoryResponse.fromEntity(category);
+        return saveCategoryByAddingId(createRequest);
+    }
+
+    /**
+     * 1차 카테고리인 경우,카테고리 생성시 id에 10000L씩 더해서 id 배정
+     *
+     * @param createRequest
+     * @return CategoryResponseDto
+     */
+    private CategoryResponseDto saveCategoryByAddingId(CategoryRequestDto createRequest) {
+        CategoryOnlyIdDto onlyParentId = queryDslCategoryRepository.getLatestIdByDepth(Category.DEPTH_PARENT);
+
+        Category category = commandCategoryRepository.save(createRequest.toEntity(
+                onlyParentId.getId() + Category.TERM_OF_PARENT_ID, Category.DEPTH_PARENT, null));
+        return CategoryResponseDto.fromEntity(category);
+    }
+
+    /**
+     * 2차 카테고리 인 경우, 카테고리 생성시 id에 100L씩 더해서 id 배정
+     *
+     * @param createRequest
+     * @return CategoryResponseDto
+     */
+    private CategoryResponseDto saveCategoryByAddingChildId(CategoryRequestDto createRequest) {
+        CategoryOnlyIdDto onlyChildId = queryDslCategoryRepository.getLatestChildIdByDepthAndParentId(
+                Category.DEPTH_CHILD,
+                createRequest.getParentId()
+        );
+        Category parentCategory = queryCategoryService.findParentCategoryById(createRequest.getParentId());
+
+        Category category = commandCategoryRepository.save(createRequest.toEntity(
+                onlyChildId.getId() + Category.TERM_OF_CHILD_ID,
+                Category.DEPTH_CHILD,
+                parentCategory
+        ));
+        return CategoryResponseDto.fromEntity(category);
     }
 
     /**
@@ -55,16 +95,18 @@ public class CommandCategoryServiceImpl implements CommandCategoryService {
      */
     @Transactional
     @Override
-    public CategoryResponse update(Long id, CategoryRequest createRequest) {
+    public CategoryResponseDto update(Long id, CategoryRequestDto createRequest) {
         Category parentCategory = null;
         if (Objects.nonNull(createRequest.getParentId())) {
             parentCategory = queryCategoryService.findParentCategoryById(createRequest.getParentId());
         }
+        //TODO 수정 필요
         Category category = commandCategoryRepository.save(createRequest.toEntity(
                 id,
+                0,
                 parentCategory
         ));
-        return CategoryResponse.fromEntity(category);
+        return CategoryResponseDto.fromEntity(category);
     }
 
     /**

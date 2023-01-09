@@ -4,6 +4,7 @@ import org.springframework.data.repository.Repository;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.repository.CommandCategoryRepository;
 import shop.yesaladin.shop.category.domain.repository.QueryCategoryRepository;
+import shop.yesaladin.shop.category.domain.repository.QueryDslCategoryRepository;
 
 
 /**

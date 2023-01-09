@@ -35,9 +35,14 @@ import lombok.ToString;
 @Entity
 public class Category {
 
+    public static int DEPTH_PARENT = 0;
+    public static int DEPTH_CHILD = 1;
+    public static long TERM_OF_PARENT_ID = 10000L;
+    public static long TERM_OF_CHILD_ID = 100L;
+
     @Id
     //TODO Category autoIncrement off 이후 삭제 예정
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(length = 30, nullable = false)
@@ -57,8 +62,12 @@ public class Category {
     @JoinColumn(name = "parent_id")
     private Category parent;
 
+    @Builder.Default
+    @Column(name = "depth", nullable = false)
+    private int depth = 0;
+
     @ToString.Exclude
-    @OneToMany(mappedBy = "parent")
+    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
     private List<Category> children;
 
 }

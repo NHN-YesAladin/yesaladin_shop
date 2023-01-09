@@ -17,7 +17,7 @@ import shop.yesaladin.shop.category.domain.model.Category;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoryRequest {
+public class CategoryRequestDto {
 
     @NotBlank
     private String name;
@@ -40,15 +40,16 @@ public class CategoryRequest {
     /**
      * 카테고리 수정을 위해 해당 dto 를 Category 로 변환
      *
-     * @param id 카테고리 id
+     * @param id     카테고리 id
      * @param parent 2차 카테고리일 경우 사용, 1차 카테고리일 경우 null 입력
      * @return Category
      */
-    public Category toEntity(Long id, Category parent) {
+    public Category toEntity(Long id, int depth, Category parent) {
         return Category.builder()
                 .id(id)
                 .name(this.name)
                 .isShown(this.isShown)
+                .depth(depth)
                 .parent(parent)
                 .build();
     }
