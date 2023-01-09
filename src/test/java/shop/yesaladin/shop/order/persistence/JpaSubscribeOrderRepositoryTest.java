@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,7 +30,7 @@ class JpaSubscribeOrderRepositoryTest {
     @PersistenceContext
     private EntityManager entityManager;
     @Autowired
-    private JpaOrderRepository<SubscribeOrder> subscribeOrderRepository;
+    private JpaOrderCommandRepository<SubscribeOrder> subscribeOrderRepository;
 
     private String orderNumber = "1234-5678";
     private LocalDateTime orderDateTime = LocalDateTime.now();
@@ -78,30 +77,6 @@ class JpaSubscribeOrderRepositoryTest {
         assertThat(savedOrder.isTransported()).isEqualTo(isTransported);
         assertThat(savedOrder.getExpectedDate()).isEqualTo(expectedDate);
         assertThat(savedOrder.getSubscribe()).isEqualTo(subscribe);
-    }
-
-    @Test
-    void findById() {
-        //given
-        entityManager.persist(subscribeOrder);
-        Long id = subscribeOrder.getId();
-
-        //when
-        Optional<SubscribeOrder> foundOrder = subscribeOrderRepository.findById(id);
-
-        //then
-        assertThat(foundOrder).isPresent();
-        assertThat(foundOrder.get().getId()).isEqualTo(id);
-        assertThat(foundOrder.get().getOrderNumber()).isEqualTo(orderNumber);
-        assertThat(foundOrder.get().getExpectedTransportDate()).isEqualTo(expectedTransportDate);
-        assertThat(foundOrder.get().isHidden()).isEqualTo(isHidden);
-        assertThat(foundOrder.get().getUsedPoint()).isEqualTo(usedPoint);
-        assertThat(foundOrder.get().getShippingFee()).isEqualTo(shippingFee);
-        assertThat(foundOrder.get().getWrappingFee()).isEqualTo(wrappingFee);
-        assertThat(foundOrder.get().getOrderCode()).isEqualTo(orderCode);
-        assertThat(foundOrder.get().isTransported()).isEqualTo(isTransported);
-        assertThat(foundOrder.get().getExpectedDate()).isEqualTo(expectedDate);
-        assertThat(foundOrder.get().getSubscribe()).isEqualTo(subscribe);
     }
 
     SubscribeOrder createSubscribeOrder() {
