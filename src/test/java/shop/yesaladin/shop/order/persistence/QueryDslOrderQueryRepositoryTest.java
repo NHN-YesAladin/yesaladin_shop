@@ -3,7 +3,6 @@ package shop.yesaladin.shop.order.persistence;
 import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 import javax.persistence.EntityManager;
 import org.assertj.core.api.Assertions;
@@ -12,6 +11,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.order.domain.dummy.MemberAddress;
@@ -133,28 +134,28 @@ class QueryDslOrderQueryRepositoryTest {
     @DisplayName("특정 기간 내 주문 기록 조회에 성공한다.")
     void findAllOrdersInPeriod() {
         // when
-        List<OrderSummaryDto> actual = queryRepository.findAllOrdersInPeriod(LocalDate.of(
+        Page<OrderSummaryDto> actual = queryRepository.findAllOrdersInPeriod(LocalDate.of(
                 2023,
                 1,
                 1
-        ), LocalDate.of(2023, 1, 2), 10, 1);
+        ), LocalDate.of(2023, 1, 2), PageRequest.of(0, 10));
 
         // then
-        Assertions.assertThat(actual).hasSize(9);
+        Assertions.assertThat(actual.get()).hasSize(9);
     }
 
     @Test
     @DisplayName("특정 기간 내 주문 기록이 페이지네이션 되어 조회된다.")
     void findAllOrdersInPeriodWithPagination() {
         // when
-        List<OrderSummaryDto> actual = queryRepository.findAllOrdersInPeriod(LocalDate.of(
+        Page<OrderSummaryDto> actual = queryRepository.findAllOrdersInPeriod(LocalDate.of(
                 2023,
                 1,
                 1
-        ), LocalDate.of(2023, 1, 3), 10, 1);
+        ), LocalDate.of(2023, 1, 3), PageRequest.of(0, 10));
 
         // then
-        Assertions.assertThat(actual).hasSize(10);
+        Assertions.assertThat(actual.get()).hasSize(10);
     }
 
     @Test
