@@ -3,12 +3,14 @@ package shop.yesaladin.shop.member.controller;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.shop.member.dto.MemberAddressCreateRequestDto;
@@ -17,7 +19,7 @@ import shop.yesaladin.shop.member.dto.MemberAddressUpdateResponseDto;
 import shop.yesaladin.shop.member.service.inter.CommandMemberAddressService;
 
 /**
- * 회원지 배송과 관련한 등록/수정/삭제 Rest Controller입니다.
+ * 회원지 배송과 관련한 등록/수정/삭제 Rest Controller 입니다.
  *
  * @author 최예린
  * @since 1.0
@@ -50,7 +52,7 @@ public class CommandMemberAddressController {
     /**
      * 회원의 배송지를 대표 배송지로 설정하는 기능입니다.
      *
-     * @param memberId 회원 id
+     * @param memberId  회원 id
      * @param addressId 대표로 지정할 배송지 id
      * @return 회원의 대표 배송지 정보
      * @author 최예린
@@ -68,7 +70,7 @@ public class CommandMemberAddressController {
     /**
      * 회원의 배송지를 삭제하는 기능입니다.
      *
-     * @param memberId 회원 id
+     * @param memberId  회원 id
      * @param addressId 삭제할 배송 id
      * @author 최예린
      * @since 1.0

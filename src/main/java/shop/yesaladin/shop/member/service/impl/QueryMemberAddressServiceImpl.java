@@ -26,7 +26,7 @@ public class QueryMemberAddressServiceImpl implements QueryMemberAddressService 
     private final QueryMemberAddressRepository queryMemberAddressRepository;
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<MemberAddressQueryDto> findByMemberId(Long memberId) {
         Member member = tryGetMemberById(memberId);
 

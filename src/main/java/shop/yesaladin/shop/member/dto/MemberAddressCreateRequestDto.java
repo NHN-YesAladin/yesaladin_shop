@@ -3,6 +3,7 @@ package shop.yesaladin.shop.member.dto;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
@@ -17,6 +18,7 @@ import shop.yesaladin.shop.member.domain.model.MemberAddress;
  */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class MemberAddressCreateRequestDto {
     @NotBlank
     @Length(max = 255)

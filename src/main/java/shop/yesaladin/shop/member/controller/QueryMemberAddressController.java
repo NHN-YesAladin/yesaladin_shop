@@ -3,7 +3,6 @@ package shop.yesaladin.shop.member.controller;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +21,7 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberAddressService;
 @RestController
 @RequestMapping("/v1/members/{memberId}/addresses")
 public class QueryMemberAddressController {
+
     private final QueryMemberAddressService queryMemberAddressService;
 
     /**

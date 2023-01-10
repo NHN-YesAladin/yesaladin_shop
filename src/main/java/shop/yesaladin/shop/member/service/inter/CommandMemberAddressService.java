@@ -37,10 +37,11 @@ public interface CommandMemberAddressService {
     /**
      * 회원의 배송지를 삭제합니다.
      *
-     * @param memberId 회원 id
+     * @param memberId  회원 id
      * @param addressId 삭제할 배송지 id
+     * @return
      * @author 최예린
      * @since 1.0
      */
-    void delete(Long memberId, Long addressId);
+    long delete(Long memberId, Long addressId);
 }

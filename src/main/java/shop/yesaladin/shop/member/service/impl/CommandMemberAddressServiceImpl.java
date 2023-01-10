@@ -61,12 +61,14 @@ public class CommandMemberAddressServiceImpl implements CommandMemberAddressServ
 
     @Override
     @Transactional
-    public void delete(Long memberId, Long addressId) {
-        if(!queryMemberAddressRepository.existByMemberIdAndMemberAddressId(memberId, addressId)) {
+    public long delete(Long memberId, Long addressId) {
+        if (!queryMemberAddressRepository.existByMemberIdAndMemberAddressId(memberId, addressId)) {
             throw new MemberAddressNotFoundException(addressId);
         }
 
         commandMemberAddressRepository.deleteById(addressId);
+
+        return addressId;
     }
 
     private MemberAddress tryGetMemberAddressByMemberIdAndMemberAddressId(
