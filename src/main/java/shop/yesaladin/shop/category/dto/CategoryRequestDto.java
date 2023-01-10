@@ -24,31 +24,24 @@ public class CategoryRequestDto {
 
     @NotNull
     private Boolean isShown;
-
+    private Integer order;
     private Long parentId;
 
-    /**
-     * 카테고리 생성을 위해 해당 dto 를 Category 로 변환
-     *
-     * @param parent 2차 카테고리일 경우 사용, 1차 카테고리일 경우 null 입력
-     * @return Category
-     */
-    public Category toEntity(Category parent) {
-        return Category.builder().name(this.name).isShown(this.isShown).parent(parent).build();
-    }
 
     /**
      * 카테고리 수정을 위해 해당 dto 를 Category 로 변환
      *
-     * @param id     카테고리 id
+     * @param id 카테고리 id
+     * @param depth 2차 카테고리일 경우 '0', 1차 카테고리일 경우 '1'
      * @param parent 2차 카테고리일 경우 사용, 1차 카테고리일 경우 null 입력
-     * @return Category
+     * @return
      */
     public Category toEntity(Long id, int depth, Category parent) {
         return Category.builder()
                 .id(id)
                 .name(this.name)
                 .isShown(this.isShown)
+                .order(this.order)
                 .depth(depth)
                 .parent(parent)
                 .build();

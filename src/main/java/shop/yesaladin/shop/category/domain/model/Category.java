@@ -1,6 +1,7 @@
 package shop.yesaladin.shop.category.domain.model;
 
 import java.util.List;
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -41,8 +42,6 @@ public class Category {
     public static long TERM_OF_CHILD_ID = 100L;
 
     @Id
-    //TODO Category autoIncrement off 이후 삭제 예정
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(length = 30, nullable = false)
@@ -69,5 +68,21 @@ public class Category {
     @ToString.Exclude
     @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
     private List<Category> children;
+
+    public void verifyChange(
+            String name,
+            boolean isShown,
+            Integer order
+    ) {
+        if (Objects.nonNull(name)) {
+            this.name = name;
+        }
+        if (Objects.nonNull(isShown)) {
+            this.isShown = isShown;
+        }
+        if (Objects.nonNull(order)) {
+            this.order = order;
+        }
+    }
 
 }

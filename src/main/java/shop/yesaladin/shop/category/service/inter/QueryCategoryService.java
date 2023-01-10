@@ -31,11 +31,11 @@ public interface QueryCategoryService {
     CategoryResponseDto findCategoryById(long id);
 
     /**
-     * 카테고리 id를 통해 부모 카테고리를 조회 하기위한 기능
-     *  1차 카테고리를 찾기 위해 내부적으로 사용
+     * 카테고리 id를 통해 카테고리를 조회 하기위한 기능
+     *  내부적으로 사용 - 부모 카테고리 조회, update시 영속성 속성 사용하여 성능 개선시 사용
      *
      * @param id 부모 카테고리의 id
      * @return 조회된 부모 Category
      */
-    Category findParentCategoryById(long id);
+    Category findInnerCategoryById(long id);
 }

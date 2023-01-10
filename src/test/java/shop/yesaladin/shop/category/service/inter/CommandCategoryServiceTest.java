@@ -46,21 +46,21 @@ class CommandCategoryServiceTest {
         );
 
         parentCategory = CategoryDummy.dummyParent(parentId);
-
+        childCategory = CategoryDummy.dummyChild(parentCategory);
     }
 
     @Test
-    @DisplayName("1차 카테고리 생성 성공 - DB에 ")
+    @DisplayName("카테고리 생성 성공 - 1차 카테고리")
     void create_parent() {
         //given
         CategoryRequestDto createDto = new CategoryRequestDto(
                 parentCategory.getName(),
                 parentCategory.isShown(),
+                null,
                 null
         );
         CategoryOnlyIdDto idDto = new CategoryOnlyIdDto(
                 parentCategory.getId() + Category.TERM_OF_PARENT_ID);
-
         Category toEntity = createDto.toEntity(parentCategory.getId(),
                 parentCategory.getDepth(),
                 null);
@@ -80,12 +80,14 @@ class CommandCategoryServiceTest {
     }
 
     @Test
+    @DisplayName("카테고리 생성 성공 - 2차 카테고리")
     void create_child() {
         //given
         Category childCategory = CategoryDummy.dummyChild(childId, parentCategory);
         CategoryRequestDto createDto = new CategoryRequestDto(
                 childCategory.getName(),
                 childCategory.isShown(),
+                childCategory.getOrder(),
                 childCategory.getParent().getId()
         );
 
@@ -108,36 +110,206 @@ class CommandCategoryServiceTest {
         assertThat(categoryResponseDto.getIsShown()).isEqualTo(toEntity.isShown());
 
         verify(commandCategoryRepository, times(1)).save(any());
-        verify(queryDslCategoryRepository, times(1)).getLatestChildIdByDepthAndParentId(
+        verify(
+                queryDslCategoryRepository,
+                times(1)
+        ).getLatestChildIdByDepthAndParentId(
                 Category.DEPTH_CHILD,
                 childCategory.getParent().getId()
         );
     }
 
     @Test
-    void update() {
+    @DisplayName("1차 카테고리 수정 성공 - 부모 id 제외 다른 필드 변경")
+    void update_parent_otherFiledChange() {
         // given
+        String name = "구독상품";
+        CategoryRequestDto categoryRequestDto = new CategoryRequestDto(
+                name,
+                parentCategory.isShown(),
+                parentCategory.getOrder(),
+                null
+        );
 
-        String name = "소설";
-
-
-        CategoryRequestDto categoryRequestDto = new CategoryRequestDto(name, true, parentCategory.getId());
-        Category toEntity = categoryRequestDto.toEntity(parentCategory);
-
-        when(queryCategoryService.findParentCategoryById(parentId)).thenReturn(parentCategory);
-        when(commandCategoryRepository.save(any())).thenReturn(toEntity);
+        when(queryCategoryService.findInnerCategoryById(parentCategory.getId())).thenReturn(parentCategory);
 
         // when
-        CategoryResponseDto categoryResponseDto = commandCategoryService.update(toEntity.getId(),
+        CategoryResponseDto responseDto = commandCategoryService.update(
+                parentCategory.getId(),
                 categoryRequestDto
         );
 
         // then
-        assertThat(categoryResponseDto.getParentId()).isEqualTo(parentCategory.getId());
-        assertThat(categoryResponseDto.getName()).isEqualTo(toEntity.getName());
+        assertThat(responseDto.getId()).isEqualTo(parentCategory.getId());
+        assertThat(responseDto.getName()).isEqualTo(categoryRequestDto.getName());
 
-        verify(queryCategoryService, times(1)).findParentCategoryById(parentId);
+        verify(queryCategoryService, times(1)).findInnerCategoryById(parentCategory.getId());
+    }
+
+    @Test
+    @DisplayName("1차 카테고리 수정 성공 - 부모 id가 null이 아니게 되어 2차 카테고리로 변환")
+    void update_parent_parentIdToNotNull() {
+        // given
+        String name = "구독상품";
+        CategoryRequestDto categoryRequestDto = new CategoryRequestDto(
+                name,
+                parentCategory.isShown(),
+                parentCategory.getOrder(),
+                childCategory.getParent().getId()
+        );
+
+        long addedChildId = childCategory.getId() + Category.TERM_OF_CHILD_ID;
+        CategoryOnlyIdDto idDto = new CategoryOnlyIdDto(childCategory.getId());
+        Category toEntity = categoryRequestDto.toEntity(
+                addedChildId,
+                childCategory.getDepth(),
+                childCategory.getParent()
+        );
+
+        when(queryCategoryService.findInnerCategoryById(parentCategory.getId())).thenReturn(parentCategory);
+        when(commandCategoryRepository.save(any())).thenReturn(toEntity);
+        when(queryDslCategoryRepository.getLatestChildIdByDepthAndParentId(
+                Category.DEPTH_CHILD,
+                categoryRequestDto.getParentId()
+        )).thenReturn(idDto);
+
+        // when
+        CategoryResponseDto responseDto = commandCategoryService.update(
+                parentCategory.getId(),
+                categoryRequestDto
+        );
+
+        // then
+        assertThat(responseDto.getId()).isEqualTo(addedChildId);
+        assertThat(responseDto.getName()).isEqualTo(categoryRequestDto.getName());
+
+        verify(queryCategoryService, times(2)).findInnerCategoryById(parentCategory.getId());
         verify(commandCategoryRepository, times(1)).save(any());
+        verify(
+                queryDslCategoryRepository,
+                times(1)
+        ).getLatestChildIdByDepthAndParentId(
+                Category.DEPTH_CHILD,
+                childCategory.getParent().getId()
+        );
+    }
+
+    @Test
+    @DisplayName("2차 카테고리 수정 성공 - 부모 id 제외 다른 필드 변경")
+    void update_child_otherFiledChange() {
+        // given
+        String name = "SF영화";
+        CategoryRequestDto categoryRequestDto = new CategoryRequestDto(
+                name,
+                childCategory.isShown(),
+                childCategory.getOrder(),
+                childCategory.getParent().getId()
+        );
+
+        when(queryCategoryService.findInnerCategoryById(childCategory.getId())).thenReturn(childCategory);
+
+        // when
+        CategoryResponseDto responseDto = commandCategoryService.update(
+                childCategory.getId(),
+                categoryRequestDto
+        );
+
+        // then
+        assertThat(responseDto.getId()).isEqualTo(childCategory.getId());
+        assertThat(responseDto.getName()).isEqualTo(categoryRequestDto.getName());
+
+        verify(queryCategoryService, times(1)).findInnerCategoryById(childCategory.getId());
+    }
+
+    @Test
+    @DisplayName("2차 카테고리 수정 성공 - 부모 id가 null이 되어 1차 카테고리로 변환")
+    void update_child_parentIdToNull() {
+        // given
+        String name = "SF영화";
+        CategoryRequestDto categoryRequestDto = new CategoryRequestDto(
+                name,
+                childCategory.isShown(),
+                childCategory.getOrder(),
+                null
+        );
+        CategoryOnlyIdDto idDto = new CategoryOnlyIdDto(parentCategory.getId());
+        long addedParentId = parentCategory.getId() + Category.TERM_OF_PARENT_ID;
+        Category toEntity = categoryRequestDto.toEntity(
+                addedParentId,
+                parentCategory.getDepth(),
+                null
+        );
+
+        when(queryCategoryService.findInnerCategoryById(childCategory.getId())).thenReturn(childCategory);
+        when(commandCategoryRepository.save(any())).thenReturn(toEntity);
+        when(queryDslCategoryRepository.getLatestIdByDepth(Category.DEPTH_PARENT)).thenReturn(idDto);
+
+
+        // when
+        CategoryResponseDto responseDto = commandCategoryService.update(
+                childCategory.getId(),
+                categoryRequestDto
+        );
+
+        // then
+        assertThat(responseDto.getId()).isEqualTo(addedParentId);
+        assertThat(responseDto.getName()).isEqualTo(categoryRequestDto.getName());
+
+        verify(queryCategoryService, times(1)).findInnerCategoryById(childCategory.getId());
+        verify(commandCategoryRepository, times(1)).save(any());
+        verify(queryDslCategoryRepository, times(1)).getLatestIdByDepth(Category.DEPTH_PARENT);
+    }
+
+
+    @Test
+    @DisplayName("2차 카테고리 수정 성공 - 다른 부모 id로 변경")
+    void update_child_parentToOtherParent() {
+        // given
+        String name = "SF영화";
+        long otherParentId = 20000L;
+        Category otherParentCategory = CategoryDummy.dummyParent(otherParentId);
+        CategoryRequestDto categoryRequestDto = new CategoryRequestDto(
+                name,
+                childCategory.isShown(),
+                childCategory.getOrder(),
+                otherParentCategory.getId()
+        );
+
+        long addedChildId = otherParentCategory.getId() + Category.TERM_OF_CHILD_ID;
+        CategoryOnlyIdDto idDto = new CategoryOnlyIdDto(otherParentCategory.getId());
+        Category toEntity = categoryRequestDto.toEntity(
+                addedChildId,
+                childCategory.getDepth(),
+                otherParentCategory
+        );
+
+        when(queryCategoryService.findInnerCategoryById(childCategory.getId())).thenReturn(childCategory);
+        when(commandCategoryRepository.save(any())).thenReturn(toEntity);
+        when(queryDslCategoryRepository.getLatestChildIdByDepthAndParentId(
+                Category.DEPTH_CHILD,
+                categoryRequestDto.getParentId()
+        )).thenReturn(idDto);
+
+        // when
+        CategoryResponseDto responseDto = commandCategoryService.update(
+                childCategory.getId(),
+                categoryRequestDto
+        );
+
+        // then
+        assertThat(responseDto.getId()).isEqualTo(addedChildId);
+        assertThat(responseDto.getName()).isEqualTo(categoryRequestDto.getName());
+
+        verify(queryCategoryService, times(1)).findInnerCategoryById(childCategory.getId());
+        verify(queryCategoryService, times(1)).findInnerCategoryById(categoryRequestDto.getParentId());
+        verify(commandCategoryRepository, times(1)).save(any());
+        verify(
+                queryDslCategoryRepository,
+                times(1)
+        ).getLatestChildIdByDepthAndParentId(
+                Category.DEPTH_CHILD,
+                categoryRequestDto.getParentId()
+        );
     }
 
     @Test

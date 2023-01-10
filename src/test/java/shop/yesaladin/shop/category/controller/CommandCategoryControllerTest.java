@@ -60,7 +60,7 @@ class CommandCategoryControllerTest {
     @DisplayName("카테고리 생성 성공")
     void createCategory() throws Exception {
         // given
-        CategoryRequestDto createDto = new CategoryRequestDto(name, true, null);
+        CategoryRequestDto createDto = new CategoryRequestDto(name, true, null, null);
         given(commandCategoryService.create(any())).willReturn(CategoryResponseDto.fromEntity(category));
 
         // when
@@ -79,7 +79,7 @@ class CommandCategoryControllerTest {
     @DisplayName("카테고리 생성 실패 - name이 null 인 경우")
     void createCategory_invalidatedData_fail() throws Exception {
         // given
-        CategoryRequestDto createDto = new CategoryRequestDto(null, true, null);
+        CategoryRequestDto createDto = new CategoryRequestDto(null, true, null, null);
 
         //when
         ResultActions perform = mockMvc.perform(post("/v1/categories").contentType(MediaType.APPLICATION_JSON)
@@ -96,7 +96,7 @@ class CommandCategoryControllerTest {
     void updateCategory() throws Exception {
         // given
         String changeName = "중고서적";
-        CategoryRequestDto categoryRequestDto = new CategoryRequestDto(name, true, null);
+        CategoryRequestDto categoryRequestDto = new CategoryRequestDto(name, true, null, null);
         //TODO 수정 필요
         Category toEntity = categoryRequestDto.toEntity(id, 0,null);
         given(commandCategoryService.update(any(), any())).willReturn(CategoryResponseDto.fromEntity(
@@ -123,7 +123,7 @@ class CommandCategoryControllerTest {
     void updateCategory_invalidatedData_fail() throws Exception {
         // given
         String nullName = null;
-        CategoryRequestDto categoryRequestDto = new CategoryRequestDto(nullName, true, null);
+        CategoryRequestDto categoryRequestDto = new CategoryRequestDto(nullName, true, null, null);
         //TODO 수정 필요
         Category toEntity = categoryRequestDto.toEntity(id, 0, null);
         given(commandCategoryService.update(any(), any())).willReturn(CategoryResponseDto.fromEntity(

@@ -74,7 +74,7 @@ public class QueryCategoryServiceImpl implements QueryCategoryService {
      */
     //TODO 테스트 필요 - 카테고리 자기 참조 구현시 테스트 예정
     @Override
-    public Category findParentCategoryById(long id) {
+    public Category findInnerCategoryById(long id) {
         return queryCategoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryNotFoundException(id));
     }
