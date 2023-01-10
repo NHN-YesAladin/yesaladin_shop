@@ -132,7 +132,6 @@ public class ProductCreateDto {
                 .isSale(isSale)
                 .isForcedOutOfStock(false)
                 .quantity(quantity)
-//                .publishedDate(LocalDate.parse(publishedDate, DateTimeFormatter.ISO_DATE))
                 .preferentialShowRanking(preferentialShowRanking)
                 .subscribeProduct(subscribeProduct)
                 .thumbnailFile(thumbnailFile)

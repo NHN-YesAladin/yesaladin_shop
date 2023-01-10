@@ -11,6 +11,7 @@ import shop.yesaladin.shop.publish.domain.repository.CommandPublishRepository;
  * @author 이수정
  * @since 1.0
  */
-public interface JpaPublishRepository extends Repository<Publish, Pk>, CommandPublishRepository {
+public interface JpaPublishRepository extends Repository<Publish, Pk>,
+        CommandPublishRepository {
 
 }

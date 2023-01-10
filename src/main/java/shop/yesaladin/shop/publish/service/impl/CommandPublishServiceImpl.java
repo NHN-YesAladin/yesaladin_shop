@@ -26,7 +26,7 @@ public class CommandPublishServiceImpl implements CommandPublishService {
      * @since 1.0
      */
     @Override
-    public void register(Publish publish) {
-        commandPublishRepository.save(publish);
+    public Publish register(Publish publish) {
+        return commandPublishRepository.save(publish);
     }
 }

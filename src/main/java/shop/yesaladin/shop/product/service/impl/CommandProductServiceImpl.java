@@ -67,8 +67,6 @@ public class CommandProductServiceImpl implements CommandProductService {
     // Publisher
     private final CommandPublisherService commandPublisherService;
     private final QueryPublisherService queryPublisherService;
-
-    // Publisher
     private final CommandPublishService commandPublishService;
 
     // Tag
