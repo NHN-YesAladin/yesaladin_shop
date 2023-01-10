@@ -12,7 +12,9 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum OrderCode {
-    NON_MEMBER_ORDER(1), MEMBER_ORDER(2), MEMBER_SUBSCRIBE(3);
+    NON_MEMBER_ORDER(1, NonMemberOrder.class), MEMBER_ORDER(2, MemberOrder.class),
+    MEMBER_SUBSCRIBE(3, SubscribeOrder.class);
 
     private final int code;
+    private final Class<? extends Order> orderClass;
 }

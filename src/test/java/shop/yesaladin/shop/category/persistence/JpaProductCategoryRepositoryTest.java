@@ -138,7 +138,7 @@ class JpaProductCategoryRepositoryTest {
                     ebookFile,
                     totalDiscountRate
             );
-            Category category = CategoryDummy.dummyParent();
+            Category category = CategoryDummy.dummyParent((long) i);
 
             entityManager.persist(product);
             entityManager.persist(category);

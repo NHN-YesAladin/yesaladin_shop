@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.Test;
@@ -23,7 +22,7 @@ class JpaNonMemberOrderRepositoryTest {
     private EntityManager entityManager;
 
     @Autowired
-    private JpaOrderRepository<NonMemberOrder> nonMemberOrderRepository;
+    private JpaOrderCommandRepository<NonMemberOrder> nonMemberOrderRepository;
 
     private String orderNumber = "1234-5678";
     private LocalDateTime orderDateTime = LocalDateTime.now();
@@ -55,30 +54,6 @@ class JpaNonMemberOrderRepositoryTest {
         assertThat(savedOrder.getAddress()).isEqualTo(address);
         assertThat(savedOrder.getName()).isEqualTo(name);
         assertThat(savedOrder.getPhoneNumber()).isEqualTo(phoneNumber);
-    }
-
-    @Test
-    void findById() {
-        //given
-        entityManager.persist(nonMemberOrder);
-        Long id = nonMemberOrder.getId();
-
-        //when
-        Optional<NonMemberOrder> foundOrder = nonMemberOrderRepository.findById(id);
-
-        //then
-        assertThat(foundOrder).isPresent();
-        assertThat(foundOrder.get().getId()).isEqualTo(id);
-        assertThat(foundOrder.get().getOrderNumber()).isEqualTo(orderNumber);
-        assertThat(foundOrder.get().getExpectedTransportDate()).isEqualTo(expectedTransportDate);
-        assertThat(foundOrder.get().isHidden()).isEqualTo(isHidden);
-        assertThat(foundOrder.get().getUsedPoint()).isEqualTo(usedPoint);
-        assertThat(foundOrder.get().getShippingFee()).isEqualTo(shippingFee);
-        assertThat(foundOrder.get().getWrappingFee()).isEqualTo(wrappingFee);
-        assertThat(foundOrder.get().getOrderCode()).isEqualTo(orderCode);
-        assertThat(foundOrder.get().getAddress()).isEqualTo(address);
-        assertThat(foundOrder.get().getName()).isEqualTo(name);
-        assertThat(foundOrder.get().getPhoneNumber()).isEqualTo(phoneNumber);
     }
 
     NonMemberOrder createNonMemberOrder() {

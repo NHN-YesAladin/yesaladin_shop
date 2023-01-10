@@ -5,13 +5,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
+import shop.yesaladin.shop.member.dto.MemberDto;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 
 /**
  * 회원 조회용 서비스 구현체 입니다.
  *
- * @author : 송학현
+ * @author : 송학현, 최예린
  * @since : 1.0
  */
 @RequiredArgsConstructor
@@ -25,14 +26,15 @@ public class QueryMemberServiceImpl implements QueryMemberService {
      *
      * @param id member의 primary key
      * @return 회원 조회 결과
-     * @author : 송학현
+     * @author : 송학현, 최예린
      * @since : 1.0
      */
     @Transactional(readOnly = true)
     @Override
-    public Member findMemberById(long id) {
-        return queryMemberRepository.findById(id)
+    public MemberDto findMemberById(long id) {
+        Member member = queryMemberRepository.findById(id)
                 .orElseThrow(() -> new MemberNotFoundException("Member Id: " + id));
+        return MemberDto.fromEntity(member);
     }
 
     /**
@@ -40,14 +42,15 @@ public class QueryMemberServiceImpl implements QueryMemberService {
      *
      * @param loginId member의 loginId
      * @return 회원 조회 결과
-     * @author : 송학현
+     * @author : 송학현, 최예린
      * @since : 1.0
      */
     @Transactional(readOnly = true)
     @Override
-    public Member findMemberByLoginId(String loginId) {
-        return queryMemberRepository.findMemberByLoginId(loginId)
+    public MemberDto findMemberByLoginId(String loginId) {
+        Member member = queryMemberRepository.findMemberByLoginId(loginId)
                 .orElseThrow(() -> new MemberNotFoundException("Member Login Id: " + loginId));
+        return MemberDto.fromEntity(member);
     }
 
     /**
@@ -55,13 +58,14 @@ public class QueryMemberServiceImpl implements QueryMemberService {
      *
      * @param nickname member의 nickname
      * @return 회원 조회 결과
-     * @author : 송학현
+     * @author : 송학현, 최예린
      * @since : 1.0
      */
     @Transactional(readOnly = true)
     @Override
-    public Member findMemberByNickname(String nickname) {
-        return queryMemberRepository.findMemberByNickname(nickname)
+    public MemberDto findMemberByNickname(String nickname) {
+        Member member = queryMemberRepository.findMemberByNickname(nickname)
                 .orElseThrow(() -> new MemberNotFoundException("Member Nickname: " + nickname));
+        return MemberDto.fromEntity(member);
     }
 }
