@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.repository.QueryComplexCategoryRepository;
 import shop.yesaladin.shop.category.dto.CategoryOnlyIdDto;
@@ -13,6 +14,7 @@ import shop.yesaladin.shop.category.dummy.CategoryDummy;
 import shop.yesaladin.shop.category.persistence.JpaCategoryRepository;
 
 @SpringBootTest
+@Transactional
 class QueryComplexCategoryRepositoryImplTest {
 
     @Autowired
