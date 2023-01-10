@@ -22,7 +22,7 @@ public class MemberCreateResponseDto {
     private String name;
     private String nickname;
     private String loginId;
-    private MemberGrade memberGrade;
+    private String memberGrade;
     private String role;
 
     /**
@@ -39,7 +39,7 @@ public class MemberCreateResponseDto {
                 member.getName(),
                 member.getNickname(),
                 member.getLoginId(),
-                member.getMemberGrade(),
+                MemberGrade.WHITE.getName(),
                 role.getName()
         );
     }

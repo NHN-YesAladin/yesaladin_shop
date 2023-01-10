@@ -80,7 +80,7 @@ class CommandMemberServiceImplTest {
         //then
         assertThat(actualMember.getLoginId()).isEqualTo(loginId);
         assertThat(actualMember.getNickname()).isEqualTo(nickname);
-        assertThat(actualMember.getMemberGrade()).isEqualTo(MemberGrade.WHITE);
+        assertThat(actualMember.getMemberGrade()).isEqualTo(MemberGrade.WHITE.getName());
         assertThat(actualMember.getRole()).isEqualTo("ROLE_MEMBER");
 
         verify(queryRoleRepository, times(1)).findById(roleId);
