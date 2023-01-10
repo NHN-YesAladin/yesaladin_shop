@@ -28,16 +28,19 @@ class QuerySubscribeProductServiceImplTest {
         subscribeProduct = DummySubscribeProduct.dummy();
 
         querySubscribeProductRepository = mock(QuerySubscribeProductRepository.class);
-        querySubscribeProductService = new QuerySubscribeProductServiceImpl(querySubscribeProductRepository);
+        querySubscribeProductService = new QuerySubscribeProductServiceImpl(
+                querySubscribeProductRepository);
     }
 
     @Test
     void findByISSN() {
         // given
-        when(querySubscribeProductRepository.findByISSN(any())).thenReturn(Optional.of(subscribeProduct));
+        when(querySubscribeProductRepository.findByISSN(any())).thenReturn(Optional.of(
+                subscribeProduct));
 
         // when
-        SubscribeProductResponseDto foundSubscribeProduct = querySubscribeProductService.findByISSN(ISSN);
+        SubscribeProductResponseDto foundSubscribeProduct = querySubscribeProductService.findByISSN(
+                ISSN);
 
         // then
         assertThat(foundSubscribeProduct).isNotNull();

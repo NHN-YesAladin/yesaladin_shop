@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.product.dummy;
 
-import java.time.LocalDate;
 import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;

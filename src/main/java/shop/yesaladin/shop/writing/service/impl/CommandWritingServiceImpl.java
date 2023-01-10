@@ -43,6 +43,11 @@ public class CommandWritingServiceImpl implements CommandWritingService {
 
         Writing savedWriting = commandWritingRepository.save(writing);
 
-        return new WritingResponseDto(savedWriting.getId(), savedWriting.getAuthorName(), savedWriting.getProduct(), savedWriting.getMember());
+        return new WritingResponseDto(
+                savedWriting.getId(),
+                savedWriting.getAuthorName(),
+                savedWriting.getProduct(),
+                savedWriting.getMember()
+        );
     }
 }

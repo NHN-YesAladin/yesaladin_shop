@@ -29,8 +29,12 @@ public class QueryFileServiceImpl implements QueryFileService {
      */
     @Override
     public FileResponseDto findByName(String name) {
-        File file =  queryFileRepository.findByName(name).orElse(null);
+        File file = queryFileRepository.findByName(name).orElse(null);
 
-        return new FileResponseDto(file.getId(), file.getName(), file.getUploadDateTime());
+        if (file != null) {
+            return new FileResponseDto(file.getId(), file.getName(), file.getUploadDateTime());
+        } else {
+            return null;
+        }
     }
 }

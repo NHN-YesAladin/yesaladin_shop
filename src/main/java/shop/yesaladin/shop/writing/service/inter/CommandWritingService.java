@@ -2,7 +2,6 @@ package shop.yesaladin.shop.writing.service.inter;
 
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.product.domain.model.Product;
-import shop.yesaladin.shop.writing.domain.model.Writing;
 import shop.yesaladin.shop.writing.dto.WritingResponseDto;
 
 /**

@@ -29,8 +29,12 @@ public class CommandTotalDiscountRateServiceImpl implements CommandTotalDiscount
      */
     @Override
     public TotalDiscountRateResponseDto register(TotalDiscountRate totalDiscountRate) {
-        TotalDiscountRate savedTotalDiscountRate = commandTotalDiscountRateRepository.save(totalDiscountRate);
+        TotalDiscountRate savedTotalDiscountRate = commandTotalDiscountRateRepository.save(
+                totalDiscountRate);
 
-        return new TotalDiscountRateResponseDto(savedTotalDiscountRate.getId(), savedTotalDiscountRate.getDiscountRate());
+        return new TotalDiscountRateResponseDto(
+                savedTotalDiscountRate.getId(),
+                savedTotalDiscountRate.getDiscountRate()
+        );
     }
 }

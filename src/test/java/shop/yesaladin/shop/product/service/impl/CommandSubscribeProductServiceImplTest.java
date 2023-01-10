@@ -22,7 +22,8 @@ class CommandSubscribeProductServiceImplTest {
     @BeforeEach
     void setUp() {
         commandSubscribeProductRepository = mock(CommandSubscribeProductRepository.class);
-        commandSubscribeProductService = new CommandSubscribeProductServiceImpl(commandSubscribeProductRepository);
+        commandSubscribeProductService = new CommandSubscribeProductServiceImpl(
+                commandSubscribeProductRepository);
     }
 
     @Test
@@ -33,7 +34,8 @@ class CommandSubscribeProductServiceImplTest {
         when(commandSubscribeProductRepository.save(any())).thenReturn(subscribeProduct);
 
         // when
-        SubscribeProductResponseDto registeredSubscribeProduct = commandSubscribeProductService.register(subscribeProduct);
+        SubscribeProductResponseDto registeredSubscribeProduct = commandSubscribeProductService.register(
+                subscribeProduct);
 
         // then
         assertThat(registeredSubscribeProduct.getISSN()).isEqualTo(ISSN);

@@ -5,8 +5,10 @@ import java.util.List;
 import shop.yesaladin.shop.product.dto.ProductCreateDto;
 
 public class DummyProductCreateDto {
+
     public static ProductCreateDto dummy(String ISBN) {
-        List<String> tags = new ArrayList<>(){};
+        List<String> tags = new ArrayList<>() {
+        };
         tags.add("아름다운");
         tags.add("슬픈");
 

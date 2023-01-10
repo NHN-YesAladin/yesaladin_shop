@@ -13,7 +13,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.dummy.DummyProduct;
 import shop.yesaladin.shop.tag.domain.model.ProductTag;
-import shop.yesaladin.shop.tag.domain.model.ProductTag.Pk;
 import shop.yesaladin.shop.tag.domain.model.Tag;
 
 @DataJpaTest

@@ -33,6 +33,10 @@ public class CommandFileServiceImpl implements CommandFileService {
     public FileResponseDto register(File file) {
         File savedFile = commandFileRepository.save(file);
 
-        return new FileResponseDto(savedFile.getId(), savedFile.getName(), savedFile.getUploadDateTime());
+        return new FileResponseDto(
+                savedFile.getId(),
+                savedFile.getName(),
+                savedFile.getUploadDateTime()
+        );
     }
 }

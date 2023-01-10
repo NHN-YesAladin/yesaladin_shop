@@ -1,21 +1,16 @@
 package shop.yesaladin.shop.product.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
 import shop.yesaladin.shop.product.domain.repository.QueryTotalDiscountRateRepository;
 import shop.yesaladin.shop.product.dto.TotalDiscountRateResponseDto;
 import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
-import shop.yesaladin.shop.product.service.inter.CommandTotalDiscountRateService;
 import shop.yesaladin.shop.product.service.inter.QueryTotalDiscountRateService;
 
 class QueryTotalDiscountRateServiceImplTest {
@@ -30,7 +25,8 @@ class QueryTotalDiscountRateServiceImplTest {
         totalDiscountRate = DummyTotalDiscountRate.dummy();
 
         queryTotalDiscountRateRepository = mock(QueryTotalDiscountRateRepository.class);
-        queryTotalDiscountRateService = new QueryTotalDiscountRateServiceImpl(queryTotalDiscountRateRepository);
+        queryTotalDiscountRateService = new QueryTotalDiscountRateServiceImpl(
+                queryTotalDiscountRateRepository);
     }
 
     @Test
@@ -40,7 +36,8 @@ class QueryTotalDiscountRateServiceImplTest {
         when(queryTotalDiscountRateRepository.findById(id)).thenReturn(Optional.of(totalDiscountRate));
 
         // when
-        TotalDiscountRateResponseDto foundTotalDiscountRate = queryTotalDiscountRateService.findById(id);
+        TotalDiscountRateResponseDto foundTotalDiscountRate = queryTotalDiscountRateService.findById(
+                id);
 
         // then
         assertThat(foundTotalDiscountRate).isNotNull();

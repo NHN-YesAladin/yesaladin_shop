@@ -4,15 +4,12 @@ import java.util.Objects;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.file.dto.FileResponseDto;
 import shop.yesaladin.shop.file.service.inter.CommandFileService;
 import shop.yesaladin.shop.file.service.inter.QueryFileService;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.product.domain.model.Product;
-import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
-import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
 import shop.yesaladin.shop.product.domain.repository.CommandProductRepository;
 import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
 import shop.yesaladin.shop.product.dto.ProductCreateDto;
@@ -134,9 +131,15 @@ public class CommandProductServiceImpl implements CommandProductService {
         // Publish
         PublisherResponseDto publisher = queryPublisherService.findByName(dto.getPublisherName());
         if (Objects.isNull(publisher)) {
-            publisher = commandPublisherService.register(Publisher.builder().name(dto.getPublisherName()).build());
+            publisher = commandPublisherService.register(Publisher.builder()
+                    .name(dto.getPublisherName())
+                    .build());
         }
-        commandPublishService.register(Publish.create(product, publisher.toEntity(), dto.getPublishedDate()));
+        commandPublishService.register(Publish.create(
+                product,
+                publisher.toEntity(),
+                dto.getPublishedDate()
+        ));
 
         // Tag
         for (String name : dto.getTags()) {

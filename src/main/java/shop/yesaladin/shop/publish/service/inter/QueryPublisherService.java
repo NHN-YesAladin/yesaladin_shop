@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.publish.service.inter;
 
-import shop.yesaladin.shop.publish.domain.model.Publisher;
 import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
 
 /**

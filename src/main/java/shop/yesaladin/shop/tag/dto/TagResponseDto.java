@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.tag.dto;
 
-import javax.persistence.Column;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,6 +18,7 @@ import shop.yesaladin.shop.tag.domain.model.Tag;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class TagResponseDto {
+
     private Long id;
     private String name;
 

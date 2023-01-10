@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.tag.service.inter;
 
-import shop.yesaladin.shop.tag.domain.model.Tag;
 import shop.yesaladin.shop.tag.dto.TagResponseDto;
 
 /**

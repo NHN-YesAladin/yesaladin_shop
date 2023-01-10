@@ -18,6 +18,7 @@ import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class SubscribeProductResponseDto {
+
     private Long id;
     private String ISSN;
 

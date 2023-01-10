@@ -29,6 +29,9 @@ public class QueryTotalDiscountRateServiceImpl implements QueryTotalDiscountRate
         TotalDiscountRate totalDiscountRate = queryTotalDiscountRateRepository.findById(id)
                 .orElseThrow(() -> new TotalDiscountRateNotExistsException());
 
-        return new TotalDiscountRateResponseDto(totalDiscountRate.getId(), totalDiscountRate.getDiscountRate());
+        return new TotalDiscountRateResponseDto(
+                totalDiscountRate.getId(),
+                totalDiscountRate.getDiscountRate()
+        );
     }
 }

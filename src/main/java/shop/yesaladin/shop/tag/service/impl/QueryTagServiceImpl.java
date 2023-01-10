@@ -31,6 +31,10 @@ public class QueryTagServiceImpl implements QueryTagService {
     public TagResponseDto findByName(String name) {
         Tag tag = queryTagRepository.findByName(name).orElse(null);
 
-        return new TagResponseDto(tag.getId(), tag.getName());
+        if (tag != null) {
+            return new TagResponseDto(tag.getId(), tag.getName());
+        } else {
+            return null;
+        }
     }
 }

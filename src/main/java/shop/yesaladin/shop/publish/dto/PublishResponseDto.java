@@ -1,10 +1,6 @@
 package shop.yesaladin.shop.publish.dto;
 
 import java.time.LocalDate;
-import javax.persistence.Column;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.MapsId;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,6 +21,7 @@ import shop.yesaladin.shop.publish.domain.model.Publisher;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class PublishResponseDto {
+
     private Pk pk;
     private LocalDate publishedDate;
     private Product product;

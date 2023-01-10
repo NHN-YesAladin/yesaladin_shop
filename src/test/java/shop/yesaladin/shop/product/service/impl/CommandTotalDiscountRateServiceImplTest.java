@@ -20,7 +20,8 @@ class CommandTotalDiscountRateServiceImplTest {
     @BeforeEach
     void setUp() {
         commandTotalDiscountRateRepository = mock(CommandTotalDiscountRateRepository.class);
-        commandTotalDiscountRateService = new CommandTotalDiscountRateServiceImpl(commandTotalDiscountRateRepository);
+        commandTotalDiscountRateService = new CommandTotalDiscountRateServiceImpl(
+                commandTotalDiscountRateRepository);
     }
 
     @Test
@@ -31,7 +32,8 @@ class CommandTotalDiscountRateServiceImplTest {
         when(commandTotalDiscountRateRepository.save(any())).thenReturn(totalDiscountRate);
 
         // when
-        TotalDiscountRateResponseDto registeredTotalDiscountRate = commandTotalDiscountRateService.register(totalDiscountRate);
+        TotalDiscountRateResponseDto registeredTotalDiscountRate = commandTotalDiscountRateService.register(
+                totalDiscountRate);
 
         // then
         assertThat(registeredTotalDiscountRate.getDiscountRate()).isEqualTo(10);

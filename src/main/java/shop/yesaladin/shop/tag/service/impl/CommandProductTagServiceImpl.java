@@ -31,6 +31,10 @@ public class CommandProductTagServiceImpl implements CommandProductTagService {
     public ProductTagResponseDto register(ProductTag productTag) {
         ProductTag savedProductTag = commandProductTagRepository.save(productTag);
 
-        return new ProductTagResponseDto(savedProductTag.getPk(), savedProductTag.getProduct(), savedProductTag.getTag());
+        return new ProductTagResponseDto(
+                savedProductTag.getPk(),
+                savedProductTag.getProduct(),
+                savedProductTag.getTag()
+        );
     }
 }

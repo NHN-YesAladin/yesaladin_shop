@@ -19,6 +19,7 @@ import shop.yesaladin.shop.file.domain.model.File;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class FileResponseDto {
+
     private Long id;
     private String name;
     private LocalDateTime uploadDateTime;

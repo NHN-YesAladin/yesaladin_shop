@@ -18,6 +18,7 @@ import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class TotalDiscountRateResponseDto {
+
     private int id;
     private int discountRate;
 

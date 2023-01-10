@@ -2,7 +2,6 @@ package shop.yesaladin.shop.publish.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import shop.yesaladin.shop.publish.domain.model.Publish;
 import shop.yesaladin.shop.publish.domain.model.Publisher;
 import shop.yesaladin.shop.publish.domain.repository.QueryPublisherRepository;
 import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
@@ -32,6 +31,10 @@ public class QueryPublisherServiceImpl implements QueryPublisherService {
     public PublisherResponseDto findByName(String name) {
         Publisher publisher = queryPublisherRepository.findByName(name).orElse(null);
 
-        return new PublisherResponseDto(publisher.getId(), publisher.getName());
+        if (publisher != null) {
+            return new PublisherResponseDto(publisher.getId(), publisher.getName());
+        } else {
+            return null;
+        }
     }
 }

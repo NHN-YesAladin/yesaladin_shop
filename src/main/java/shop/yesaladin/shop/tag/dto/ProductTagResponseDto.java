@@ -1,8 +1,5 @@
 package shop.yesaladin.shop.tag.dto;
 
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.MapsId;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,6 +20,7 @@ import shop.yesaladin.shop.tag.domain.model.Tag;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class ProductTagResponseDto {
+
     private Pk pk;
     private Product product;
     private Tag tag;

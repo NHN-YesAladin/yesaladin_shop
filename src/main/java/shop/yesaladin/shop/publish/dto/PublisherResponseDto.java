@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.publish.dto;
 
-import javax.persistence.Column;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,6 +18,7 @@ import shop.yesaladin.shop.publish.domain.model.Publisher;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class PublisherResponseDto {
+
     private Long id;
     private String name;
 

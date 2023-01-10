@@ -29,8 +29,12 @@ public class CommandSubscribeProductServiceImpl implements CommandSubscribeProdu
      */
     @Override
     public SubscribeProductResponseDto register(SubscribeProduct subscribeProduct) {
-        SubscribeProduct savedSubscribeProduct = commandSubscribeProductRepository.save(subscribeProduct);
+        SubscribeProduct savedSubscribeProduct = commandSubscribeProductRepository.save(
+                subscribeProduct);
 
-        return new SubscribeProductResponseDto(savedSubscribeProduct.getId(), savedSubscribeProduct.getISSN());
+        return new SubscribeProductResponseDto(
+                savedSubscribeProduct.getId(),
+                savedSubscribeProduct.getISSN()
+        );
     }
 }

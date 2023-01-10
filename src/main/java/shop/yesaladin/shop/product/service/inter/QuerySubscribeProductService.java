@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.product.service.inter;
 
-import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 import shop.yesaladin.shop.product.dto.SubscribeProductResponseDto;
 
 /**

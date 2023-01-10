@@ -29,8 +29,16 @@ public class QuerySubscribeProductServiceImpl implements QuerySubscribeProductSe
      */
     @Override
     public SubscribeProductResponseDto findByISSN(String ISSN) {
-        SubscribeProduct subscribeProduct = querySubscribeProductRepository.findByISSN(ISSN).orElse(null);
+        SubscribeProduct subscribeProduct = querySubscribeProductRepository.findByISSN(ISSN)
+                .orElse(null);
 
-        return new SubscribeProductResponseDto(subscribeProduct.getId(), subscribeProduct.getISSN());
+        if (subscribeProduct != null) {
+            return new SubscribeProductResponseDto(
+                    subscribeProduct.getId(),
+                    subscribeProduct.getISSN()
+            );
+        } else {
+            return null;
+        }
     }
 }
