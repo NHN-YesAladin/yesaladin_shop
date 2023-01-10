@@ -121,7 +121,7 @@ class CommandCategoryServiceTest {
 
     @Test
     @DisplayName("1차 카테고리 수정 성공 - 부모 id 제외 다른 필드 변경")
-    void update_parent_otherFiledChange() {
+    void update_parent_otherFieldChange() {
         // given
         String name = "구독상품";
         CategoryRequestDto categoryRequestDto = new CategoryRequestDto(
@@ -142,61 +142,15 @@ class CommandCategoryServiceTest {
         // then
         assertThat(responseDto.getId()).isEqualTo(parentCategory.getId());
         assertThat(responseDto.getName()).isEqualTo(categoryRequestDto.getName());
+        assertThat(parentCategory.getDepth()).isEqualTo(Category.DEPTH_PARENT);
 
         verify(queryCategoryService, times(1)).findInnerCategoryById(parentCategory.getId());
     }
 
-    @Test
-    @DisplayName("1차 카테고리 수정 성공 - 부모 id가 null이 아니게 되어 2차 카테고리로 변환")
-    void update_parent_parentIdToNotNull() {
-        // given
-        String name = "구독상품";
-        CategoryRequestDto categoryRequestDto = new CategoryRequestDto(
-                name,
-                parentCategory.isShown(),
-                parentCategory.getOrder(),
-                childCategory.getParent().getId()
-        );
-
-        long addedChildId = childCategory.getId() + Category.TERM_OF_CHILD_ID;
-        CategoryOnlyIdDto idDto = new CategoryOnlyIdDto(childCategory.getId());
-        Category toEntity = categoryRequestDto.toEntity(
-                addedChildId,
-                childCategory.getDepth(),
-                childCategory.getParent()
-        );
-
-        when(queryCategoryService.findInnerCategoryById(parentCategory.getId())).thenReturn(parentCategory);
-        when(commandCategoryRepository.save(any())).thenReturn(toEntity);
-        when(queryDslCategoryRepository.getLatestChildIdByDepthAndParentId(
-                Category.DEPTH_CHILD,
-                categoryRequestDto.getParentId()
-        )).thenReturn(idDto);
-
-        // when
-        CategoryResponseDto responseDto = commandCategoryService.update(
-                parentCategory.getId(),
-                categoryRequestDto
-        );
-
-        // then
-        assertThat(responseDto.getId()).isEqualTo(addedChildId);
-        assertThat(responseDto.getName()).isEqualTo(categoryRequestDto.getName());
-
-        verify(queryCategoryService, times(2)).findInnerCategoryById(parentCategory.getId());
-        verify(commandCategoryRepository, times(1)).save(any());
-        verify(
-                queryDslCategoryRepository,
-                times(1)
-        ).getLatestChildIdByDepthAndParentId(
-                Category.DEPTH_CHILD,
-                childCategory.getParent().getId()
-        );
-    }
 
     @Test
     @DisplayName("2차 카테고리 수정 성공 - 부모 id 제외 다른 필드 변경")
-    void update_child_otherFiledChange() {
+    void update_child_otherFieldChange() {
         // given
         String name = "SF영화";
         CategoryRequestDto categoryRequestDto = new CategoryRequestDto(
@@ -217,6 +171,7 @@ class CommandCategoryServiceTest {
         // then
         assertThat(responseDto.getId()).isEqualTo(childCategory.getId());
         assertThat(responseDto.getName()).isEqualTo(categoryRequestDto.getName());
+        assertThat(childCategory.getDepth()).isEqualTo(Category.DEPTH_CHILD);
 
         verify(queryCategoryService, times(1)).findInnerCategoryById(childCategory.getId());
     }
@@ -254,6 +209,7 @@ class CommandCategoryServiceTest {
         // then
         assertThat(responseDto.getId()).isEqualTo(addedParentId);
         assertThat(responseDto.getName()).isEqualTo(categoryRequestDto.getName());
+        assertThat(childCategory.getDepth()).isEqualTo(Category.DEPTH_DISABLE);
 
         verify(queryCategoryService, times(1)).findInnerCategoryById(childCategory.getId());
         verify(commandCategoryRepository, times(1)).save(any());
@@ -299,6 +255,7 @@ class CommandCategoryServiceTest {
         // then
         assertThat(responseDto.getId()).isEqualTo(addedChildId);
         assertThat(responseDto.getName()).isEqualTo(categoryRequestDto.getName());
+        assertThat(childCategory.getDepth()).isEqualTo(Category.DEPTH_DISABLE);
 
         verify(queryCategoryService, times(1)).findInnerCategoryById(childCategory.getId());
         verify(queryCategoryService, times(1)).findInnerCategoryById(categoryRequestDto.getParentId());

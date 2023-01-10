@@ -84,54 +84,48 @@ public class CommandCategoryServiceImpl implements CommandCategoryService {
     }
 
     /**
-     * 카테고리 수정을 위한 기능 요청 dto에 부모 카테고리의 id가 있는 경우 id를 통한 카테고리 조회 추가 실행
+     * 카테고리 수정을 위한 기능
+     *   1. id를 통해 해당하는 카테고리를 찾고 변경된 값이 있을 경우, 해당 트랜잭션이 변경 되면 변경 감지를 통해 변경
+     *   2. parentId에 수정이 필요한 경우 3가지 케이스에 대처한다
+     *      CASE 1) 기존 parentId가 null이거나 달라지지 않았을 경우 , 이름 등 다른 필드만 변경
+     *      CASE 2) 2차 카테고리이고 변경하고자하는 parentId가 null 인 경우, 1차 카테고리로 새로 생성
+     *      CASE 3) 2차 카테고리이고 변경하고자 하는 parentId가 다른 1차 카테고리의 아이디 인경우,
+     *              다른 1차 카테고리 id를 부모 id로 가지는 2차 카테고리로 새로 생성
+     *
+     *   categoryById.disableCategory(nameBeforeChanging)
+     *             : 새로 카테고리가 생성되고 기존의 카테고리의 이름을 다시 복구하고,
+     *               depth를 -1로 변경하여 해당 카테고리를 disable 한 것으로 활용한다.
+     *
      *
      * @param id            수정하고자 하는 카테고리 id
      * @param createRequest 카테고리의 일부 정보를 담은 request Dto
      * @return CategoryResponse 카테고리의 일부 정보를 담은 response Dto
      */
-//    @Transactional
-//    @Override
-//    public CategoryResponseDto update(Long id, CategoryRequestDto createRequest) {
-//        Category parentCategory = null;
-//        if (Objects.nonNull(createRequest.getParentId())) {
-//            parentCategory = queryCategoryService.findInnerCategoryById(createRequest.getParentId());
-//        }
-//        Category category = commandCategoryRepository.save(createRequest.toEntity(
-//                id,
-//                0,
-//                parentCategory
-//        ));
-//        return CategoryResponseDto.fromEntity(category);
-//    }
-
     @Transactional
     @Override
     public CategoryResponseDto update(Long id, CategoryRequestDto createRequest) {
         Category categoryById = queryCategoryService.findInnerCategoryById(id);
+        String nameBeforeChanging = categoryById.getName();
         categoryById.verifyChange(
                 createRequest.getName(),
                 createRequest.getIsShown(),
                 createRequest.getOrder()
         );
 
-        // 부모 카테고리의 id를 변경해야할 경우
-        //  새롭게 insert 후 기존 데이터 delete (fk로 걸려있어서 힘듦)
-        //TODO FK 연결로 인한 삭제 불가 -> disable 상태로 만들어야함
         Long requestParentId = createRequest.getParentId();
-
         if (Objects.nonNull(categoryById.getParent())) {
             if (Objects.isNull(requestParentId)) {
+                // CASE 2)
+                categoryById.disableCategory(nameBeforeChanging);
                 return this.saveCategoryByAddingId(createRequest);
             }else if (!categoryById.getParent().getId().equals(requestParentId)) {
-                return this.saveCategoryByAddingChildId(createRequest);
-            }
-        }else{
-            if (Objects.nonNull(requestParentId)) {
+                // CASE 3)
+                categoryById.disableCategory(nameBeforeChanging);
                 return this.saveCategoryByAddingChildId(createRequest);
             }
         }
 
+        // CASE 1)
         return CategoryResponseDto.fromEntity(categoryById);
     }
 

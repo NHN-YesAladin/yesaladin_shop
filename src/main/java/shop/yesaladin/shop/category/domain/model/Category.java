@@ -38,6 +38,7 @@ public class Category {
 
     public static int DEPTH_PARENT = 0;
     public static int DEPTH_CHILD = 1;
+    public static int DEPTH_DISABLE = -1;
     public static long TERM_OF_PARENT_ID = 10000L;
     public static long TERM_OF_CHILD_ID = 100L;
 
@@ -69,9 +70,16 @@ public class Category {
     @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
     private List<Category> children;
 
+    /**
+     * entity의 변경감지를 위해 사용
+     *
+     * @param name
+     * @param isShown
+     * @param order
+     */
     public void verifyChange(
             String name,
-            boolean isShown,
+            Boolean isShown,
             Integer order
     ) {
         if (Objects.nonNull(name)) {
@@ -83,6 +91,17 @@ public class Category {
         if (Objects.nonNull(order)) {
             this.order = order;
         }
+    }
+
+    /**
+     * FK 제약조건으로 인해 삭제가 불가한 카테고리에 disable 이라는 기능을 추가
+     *  depth = -1 인 경우, disable로 간주
+     *
+     * @param nameBeforeChanging 변경감지로 인해 이름이 변경 되는 경우, 기존 엔티티의 이름을 저장하기 위하여 사용
+     */
+    public void disableCategory(String nameBeforeChanging) {
+        this.depth = -1;
+        this.name = nameBeforeChanging;
     }
 
 }
