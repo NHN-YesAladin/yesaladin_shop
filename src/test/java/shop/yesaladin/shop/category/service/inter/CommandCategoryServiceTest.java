@@ -14,7 +14,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.repository.CommandCategoryRepository;
-import shop.yesaladin.shop.category.domain.repository.QueryDslCategoryRepository;
+import shop.yesaladin.shop.category.domain.repository.QueryComplexCategoryRepository;
 import shop.yesaladin.shop.category.dto.CategoryOnlyIdDto;
 import shop.yesaladin.shop.category.dto.CategoryRequestDto;
 import shop.yesaladin.shop.category.dto.CategoryResponseDto;
@@ -24,7 +24,7 @@ import shop.yesaladin.shop.category.service.impl.CommandCategoryServiceImpl;
 class CommandCategoryServiceTest {
 
     private CommandCategoryRepository commandCategoryRepository;
-    private QueryDslCategoryRepository queryDslCategoryRepository;
+    private QueryComplexCategoryRepository queryComplexCategoryRepository;
     private QueryCategoryService queryCategoryService;
     private CommandCategoryService commandCategoryService;
 
@@ -37,11 +37,11 @@ class CommandCategoryServiceTest {
     void setUp() {
         commandCategoryRepository = mock(CommandCategoryRepository.class);
         queryCategoryService = mock(QueryCategoryService.class);
-        queryDslCategoryRepository = mock(QueryDslCategoryRepository.class);
+        queryComplexCategoryRepository = mock(QueryComplexCategoryRepository.class);
 
         commandCategoryService = new CommandCategoryServiceImpl(
                 commandCategoryRepository,
-                queryDslCategoryRepository,
+                queryComplexCategoryRepository,
                 queryCategoryService
         );
 
@@ -66,7 +66,7 @@ class CommandCategoryServiceTest {
                 null);
 
         when(commandCategoryRepository.save(any())).thenReturn(toEntity);
-        when(queryDslCategoryRepository.getLatestIdByDepth(Category.DEPTH_PARENT)).thenReturn(idDto);
+        when(queryComplexCategoryRepository.getLatestIdByDepth(Category.DEPTH_PARENT)).thenReturn(idDto);
 
         //when
         CategoryResponseDto categoryResponseDto = commandCategoryService.create(createDto);
@@ -76,7 +76,7 @@ class CommandCategoryServiceTest {
         assertThat(categoryResponseDto.getIsShown()).isEqualTo(toEntity.isShown());
 
         verify(commandCategoryRepository, times(1)).save(any());
-        verify(queryDslCategoryRepository, times(1)).getLatestIdByDepth(Category.DEPTH_PARENT);
+        verify(queryComplexCategoryRepository, times(1)).getLatestIdByDepth(Category.DEPTH_PARENT);
     }
 
     @Test
@@ -99,7 +99,7 @@ class CommandCategoryServiceTest {
                 childCategory.getParent());
 
         when(commandCategoryRepository.save(any())).thenReturn(toEntity);
-        when(queryDslCategoryRepository.getLatestChildIdByDepthAndParentId(Category.DEPTH_CHILD,
+        when(queryComplexCategoryRepository.getLatestChildIdByDepthAndParentId(Category.DEPTH_CHILD,
                 childCategory.getParent().getId())).thenReturn(idDto);
 
         //when
@@ -111,7 +111,7 @@ class CommandCategoryServiceTest {
 
         verify(commandCategoryRepository, times(1)).save(any());
         verify(
-                queryDslCategoryRepository,
+                queryComplexCategoryRepository,
                 times(1)
         ).getLatestChildIdByDepthAndParentId(
                 Category.DEPTH_CHILD,
@@ -197,7 +197,7 @@ class CommandCategoryServiceTest {
 
         when(queryCategoryService.findInnerCategoryById(childCategory.getId())).thenReturn(childCategory);
         when(commandCategoryRepository.save(any())).thenReturn(toEntity);
-        when(queryDslCategoryRepository.getLatestIdByDepth(Category.DEPTH_PARENT)).thenReturn(idDto);
+        when(queryComplexCategoryRepository.getLatestIdByDepth(Category.DEPTH_PARENT)).thenReturn(idDto);
 
 
         // when
@@ -213,7 +213,7 @@ class CommandCategoryServiceTest {
 
         verify(queryCategoryService, times(1)).findInnerCategoryById(childCategory.getId());
         verify(commandCategoryRepository, times(1)).save(any());
-        verify(queryDslCategoryRepository, times(1)).getLatestIdByDepth(Category.DEPTH_PARENT);
+        verify(queryComplexCategoryRepository, times(1)).getLatestIdByDepth(Category.DEPTH_PARENT);
     }
 
 
@@ -241,7 +241,7 @@ class CommandCategoryServiceTest {
 
         when(queryCategoryService.findInnerCategoryById(childCategory.getId())).thenReturn(childCategory);
         when(commandCategoryRepository.save(any())).thenReturn(toEntity);
-        when(queryDslCategoryRepository.getLatestChildIdByDepthAndParentId(
+        when(queryComplexCategoryRepository.getLatestChildIdByDepthAndParentId(
                 Category.DEPTH_CHILD,
                 categoryRequestDto.getParentId()
         )).thenReturn(idDto);
@@ -261,7 +261,7 @@ class CommandCategoryServiceTest {
         verify(queryCategoryService, times(1)).findInnerCategoryById(categoryRequestDto.getParentId());
         verify(commandCategoryRepository, times(1)).save(any());
         verify(
-                queryDslCategoryRepository,
+                queryComplexCategoryRepository,
                 times(1)
         ).getLatestChildIdByDepthAndParentId(
                 Category.DEPTH_CHILD,

@@ -3,11 +3,9 @@ package shop.yesaladin.shop.category.domain.repository.impl;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.stereotype.Repository;
-import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.model.QCategory;
-import shop.yesaladin.shop.category.domain.repository.QueryDslCategoryRepository;
+import shop.yesaladin.shop.category.domain.repository.QueryComplexCategoryRepository;
 import shop.yesaladin.shop.category.dto.CategoryOnlyIdDto;
 
 /**
@@ -19,7 +17,7 @@ import shop.yesaladin.shop.category.dto.CategoryOnlyIdDto;
 
 @RequiredArgsConstructor
 @Repository
-public class QueryDslCategoryRepositoryImpl implements QueryDslCategoryRepository {
+public class QueryComplexCategoryRepositoryImpl implements QueryComplexCategoryRepository {
 
     private final JPAQueryFactory queryFactory;
 
@@ -30,8 +28,7 @@ public class QueryDslCategoryRepositoryImpl implements QueryDslCategoryRepositor
                 .from(category)
                 .where(category.depth.eq(depth).and(category.parent.id.eq(parentId)))
                 .orderBy(category.id.desc())
-                .limit(1L)
-                .fetchOne();
+                .fetchFirst();
         if (Objects.isNull(fetchOne)) {
             return new CategoryOnlyIdDto(parentId);
         }
@@ -45,8 +42,7 @@ public class QueryDslCategoryRepositoryImpl implements QueryDslCategoryRepositor
                 .from(category)
                 .where(category.depth.eq(depth))
                 .orderBy(category.id.desc())
-                .limit(1L)
-                .fetchOne();
+                .fetchFirst();
 
         if (Objects.isNull(fetchOne)) {
             return new CategoryOnlyIdDto(0L);

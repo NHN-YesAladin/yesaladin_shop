@@ -7,19 +7,19 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import shop.yesaladin.shop.category.domain.model.Category;
-import shop.yesaladin.shop.category.domain.repository.QueryDslCategoryRepository;
+import shop.yesaladin.shop.category.domain.repository.QueryComplexCategoryRepository;
 import shop.yesaladin.shop.category.dto.CategoryOnlyIdDto;
 import shop.yesaladin.shop.category.dummy.CategoryDummy;
 import shop.yesaladin.shop.category.persistence.JpaCategoryRepository;
 
 @SpringBootTest
-class QueryDslCategoryRepositoryImplTest {
+class QueryComplexCategoryRepositoryImplTest {
 
     @Autowired
     private JpaCategoryRepository jpaCategoryRepository;
 
     @Autowired
-    private QueryDslCategoryRepository queryDslCategoryRepository;
+    private QueryComplexCategoryRepository queryComplexCategoryRepository;
 
     @BeforeEach
     void setUp() {
@@ -31,7 +31,7 @@ class QueryDslCategoryRepositoryImplTest {
         Category parent = jpaCategoryRepository.save(CategoryDummy.dummyParent());
 
          // when
-        CategoryOnlyIdDto onlyId = queryDslCategoryRepository.getLatestIdByDepth(parent.getDepth());
+        CategoryOnlyIdDto onlyId = queryComplexCategoryRepository.getLatestIdByDepth(parent.getDepth());
 
          // then
         assertThat(onlyId.getId()).isEqualTo(parent.getId());
@@ -40,7 +40,7 @@ class QueryDslCategoryRepositoryImplTest {
     @Test
     void getIdByDepth_noPreviousData() throws Exception {
         // when
-        CategoryOnlyIdDto onlyId = queryDslCategoryRepository.getLatestIdByDepth(Category.DEPTH_PARENT);
+        CategoryOnlyIdDto onlyId = queryComplexCategoryRepository.getLatestIdByDepth(Category.DEPTH_PARENT);
 
         // then
         assertThat(onlyId.getId()).isEqualTo(0L);
@@ -53,7 +53,7 @@ class QueryDslCategoryRepositoryImplTest {
         Category child = jpaCategoryRepository.save(CategoryDummy.dummyChild(2L, parent));
 
         // when
-        CategoryOnlyIdDto onlyId = queryDslCategoryRepository.getLatestChildIdByDepthAndParentId(
+        CategoryOnlyIdDto onlyId = queryComplexCategoryRepository.getLatestChildIdByDepthAndParentId(
                 child.getDepth(),
                 child.getParent().getId()
         );
@@ -69,7 +69,7 @@ class QueryDslCategoryRepositoryImplTest {
         Category parent = jpaCategoryRepository.save(CategoryDummy.dummyParent());
 
         // when
-        CategoryOnlyIdDto onlyId = queryDslCategoryRepository.getLatestChildIdByDepthAndParentId(
+        CategoryOnlyIdDto onlyId = queryComplexCategoryRepository.getLatestChildIdByDepthAndParentId(
                 Category.DEPTH_CHILD,
                 parent.getId()
         );
