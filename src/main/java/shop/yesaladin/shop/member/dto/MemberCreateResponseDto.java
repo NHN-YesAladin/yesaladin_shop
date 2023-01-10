@@ -15,7 +15,7 @@ import shop.yesaladin.shop.member.domain.model.MemberGrade;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MemberCreateResponse {
+public class MemberCreateResponseDto {
 
     private Long id;
     private String name;
@@ -31,8 +31,8 @@ public class MemberCreateResponse {
      * @author : 송학현
      * @since : 1.0
      */
-    public static MemberCreateResponse fromEntity(Member member) {
-        return new MemberCreateResponse(
+    public static MemberCreateResponseDto fromEntity(Member member) {
+        return new MemberCreateResponseDto(
                 member.getId(),
                 member.getName(),
                 member.getNickname(),

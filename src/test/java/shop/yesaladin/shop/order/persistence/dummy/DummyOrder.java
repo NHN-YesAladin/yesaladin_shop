@@ -12,13 +12,13 @@ import shop.yesaladin.shop.order.domain.model.SubscribeOrder;
 
 public class DummyOrder {
 
-    private static String orderNumber = "20230106-3942JE84";
-    private static LocalDateTime orderDateTime = LocalDateTime.now();
-    private static LocalDate expectedTransportDate = LocalDate.now();
+    private static final String orderNumber = "20230106-3942JE8";
+    private static final LocalDateTime orderDateTime = LocalDateTime.of(2023, 1, 1, 0, 0);
+    private static final LocalDate expectedTransportDate = LocalDate.of(2023, 1, 2);
 
     public static NonMemberOrder nonMemberOrder() {
         return NonMemberOrder.builder()
-                .orderNumber(orderNumber)
+                .orderNumber(orderNumber + "n")
                 .orderDateTime(orderDateTime)
                 .expectedTransportDate(expectedTransportDate)
                 .isHidden(false)
@@ -34,7 +34,7 @@ public class DummyOrder {
 
     public static MemberOrder memberOrder(Member member, MemberAddress memberAddress) {
         return MemberOrder.builder()
-                .orderNumber(orderNumber)
+                .orderNumber(orderNumber + "m")
                 .orderDateTime(orderDateTime)
                 .expectedTransportDate(expectedTransportDate)
                 .isHidden(false)
@@ -49,7 +49,7 @@ public class DummyOrder {
 
     public static SubscribeOrder subscribeOrder(Subscribe subscribe) {
         return SubscribeOrder.builder()
-                .orderNumber(orderNumber)
+                .orderNumber(orderNumber + "s")
                 .orderDateTime(orderDateTime)
                 .expectedTransportDate(expectedTransportDate)
                 .isHidden(false)

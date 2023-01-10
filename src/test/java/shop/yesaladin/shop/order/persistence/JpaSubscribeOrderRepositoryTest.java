@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,14 +13,12 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import shop.yesaladin.shop.member.domain.model.Member;
-import shop.yesaladin.shop.member.domain.model.MemberGrade;
 import shop.yesaladin.shop.order.domain.dummy.MemberAddress;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
 import shop.yesaladin.shop.order.domain.model.Subscribe;
 import shop.yesaladin.shop.order.domain.model.SubscribeOrder;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMemberAddress;
-import shop.yesaladin.shop.order.persistence.dummy.DummyMemberGrade;
 import shop.yesaladin.shop.order.persistence.dummy.DummySubscribe;
 import shop.yesaladin.shop.order.persistence.dummy.DummySubscribeProduct;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
@@ -33,7 +30,7 @@ class JpaSubscribeOrderRepositoryTest {
     @PersistenceContext
     private EntityManager entityManager;
     @Autowired
-    private JpaOrderRepository<SubscribeOrder> subscribeOrderRepository;
+    private JpaOrderCommandRepository<SubscribeOrder> subscribeOrderRepository;
 
     private String orderNumber = "1234-5678";
     private LocalDateTime orderDateTime = LocalDateTime.now();
@@ -51,13 +48,11 @@ class JpaSubscribeOrderRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        MemberGrade memberGrade = DummyMemberGrade.memberGrade;
-        Member member = DummyMember.member(memberGrade);
+        Member member = DummyMember.member();
         MemberAddress memberAddress = DummyMemberAddress.address(member);
         SubscribeProduct subscribeProduct = DummySubscribeProduct.subscribeProduct();
         subscribe = DummySubscribe.subscribe(memberAddress, member, subscribeProduct);
 
-        entityManager.persist(memberGrade);
         entityManager.persist(member);
         entityManager.persist(memberAddress);
         entityManager.persist(subscribeProduct);
@@ -82,30 +77,6 @@ class JpaSubscribeOrderRepositoryTest {
         assertThat(savedOrder.isTransported()).isEqualTo(isTransported);
         assertThat(savedOrder.getExpectedDate()).isEqualTo(expectedDate);
         assertThat(savedOrder.getSubscribe()).isEqualTo(subscribe);
-    }
-
-    @Test
-    void findById() {
-        //given
-        entityManager.persist(subscribeOrder);
-        Long id = subscribeOrder.getId();
-
-        //when
-        Optional<SubscribeOrder> foundOrder = subscribeOrderRepository.findById(id);
-
-        //then
-        assertThat(foundOrder).isPresent();
-        assertThat(foundOrder.get().getId()).isEqualTo(id);
-        assertThat(foundOrder.get().getOrderNumber()).isEqualTo(orderNumber);
-        assertThat(foundOrder.get().getExpectedTransportDate()).isEqualTo(expectedTransportDate);
-        assertThat(foundOrder.get().isHidden()).isEqualTo(isHidden);
-        assertThat(foundOrder.get().getUsedPoint()).isEqualTo(usedPoint);
-        assertThat(foundOrder.get().getShippingFee()).isEqualTo(shippingFee);
-        assertThat(foundOrder.get().getWrappingFee()).isEqualTo(wrappingFee);
-        assertThat(foundOrder.get().getOrderCode()).isEqualTo(orderCode);
-        assertThat(foundOrder.get().isTransported()).isEqualTo(isTransported);
-        assertThat(foundOrder.get().getExpectedDate()).isEqualTo(expectedDate);
-        assertThat(foundOrder.get().getSubscribe()).isEqualTo(subscribe);
     }
 
     SubscribeOrder createSubscribeOrder() {
