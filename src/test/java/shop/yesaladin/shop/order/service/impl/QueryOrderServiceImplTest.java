@@ -10,6 +10,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 import shop.yesaladin.shop.common.exception.InvalidPeriodConditionException;
 import shop.yesaladin.shop.common.exception.PageOffsetOutOfBoundsException;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
@@ -36,22 +40,21 @@ class QueryOrderServiceImplTest {
     void getAllOrderListInPeriodSuccessTest() {
         // given
         OrderInPeriodQueryDto queryDto = Mockito.mock(OrderInPeriodQueryDto.class);
-        List<OrderSummaryDto> expectedValue = List.of(Mockito.mock(OrderSummaryDto.class));
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<OrderSummaryDto> expectedValue = PageableExecutionUtils.getPage(List.of((Mockito.mock(
+                OrderSummaryDto.class))), pageable, () -> 1);
         Mockito.when(repository.getCountOfOrdersInPeriod(Mockito.any(), Mockito.any()))
                 .thenReturn(1L);
         Mockito.when(repository.findAllOrdersInPeriod(
                         Mockito.any(),
                         Mockito.any(),
-                        Mockito.eq(10),
-                        Mockito.eq(1)
+                        Mockito.any()
                 ))
                 .thenReturn(expectedValue);
         Mockito.when(queryDto.getEndDateOrDefaultValue(clock)).thenReturn(LocalDate.now(clock));
-        Mockito.when(queryDto.getSize()).thenReturn(10);
-        Mockito.when(queryDto.getPage()).thenReturn(1);
 
         // when
-        List<OrderSummaryDto> actual = service.getAllOrderListInPeriod(queryDto);
+        Page<OrderSummaryDto> actual = service.getAllOrderListInPeriod(queryDto, pageable);
 
         // then
         Assertions.assertThat(actual).isEqualTo(expectedValue);
@@ -65,10 +68,11 @@ class QueryOrderServiceImplTest {
         OrderInPeriodQueryDto queryDto = Mockito.mock(OrderInPeriodQueryDto.class);
         Mockito.when(queryDto.getEndDateOrDefaultValue(clock))
                 .thenReturn(LocalDate.now(clock).plusDays(1));
+        Pageable pageable = PageRequest.of(1, 10);
 
         // when
         // then
-        Assertions.assertThatThrownBy(() -> service.getAllOrderListInPeriod(queryDto))
+        Assertions.assertThatThrownBy(() -> service.getAllOrderListInPeriod(queryDto, pageable))
                 .isInstanceOf(InvalidPeriodConditionException.class);
     }
 
@@ -80,12 +84,11 @@ class QueryOrderServiceImplTest {
         Mockito.when(queryDto.getEndDateOrDefaultValue(clock)).thenReturn(LocalDate.now(clock));
         Mockito.when(repository.getCountOfOrdersInPeriod(Mockito.any(), Mockito.any()))
                 .thenReturn(1L);
-        Mockito.when(queryDto.getSize()).thenReturn(10);
-        Mockito.when(queryDto.getPage()).thenReturn(2);
+        Pageable pageable = PageRequest.of(2, 10);
 
         // when
         // then
-        Assertions.assertThatThrownBy(() -> service.getAllOrderListInPeriod(queryDto))
+        Assertions.assertThatThrownBy(() -> service.getAllOrderListInPeriod(queryDto, pageable))
                 .isInstanceOf(PageOffsetOutOfBoundsException.class);
     }
 }
