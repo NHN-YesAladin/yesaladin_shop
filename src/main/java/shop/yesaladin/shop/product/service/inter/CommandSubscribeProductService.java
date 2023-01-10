@@ -1,6 +1,7 @@
 package shop.yesaladin.shop.product.service.inter;
 
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
+import shop.yesaladin.shop.product.dto.SubscribeProductResponseDto;
 
 /**
  * 구독상품 등록을 위한 Service Interface 입니다.
@@ -9,5 +10,6 @@ import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
  * @since 1.0
  */
 public interface CommandSubscribeProductService {
-    SubscribeProduct register(SubscribeProduct subscribeProduct);
+
+    SubscribeProductResponseDto register(SubscribeProduct subscribeProduct);
 }

@@ -6,9 +6,8 @@ import shop.yesaladin.shop.category.domain.model.Category;
 public class CategoryDummy {
 
     public static Category dummyParent() {
-        //TODO Category autoIncrement off 이후 주석 삭제 예정
         return Category.builder()
-//                .id(10000L)
+                .id(10000L)
                 .name("국내도서")
                 .isShown(true)
                 .order(null)
@@ -16,7 +15,6 @@ public class CategoryDummy {
                 .build();
     }
 
-    //TODO Category autoIncrement off 이후 삭제 예정
     public static Category dummyParent(Long id) {
         return Category.builder()
                 .id(id)
@@ -27,25 +25,25 @@ public class CategoryDummy {
                 .build();
     }
 
-    public static Category dummyChild() {
-        //TODO Category autoIncrement off 이후 주석 삭제 예정
+    public static Category dummyChild(Category parent) {
         return Category.builder()
-//                .id(10100L)
+                .id(10100L)
                 .name("소설")
                 .isShown(true)
                 .order(null)
-                .parent(dummyParent())
+                .depth(1)
+                .parent(parent)
                 .build();
     }
 
-    //TODO Category autoIncrement off 이후 삭제 예정
-    public static Category dummyChild(Long id) {
+    public static Category dummyChild(Long id, Category parent) {
         return Category.builder()
                 .id(id)
                 .name("소설")
                 .isShown(true)
                 .order(null)
-                .parent(dummyParent())
+                .depth(1)
+                .parent(parent)
                 .build();
     }
 }

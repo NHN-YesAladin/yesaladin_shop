@@ -60,7 +60,8 @@ class JpaCategoryRepositoryTest {
         int size = 3;
         for (int i = 0; i < 5; i++) {
             sample = Category.builder()
-                    .name(name + "1")
+                    .id((long)i)
+                    .name(name + i)
                     .order(null)
                     .isShown(true)
                     .parent(null)

@@ -7,16 +7,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Collections;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.platform.commons.util.ReflectionUtils;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import shop.yesaladin.shop.order.dto.OrderInPeriodQueryDto;
@@ -35,29 +38,45 @@ class QueryOrderControllerTest {
     @Test
     @DisplayName("기간 내의 모든 주문 내역이 조회된다.")
     void getAllOrdersTest() throws Exception {
-        Mockito.when(queryOrderService.getAllOrderListInPeriod(any())).thenReturn(List.of());
+        // given
+        Mockito.when(queryOrderService.getAllOrderListInPeriod(any(), any()))
+                .thenReturn(new PageImpl<>(Collections.emptyList()));
+
         Map<String, Object> request = Map.of(
                 "startDate",
                 LocalDate.of(2023, 1, 1),
                 "endDate",
-                LocalDate.of(2023, 1, 2),
-                "size",
-                20,
-                "page",
-                1
+                LocalDate.of(2023, 1, 2)
         );
-        ArgumentCaptor<OrderInPeriodQueryDto> captor = ArgumentCaptor.forClass(OrderInPeriodQueryDto.class);
+        ArgumentCaptor<OrderInPeriodQueryDto> dtoCaptor = ArgumentCaptor.forClass(
+                OrderInPeriodQueryDto.class);
+        ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
 
-        mockMvc.perform(get("/v1/orders")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+        // when
+        // then
+        mockMvc.perform(get("/v1/orders").contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+                        .param("size", "20")
+                        .param("page", "1"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
 
         Mockito.verify(queryOrderService, Mockito.times(1))
-                .getAllOrderListInPeriod(captor.capture());
-        OrderInPeriodQueryDto actual = captor.getValue();
-        Assertions.assertThat(actual.getSize()).isEqualTo(20);
-        Assertions.assertThat(actual.getPage()).isEqualTo(1);
+                .getAllOrderListInPeriod(dtoCaptor.capture(), pageableCaptor.capture());
+        OrderInPeriodQueryDto actualDto = dtoCaptor.getValue();
+        Pageable actualPageable = pageableCaptor.getValue();
+
+        Assertions.assertThat(ReflectionUtils.tryToReadFieldValue(
+                OrderInPeriodQueryDto.class,
+                "startDate",
+                actualDto
+        ).get()).isEqualTo(request.get("startDate"));
+        Assertions.assertThat(ReflectionUtils.tryToReadFieldValue(
+                OrderInPeriodQueryDto.class,
+                "endDate",
+                actualDto
+        ).get()).isEqualTo(request.get("endDate"));
+        Assertions.assertThat(actualPageable.getPageSize()).isEqualTo(20);
+        Assertions.assertThat(actualPageable.getPageNumber()).isEqualTo(1);
     }
 }

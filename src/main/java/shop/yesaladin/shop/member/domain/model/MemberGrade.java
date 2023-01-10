@@ -4,18 +4,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 회원 등급 엔티티 클래스 입니다.
+ *
  *
  * @author : 송학현
  * @since : 1.0
  */
-
-//@Getter
-//@Builder
-//@NoArgsConstructor(access = AccessLevel.PROTECTED)
-//@AllArgsConstructor(access = AccessLevel.PRIVATE)
-//@Table(name = "member_grades")
-//@Entity
 @Getter
 @RequiredArgsConstructor
 public enum MemberGrade {
@@ -29,16 +22,4 @@ public enum MemberGrade {
     private final String name;
     private final Long baseOrderAmount;
     private final Long baseGivenPoint;
-
-//    @Id
-//    private Integer id;
-//
-//    @Column(nullable = false, length = 15)
-//    private String name;
-//
-//    @Column(name = "base_order_amount", nullable = false)
-//    private Long baseOrderAmount;
-//
-//    @Column(name = "base_given_point", nullable = false)
-//    private Long baseGivenPoint;
 }

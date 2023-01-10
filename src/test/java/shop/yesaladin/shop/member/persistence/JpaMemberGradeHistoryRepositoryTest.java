@@ -38,7 +38,6 @@ class JpaMemberGradeHistoryRepositoryTest {
         //given
         Member savedMember = entityManager.persist(member);
 
-//        memberGradeHistory = MemberGradeHistoryDummy.dummy(savedMemberGrade, savedMember);
         memberGradeHistory = MemberGradeHistoryDummy.dummy(savedMember);
 
         //when

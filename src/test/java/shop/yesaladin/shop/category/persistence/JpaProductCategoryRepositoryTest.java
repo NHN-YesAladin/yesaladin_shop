@@ -3,10 +3,7 @@ package shop.yesaladin.shop.category.persistence;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -29,7 +26,7 @@ import shop.yesaladin.shop.product.dummy.DummyProduct;
 import shop.yesaladin.shop.product.dummy.DummyPublisher;
 import shop.yesaladin.shop.product.dummy.DummySubscribeProduct;
 import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
-import shop.yesaladin.shop.publisher.domain.model.Publisher;
+import shop.yesaladin.shop.publish.domain.model.Publisher;
 
 
 @DataJpaTest
@@ -138,7 +135,7 @@ class JpaProductCategoryRepositoryTest {
                     ebookFile,
                     totalDiscountRate
             );
-            Category category = CategoryDummy.dummyParent();
+            Category category = CategoryDummy.dummyParent((long) i);
 
             entityManager.persist(product);
             entityManager.persist(category);
