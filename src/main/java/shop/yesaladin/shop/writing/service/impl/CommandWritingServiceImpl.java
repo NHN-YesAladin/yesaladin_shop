@@ -7,6 +7,7 @@ import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.writing.domain.model.Writing;
 import shop.yesaladin.shop.writing.domain.repository.CommandWritingRepository;
+import shop.yesaladin.shop.writing.dto.WritingResponseDto;
 import shop.yesaladin.shop.writing.service.inter.CommandWritingService;
 
 /**
@@ -33,13 +34,15 @@ public class CommandWritingServiceImpl implements CommandWritingService {
      */
     @Transactional
     @Override
-    public Writing create(String authorName, Product product, Member member) {
+    public WritingResponseDto create(String authorName, Product product, Member member) {
         Writing writing = Writing.builder()
                 .authorName(authorName)
                 .product(product)
                 .member(member)
                 .build();
 
-        return commandWritingRepository.save(writing);
+        Writing savedWriting = commandWritingRepository.save(writing);
+
+        return new WritingResponseDto(savedWriting.getId(), savedWriting.getAuthorName(), savedWriting.getProduct(), savedWriting.getMember());
     }
 }

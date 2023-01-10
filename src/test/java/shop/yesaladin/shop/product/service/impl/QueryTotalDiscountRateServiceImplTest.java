@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
 import shop.yesaladin.shop.product.domain.repository.QueryTotalDiscountRateRepository;
+import shop.yesaladin.shop.product.dto.TotalDiscountRateResponseDto;
 import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
 import shop.yesaladin.shop.product.service.inter.CommandTotalDiscountRateService;
 import shop.yesaladin.shop.product.service.inter.QueryTotalDiscountRateService;
@@ -39,7 +40,7 @@ class QueryTotalDiscountRateServiceImplTest {
         when(queryTotalDiscountRateRepository.findById(id)).thenReturn(Optional.of(totalDiscountRate));
 
         // when
-        TotalDiscountRate foundTotalDiscountRate = queryTotalDiscountRateService.findById(id);
+        TotalDiscountRateResponseDto foundTotalDiscountRate = queryTotalDiscountRateService.findById(id);
 
         // then
         assertThat(foundTotalDiscountRate).isNotNull();

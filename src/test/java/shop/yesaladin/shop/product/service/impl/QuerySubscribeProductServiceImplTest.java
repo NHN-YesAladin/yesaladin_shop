@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 import shop.yesaladin.shop.product.domain.repository.QuerySubscribeProductRepository;
+import shop.yesaladin.shop.product.dto.SubscribeProductResponseDto;
 import shop.yesaladin.shop.product.dummy.DummySubscribeProduct;
 import shop.yesaladin.shop.product.service.inter.QuerySubscribeProductService;
 
@@ -36,7 +37,7 @@ class QuerySubscribeProductServiceImplTest {
         when(querySubscribeProductRepository.findByISSN(any())).thenReturn(Optional.of(subscribeProduct));
 
         // when
-        SubscribeProduct foundSubscribeProduct = querySubscribeProductService.findByISSN(ISSN);
+        SubscribeProductResponseDto foundSubscribeProduct = querySubscribeProductService.findByISSN(ISSN);
 
         // then
         assertThat(foundSubscribeProduct).isNotNull();

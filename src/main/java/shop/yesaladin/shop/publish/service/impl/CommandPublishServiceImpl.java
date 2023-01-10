@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import shop.yesaladin.shop.publish.domain.model.Publish;
 import shop.yesaladin.shop.publish.domain.repository.CommandPublishRepository;
+import shop.yesaladin.shop.publish.dto.PublishResponseDto;
+import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
 import shop.yesaladin.shop.publish.service.inter.CommandPublishService;
 
 /**
@@ -26,7 +28,9 @@ public class CommandPublishServiceImpl implements CommandPublishService {
      * @since 1.0
      */
     @Override
-    public Publish register(Publish publish) {
-        return commandPublishRepository.save(publish);
+    public PublishResponseDto register(Publish publish) {
+        Publish savedPublish = commandPublishRepository.save(publish);
+
+        return new PublishResponseDto(savedPublish.getPk(), savedPublish.getPublishedDate(), savedPublish.getProduct(), savedPublish.getPublisher());
     }
 }

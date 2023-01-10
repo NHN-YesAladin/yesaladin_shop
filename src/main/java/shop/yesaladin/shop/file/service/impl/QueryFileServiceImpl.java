@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.file.domain.repository.QueryFileRepository;
+import shop.yesaladin.shop.file.dto.FileResponseDto;
 import shop.yesaladin.shop.file.service.inter.QueryFileService;
 
 /**
@@ -27,7 +28,9 @@ public class QueryFileServiceImpl implements QueryFileService {
      * @since 1.0
      */
     @Override
-    public File findByName(String name) {
-        return queryFileRepository.findByName(name).orElse(null);
+    public FileResponseDto findByName(String name) {
+        File file =  queryFileRepository.findByName(name).orElse(null);
+
+        return new FileResponseDto(file.getId(), file.getName(), file.getUploadDateTime());
     }
 }

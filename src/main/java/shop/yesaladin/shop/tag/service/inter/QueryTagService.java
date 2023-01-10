@@ -1,6 +1,7 @@
 package shop.yesaladin.shop.tag.service.inter;
 
 import shop.yesaladin.shop.tag.domain.model.Tag;
+import shop.yesaladin.shop.tag.dto.TagResponseDto;
 
 /**
  * 태그 조회를 위한 Service Interface 입니다.
@@ -10,5 +11,5 @@ import shop.yesaladin.shop.tag.domain.model.Tag;
  */
 public interface QueryTagService {
 
-    Tag findByName(String name);
+    TagResponseDto findByName(String name);
 }

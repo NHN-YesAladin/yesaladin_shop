@@ -1,6 +1,7 @@
 package shop.yesaladin.shop.product.service.inter;
 
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
+import shop.yesaladin.shop.product.dto.SubscribeProductResponseDto;
 
 /**
  * 구독상품 조회를 위한 Service Interface 입니다.
@@ -10,5 +11,5 @@ import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
  */
 public interface QuerySubscribeProductService {
 
-    SubscribeProduct findByISSN(String ISSN);
+    SubscribeProductResponseDto findByISSN(String ISSN);
 }

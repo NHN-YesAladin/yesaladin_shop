@@ -32,6 +32,7 @@ import shop.yesaladin.shop.product.service.inter.QuerySubscribeProductService;
 import shop.yesaladin.shop.product.service.inter.QueryTotalDiscountRateService;
 import shop.yesaladin.shop.publish.domain.model.Publish;
 import shop.yesaladin.shop.publish.domain.model.Publisher;
+import shop.yesaladin.shop.publish.dto.PublishResponseDto;
 import shop.yesaladin.shop.publish.service.inter.CommandPublishService;
 import shop.yesaladin.shop.publish.service.inter.CommandPublisherService;
 import shop.yesaladin.shop.publish.service.inter.QueryPublisherService;
@@ -140,17 +141,19 @@ class CommandProductServiceImplTest {
                 totalDiscountRate
         );
 
+        when(commandSubscribeProductService.register(any()).toEntity()).thenReturn(subscribeProduct);
+
         when(commandProductRepository.save(any())).thenReturn(product);
 
         Publisher publisher = DummyPublisher.dummy();
         commandPublisherService.register(publisher);
 
         // TODO: test......모르겠어요... 다시해요...
-//        mockStatic(Publish.class);
 
         String now = LocalDateTime.now().toLocalDate().toString();
         Publish publish = Publish.create(product, publisher, now);
-        when(commandPublishService.register(any())).thenReturn(publish);
+        PublishResponseDto publishResponseDto = new PublishResponseDto(publish.getPk(), publish.getPublishedDate(), publish.getProduct(), publish.getPublisher());
+        when(commandPublishService.register(any())).thenReturn(publishResponseDto);
 
         // when
         ProductResponseDto productResponseDto = commandProductService.create(productCreateDto);

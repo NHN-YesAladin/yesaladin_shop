@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import shop.yesaladin.shop.tag.domain.model.Tag;
 import shop.yesaladin.shop.tag.domain.repository.QueryTagRepository;
+import shop.yesaladin.shop.tag.dto.TagResponseDto;
 import shop.yesaladin.shop.tag.service.inter.QueryTagService;
 
 class QueryTagServiceImplTest {
@@ -32,7 +33,7 @@ class QueryTagServiceImplTest {
         when(queryTagRepository.findByName(TAG_NAME)).thenReturn(Optional.of(tag));
 
         // when
-        Tag foundTag = queryTagService.findByName(TAG_NAME);
+        TagResponseDto foundTag = queryTagService.findByName(TAG_NAME);
 
         // then
         assertThat(foundTag).isNotNull();

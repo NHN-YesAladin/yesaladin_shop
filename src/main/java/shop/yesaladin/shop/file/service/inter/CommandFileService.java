@@ -1,6 +1,7 @@
 package shop.yesaladin.shop.file.service.inter;
 
 import shop.yesaladin.shop.file.domain.model.File;
+import shop.yesaladin.shop.file.dto.FileResponseDto;
 
 /**
  * 파일 등록을 위한 Service Interface 입니다.
@@ -10,5 +11,5 @@ import shop.yesaladin.shop.file.domain.model.File;
  */
 public interface CommandFileService {
 
-    File register(File file);
+    FileResponseDto register(File file);
 }

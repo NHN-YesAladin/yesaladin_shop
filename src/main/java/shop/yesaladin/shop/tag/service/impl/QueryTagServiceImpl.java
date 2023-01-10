@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import shop.yesaladin.shop.tag.domain.model.Tag;
 import shop.yesaladin.shop.tag.domain.repository.QueryTagRepository;
+import shop.yesaladin.shop.tag.dto.TagResponseDto;
 import shop.yesaladin.shop.tag.service.inter.QueryTagService;
 
 /**
@@ -27,7 +28,9 @@ public class QueryTagServiceImpl implements QueryTagService {
      * @since 1.0
      */
     @Override
-    public Tag findByName(String name) {
-        return queryTagRepository.findByName(name).orElse(null);
+    public TagResponseDto findByName(String name) {
+        Tag tag = queryTagRepository.findByName(name).orElse(null);
+
+        return new TagResponseDto(tag.getId(), tag.getName());
     }
 }

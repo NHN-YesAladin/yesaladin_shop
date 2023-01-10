@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import shop.yesaladin.shop.tag.domain.model.Tag;
 import shop.yesaladin.shop.tag.domain.repository.CommandTagRepository;
+import shop.yesaladin.shop.tag.dto.TagResponseDto;
 import shop.yesaladin.shop.tag.service.inter.CommandTagService;
 
 /**
@@ -27,7 +28,9 @@ public class CommandTagServiceImpl implements CommandTagService {
      * @since 1.0
      */
     @Override
-    public Tag register(Tag tag) {
-        return commandTagRepository.save(tag);
+    public TagResponseDto register(Tag tag) {
+        Tag savedTag = commandTagRepository.save(tag);
+
+        return new TagResponseDto(savedTag.getId(), savedTag.getName());
     }
 }

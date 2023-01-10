@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.file.domain.repository.CommandFileRepository;
+import shop.yesaladin.shop.file.dto.FileResponseDto;
 import shop.yesaladin.shop.file.service.inter.CommandFileService;
 
 /**
@@ -29,7 +30,9 @@ public class CommandFileServiceImpl implements CommandFileService {
      */
     @Transactional
     @Override
-    public File register(File file) {
-        return commandFileRepository.save(file);
+    public FileResponseDto register(File file) {
+        File savedFile = commandFileRepository.save(file);
+
+        return new FileResponseDto(savedFile.getId(), savedFile.getName(), savedFile.getUploadDateTime());
     }
 }

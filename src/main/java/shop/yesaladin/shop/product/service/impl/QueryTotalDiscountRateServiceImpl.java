@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
 import shop.yesaladin.shop.product.domain.repository.QueryTotalDiscountRateRepository;
+import shop.yesaladin.shop.product.dto.TotalDiscountRateResponseDto;
 import shop.yesaladin.shop.product.exception.TotalDiscountRateNotExistsException;
 import shop.yesaladin.shop.product.service.inter.QueryTotalDiscountRateService;
 
@@ -24,8 +25,10 @@ public class QueryTotalDiscountRateServiceImpl implements QueryTotalDiscountRate
      * @since 1.0
      */
     @Override
-    public TotalDiscountRate findById(int id) {
-        return queryTotalDiscountRateRepository.findById(id)
+    public TotalDiscountRateResponseDto findById(int id) {
+        TotalDiscountRate totalDiscountRate = queryTotalDiscountRateRepository.findById(id)
                 .orElseThrow(() -> new TotalDiscountRateNotExistsException());
+
+        return new TotalDiscountRateResponseDto(totalDiscountRate.getId(), totalDiscountRate.getDiscountRate());
     }
 }

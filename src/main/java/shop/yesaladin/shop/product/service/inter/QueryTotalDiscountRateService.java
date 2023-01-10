@@ -1,6 +1,7 @@
 package shop.yesaladin.shop.product.service.inter;
 
 import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
+import shop.yesaladin.shop.product.dto.TotalDiscountRateResponseDto;
 
 /**
  * 전체 할인율 조회를 위한 Service Interface 입니다.
@@ -10,5 +11,5 @@ import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
  */
 public interface QueryTotalDiscountRateService {
 
-    TotalDiscountRate findById(int id);
+    TotalDiscountRateResponseDto findById(int id);
 }

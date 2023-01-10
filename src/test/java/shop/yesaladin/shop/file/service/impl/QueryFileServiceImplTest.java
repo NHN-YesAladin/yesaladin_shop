@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.file.domain.repository.QueryFileRepository;
+import shop.yesaladin.shop.file.dto.FileResponseDto;
 import shop.yesaladin.shop.file.service.inter.QueryFileService;
 
 class QueryFileServiceImplTest {
@@ -26,7 +27,7 @@ class QueryFileServiceImplTest {
     }
 
     @Test
-    void findByName_existFile() {
+    void findByName() {
         // given
         LocalDateTime now = LocalDateTime.now();
 
@@ -38,20 +39,11 @@ class QueryFileServiceImplTest {
         when(queryFileRepository.findByName(FILE_NAME)).thenReturn(Optional.of(file));
 
         // when
-        File foundFile = queryFileService.findByName(FILE_NAME);
+        FileResponseDto foundFile = queryFileService.findByName(FILE_NAME);
 
         // then
         assertThat(foundFile).isNotNull();
         assertThat(foundFile.getName()).isEqualTo(FILE_NAME);
         assertThat(foundFile.getUploadDateTime()).isEqualTo(now);
-    }
-
-    @Test
-    void findByName_notExistFile() {
-        // when
-        File foundFile = queryFileService.findByName(FILE_NAME);
-
-        // then
-        assertThat(foundFile).isNull();
     }
 }

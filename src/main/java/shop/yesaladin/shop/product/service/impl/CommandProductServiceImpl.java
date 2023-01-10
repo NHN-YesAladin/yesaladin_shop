@@ -5,6 +5,7 @@ import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import shop.yesaladin.shop.file.domain.model.File;
+import shop.yesaladin.shop.file.dto.FileResponseDto;
 import shop.yesaladin.shop.file.service.inter.CommandFileService;
 import shop.yesaladin.shop.file.service.inter.QueryFileService;
 import shop.yesaladin.shop.member.domain.model.Member;
@@ -16,6 +17,8 @@ import shop.yesaladin.shop.product.domain.repository.CommandProductRepository;
 import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
 import shop.yesaladin.shop.product.dto.ProductCreateDto;
 import shop.yesaladin.shop.product.dto.ProductResponseDto;
+import shop.yesaladin.shop.product.dto.SubscribeProductResponseDto;
+import shop.yesaladin.shop.product.dto.TotalDiscountRateResponseDto;
 import shop.yesaladin.shop.product.exception.AlreadyProductExistsException;
 import shop.yesaladin.shop.product.service.inter.CommandProductService;
 import shop.yesaladin.shop.product.service.inter.CommandSubscribeProductService;
@@ -23,11 +26,13 @@ import shop.yesaladin.shop.product.service.inter.QuerySubscribeProductService;
 import shop.yesaladin.shop.product.service.inter.QueryTotalDiscountRateService;
 import shop.yesaladin.shop.publish.domain.model.Publish;
 import shop.yesaladin.shop.publish.domain.model.Publisher;
+import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
 import shop.yesaladin.shop.publish.service.inter.CommandPublishService;
 import shop.yesaladin.shop.publish.service.inter.CommandPublisherService;
 import shop.yesaladin.shop.publish.service.inter.QueryPublisherService;
 import shop.yesaladin.shop.tag.domain.model.ProductTag;
 import shop.yesaladin.shop.tag.domain.model.Tag;
+import shop.yesaladin.shop.tag.dto.TagResponseDto;
 import shop.yesaladin.shop.tag.service.inter.CommandProductTagService;
 import shop.yesaladin.shop.tag.service.inter.CommandTagService;
 import shop.yesaladin.shop.tag.service.inter.QueryTagService;
@@ -88,24 +93,24 @@ public class CommandProductServiceImpl implements CommandProductService {
     public ProductResponseDto create(ProductCreateDto dto) {
 
         // File
-        File thumbnailFile = queryFileService.findByName(dto.getThumbnailFileName());
+        FileResponseDto thumbnailFile = queryFileService.findByName(dto.getThumbnailFileName());
         if (Objects.isNull(thumbnailFile)) {
             thumbnailFile = commandFileService.register(dto.toThumbnailFileEntity());
         }
 
-        File ebookFile = queryFileService.findByName(dto.getEbookFileName());
+        FileResponseDto ebookFile = queryFileService.findByName(dto.getEbookFileName());
         if (Objects.isNull(ebookFile)) {
             ebookFile = commandFileService.register(dto.toEbookFileEntity());
         }
 
         // SubscribeProduct
-        SubscribeProduct subscribeProduct = querySubscribeProductService.findByISSN(dto.getISSN());
+        SubscribeProductResponseDto subscribeProduct = querySubscribeProductService.findByISSN(dto.getISSN());
         if (Objects.isNull(subscribeProduct)) {
             subscribeProduct = commandSubscribeProductService.register(dto.toSubscribeProductEntity());
         }
 
         // TotalDiscountRate
-        TotalDiscountRate totalDiscountRate = queryTotalDiscountRateService.findById(1);
+        TotalDiscountRateResponseDto totalDiscountRate = queryTotalDiscountRateService.findById(1);
 
         // Product
         Product product = queryProductRepository.findByISBN(dto.getISBN()).orElse(null);
@@ -113,10 +118,10 @@ public class CommandProductServiceImpl implements CommandProductService {
             throw new AlreadyProductExistsException(dto.getISBN());
         }
         product = commandProductRepository.save(dto.toProductEntity(
-                subscribeProduct,
-                thumbnailFile,
-                ebookFile,
-                totalDiscountRate
+                subscribeProduct.toEntity(),
+                thumbnailFile.toEntity(),
+                ebookFile.toEntity(),
+                totalDiscountRate.toEntity()
         ));
 
         // Writing
@@ -127,24 +132,22 @@ public class CommandProductServiceImpl implements CommandProductService {
         commandWritingService.create(dto.getWriterName(), product, member);
 
         // Publish
-        Publisher publisher = queryPublisherService.findByName(dto.getPublisherName());
+        PublisherResponseDto publisher = queryPublisherService.findByName(dto.getPublisherName());
         if (Objects.isNull(publisher)) {
-            publisher = Publisher.builder().name(dto.getPublisherName()).build();
-            publisher = commandPublisherService.register(publisher);
+            publisher = commandPublisherService.register(Publisher.builder().name(dto.getPublisherName()).build());
         }
-        commandPublishService.register(Publish.create(product, publisher, dto.getPublishedDate()));
+        commandPublishService.register(Publish.create(product, publisher.toEntity(), dto.getPublishedDate()));
 
         // Tag
         for (String name : dto.getTags()) {
-            Tag tag = queryTagService.findByName(name);
+            TagResponseDto tag = queryTagService.findByName(name);
             if (Objects.isNull(tag)) {
-                tag = Tag.builder().name(name).build();
-                tag = commandTagService.register(tag);
+                tag = commandTagService.register(Tag.builder().name(name).build());
             }
-            commandProductTagService.register(ProductTag.create(product, tag));
+            commandProductTagService.register(ProductTag.create(product, tag.toEntity()));
         }
 
-        // Category
+        // TODO: add Category
 
         return new ProductResponseDto(product.getId());
     }
