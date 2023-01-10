@@ -20,7 +20,7 @@ import shop.yesaladin.shop.category.domain.model.Category;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoryResponse {
+public class CategoryResponseDto {
 
     private Long id;
 
@@ -42,8 +42,8 @@ public class CategoryResponse {
      * @param category 변환하고자 하는 Category
      * @return CategoryResponse 카테고리의 일부 데이터
      */
-    public static CategoryResponse fromEntity(Category category) {
-        CategoryResponseBuilder builder = CategoryResponse.builder()
+    public static CategoryResponseDto fromEntity(Category category) {
+        CategoryResponseDtoBuilder builder = CategoryResponseDto.builder()
                 .id(category.getId())
                 .name(category.getName())
                 .isShown(category.isShown())
