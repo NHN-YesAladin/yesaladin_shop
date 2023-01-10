@@ -48,10 +48,10 @@ public class CommandMemberServiceImpl implements CommandMemberService {
     @Transactional
     @Override
     public MemberCreateResponseDto create(MemberCreateRequestDto createDto) {
-        checkUniqueData(queryMemberRepository.findMemberByLoginId(createDto.getLoginId()), "id");
+        checkUniqueData(queryMemberRepository.findMemberByLoginId(createDto.getLoginId()), createDto.getLoginId());
         checkUniqueData(
                 queryMemberRepository.findMemberByNickname(createDto.getNickname()),
-                "nickname"
+                createDto.getNickname()
         );
 
         Member member = createDto.toEntity();
