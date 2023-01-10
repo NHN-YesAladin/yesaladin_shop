@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 import shop.yesaladin.shop.product.domain.repository.CommandSubscribeProductRepository;
+import shop.yesaladin.shop.product.dto.SubscribeProductResponseDto;
 import shop.yesaladin.shop.product.service.inter.CommandSubscribeProductService;
 
 /**
@@ -27,7 +28,9 @@ public class CommandSubscribeProductServiceImpl implements CommandSubscribeProdu
      * @since 1.0
      */
     @Override
-    public SubscribeProduct register(SubscribeProduct subscribeProduct) {
-        return commandSubscribeProductRepository.save(subscribeProduct);
+    public SubscribeProductResponseDto register(SubscribeProduct subscribeProduct) {
+        SubscribeProduct savedSubscribeProduct = commandSubscribeProductRepository.save(subscribeProduct);
+
+        return new SubscribeProductResponseDto(savedSubscribeProduct.getId(), savedSubscribeProduct.getISSN());
     }
 }

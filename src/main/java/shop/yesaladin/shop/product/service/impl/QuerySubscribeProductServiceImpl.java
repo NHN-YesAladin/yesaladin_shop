@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 import shop.yesaladin.shop.product.domain.repository.QuerySubscribeProductRepository;
+import shop.yesaladin.shop.product.dto.SubscribeProductResponseDto;
 import shop.yesaladin.shop.product.service.inter.QuerySubscribeProductService;
 
 /**
@@ -27,7 +28,9 @@ public class QuerySubscribeProductServiceImpl implements QuerySubscribeProductSe
      * @since 1.0
      */
     @Override
-    public SubscribeProduct findByISSN(String ISSN) {
-        return querySubscribeProductRepository.findByISSN(ISSN).orElse(null);
+    public SubscribeProductResponseDto findByISSN(String ISSN) {
+        SubscribeProduct subscribeProduct = querySubscribeProductRepository.findByISSN(ISSN).orElse(null);
+
+        return new SubscribeProductResponseDto(subscribeProduct.getId(), subscribeProduct.getISSN());
     }
 }

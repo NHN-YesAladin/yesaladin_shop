@@ -14,6 +14,7 @@ import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
 import shop.yesaladin.shop.product.dummy.DummyProduct;
 import shop.yesaladin.shop.writing.domain.model.Writing;
 import shop.yesaladin.shop.writing.domain.repository.CommandWritingRepository;
+import shop.yesaladin.shop.writing.dto.WritingResponseDto;
 import shop.yesaladin.shop.writing.service.inter.CommandWritingService;
 
 class CommandWritingServiceImplTest {
@@ -46,7 +47,7 @@ class CommandWritingServiceImplTest {
         when(commandWritingRepository.save(any())).thenReturn(writing);
 
         // when
-        Writing createdWriting = commandWritingService.create(AUTHOR_NAME, product, null);
+        WritingResponseDto createdWriting = commandWritingService.create(AUTHOR_NAME, product, null);
 
         // then
         assertThat(createdWriting.getAuthorName()).isEqualTo(AUTHOR_NAME);

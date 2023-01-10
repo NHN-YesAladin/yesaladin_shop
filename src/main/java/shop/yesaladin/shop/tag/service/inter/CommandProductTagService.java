@@ -1,6 +1,7 @@
 package shop.yesaladin.shop.tag.service.inter;
 
 import shop.yesaladin.shop.tag.domain.model.ProductTag;
+import shop.yesaladin.shop.tag.dto.ProductTagResponseDto;
 
 /**
  * 태그 관계 등록을 위한 Service Interface 입니다.
@@ -10,5 +11,5 @@ import shop.yesaladin.shop.tag.domain.model.ProductTag;
  */
 public interface CommandProductTagService {
 
-    ProductTag register(ProductTag productTag);
+    ProductTagResponseDto register(ProductTag productTag);
 }

@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
 import shop.yesaladin.shop.product.domain.repository.CommandTotalDiscountRateRepository;
+import shop.yesaladin.shop.product.dto.TotalDiscountRateResponseDto;
 import shop.yesaladin.shop.product.service.inter.CommandTotalDiscountRateService;
 
 class CommandTotalDiscountRateServiceImplTest {
@@ -30,7 +31,7 @@ class CommandTotalDiscountRateServiceImplTest {
         when(commandTotalDiscountRateRepository.save(any())).thenReturn(totalDiscountRate);
 
         // when
-        TotalDiscountRate registeredTotalDiscountRate = commandTotalDiscountRateService.register(totalDiscountRate);
+        TotalDiscountRateResponseDto registeredTotalDiscountRate = commandTotalDiscountRateService.register(totalDiscountRate);
 
         // then
         assertThat(registeredTotalDiscountRate.getDiscountRate()).isEqualTo(10);

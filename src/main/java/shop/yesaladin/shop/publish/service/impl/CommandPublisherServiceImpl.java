@@ -2,8 +2,10 @@ package shop.yesaladin.shop.publish.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import shop.yesaladin.shop.publish.domain.model.Publish;
 import shop.yesaladin.shop.publish.domain.model.Publisher;
 import shop.yesaladin.shop.publish.domain.repository.CommandPublisherRepository;
+import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
 import shop.yesaladin.shop.publish.service.inter.CommandPublisherService;
 
 /**
@@ -27,8 +29,10 @@ public class CommandPublisherServiceImpl implements CommandPublisherService {
      * @since 1.0
      */
     @Override
-    public Publisher register(Publisher publisher) {
-        return commandPublisherRepository.save(publisher);
+    public PublisherResponseDto register(Publisher publisher) {
+        Publisher savedPublisher = commandPublisherRepository.save(publisher);
+
+        return new PublisherResponseDto(savedPublisher.getId(), savedPublisher.getName());
     }
 }
 

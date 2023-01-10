@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.file.domain.repository.CommandFileRepository;
+import shop.yesaladin.shop.file.dto.FileResponseDto;
 import shop.yesaladin.shop.file.service.inter.CommandFileService;
 
 class CommandFileServiceImplTest {
@@ -38,7 +39,7 @@ class CommandFileServiceImplTest {
         when(commandFileRepository.save(any())).thenReturn(file);
 
         // when
-        File registeredFile = commandFileService.register(file);
+        FileResponseDto registeredFile = commandFileService.register(file);
 
         // then
         assertThat(registeredFile.getName()).isEqualTo(FILE_NAME);

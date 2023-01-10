@@ -12,6 +12,7 @@ import shop.yesaladin.shop.product.dummy.DummyProduct;
 import shop.yesaladin.shop.tag.domain.model.ProductTag;
 import shop.yesaladin.shop.tag.domain.model.Tag;
 import shop.yesaladin.shop.tag.domain.repository.CommandProductTagRepository;
+import shop.yesaladin.shop.tag.dto.ProductTagResponseDto;
 import shop.yesaladin.shop.tag.service.inter.CommandProductTagService;
 
 class CommandProductTagServiceImplTest {
@@ -41,7 +42,7 @@ class CommandProductTagServiceImplTest {
         when(commandProductTagRepository.save(any())).thenReturn(productTag);
 
         // when
-        ProductTag registeredProductTag = commandProductTagService.register(productTag);
+        ProductTagResponseDto registeredProductTag = commandProductTagService.register(productTag);
 
         // then
         assertThat(registeredProductTag.getProduct().getISBN()).isEqualTo(ISBN);

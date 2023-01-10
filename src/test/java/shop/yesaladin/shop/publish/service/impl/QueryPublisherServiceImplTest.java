@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import shop.yesaladin.shop.product.dummy.DummyPublisher;
 import shop.yesaladin.shop.publish.domain.model.Publisher;
 import shop.yesaladin.shop.publish.domain.repository.QueryPublisherRepository;
+import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
 import shop.yesaladin.shop.publish.service.inter.QueryPublisherService;
 
 class QueryPublisherServiceImplTest {
@@ -32,7 +33,7 @@ class QueryPublisherServiceImplTest {
         when(queryPublisherRepository.findByName(anyString())).thenReturn(Optional.of(publisher));
 
         // when
-        Publisher foundPublisher = queryPublisherService.findByName(publisher.getName());
+        PublisherResponseDto foundPublisher = queryPublisherService.findByName(publisher.getName());
 
         // then
         assertThat(foundPublisher).isNotNull();

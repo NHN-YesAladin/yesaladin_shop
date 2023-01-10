@@ -1,6 +1,6 @@
 package shop.yesaladin.shop.file.service.inter;
 
-import shop.yesaladin.shop.file.domain.model.File;
+import shop.yesaladin.shop.file.dto.FileResponseDto;
 
 /**
  * 파일 조회를 위한 Service Interface 입니다. 사
@@ -10,5 +10,5 @@ import shop.yesaladin.shop.file.domain.model.File;
  */
 public interface QueryFileService {
 
-    File findByName(String name);
+    FileResponseDto findByName(String name);
 }

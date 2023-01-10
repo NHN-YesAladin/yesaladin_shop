@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import shop.yesaladin.shop.tag.domain.model.Tag;
 import shop.yesaladin.shop.tag.domain.repository.CommandTagRepository;
+import shop.yesaladin.shop.tag.dto.TagResponseDto;
 import shop.yesaladin.shop.tag.service.inter.CommandTagService;
 
 class CommandTagServiceImplTest {
@@ -32,7 +33,7 @@ class CommandTagServiceImplTest {
         when(commandTagRepository.save(any())).thenReturn(tag);
 
         // when
-        Tag registerdTag = commandTagService.register(tag);
+        TagResponseDto registerdTag = commandTagService.register(tag);
 
         // then
         assertThat(registerdTag.getName()).isEqualTo(TAG_NAME);

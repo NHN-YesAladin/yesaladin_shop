@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import shop.yesaladin.shop.publish.domain.model.Publisher;
 import shop.yesaladin.shop.publish.domain.repository.CommandPublisherRepository;
+import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
 import shop.yesaladin.shop.publish.service.inter.CommandPublisherService;
 
 class CommandPublisherServiceImplTest {
@@ -32,7 +33,7 @@ class CommandPublisherServiceImplTest {
         when(commandPublisherRepository.save(any())).thenReturn(publisher);
 
         // when
-        Publisher registerdPublisher = commandPublisherService.register(publisher);
+        PublisherResponseDto registerdPublisher = commandPublisherService.register(publisher);
 
         // then
         assertThat(registerdPublisher.getName()).isEqualTo(PUBLISHER_NAME);

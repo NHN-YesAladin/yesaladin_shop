@@ -16,6 +16,8 @@ import shop.yesaladin.shop.product.dummy.DummyPublisher;
 import shop.yesaladin.shop.publish.domain.model.Publish;
 import shop.yesaladin.shop.publish.domain.model.Publisher;
 import shop.yesaladin.shop.publish.domain.repository.CommandPublishRepository;
+import shop.yesaladin.shop.publish.dto.PublishResponseDto;
+import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
 import shop.yesaladin.shop.publish.service.inter.CommandPublishService;
 
 class CommandPublishServiceImplTest {
@@ -45,7 +47,7 @@ class CommandPublishServiceImplTest {
         when(commandPublishRepository.save(any())).thenReturn(publish);
 
         // when
-        Publish registerdPublish = commandPublishService.register(publish);
+        PublishResponseDto registerdPublish = commandPublishService.register(publish);
 
         // then
         assertThat(registerdPublish.getProduct().getISBN()).isEqualTo(ISBN);

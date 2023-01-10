@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import shop.yesaladin.shop.tag.domain.model.ProductTag;
 import shop.yesaladin.shop.tag.domain.repository.CommandProductTagRepository;
+import shop.yesaladin.shop.tag.dto.ProductTagResponseDto;
 import shop.yesaladin.shop.tag.service.inter.CommandProductTagService;
 
 /**
@@ -27,7 +28,9 @@ public class CommandProductTagServiceImpl implements CommandProductTagService {
      * @since 1.0
      */
     @Override
-    public ProductTag register(ProductTag productTag) {
-        return commandProductTagRepository.save(productTag);
+    public ProductTagResponseDto register(ProductTag productTag) {
+        ProductTag savedProductTag = commandProductTagRepository.save(productTag);
+
+        return new ProductTagResponseDto(savedProductTag.getPk(), savedProductTag.getProduct(), savedProductTag.getTag());
     }
 }
