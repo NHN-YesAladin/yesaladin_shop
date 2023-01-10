@@ -32,7 +32,7 @@ public class File {
     private Long id;
 
     @Column(name = "name", nullable = false, length = 50)
-    private String fileName;
+    private String name;
 
     @Column(name = "upload_datetime", nullable = false)
     private LocalDateTime uploadDateTime;

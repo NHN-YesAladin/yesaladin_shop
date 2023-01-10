@@ -53,8 +53,8 @@ class ProductControllerTest {
 
         // when
         ResultActions perform = mockMvc.perform(post("/v1/products")
-                                        .content(objectMapper.writeValueAsString(productCreateDto))
-                                        .contentType(MediaType.APPLICATION_JSON));
+                .content(objectMapper.writeValueAsString(productCreateDto))
+                .contentType(MediaType.APPLICATION_JSON));
 
         // then
         perform.andExpect(status().isCreated())

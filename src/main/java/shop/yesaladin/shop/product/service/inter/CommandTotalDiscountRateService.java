@@ -1,6 +1,7 @@
 package shop.yesaladin.shop.product.service.inter;
 
 import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
+import shop.yesaladin.shop.product.dto.TotalDiscountRateResponseDto;
 
 /**
  * 전체 할인율 등록을 위한 Service Interface 입니다.
@@ -9,5 +10,6 @@ import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
  * @since 1.0
  */
 public interface CommandTotalDiscountRateService {
-    TotalDiscountRate register(TotalDiscountRate totalDiscountRate);
+
+    TotalDiscountRateResponseDto register(TotalDiscountRate totalDiscountRate);
 }
