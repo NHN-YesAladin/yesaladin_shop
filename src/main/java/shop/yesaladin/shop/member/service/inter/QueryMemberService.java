@@ -1,12 +1,12 @@
 package shop.yesaladin.shop.member.service.inter;
 
-import shop.yesaladin.shop.member.domain.model.Member;
+import shop.yesaladin.shop.member.dto.MemberDto;
 
 
 /**
  * 회원 조회용 service interface
  *
- * @author : 송학현
+ * @author : 송학현, 최예린
  * @since : 1.0
  */
 public interface QueryMemberService {
@@ -16,28 +16,28 @@ public interface QueryMemberService {
      *
      * @param id member의 primary key
      * @return 회원 조회 결과
-     * @author : 송학현
+     * @author : 송학현, 최예린
      * @since : 1.0
      */
-    Member findMemberById(long id);
+    MemberDto findMemberById(long id);
 
     /**
      * 회원을 unique column인 loginId를 기준 으로 조회 하기 위한 메서드 입니다.
      *
      * @param loginId member의 loginId
      * @return 회원 조회 결과
-     * @author : 송학현
+     * @author : 송학현, 최예린
      * @since : 1.0
      */
-    Member findMemberByLoginId(String loginId);
+    MemberDto findMemberByLoginId(String loginId);
 
     /**
      * 회원을 unique column인 nickname을 기준 으로 조회 하기 위한 메서드 입니다.
      *
      * @param nickname member의 nickname
      * @return 회원 조회 결과
-     * @author : 송학현
+     * @author : 송학현, 최예린
      * @since : 1.0
      */
-    Member findMemberByNickname(String nickname);
+    MemberDto findMemberByNickname(String nickname);
 }

@@ -14,7 +14,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberGrade;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
-import shop.yesaladin.shop.member.dummy.MemberGradeDummy;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
@@ -26,32 +25,26 @@ class JpaMemberRepositoryTest {
     @Autowired
     JpaMemberRepository repository;
 
-    private MemberGrade grade;
     private Member member;
 
     @BeforeEach
     void setUp() {
-        grade = MemberGradeDummy.dummy();
         member = MemberDummy.dummy();
     }
 
     @Test
     void save() throws Exception {
-        //given
-        entityManager.persist(grade);
-
         //when
         Member savedMember = repository.save(member);
 
         //then
         assertThat(savedMember).isNotNull();
-        assertThat(savedMember.getMemberGrade().getName()).isEqualTo(grade.getName());
+        assertThat(savedMember.getMemberGrade().getName()).isEqualTo(MemberGrade.WHITE.getName());
     }
 
     @Test
     void findById() throws Exception {
         //given
-        entityManager.persist(grade);
         Member savedMember = entityManager.persist(member);
 
         //when

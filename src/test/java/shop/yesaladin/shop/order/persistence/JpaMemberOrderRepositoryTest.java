@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,13 +13,11 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import shop.yesaladin.shop.member.domain.model.Member;
-import shop.yesaladin.shop.member.domain.model.MemberGrade;
 import shop.yesaladin.shop.order.domain.dummy.MemberAddress;
 import shop.yesaladin.shop.order.domain.model.MemberOrder;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMemberAddress;
-import shop.yesaladin.shop.order.persistence.dummy.DummyMemberGrade;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
@@ -29,7 +26,7 @@ class JpaMemberOrderRepositoryTest {
     @PersistenceContext
     private EntityManager entityManager;
     @Autowired
-    private JpaOrderRepository<MemberOrder> memberOrderRepository;
+    private JpaOrderCommandRepository<MemberOrder> memberOrderRepository;
 
     private String orderNumber = "1234-5678";
     private LocalDateTime orderDateTime = LocalDateTime.now();
@@ -46,11 +43,9 @@ class JpaMemberOrderRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        MemberGrade memberGrade = DummyMemberGrade.memberGrade;
-        member = DummyMember.member(memberGrade);
+        member = DummyMember.member();
         memberAddress = DummyMemberAddress.address(member);
 
-        entityManager.persist(memberGrade);
         entityManager.persist(member);
         entityManager.persist(memberAddress);
 
@@ -73,29 +68,6 @@ class JpaMemberOrderRepositoryTest {
         assertThat(savedOrder.getOrderCode()).isEqualTo(orderCode);
         assertThat(savedOrder.getMember()).isEqualTo(member);
         assertThat(savedOrder.getMemberAddress()).isEqualTo(memberAddress);
-    }
-
-    @Test
-    void findById() {
-        //given
-        entityManager.persist(memberOrder);
-        Long id = memberOrder.getId();
-
-        //when
-        Optional<MemberOrder> foundOrder = memberOrderRepository.findById(id);
-
-        //then
-        assertThat(foundOrder).isPresent();
-        assertThat(foundOrder.get().getId()).isEqualTo(id);
-        assertThat(foundOrder.get().getOrderNumber()).isEqualTo(orderNumber);
-        assertThat(foundOrder.get().getExpectedTransportDate()).isEqualTo(expectedTransportDate);
-        assertThat(foundOrder.get().isHidden()).isEqualTo(isHidden);
-        assertThat(foundOrder.get().getUsedPoint()).isEqualTo(usedPoint);
-        assertThat(foundOrder.get().getShippingFee()).isEqualTo(shippingFee);
-        assertThat(foundOrder.get().getWrappingFee()).isEqualTo(wrappingFee);
-        assertThat(foundOrder.get().getOrderCode()).isEqualTo(orderCode);
-        assertThat(foundOrder.get().getMember()).isEqualTo(member);
-        assertThat(foundOrder.get().getMemberAddress()).isEqualTo(memberAddress);
     }
 
     MemberOrder createMemberOrder() {
