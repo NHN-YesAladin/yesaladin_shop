@@ -16,7 +16,7 @@ public interface CommandMemberAddressService {
      * 회원의 배송지를 등록합니다.
      *
      * @param memberId 회원 id
-     * @param request 등록할 배송지 데이터
+     * @param request  등록할 배송지 데이터
      * @return 등록된 배송지 데이터
      * @author 최예린
      * @since 1.0
@@ -26,7 +26,7 @@ public interface CommandMemberAddressService {
     /**
      * 회원의 대표 배송지를 등록합니다.
      *
-     * @param memberId 회원 id
+     * @param memberId  회원 id
      * @param addressId 대표 배송지 아이디
      * @return 대표 배송지 데이터
      * @author 최예린

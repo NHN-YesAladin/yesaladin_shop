@@ -20,6 +20,7 @@ import shop.yesaladin.shop.member.domain.model.MemberAddress;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class MemberAddressCreateRequestDto {
+
     @NotBlank
     @Length(max = 255)
     private String address;

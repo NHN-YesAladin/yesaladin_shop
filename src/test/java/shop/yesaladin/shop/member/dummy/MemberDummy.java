@@ -6,6 +6,7 @@ import shop.yesaladin.shop.member.domain.model.MemberGenderCode;
 import shop.yesaladin.shop.member.domain.model.MemberGrade;
 
 public class MemberDummy {
+
     public static Member dummyWithId(Long id) {
         String ramos = "Ramos";
         String password = "password";
@@ -34,6 +35,7 @@ public class MemberDummy {
                 .memberGenderCode(MemberGenderCode.MALE)
                 .build();
     }
+
     public static Member dummy() {
         String ramos = "Ramos";
         String password = "password";

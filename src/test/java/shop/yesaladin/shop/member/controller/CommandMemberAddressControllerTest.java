@@ -48,20 +48,6 @@ class CommandMemberAddressControllerTest {
     String address = "Gwang Ju";
     Boolean isDefault = false;
 
-    @ParameterizedTest
-    @MethodSource(value = "createMemberAddressData")
-    void createMemberAddress_failByValidationError(Map<String, Object> request) throws Exception {
-        //given
-        Long memberId = 1L;
-
-        //when
-        ResultActions result = mockMvc.perform(post("/v1/members/{memberId}/addresses", memberId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)));
-        //then
-        result.andExpect(status().isBadRequest());
-    }
-
     private static Stream<Map<String, Object>> createMemberAddressData() {
         return Stream.of(
                 Map.of("address", "", "isDefault", true),
@@ -74,6 +60,20 @@ class CommandMemberAddressControllerTest {
                         false
                 )
         );
+    }
+
+    @ParameterizedTest
+    @MethodSource(value = "createMemberAddressData")
+    void createMemberAddress_failByValidationError(Map<String, Object> request) throws Exception {
+        //given
+        Long memberId = 1L;
+
+        //when
+        ResultActions result = mockMvc.perform(post("/v1/members/{memberId}/addresses", memberId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
+        //then
+        result.andExpect(status().isBadRequest());
     }
 
     @Test

@@ -49,8 +49,10 @@ class CommandMemberServiceImplTest {
 //                .memberGrade(memberGrade)
                 .build();
 
-        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId)).thenReturn(Optional.empty());
-        Mockito.when(queryMemberRepository.findMemberByNickname(nickname)).thenReturn(Optional.empty());
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
+                .thenReturn(Optional.empty());
+        Mockito.when(queryMemberRepository.findMemberByNickname(nickname))
+                .thenReturn(Optional.empty());
 
         Mockito.when(createDto.toEntity()).thenReturn(member);
 
@@ -71,7 +73,10 @@ class CommandMemberServiceImplTest {
         long id = 1;
         String name = "name";
         String nickname = "nickname";
-        MemberUpdateRequestDto request = ReflectionUtils.newInstance(MemberUpdateRequestDto.class, nickname);
+        MemberUpdateRequestDto request = ReflectionUtils.newInstance(
+                MemberUpdateRequestDto.class,
+                nickname
+        );
 
         Member member = Member.builder()
                 .id(id)
@@ -79,7 +84,8 @@ class CommandMemberServiceImplTest {
                 .nickname(nickname)
                 .build();
         Mockito.when(queryMemberRepository.findById(id)).thenReturn(Optional.of(member));
-        Mockito.when(queryMemberRepository.findMemberByNickname(nickname)).thenReturn(Optional.empty());
+        Mockito.when(queryMemberRepository.findMemberByNickname(nickname))
+                .thenReturn(Optional.empty());
 
         //when
         MemberUpdateResponseDto actualMember = service.update(id, request);

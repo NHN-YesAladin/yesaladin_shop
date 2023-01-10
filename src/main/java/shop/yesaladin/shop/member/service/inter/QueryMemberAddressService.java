@@ -13,6 +13,7 @@ public interface QueryMemberAddressService {
 
     /**
      * 회원의 배송지 목록들을 조회합니다.
+     *
      * @param memberId 회원 id
      * @return 회원의 배송지 목록
      */

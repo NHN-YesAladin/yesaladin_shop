@@ -1,12 +1,9 @@
 package shop.yesaladin.shop.member.dto;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.Length;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
 
@@ -20,6 +17,7 @@ import shop.yesaladin.shop.member.domain.model.MemberAddress;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MemberAddressCreateResponseDto {
+
     private Long id;
     private String address;
 

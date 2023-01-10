@@ -146,8 +146,10 @@ class CommandMemberAddressServiceImplTest {
         Long memberId = 1L;
         Long addressId = 1L;
 
-        Mockito.when(queryMemberAddressRepository.existByMemberIdAndMemberAddressId(memberId,
-                addressId)).thenReturn(false);
+        Mockito.when(queryMemberAddressRepository.existByMemberIdAndMemberAddressId(
+                memberId,
+                addressId
+        )).thenReturn(false);
 
         assertThatThrownBy(() -> commandMemberAddressService.delete(
                 memberId,
@@ -161,10 +163,12 @@ class CommandMemberAddressServiceImplTest {
         Long memberId = 1L;
         Long addressId = 1L;
 
-        Mockito.when(queryMemberAddressRepository.existByMemberIdAndMemberAddressId(memberId,
-                addressId)).thenReturn(true);
+        Mockito.when(queryMemberAddressRepository.existByMemberIdAndMemberAddressId(
+                memberId,
+                addressId
+        )).thenReturn(true);
 
-        long result = commandMemberAddressService.delete(memberId,addressId);
+        long result = commandMemberAddressService.delete(memberId, addressId);
 
         assertThat(result).isEqualTo(addressId);
     }
