@@ -30,7 +30,7 @@ public class MemberGenderCodeConverter implements AttributeConverter<MemberGende
     }
 
     /**
-     * 회원성별코드를 Integer 타입으로 변환합니다.
+     * pk를 회원성별코드로 변환합니다.
      *
      * @param gender 회원성별코드의 Id
      * @return 회원성별코드

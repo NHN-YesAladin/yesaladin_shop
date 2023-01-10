@@ -5,8 +5,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.member.domain.model.Member;
+import shop.yesaladin.shop.member.domain.model.MemberRole;
+import shop.yesaladin.shop.member.domain.model.MemberRole.Pk;
+import shop.yesaladin.shop.member.domain.model.Role;
 import shop.yesaladin.shop.member.domain.repository.CommandMemberRepository;
+import shop.yesaladin.shop.member.domain.repository.CommandMemberRoleRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
+import shop.yesaladin.shop.member.domain.repository.QueryRoleRepository;
 import shop.yesaladin.shop.member.dto.MemberBlockResponseDto;
 import shop.yesaladin.shop.member.dto.MemberCreateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberCreateResponseDto;
@@ -28,9 +33,12 @@ public class CommandMemberServiceImpl implements CommandMemberService {
 
     private final CommandMemberRepository commandMemberRepository;
     private final QueryMemberRepository queryMemberRepository;
+    private final QueryRoleRepository queryRoleRepository;
+    private final CommandMemberRoleRepository commandMemberRoleRepository;
 
     /**
      * 회원 등록을 위한 기능 입니다.
+     * 회원 등록시 ROLE_MEMBER 권한과 WHITE 회원 등급을 함께 등록합니다.
      *
      * @param createDto 회원 등록 요청 dto
      * @return 등록된 회원 결과 dto
@@ -49,7 +57,27 @@ public class CommandMemberServiceImpl implements CommandMemberService {
         Member member = createDto.toEntity();
         Member savedMember = commandMemberRepository.save(member);
 
-        return MemberCreateResponseDto.fromEntity(savedMember);
+        int roleId = 1;
+
+        Role roleMember = queryRoleRepository.findById(roleId).orElseThrow(RuntimeException::new);
+
+        MemberRole memberRole = createMemberRole(
+                savedMember,
+                roleId,
+                roleMember
+        );
+
+        commandMemberRoleRepository.save(memberRole);
+
+        return MemberCreateResponseDto.fromEntity(savedMember, roleMember);
+    }
+
+    private MemberRole createMemberRole(Member savedMember, int roleId, Role roleMember) {
+        return MemberRole.builder()
+                .id(new Pk(savedMember.getId(), roleId))
+                .member(savedMember)
+                .role(roleMember)
+                .build();
     }
 
     /**
