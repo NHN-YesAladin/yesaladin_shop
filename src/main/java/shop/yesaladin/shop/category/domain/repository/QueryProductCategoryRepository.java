@@ -3,7 +3,6 @@ package shop.yesaladin.shop.category.domain.repository;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.model.ProductCategory;
 import shop.yesaladin.shop.category.domain.model.ProductCategory.Pk;
 

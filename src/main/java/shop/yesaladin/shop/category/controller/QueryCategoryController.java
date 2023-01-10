@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import shop.yesaladin.shop.category.dto.CategoryResponse;
+import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 import shop.yesaladin.shop.category.service.inter.QueryCategoryService;
 
 /**
@@ -35,7 +35,7 @@ public class QueryCategoryController {
      * @return 카테고리의 일부 데이터를 반환
      */
     @GetMapping("/{categoryId}")
-    public CategoryResponse getCategoryById(@PathVariable Long categoryId) {
+    public CategoryResponseDto getCategoryById(@PathVariable Long categoryId) {
         return queryCategoryService.findCategoryById(categoryId);
     }
 
@@ -46,7 +46,7 @@ public class QueryCategoryController {
      * @return 카테고리의 일부 데이터를 List 화 하여 전달
      */
     @GetMapping
-    public List<CategoryResponse> getCategories(Pageable pageable) {
+    public List<CategoryResponseDto> getCategories(Pageable pageable) {
         return queryCategoryService.findCategories(pageable).getContent();
     }
 }

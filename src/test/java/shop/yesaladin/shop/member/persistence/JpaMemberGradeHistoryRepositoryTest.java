@@ -11,10 +11,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import shop.yesaladin.shop.member.domain.model.Member;
-import shop.yesaladin.shop.member.domain.model.MemberGrade;
 import shop.yesaladin.shop.member.domain.model.MemberGradeHistory;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
-import shop.yesaladin.shop.member.dummy.MemberGradeDummy;
 import shop.yesaladin.shop.member.dummy.MemberGradeHistoryDummy;
 
 @DataJpaTest
@@ -28,22 +26,19 @@ class JpaMemberGradeHistoryRepositoryTest {
     JpaMemberGradeHistoryRepository repository;
 
     private MemberGradeHistory memberGradeHistory;
-    private MemberGrade memberGrade;
     private Member member;
 
     @BeforeEach
     void setUp() {
-        memberGrade = MemberGradeDummy.dummy();
+        member = MemberDummy.dummy();
     }
 
     @Test
     void save() throws Exception {
         //given
-        MemberGrade savedMemberGrade = entityManager.persist(memberGrade);
-        member = MemberDummy.dummy(savedMemberGrade);
         Member savedMember = entityManager.persist(member);
 
-        memberGradeHistory = MemberGradeHistoryDummy.dummy(savedMemberGrade, savedMember);
+        memberGradeHistory = MemberGradeHistoryDummy.dummy(savedMember);
 
         //when
         MemberGradeHistory savedMemberGradeHistory = repository.save(memberGradeHistory);
@@ -61,8 +56,6 @@ class JpaMemberGradeHistoryRepositoryTest {
     @Test
     void findById() throws Exception {
         //given
-        entityManager.persist(memberGrade);
-        member = MemberDummy.dummy();
         entityManager.persist(member);
         memberGradeHistory = MemberGradeHistoryDummy.dummy();
         MemberGradeHistory savedMemberGradeHistory = entityManager.persist(memberGradeHistory);

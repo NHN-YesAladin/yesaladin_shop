@@ -22,7 +22,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.category.domain.model.Category;
-import shop.yesaladin.shop.category.dto.CategoryResponse;
+import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 import shop.yesaladin.shop.category.service.inter.QueryCategoryService;
 
 @WebMvcTest(QueryCategoryController.class)
@@ -50,7 +50,7 @@ class QueryCategoryControllerTest {
     void getCategoryById() throws Exception {
         // given
         Category category = Category.builder().id(id).name(name).isShown(true).build();
-        CategoryResponse responseDto = CategoryResponse.fromEntity(category);
+        CategoryResponseDto responseDto = CategoryResponseDto.fromEntity(category);
         given(queryCategoryService.findCategoryById(id)).willReturn(responseDto);
 
         // when
@@ -68,16 +68,16 @@ class QueryCategoryControllerTest {
     @DisplayName("페이징을 통한 카테고리 조회 성공")
     void getCategories() throws Exception {
         // given
-        List<CategoryResponse> dtoList = new ArrayList<>();
+        List<CategoryResponseDto> dtoList = new ArrayList<>();
         for (int i = 1; i <= 5; i++) {
             Category category = Category.builder()
                     .id((long) i)
                     .name(name + i)
                     .isShown(true)
                     .build();
-            dtoList.add(CategoryResponse.fromEntity(category));
+            dtoList.add(CategoryResponseDto.fromEntity(category));
         }
-        Page<CategoryResponse> dtoPage = new PageImpl<>(dtoList);
+        Page<CategoryResponseDto> dtoPage = new PageImpl<>(dtoList);
         given(queryCategoryService.findCategories(any())).willReturn(dtoPage);
 
         // when

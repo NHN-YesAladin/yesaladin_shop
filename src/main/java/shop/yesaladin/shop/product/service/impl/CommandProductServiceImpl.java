@@ -71,7 +71,7 @@ public class CommandProductServiceImpl implements CommandProductService {
         // Writing
         Member member = null;
         if (!dto.getLoginId().equals("")) {
-            member = queryMemberService.findMemberByLoginId(dto.getLoginId());
+            member = queryMemberService.findMemberByLoginId(dto.getLoginId()).toEntity();
         }
         commandWritingService.create(dto.getWriterName(), product, member);
 

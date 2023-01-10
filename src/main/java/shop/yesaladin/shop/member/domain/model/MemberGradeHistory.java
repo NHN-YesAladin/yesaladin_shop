@@ -2,6 +2,7 @@ package shop.yesaladin.shop.member.domain.model;
 
 import java.time.LocalDate;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -15,6 +16,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import shop.yesaladin.shop.member.persistence.converter.MemberGradeCodeConverter;
 
 /**
  * 회원 등급 변동 이력을 저장할 엔티티 클래스 입니다.
@@ -40,8 +42,8 @@ public class MemberGradeHistory {
     @Column(name = "previous_paid_amount", nullable = false)
     private Long previousPaidAmount;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "grade_id")
+    @Column(name = "grade_id")
+    @Convert(converter = MemberGradeCodeConverter.class)
     private MemberGrade memberGrade;
 
     @ManyToOne(fetch = FetchType.LAZY)
