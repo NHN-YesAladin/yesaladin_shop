@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberGrade;
+import shop.yesaladin.shop.member.domain.model.Role;
 
 /**
  * 회원 등록 이후 MemberController 에서 클라이언트 에게 반환하기 위한 결과 DTO 입니다.
@@ -22,6 +23,7 @@ public class MemberCreateResponseDto {
     private String nickname;
     private String loginId;
     private MemberGrade memberGrade;
+    private String role;
 
     /**
      * Member Entity를 MemberCreateResponse DTO로 변한하기 위한 메서드 입니다.
@@ -31,13 +33,14 @@ public class MemberCreateResponseDto {
      * @author : 송학현
      * @since : 1.0
      */
-    public static MemberCreateResponseDto fromEntity(Member member) {
+    public static MemberCreateResponseDto fromEntity(Member member, Role role) {
         return new MemberCreateResponseDto(
                 member.getId(),
                 member.getName(),
                 member.getNickname(),
                 member.getLoginId(),
-                member.getMemberGrade()
+                member.getMemberGrade(),
+                role.getName()
         );
     }
 }

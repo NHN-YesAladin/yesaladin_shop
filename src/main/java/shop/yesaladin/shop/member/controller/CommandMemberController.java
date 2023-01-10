@@ -51,7 +51,7 @@ public class CommandMemberController {
     /**
      * 회원 정보 수정을 위한 Post 요청을 처리하는 기능입니다.
      *
-     * @param updateDto 회원 정보 수정을 위한 요청 파라미
+     * @param updateDto 회원 정보 수정을 위한 요청 파라미터
      * @return 수정된 회원 정보를 담은 ResponseEntity
      * @author 최예린
      * @since 1.0

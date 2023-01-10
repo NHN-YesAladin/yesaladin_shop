@@ -33,6 +33,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.member.domain.model.Member;
+import shop.yesaladin.shop.member.domain.model.Role;
 import shop.yesaladin.shop.member.dto.MemberBlockResponseDto;
 import shop.yesaladin.shop.member.dto.MemberCreateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberCreateResponseDto;
@@ -67,12 +68,16 @@ class CommandMemberControllerTest {
     private final String BIRTH = "20230107";
     private final String EMAIL = "test@test.com";
     private final String GENDER = "MALE";
+    private final String ROLE_MEMBER = "ROLE_MEMBER";
 
     @BeforeEach
     void setUp() {
         long id = 1L;
+        int roleId = 1;
+
         member = Member.builder().id(id).name(NAME).nickname(NICKNAME).loginId(LOGIN_ID).build();
-        createResponse = MemberCreateResponseDto.fromEntity(member);
+        Role role = Role.builder().id(roleId).name("ROLE_MEMBER").build();
+        createResponse = MemberCreateResponseDto.fromEntity(member, role);
         updateResponse = MemberUpdateResponseDto.fromEntity(member);
     }
 
@@ -146,7 +151,8 @@ class CommandMemberControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.name", equalTo(member.getName())))
                 .andExpect(jsonPath("$.nickname", equalTo(member.getNickname())))
-                .andExpect(jsonPath("$.loginId", equalTo(member.getLoginId())));
+                .andExpect(jsonPath("$.loginId", equalTo(member.getLoginId())))
+                .andExpect(jsonPath("$.role", equalTo(ROLE_MEMBER)));
 
         verify(commandMemberService, times(1)).create(any());
     }

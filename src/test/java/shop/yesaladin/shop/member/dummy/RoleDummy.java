@@ -5,10 +5,20 @@ import shop.yesaladin.shop.member.domain.model.Role;
 public class RoleDummy {
 
     public static Role dummy() {
-        String ROLE_NAME = "ROLE_MEMBER";
+        String roleName = "ROLE_MEMBER";
 
         return Role.builder()
-                .name(ROLE_NAME)
+                .name(roleName)
+                .build();
+    }
+
+    public static Role dummyWithId() {
+        int roleId = 1;
+        String roleName = "ROLE_MEMBER";
+
+        return Role.builder()
+                .id(roleId)
+                .name(roleName)
                 .build();
     }
 }
