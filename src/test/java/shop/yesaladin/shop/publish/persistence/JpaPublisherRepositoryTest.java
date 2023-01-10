@@ -2,6 +2,9 @@ package shop.yesaladin.shop.publish.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Optional;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +19,9 @@ import shop.yesaladin.shop.publish.domain.model.Publisher;
 class JpaPublisherRepositoryTest {
 
     private final String PUBLISHER_NAME = "길벗";
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Autowired
     private JpaPublisherRepository jpaPublisherRepository;
@@ -37,4 +43,16 @@ class JpaPublisherRepositoryTest {
         assertThat(savedPublisher.getName()).isEqualTo(PUBLISHER_NAME);
     }
 
+    @Test
+    void findByName() {
+        // given
+        entityManager.persist(publisher);
+
+        // when
+        Optional<Publisher> foundPublisher = jpaPublisherRepository.findByName(publisher.getName());
+
+        // then
+        assertThat(foundPublisher).isPresent();
+        assertThat(foundPublisher.get().getName()).isEqualTo(publisher.getName());
+    }
 }

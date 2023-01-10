@@ -10,5 +10,5 @@ import shop.yesaladin.shop.publish.domain.model.Publish;
  */
 public interface CommandPublishService {
 
-    void register(Publish publish);
+    Publish register(Publish publish);
 }

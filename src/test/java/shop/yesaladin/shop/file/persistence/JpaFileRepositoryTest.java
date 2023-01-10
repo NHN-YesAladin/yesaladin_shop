@@ -2,6 +2,9 @@ package shop.yesaladin.shop.file.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Optional;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +19,9 @@ import shop.yesaladin.shop.product.dummy.DummyFile;
 class JpaFileRepositoryTest {
 
     private final String FILE_NAME = "UUID.png";
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Autowired
     private JpaFileRepository jpaFileRepository;
@@ -34,6 +40,19 @@ class JpaFileRepositoryTest {
 
         // then
         assertThat(savedFile).isNotNull();
-        assertThat(savedFile.getFileName()).isEqualTo(FILE_NAME);
+        assertThat(savedFile.getName()).isEqualTo(FILE_NAME);
+    }
+
+    @Test
+    void findByName() {
+        // given
+        entityManager.persist(file);
+
+        // when
+        Optional<File> foundFile = jpaFileRepository.findByName(FILE_NAME);
+
+        // then
+        assertThat(foundFile).isPresent();
+        assertThat(foundFile.get().getName()).isEqualTo(FILE_NAME);
     }
 }

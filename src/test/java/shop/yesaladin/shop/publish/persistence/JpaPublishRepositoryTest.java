@@ -1,7 +1,8 @@
-package shop.yesaladin.shop.tag.persistence;
+package shop.yesaladin.shop.publish.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.LocalDateTime;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,44 +13,40 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.dummy.DummyProduct;
-import shop.yesaladin.shop.tag.domain.model.ProductTag;
-import shop.yesaladin.shop.tag.domain.model.ProductTag.Pk;
-import shop.yesaladin.shop.tag.domain.model.Tag;
+import shop.yesaladin.shop.product.dummy.DummyPublisher;
+import shop.yesaladin.shop.publish.domain.model.Publish;
+import shop.yesaladin.shop.publish.domain.model.Publisher;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-class JpaProductTagRepositoryTest {
-
-    private final String ISBN = "00001-...";
-    private final String TAG_NAME = "눈물나는";
+class JpaPublishRepositoryTest {
 
     @PersistenceContext
     private EntityManager entityManager;
 
     @Autowired
-    private JpaProductTagRepository jpaProductTagRepository;
+    private JpaPublishRepository jpaPublishRepository;
 
-    private ProductTag productTag;
+    private Publish publish;
 
     @BeforeEach
     void setUp() {
-        Product product = DummyProduct.dummy(ISBN);
-        Tag tag = Tag.builder().name(TAG_NAME).build();
+        Product product = DummyProduct.dummy("00001-...");
+        Publisher publisher = DummyPublisher.dummy();
+        LocalDateTime now = LocalDateTime.now();
 
         entityManager.persist(product);
-        entityManager.persist(tag);
+        entityManager.persist(publisher);
 
-        productTag = ProductTag.create(product, tag);
+        publish = Publish.create(product, publisher, now.toLocalDate().toString());
     }
 
     @Test
     void save() {
         // when
-        ProductTag savedProductTag = jpaProductTagRepository.save(productTag);
+        Publish savedPublish = jpaPublishRepository.save(publish);
 
         // then
-        assertThat(savedProductTag).isNotNull();
-        assertThat(savedProductTag.getProduct().getISBN()).isEqualTo("00001-...");
-        assertThat(savedProductTag.getTag().getName()).isEqualTo("눈물나는");
+        assertThat(savedPublish).isNotNull();
     }
 }

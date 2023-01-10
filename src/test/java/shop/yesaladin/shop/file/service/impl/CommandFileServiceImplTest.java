@@ -31,7 +31,7 @@ class CommandFileServiceImplTest {
         LocalDateTime now = LocalDateTime.now();
 
         File file = File.builder()
-                .fileName(FILE_NAME)
+                .name(FILE_NAME)
                 .uploadDateTime(now)
                 .build();
 
@@ -41,7 +41,7 @@ class CommandFileServiceImplTest {
         File registeredFile = commandFileService.register(file);
 
         // then
-        assertThat(registeredFile.getFileName()).isEqualTo(FILE_NAME);
+        assertThat(registeredFile.getName()).isEqualTo(FILE_NAME);
         assertThat(registeredFile.getUploadDateTime()).isEqualTo(now);
     }
 }

@@ -1,11 +1,17 @@
 package shop.yesaladin.shop.product.dummy;
 
+import java.util.ArrayList;
+import java.util.List;
 import shop.yesaladin.shop.product.dto.ProductCreateDto;
 
 public class DummyProductCreateDto {
     public static ProductCreateDto dummy(String ISBN) {
+        List<String> tags = new ArrayList<>(){};
+        tags.add("아름다운");
+        tags.add("슬픈");
+
         return new ProductCreateDto(
-                "00001-...",
+                ISBN,
                 "더미",
                 "목차",
                 "상품 더미 입니다.",
@@ -28,7 +34,8 @@ public class DummyProductCreateDto {
                 "ebook.pdf",
                 "2023-01-17T00:23:17",
                 "BESTSELLER",
-                "SELLING_PRICE"
+                "SELLING_PRICE",
+                tags
         );
     }
 
