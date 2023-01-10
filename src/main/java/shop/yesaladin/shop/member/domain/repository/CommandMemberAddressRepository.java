@@ -28,4 +28,13 @@ public interface CommandMemberAddressRepository {
      * @since 1.0
      */
     void deleteById(Long id);
+
+    /**
+     * 회원의 배송지 목록에서 대표 배송지를 제거합니다.
+     *
+     * @param memberId 회원 id
+     * @author 최예린
+     * @since 1.0
+     */
+    void updateIsDefaultToFalseByMemberId(Long memberId);
 }

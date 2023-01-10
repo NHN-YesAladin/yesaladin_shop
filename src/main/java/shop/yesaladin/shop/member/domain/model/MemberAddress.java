@@ -28,6 +28,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "member_addresses")
 public class MemberAddress {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -41,4 +42,14 @@ public class MemberAddress {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
+
+    /**
+     * 현재 배송지를 대표 배송지로 설정합니다.
+     *
+     * @author 최예린
+     * @since 1.0
+     */
+    public void markAsDefault() {
+        this.isDefault = true;
+    }
 }

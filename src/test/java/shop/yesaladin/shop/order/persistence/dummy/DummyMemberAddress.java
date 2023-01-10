@@ -7,7 +7,6 @@ public class DummyMemberAddress {
 
     public static MemberAddress address(Member member) {
         return MemberAddress.builder()
-                .id(1L)
                 .address("Gwang Ju")
                 .isDefault(true)
                 .member(member)
