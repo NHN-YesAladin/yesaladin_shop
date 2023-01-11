@@ -1,12 +1,15 @@
 package shop.yesaladin.shop.member.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.mockito.Mockito;
@@ -24,6 +27,7 @@ import shop.yesaladin.shop.member.dto.MemberUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateResponseDto;
 import shop.yesaladin.shop.member.dummy.MemberRoleDummy;
 import shop.yesaladin.shop.member.dummy.RoleDummy;
+import shop.yesaladin.shop.member.exception.MemberProfileAlreadyExistException;
 
 class CommandMemberServiceImplTest {
 
@@ -48,22 +52,114 @@ class CommandMemberServiceImplTest {
     }
 
     @Test
+    @DisplayName("입력 받은 loginId이 기존에 있는 경우 예외가 발생한다.")
+    void create_fail_whenMemberProfileDuplicated() throws Exception {
+        //given
+        String loginId = "loginId";
+        String nickname = "nickname";
+        String email = "test@test.com";
+        int roleId = 1;
+        Role role = RoleDummy.dummyWithId();
+
+        MemberCreateRequestDto createDto = Mockito.mock(MemberCreateRequestDto.class);
+
+        Mockito.when(createDto.getLoginId()).thenReturn(loginId);
+
+        Mockito.when(queryRoleRepository.findById(roleId)).thenReturn(Optional.of(role));
+        Mockito.when(queryMemberRepository.existMemberByLoginId(loginId))
+                        .thenReturn(true);
+        Mockito.when(queryMemberRepository.existMemberByNickname(nickname))
+                .thenReturn(false);
+        Mockito.when(queryMemberRepository.existMemberByEmail(email))
+                .thenReturn(false);
+
+        //when then
+        assertThatThrownBy(() -> service.create(createDto))
+                .isInstanceOf(MemberProfileAlreadyExistException.class);
+
+        verify(commandMemberRoleRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("입력 받은 nickname이 기존에 있는 경우 예외가 발생한다.")
+    void create_fail_whenNicknameDuplicated() throws Exception {
+        //given
+        String loginId = "loginId";
+        String nickname = "nickname";
+        String email = "test@test.com";
+        int roleId = 1;
+        Role role = RoleDummy.dummyWithId();
+
+        MemberCreateRequestDto createDto = Mockito.mock(MemberCreateRequestDto.class);
+
+        Mockito.when(createDto.getNickname()).thenReturn(nickname);
+
+        Mockito.when(queryRoleRepository.findById(roleId)).thenReturn(Optional.of(role));
+        Mockito.when(queryMemberRepository.existMemberByLoginId(loginId))
+                .thenReturn(false);
+        Mockito.when(queryMemberRepository.existMemberByNickname(nickname))
+                .thenReturn(true);
+        Mockito.when(queryMemberRepository.existMemberByEmail(email))
+                .thenReturn(false);
+
+        //when then
+        assertThatThrownBy(() -> service.create(createDto))
+                .isInstanceOf(MemberProfileAlreadyExistException.class);
+
+        verify(commandMemberRoleRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("입력 받은 email이 기존에 있는 경우 예외가 발생한다.")
+    void create_fail_whenEmailDuplicated() throws Exception {
+        //given
+        String loginId = "loginId";
+        String nickname = "nickname";
+        String email = "test@test.com";
+        int roleId = 1;
+        Role role = RoleDummy.dummyWithId();
+
+        MemberCreateRequestDto createDto = Mockito.mock(MemberCreateRequestDto.class);
+
+        Mockito.when(createDto.getEmail()).thenReturn(email);
+
+        Mockito.when(queryRoleRepository.findById(roleId)).thenReturn(Optional.of(role));
+        Mockito.when(queryMemberRepository.existMemberByLoginId(loginId))
+                .thenReturn(false);
+        Mockito.when(queryMemberRepository.existMemberByNickname(nickname))
+                .thenReturn(false);
+        Mockito.when(queryMemberRepository.existMemberByEmail(email))
+                .thenReturn(true);
+
+        //when then
+        assertThatThrownBy(() -> service.create(createDto))
+                .isInstanceOf(MemberProfileAlreadyExistException.class);
+
+        verify(commandMemberRoleRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("회원 등록 성공")
     void create() throws Exception {
         //given
         String loginId = "loginId";
         String nickname = "nickname";
+        String email = "test@test.com";
         int roleId = 1;
 
         MemberCreateRequestDto createDto = Mockito.mock(MemberCreateRequestDto.class);
         Member member = Member.builder()
                 .loginId(loginId)
                 .nickname(nickname)
+                .email(email)
                 .memberGrade(MemberGrade.WHITE)
                 .build();
 
         Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
                 .thenReturn(Optional.empty());
         Mockito.when(queryMemberRepository.findMemberByNickname(nickname))
+                .thenReturn(Optional.empty());
+        Mockito.when(queryMemberRepository.findMemberByEmail(email))
                 .thenReturn(Optional.empty());
         // 1번 Role 빼오기
         Role role = RoleDummy.dummyWithId();
@@ -92,6 +188,7 @@ class CommandMemberServiceImplTest {
     }
 
     @Test
+    @DisplayName("회원 정보 수정 성공")
     void update() {
         //given
         long id = 1;
