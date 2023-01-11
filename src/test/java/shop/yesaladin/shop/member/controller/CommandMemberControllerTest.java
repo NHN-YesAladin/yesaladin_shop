@@ -45,20 +45,6 @@ import shop.yesaladin.shop.member.service.inter.CommandMemberService;
 @WebMvcTest(CommandMemberController.class)
 class CommandMemberControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    ObjectMapper objectMapper;
-
-    @MockBean
-    private CommandMemberService commandMemberService;
-
-    private Member member;
-    private MemberCreateResponseDto createResponse;
-    private MemberUpdateResponseDto updateResponse;
-    private MemberBlockResponseDto blockResponse;
-
     private final String NAME = "Ramos";
     private final String NICKNAME = "Ramos";
     private final String LOGIN_ID = "testloginid";
@@ -68,6 +54,27 @@ class CommandMemberControllerTest {
     private final String BIRTH = "20230107";
     private final String EMAIL = "test@test.com";
     private final String GENDER = "MALE";
+    
+    @Autowired
+    ObjectMapper objectMapper;
+    @Autowired
+    private MockMvc mockMvc;
+    @MockBean
+    private CommandMemberService commandMemberService;
+    private Member member;
+    private MemberCreateResponseDto createResponse;
+    private MemberUpdateResponseDto updateResponse;
+    private MemberBlockResponseDto blockResponse;
+
+    private static Stream<Arguments> updateMemberRequestData() {
+        return Stream.of(
+                Arguments.of("'   '", "빈칸인 경우"),
+                Arguments.of("'ㅇ'", "2자리 미만인 경우"),
+                Arguments.of("'mongmeo21'", "숫자가 포함된 경우"),
+                Arguments.of("'몽매오Ω≈ΩZ'", "특수문자가 포함된 경우"),
+                Arguments.of("'hanadoolsetnetdasut'", "15자리 초과한 경우")
+        );
+    }
     private final String ROLE_MEMBER = "ROLE_MEMBER";
 
     @BeforeEach
@@ -192,16 +199,6 @@ class CommandMemberControllerTest {
         perform.andDo(print()).andExpect(status().isBadRequest());
 
         verify(commandMemberService, never()).update(anyLong(), any());
-    }
-
-    private static Stream<Arguments> updateMemberRequestData() {
-        return Stream.of(
-                Arguments.of("'   '", "빈칸인 경우"),
-                Arguments.of("'ㅇ'", "2자리 미만인 경우"),
-                Arguments.of("'mongmeo21'", "숫자가 포함된 경우"),
-                Arguments.of("'몽매오Ω≈ΩZ'", "특수문자가 포함된 경우"),
-                Arguments.of("'hanadoolsetnetdasut'", "15자리 초과한 경우")
-        );
     }
 
     @Test

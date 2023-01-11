@@ -2,6 +2,7 @@ package shop.yesaladin.shop.order.persistence;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.PathBuilder;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -9,6 +10,9 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
@@ -41,10 +45,8 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
             return Optional.empty();
         }
 
-        PathBuilder<? extends Order> orderDetails = new PathBuilder<>(
-                orderCode.get().getOrderClass(),
-                "order"
-        );
+        PathBuilder<? extends Order> orderDetails = new PathBuilder<>(orderCode.get()
+                .getOrderClass(), "order");
 
         return Optional.ofNullable(queryFactory.select(orderDetails)
                 .from(orderDetails)
@@ -53,11 +55,11 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
     }
 
     @Override
-    public List<OrderSummaryDto> findAllOrdersInPeriod(
-            LocalDate startDate, LocalDate endDate, int size, int page
+    public Page<OrderSummaryDto> findAllOrdersInPeriod(
+            LocalDate startDate, LocalDate endDate, Pageable pageable
     ) {
         QOrder order = QOrder.order;
-        return queryFactory.select(Projections.constructor(
+        List<OrderSummaryDto> data = queryFactory.select(Projections.constructor(
                         OrderSummaryDto.class,
                         order.orderNumber,
                         order.orderDateTime,
@@ -68,9 +70,18 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
                         LocalDateTime.of(startDate, LocalTime.MIDNIGHT),
                         LocalDateTime.of(endDate, LocalTime.MIDNIGHT)
                 ))
-                .offset((long) size * (page - 1))
-                .limit(size)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
+
+        JPAQuery<Long> countQuery = queryFactory.select(order.count())
+                .from(order)
+                .where(order.orderDateTime.between(
+                        LocalDateTime.of(startDate, LocalTime.MIDNIGHT),
+                        LocalDateTime.of(endDate, LocalTime.MIDNIGHT)
+                ));
+
+        return PageableExecutionUtils.getPage(data, pageable, countQuery::fetchFirst);
     }
 
     @Override

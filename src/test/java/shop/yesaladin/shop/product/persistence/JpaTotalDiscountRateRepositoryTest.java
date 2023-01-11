@@ -2,6 +2,7 @@ package shop.yesaladin.shop.product.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,5 +35,20 @@ class JpaTotalDiscountRateRepositoryTest {
         // then
         assertThat(savedTotalDiscountRate).isNotNull();
         assertThat(savedTotalDiscountRate.getDiscountRate()).isEqualTo(10);
+    }
+
+    @Test
+    void findById() {
+        // given
+        TotalDiscountRate savedTotalDiscountRate = jpaTotalDiscountRateRepository.save(
+                totalDiscountRate);
+
+        // when
+        Optional<TotalDiscountRate> foundTotalDiscountRate = jpaTotalDiscountRateRepository.findById(
+                savedTotalDiscountRate.getId());
+
+        // then
+        assertThat(foundTotalDiscountRate).isPresent();
+        assertThat(foundTotalDiscountRate.get().getDiscountRate()).isEqualTo(10);
     }
 }

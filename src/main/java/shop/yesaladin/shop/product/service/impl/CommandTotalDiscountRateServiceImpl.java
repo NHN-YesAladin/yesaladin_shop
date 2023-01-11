@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
 import shop.yesaladin.shop.product.domain.repository.CommandTotalDiscountRateRepository;
+import shop.yesaladin.shop.product.dto.TotalDiscountRateResponseDto;
 import shop.yesaladin.shop.product.service.inter.CommandTotalDiscountRateService;
 
 /**
@@ -27,7 +28,13 @@ public class CommandTotalDiscountRateServiceImpl implements CommandTotalDiscount
      * @since 1.0
      */
     @Override
-    public TotalDiscountRate register(TotalDiscountRate totalDiscountRate) {
-        return commandTotalDiscountRateRepository.save(totalDiscountRate);
+    public TotalDiscountRateResponseDto register(TotalDiscountRate totalDiscountRate) {
+        TotalDiscountRate savedTotalDiscountRate = commandTotalDiscountRateRepository.save(
+                totalDiscountRate);
+
+        return new TotalDiscountRateResponseDto(
+                savedTotalDiscountRate.getId(),
+                savedTotalDiscountRate.getDiscountRate()
+        );
     }
 }

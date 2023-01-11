@@ -40,4 +40,44 @@ public interface QueryMemberRepository {
      * @since : 1.0
      */
     Optional<Member> findMemberByLoginId(String loginId);
+
+    /**
+     * 회원의 email 을 통해 회원을 조회 합니다.
+     *
+     * @param email 회원의 email 입니다.
+     * @return 조회된 회원
+     * @author : 송학현
+     * @since : 1.0
+     */
+    Optional<Member> findMemberByEmail(String email);
+
+    /**
+     * 회원의 loginId 을 통해 회원이 존재 하는지 유무를 판별합니다.
+     *
+     * @param loginId 회원의 loginId 입니다.
+     * @return 존재 유무
+     * @author : 송학현
+     * @since : 1.0
+     */
+    boolean existsMemberByLoginId(String loginId);
+
+    /**
+     * 회원의 nickname 을 통해 회원이 존재 하는지 유무를 판별합니다.
+     *
+     * @param nickname 회원의 nickname 입니다.
+     * @return 존재 유무
+     * @author : 송학현
+     * @since : 1.0
+     */
+    boolean existsMemberByNickname(String nickname);
+
+    /**
+     * 회원의 email 을 통해 회원이 존재 하는지 유무를 판별합니다.
+     *
+     * @param email 회원의 email 입니다.
+     * @return 존재 유무
+     * @author : 송학현
+     * @since : 1.0
+     */
+    boolean existsMemberByEmail(String email);
 }

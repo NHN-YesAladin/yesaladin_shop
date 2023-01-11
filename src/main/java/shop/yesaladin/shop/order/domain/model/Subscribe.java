@@ -16,7 +16,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.yesaladin.shop.member.domain.model.Member;
-import shop.yesaladin.shop.order.domain.dummy.MemberAddress;
+import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 
 /**
