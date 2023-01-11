@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +22,7 @@ import shop.yesaladin.shop.category.dto.CategoryOnlyIdDto;
  * @since 1.0
  */
 
+@Slf4j
 @RequiredArgsConstructor
 @Repository
 public class QueryDslCategoryRepositoryImpl implements QueryCategoryRepository {
@@ -102,12 +104,28 @@ public class QueryDslCategoryRepositoryImpl implements QueryCategoryRepository {
 
         List<Category> categories = queryFactory.select(category)
                 .from(category)
-                .innerJoin(category.parent, parent)
+                .rightJoin(category.parent, parent)
                 .fetchJoin()
                 .where(category.parent.id.eq(parentId))
-                .groupBy(category.id)
                 .fetch();
-        System.out.println("categories = " + categories);
-        return null;
+        log.info("\n categories.size =  {} ", categories.size());
+        return categories;
     }
+
+    @Override
+    public Optional<Category> findByIdByFetching(Long id) {
+        QCategory category = QCategory.category;
+        Optional<Category> categoryOptional = Optional.ofNullable(queryFactory.selectFrom(category)
+                .leftJoin(category.parent)
+                .fetchJoin()
+                .where(category.id.eq(id))
+                .fetchFirst());
+
+        if (categoryOptional.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return categoryOptional;
+    }
+
 }

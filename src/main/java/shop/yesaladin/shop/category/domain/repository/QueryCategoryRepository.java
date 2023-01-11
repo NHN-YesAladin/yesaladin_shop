@@ -61,4 +61,5 @@ public interface QueryCategoryRepository {
 
     List<Category> getCategoriesByParentId(Long parentId);
 
+    Optional<Category> findByIdByFetching(Long id);
 }

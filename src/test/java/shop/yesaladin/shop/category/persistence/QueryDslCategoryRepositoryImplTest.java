@@ -2,10 +2,14 @@ package shop.yesaladin.shop.category.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -151,7 +155,9 @@ class QueryDslCategoryRepositoryImplTest {
     @Test
     void getCategoriesByParentId() throws Exception {
         // given
-        for (int i = 0; i < 10; i++) {
+        em.persist(parentCategory);
+        int count = 10;
+        for (int i = 0; i < count; i++) {
             Category child = Category.builder()
                     .id((long)i)
                     .name("" + i)
@@ -161,10 +167,55 @@ class QueryDslCategoryRepositoryImplTest {
                     .build();
             em.persist(child);
         }
+        Category otherParent = CategoryDummy.dummyParent(20000L);
+        em.persist(otherParent);
+        for (int i = 10; i < 12; i++) {
+            Category child = Category.builder()
+                    .id((long)i)
+                    .name("" + i)
+                    .order(null)
+                    .isShown(true)
+                    .parent(otherParent)
+                    .build();
+            em.persist(child);
+        }
 
         // when
-        queryCategoryRepository.getCategoriesByParentId(parentCategory.getId());
+        List<Category> categories = queryCategoryRepository.getCategoriesByParentId(
+                parentCategory.getId());
 
         // then
+        assertThat(categories.size()).isEqualTo(count);
+        assertThat(categories.get(0).getParent()).isEqualTo(parentCategory);
+    }
+
+    @Test
+    void findByIdByFetching() throws Exception {
+        // given
+        em.persist(parentCategory);
+
+        // when
+        Category category = queryCategoryRepository.findByIdByFetching(parentCategory.getId())
+                .orElseThrow(() -> new CategoryNotFoundException(parentCategory.getId()));
+
+        // then
+        assertThat(category.getId()).isEqualTo(parentCategory.getId());
+        assertThat(category.getParent()).isEqualTo(parentCategory.getParent());
+    }
+
+    @Disabled
+    @Test
+    @DisplayName("로컬 DB에서 테스트용 - @disabled")
+    void findByIdByFetching_realDB() throws Exception {
+        // given
+        Long id = 20000L;
+
+        // when
+        Category category = queryCategoryRepository.findByIdByFetching(id)
+                .orElseThrow(() -> new CategoryNotFoundException(id));
+
+        // then
+        assertThat(category.getChildren().size() > 0).isTrue();
+        System.out.println("category.getChildren() = " + category.getChildren());
     }
 }

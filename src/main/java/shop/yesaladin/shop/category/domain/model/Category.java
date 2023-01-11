@@ -1,7 +1,9 @@
 package shop.yesaladin.shop.category.domain.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -54,18 +56,18 @@ public class Category {
     @Column(name = "`order`")
     private Integer order;
 
-    @ToString.Exclude
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_id")
-    private Category parent;
 
     @Builder.Default
     @Column(name = "depth", nullable = false)
     private int depth = 0;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    private Category parent;
+
     @ToString.Exclude
-    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
-    private List<Category> children;
+    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Category> children = new ArrayList<>();
 
     /**
      * entity의 변경감지를 위해 사용
