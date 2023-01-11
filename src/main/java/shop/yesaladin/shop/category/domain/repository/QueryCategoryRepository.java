@@ -4,6 +4,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.category.domain.model.Category;
+import shop.yesaladin.shop.category.dto.CategoryOnlyIdDto;
 
 /**
  * 카테고리 조회용(R) 레포지토리 인터페이스
@@ -37,5 +38,8 @@ public interface QueryCategoryRepository {
      * @return Optional 처리가 된 카테고리 객체
      */
     Optional<Category> findByName(String name);
+
+    CategoryOnlyIdDto getLatestChildIdByDepthAndParentId(int depth, Long parentId);
+    CategoryOnlyIdDto getLatestIdByDepth(int depth);
 
 }

@@ -14,7 +14,7 @@ import shop.yesaladin.shop.category.domain.repository.QueryCategoryRepository;
  */
 
 public interface JpaCategoryRepository extends Repository<Category, Long>,
-        CommandCategoryRepository, QueryCategoryRepository {
+        CommandCategoryRepository {
 
 
 }
