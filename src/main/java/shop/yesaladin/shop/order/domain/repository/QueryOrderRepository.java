@@ -42,6 +42,24 @@ public interface QueryOrderRepository {
     );
 
     /**
+     * 특정 회원의 기간 내 모든 주문 데이터의 요약본을 페이지네이션하여 조회합니다.
+     *
+     * @param startDate 조회 기간 시작 일자
+     * @param endDate   조회 기간 마지막 일자
+     * @param memberId  주문 내역을 조회할 회원의 아이디
+     * @param pageable  페이지네이션 정보
+     * @return 페이지네이션 된 기간 내의 모든 주문 데이터의 요약
+     * @author 김홍대
+     * @since 1.0
+     */
+    Page<OrderSummaryDto> findAllOrdersInPeriodByMemberId(
+            LocalDate startDate,
+            LocalDate endDate,
+            long memberId,
+            Pageable pageable
+    );
+
+    /**
      * 기간 내의 주문 데이터의 수를 반환합니다.
      *
      * @param startDate 조회 기간 시작 일자
