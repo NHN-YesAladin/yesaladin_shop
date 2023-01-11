@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import shop.yesaladin.shop.member.domain.model.SearchedMember;
 
+
 /**
  * 검색 전용 인터페이스
  *
@@ -17,8 +18,11 @@ public interface SearchMemberRepository {
     Optional<SearchedMember> findByPhone(String phone);
     List<SearchedMember> findAllByName(String name);
     List<SearchedMember> findBySignUpDate(LocalDate sighUpDate);
-
     SearchedMember save(SearchedMember searchedMember);
-
     void deleteByLoginId(String loginId);
+    boolean existsByLoginId(String loginId);
+    boolean existsByEmail(String email);
+    boolean existsByNickname(String nickname);
+    boolean existsByPhone(String phone);
+    boolean existsById(Long id);
 }
