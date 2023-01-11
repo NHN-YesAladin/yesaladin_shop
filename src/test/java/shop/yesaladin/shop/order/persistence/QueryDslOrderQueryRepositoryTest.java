@@ -219,6 +219,34 @@ class QueryDslOrderQueryRepositoryTest {
     }
 
     @Test
+    @DisplayName("특정 회원의 특정 기간 내 주문 기록 조회에 성공한다.")
+    void findAllOrdersInPeriodByMemberId() {
+        // when
+        Page<OrderSummaryDto> actual = queryRepository.findAllOrdersInPeriodByMemberId(LocalDate.of(
+                2023,
+                1,
+                1
+        ), LocalDate.of(2023, 1, 5), memberList.get(0).getId(), PageRequest.of(0, 20));
+
+        // then
+        Assertions.assertThat(actual.get()).hasSize(4);
+    }
+
+    @Test
+    @DisplayName("특정 회원의 특정 기간 내 주문 기록이 페이지네이션 되어 조회된다.")
+    void findAllOrdersInPeriodByMemberIdWithPagination() {
+        // when
+        Page<OrderSummaryDto> actual = queryRepository.findAllOrdersInPeriodByMemberId(LocalDate.of(
+                2023,
+                1,
+                1
+        ), LocalDate.of(2023, 1, 31), memberList.get(0).getId(), PageRequest.of(0, 5));
+
+        // then
+        Assertions.assertThat(actual.get()).hasSize(5);
+    }
+
+    @Test
     @DisplayName("특정 기간 내 주문 수가 반환된다.")
     void getCountOrdersInPeriod() {
         // when
