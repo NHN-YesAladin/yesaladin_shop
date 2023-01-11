@@ -20,10 +20,31 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ * Web에 관련된 전반적인 설정을 관리합니다.
+ *
+ * @author : 송학현
+ * @since : 1.0
+ */
 @Slf4j
 @Configuration
 public class WebConfiguration {
 
+    /**
+     * NHN Secure Manager를 통해 민감정보를 받습니다.
+     * yesaladin.p12 인증서를 통해 HTTPS 요청을 보냅니다.
+     *
+     * @return DataSource
+     * @throws IOException
+     * @throws KeyStoreException
+     * @throws CertificateException
+     * @throws NoSuchAlgorithmException
+     * @throws UnrecoverableKeyException
+     * @throws KeyManagementException
+     *
+     * @author : 송학현
+     * @since : 1.0
+     */
     @Bean
     public RestTemplate restTemplate() throws IOException, KeyStoreException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException, KeyManagementException {
         KeyStore clientStore = KeyStore.getInstance("PKCS12");

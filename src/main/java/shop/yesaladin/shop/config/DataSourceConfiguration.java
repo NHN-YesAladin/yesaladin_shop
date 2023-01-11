@@ -9,9 +9,15 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 import shop.yesaladin.shop.common.dto.SecretResponse;
 
+/**
+ * Spring Boot의 기본 DataSource인 hikari를 DBCP2로 바꾸기 위한 설정 파일입니다.
+ *
+ * @author : 송학현
+ * @since : 1.0
+ */
 @Slf4j
 @Configuration
-public class SecureKeyManagerConfiguration {
+public class DataSourceConfiguration {
 
     @Value("${yesaladin.secure.url}")
     private String url;
@@ -25,6 +31,16 @@ public class SecureKeyManagerConfiguration {
     @Value("${yesaladin.secure.db_url}")
     private String dbUrl;
 
+
+    /**
+     * NHN Secure Key Manager를 통해 받아온 민감 정보를 사용하여 datasource를 Bean으로 등록하여 관리합니다.
+     * 현재는 임시적인 설정이며, Database Connection 설정은 팀원들과 협의 하에 수정 예정입니다.
+     *
+     * @param restTemplate NHN Secure Key Manager를 통해 민감 정보를 받아오는 Bean 입니다.
+     * @return DataSource 설정 결과를 반환합니다.
+     * @author : 송학현
+     * @since : 1.0
+     */
     @Bean
     public DataSource dataSource(RestTemplate restTemplate) {
         SecretResponse usernameResponse = restTemplate.getForObject(
