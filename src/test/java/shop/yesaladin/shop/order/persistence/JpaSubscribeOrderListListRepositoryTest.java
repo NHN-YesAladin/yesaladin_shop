@@ -90,7 +90,7 @@ class JpaSubscribeOrderListListRepositoryTest {
 
         //when
         Optional<SubscribeOrderList> actual = subscribeOrderListRepository.findById(id);
-        System.out.println(actual);
+
         //then
         assertThat(actual).isPresent();
         assertThat(actual.get().getId()).isEqualTo(id);
