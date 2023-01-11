@@ -25,7 +25,7 @@ import shop.yesaladin.shop.order.domain.model.NonMemberOrder;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
 import shop.yesaladin.shop.order.domain.model.Subscribe;
-import shop.yesaladin.shop.order.domain.model.SubscribeOrder;
+import shop.yesaladin.shop.order.domain.model.SubscribeOrderList;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 
@@ -39,7 +39,7 @@ class QueryDslOrderQueryRepositoryTest {
     private EntityManager entityManager;
     private List<NonMemberOrder> nonMemberOrderList;
     private List<MemberOrder> memberOrderList;
-    private List<SubscribeOrder> subscribeOrderList;
+    private List<SubscribeOrderList> subscribeOrderList;
     private List<Member> memberList;
     private List<MemberAddress> memberAddressList;
 
@@ -127,7 +127,7 @@ class QueryDslOrderQueryRepositoryTest {
                     .intervalMonth(2)
                     .nextRenewalDate(LocalDate.of(2023, i + 1, i + 1))
                     .build();
-            SubscribeOrder subscribeOrder = SubscribeOrder.builder()
+            SubscribeOrderList subscribeOrderList = SubscribeOrderList.builder()
                     .orderNumber("S-" + i)
                     .orderDateTime(LocalDateTime.of(2023, 1, i + 1, 0, 0))
                     .expectedDate(LocalDate.of(2023, 1, i + 2))
@@ -142,8 +142,8 @@ class QueryDslOrderQueryRepositoryTest {
                     .build();
             entityManager.persist(subscribeProduct);
             entityManager.persist(subscribe);
-            entityManager.persist(subscribeOrder);
-            subscribeOrderList.add(subscribeOrder);
+            entityManager.persist(subscribeOrderList);
+            this.subscribeOrderList.add(subscribeOrderList);
         }
 
         entityManager.flush();

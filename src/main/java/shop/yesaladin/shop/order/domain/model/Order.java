@@ -44,7 +44,7 @@ public abstract class Order {
     @Column(name = "order_datetime", nullable = false)
     private LocalDateTime orderDateTime;
 
-    @Column(name = "expected_transport_date", nullable = false)
+    @Column(name = "expected_transport_date")
     private LocalDate expectedTransportDate;
 
     @Column(name = "is_hidden", nullable = false)
