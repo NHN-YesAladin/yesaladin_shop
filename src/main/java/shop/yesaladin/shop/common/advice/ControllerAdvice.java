@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import shop.yesaladin.shop.category.exception.CategoryNotFoundException;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
+import shop.yesaladin.shop.member.exception.MemberProfileAlreadyExistException;
+import shop.yesaladin.shop.member.exception.MemberRoleNotFoundException;
 
 /**
  * 공용으로 사용하는 예외 처리
@@ -22,7 +24,7 @@ import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 @RestControllerAdvice
 public class ControllerAdvice {
 
-    @ExceptionHandler(value = {CategoryNotFoundException.class})
+    @ExceptionHandler(value = {CategoryNotFoundException.class, MemberRoleNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<String> handleNotFoundException(Exception ex) {
         log.error("[NOT_FOUND] handleNotFoundException", ex);
@@ -36,6 +38,13 @@ public class ControllerAdvice {
     public ResponseEntity<String> handleValidationException(Exception ex) {
         log.error("[BAD_REQUEST] handleValidationException", ex);
         return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(value = {MemberProfileAlreadyExistException.class})
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ResponseEntity<String> handleAlreadyExistException(Exception ex) {
+        log.error("[CONFLICT] handleAlreadyExistException", ex);
+        return ResponseEntity.status(HttpStatus.CONFLICT).build();
     }
 
     @ExceptionHandler(Exception.class)
