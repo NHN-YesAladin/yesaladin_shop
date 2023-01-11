@@ -230,6 +230,17 @@
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <version>2.14.1</version>
         </dependency>
+
+        <!-- DBCP 관련 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.14</version>
+        </dependency>
     </dependencies>
     <dependencyManagement>
         <dependencies>
