@@ -1,4 +1,4 @@
-package shop.yesaladin.shop.order.dto;
+package shop.yesaladin.shop.common.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.Clock;
@@ -7,8 +7,14 @@ import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+/**
+ * 기간조회를 위한 요청 dto 클래스입니다.
+ *
+ * @author 최예린
+ * @since 1.0
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class OrderInPeriodQueryDto {
+public class PeriodQueryRequestDto {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate startDate;
