@@ -83,7 +83,7 @@ public class QueryCategoryServiceImpl implements QueryCategoryService {
      * @return
      */
     private Category tryGetCategoryById(long id) {
-        return queryCategoryRepository.findById(id)
+        return queryCategoryRepository.findByIdByFetching(id)
                 .orElseThrow(() -> new CategoryNotFoundException(id));
     }
 
