@@ -17,5 +17,5 @@ public interface QueryMemberAddressService {
      * @param memberId 회원 id
      * @return 회원의 배송지 목록
      */
-    List<MemberAddressQueryDto> findByMemberId(Long memberId);
+    List<MemberAddressQueryDto> findByMemberId(long memberId);
 }

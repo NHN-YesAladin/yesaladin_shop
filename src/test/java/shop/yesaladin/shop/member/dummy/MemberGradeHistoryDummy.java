@@ -28,4 +28,13 @@ public class MemberGradeHistoryDummy {
                 .member(member)
                 .build();
     }
+
+    public static MemberGradeHistory dummyWithDate(Member member, LocalDate date) {
+        return MemberGradeHistory.builder()
+                .updateDate(date)
+                .previousPaidAmount(0L)
+                .memberGrade(MemberGrade.WHITE)
+                .member(member)
+                .build();
+    }
 }

@@ -32,7 +32,7 @@ public class CommandMemberAddressServiceImpl implements CommandMemberAddressServ
     @Override
     @Transactional
     public MemberAddressCreateResponseDto save(
-            Long memberId,
+            long memberId,
             MemberAddressCreateRequestDto request
     ) {
         Member member = tryGetMemberById(memberId);
@@ -46,7 +46,7 @@ public class CommandMemberAddressServiceImpl implements CommandMemberAddressServ
 
     @Override
     @Transactional
-    public MemberAddressUpdateResponseDto markAsDefault(Long memberId, Long addressId) {
+    public MemberAddressUpdateResponseDto markAsDefault(long memberId, long addressId) {
         MemberAddress memberAddress = tryGetMemberAddressByMemberIdAndMemberAddressId(
                 memberId,
                 addressId
@@ -61,7 +61,7 @@ public class CommandMemberAddressServiceImpl implements CommandMemberAddressServ
 
     @Override
     @Transactional
-    public long delete(Long memberId, Long addressId) {
+    public long delete(long memberId, long addressId) {
         if (!queryMemberAddressRepository.existByMemberIdAndMemberAddressId(memberId, addressId)) {
             throw new MemberAddressNotFoundException(addressId);
         }
@@ -72,8 +72,8 @@ public class CommandMemberAddressServiceImpl implements CommandMemberAddressServ
     }
 
     private MemberAddress tryGetMemberAddressByMemberIdAndMemberAddressId(
-            Long memberId,
-            Long addressId
+            long memberId,
+            long addressId
     ) {
         return queryMemberAddressRepository.getByMemberIdAndMemberAddressId(
                 memberId,
@@ -82,7 +82,7 @@ public class CommandMemberAddressServiceImpl implements CommandMemberAddressServ
     }
 
 
-    private Member tryGetMemberById(Long memberId) {
+    private Member tryGetMemberById(long memberId) {
         return queryMemberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException("Member Id: " + memberId));
     }
