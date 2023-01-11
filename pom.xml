@@ -52,6 +52,9 @@
                         <configuration>
                             <outputDirectory>target/generated-sources/java</outputDirectory>
                             <processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>
+                            <options>
+                                <querydsl.packageSuffix>.querydsl</querydsl.packageSuffix>
+                            </options>
                         </configuration>
                     </execution>
                 </executions>
@@ -69,7 +72,8 @@
                 <version>0.8.5</version>
                 <configuration>
                     <excludes>
-                        <exclude>**/*shop.yesaladin.shop.*Application.class</exclude>
+                        <exclude>**/shop/yesaladin/shop/*Application.class</exclude>
+                        <exclude>**/model/querydsl/*.class</exclude>
                     </excludes>
                 </configuration>
                 <executions>
