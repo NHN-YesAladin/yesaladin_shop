@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.order.domain.model;
 
-import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -28,9 +27,8 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "subscribe_orders")
-@PrimaryKeyJoinColumn(name = "order_id")
-public class SubscribeOrder {
+@Table(name = "subscribe_order_lists")
+public class SubscribeOrderList {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
