@@ -69,6 +69,14 @@ public class CommandMemberServiceImpl implements CommandMemberService {
         return MemberCreateResponseDto.fromEntity(savedMember, roleMember);
     }
 
+    /**
+     * 중복 사항을 체크하는 메소드 입니다.
+     *
+     * @param createDto 회원 등록 요청 dto
+     * @throws MemberProfileAlreadyExistException loginId, nickname, email이 기존에 있다면 발생하는 예외입니다.
+     * @author : 송학현
+     * @since : 1.0
+     */
     private void checkMemberProfileExist(MemberCreateRequestDto createDto) {
         if (queryMemberRepository.existMemberByLoginId(createDto.getLoginId())) {
             throw new MemberProfileAlreadyExistException(createDto.getLoginId());
