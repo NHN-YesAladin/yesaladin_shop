@@ -8,7 +8,7 @@ package shop.yesaladin.shop.member.exception;
  */
 public class MemberRoleNotFoundException extends RuntimeException {
 
-    public MemberRoleNotFoundException(int roleId) {
+    public MemberRoleNotFoundException(Integer roleId) {
         super("Member Role not found - " + roleId);
     }
 }
