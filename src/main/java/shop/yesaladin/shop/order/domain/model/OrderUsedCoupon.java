@@ -42,6 +42,15 @@ public class OrderUsedCoupon {
     @JoinColumn(name = "coupon_issuance_id", nullable = false)
     private CouponIssuance couponIssuance;
 
+    /**
+     * 주문에 사용한 쿠폰 엔티티 생성 메소드입니다.
+     *
+     * @param memberOrder 회원주문 데이터
+     * @param couponIssuance 회원이 소유한 쿠폰
+     * @return 주문에 사용한 쿠폰 엔티티
+     * @author 최예린
+     * @since 1.0
+     */
     public static OrderUsedCoupon create(MemberOrder memberOrder, CouponIssuance couponIssuance) {
         Pk pk = new Pk(memberOrder.getId(), couponIssuance.getId());
         return new OrderUsedCoupon(pk, memberOrder, couponIssuance);
