@@ -22,7 +22,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import shop.yesaladin.shop.order.dto.OrderInPeriodQueryDto;
+import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.order.service.inter.QueryOrderService;
 
 @WebMvcTest(QueryOrderController.class)
@@ -48,8 +48,8 @@ class QueryOrderControllerTest {
                 "endDate",
                 LocalDate.of(2023, 1, 2)
         );
-        ArgumentCaptor<OrderInPeriodQueryDto> dtoCaptor = ArgumentCaptor.forClass(
-                OrderInPeriodQueryDto.class);
+        ArgumentCaptor<PeriodQueryRequestDto> dtoCaptor = ArgumentCaptor.forClass(
+                PeriodQueryRequestDto.class);
         ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
 
         // when
@@ -63,16 +63,16 @@ class QueryOrderControllerTest {
 
         Mockito.verify(queryOrderService, Mockito.times(1))
                 .getAllOrderListInPeriod(dtoCaptor.capture(), pageableCaptor.capture());
-        OrderInPeriodQueryDto actualDto = dtoCaptor.getValue();
+        PeriodQueryRequestDto actualDto = dtoCaptor.getValue();
         Pageable actualPageable = pageableCaptor.getValue();
 
         Assertions.assertThat(ReflectionUtils.tryToReadFieldValue(
-                OrderInPeriodQueryDto.class,
+                PeriodQueryRequestDto.class,
                 "startDate",
                 actualDto
         ).get()).isEqualTo(request.get("startDate"));
         Assertions.assertThat(ReflectionUtils.tryToReadFieldValue(
-                OrderInPeriodQueryDto.class,
+                PeriodQueryRequestDto.class,
                 "endDate",
                 actualDto
         ).get()).isEqualTo(request.get("endDate"));
