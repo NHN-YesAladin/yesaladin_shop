@@ -4,6 +4,9 @@ import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
@@ -27,15 +30,19 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @Table(name = "subscribe_orders")
 @PrimaryKeyJoinColumn(name = "order_id")
-public class SubscribeOrder extends Order {
+public class SubscribeOrder {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(name = "is_transported", nullable = false)
     private boolean isTransported;
 
-    @Column(name = "expected_date", nullable = false)
-    private LocalDate expectedDate;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subscribe_id", nullable = false)
     private Subscribe subscribe;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_order_id")
+    private MemberOrder memberOrder;
 }

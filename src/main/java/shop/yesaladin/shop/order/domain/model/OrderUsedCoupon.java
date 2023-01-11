@@ -33,18 +33,18 @@ public class OrderUsedCoupon {
     private Pk pk;
 
     @ManyToOne
-    @MapsId(value = "orderId")
-    @JoinColumn(name = "order_id", nullable = false)
-    private Order order;
+    @MapsId(value = "memberOrderId")
+    @JoinColumn(name = "member_order_id", nullable = false)
+    private MemberOrder memberOrder;
 
     @ManyToOne
     @MapsId(value = "couponIssuanceId")
     @JoinColumn(name = "coupon_issuance_id", nullable = false)
     private CouponIssuance couponIssuance;
 
-    public static OrderUsedCoupon create(Order order, CouponIssuance couponIssuance) {
-        Pk pk = new Pk(order.getId(), couponIssuance.getId());
-        return new OrderUsedCoupon(pk, order, couponIssuance);
+    public static OrderUsedCoupon create(MemberOrder memberOrder, CouponIssuance couponIssuance) {
+        Pk pk = new Pk(memberOrder.getId(), couponIssuance.getId());
+        return new OrderUsedCoupon(pk, memberOrder, couponIssuance);
     }
 
     /**
@@ -60,8 +60,8 @@ public class OrderUsedCoupon {
     @Embeddable
     public static class Pk implements Serializable {
 
-        @Column(name = "order_id", nullable = false)
-        private long orderId;
+        @Column(name = "member_order_id", nullable = false)
+        private long memberOrderId;
 
         @Column(name = "coupon_issuance_id", nullable = false)
         private long couponIssuanceId;
