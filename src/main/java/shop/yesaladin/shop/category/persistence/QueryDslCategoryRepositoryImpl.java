@@ -94,4 +94,20 @@ public class QueryDslCategoryRepositoryImpl implements QueryCategoryRepository {
         }
         return new CategoryOnlyIdDto(fetchOne);
     }
+
+    @Override
+    public List<Category> getCategoriesByParentId(Long parentId) {
+        QCategory category = QCategory.category;
+        QCategory parent = new QCategory("parent");
+
+        List<Category> categories = queryFactory.select(category)
+                .from(category)
+                .innerJoin(category.parent, parent)
+                .fetchJoin()
+                .where(category.parent.id.eq(parentId))
+                .groupBy(category.id)
+                .fetch();
+        System.out.println("categories = " + categories);
+        return null;
+    }
 }

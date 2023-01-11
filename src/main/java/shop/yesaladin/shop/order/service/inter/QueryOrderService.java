@@ -2,7 +2,6 @@ package shop.yesaladin.shop.order.service.inter;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import shop.yesaladin.shop.order.dto.OrderInPeriodQueryDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 
 /**

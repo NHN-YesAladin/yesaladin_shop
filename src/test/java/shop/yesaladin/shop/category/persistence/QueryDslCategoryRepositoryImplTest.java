@@ -6,6 +6,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -145,5 +146,25 @@ class QueryDslCategoryRepositoryImplTest {
         // then
         assertThat(onlyId.getId()).isEqualTo(parentCategory.getId());
 
+    }
+
+    @Test
+    void getCategoriesByParentId() throws Exception {
+        // given
+        for (int i = 0; i < 10; i++) {
+            Category child = Category.builder()
+                    .id((long)i)
+                    .name("" + i)
+                    .order(null)
+                    .isShown(true)
+                    .parent(parentCategory)
+                    .build();
+            em.persist(child);
+        }
+
+        // when
+        queryCategoryRepository.getCategoriesByParentId(parentCategory.getId());
+
+        // then
     }
 }

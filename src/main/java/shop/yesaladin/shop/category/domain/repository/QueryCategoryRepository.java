@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.category.domain.repository;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,7 +40,25 @@ public interface QueryCategoryRepository {
      */
     Optional<Category> findByName(String name);
 
+    /**
+     * 카테고리 id의 마지막 값을 depth와 부모 id를 통해 조회
+     *   2차 카테고리의 마지막 id를 찾아오기 위해 사용
+     *
+     * @param depth 2차 카테고리의 깊이 값인 1이 입력됨
+     * @param parentId 2차 카테고리가 가지고있는 부모 id
+     * @return Long id 만 가지고있음
+     */
     CategoryOnlyIdDto getLatestChildIdByDepthAndParentId(int depth, Long parentId);
+
+    /**
+     * 카테고리의 id의 마지막 값을 depth를 통해 조회
+     *   1차 카테고리의 마지막 id를 찾아오기 위해 사용
+     *
+     * @param depth 1차 카테고리의 깊이 값인 0이 입력됨
+     * @return Long id 만 가지고있음
+     */
     CategoryOnlyIdDto getLatestIdByDepth(int depth);
+
+    List<Category> getCategoriesByParentId(Long parentId);
 
 }
