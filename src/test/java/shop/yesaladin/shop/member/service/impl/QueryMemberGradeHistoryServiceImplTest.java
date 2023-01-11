@@ -77,7 +77,7 @@ class QueryMemberGradeHistoryServiceImplTest {
         return Stream.of(
                 Arguments.of(
                         ReflectionUtils.newInstance(PeriodQueryRequestDto.class, date2, date1),
-                        "[INVALID] 시작날짜가 끝날짜보다 뒤에 있는 경우"
+                        "[START_OVER_END] 시작날짜가 끝날짜보다 뒤에 있는 경우"
                 ),
                 Arguments.of(
                         ReflectionUtils.newInstance(PeriodQueryRequestDto.class, date1, date3),

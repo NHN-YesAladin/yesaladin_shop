@@ -25,7 +25,7 @@ public class QueryDslQueryMemberGradeHistoryRepository implements
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Optional<MemberGradeHistoryQueryResponseDto> findById(Long id) {
+    public Optional<MemberGradeHistoryQueryResponseDto> findById(long id) {
         QMemberGradeHistory memberGradeHistory = QMemberGradeHistory.memberGradeHistory;
 
         return Optional.ofNullable(queryFactory.select(Projections.constructor(
@@ -43,7 +43,7 @@ public class QueryDslQueryMemberGradeHistoryRepository implements
 
     @Override
     public List<MemberGradeHistoryQueryResponseDto> findByMemberIdAndPeriod(
-            Long memberId,
+            long memberId,
             LocalDate startDate,
             LocalDate endDate
     ) {

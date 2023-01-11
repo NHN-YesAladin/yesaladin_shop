@@ -21,7 +21,7 @@ public interface CommandMemberAddressService {
      * @author 최예린
      * @since 1.0
      */
-    MemberAddressCreateResponseDto save(Long memberId, MemberAddressCreateRequestDto request);
+    MemberAddressCreateResponseDto save(long memberId, MemberAddressCreateRequestDto request);
 
     /**
      * 회원의 대표 배송지를 등록합니다.
@@ -32,7 +32,7 @@ public interface CommandMemberAddressService {
      * @author 최예린
      * @since 1.0
      */
-    MemberAddressUpdateResponseDto markAsDefault(Long memberId, Long addressId);
+    MemberAddressUpdateResponseDto markAsDefault(long memberId, long addressId);
 
     /**
      * 회원의 배송지를 삭제합니다.
@@ -43,5 +43,5 @@ public interface CommandMemberAddressService {
      * @author 최예린
      * @since 1.0
      */
-    long delete(Long memberId, Long addressId);
+    long delete(long memberId, long addressId);
 }

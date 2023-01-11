@@ -27,7 +27,7 @@ public class QueryMemberGradeHistoryServiceImpl implements QueryMemberGradeHisto
 
     @Override
     public List<MemberGradeHistoryQueryResponseDto> findByMemberId(
-            Long memberId,
+            long memberId,
             PeriodQueryRequestDto request
     ) {
         checkValidQueryCondition(request);
@@ -41,7 +41,7 @@ public class QueryMemberGradeHistoryServiceImpl implements QueryMemberGradeHisto
     private void checkValidQueryCondition(PeriodQueryRequestDto queryDto) {
         if (queryDto.getStartDateOrDefaultValue(clock)
                 .isAfter(queryDto.getEndDateOrDefaultValue(clock))) {
-            throw new InvalidPeriodConditionException(InvalidPeriodConditionType.INVALID);
+            throw new InvalidPeriodConditionException(InvalidPeriodConditionType.START_OVER_END);
         }
         if (queryDto.getEndDateOrDefaultValue(clock).isAfter(LocalDate.now(clock))) {
             throw new InvalidPeriodConditionException(InvalidPeriodConditionType.FUTURE);

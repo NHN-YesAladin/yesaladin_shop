@@ -10,7 +10,7 @@ import shop.yesaladin.shop.member.domain.repository.CommandMemberGradeHistoryRep
  * @author : 송학현, 최예린
  * @since : 1.0
  */
-public interface JpaMemberGradeHistoryRepository extends Repository<MemberGradeHistory, Long>,
+public interface JpaCommandMemberGradeHistoryRepository extends Repository<MemberGradeHistory, Long>,
         CommandMemberGradeHistoryRepository {
 
 }

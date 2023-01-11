@@ -31,7 +31,7 @@ public interface QueryMemberAddressRepository {
      * @author 최예린
      * @since 1.0
      */
-    Optional<MemberAddress> findById(Long id);
+    Optional<MemberAddress> findById(long id);
 
     /**
      * 회원의 특정한 배송지를 조회합니다.
@@ -42,7 +42,7 @@ public interface QueryMemberAddressRepository {
      * @author 최예린
      * @since 1.0
      */
-    Optional<MemberAddress> getByMemberIdAndMemberAddressId(Long memberId, Long memberAddressId);
+    Optional<MemberAddress> getByMemberIdAndMemberAddressId(long memberId, long memberAddressId);
 
     /**
      * 회원의 특정한 배송지가 있는지 확인합니다.
@@ -53,5 +53,5 @@ public interface QueryMemberAddressRepository {
      * @author 최예린
      * @since 1.0
      */
-    boolean existByMemberIdAndMemberAddressId(Long memberId, Long memberAddressId);
+    boolean existByMemberIdAndMemberAddressId(long memberId, long memberAddressId);
 }

@@ -23,7 +23,7 @@ public interface QueryMemberGradeHistoryService {
      * @since 1.0
      */
     List<MemberGradeHistoryQueryResponseDto> findByMemberId(
-            Long memberId,
+            long memberId,
             PeriodQueryRequestDto request
     );
 }

@@ -16,13 +16,13 @@ import shop.yesaladin.shop.member.dummy.MemberGradeHistoryDummy;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-class JpaMemberGradeHistoryRepositoryTest {
+class JpaCommandMemberGradeHistoryRepositoryTest {
 
     @Autowired
     TestEntityManager entityManager;
 
     @Autowired
-    JpaMemberGradeHistoryRepository repository;
+    JpaCommandMemberGradeHistoryRepository repository;
 
     private MemberGradeHistory memberGradeHistory;
     private Member member;

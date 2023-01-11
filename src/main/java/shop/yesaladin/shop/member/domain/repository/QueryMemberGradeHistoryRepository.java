@@ -21,7 +21,7 @@ public interface QueryMemberGradeHistoryRepository {
      * @author : 송학현, 최예린
      * @since : 1.0
      */
-    Optional<MemberGradeHistoryQueryResponseDto> findById(Long id);
+    Optional<MemberGradeHistoryQueryResponseDto> findById(long id);
 
     /**
      * 회원의 id를 통해 회원의 등급 변경 이력을 조회 합니다.
@@ -34,7 +34,7 @@ public interface QueryMemberGradeHistoryRepository {
      * @since 1.0
      */
     List<MemberGradeHistoryQueryResponseDto> findByMemberIdAndPeriod(
-            Long memberId,
+            long memberId,
             LocalDate startDate,
             LocalDate endDate
     );

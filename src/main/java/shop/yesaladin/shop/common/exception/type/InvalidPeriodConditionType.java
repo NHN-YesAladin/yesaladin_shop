@@ -8,5 +8,5 @@ package shop.yesaladin.shop.common.exception.type;
  * @since 1.0
  */
 public enum InvalidPeriodConditionType {
-    TOO_PAST, LONG_PERIOD_OF_TIME, FUTURE, INVALID
+    TOO_PAST, LONG_PERIOD_OF_TIME, FUTURE, START_OVER_END
 }
