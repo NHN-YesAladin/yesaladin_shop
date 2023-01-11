@@ -17,6 +17,7 @@ import shop.yesaladin.shop.member.domain.model.MemberGradeHistory;
  */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class MemberGradeHistoryQueryResponseDto {
 
     private Long id;

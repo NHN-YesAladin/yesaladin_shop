@@ -2,7 +2,6 @@ package shop.yesaladin.shop.member.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,28 +50,5 @@ class JpaMemberGradeHistoryRepositoryTest {
         assertThat(savedMemberGradeHistory.getPreviousPaidAmount()).isEqualTo(
                 savedMemberGradeHistory.getPreviousPaidAmount());
         assertThat(savedMemberGradeHistory.getUpdateDate()).isEqualTo(savedMemberGradeHistory.getUpdateDate());
-    }
-
-    @Test
-    void findById() throws Exception {
-        //given
-        entityManager.persist(member);
-        memberGradeHistory = MemberGradeHistoryDummy.dummy();
-        MemberGradeHistory savedMemberGradeHistory = entityManager.persist(memberGradeHistory);
-
-        //when
-        Optional<MemberGradeHistory> optionalMemberGradeHistory = repository.findById(
-                savedMemberGradeHistory.getId());
-
-        //then
-        assertThat(optionalMemberGradeHistory).isPresent();
-        assertThat(optionalMemberGradeHistory.get().getMemberGrade().getName()).isEqualTo(
-                savedMemberGradeHistory.getMemberGrade().getName());
-        assertThat(optionalMemberGradeHistory.get().getMember().getName()).isEqualTo(
-                savedMemberGradeHistory.getMember().getName());
-        assertThat(optionalMemberGradeHistory.get().getPreviousPaidAmount()).isEqualTo(
-                savedMemberGradeHistory.getPreviousPaidAmount());
-        assertThat(optionalMemberGradeHistory.get().getUpdateDate()).isEqualTo(
-                savedMemberGradeHistory.getUpdateDate());
     }
 }

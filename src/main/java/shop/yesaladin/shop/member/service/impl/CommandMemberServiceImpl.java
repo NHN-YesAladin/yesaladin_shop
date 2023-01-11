@@ -37,8 +37,7 @@ public class CommandMemberServiceImpl implements CommandMemberService {
     private final CommandMemberRoleRepository commandMemberRoleRepository;
 
     /**
-     * 회원 등록을 위한 기능 입니다.
-     * 회원 등록시 ROLE_MEMBER 권한과 WHITE 회원 등급을 함께 등록합니다.
+     * 회원 등록을 위한 기능 입니다. 회원 등록시 ROLE_MEMBER 권한과 WHITE 회원 등급을 함께 등록합니다.
      *
      * @param createDto 회원 등록 요청 dto
      * @return 등록된 회원 결과 dto
