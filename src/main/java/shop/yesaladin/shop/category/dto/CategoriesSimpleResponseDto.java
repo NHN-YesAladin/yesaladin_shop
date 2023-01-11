@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.springframework.util.MultiValueMap;
 
 /**
  * 메인화면에서 필요한 데이터를 전달하기 위한 dto
