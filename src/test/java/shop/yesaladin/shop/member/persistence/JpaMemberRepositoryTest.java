@@ -93,4 +93,41 @@ class JpaMemberRepositoryTest {
         assertThat(optionalMember).isPresent();
         assertThat(optionalMember.get().getEmail()).isEqualTo(savedMember.getEmail());
     }
+
+    @Test
+    void existsMemberByLoginId() throws Exception {
+        //given
+        Member savedMember = entityManager.persist(member);
+
+        //when
+        boolean result = repository.existsMemberByLoginId(savedMember.getLoginId());
+
+        //then
+        assertThat(result).isTrue();
+
+    }
+
+    @Test
+    void existsMemberByNickname() throws Exception {
+        //given
+        Member savedMember = entityManager.persist(member);
+
+        //when
+        boolean result = repository.existsMemberByNickname(savedMember.getNickname());
+
+        //then
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void existsMemberByEmail() throws Exception {
+        //given
+        Member savedMember = entityManager.persist(member);
+
+        //when
+        boolean result = repository.existsMemberByEmail(savedMember.getEmail());
+
+        //then
+        assertThat(result).isTrue();
+    }
 }
