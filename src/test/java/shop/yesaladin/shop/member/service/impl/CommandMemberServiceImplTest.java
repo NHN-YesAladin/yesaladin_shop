@@ -66,11 +66,11 @@ class CommandMemberServiceImplTest {
         Mockito.when(createDto.getLoginId()).thenReturn(loginId);
 
         Mockito.when(queryRoleRepository.findById(roleId)).thenReturn(Optional.of(role));
-        Mockito.when(queryMemberRepository.existMemberByLoginId(loginId))
+        Mockito.when(queryMemberRepository.existsMemberByLoginId(loginId))
                         .thenReturn(true);
-        Mockito.when(queryMemberRepository.existMemberByNickname(nickname))
+        Mockito.when(queryMemberRepository.existsMemberByNickname(nickname))
                 .thenReturn(false);
-        Mockito.when(queryMemberRepository.existMemberByEmail(email))
+        Mockito.when(queryMemberRepository.existsMemberByEmail(email))
                 .thenReturn(false);
 
         //when then
@@ -95,11 +95,11 @@ class CommandMemberServiceImplTest {
         Mockito.when(createDto.getNickname()).thenReturn(nickname);
 
         Mockito.when(queryRoleRepository.findById(roleId)).thenReturn(Optional.of(role));
-        Mockito.when(queryMemberRepository.existMemberByLoginId(loginId))
+        Mockito.when(queryMemberRepository.existsMemberByLoginId(loginId))
                 .thenReturn(false);
-        Mockito.when(queryMemberRepository.existMemberByNickname(nickname))
+        Mockito.when(queryMemberRepository.existsMemberByNickname(nickname))
                 .thenReturn(true);
-        Mockito.when(queryMemberRepository.existMemberByEmail(email))
+        Mockito.when(queryMemberRepository.existsMemberByEmail(email))
                 .thenReturn(false);
 
         //when then
@@ -124,11 +124,11 @@ class CommandMemberServiceImplTest {
         Mockito.when(createDto.getEmail()).thenReturn(email);
 
         Mockito.when(queryRoleRepository.findById(roleId)).thenReturn(Optional.of(role));
-        Mockito.when(queryMemberRepository.existMemberByLoginId(loginId))
+        Mockito.when(queryMemberRepository.existsMemberByLoginId(loginId))
                 .thenReturn(false);
-        Mockito.when(queryMemberRepository.existMemberByNickname(nickname))
+        Mockito.when(queryMemberRepository.existsMemberByNickname(nickname))
                 .thenReturn(false);
-        Mockito.when(queryMemberRepository.existMemberByEmail(email))
+        Mockito.when(queryMemberRepository.existsMemberByEmail(email))
                 .thenReturn(true);
 
         //when then

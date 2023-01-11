@@ -59,7 +59,7 @@ public interface QueryMemberRepository {
      * @author : 송학현
      * @since : 1.0
      */
-    boolean existMemberByLoginId(String loginId);
+    boolean existsMemberByLoginId(String loginId);
 
     /**
      * 회원의 nickname 을 통해 회원이 존재 하는지 유무를 판별합니다.
@@ -69,7 +69,7 @@ public interface QueryMemberRepository {
      * @author : 송학현
      * @since : 1.0
      */
-    boolean existMemberByNickname(String nickname);
+    boolean existsMemberByNickname(String nickname);
 
     /**
      * 회원의 email 을 통해 회원이 존재 하는지 유무를 판별합니다.
@@ -79,5 +79,5 @@ public interface QueryMemberRepository {
      * @author : 송학현
      * @since : 1.0
      */
-    boolean existMemberByEmail(String email);
+    boolean existsMemberByEmail(String email);
 }
