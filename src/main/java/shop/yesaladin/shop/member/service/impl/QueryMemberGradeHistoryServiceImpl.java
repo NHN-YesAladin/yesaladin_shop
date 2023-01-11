@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.common.exception.InvalidPeriodConditionException;
 import shop.yesaladin.shop.common.exception.type.InvalidPeriodConditionType;
@@ -26,6 +27,7 @@ public class QueryMemberGradeHistoryServiceImpl implements QueryMemberGradeHisto
     private final Clock clock;
 
     @Override
+    @Transactional(readOnly = true)
     public List<MemberGradeHistoryQueryResponseDto> findByMemberId(
             long memberId,
             PeriodQueryRequestDto request
