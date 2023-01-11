@@ -66,6 +66,7 @@ public class Category {
     private Category parent;
 
     @ToString.Exclude
+    @Builder.Default
     @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Category> children = new ArrayList<>();
 

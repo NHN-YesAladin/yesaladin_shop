@@ -11,11 +11,11 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import shop.yesaladin.shop.category.domain.model.Category;
-import shop.yesaladin.shop.category.domain.model.QCategory;
+import shop.yesaladin.shop.category.domain.model.querydsl.QCategory;
 import shop.yesaladin.shop.category.domain.repository.QueryCategoryRepository;
 import shop.yesaladin.shop.category.dto.CategoryOnlyIdDto;
 import shop.yesaladin.shop.category.dto.CategorySimpleDto;
-import shop.yesaladin.shop.category.dto.QCategorySimpleDto;
+import shop.yesaladin.shop.category.dto.querydsl.QCategorySimpleDto;
 
 /**
  * QueryDsl 을 사용하여 카테고리 관련 데이터를 조회시 사용
