@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +12,6 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.repository.QueryCategoryRepository;
 import shop.yesaladin.shop.category.dto.CategoryOnlyIdDto;
+import shop.yesaladin.shop.category.dto.CategorySimpleDto;
 import shop.yesaladin.shop.category.dummy.CategoryDummy;
 import shop.yesaladin.shop.category.exception.CategoryNotFoundException;
 
@@ -99,7 +98,7 @@ class QueryDslCategoryRepositoryImplTest {
     }
 
     @Test
-    void getIdByDepth() throws Exception {
+    void getLatestIdByDepth() throws Exception {
         // given
         em.persist(parentCategory);
 
@@ -111,7 +110,7 @@ class QueryDslCategoryRepositoryImplTest {
     }
 
     @Test
-    void getIdByDepth_noPreviousData() throws Exception {
+    void getLatestIdByDepth_noPreviousData() throws Exception {
         // when
         CategoryOnlyIdDto onlyId = queryCategoryRepository.getLatestIdByDepth(Category.DEPTH_PARENT);
 
@@ -120,7 +119,7 @@ class QueryDslCategoryRepositoryImplTest {
     }
 
     @Test
-    void getIdByDepthAndParentId() throws Exception {
+    void getLatestChildIdByDepthAndParentId() throws Exception {
         // given
         em.persist(parentCategory);
         em.persist(childCategory);
@@ -137,7 +136,7 @@ class QueryDslCategoryRepositoryImplTest {
     }
 
     @Test
-    void getIdByDepthAndParentId_noPreviousData() throws Exception {
+    void getLatestChildIdByDepthAndParentId_noPreviousData() throws Exception {
         // given
         em.persist(parentCategory);
 
@@ -153,9 +152,10 @@ class QueryDslCategoryRepositoryImplTest {
     }
 
     @Test
-    void getCategoriesByParentId() throws Exception {
+    void findSimpleDtosByParentId() throws Exception {
         // given
         em.persist(parentCategory);
+        List<Category> children = new ArrayList<>();
         int count = 10;
         for (int i = 0; i < count; i++) {
             Category child = Category.builder()
@@ -165,28 +165,19 @@ class QueryDslCategoryRepositoryImplTest {
                     .isShown(true)
                     .parent(parentCategory)
                     .build();
-            em.persist(child);
-        }
-        Category otherParent = CategoryDummy.dummyParent(20000L);
-        em.persist(otherParent);
-        for (int i = 10; i < 12; i++) {
-            Category child = Category.builder()
-                    .id((long)i)
-                    .name("" + i)
-                    .order(null)
-                    .isShown(true)
-                    .parent(otherParent)
-                    .build();
+            children.add(child);
             em.persist(child);
         }
 
+        em.flush();
+
         // when
-        List<Category> categories = queryCategoryRepository.getCategoriesByParentId(
+        List<CategorySimpleDto> categories = queryCategoryRepository.findSimpleDtosByParentId(
                 parentCategory.getId());
 
         // then
         assertThat(categories.size()).isEqualTo(count);
-        assertThat(categories.get(0).getParent()).isEqualTo(parentCategory);
+        assertThat(categories.get(0).getId()).isEqualTo(children.get(0).getId());
     }
 
     @Test
@@ -217,5 +208,34 @@ class QueryDslCategoryRepositoryImplTest {
         // then
         assertThat(category.getChildren().size() > 0).isTrue();
         System.out.println("category.getChildren() = " + category.getChildren());
+    }
+
+    @Test
+    void findSimpleDtosByDepth() throws Exception {
+        // given
+        em.persist(parentCategory);
+        List<Category> children = new ArrayList<>();
+        int count = 10;
+        for (int i = 0; i < count; i++) {
+            Category child = Category.builder()
+                    .id((long)i)
+                    .name("" + i)
+                    .order(null)
+                    .isShown(true)
+                    .parent(parentCategory)
+                    .depth(Category.DEPTH_CHILD)
+                    .build();
+            children.add(child);
+            em.persist(child);
+        }
+
+        // when
+        List<CategorySimpleDto> simpleDtosByDepth = queryCategoryRepository.findSimpleDtosByDepth(
+                Category.DEPTH_CHILD);
+
+        // then
+        assertThat(simpleDtosByDepth.size()).isEqualTo(count);
+        assertThat(simpleDtosByDepth.get(0).getId()).isEqualTo(children.get(0).getId());
+        assertThat(simpleDtosByDepth.get(0).getName()).isEqualTo(children.get(0).getName());
     }
 }

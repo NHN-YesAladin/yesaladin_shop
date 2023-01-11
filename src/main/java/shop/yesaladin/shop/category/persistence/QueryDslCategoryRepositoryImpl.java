@@ -14,6 +14,8 @@ import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.model.QCategory;
 import shop.yesaladin.shop.category.domain.repository.QueryCategoryRepository;
 import shop.yesaladin.shop.category.dto.CategoryOnlyIdDto;
+import shop.yesaladin.shop.category.dto.CategorySimpleDto;
+import shop.yesaladin.shop.category.dto.QCategorySimpleDto;
 
 /**
  * QueryDsl 을 사용하여 카테고리 관련 데이터를 조회시 사용
@@ -98,18 +100,33 @@ public class QueryDslCategoryRepositoryImpl implements QueryCategoryRepository {
     }
 
     @Override
-    public List<Category> getCategoriesByParentId(Long parentId) {
+    public List<CategorySimpleDto> findSimpleDtosByParentId(Long parentId) {
         QCategory category = QCategory.category;
-        QCategory parent = new QCategory("parent");
-
-        List<Category> categories = queryFactory.select(category)
+        List<CategorySimpleDto> simpleDtoList = queryFactory.select(new QCategorySimpleDto(
+                        category.id,
+                        category.name,
+                        category.isShown,
+                        category.order
+                ))
                 .from(category)
-                .rightJoin(category.parent, parent)
-                .fetchJoin()
                 .where(category.parent.id.eq(parentId))
                 .fetch();
-        log.info("\n categories.size =  {} ", categories.size());
-        return categories;
+        log.info("\n getCategoriesByParentId size =  {} ", simpleDtoList.size());
+        return simpleDtoList;
+    }
+
+    @Override
+    public List<CategorySimpleDto> findSimpleDtosByDepth(int depth) {
+        QCategory category = QCategory.category;
+        return queryFactory.select(new QCategorySimpleDto(
+                        category.id,
+                        category.name,
+                        category.isShown,
+                        category.order
+                ))
+                .from(category)
+                .where(category.depth.eq(depth))
+                .fetch();
     }
 
     @Override
@@ -127,5 +144,6 @@ public class QueryDslCategoryRepositoryImpl implements QueryCategoryRepository {
 
         return categoryOptional;
     }
+
 
 }
