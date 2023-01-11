@@ -34,7 +34,7 @@ public class QueryDslQueryMemberAddressRepository implements QueryMemberAddressR
     }
 
     @Override
-    public Optional<MemberAddress> findById(Long id) {
+    public Optional<MemberAddress> findById(long id) {
         QMemberAddress memberAddress = QMemberAddress.memberAddress;
 
         return Optional.ofNullable(queryFactory.select(memberAddress)
@@ -45,8 +45,8 @@ public class QueryDslQueryMemberAddressRepository implements QueryMemberAddressR
 
     @Override
     public Optional<MemberAddress> getByMemberIdAndMemberAddressId(
-            Long memberId,
-            Long memberAddressId
+            long memberId,
+            long memberAddressId
     ) {
         QMemberAddress memberAddress = QMemberAddress.memberAddress;
 
@@ -58,7 +58,7 @@ public class QueryDslQueryMemberAddressRepository implements QueryMemberAddressR
     }
 
     @Override
-    public boolean existByMemberIdAndMemberAddressId(Long memberId, Long memberAddressId) {
+    public boolean existByMemberIdAndMemberAddressId(long memberId, long memberAddressId) {
         QMemberAddress memberAddress = QMemberAddress.memberAddress;
 
         MemberAddress result = queryFactory.select(memberAddress)

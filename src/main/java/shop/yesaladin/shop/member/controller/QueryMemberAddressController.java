@@ -29,6 +29,8 @@ public class QueryMemberAddressController {
      *
      * @param memberId 회원 id
      * @return 회원의 배송지 목록
+     * @author 최예린
+     * @since 1.0
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)

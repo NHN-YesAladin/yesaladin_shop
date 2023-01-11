@@ -4,8 +4,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- *
- *
  * @author : 송학현
  * @since : 1.0
  */
