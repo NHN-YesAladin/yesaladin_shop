@@ -8,10 +8,10 @@ import shop.yesaladin.shop.member.domain.repository.QueryMemberGradeHistoryRepos
 /**
  * 회원 등급 이력 테이블에 JPA로 접근 가능한 인터페이스 입니다.
  *
- * @author : 송학현
+ * @author : 송학현, 최예린
  * @since : 1.0
  */
 public interface JpaMemberGradeHistoryRepository extends Repository<MemberGradeHistory, Long>,
-        CommandMemberGradeHistoryRepository, QueryMemberGradeHistoryRepository {
+        CommandMemberGradeHistoryRepository {
 
 }

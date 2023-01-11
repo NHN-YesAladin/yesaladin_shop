@@ -17,7 +17,7 @@ import org.springframework.data.support.PageableExecutionUtils;
 import shop.yesaladin.shop.common.exception.InvalidPeriodConditionException;
 import shop.yesaladin.shop.common.exception.PageOffsetOutOfBoundsException;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
-import shop.yesaladin.shop.order.dto.OrderInPeriodQueryDto;
+import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 
 class QueryOrderServiceImplTest {
@@ -39,7 +39,7 @@ class QueryOrderServiceImplTest {
     @DisplayName("기간 내에 생성된 모든 데이터 조회에 성공한다")
     void getAllOrderListInPeriodSuccessTest() {
         // given
-        OrderInPeriodQueryDto queryDto = Mockito.mock(OrderInPeriodQueryDto.class);
+        PeriodQueryRequestDto queryDto = Mockito.mock(PeriodQueryRequestDto.class);
         Pageable pageable = PageRequest.of(0, 10);
         Page<OrderSummaryDto> expectedValue = PageableExecutionUtils.getPage(List.of((Mockito.mock(
                 OrderSummaryDto.class))), pageable, () -> 1);
@@ -65,7 +65,7 @@ class QueryOrderServiceImplTest {
     @DisplayName("미래의 데이터를 조회하려고 시도하면 예외가 발생한다")
     void getAllOrderListInPeriodFailCauseByFutureQueryConditionTest() {
         // given
-        OrderInPeriodQueryDto queryDto = Mockito.mock(OrderInPeriodQueryDto.class);
+        PeriodQueryRequestDto queryDto = Mockito.mock(PeriodQueryRequestDto.class);
         Mockito.when(queryDto.getEndDateOrDefaultValue(clock))
                 .thenReturn(LocalDate.now(clock).plusDays(1));
         Pageable pageable = PageRequest.of(1, 10);
@@ -80,7 +80,7 @@ class QueryOrderServiceImplTest {
     @DisplayName("존재하는 데이터 수보다 큰 오프셋으로 조회를 시도하면 예외가 발생한다")
     void getAllOrderListInPeriodFailCauseByOffsetOutOfBounds() {
         // given
-        OrderInPeriodQueryDto queryDto = Mockito.mock(OrderInPeriodQueryDto.class);
+        PeriodQueryRequestDto queryDto = Mockito.mock(PeriodQueryRequestDto.class);
         Mockito.when(queryDto.getEndDateOrDefaultValue(clock)).thenReturn(LocalDate.now(clock));
         Mockito.when(repository.getCountOfOrdersInPeriod(Mockito.any(), Mockito.any()))
                 .thenReturn(1L);
