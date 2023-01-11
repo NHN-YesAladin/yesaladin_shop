@@ -124,8 +124,6 @@
                             </attributes>
                             <backend>html</backend>
                             <doctype>book</doctype>
-                            <outputDirectory>target/generated-docs</outputDirectory>
-                            <sourceDirectory>src/docs/asciidocs</sourceDirectory>
                         </configuration>
                         <goals>
                             <goal>process-asciidoc</goal>
@@ -136,6 +134,31 @@
                 </executions>
                 <groupId>org.asciidoctor</groupId>
                 <version>1.5.8</version>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <configuration>
+                            <outputDirectory>
+                                ${project.build.outputDirectory}/static/docs
+                            </outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>
+                                        static/docs
+                                    </directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <id>copy-resources</id>
+                        <phase>prepare-package</phase>
+                    </execution>
+                </executions>
+                <version>2.7</version>
             </plugin>
         </plugins>
     </build>
