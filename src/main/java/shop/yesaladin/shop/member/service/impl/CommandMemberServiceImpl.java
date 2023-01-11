@@ -78,15 +78,15 @@ public class CommandMemberServiceImpl implements CommandMemberService {
      * @since : 1.0
      */
     private void checkMemberProfileExist(MemberCreateRequestDto createDto) {
-        if (queryMemberRepository.existMemberByLoginId(createDto.getLoginId())) {
+        if (queryMemberRepository.existsMemberByLoginId(createDto.getLoginId())) {
             throw new MemberProfileAlreadyExistException(createDto.getLoginId());
         }
 
-        if (queryMemberRepository.existMemberByNickname(createDto.getNickname())) {
+        if (queryMemberRepository.existsMemberByNickname(createDto.getNickname())) {
             throw new MemberProfileAlreadyExistException(createDto.getNickname());
         }
 
-        if (queryMemberRepository.existMemberByEmail(createDto.getEmail())) {
+        if (queryMemberRepository.existsMemberByEmail(createDto.getEmail())) {
             throw new MemberProfileAlreadyExistException(createDto.getEmail());
         }
     }
