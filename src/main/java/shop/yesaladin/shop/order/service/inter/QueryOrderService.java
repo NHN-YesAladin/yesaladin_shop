@@ -2,6 +2,7 @@ package shop.yesaladin.shop.order.service.inter;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 
 /**
@@ -22,7 +23,7 @@ public interface QueryOrderService {
      * @since 1.0
      */
     Page<OrderSummaryDto> getAllOrderListInPeriod(
-            OrderInPeriodQueryDto queryDto,
+            PeriodQueryRequestDto queryDto,
             Pageable pageable
     );
 }

@@ -7,11 +7,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.common.exception.InvalidPeriodConditionException;
 import shop.yesaladin.shop.common.exception.PageOffsetOutOfBoundsException;
 import shop.yesaladin.shop.common.exception.type.InvalidPeriodConditionType;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
-import shop.yesaladin.shop.order.dto.OrderInPeriodQueryDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 import shop.yesaladin.shop.order.service.inter.QueryOrderService;
 
@@ -31,7 +31,7 @@ public class QueryOrderServiceImpl implements QueryOrderService {
     @Override
     @Transactional(readOnly = true)
     public Page<OrderSummaryDto> getAllOrderListInPeriod(
-            OrderInPeriodQueryDto queryDto, Pageable pageable
+            PeriodQueryRequestDto queryDto, Pageable pageable
     ) {
         // TODO : 관리자 권한 체크
         checkValidQueryCondition(queryDto);
@@ -43,7 +43,7 @@ public class QueryOrderServiceImpl implements QueryOrderService {
         return queryOrderRepository.findAllOrdersInPeriod(startDate, endDate, pageable);
     }
 
-    private void checkValidQueryCondition(OrderInPeriodQueryDto queryDto) {
+    private void checkValidQueryCondition(PeriodQueryRequestDto queryDto) {
         if (queryDto.getEndDateOrDefaultValue(clock).isAfter(LocalDate.now(clock))) {
             throw new InvalidPeriodConditionException(InvalidPeriodConditionType.FUTURE);
         }

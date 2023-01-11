@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
-import shop.yesaladin.shop.order.dto.OrderInPeriodQueryDto;
+import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 import shop.yesaladin.shop.order.service.inter.QueryOrderService;
 
@@ -21,7 +21,7 @@ public class QueryOrderController {
 
     @GetMapping
     public PaginatedResponseDto<OrderSummaryDto> getAllOrders(
-            @RequestBody OrderInPeriodQueryDto queryDto, Pageable pageable
+            @RequestBody PeriodQueryRequestDto queryDto, Pageable pageable
     ) {
 
         Page<OrderSummaryDto> data = queryOrderService.getAllOrderListInPeriod(queryDto, pageable);
