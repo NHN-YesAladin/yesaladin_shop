@@ -3,19 +3,19 @@ package shop.yesaladin.shop.category.controller;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import shop.yesaladin.shop.category.dto.CategoriesSimpleResponseDto;
 import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 import shop.yesaladin.shop.category.service.inter.QueryCategoryService;
+import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 
 /**
- * 카테고리 조회를 api를 통하여 동작하기 위한 rest controller
- *   id, name을 통한 단일 조회
- *   페이징, parent_id를 통한 복수 조회
+ * 카테고리 조회를 api를 통하여 동작하기 위한 rest controller id, name을 통한 단일 조회 페이징, parent_id를 통한 복수 조회
  *
  * @author 배수한
  * @since 1.0
@@ -47,18 +47,26 @@ public class QueryCategoryController {
      * @return 카테고리의 일부 데이터를 List 화 하여 전달
      */
     @GetMapping
-    public List<CategoryResponseDto> getCategoriesWithPaging(Pageable pageable) {
-        return queryCategoryService.findCategories(pageable).getContent();
+    public PaginatedResponseDto<CategoryResponseDto> getCategoriesByParentId(
+            @RequestParam("parentId") Long parentId,
+            Pageable pageable
+    ) {
+
+        Page<CategoryResponseDto> data = queryCategoryService.findCategoriesByParentId(
+                pageable,
+                parentId
+        );
+        return PaginatedResponseDto.<CategoryResponseDto>builder()
+                .currentPage(data.getNumber())
+                .totalPage(data.getTotalPages())
+                .totalDataCount(data.getTotalElements())
+                .dataList(data.getContent())
+                .build();
     }
 
-    /**
-     * 메인페이지에서 전체 카테고리 조회시 사용
-     *   paging 없이 모든 카테고리에 대해 모두 전송함
-     *
-     * @return 카테고리의 기본 정보를 담은 CategoriesSimpleResponseDto의 리스트
-     */
-    @GetMapping("/all")
-    public List<CategoriesSimpleResponseDto> getAllCategories() {
-        return queryCategoryService.findAllCategoryResponseDto();
+    @GetMapping("/parents")
+    public List<CategoryResponseDto> getParentCategories() {
+        return queryCategoryService.findParentCategories();
     }
+
 }

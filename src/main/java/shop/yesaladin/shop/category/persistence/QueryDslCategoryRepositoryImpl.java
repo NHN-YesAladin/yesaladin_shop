@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.category.persistence;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import java.util.Objects;
@@ -14,8 +15,6 @@ import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.model.querydsl.QCategory;
 import shop.yesaladin.shop.category.domain.repository.QueryCategoryRepository;
 import shop.yesaladin.shop.category.dto.CategoryOnlyIdDto;
-import shop.yesaladin.shop.category.dto.CategorySimpleDto;
-import shop.yesaladin.shop.category.dto.querydsl.QCategorySimpleDto;
 
 /**
  * QueryDsl 을 사용하여 카테고리 관련 데이터를 조회시 사용
@@ -38,9 +37,14 @@ public class QueryDslCategoryRepositoryImpl implements QueryCategoryRepository {
      * @return paging 되어있는 Category Page 객체
      */
     @Override
-    public Page<Category> findAll(Pageable pageable) {
+    public Page<Category> findCategoriesByParentId(Pageable pageable, Long parentId) {
         QCategory category = QCategory.category;
-        List<Category> categories = queryFactory.selectFrom(category)
+        List<Category> categories = queryFactory.select(category)
+                .from(category)
+                .innerJoin(category.parent)
+                .fetchJoin()
+                .where(category.parent.id.eq(parentId))
+                .orderBy(category.order.asc().nullsLast())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -48,25 +52,6 @@ public class QueryDslCategoryRepositoryImpl implements QueryCategoryRepository {
         return new PageImpl<>(categories, pageable, count);
     }
 
-    /**
-     * id를 통한 카테고리 조회
-     *
-     * @param id 카테고리 id
-     * @return Optional 처리가 된 카테고리 객체
-     */
-    @Override
-    public Optional<Category> findById(Long id) {
-        QCategory category = QCategory.category;
-        Optional<Category> categoryOptional = Optional.ofNullable(queryFactory.selectFrom(category)
-                .where(category.id.eq(id))
-                .fetchFirst());
-
-        if (categoryOptional.isEmpty()) {
-            return Optional.empty();
-        }
-
-        return categoryOptional;
-    }
 
     /**
      * 카테고리 이름을 통한 카테고리 조회
@@ -89,10 +74,9 @@ public class QueryDslCategoryRepositoryImpl implements QueryCategoryRepository {
     }
 
     /**
-     * 카테고리 id의 마지막 값을 depth와 부모 id를 통해 조회
-     *   2차 카테고리의 마지막 id를 찾아오기 위해 사용
+     * 카테고리 id의 마지막 값을 depth와 부모 id를 통해 조회 2차 카테고리의 마지막 id를 찾아오기 위해 사용
      *
-     * @param depth 2차 카테고리의 깊이 값인 1이 입력됨
+     * @param depth    2차 카테고리의 깊이 값인 1이 입력됨
      * @param parentId 2차 카테고리가 가지고있는 부모 id
      * @return Long id 만 가지고있음
      */
@@ -111,8 +95,7 @@ public class QueryDslCategoryRepositoryImpl implements QueryCategoryRepository {
     }
 
     /**
-     * 카테고리의 id의 마지막 값을 depth를 통해 조회
-     *   1차 카테고리의 마지막 id를 찾아오기 위해 사용
+     * 카테고리의 id의 마지막 값을 depth를 통해 조회 1차 카테고리의 마지막 id를 찾아오기 위해 사용
      *
      * @param depth 1차 카테고리의 깊이 값인 0이 입력됨
      * @return Long id 만 가지고있음
@@ -132,47 +115,41 @@ public class QueryDslCategoryRepositoryImpl implements QueryCategoryRepository {
         return new CategoryOnlyIdDto(fetchOne);
     }
 
-    /**
-     * parentId 를 통해서 DtoProjection 으로 데이터를 선별하여 return 하는 기능
-     *
-     * @param parentId 찾고자하는 카테고리의 parentId
-     * @return CategorySimpleDto 카테고리의 기본 정보를 담고있는 dto
-     */
-    @Override
-    public List<CategorySimpleDto> findSimpleDtosByParentId(Long parentId) {
-        QCategory category = QCategory.category;
-        List<CategorySimpleDto> simpleDtoList = queryFactory.select(new QCategorySimpleDto(
-                        category.id,
-                        category.name,
-                        category.isShown,
-                        category.order
-                ))
-                .from(category)
-                .where(category.parent.id.eq(parentId))
-                .fetch();
-        log.info("\n getCategoriesByParentId size =  {} ", simpleDtoList.size());
-        return simpleDtoList;
-    }
 
     /**
-     * depth를 통해서 카테고리를 조회하여 카테고리의 기본 정보를 담고있는 dto를 return 하는 기능
      *
-     * @param depth 1차는 '0' , 2차는 '1'
-     * @return CategorySimpleDto 카테고리의 기본 정보를 담고있는 dto
+     *
+     * @param parentId 찾고자하는 카테고리의 parentId
+     * @param depth 찾고자하는 카테고리의 깊이
+     * @return Category 엔티티
      */
     @Override
-    public List<CategorySimpleDto> findSimpleDtosByDepth(int depth) {
+    public List<Category> findCategories(Long parentId, Integer depth) {
         QCategory category = QCategory.category;
-        return queryFactory.select(new QCategorySimpleDto(
-                        category.id,
-                        category.name,
-                        category.isShown,
-                        category.order
-                ))
+        return queryFactory.select(category)
                 .from(category)
-                .where(category.depth.eq(depth))
+                .leftJoin(category.parent)
+                .fetchJoin()
+                .where(parentIdEq(category, parentId), depthEq(category, depth))
+                .orderBy(category.order.asc().nullsLast())
                 .fetch();
     }
+
+    private BooleanExpression parentIdEq(QCategory category, Long parentId) {
+        if (parentId == null) {
+            return null;
+        }
+        return category.parent.id.eq(parentId);
+    }
+
+    private BooleanExpression depthEq(QCategory category, Integer depth) {
+
+        if (depth == null) {
+            return null;
+        }
+        return category.depth.eq(depth);
+    }
+
 
     /**
      * id 를 통해 카테고리를 조회 할 경우, N+1을 해결 하기 위해 fetch join 실행
@@ -181,7 +158,7 @@ public class QueryDslCategoryRepositoryImpl implements QueryCategoryRepository {
      * @return Optional<Category>
      */
     @Override
-    public Optional<Category> findByIdByFetching(Long id) {
+    public Optional<Category> findById(Long id) {
         QCategory category = QCategory.category;
         Optional<Category> categoryOptional = Optional.ofNullable(queryFactory.selectFrom(category)
                 .leftJoin(category.parent)

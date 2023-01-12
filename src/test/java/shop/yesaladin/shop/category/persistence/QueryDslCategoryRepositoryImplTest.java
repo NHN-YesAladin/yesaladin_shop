@@ -2,14 +2,12 @@ package shop.yesaladin.shop.category.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.repository.QueryCategoryRepository;
 import shop.yesaladin.shop.category.dto.CategoryOnlyIdDto;
-import shop.yesaladin.shop.category.dto.CategorySimpleDto;
 import shop.yesaladin.shop.category.dummy.CategoryDummy;
 import shop.yesaladin.shop.category.exception.CategoryNotFoundException;
 
@@ -45,39 +42,22 @@ class QueryDslCategoryRepositoryImplTest {
         childCategory = CategoryDummy.dummyChild(parentCategory);
     }
 
-    @Test
-    void findById() {
-        //given
-        em.persist(parentCategory);
-
-        //when
-        Category category = queryCategoryRepository.findById(parentCategory.getId())
-                .orElseThrow(() -> new CategoryNotFoundException(parentCategory.getId()));
-
-        //then
-        assertThat(category.getName()).isEqualTo(parentCategory.getName());
-        assertThat(category.getId()).isEqualTo(parentCategory.getId());
-    }
 
     @Test
-    void findAll_pageable() {
+    void findCategoriesByParentId_pageable() {
         //given
         int size = 3;
+        em.persist(parentCategory);
         for (int i = 0; i < 10; i++) {
-            parentCategory = Category.builder()
-                    .id((long)i)
-                    .name("" + i)
-                    .order(null)
-                    .isShown(true)
-                    .parent(null)
-                    .build();
-            em.persist(parentCategory);
+            childCategory = CategoryDummy.dummyChild((long) i, parentCategory);
+            em.persist(childCategory);
         }
 
         PageRequest pageRequest = PageRequest.of(1, size);
 
         //when
-        Page<Category> page = queryCategoryRepository.findAll(pageRequest);
+        Page<Category> page = queryCategoryRepository.findCategoriesByParentId(pageRequest,
+                parentCategory.getId());
         log.info("{}", page.getContent().size());
 
         //then
@@ -152,41 +132,97 @@ class QueryDslCategoryRepositoryImplTest {
     }
 
     @Test
-    void findSimpleDtosByParentId() throws Exception {
+    void findCategories_parentId() throws Exception {
         // given
         em.persist(parentCategory);
-        List<Category> children = new ArrayList<>();
-        int count = 10;
-        for (int i = 0; i < count; i++) {
-            Category child = Category.builder()
-                    .id((long)i)
-                    .name("" + i)
-                    .order(null)
-                    .isShown(true)
-                    .parent(parentCategory)
-                    .build();
-            children.add(child);
-            em.persist(child);
-        }
-
-        em.flush();
+        em.persist(childCategory);
+        em.persist(CategoryDummy.dummyChild(1L, parentCategory));
 
         // when
-        List<CategorySimpleDto> categories = queryCategoryRepository.findSimpleDtosByParentId(
-                parentCategory.getId());
+        List<Category> categories = queryCategoryRepository.findCategories(childCategory.getParent()
+                .getId(), null);
 
         // then
-        assertThat(categories.size()).isEqualTo(count);
-        assertThat(categories.get(0).getId()).isEqualTo(children.get(0).getId());
+        assertThat(categories.size()).isEqualTo(2);
     }
 
     @Test
-    void findByIdByFetching() throws Exception {
+    void findCategories_depth() throws Exception {
+        // given
+        em.persist(parentCategory);
+        em.persist(CategoryDummy.dummyParent(100L));
+        em.persist(childCategory);
+
+        // when
+        List<Category> categories = queryCategoryRepository.findCategories(
+                null,
+                parentCategory.getDepth()
+        );
+
+        // then
+        assertThat(categories.size()).isEqualTo(2);
+    }
+
+    @Test
+    void findCategories_bothNull() throws Exception {
+        // given
+        em.persist(parentCategory);
+        em.persist(CategoryDummy.dummyParent(100L));
+        em.persist(childCategory);
+        em.persist(CategoryDummy.dummyChild(1L, parentCategory));
+
+        // when
+        List<Category> categories = queryCategoryRepository.findCategories(null, null);
+
+        // then
+        assertThat(categories.size()).isEqualTo(4);
+    }
+
+    @Test
+    void findCategories_parentId_wrongDepth() throws Exception {
+        // given
+        em.persist(parentCategory);
+        em.persist(CategoryDummy.dummyParent(100L));
+        em.persist(childCategory);
+        em.persist(CategoryDummy.dummyChild(1L, parentCategory));
+
+        // when
+        List<Category> categories = queryCategoryRepository.findCategories(
+                parentCategory.getId(),
+                Category.DEPTH_PARENT
+        );
+
+        // then
+        assertThat(categories.size()).isEqualTo(0);
+    }
+
+    @Test
+    void findCategories_parentId_depth() throws Exception {
+        // given
+        em.persist(parentCategory);
+        em.persist(CategoryDummy.dummyParent(100L));
+        em.persist(childCategory);
+        em.persist(CategoryDummy.dummyChild(1L, parentCategory));
+
+        // when
+        List<Category> categories = queryCategoryRepository.findCategories(
+                parentCategory.getId(),
+                Category.DEPTH_CHILD
+        );
+
+        // then
+        assertThat(categories.size()).isEqualTo(2);
+    }
+
+
+
+    @Test
+    void findById() throws Exception {
         // given
         em.persist(parentCategory);
 
         // when
-        Category category = queryCategoryRepository.findByIdByFetching(parentCategory.getId())
+        Category category = queryCategoryRepository.findById(parentCategory.getId())
                 .orElseThrow(() -> new CategoryNotFoundException(parentCategory.getId()));
 
         // then
@@ -194,15 +230,14 @@ class QueryDslCategoryRepositoryImplTest {
         assertThat(category.getParent()).isEqualTo(parentCategory.getParent());
     }
 
-    @Disabled
+    @Disabled("로컬 DB 테스트 용")
     @Test
-    @DisplayName("로컬 DB에서 테스트용 - @disabled")
-    void findByIdByFetching_realDB() throws Exception {
+    void findById_realDB() throws Exception {
         // given
         Long id = 20000L;
 
         // when
-        Category category = queryCategoryRepository.findByIdByFetching(id)
+        Category category = queryCategoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryNotFoundException(id));
 
         // then
@@ -210,32 +245,4 @@ class QueryDslCategoryRepositoryImplTest {
         System.out.println("category.getChildren() = " + category.getChildren());
     }
 
-    @Test
-    void findSimpleDtosByDepth() throws Exception {
-        // given
-        em.persist(parentCategory);
-        List<Category> children = new ArrayList<>();
-        int count = 10;
-        for (int i = 0; i < count; i++) {
-            Category child = Category.builder()
-                    .id((long)i)
-                    .name("" + i)
-                    .order(null)
-                    .isShown(true)
-                    .parent(parentCategory)
-                    .depth(Category.DEPTH_CHILD)
-                    .build();
-            children.add(child);
-            em.persist(child);
-        }
-
-        // when
-        List<CategorySimpleDto> simpleDtosByDepth = queryCategoryRepository.findSimpleDtosByDepth(
-                Category.DEPTH_CHILD);
-
-        // then
-        assertThat(simpleDtosByDepth.size()).isEqualTo(count);
-        assertThat(simpleDtosByDepth.get(0).getId()).isEqualTo(children.get(0).getId());
-        assertThat(simpleDtosByDepth.get(0).getName()).isEqualTo(children.get(0).getName());
-    }
 }

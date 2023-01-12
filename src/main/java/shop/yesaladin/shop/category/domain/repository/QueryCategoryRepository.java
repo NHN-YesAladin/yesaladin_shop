@@ -6,7 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.dto.CategoryOnlyIdDto;
-import shop.yesaladin.shop.category.dto.CategorySimpleDto;
 
 /**
  * 카테고리 조회용(R) 레포지토리 인터페이스
@@ -23,15 +22,8 @@ public interface QueryCategoryRepository {
      * @param pageable size 와 page 를 가진 객체
      * @return paging 되어있는 Category Page 객체
      */
-    Page<Category> findAll(Pageable pageable);
+    Page<Category> findCategoriesByParentId(Pageable pageable, Long parentId);
 
-    /**
-     * id를 통한 카테고리 조회
-     *
-     * @param id 카테고리 id
-     * @return Optional 처리가 된 카테고리 객체
-     */
-    Optional<Category> findById(Long id);
 
     /**
      * 카테고리 이름을 통한 카테고리 조회
@@ -61,20 +53,16 @@ public interface QueryCategoryRepository {
     CategoryOnlyIdDto getLatestIdByDepth(int depth);
 
     /**
-     * parentId 를 통해서 DtoProjection 으로 데이터를 선별하여 return 하는 기능
+     * parentId 혹은 depth를 통해 category를 찾을 때 사용
      *
      * @param parentId 찾고자하는 카테고리의 parentId
+     * @param depth 찾고자하는 카테고리의 depth
      * @return CategorySimpleDto 카테고리의 기본 정보를 담고있는 dto
      */
-    List<CategorySimpleDto> findSimpleDtosByParentId(Long parentId);
 
-    /**
-     * depth를 통해서 카테고리를 조회하여 카테고리의 기본 정보를 담고있는 dto를 return 하는 기능
-     *
-     * @param depth 1차는 '0' , 2차는 '1'
-     * @return CategorySimpleDto 카테고리의 기본 정보를 담고있는 dto
-     */
-    List<CategorySimpleDto> findSimpleDtosByDepth(int depth);
+    List<Category> findCategories(Long parentId, Integer depth);
+
+
 
     /**
      * id 를 통해 카테고리를 조회 할 경우, N+1을 해결 하기 위해 fetch join 실행
@@ -82,6 +70,6 @@ public interface QueryCategoryRepository {
      * @param id 찾고자하는 카테고리 id
      * @return Optional<Category>
      */
-    Optional<Category> findByIdByFetching(Long id);
+    Optional<Category> findById(Long id);
 
 }
