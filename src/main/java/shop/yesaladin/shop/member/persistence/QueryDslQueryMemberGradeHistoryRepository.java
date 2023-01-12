@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import shop.yesaladin.shop.member.domain.model.QMemberGradeHistory;
+import shop.yesaladin.shop.member.domain.model.querydsl.QMemberGradeHistory;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberGradeHistoryRepository;
 import shop.yesaladin.shop.member.dto.MemberGradeHistoryQueryResponseDto;
 
