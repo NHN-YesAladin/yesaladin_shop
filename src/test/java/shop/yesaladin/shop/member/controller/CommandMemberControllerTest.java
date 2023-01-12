@@ -26,6 +26,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -93,7 +94,7 @@ class CommandMemberControllerTest {
     void signUpMember_withInvalidInputData() throws Exception {
         //given
         MemberCreateRequestDto request = new MemberCreateRequestDto();
-        given(commandMemberService.create(any())).willReturn(createResponse);
+        Mockito.when(commandMemberService.create(any())).thenReturn(createResponse);
 
         //when
         ResultActions perform = mockMvc.perform(post("/v1/members").contentType(MediaType.APPLICATION_JSON)
@@ -119,7 +120,7 @@ class CommandMemberControllerTest {
                 EMAIL,
                 GENDER
         );
-        given(commandMemberService.create(any())).willReturn(createResponse);
+        Mockito.when(commandMemberService.create(any())).thenReturn(createResponse);
 
         //when
         ResultActions perform = mockMvc.perform(post("/v1/members").contentType(MediaType.APPLICATION_JSON)
@@ -147,7 +148,7 @@ class CommandMemberControllerTest {
         );
         Member member = request.toEntity();
 
-        given(commandMemberService.create(any())).willReturn(createResponse);
+        Mockito.when(commandMemberService.create(any())).thenReturn(createResponse);
 
         //when
         ResultActions perform = mockMvc.perform(post("/v1/members").contentType(MediaType.APPLICATION_JSON)
@@ -213,8 +214,7 @@ class CommandMemberControllerTest {
         ArgumentCaptor<MemberUpdateRequestDto> requestArgumentCaptor = ArgumentCaptor.forClass(
                 MemberUpdateRequestDto.class);
 
-        given(commandMemberService.update(eq(invalidMemberId), any())).willThrow(
-                MemberNotFoundException.class);
+        Mockito.when(commandMemberService.update(eq(invalidMemberId), any())).thenThrow(MemberNotFoundException.class);
 
         //when
         ResultActions perform = mockMvc.perform(put(
@@ -242,7 +242,7 @@ class CommandMemberControllerTest {
         ArgumentCaptor<MemberUpdateRequestDto> requestArgumentCaptor = ArgumentCaptor.forClass(
                 MemberUpdateRequestDto.class);
 
-        given(commandMemberService.update(eq(memberId), any())).willReturn(updateResponse);
+        Mockito.when(commandMemberService.update(eq(memberId), any())).thenReturn(updateResponse);
 
         //when
         ResultActions perform = mockMvc.perform(put("/v1/members/{memberId}", memberId).contentType(
@@ -261,7 +261,7 @@ class CommandMemberControllerTest {
     void blockMember_withInvalidMemberId() throws Exception {
         //given
         Long memberId = 1L;
-        given(commandMemberService.block(memberId)).willThrow(MemberNotFoundException.class);
+        Mockito.when(commandMemberService.block(memberId)).thenThrow(MemberNotFoundException.class);
 
         //when
         ResultActions perform = mockMvc.perform(put("/v1/members/{memberId}/block", memberId));
@@ -278,7 +278,7 @@ class CommandMemberControllerTest {
     void blockMember() throws Exception {
         //given
         Long memberId = 1L;
-        given(commandMemberService.block(memberId)).willReturn(blockResponse);
+        Mockito.when(commandMemberService.block(memberId)).thenReturn(blockResponse);
 
         //when
         ResultActions perform = mockMvc.perform(put("/v1/members/{memberId}/block", memberId));
@@ -294,7 +294,7 @@ class CommandMemberControllerTest {
     void unblockMember_withInvalidMemberId() throws Exception {
         //given
         Long memberId = 1L;
-        given(commandMemberService.unblock(memberId)).willThrow(MemberNotFoundException.class);
+        Mockito.when(commandMemberService.unblock(memberId)).thenThrow(MemberNotFoundException.class);
 
         //when
         ResultActions perform = mockMvc.perform(put(
@@ -313,7 +313,7 @@ class CommandMemberControllerTest {
     void unblockMember() throws Exception {
         //given
         Long memberId = 1L;
-        given(commandMemberService.unblock(memberId)).willReturn(blockResponse);
+        Mockito.when(commandMemberService.unblock(memberId)).thenReturn(blockResponse);
 
         //when
         ResultActions perform = mockMvc.perform(put(
