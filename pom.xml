@@ -150,7 +150,7 @@
                             <resources>
                                 <resource>
                                     <directory>
-                                        static/docs
+                                        ${project.build.directory}/generated-docs
                                     </directory>
                                 </resource>
                             </resources>
