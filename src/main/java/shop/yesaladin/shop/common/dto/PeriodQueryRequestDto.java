@@ -7,6 +7,8 @@ import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import shop.yesaladin.shop.common.exception.InvalidPeriodConditionException;
+import shop.yesaladin.shop.common.exception.type.InvalidPeriodConditionType;
 
 /**
  * 기간조회를 위한 요청 dto 클래스입니다.
@@ -31,4 +33,24 @@ public class PeriodQueryRequestDto {
         return Objects.isNull(endDate) ? LocalDate.now(clock) : endDate;
     }
 
+    public void validate(Clock clock) {
+        LocalDate start = this.getStartDateOrDefaultValue(clock);
+        LocalDate end = this.getEndDateOrDefaultValue(clock);
+
+        if (start.isAfter(end)) {
+            throw new InvalidPeriodConditionException(InvalidPeriodConditionType.START_OVER_END);
+        }
+
+        if (end.isAfter(LocalDate.now(clock))) {
+            throw new InvalidPeriodConditionException(InvalidPeriodConditionType.FUTURE);
+        }
+
+        if (start.isBefore(LocalDate.of(2023, 1, 1))) {
+            throw new InvalidPeriodConditionException(InvalidPeriodConditionType.TOO_PAST);
+        }
+
+        if (start.isBefore(end.minusYears(1))) {
+            throw new InvalidPeriodConditionException(InvalidPeriodConditionType.LONG_PERIOD_OF_TIME);
+        }
+    }
 }

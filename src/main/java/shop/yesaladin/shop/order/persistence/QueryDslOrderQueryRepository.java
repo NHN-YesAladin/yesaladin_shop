@@ -123,4 +123,20 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
                 LocalDateTime.of(endDate, LocalTime.MIDNIGHT)
         )).fetchFirst();
     }
+
+    @Override
+    public long getCountOfOrdersInPeriodByMemberId(
+            LocalDate startDate,
+            LocalDate endDate,
+            long memberId
+    ) {
+        QMemberOrder qMemberOrder = QMemberOrder.memberOrder;
+        return queryFactory.select(qMemberOrder.count())
+                .from(qMemberOrder)
+                .where(qMemberOrder.member.id.eq(memberId))
+                .where(qMemberOrder.orderDateTime.between(
+                        LocalDateTime.of(startDate, LocalTime.MIDNIGHT),
+                        LocalDateTime.of(endDate, LocalTime.MIDNIGHT)
+                )).fetchFirst();
+    }
 }
