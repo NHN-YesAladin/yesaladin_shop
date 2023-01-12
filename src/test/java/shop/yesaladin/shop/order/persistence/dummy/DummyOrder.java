@@ -8,7 +8,7 @@ import shop.yesaladin.shop.order.domain.model.MemberOrder;
 import shop.yesaladin.shop.order.domain.model.NonMemberOrder;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
 import shop.yesaladin.shop.order.domain.model.Subscribe;
-import shop.yesaladin.shop.order.domain.model.SubscribeOrder;
+import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 
 public class DummyOrder {
 
@@ -47,9 +47,13 @@ public class DummyOrder {
                 .build();
     }
 
-    public static SubscribeOrder subscribeOrder(Subscribe subscribe) {
-        return SubscribeOrder.builder()
-                .orderNumber(orderNumber + "s")
+    public static Subscribe subscribe(
+            Member member,
+            MemberAddress memberAddress,
+            SubscribeProduct subscribeProduct
+    ) {
+        return Subscribe.builder()
+                .orderNumber(orderNumber)
                 .orderDateTime(orderDateTime)
                 .expectedTransportDate(expectedTransportDate)
                 .isHidden(false)
@@ -57,9 +61,12 @@ public class DummyOrder {
                 .shippingFee(0)
                 .wrappingFee(0)
                 .orderCode(OrderCode.MEMBER_SUBSCRIBE)
-                .isTransported(false)
-                .expectedDate(LocalDate.now())
-                .subscribe(subscribe)
+                .memberAddress(memberAddress)
+                .member(member)
+                .expectedDay(5)
+                .intervalMonth(6)
+                .nextRenewalDate(LocalDate.now())
+                .subscribeProduct(subscribeProduct)
                 .build();
     }
 }

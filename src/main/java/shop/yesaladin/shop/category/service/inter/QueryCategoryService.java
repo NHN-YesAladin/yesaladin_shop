@@ -1,8 +1,10 @@
 package shop.yesaladin.shop.category.service.inter;
 
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.category.domain.model.Category;
+import shop.yesaladin.shop.category.dto.CategoriesSimpleResponseDto;
 import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 
 /**
@@ -21,6 +23,13 @@ public interface QueryCategoryService {
      * @return 페이징 된 CategoryResponse Page 객체
      */
     Page<CategoryResponseDto> findCategories(Pageable pageable);
+
+    /**
+     * 모든 카테고리에대한 정보를 Dto를 통해서 필요한 정보만 뽑아서 controller로 전달
+     *
+     * @return 1차 카테고리에 대한 단건 기본정보와 해당 1차 카테고리의 자식 카테고리들에 대한 기본정보 리스트를 반환
+     */
+    List<CategoriesSimpleResponseDto> findAllCategoryResponseDto();
 
     /**
      * 단일 카테고리 조회를 위한 기능

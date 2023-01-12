@@ -27,7 +27,7 @@ public class QueryMemberAddressServiceImpl implements QueryMemberAddressService 
 
     @Override
     @Transactional(readOnly = true)
-    public List<MemberAddressQueryDto> findByMemberId(Long memberId) {
+    public List<MemberAddressQueryDto> findByMemberId(long memberId) {
         Member member = tryGetMemberById(memberId);
 
         return queryMemberAddressRepository.findByMember(member)
@@ -36,7 +36,7 @@ public class QueryMemberAddressServiceImpl implements QueryMemberAddressService 
                 .collect(Collectors.toList());
     }
 
-    private Member tryGetMemberById(Long memberId) {
+    private Member tryGetMemberById(long memberId) {
         return queryMemberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException("Member Not Found: " + memberId));
     }

@@ -43,6 +43,16 @@ public class OrderStatusChangeLog {
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
+    /**
+     * 주문상태변경내역 엔티티 생성 메소드입니다.
+     *
+     * @param order 주문 데이터
+     * @param changeDateTime 변경된 일시
+     * @param orderStatusCode 주문 상태 코드
+     * @return 주문상태변경내역 엔티티
+     * @author 최예린
+     * @since 1.0
+     */
     public static OrderStatusChangeLog create(
             Order order,
             LocalDateTime changeDateTime,
