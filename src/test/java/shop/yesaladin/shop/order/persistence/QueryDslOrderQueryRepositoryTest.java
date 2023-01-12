@@ -8,7 +8,6 @@ import java.util.Optional;
 import javax.persistence.EntityManager;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -196,8 +195,7 @@ class QueryDslOrderQueryRepositoryTest {
     @DisplayName("특정 기간 내 주문 기록 조회에 성공한다.")
     void findAllOrdersInPeriod() {
         // when
-        Page<OrderSummaryDto> actual = queryRepository.findAllOrdersInPeriod(LocalDate.of(
-                2023,
+        Page<OrderSummaryDto> actual = queryRepository.findAllOrdersInPeriod(LocalDate.of(2023,
                 1,
                 1
         ), LocalDate.of(2023, 1, 2), PageRequest.of(0, 10));
@@ -210,8 +208,7 @@ class QueryDslOrderQueryRepositoryTest {
     @DisplayName("특정 기간 내 주문 기록이 페이지네이션 되어 조회된다.")
     void findAllOrdersInPeriodWithPagination() {
         // when
-        Page<OrderSummaryDto> actual = queryRepository.findAllOrdersInPeriod(LocalDate.of(
-                2023,
+        Page<OrderSummaryDto> actual = queryRepository.findAllOrdersInPeriod(LocalDate.of(2023,
                 1,
                 1
         ), LocalDate.of(2023, 1, 4), PageRequest.of(0, 10));
@@ -220,16 +217,16 @@ class QueryDslOrderQueryRepositoryTest {
         Assertions.assertThat(actual.get()).hasSize(10);
     }
 
-    @Disabled("DB구조 개선 후 수정 예정")
     @Test
     @DisplayName("특정 회원의 특정 기간 내 주문 기록 조회에 성공한다.")
     void findAllOrdersInPeriodByMemberId() {
         // when
-        Page<OrderSummaryDto> actual = queryRepository.findAllOrdersInPeriodByMemberId(LocalDate.of(
-                2023,
-                1,
-                1
-        ), LocalDate.of(2023, 1, 5), memberList.get(0).getId(), PageRequest.of(0, 20));
+        Page<OrderSummaryDto> actual = queryRepository.findAllOrdersInPeriodByMemberId(
+                LocalDate.of(2023, 1, 1),
+                LocalDate.of(2023, 1, 5),
+                memberList.get(0).getId(),
+                PageRequest.of(0, 20)
+        );
 
         // then
         Assertions.assertThat(actual.get()).hasSize(4);
@@ -239,11 +236,12 @@ class QueryDslOrderQueryRepositoryTest {
     @DisplayName("특정 회원의 특정 기간 내 주문 기록이 페이지네이션 되어 조회된다.")
     void findAllOrdersInPeriodByMemberIdWithPagination() {
         // when
-        Page<OrderSummaryDto> actual = queryRepository.findAllOrdersInPeriodByMemberId(LocalDate.of(
-                2023,
-                1,
-                1
-        ), LocalDate.of(2023, 1, 31), memberList.get(0).getId(), PageRequest.of(0, 5));
+        Page<OrderSummaryDto> actual = queryRepository.findAllOrdersInPeriodByMemberId(
+                LocalDate.of(2023, 1, 1),
+                LocalDate.of(2023, 1, 31),
+                memberList.get(0).getId(),
+                PageRequest.of(0, 5)
+        );
 
         // then
         Assertions.assertThat(actual.get()).hasSize(5);
@@ -253,8 +251,7 @@ class QueryDslOrderQueryRepositoryTest {
     @DisplayName("특정 기간 내 주문 수가 반환된다.")
     void getCountOrdersInPeriod() {
         // when
-        long actual = queryRepository.getCountOfOrdersInPeriod(
-                LocalDate.of(2023, 1, 1),
+        long actual = queryRepository.getCountOfOrdersInPeriod(LocalDate.of(2023, 1, 1),
                 LocalDate.of(2023, 1, 4)
         );
 
@@ -262,5 +259,17 @@ class QueryDslOrderQueryRepositoryTest {
         Assertions.assertThat(actual).isEqualTo(12);
     }
 
+    @Test
+    @DisplayName("특정 회원의 특정 기간 내 주문 수가 반환된다.")
+    void getCountOrdersInPeriodByMemberId() {
+        // when
+        long actual = queryRepository.getCountOfOrdersInPeriodByMemberId(LocalDate.of(2023, 1, 1),
+                LocalDate.of(2023, 1, 2),
+                memberList.get(0).getId()
+        );
+
+        // then
+        Assertions.assertThat(actual).isEqualTo(4);
+    }
 
 }
