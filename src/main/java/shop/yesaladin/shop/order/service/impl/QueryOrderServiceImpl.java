@@ -2,6 +2,7 @@ package shop.yesaladin.shop.order.service.impl;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,13 +34,12 @@ public class QueryOrderServiceImpl implements QueryOrderService {
     public Page<OrderSummaryDto> getAllOrderListInPeriod(
             PeriodQueryRequestDto queryDto, Pageable pageable
     ) {
-        // TODO : 관리자 권한 체크
         queryDto.validate(clock);
 
         LocalDate startDate = queryDto.getStartDateOrDefaultValue(clock);
         LocalDate endDate = queryDto.getEndDateOrDefaultValue(clock);
 
-        checkRequestedOffsetInBounds(startDate, endDate, pageable);
+        checkRequestedOffsetInBounds(startDate, endDate, null, pageable);
         return queryOrderRepository.findAllOrdersInPeriod(startDate, endDate, pageable);
     }
 
@@ -53,7 +53,7 @@ public class QueryOrderServiceImpl implements QueryOrderService {
         LocalDate startDate = queryDto.getStartDateOrDefaultValue(clock);
         LocalDate endDate = queryDto.getEndDateOrDefaultValue(clock);
 
-        checkRequestedOffsetInBounds(startDate, endDate, pageable);
+        checkRequestedOffsetInBounds(startDate, endDate, memberId, pageable);
         return queryOrderRepository.findAllOrdersInPeriodByMemberId(
                 startDate,
                 endDate,
@@ -63,9 +63,20 @@ public class QueryOrderServiceImpl implements QueryOrderService {
     }
 
     private void checkRequestedOffsetInBounds(
-            LocalDate startDate, LocalDate endDate, Pageable pageable
+            LocalDate startDate, LocalDate endDate, Long memberId, Pageable pageable
     ) {
-        long countOfOrder = queryOrderRepository.getCountOfOrdersInPeriod(startDate, endDate);
+        long countOfOrder = 0;
+
+        if (Objects.isNull(memberId)) {
+            countOfOrder = queryOrderRepository.getCountOfOrdersInPeriod(startDate, endDate);
+        } else {
+            countOfOrder = queryOrderRepository.getCountOfOrdersInPeriodByMemberId(
+                    startDate,
+                    endDate,
+                    memberId
+            );
+        }
+
         if (countOfOrder <= pageable.getOffset()) {
             throw new PageOffsetOutOfBoundsException((int) pageable.getOffset(), countOfOrder);
         }
