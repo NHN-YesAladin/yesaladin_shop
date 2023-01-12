@@ -12,7 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import shop.yesaladin.shop.member.domain.model.Member;
-import shop.yesaladin.shop.order.domain.dummy.MemberAddress;
+import shop.yesaladin.shop.member.domain.model.MemberAddress;
 
 /**
  * 회원 주문 엔티티입니다.

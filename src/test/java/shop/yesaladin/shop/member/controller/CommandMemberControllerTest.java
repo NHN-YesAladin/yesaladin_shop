@@ -5,7 +5,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -26,6 +25,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -45,20 +45,6 @@ import shop.yesaladin.shop.member.service.inter.CommandMemberService;
 @WebMvcTest(CommandMemberController.class)
 class CommandMemberControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    ObjectMapper objectMapper;
-
-    @MockBean
-    private CommandMemberService commandMemberService;
-
-    private Member member;
-    private MemberCreateResponseDto createResponse;
-    private MemberUpdateResponseDto updateResponse;
-    private MemberBlockResponseDto blockResponse;
-
     private final String NAME = "Ramos";
     private final String NICKNAME = "Ramos";
     private final String LOGIN_ID = "testloginid";
@@ -68,6 +54,28 @@ class CommandMemberControllerTest {
     private final String BIRTH = "20230107";
     private final String EMAIL = "test@test.com";
     private final String GENDER = "MALE";
+
+    @Autowired
+    ObjectMapper objectMapper;
+    @Autowired
+    private MockMvc mockMvc;
+    @MockBean
+    private CommandMemberService commandMemberService;
+    private Member member;
+    private MemberCreateResponseDto createResponse;
+    private MemberUpdateResponseDto updateResponse;
+    private MemberBlockResponseDto blockResponse;
+
+    private static Stream<Arguments> updateMemberRequestData() {
+        return Stream.of(
+                Arguments.of("'   '", "빈칸인 경우"),
+                Arguments.of("'ㅇ'", "2자리 미만인 경우"),
+                Arguments.of("'mongmeo21'", "숫자가 포함된 경우"),
+                Arguments.of("'몽매오Ω≈ΩZ'", "특수문자가 포함된 경우"),
+                Arguments.of("'hanadoolsetnetdasut'", "15자리 초과한 경우")
+        );
+    }
+
     private final String ROLE_MEMBER = "ROLE_MEMBER";
 
     @BeforeEach
@@ -86,7 +94,7 @@ class CommandMemberControllerTest {
     void signUpMember_withInvalidInputData() throws Exception {
         //given
         MemberCreateRequestDto request = new MemberCreateRequestDto();
-        given(commandMemberService.create(any())).willReturn(createResponse);
+        Mockito.when(commandMemberService.create(any())).thenReturn(createResponse);
 
         //when
         ResultActions perform = mockMvc.perform(post("/v1/members").contentType(MediaType.APPLICATION_JSON)
@@ -112,7 +120,7 @@ class CommandMemberControllerTest {
                 EMAIL,
                 GENDER
         );
-        given(commandMemberService.create(any())).willReturn(createResponse);
+        Mockito.when(commandMemberService.create(any())).thenReturn(createResponse);
 
         //when
         ResultActions perform = mockMvc.perform(post("/v1/members").contentType(MediaType.APPLICATION_JSON)
@@ -140,7 +148,7 @@ class CommandMemberControllerTest {
         );
         Member member = request.toEntity();
 
-        given(commandMemberService.create(any())).willReturn(createResponse);
+        Mockito.when(commandMemberService.create(any())).thenReturn(createResponse);
 
         //when
         ResultActions perform = mockMvc.perform(post("/v1/members").contentType(MediaType.APPLICATION_JSON)
@@ -194,16 +202,6 @@ class CommandMemberControllerTest {
         verify(commandMemberService, never()).update(anyLong(), any());
     }
 
-    private static Stream<Arguments> updateMemberRequestData() {
-        return Stream.of(
-                Arguments.of("'   '", "빈칸인 경우"),
-                Arguments.of("'ㅇ'", "2자리 미만인 경우"),
-                Arguments.of("'mongmeo21'", "숫자가 포함된 경우"),
-                Arguments.of("'몽매오Ω≈ΩZ'", "특수문자가 포함된 경우"),
-                Arguments.of("'hanadoolsetnetdasut'", "15자리 초과한 경우")
-        );
-    }
-
     @Test
     @DisplayName("회원정보수정 실패 - 존재하지 않는 회원인 경우")
     void updateMember_withInvalidMemberId() throws Exception {
@@ -216,8 +214,8 @@ class CommandMemberControllerTest {
         ArgumentCaptor<MemberUpdateRequestDto> requestArgumentCaptor = ArgumentCaptor.forClass(
                 MemberUpdateRequestDto.class);
 
-        given(commandMemberService.update(eq(invalidMemberId), any())).willThrow(
-                MemberNotFoundException.class);
+        Mockito.when(commandMemberService.update(eq(invalidMemberId), any()))
+                .thenThrow(MemberNotFoundException.class);
 
         //when
         ResultActions perform = mockMvc.perform(put(
@@ -245,7 +243,7 @@ class CommandMemberControllerTest {
         ArgumentCaptor<MemberUpdateRequestDto> requestArgumentCaptor = ArgumentCaptor.forClass(
                 MemberUpdateRequestDto.class);
 
-        given(commandMemberService.update(eq(memberId), any())).willReturn(updateResponse);
+        Mockito.when(commandMemberService.update(eq(memberId), any())).thenReturn(updateResponse);
 
         //when
         ResultActions perform = mockMvc.perform(put("/v1/members/{memberId}", memberId).contentType(
@@ -264,7 +262,7 @@ class CommandMemberControllerTest {
     void blockMember_withInvalidMemberId() throws Exception {
         //given
         Long memberId = 1L;
-        given(commandMemberService.block(memberId)).willThrow(MemberNotFoundException.class);
+        Mockito.when(commandMemberService.block(memberId)).thenThrow(MemberNotFoundException.class);
 
         //when
         ResultActions perform = mockMvc.perform(put("/v1/members/{memberId}/block", memberId));
@@ -281,7 +279,7 @@ class CommandMemberControllerTest {
     void blockMember() throws Exception {
         //given
         Long memberId = 1L;
-        given(commandMemberService.block(memberId)).willReturn(blockResponse);
+        Mockito.when(commandMemberService.block(memberId)).thenReturn(blockResponse);
 
         //when
         ResultActions perform = mockMvc.perform(put("/v1/members/{memberId}/block", memberId));
@@ -297,7 +295,8 @@ class CommandMemberControllerTest {
     void unblockMember_withInvalidMemberId() throws Exception {
         //given
         Long memberId = 1L;
-        given(commandMemberService.unblock(memberId)).willThrow(MemberNotFoundException.class);
+        Mockito.when(commandMemberService.unblock(memberId))
+                .thenThrow(MemberNotFoundException.class);
 
         //when
         ResultActions perform = mockMvc.perform(put(
@@ -316,7 +315,7 @@ class CommandMemberControllerTest {
     void unblockMember() throws Exception {
         //given
         Long memberId = 1L;
-        given(commandMemberService.unblock(memberId)).willReturn(blockResponse);
+        Mockito.when(commandMemberService.unblock(memberId)).thenReturn(blockResponse);
 
         //when
         ResultActions perform = mockMvc.perform(put(

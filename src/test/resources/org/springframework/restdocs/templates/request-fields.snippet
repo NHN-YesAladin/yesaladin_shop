@@ -1,0 +1,13 @@
+|===
+|필드명|타입|설명|선택값|포맷|기본값
+
+{{#fields}}
+|{{path}}
+|{{type}}
+|{{description}}
+|{{#optional}}{{optional}}{{/optional}}{{^optional}}false{{/optional}}
+|{{#format}}{{format}}{{/format}}{{^format}}_{{/format}}
+|{{#default value}}{{default value}}{{/default value}}{{^default value}}_{{/default value}}
+
+{{/fields}}
+|===

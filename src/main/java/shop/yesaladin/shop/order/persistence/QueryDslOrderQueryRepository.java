@@ -16,7 +16,8 @@ import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
-import shop.yesaladin.shop.order.domain.model.QOrder;
+import shop.yesaladin.shop.order.domain.model.querydsl.QMemberOrder;
+import shop.yesaladin.shop.order.domain.model.querydsl.QOrder;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 
@@ -80,6 +81,36 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
                         LocalDateTime.of(startDate, LocalTime.MIDNIGHT),
                         LocalDateTime.of(endDate, LocalTime.MIDNIGHT)
                 ));
+
+        return PageableExecutionUtils.getPage(data, pageable, countQuery::fetchFirst);
+    }
+
+    @Override
+    public Page<OrderSummaryDto> findAllOrdersInPeriodByMemberId(
+            LocalDate startDate, LocalDate endDate, long memberId, Pageable pageable
+    ) {
+        QMemberOrder memberOrder = QMemberOrder.memberOrder;
+        List<OrderSummaryDto> data = queryFactory.select(Projections.constructor(
+                        OrderSummaryDto.class,
+                        memberOrder.orderNumber,
+                        memberOrder.orderDateTime,
+                        memberOrder.orderCode
+                ))
+                .from(memberOrder)
+                .where(memberOrder.member.id.eq(memberId).and(memberOrder.orderDateTime.between(
+                        LocalDateTime.of(startDate, LocalTime.MIDNIGHT),
+                        LocalDateTime.of(endDate, LocalTime.MIDNIGHT)
+                )))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        JPAQuery<Long> countQuery = queryFactory.select(memberOrder.count())
+                .from(memberOrder)
+                .where(memberOrder.member.id.eq(memberId).and(memberOrder.orderDateTime.between(
+                        LocalDateTime.of(startDate, LocalTime.MIDNIGHT),
+                        LocalDateTime.of(endDate, LocalTime.MIDNIGHT)
+                )));
 
         return PageableExecutionUtils.getPage(data, pageable, countQuery::fetchFirst);
     }

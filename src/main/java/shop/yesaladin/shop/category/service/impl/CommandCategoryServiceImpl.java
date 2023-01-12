@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.repository.CommandCategoryRepository;
-import shop.yesaladin.shop.category.domain.repository.QueryComplexCategoryRepository;
+import shop.yesaladin.shop.category.domain.repository.QueryCategoryRepository;
 import shop.yesaladin.shop.category.dto.CategoryOnlyIdDto;
 import shop.yesaladin.shop.category.dto.CategoryRequestDto;
 import shop.yesaladin.shop.category.dto.CategoryResponseDto;
@@ -25,7 +25,7 @@ import shop.yesaladin.shop.category.service.inter.QueryCategoryService;
 public class CommandCategoryServiceImpl implements CommandCategoryService {
 
     private final CommandCategoryRepository commandCategoryRepository;
-    private final QueryComplexCategoryRepository queryComplexCategoryRepository;
+    private final QueryCategoryRepository queryCategoryRepository;
     private final QueryCategoryService queryCategoryService;
 
 
@@ -55,7 +55,7 @@ public class CommandCategoryServiceImpl implements CommandCategoryService {
      * @return CategoryResponseDto
      */
     private CategoryResponseDto saveCategoryByAddingId(CategoryRequestDto createRequest) {
-        CategoryOnlyIdDto onlyParentId = queryComplexCategoryRepository.getLatestIdByDepth(Category.DEPTH_PARENT);
+        CategoryOnlyIdDto onlyParentId = queryCategoryRepository.getLatestIdByDepth(Category.DEPTH_PARENT);
 
         Category category = commandCategoryRepository.save(createRequest.toEntity(
                 onlyParentId.getId() + Category.TERM_OF_PARENT_ID, Category.DEPTH_PARENT, null));
@@ -69,7 +69,7 @@ public class CommandCategoryServiceImpl implements CommandCategoryService {
      * @return CategoryResponseDto
      */
     private CategoryResponseDto saveCategoryByAddingChildId(CategoryRequestDto createRequest) {
-        CategoryOnlyIdDto onlyChildId = queryComplexCategoryRepository.getLatestChildIdByDepthAndParentId(
+        CategoryOnlyIdDto onlyChildId = queryCategoryRepository.getLatestChildIdByDepthAndParentId(
                 Category.DEPTH_CHILD,
                 createRequest.getParentId()
         );
