@@ -39,7 +39,7 @@ class QueryDslOrderQueryRepositoryTest {
     private EntityManager entityManager;
     private List<NonMemberOrder> nonMemberOrderList;
     private List<MemberOrder> memberOrderList;
-    private List<SubscribeOrderList> subscribeOrderList;
+    private List<Subscribe> subscribeList;
     private List<Member> memberList;
     private List<MemberAddress> memberAddressList;
 
@@ -48,7 +48,7 @@ class QueryDslOrderQueryRepositoryTest {
     void setUp() {
         nonMemberOrderList = new ArrayList<>();
         memberOrderList = new ArrayList<>();
-        subscribeOrderList = new ArrayList<>();
+        subscribeList = new ArrayList<>();
         memberList = new ArrayList<>();
         memberAddressList = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
@@ -121,29 +121,28 @@ class QueryDslOrderQueryRepositoryTest {
                     .ISSN("12345" + i)
                     .build();
             Subscribe subscribe = Subscribe.builder()
-                    .memberAddress(memberAddressList.get(i % 5))
                     .member(memberList.get(i % 5))
+                    .memberAddress(memberAddressList.get(i % 5))
+                    .nextRenewalDate(LocalDate.of(2023, i + 1, 1))
                     .subscribeProduct(subscribeProduct)
-                    .intervalMonth(2)
-                    .nextRenewalDate(LocalDate.of(2023, i + 1, i + 1))
-                    .build();
-            SubscribeOrderList subscribeOrderList = SubscribeOrderList.builder()
                     .orderNumber("S-" + i)
                     .orderDateTime(LocalDateTime.of(2023, 1, i + 1, 0, 0))
-                    .expectedDate(LocalDate.of(2023, 1, i + 2))
                     .expectedTransportDate(LocalDate.of(2023, 1, i + 2))
                     .isHidden(false)
                     .usedPoint(0)
                     .shippingFee(0)
                     .wrappingFee(0)
                     .orderCode(OrderCode.MEMBER_SUBSCRIBE)
-                    .isTransported(false)
+                    .build();
+            SubscribeOrderList subscribeOrder = SubscribeOrderList.builder()
+                    .isTransported(true)
                     .subscribe(subscribe)
+                    .memberOrder(memberOrderList.get(i % 5))
                     .build();
             entityManager.persist(subscribeProduct);
             entityManager.persist(subscribe);
-            entityManager.persist(subscribeOrderList);
-            this.subscribeOrderList.add(subscribeOrderList);
+            entityManager.persist(subscribeOrder);
+            this.subscribeList.add(subscribe);
         }
 
         entityManager.flush();
@@ -180,12 +179,12 @@ class QueryDslOrderQueryRepositoryTest {
     @DisplayName("구독 주문 조회에 성공한다.")
     void findByIdSubscribeOrderTest() {
         // when
-        Optional<Order> actual = queryRepository.findById(subscribeOrderList.get(0).getId());
+        Optional<Order> actual = queryRepository.findById(subscribeList.get(0).getId());
 
         // then
         Assertions.assertThat(actual).isPresent();
         Assertions.assertThat(actual.get().getOrderNumber())
-                .isEqualTo(subscribeOrderList.get(0).getOrderNumber());
+                .isEqualTo(subscribeList.get(0).getOrderNumber());
         Assertions.assertThat(actual.get())
                 .isInstanceOf(OrderCode.MEMBER_SUBSCRIBE.getOrderClass());
     }
