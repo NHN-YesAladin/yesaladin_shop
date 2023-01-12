@@ -86,6 +86,7 @@ class QueryDslOrderQueryRepositoryTest {
         for (int i = 0; i < 10; i++) {
             NonMemberOrder nonMemberOrder = NonMemberOrder.builder()
                     .orderNumber("NM-" + i)
+                    .name("non-member-order" + i)
                     .orderDateTime(LocalDateTime.of(2023, 1, i + 1, 0, 0))
                     .expectedTransportDate(LocalDate.of(2023, 1, i + 2))
                     .isHidden(false)
@@ -103,6 +104,7 @@ class QueryDslOrderQueryRepositoryTest {
         for (int i = 0; i < 30; i++) {
             MemberOrder memberOrder = MemberOrder.builder()
                     .orderNumber("M-" + i)
+                    .name("member-order" + i)
                     .orderDateTime(LocalDateTime.of(2023, 1, i + 1, 0, 0))
                     .expectedTransportDate(LocalDate.of(2023, 1, i + 2))
                     .isHidden(false)
@@ -122,6 +124,7 @@ class QueryDslOrderQueryRepositoryTest {
                     .build();
             Subscribe subscribe = Subscribe.builder()
                     .member(memberList.get(i % 5))
+                    .name("subscribe" + i)
                     .memberAddress(memberAddressList.get(i % 5))
                     .nextRenewalDate(LocalDate.of(2023, i + 1, 1))
                     .subscribeProduct(subscribeProduct)

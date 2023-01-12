@@ -73,6 +73,7 @@ class JpaMemberOrderRepositoryTest {
     MemberOrder createMemberOrder() {
         return MemberOrder.builder()
                 .orderNumber(orderNumber)
+                .name("memberOrder")
                 .orderDateTime(orderDateTime)
                 .expectedTransportDate(expectedTransportDate)
                 .isHidden(isHidden)
