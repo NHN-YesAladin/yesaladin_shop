@@ -5,7 +5,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -55,7 +54,7 @@ class CommandMemberControllerTest {
     private final String BIRTH = "20230107";
     private final String EMAIL = "test@test.com";
     private final String GENDER = "MALE";
-    
+
     @Autowired
     ObjectMapper objectMapper;
     @Autowired
@@ -76,6 +75,7 @@ class CommandMemberControllerTest {
                 Arguments.of("'hanadoolsetnetdasut'", "15자리 초과한 경우")
         );
     }
+
     private final String ROLE_MEMBER = "ROLE_MEMBER";
 
     @BeforeEach
@@ -214,7 +214,8 @@ class CommandMemberControllerTest {
         ArgumentCaptor<MemberUpdateRequestDto> requestArgumentCaptor = ArgumentCaptor.forClass(
                 MemberUpdateRequestDto.class);
 
-        Mockito.when(commandMemberService.update(eq(invalidMemberId), any())).thenThrow(MemberNotFoundException.class);
+        Mockito.when(commandMemberService.update(eq(invalidMemberId), any()))
+                .thenThrow(MemberNotFoundException.class);
 
         //when
         ResultActions perform = mockMvc.perform(put(
@@ -294,7 +295,8 @@ class CommandMemberControllerTest {
     void unblockMember_withInvalidMemberId() throws Exception {
         //given
         Long memberId = 1L;
-        Mockito.when(commandMemberService.unblock(memberId)).thenThrow(MemberNotFoundException.class);
+        Mockito.when(commandMemberService.unblock(memberId))
+                .thenThrow(MemberNotFoundException.class);
 
         //when
         ResultActions perform = mockMvc.perform(put(
