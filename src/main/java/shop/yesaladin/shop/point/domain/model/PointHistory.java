@@ -43,7 +43,7 @@ public class PointHistory {
     @Column(name = "create_datetime", nullable = false)
     private LocalDateTime createDateTime;
 
-    @Column(name = "point_code_id")
+    @Column(name = "point_code_id", nullable = false)
     @Convert(converter = PointCodeConverter.class)
     private PointCode pointCode;
 
