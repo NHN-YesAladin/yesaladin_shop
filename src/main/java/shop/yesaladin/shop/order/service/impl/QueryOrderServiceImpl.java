@@ -8,9 +8,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
-import shop.yesaladin.shop.common.exception.InvalidPeriodConditionException;
 import shop.yesaladin.shop.common.exception.PageOffsetOutOfBoundsException;
-import shop.yesaladin.shop.common.exception.type.InvalidPeriodConditionType;
+import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 import shop.yesaladin.shop.order.service.inter.QueryOrderService;
@@ -26,6 +25,7 @@ import shop.yesaladin.shop.order.service.inter.QueryOrderService;
 public class QueryOrderServiceImpl implements QueryOrderService {
 
     private final QueryOrderRepository queryOrderRepository;
+    private final QueryMemberService queryMemberService;
     private final Clock clock;
 
     @Override
@@ -34,7 +34,7 @@ public class QueryOrderServiceImpl implements QueryOrderService {
             PeriodQueryRequestDto queryDto, Pageable pageable
     ) {
         // TODO : 관리자 권한 체크
-        checkValidQueryCondition(queryDto);
+        queryDto.validate(clock);
 
         LocalDate startDate = queryDto.getStartDateOrDefaultValue(clock);
         LocalDate endDate = queryDto.getEndDateOrDefaultValue(clock);
@@ -43,10 +43,23 @@ public class QueryOrderServiceImpl implements QueryOrderService {
         return queryOrderRepository.findAllOrdersInPeriod(startDate, endDate, pageable);
     }
 
-    private void checkValidQueryCondition(PeriodQueryRequestDto queryDto) {
-        if (queryDto.getEndDateOrDefaultValue(clock).isAfter(LocalDate.now(clock))) {
-            throw new InvalidPeriodConditionException(InvalidPeriodConditionType.FUTURE);
-        }
+    @Override
+    public Page<OrderSummaryDto> getAllOrderListInPeriodByMemberId(
+            PeriodQueryRequestDto queryDto, long memberId, Pageable pageable
+    ) {
+        checkValidMemberId(memberId);
+        queryDto.validate(clock);
+
+        LocalDate startDate = queryDto.getStartDateOrDefaultValue(clock);
+        LocalDate endDate = queryDto.getEndDateOrDefaultValue(clock);
+
+        checkRequestedOffsetInBounds(startDate, endDate, pageable);
+        return queryOrderRepository.findAllOrdersInPeriodByMemberId(
+                startDate,
+                endDate,
+                memberId,
+                pageable
+        );
     }
 
     private void checkRequestedOffsetInBounds(
@@ -56,5 +69,9 @@ public class QueryOrderServiceImpl implements QueryOrderService {
         if (countOfOrder <= pageable.getOffset()) {
             throw new PageOffsetOutOfBoundsException((int) pageable.getOffset(), countOfOrder);
         }
+    }
+
+    private void checkValidMemberId(long memberId) {
+        queryMemberService.findMemberById(memberId);
     }
 }
