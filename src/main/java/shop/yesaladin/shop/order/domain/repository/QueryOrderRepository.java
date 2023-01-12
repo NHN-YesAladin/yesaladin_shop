@@ -69,4 +69,16 @@ public interface QueryOrderRepository {
      * @since 1.0
      */
     long getCountOfOrdersInPeriod(LocalDate startDate, LocalDate endDate);
+
+    /**
+     * 특정 회원의 기간 내 주문 데이터의 수를 반환합니다.
+     *
+     * @param startDate 조회 기간 시작 일자
+     * @param endDate   조회 기간 마지막 일자
+     * @return 기간 내의 주문 데이터 개수
+     * @author 김홍대
+     * @since 1.0
+     */
+    long getCountOfOrdersInPeriodByMemberId(LocalDate startDate, LocalDate endDate, long memberId);
+
 }
