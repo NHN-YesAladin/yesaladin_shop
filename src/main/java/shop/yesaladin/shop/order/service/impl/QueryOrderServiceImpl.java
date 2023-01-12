@@ -44,6 +44,7 @@ public class QueryOrderServiceImpl implements QueryOrderService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<OrderSummaryDto> getAllOrderListInPeriodByMemberId(
             PeriodQueryRequestDto queryDto, long memberId, Pageable pageable
     ) {
@@ -65,7 +66,7 @@ public class QueryOrderServiceImpl implements QueryOrderService {
     private void checkRequestedOffsetInBounds(
             LocalDate startDate, LocalDate endDate, Long memberId, Pageable pageable
     ) {
-        long countOfOrder = 0;
+        long countOfOrder;
 
         if (Objects.isNull(memberId)) {
             countOfOrder = queryOrderRepository.getCountOfOrdersInPeriod(startDate, endDate);
