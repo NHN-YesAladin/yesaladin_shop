@@ -76,9 +76,6 @@ public class Member {
     @Column(name = "is_blocked", nullable = false)
     private boolean isBlocked;
 
-    @Column(nullable = false)
-    private long point;
-
     @Column(name = "member_grade_id")
     @Convert(converter = MemberGradeCodeConverter.class)
     private MemberGrade memberGrade;
