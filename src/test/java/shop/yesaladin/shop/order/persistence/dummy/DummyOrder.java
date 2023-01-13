@@ -18,6 +18,7 @@ public class DummyOrder {
 
     public static NonMemberOrder nonMemberOrder() {
         return NonMemberOrder.builder()
+                .name("nonMemberOrder")
                 .orderNumber(orderNumber + "n")
                 .orderDateTime(orderDateTime)
                 .expectedTransportDate(expectedTransportDate)
@@ -35,6 +36,7 @@ public class DummyOrder {
     public static MemberOrder memberOrder(Member member, MemberAddress memberAddress) {
         return MemberOrder.builder()
                 .orderNumber(orderNumber + "m")
+                .name("memberOrder")
                 .orderDateTime(orderDateTime)
                 .expectedTransportDate(expectedTransportDate)
                 .isHidden(false)
@@ -54,6 +56,7 @@ public class DummyOrder {
     ) {
         return Subscribe.builder()
                 .orderNumber(orderNumber)
+                .name("subscribe")
                 .orderDateTime(orderDateTime)
                 .expectedTransportDate(expectedTransportDate)
                 .isHidden(false)

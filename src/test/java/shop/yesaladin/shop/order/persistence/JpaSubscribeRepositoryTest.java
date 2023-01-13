@@ -80,6 +80,7 @@ class JpaSubscribeRepositoryTest {
     Subscribe createSubscribe() {
         return Subscribe.builder()
                 .orderNumber(orderNumber)
+                .name("subscribe")
                 .orderDateTime(orderDateTime)
                 .expectedTransportDate(expectedTransportDate)
                 .isHidden(isHidden)

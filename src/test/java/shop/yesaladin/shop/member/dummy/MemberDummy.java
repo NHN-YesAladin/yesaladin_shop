@@ -30,7 +30,6 @@ public class MemberDummy {
                 .phone(phone)
                 .signUpDate(LocalDate.now())
                 .isBlocked(false)
-                .point(point)
                 .memberGrade(MemberGrade.WHITE)
                 .memberGenderCode(MemberGenderCode.MALE)
                 .build();
@@ -58,7 +57,6 @@ public class MemberDummy {
                 .phone(phone)
                 .signUpDate(LocalDate.now())
                 .isBlocked(false)
-                .point(point)
                 .memberGrade(MemberGrade.WHITE)
                 .memberGenderCode(MemberGenderCode.MALE)
                 .build();
