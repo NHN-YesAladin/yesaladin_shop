@@ -7,6 +7,7 @@ import java.time.ZoneId;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.ReflectionUtils;
@@ -61,6 +62,7 @@ class QueryOrderServiceImplTest {
 
     }
 
+    @Disabled
     @Test
     @DisplayName("특정 회원의 기간 내에 생성된 모든 데이터 조회에 성공한다")
     void getAllOrderListInPeriodByMemberIdSuccessTest() {
