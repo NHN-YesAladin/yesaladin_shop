@@ -79,7 +79,6 @@ public class MemberCreateRequestDto {
                 .signUpDate(LocalDate.now())
                 .isWithdrawal(false)
                 .isBlocked(false)
-                .point(0)
                 .memberGrade(MemberGrade.WHITE)
                 .memberGenderCode(MemberGenderCode.valueOf(gender))
                 .build();

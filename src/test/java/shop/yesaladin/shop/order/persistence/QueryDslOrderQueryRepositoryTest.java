@@ -65,7 +65,6 @@ class QueryDslOrderQueryRepositoryTest {
                     .withdrawalDate(null)
                     .isWithdrawal(false)
                     .isBlocked(false)
-                    .point(i)
                     .memberGrade(MemberGrade.WHITE)
                     .memberGenderCode(MemberGenderCode.MALE)
                     .build();
