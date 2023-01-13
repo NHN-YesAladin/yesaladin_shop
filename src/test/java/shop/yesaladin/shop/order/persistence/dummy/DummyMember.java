@@ -7,7 +7,7 @@ import shop.yesaladin.shop.member.domain.model.MemberGrade;
 
 public class DummyMember {
 
-    public static Member member(MemberGrade grade) {
+    public static Member member() {
         return Member.builder()
                 .nickname("member")
                 .name("name")
@@ -22,8 +22,7 @@ public class DummyMember {
                 .withdrawalDate(null)
                 .isWithdrawal(false)
                 .isBlocked(false)
-                .point(0)
-                .memberGrade(grade)
+                .memberGrade(MemberGrade.WHITE)
                 .memberGenderCode(MemberGenderCode.MALE)
                 .build();
     }

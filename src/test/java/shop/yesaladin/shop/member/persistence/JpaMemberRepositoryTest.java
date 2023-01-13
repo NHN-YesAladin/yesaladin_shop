@@ -14,7 +14,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberGrade;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
-import shop.yesaladin.shop.member.dummy.MemberGradeDummy;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
@@ -26,32 +25,26 @@ class JpaMemberRepositoryTest {
     @Autowired
     JpaMemberRepository repository;
 
-    private MemberGrade grade;
     private Member member;
 
     @BeforeEach
     void setUp() {
-        grade = MemberGradeDummy.dummy();
         member = MemberDummy.dummy();
     }
 
     @Test
     void save() throws Exception {
-        //given
-        entityManager.persist(grade);
-
         //when
         Member savedMember = repository.save(member);
 
         //then
         assertThat(savedMember).isNotNull();
-        assertThat(savedMember.getMemberGrade().getName()).isEqualTo(grade.getName());
+        assertThat(savedMember.getMemberGrade().getName()).isEqualTo(MemberGrade.WHITE.getName());
     }
 
     @Test
     void findById() throws Exception {
         //given
-        entityManager.persist(grade);
         Member savedMember = entityManager.persist(member);
 
         //when
@@ -60,5 +53,81 @@ class JpaMemberRepositoryTest {
         //then
         assertThat(optionalMember).isPresent();
         assertThat(optionalMember.get().getName()).isEqualTo(savedMember.getName());
+    }
+
+    @Test
+    void findMemberByLoginId() throws Exception {
+        //given
+        Member savedMember = entityManager.persist(member);
+
+        //when
+        Optional<Member> optionalMember = repository.findMemberByLoginId(savedMember.getLoginId());
+
+        //then
+        assertThat(optionalMember).isPresent();
+        assertThat(optionalMember.get().getLoginId()).isEqualTo(savedMember.getLoginId());
+    }
+
+    @Test
+    void findMemberByNickname() throws Exception {
+        //given
+        Member savedMember = entityManager.persist(member);
+
+        //when
+        Optional<Member> optionalMember = repository.findMemberByNickname(savedMember.getNickname());
+
+        //then
+        assertThat(optionalMember).isPresent();
+        assertThat(optionalMember.get().getNickname()).isEqualTo(savedMember.getNickname());
+    }
+
+    @Test
+    void findMemberByEmail() throws Exception {
+        //given
+        Member savedMember = entityManager.persist(member);
+
+        //when
+        Optional<Member> optionalMember = repository.findMemberByEmail(savedMember.getEmail());
+
+        //then
+        assertThat(optionalMember).isPresent();
+        assertThat(optionalMember.get().getEmail()).isEqualTo(savedMember.getEmail());
+    }
+
+    @Test
+    void existsMemberByLoginId() throws Exception {
+        //given
+        Member savedMember = entityManager.persist(member);
+
+        //when
+        boolean result = repository.existsMemberByLoginId(savedMember.getLoginId());
+
+        //then
+        assertThat(result).isTrue();
+
+    }
+
+    @Test
+    void existsMemberByNickname() throws Exception {
+        //given
+        Member savedMember = entityManager.persist(member);
+
+        //when
+        boolean result = repository.existsMemberByNickname(savedMember.getNickname());
+
+        //then
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void existsMemberByEmail() throws Exception {
+        //given
+        Member savedMember = entityManager.persist(member);
+
+        //when
+        boolean result = repository.existsMemberByEmail(savedMember.getEmail());
+
+        //then
+        assertThat(result).isTrue();
     }
 }

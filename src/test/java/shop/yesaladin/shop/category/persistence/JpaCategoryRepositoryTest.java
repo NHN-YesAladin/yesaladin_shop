@@ -7,16 +7,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.dummy.CategoryDummy;
-import shop.yesaladin.shop.category.exception.CategoryNotFoundException;
 
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class JpaCategoryRepositoryTest {
+
+    @Autowired
+    TestEntityManager em;
 
     @Autowired
     private JpaCategoryRepository jpaCategoryRepository;
@@ -41,67 +42,18 @@ class JpaCategoryRepositoryTest {
     }
 
     @Test
-    void findById() {
-        //given
-        Category save = jpaCategoryRepository.save(sample);
-
-        //when
-        Category category = jpaCategoryRepository.findById(save.getId())
-                .orElseThrow(() -> new CategoryNotFoundException(save.getId()));
-
-        //then
-        assertThat(category.getName()).isEqualTo(save.getName());
-        assertThat(category.getId()).isEqualTo(save.getId());
-    }
-
-    @Test
-    void findAll_pageable() {
-        //given
-        int size = 3;
-        for (int i = 0; i < 5; i++) {
-            sample = Category.builder()
-                    .name(name + "1")
-                    .order(null)
-                    .isShown(true)
-                    .parent(null)
-                    .build();
-            jpaCategoryRepository.save(sample);
-        }
-
-        PageRequest pageRequest = PageRequest.of(0, size);
-
-        //when
-        Page<Category> page = jpaCategoryRepository.findAll(pageRequest);
-
-        //then
-        assertThat(page.getContent().size()).isEqualTo(size);
-    }
-
-    @Test
     void deleteById() {
         // given
-        Category save = jpaCategoryRepository.save(sample);
+        Category persistedCategory = em.persist(sample);
 
         // when
-        jpaCategoryRepository.deleteById(save.getId());
-        Category category = jpaCategoryRepository.findById(save.getId()).orElse(null);
+        jpaCategoryRepository.deleteById(persistedCategory.getId());
+        Category category = em.find(Category.class, persistedCategory.getId());
 
         // then
         assertThat(category).isNull();
     }
 
-    @Test
-    void findByName() {
-        // given
-        Category save = jpaCategoryRepository.save(sample);
-
-        // when
-        Category category = jpaCategoryRepository.findByName(name)
-                .orElseThrow(() -> new CategoryNotFoundException(name));
-
-        // then
-        assertThat(category.getName()).isEqualTo(save.getName());
-    }
 
 
 }

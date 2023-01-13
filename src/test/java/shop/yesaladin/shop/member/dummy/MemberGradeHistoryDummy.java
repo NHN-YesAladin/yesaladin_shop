@@ -13,18 +13,27 @@ public class MemberGradeHistoryDummy {
         return MemberGradeHistory.builder()
                 .updateDate(LocalDate.now())
                 .previousPaidAmount(previousPaidAmount)
-                .memberGrade(MemberGradeDummy.dummy())
+                .memberGrade(MemberGrade.WHITE)
                 .member(MemberDummy.dummy())
                 .build();
     }
 
-    public static MemberGradeHistory dummy(MemberGrade memberGrade, Member member) {
+    public static MemberGradeHistory dummy(Member member) {
         long previousPaidAmount = 0L;
 
         return MemberGradeHistory.builder()
                 .updateDate(LocalDate.now())
                 .previousPaidAmount(previousPaidAmount)
-                .memberGrade(memberGrade)
+                .memberGrade(MemberGrade.WHITE)
+                .member(member)
+                .build();
+    }
+
+    public static MemberGradeHistory dummyWithDate(Member member, LocalDate date) {
+        return MemberGradeHistory.builder()
+                .updateDate(date)
+                .previousPaidAmount(0L)
+                .memberGrade(MemberGrade.WHITE)
                 .member(member)
                 .build();
     }

@@ -15,10 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import shop.yesaladin.shop.category.dto.CategoryRequest;
-import shop.yesaladin.shop.category.dto.CategoryOnlyId;
-import shop.yesaladin.shop.category.dto.CategoryResponse;
-import shop.yesaladin.shop.category.dto.ResultCode;
+import shop.yesaladin.shop.category.dto.CategoryRequestDto;
+import shop.yesaladin.shop.category.dto.CategoryResponseDto;
+import shop.yesaladin.shop.category.dto.ResultCodeDto;
 import shop.yesaladin.shop.category.service.inter.CommandCategoryService;
 
 /**
@@ -40,35 +39,35 @@ public class CommandCategoryController {
     /**
      * 카테고리를 생성하기위해 Post 요청을 처리하는 기능
      *
-     * @param categoryRequest 생성시 필요한 이름, 노출 여부, 상위 카테고리 id가 존재
+     * @param categoryRequestDto 생성시 필요한 이름, 노출 여부, 상위 카테고리 id가 존재
      * @return ResponseEntity로 카테고리 생성 성공시 201 코드 및 생성된 카테고리의 id를 반환
      * @throws URISyntaxException
      */
     @PostMapping
-    public ResponseEntity<CategoryResponse> createCategory(
-            @Valid @RequestBody CategoryRequest categoryRequest
+    public ResponseEntity<CategoryResponseDto> createCategory(
+            @Valid @RequestBody CategoryRequestDto categoryRequestDto
     ) throws URISyntaxException {
-        CategoryResponse categoryResponse = commandCategoryService.create(categoryRequest);
-        return ResponseEntity.created(new URI(categoryResponse.getId().toString())).build();
+        CategoryResponseDto categoryResponseDto = commandCategoryService.create(categoryRequestDto);
+        return ResponseEntity.created(new URI(categoryResponseDto.getId().toString())).build();
     }
 
     /**
      * 카테고리를 수정하기위해 Put 요청을 처리하는 기능
      *
      * @param categoryId 수정하고자 하는 카테고리의 id
-     * @param categoryRequest 생성시 필요한 이름, 노출 여부, 상위 카테고리 id가 존재
+     * @param categoryRequestDto 생성시 필요한 이름, 노출 여부, 상위 카테고리 id가 존재
      * @return ResponseEntity로 카테고리 수정 성공시 200 코드 및 카테고리의 일부 데이터 반환
      */
     @PutMapping("/{categoryId}")
-    public ResponseEntity<CategoryResponse> updateCategory(
+    public ResponseEntity<CategoryResponseDto> updateCategory(
             @PathVariable Long categoryId,
-            @Valid @RequestBody CategoryRequest categoryRequest
+            @Valid @RequestBody CategoryRequestDto categoryRequestDto
     ) {
-        CategoryResponse categoryResponse = commandCategoryService.update(
+        CategoryResponseDto categoryResponseDto = commandCategoryService.update(
                 categoryId,
-                categoryRequest
+                categoryRequestDto
         );
-        return ResponseEntity.ok(categoryResponse);
+        return ResponseEntity.ok(categoryResponseDto);
     }
 
     /**
@@ -79,8 +78,8 @@ public class CommandCategoryController {
      */
     @DeleteMapping("/{categoryId}")
     @ResponseStatus(HttpStatus.OK)
-    public ResultCode deleteCategory(@PathVariable Long categoryId) {
+    public ResultCodeDto deleteCategory(@PathVariable Long categoryId) {
         commandCategoryService.delete(categoryId);
-        return new ResultCode("Success");
+        return new ResultCodeDto("Success");
     }
 }

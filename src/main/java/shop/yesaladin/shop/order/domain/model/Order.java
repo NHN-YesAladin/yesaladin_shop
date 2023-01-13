@@ -38,13 +38,16 @@ public abstract class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "name", nullable = false)
+    private String name;
+
     @Column(name = "order_number", length = 18, nullable = false, unique = true)
     private String orderNumber;
 
     @Column(name = "order_datetime", nullable = false)
     private LocalDateTime orderDateTime;
 
-    @Column(name = "expected_transport_date", nullable = false)
+    @Column(name = "expected_transport_date")
     private LocalDate expectedTransportDate;
 
     @Column(name = "is_hidden", nullable = false)

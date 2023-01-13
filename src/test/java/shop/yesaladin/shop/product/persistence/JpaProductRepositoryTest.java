@@ -11,12 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
+import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.product.domain.model.Product;
+import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
+import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
 import shop.yesaladin.shop.product.dummy.DummyFile;
 import shop.yesaladin.shop.product.dummy.DummyProduct;
-import shop.yesaladin.shop.product.dummy.DummyProductTypeCode;
-import shop.yesaladin.shop.product.dummy.DummyPublisher;
 import shop.yesaladin.shop.product.dummy.DummySubscribeProduct;
 import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
 
@@ -36,13 +36,23 @@ class JpaProductRepositoryTest {
 
     @BeforeEach
     void setUp() {
-//        entityManager.persist(DummySubscribeProduct.dummy());
-//        entityManager.persist(DummyPublisher.dummy());
-//        entityManager.persist(DummyFile.dummy(".png"));
-//        entityManager.persist(DummyFile.dummy(".pdf"));
-//        entityManager.persist(DummyTotalDiscountRate.dummy());
+        SubscribeProduct subscribeProduct = DummySubscribeProduct.dummy();
+        File thumbnailFile = DummyFile.dummy("png");
+        File ebookFile = DummyFile.dummy("pdf");
+        TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
 
-        product = DummyProduct.dummy(ISBN);
+        entityManager.persist(subscribeProduct);
+        entityManager.persist(thumbnailFile);
+        entityManager.persist(ebookFile);
+        entityManager.persist(totalDiscountRate);
+
+        product = DummyProduct.dummy(
+                ISBN,
+                subscribeProduct,
+                thumbnailFile,
+                ebookFile,
+                totalDiscountRate
+        );
     }
 
     @Test
@@ -56,12 +66,12 @@ class JpaProductRepositoryTest {
     }
 
     @Test
-    void findById() {
+    void findByISBN() {
         // given
         entityManager.persist(product);
 
         // when
-        Optional<Product> foundProduct = jpaProductRepository.findById(product.getId());
+        Optional<Product> foundProduct = jpaProductRepository.findByISBN(product.getISBN());
 
         // then
         assertThat(foundProduct).isPresent();

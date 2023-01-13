@@ -5,24 +5,24 @@ import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import shop.yesaladin.shop.member.exception.AlreadyBlockedMemberException;
+import shop.yesaladin.shop.member.exception.AlreadyUnblockedMemberException;
 import shop.yesaladin.shop.member.persistence.converter.MemberGenderCodeConverter;
+import shop.yesaladin.shop.member.persistence.converter.MemberGradeCodeConverter;
 
 /**
  * 회원의 엔티티 클래스 입니다.
  *
- * @author : 송학현
+ * @author : 송학현, 최예린
  * @since : 1.0
  */
 @Getter
@@ -61,7 +61,7 @@ public class Member {
     @Column(unique = true, length = 100, nullable = false)
     private String email;
 
-    @Column(length = 11, nullable = false)
+    @Column(length = 11, unique = true, nullable = false)
     private String phone;
 
     @Column(name = "sign_up_date", nullable = false)
@@ -76,11 +76,8 @@ public class Member {
     @Column(name = "is_blocked", nullable = false)
     private boolean isBlocked;
 
-    @Column(nullable = false)
-    private long point;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_grade_id")
+    @Column(name = "member_grade_id")
+    @Convert(converter = MemberGradeCodeConverter.class)
     private MemberGrade memberGrade;
 
     @Column(name = "gender_code")
@@ -109,5 +106,42 @@ public class Member {
      */
     public boolean isSameNickname(Member compare) {
         return Objects.equals(this.nickname, compare.getNickname());
+    }
+
+    /**
+     * Member entity 의 blocked 를 false 로 변경하기 위한 기능입니다.
+     *
+     * @author 최예린
+     * @since 1.0
+     */
+    public void unblockMember() {
+        if (!this.isBlocked) {
+            throw new AlreadyUnblockedMemberException(this.id);
+        }
+        this.isBlocked = false;
+    }
+
+    /**
+     * Member entity 의 blocked 를 true 로 변경하기 위한 기능입니다.
+     *
+     * @author 최예린
+     * @since 1.0
+     */
+    public void blockMember() {
+        if (this.isBlocked) {
+            throw new AlreadyBlockedMemberException(this.id);
+        }
+        this.isBlocked = true;
+    }
+
+    /**
+     * Member entity 의 nickname 을 수정하기 위한 기능입니다.
+     *
+     * @param newNickname 새로운 nickname
+     * @author 최예린
+     * @since 1.0
+     */
+    public void changeNickname(String newNickname) {
+        this.nickname = newNickname;
     }
 }

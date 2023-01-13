@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.product.domain.model;
 
-import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -18,7 +17,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.yesaladin.shop.file.domain.model.File;
-import shop.yesaladin.shop.publisher.domain.model.Publisher;
 
 /**
  * 상품의 엔터티 클래스입니다.
@@ -68,8 +66,6 @@ public class Product {
 
     @Column(nullable = false)
     private long quantity;
-    @Column(name = "published_date")
-    private LocalDate publishedDate;
     @Column(name = "preferential_show_ranking", nullable = false)
     private int preferentialShowRanking;
 
@@ -77,10 +73,6 @@ public class Product {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subscribe_product_id")
     private SubscribeProduct subscribeProduct;
-
-    @OneToOne
-    @JoinColumn(name = "publisher_id")
-    private Publisher publisher;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "thumbnail_file_id")

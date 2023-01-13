@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 import shop.yesaladin.shop.product.domain.repository.CommandSubscribeProductRepository;
+import shop.yesaladin.shop.product.dto.SubscribeProductResponseDto;
 import shop.yesaladin.shop.product.service.inter.CommandSubscribeProductService;
 
 class CommandSubscribeProductServiceImplTest {
@@ -21,7 +22,8 @@ class CommandSubscribeProductServiceImplTest {
     @BeforeEach
     void setUp() {
         commandSubscribeProductRepository = mock(CommandSubscribeProductRepository.class);
-        commandSubscribeProductService = new CommandSubscribeProductServiceImpl(commandSubscribeProductRepository);
+        commandSubscribeProductService = new CommandSubscribeProductServiceImpl(
+                commandSubscribeProductRepository);
     }
 
     @Test
@@ -32,7 +34,8 @@ class CommandSubscribeProductServiceImplTest {
         when(commandSubscribeProductRepository.save(any())).thenReturn(subscribeProduct);
 
         // when
-        SubscribeProduct registeredSubscribeProduct = commandSubscribeProductService.register(subscribeProduct);
+        SubscribeProductResponseDto registeredSubscribeProduct = commandSubscribeProductService.register(
+                subscribeProduct);
 
         // then
         assertThat(registeredSubscribeProduct.getISSN()).isEqualTo(ISSN);
