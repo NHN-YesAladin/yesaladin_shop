@@ -7,7 +7,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -18,7 +17,6 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -27,7 +25,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.member.domain.model.MemberGenderCode;
-import shop.yesaladin.shop.member.domain.model.SearchedMember;
 import shop.yesaladin.shop.member.dto.SearchMemberManagerRequestDto;
 import shop.yesaladin.shop.member.service.inter.SearchMemberService;
 
@@ -69,14 +66,15 @@ class SearchMemberControllerTest {
     @Test
     @DisplayName("saveMember 메서드의 Validation 에러")
     void saveMemberOfSearchMemberManagerRequestDtoFailByValidationError() throws Exception {
+        //given
         SearchMemberManagerRequestDto invalidEmailDummy = SearchMemberManagerRequestDto.builder()
                 .email("test")
                 .build();
-
+        //when
         ResultActions resultActions = mockMvc.perform(post("/v1/members/search")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invalidEmailDummy)));
-
+        //then
         resultActions.andExpect(status().isBadRequest())
                 .andDo(print());
     }
@@ -84,16 +82,16 @@ class SearchMemberControllerTest {
     @Test
     @DisplayName("회원 등록 성공")
     void saveMemberSuccess() throws Exception {
-
-        SearchedMember searchedMember = requestDto.toSearchedMember();
+        //given
         Mockito.when(searchMemberService.saveNewMember(any()))
-                .thenReturn(searchedMember);
-
-        mockMvc.perform(post("/v1/members/search")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto)))
-                .andExpect(status().isOk())
+                .thenReturn(requestDto);
+        //when
+        ResultActions resultActions = mockMvc.perform(post("/v1/members/search")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestDto)));
+        //then
+        resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("$.loginId", equalTo(requestDto.getLoginId())))
                 .andExpect(jsonPath("$.name", equalTo(requestDto.getName())))
                 .andExpect(jsonPath("$.nickname", equalTo(requestDto.getNickname())))
@@ -112,14 +110,15 @@ class SearchMemberControllerTest {
     @Test
     @DisplayName("updateMember 메서드의 Validation 에러")
     void updateMemberOfSearchMemberManagerRequestDtoFailByValidationError() throws Exception {
+        //given
         SearchMemberManagerRequestDto invalidEmailDummy = SearchMemberManagerRequestDto.builder()
                 .email("test")
                 .build();
-
+        //when
         ResultActions resultActions = mockMvc.perform(put("/v1/members/search")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invalidEmailDummy)));
-
+        //then
         resultActions.andExpect(status().isBadRequest())
                 .andDo(print());
     }
@@ -127,15 +126,16 @@ class SearchMemberControllerTest {
     @Test
     @DisplayName("회원 정보 수정 성공")
     void updateMemberSuccess() throws Exception {
-
+        //given
         Mockito.when(searchMemberService.updateMember(any()))
-                .thenReturn(requestDto.toSearchedMember());
-
-        mockMvc.perform(put("/v1/members/search")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto)))
-                .andExpect(status().isOk())
+                .thenReturn(requestDto);
+        //when
+        ResultActions resultActions = mockMvc.perform(put("/v1/members/search")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestDto)));
+        //then
+        resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("$.loginId", equalTo(requestDto.getLoginId())))
                 .andExpect(jsonPath("$.name", equalTo(requestDto.getName())))
                 .andExpect(jsonPath("$.nickname", equalTo(requestDto.getNickname())))
@@ -156,23 +156,28 @@ class SearchMemberControllerTest {
     @Test
     @DisplayName(("회원 정보 삭제 성공"))
     void deleteMemberSuccess() throws Exception {
-        mockMvc.perform(delete("/v1/members/search/{loginid}", "loginId"))
-                .andExpect(status().isNoContent());
+        //when
+        ResultActions resultActions = mockMvc.perform(delete(
+                "/v1/members/search/{loginid}",
+                "loginId"
+        ));
+        //then
+        resultActions.andExpect(status().isNoContent());
     }
 
     @Test
     @DisplayName("로그인 아이디로 검색")
     void testSearchByLoginId() throws Exception {
+        //given
         String loginId = "loginId";
-
         Mockito.when(searchMemberService.searchByLoginId(any()))
-                .thenReturn(requestDto.toSearchedMember());
-
+                .thenReturn(requestDto);
+        //when
         ResultActions resultActions = mockMvc.perform(get(
                 "/v1/members/search/loginid/{loginId}",
                 loginId
         ));
-
+        //then
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("$.loginId", equalTo(loginId)))
                 .andDo(print());
@@ -181,16 +186,16 @@ class SearchMemberControllerTest {
     @Test
     @DisplayName("닉네임으로 검색")
     void testSearchByNickname() throws Exception {
+        //given
         String nickname = "nickname";
-
         Mockito.when(searchMemberService.searchByNickname(any()))
-                .thenReturn(requestDto.toSearchedMember());
-
+                .thenReturn(requestDto);
+        //when
         ResultActions resultActions = mockMvc.perform(get(
                 "/v1/members/search/nickname/{nickname}",
                 nickname
         ));
-
+        //then
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("$.nickname", equalTo(nickname)))
                 .andDo(print());
@@ -199,16 +204,16 @@ class SearchMemberControllerTest {
     @Test
     @DisplayName("닉네임으로 검색")
     void testSearchByPhone() throws Exception {
+        //given
         String phone = "00000000000";
-
         Mockito.when(searchMemberService.searchByPhone(any()))
-                .thenReturn(requestDto.toSearchedMember());
-
+                .thenReturn(requestDto);
+        //when
         ResultActions resultActions = mockMvc.perform(get(
                 "/v1/members/search/phone/{phone}",
                 phone
         ));
-
+        //then
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("$.phone", equalTo(phone)))
                 .andDo(print());
@@ -217,15 +222,16 @@ class SearchMemberControllerTest {
     @Test
     @DisplayName("이름으로 검색")
     void testSearchByName() throws Exception {
+        //given
         String name = "name";
         Mockito.when(searchMemberService.searchByName(name))
-                .thenReturn(List.of(requestDto.toSearchedMember()));
-
+                .thenReturn(List.of(requestDto));
+        //when
         ResultActions resultActions = mockMvc.perform(get(
                 "/v1/members/search/name/{name}",
                 name
         ));
-
+        //then
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].name", equalTo(name)))
                 .andDo(print());
@@ -234,14 +240,15 @@ class SearchMemberControllerTest {
     @Test
     @DisplayName("회원가입날로 검색")
     void testSearchBySignUpDate() throws Exception {
+        //given
         LocalDate signUpDate = LocalDate.of(2000, 10, 20);
         Mockito.when(searchMemberService.searchBySignUpDate(signUpDate))
-                .thenReturn(List.of(requestDto.toSearchedMember()));
-
+                .thenReturn(List.of(requestDto));
+        //when
         ResultActions resultActions = mockMvc.perform(get(
                 "/v1/members/search/signupdate/{signupdate}", signUpDate
         ));
-
+        //then
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].signUpDate", equalTo(signUpDate.toString())))
                 .andDo(print());

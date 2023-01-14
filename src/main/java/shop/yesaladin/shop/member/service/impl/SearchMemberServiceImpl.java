@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import shop.yesaladin.shop.member.domain.model.SearchedMember;
@@ -34,13 +35,14 @@ public class SearchMemberServiceImpl implements SearchMemberService {
      * @since : 1.0
      */
     @Override
-    public SearchedMember saveNewMember(SearchMemberManagerRequestDto searchMemberManagerRequestDto) {
+    public SearchMemberManagerRequestDto saveNewMember(SearchMemberManagerRequestDto searchMemberManagerRequestDto) {
         if (checkLoginIdDuplication(searchMemberManagerRequestDto)
                 || checkNicknameDuplication(searchMemberManagerRequestDto) || checkPhoneDuplication(
                 searchMemberManagerRequestDto)) {
             throw new MemberProfileAlreadyExistException(searchMemberManagerRequestDto.toString());
         }
-        return searchMemberRepository.save(searchMemberManagerRequestDto.toSearchedMember());
+        return searchMemberRepository.save(searchMemberManagerRequestDto.toSearchedMember())
+                .toDto();
     }
 
     /**
@@ -52,12 +54,13 @@ public class SearchMemberServiceImpl implements SearchMemberService {
      * @since : 1.0
      */
     @Override
-    public SearchedMember updateMember(SearchMemberManagerRequestDto searchMemberManagerRequestDto) {
+    public SearchMemberManagerRequestDto updateMember(SearchMemberManagerRequestDto searchMemberManagerRequestDto) {
         if (checkUpdateNickname(searchMemberManagerRequestDto) || checkUpdatePhone(
                 searchMemberManagerRequestDto)) {
             throw new MemberProfileAlreadyExistException(searchMemberManagerRequestDto.toString());
         }
-        return searchMemberRepository.save(searchMemberManagerRequestDto.toSearchedMember());
+        return searchMemberRepository.save(searchMemberManagerRequestDto.toSearchedMember())
+                .toDto();
     }
 
     /**
@@ -81,9 +84,9 @@ public class SearchMemberServiceImpl implements SearchMemberService {
      * @since : 1.0
      */
     @Override
-    public SearchedMember searchByLoginId(String loginId) {
+    public SearchMemberManagerRequestDto searchByLoginId(String loginId) {
         return searchMemberRepository.searchByLoginId(loginId).orElseThrow(() ->
-                new MemberNotFoundException(loginId));
+                new MemberNotFoundException(loginId)).toDto();
     }
 
     /**
@@ -95,9 +98,9 @@ public class SearchMemberServiceImpl implements SearchMemberService {
      * @since : 1.0
      */
     @Override
-    public SearchedMember searchByPhone(String phone) {
+    public SearchMemberManagerRequestDto searchByPhone(String phone) {
         return searchMemberRepository.searchByPhone(phone).orElseThrow(() ->
-                new MemberNotFoundException(phone));
+                new MemberNotFoundException(phone)).toDto();
     }
 
     /**
@@ -109,9 +112,9 @@ public class SearchMemberServiceImpl implements SearchMemberService {
      * @since : 1.0
      */
     @Override
-    public SearchedMember searchByNickname(String nickname) {
+    public SearchMemberManagerRequestDto searchByNickname(String nickname) {
         return searchMemberRepository.searchByNickname(nickname).orElseThrow(() ->
-                new MemberNotFoundException(nickname));
+                new MemberNotFoundException(nickname)).toDto();
     }
 
     /**
@@ -121,8 +124,11 @@ public class SearchMemberServiceImpl implements SearchMemberService {
      * @return 검색된 회원의 정보 리스트
      */
     @Override
-    public List<SearchedMember> searchByName(String name) {
-        return searchMemberRepository.searchAllByName(name);
+    public List<SearchMemberManagerRequestDto> searchByName(String name) {
+        return searchMemberRepository.searchAllByName(name)
+                .stream()
+                .map(SearchedMember::toDto)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -134,8 +140,11 @@ public class SearchMemberServiceImpl implements SearchMemberService {
      * @since : 1.0
      */
     @Override
-    public List<SearchedMember> searchBySignUpDate(LocalDate signUpDate) {
-        return searchMemberRepository.searchBySignUpDate(signUpDate);
+    public List<SearchMemberManagerRequestDto> searchBySignUpDate(LocalDate signUpDate) {
+        return searchMemberRepository.searchBySignUpDate(signUpDate)
+                .stream()
+                .map(SearchedMember::toDto)
+                .collect(Collectors.toList());
     }
 
     /**

@@ -21,7 +21,7 @@ public interface SearchMemberService {
      * @author : 김선홍
      * @since : 1.0
      */
-    SearchedMember saveNewMember(SearchMemberManagerRequestDto searchMemberManagerRequestDto);
+    SearchMemberManagerRequestDto saveNewMember(SearchMemberManagerRequestDto searchMemberManagerRequestDto);
 
     /**
      * 엘라스틱 서치에 회원의 정보를 수정하기 위한 메서드
@@ -31,7 +31,7 @@ public interface SearchMemberService {
      * @author : 김선홍
      * @since : 1.0
      */
-    SearchedMember updateMember(SearchMemberManagerRequestDto searchMemberManagerRequestDto);
+    SearchMemberManagerRequestDto updateMember(SearchMemberManagerRequestDto searchMemberManagerRequestDto);
 
     /**
      * 엘라스틱 서치에 회원의 정보를 삭제하기 위한 메서드
@@ -50,7 +50,7 @@ public interface SearchMemberService {
      * @author : 김선홍
      * @since : 1.0
      */
-    SearchedMember searchByLoginId(String loginId);
+    SearchMemberManagerRequestDto searchByLoginId(String loginId);
 
     /**
      * 핸드폰 번호로 회원을 검색하는 메서드
@@ -60,7 +60,7 @@ public interface SearchMemberService {
      * @author : 김선홍
      * @since : 1.0
      */
-    SearchedMember searchByPhone(String phone);
+    SearchMemberManagerRequestDto searchByPhone(String phone);
 
     /**
      * 회원의 닉네임으로 검색하는 메서드
@@ -70,7 +70,7 @@ public interface SearchMemberService {
      * @author : 김선홍
      * @since : 1.0
      */
-    SearchedMember searchByNickname(String nickname);
+    SearchMemberManagerRequestDto searchByNickname(String nickname);
 
     /**
      * 회원의 이름으로 검색하는 메서드
@@ -80,7 +80,7 @@ public interface SearchMemberService {
      * @author : 김선홍
      * @since : 1.0
      */
-    List<SearchedMember> searchByName(String name);
+    List<SearchMemberManagerRequestDto> searchByName(String name);
 
     /**
      * 회원가입한 날로 회원을 검색하는 메서드
@@ -90,7 +90,7 @@ public interface SearchMemberService {
      * @author : 김선홍
      * @since : 1.0
      */
-    List<SearchedMember> searchBySignUpDate(LocalDate signUpDate);
+    List<SearchMemberManagerRequestDto> searchBySignUpDate(LocalDate signUpDate);
 
 
 

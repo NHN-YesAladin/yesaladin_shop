@@ -16,14 +16,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import shop.yesaladin.shop.member.domain.model.SearchedMember;
 import shop.yesaladin.shop.member.dto.SearchMemberManagerRequestDto;
 import shop.yesaladin.shop.member.service.inter.SearchMemberService;
 
 
 /**
- * 회원을 로그인 아이디, 닉네임, 핸드폰번호, 이름, 회원가입날로 검색과
- * 엘라스틱서치에서 생성, 수정, 삭제 해주는 Controller
+ * 회원을 로그인 아이디, 닉네임, 핸드폰번호, 이름, 회원가입날로 검색과 엘라스틱서치에서 생성, 수정, 삭제 해주는 Controller
  *
  * @author : 김선홍
  * @since : 1.0
@@ -44,7 +42,7 @@ public class SearchMemberController {
      * @since : 1.0
      */
     @PostMapping
-    ResponseEntity<SearchedMember> saveMember(@Valid @RequestBody SearchMemberManagerRequestDto searchMemberManagerRequestDto) {
+    ResponseEntity<SearchMemberManagerRequestDto> saveMember(@Valid @RequestBody SearchMemberManagerRequestDto searchMemberManagerRequestDto) {
         return ResponseEntity.ok(searchMemberService.saveNewMember(searchMemberManagerRequestDto));
     }
 
@@ -57,10 +55,9 @@ public class SearchMemberController {
      * @since : 1.0
      */
     @PutMapping
-    ResponseEntity<SearchedMember> updateMember(@Valid @RequestBody SearchMemberManagerRequestDto searchMemberManagerRequestDto) {
+    ResponseEntity<SearchMemberManagerRequestDto> updateMember(@Valid @RequestBody SearchMemberManagerRequestDto searchMemberManagerRequestDto) {
         return ResponseEntity.ok(searchMemberService.updateMember(searchMemberManagerRequestDto));
     }
-
 
     /**
      * 로그인 아이디로 회원을 삭제하는 메서드
@@ -84,7 +81,7 @@ public class SearchMemberController {
      * @since : 1.0
      */
     @GetMapping("/loginid/{loginid}")
-    ResponseEntity<SearchedMember> searchByLoginId(@PathVariable("loginid") String loginId) {
+    ResponseEntity<SearchMemberManagerRequestDto> searchByLoginId(@PathVariable("loginid") String loginId) {
         return ResponseEntity.ok(searchMemberService.searchByLoginId(loginId));
     }
 
@@ -97,7 +94,7 @@ public class SearchMemberController {
      * @since : 1.0
      */
     @GetMapping("/nickname/{nickname}")
-    ResponseEntity<SearchedMember> searchByNickname(@PathVariable("nickname") String nickname) {
+    ResponseEntity<SearchMemberManagerRequestDto> searchByNickname(@PathVariable("nickname") String nickname) {
         return ResponseEntity.ok(searchMemberService.searchByNickname(nickname));
     }
 
@@ -110,7 +107,7 @@ public class SearchMemberController {
      * @since : 1.0
      */
     @GetMapping("/phone/{phone}")
-    ResponseEntity<SearchedMember> searchByPhone(@PathVariable("phone") String phone) {
+    ResponseEntity<SearchMemberManagerRequestDto> searchByPhone(@PathVariable("phone") String phone) {
         return ResponseEntity.ok(searchMemberService.searchByPhone(phone));
     }
 
@@ -123,7 +120,7 @@ public class SearchMemberController {
      * @since : 1.0
      */
     @GetMapping("/name/{name}")
-    List<SearchedMember> searchByName(@PathVariable("name") String name) {
+    List<SearchMemberManagerRequestDto> searchByName(@PathVariable("name") String name) {
         return searchMemberService.searchByName(name);
     }
 
@@ -133,10 +130,10 @@ public class SearchMemberController {
      * @param signUpDate 검색할 회원의 회원가입날
      * @return 검색된 회원의 정보 리스트
      * @author : 김선홍
-     * @since  : 1.0
+     * @since : 1.0
      */
     @GetMapping("/signupdate/{signUpDate}")
-    List<SearchedMember> searchBySignUpDate(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate signUpDate) {
+    List<SearchMemberManagerRequestDto> searchBySignUpDate(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate signUpDate) {
         return searchMemberService.searchBySignUpDate(signUpDate);
     }
 }

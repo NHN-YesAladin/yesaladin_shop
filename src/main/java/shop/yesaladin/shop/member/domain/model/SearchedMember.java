@@ -12,6 +12,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
+import shop.yesaladin.shop.member.dto.SearchMemberManagerRequestDto;
 
 /**
  * 엘라스틱서치에서 검색된 회원의 정보 document 입니다.
@@ -60,4 +61,24 @@ public class SearchedMember {
     private String grade;
     @JsonFormat(shape = Shape.STRING)
     private MemberGenderCode gender;
+
+    public SearchMemberManagerRequestDto toDto() {
+        return SearchMemberManagerRequestDto.builder()
+                .id(id)
+                .loginId(loginId)
+                .name(name)
+                .nickname(nickname)
+                .phone(phone)
+                .email(email)
+                .signUpDate(signUpDate)
+                .birthYear(birthYear)
+                .birthMonth(birthMonth)
+                .birthDay(birthDay)
+                .isBlocked(isBlocked)
+                .isWithdrawal(isWithdrawal)
+                .point(point)
+                .grade(grade)
+                .gender(gender)
+                .build();
+    }
 }

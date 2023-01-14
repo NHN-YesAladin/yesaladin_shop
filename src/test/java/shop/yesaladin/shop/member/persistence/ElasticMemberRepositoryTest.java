@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,17 +13,18 @@ import org.springframework.boot.test.context.SpringBootTest;
 import shop.yesaladin.shop.member.domain.model.MemberGenderCode;
 import shop.yesaladin.shop.member.domain.model.SearchedMember;
 import shop.yesaladin.shop.member.domain.repository.SearchMemberRepository;
+import shop.yesaladin.shop.member.dto.SearchMemberManagerRequestDto;
 
 @SpringBootTest
 class ElasticMemberRepositoryTest {
 
     @Autowired
     private SearchMemberRepository searchMemberRepository;
-    private SearchedMember dummySearchedMember;
+    private SearchMemberManagerRequestDto dummyDto;
 
     @BeforeEach
     void setUp() {
-        dummySearchedMember = SearchedMember.builder()
+        dummyDto = SearchMemberManagerRequestDto.builder()
                 .id(1L)
                 .nickname("nickname")
                 .name("name")
@@ -44,30 +46,37 @@ class ElasticMemberRepositoryTest {
 
     @Test
     void saveNewMember() {
-        SearchedMember result = searchMemberRepository.save(dummySearchedMember);
+        //when
+        SearchMemberManagerRequestDto result = searchMemberRepository.save(dummyDto.toSearchedMember())
+                .toDto();
 
-        assertThat(result.getId()).isEqualTo(dummySearchedMember.getId());
-        assertThat(result.getNickname()).isEqualTo(dummySearchedMember.getNickname());
-        assertThat(result.getName()).isEqualTo(dummySearchedMember.getName());
-        assertThat(result.getLoginId()).isEqualTo(dummySearchedMember.getLoginId());
-        assertThat(result.getPhone()).isEqualTo(dummySearchedMember.getPhone());
-        assertThat(result.getBirthYear()).isEqualTo(dummySearchedMember.getBirthYear());
-        assertThat(result.getBirthMonth()).isEqualTo(dummySearchedMember.getBirthMonth());
-        assertThat(result.getBirthDay()).isEqualTo(dummySearchedMember.getBirthDay());
-        assertThat(result.getEmail()).isEqualTo(dummySearchedMember.getEmail());
-        assertThat(result.getSignUpDate()).isEqualTo(dummySearchedMember.getSignUpDate());
-        assertThat(result.getPoint()).isEqualTo(dummySearchedMember.getPoint());
-        assertThat(result.getGrade()).isEqualTo(dummySearchedMember.getGrade());
-        assertThat(result.getGender()).isEqualTo(dummySearchedMember.getGender());
+        //then
+        assertThat(result.getId()).isEqualTo(dummyDto.getId());
+        assertThat(result.getNickname()).isEqualTo(dummyDto.getNickname());
+        assertThat(result.getName()).isEqualTo(dummyDto.getName());
+        assertThat(result.getLoginId()).isEqualTo(dummyDto.getLoginId());
+        assertThat(result.getPhone()).isEqualTo(dummyDto.getPhone());
+        assertThat(result.getBirthYear()).isEqualTo(dummyDto.getBirthYear());
+        assertThat(result.getBirthMonth()).isEqualTo(dummyDto.getBirthMonth());
+        assertThat(result.getBirthDay()).isEqualTo(dummyDto.getBirthDay());
+        assertThat(result.getEmail()).isEqualTo(dummyDto.getEmail());
+        assertThat(result.getSignUpDate()).isEqualTo(dummyDto.getSignUpDate());
+        assertThat(result.getPoint()).isEqualTo(dummyDto.getPoint());
+        assertThat(result.getGrade()).isEqualTo(dummyDto.getGrade());
+        assertThat(result.getGender()).isEqualTo(dummyDto.getGender());
 
         searchMemberRepository.deleteByLoginId(result.getLoginId());
     }
 
     @Test
     void updateMember() {
+        //given
         String newNickname = "new";
-        SearchedMember savedDummy = searchMemberRepository.save(dummySearchedMember);
-        SearchedMember updatedDummy = SearchedMember.builder()
+
+        //when
+        SearchMemberManagerRequestDto savedDummy = searchMemberRepository.save(dummyDto.toSearchedMember())
+                .toDto();
+        SearchMemberManagerRequestDto updatedDummy = SearchMemberManagerRequestDto.builder()
                 .id(savedDummy.getId())
                 .nickname(newNickname)
                 .name(savedDummy.getName())
@@ -84,8 +93,10 @@ class ElasticMemberRepositoryTest {
                 .grade(savedDummy.getGrade())
                 .gender(savedDummy.getGender())
                 .build();
-        SearchedMember result = searchMemberRepository.save(updatedDummy);
+        SearchMemberManagerRequestDto result = searchMemberRepository.save(updatedDummy.toSearchedMember())
+                .toDto();
 
+        //then
         assertThat(result.getId()).isEqualTo(updatedDummy.getId());
         assertThat(result.getNickname()).isEqualTo(updatedDummy.getNickname());
         assertThat(result.getName()).isEqualTo(updatedDummy.getName());
@@ -105,58 +116,84 @@ class ElasticMemberRepositoryTest {
 
     @Test
     void testDeleteByLoginId() {
-        SearchedMember savedMember = searchMemberRepository.save(dummySearchedMember);
+        //given
+        SearchMemberManagerRequestDto savedMember = searchMemberRepository.save(dummyDto.toSearchedMember())
+                .toDto();
+        //when
         searchMemberRepository.deleteByLoginId(savedMember.getLoginId());
-        Optional<SearchedMember> optional = searchMemberRepository.searchByLoginId(savedMember.getLoginId());
+
+        //then
+        Optional<SearchedMember> optional = searchMemberRepository.searchByLoginId(
+                savedMember.getLoginId());
         assertThat(optional).isNotPresent();
     }
 
     @Test
     void testSearchByPhone() {
-        searchMemberRepository.save(dummySearchedMember);
+        //given
+        searchMemberRepository.save(dummyDto.toSearchedMember());
 
-        Optional<SearchedMember> result = searchMemberRepository.searchByPhone(dummySearchedMember.getPhone());
+        //when
+        Optional<SearchMemberManagerRequestDto> result = Optional.of(searchMemberRepository.searchByPhone(
+                dummyDto.getPhone()).get().toDto());
 
+        //then
         assertThat(result).isPresent();
-        assertThat(result.get().getPhone()).isEqualTo(dummySearchedMember.getPhone());
+        assertThat(result.get().getPhone()).isEqualTo(dummyDto.getPhone());
 
         searchMemberRepository.deleteByLoginId(result.get().getLoginId());
     }
 
     @Test
     void testSearchByNickname() {
-        searchMemberRepository.save(dummySearchedMember);
+        //given
+        searchMemberRepository.save(dummyDto.toSearchedMember());
 
-        Optional<SearchedMember> result = searchMemberRepository.searchByNickname(dummySearchedMember.getNickname());
+        //when
+        Optional<SearchMemberManagerRequestDto> result = Optional.of(searchMemberRepository.searchByNickname(
+                dummyDto.getNickname()).get().toDto());
 
+        //then
         assertThat(result).isPresent();
-        assertThat(result.get().getNickname()).isEqualTo(dummySearchedMember.getNickname());
+        assertThat(result.get().getNickname()).isEqualTo(dummyDto.getNickname());
 
         searchMemberRepository.deleteByLoginId(result.get().getLoginId());
     }
+
     @Test
     void testSearchAllByName() {
-        searchMemberRepository.save(dummySearchedMember);
+        //given
+        searchMemberRepository.save(dummyDto.toSearchedMember());
 
-        System.out.println(dummySearchedMember.getName());
-        List<SearchedMember> results = searchMemberRepository.searchAllByName(dummySearchedMember.getName());
+        //when
+        List<SearchMemberManagerRequestDto> results = searchMemberRepository.searchAllByName(
+                dummyDto.getName()).stream().map(SearchedMember::toDto).collect(
+                Collectors.toList());
+
+        //then
         assertThat(results).hasSize(1);
-
-        SearchedMember result = results.get(0);
-        assertThat(result.getName()).isEqualTo(dummySearchedMember.getName());
+        SearchMemberManagerRequestDto result = results.get(0);
+        assertThat(result.getName()).isEqualTo(dummyDto.getName());
 
         searchMemberRepository.deleteByLoginId(result.getLoginId());
     }
 
     @Test
     void testSearchBySignUpDate() {
-        searchMemberRepository.save(dummySearchedMember);
+        //given
+        searchMemberRepository.save(dummyDto.toSearchedMember());
 
-        List<SearchedMember> results = searchMemberRepository.searchBySignUpDate(dummySearchedMember.getSignUpDate());
+        //wheb
+        List<SearchMemberManagerRequestDto> results = searchMemberRepository.searchBySignUpDate(
+                        dummyDto.getSignUpDate())
+                .stream()
+                .map(SearchedMember::toDto)
+                .collect(Collectors.toList());
+
+        //then
         assertThat(results).hasSize(1);
-
-        SearchedMember result = results.get(0);
-        assertThat(result.getSignUpDate()).isEqualTo(dummySearchedMember.getSignUpDate());
+        SearchMemberManagerRequestDto result = results.get(0);
+        assertThat(result.getSignUpDate()).isEqualTo(dummyDto.getSignUpDate());
 
         searchMemberRepository.deleteByLoginId(result.getLoginId());
     }

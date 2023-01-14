@@ -1,6 +1,7 @@
 package shop.yesaladin.shop.member.service.impl;
 
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -18,6 +19,7 @@ import shop.yesaladin.shop.member.domain.repository.SearchMemberRepository;
 import shop.yesaladin.shop.member.dto.SearchMemberManagerRequestDto;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.exception.MemberProfileAlreadyExistException;
+import shop.yesaladin.shop.member.persistence.ElasticMemberRepository;
 
 class SearchMemberServiceImplTest {
 
@@ -27,7 +29,7 @@ class SearchMemberServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        searchMemberRepository = Mockito.mock(SearchMemberRepository.class);
+        searchMemberRepository = Mockito.mock(ElasticMemberRepository.class);
         searchMemberService = new SearchMemberServiceImpl(searchMemberRepository);
         dummy = Mockito.mock(SearchMemberManagerRequestDto.class);
     }
@@ -41,6 +43,9 @@ class SearchMemberServiceImplTest {
                 .thenReturn(Optional.of(SearchedMember.builder().build()));
         assertThatThrownBy(() -> searchMemberService.saveNewMember(dummy)).isInstanceOf(
                 MemberProfileAlreadyExistException.class);
+
+        verify(dummy, atLeastOnce()).getLoginId();
+        verify(searchMemberRepository, never()).save(dummy.toSearchedMember());
     }
 
     @Test
@@ -83,7 +88,7 @@ class SearchMemberServiceImplTest {
         Mockito.when(searchMemberRepository.save(dummy.toSearchedMember())).thenReturn(
                 SearchedMember.builder().loginId(loginId).nickname(nickname).phone(phone).build());
 
-        SearchedMember result = searchMemberService.saveNewMember(dummy);
+        SearchMemberManagerRequestDto result = searchMemberService.saveNewMember(dummy);
 
         assertThat(result.getLoginId()).isEqualTo(loginId);
         assertThat(result.getNickname()).isEqualTo(nickname);
@@ -145,7 +150,7 @@ class SearchMemberServiceImplTest {
                         .phone(phone)
                         .build());
 
-        SearchedMember result = searchMemberService.updateMember(dummy);
+        SearchMemberManagerRequestDto result = searchMemberService.updateMember(dummy);
 
         assertThat(result.getId()).isEqualTo(dummy.getId());
         assertThat(result.getNickname()).isEqualTo(dummy.getNickname());
@@ -176,7 +181,7 @@ class SearchMemberServiceImplTest {
         String loginId = "loginId";
         Mockito.when(searchMemberRepository.searchByLoginId(loginId)).thenReturn(Optional.of(
                 SearchedMember.builder().loginId(loginId).build()));
-        SearchedMember result = searchMemberService.searchByLoginId(loginId);
+        SearchMemberManagerRequestDto result = searchMemberService.searchByLoginId(loginId);
         assertThat(result.getLoginId()).isEqualTo(loginId);
     }
 
@@ -196,7 +201,7 @@ class SearchMemberServiceImplTest {
         String phone = "phone";
         Mockito.when(searchMemberRepository.searchByPhone(phone)).thenReturn(Optional.of(
                 SearchedMember.builder().phone(phone).build()));
-        SearchedMember result = searchMemberService.searchByPhone(phone);
+        SearchMemberManagerRequestDto result = searchMemberService.searchByPhone(phone);
         assertThat(result.getPhone()).isEqualTo(phone);
     }
 
@@ -216,7 +221,7 @@ class SearchMemberServiceImplTest {
         String nickname = "nickname";
         Mockito.when(searchMemberRepository.searchByNickname(nickname)).thenReturn(Optional.of(
                 SearchedMember.builder().nickname(nickname).build()));
-        SearchedMember result = searchMemberService.searchByNickname(nickname);
+        SearchMemberManagerRequestDto result = searchMemberService.searchByNickname(nickname);
         assertThat(result.getNickname()).isEqualTo(nickname);
     }
 
@@ -224,7 +229,7 @@ class SearchMemberServiceImplTest {
     @DisplayName("이름으로 검색 시 리스트 출력")
     void testSearchByName() {
         String name = "name";
-        List<SearchedMember> results = searchMemberService.searchByName(name);
+        List<SearchMemberManagerRequestDto> results = searchMemberService.searchByName(name);
         assertThat(results).isEmpty();
         verify(searchMemberRepository, atLeastOnce()).searchAllByName(name);
     }
@@ -233,7 +238,7 @@ class SearchMemberServiceImplTest {
     @DisplayName("회원가입날로 검색 시 리스트 출력")
     void testSearchBySignUpDate() {
         LocalDate signUpDate = LocalDate.of(2000, 1,1);
-        List<SearchedMember> results = searchMemberService.searchBySignUpDate(signUpDate);
+        List<SearchMemberManagerRequestDto> results = searchMemberService.searchBySignUpDate(signUpDate);
         assertThat(results).isEmpty();
         verify(searchMemberRepository, atLeastOnce()).searchBySignUpDate(signUpDate);
     }
