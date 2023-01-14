@@ -33,7 +33,6 @@ public class MemberDto {
     private LocalDate withdrawalDate;
     private boolean isWithdrawal;
     private boolean isBlocked;
-    private long point;
     private MemberGrade memberGrade;
     private MemberGenderCode memberGenderCode;
 
@@ -52,7 +51,6 @@ public class MemberDto {
                 member.getWithdrawalDate(),
                 member.isWithdrawal(),
                 member.isBlocked(),
-                member.getPoint(),
                 member.getMemberGrade(),
                 member.getMemberGenderCode()
         );
@@ -73,7 +71,6 @@ public class MemberDto {
                 .isWithdrawal(isWithdrawal)
                 .withdrawalDate(withdrawalDate)
                 .isBlocked(isBlocked)
-                .point(point)
                 .memberGrade(memberGrade)
                 .memberGenderCode(memberGenderCode)
                 .build();

@@ -22,7 +22,6 @@ public class DummyMember {
                 .withdrawalDate(null)
                 .isWithdrawal(false)
                 .isBlocked(false)
-                .point(0)
                 .memberGrade(MemberGrade.WHITE)
                 .memberGenderCode(MemberGenderCode.MALE)
                 .build();
