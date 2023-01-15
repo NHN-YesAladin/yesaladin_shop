@@ -1,9 +1,10 @@
 package shop.yesaladin.shop.order.persistence.dummy;
 
-import shop.yesaladin.shop.order.domain.dummy.CouponIssuance;
+
+import shop.yesaladin.shop.member.domain.model.MemberCoupon;
 
 public class DummyCouponIssuance {
 
-    public static CouponIssuance couponIssuance = CouponIssuance.builder().build();
+    public static MemberCoupon memberCoupon = MemberCoupon.builder().build();
 
 }
