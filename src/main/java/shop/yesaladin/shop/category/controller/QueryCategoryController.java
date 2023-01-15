@@ -1,10 +1,12 @@
 package shop.yesaladin.shop.category.controller;
 
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +27,7 @@ import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/v1/categories")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class QueryCategoryController {
 
     private final QueryCategoryService queryCategoryService;
@@ -44,14 +47,13 @@ public class QueryCategoryController {
      * 카테고리 리스트 조회를 paging하여 조회하는 기능
      *
      * @param pageable page 와 size를 자동으로 parsing 하여줌
-     * @return 카테고리의 일부 데이터를 List 화 하여 전달
+     * @return 카테고리의 일부 데이터를 페이징데이터와 함게 List 화 하여 전달
      */
     @GetMapping
     public PaginatedResponseDto<CategoryResponseDto> getCategoriesByParentId(
             @RequestParam("parentId") Long parentId,
             Pageable pageable
     ) {
-
         Page<CategoryResponseDto> data = queryCategoryService.findCategoriesByParentId(
                 pageable,
                 parentId
@@ -64,9 +66,25 @@ public class QueryCategoryController {
                 .build();
     }
 
+    /**
+     * 모든 1차 카테고리에 대해 조회하는 기능
+     *
+     * @return 카테고리의 일부 데이터를 List화 하여 반환
+     */
     @GetMapping("/parents")
     public List<CategoryResponseDto> getParentCategories() {
         return queryCategoryService.findParentCategories();
+    }
+
+    /**
+     * 주어진 1차 카테고리 id를 통해 아래의 자식 카테고리를 모두 조회 하는 기능
+     *
+     * @param parentId
+     * @return
+     */
+    @GetMapping("/{parentId}/children")
+    public List<CategoryResponseDto> getChildCategoriesByParentId(@PathVariable Long parentId) {
+        return queryCategoryService.findChildCategoriesByParentId(parentId);
     }
 
 }

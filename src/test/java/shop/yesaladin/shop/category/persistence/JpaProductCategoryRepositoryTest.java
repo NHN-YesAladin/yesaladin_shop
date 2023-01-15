@@ -71,7 +71,6 @@ class JpaProductCategoryRepositoryTest {
 
         productCategory = ProductCategoryDummy.dummy(category, product);
 
-        System.out.println("productCategory = " + productCategory);
     }
 
     @Test

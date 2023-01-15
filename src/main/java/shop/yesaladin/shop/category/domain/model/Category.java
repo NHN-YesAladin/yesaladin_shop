@@ -56,10 +56,13 @@ public class Category {
     @Column(name = "`order`")
     private Integer order;
 
-
     @Builder.Default
     @Column(name = "depth", nullable = false)
     private int depth = 0;
+
+    @Builder.Default
+    @Column(name = "disable", nullable = false)
+    private boolean isDisable = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
@@ -95,13 +98,21 @@ public class Category {
 
     /**
      * FK 제약조건으로 인해 삭제가 불가한 카테고리에 disable 이라는 기능을 추가
-     *  depth = -1 인 경우, disable로 간주
+     *  disable = true
      *
      * @param nameBeforeChanging 변경감지로 인해 이름이 변경 되는 경우, 기존 엔티티의 이름을 저장하기 위하여 사용
      */
     public void disableCategory(String nameBeforeChanging) {
-        this.depth = Category.DEPTH_DISABLE;
+        this.isDisable = true;
         this.name = nameBeforeChanging;
+    }
+
+    public void changeParent(Category parent) {
+        if (Objects.nonNull(this.parent)) {
+            this.parent.getChildren().remove(this);
+        }
+        this.parent = parent;
+        parent.getChildren().add(this);
     }
 
 }

@@ -209,7 +209,7 @@ class CommandCategoryServiceTest {
         // then
         assertThat(responseDto.getId()).isEqualTo(addedParentId);
         assertThat(responseDto.getName()).isEqualTo(categoryRequestDto.getName());
-        assertThat(childCategory.getDepth()).isEqualTo(Category.DEPTH_DISABLE);
+        assertThat(childCategory.isDisable()).isEqualTo(true);
 
         verify(queryCategoryService, times(1)).findInnerCategoryById(childCategory.getId());
         verify(commandCategoryRepository, times(1)).save(any());
@@ -255,7 +255,7 @@ class CommandCategoryServiceTest {
         // then
         assertThat(responseDto.getId()).isEqualTo(addedChildId);
         assertThat(responseDto.getName()).isEqualTo(categoryRequestDto.getName());
-        assertThat(childCategory.getDepth()).isEqualTo(Category.DEPTH_DISABLE);
+        assertThat(childCategory.isDisable()).isEqualTo(true);
 
         verify(queryCategoryService, times(1)).findInnerCategoryById(childCategory.getId());
         verify(queryCategoryService, times(1)).findInnerCategoryById(categoryRequestDto.getParentId());

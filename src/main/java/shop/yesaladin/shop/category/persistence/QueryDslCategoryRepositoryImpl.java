@@ -1,6 +1,7 @@
 package shop.yesaladin.shop.category.persistence;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import java.util.Objects;
@@ -10,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.model.querydsl.QCategory;
@@ -41,15 +43,18 @@ public class QueryDslCategoryRepositoryImpl implements QueryCategoryRepository {
         QCategory category = QCategory.category;
         List<Category> categories = queryFactory.select(category)
                 .from(category)
-                .innerJoin(category.parent)
+                .leftJoin(category.parent)
                 .fetchJoin()
                 .where(category.parent.id.eq(parentId))
                 .orderBy(category.order.asc().nullsLast())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
-        Long count = queryFactory.select(category.count()).from(category).fetchFirst();
-        return new PageImpl<>(categories, pageable, count);
+        JPAQuery<Long> countQuery = queryFactory.select(category.count())
+                .where(category.parent.id.eq(parentId))
+                .from(category);
+
+        return PageableExecutionUtils.getPage(categories, pageable, countQuery::fetchFirst);
     }
 
 

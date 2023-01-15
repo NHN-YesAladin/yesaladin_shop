@@ -40,15 +40,14 @@ public class CommandCategoryController {
      * 카테고리를 생성하기위해 Post 요청을 처리하는 기능
      *
      * @param categoryRequestDto 생성시 필요한 이름, 노출 여부, 상위 카테고리 id가 존재
-     * @return ResponseEntity로 카테고리 생성 성공시 201 코드 및 생성된 카테고리의 id를 반환
-     * @throws URISyntaxException
+     * @return ResponseEntity로 카테고리 생성 성공시 생성된 카테고리의 일부 데이터를 반환
      */
     @PostMapping
-    public ResponseEntity<CategoryResponseDto> createCategory(
+    public CategoryResponseDto createCategory(
             @Valid @RequestBody CategoryRequestDto categoryRequestDto
-    ) throws URISyntaxException {
+    ) {
         CategoryResponseDto categoryResponseDto = commandCategoryService.create(categoryRequestDto);
-        return ResponseEntity.created(new URI(categoryResponseDto.getId().toString())).build();
+        return categoryResponseDto;
     }
 
     /**

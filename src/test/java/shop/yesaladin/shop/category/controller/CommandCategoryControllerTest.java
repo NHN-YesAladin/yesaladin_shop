@@ -2,6 +2,7 @@ package shop.yesaladin.shop.category.controller;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.never;
@@ -90,7 +91,8 @@ class CommandCategoryControllerTest {
                 childCategory.getParent().getId()
         );
 
-        given(commandCategoryService.create(any())).willReturn(CategoryResponseDto.fromEntity(childCategory));
+        CategoryResponseDto responseDto = CategoryResponseDto.fromEntity(childCategory);
+        given(commandCategoryService.create(any())).willReturn(responseDto);
 
         // when
         ResultActions perform = mockMvc.perform(post("/v1/categories").contentType(MediaType.APPLICATION_JSON)
@@ -98,8 +100,11 @@ class CommandCategoryControllerTest {
 
         // then
         perform.andDo(print())
-                .andExpect(status().isCreated())
-                .andExpect(header().longValue("Location", childCategory.getId()));
+                .andExpect(status().isOk())
+                .andExpect(header().stringValues("Content-Type", MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(jsonPath("$.id", equalTo(responseDto.getId().intValue())))
+                .andExpect(jsonPath("$.name", equalTo(responseDto.getName())))
+                .andExpect(jsonPath("$.isShown", equalTo(responseDto.getIsShown())));
 
         verify(commandCategoryService, times(1)).create(any());
     }

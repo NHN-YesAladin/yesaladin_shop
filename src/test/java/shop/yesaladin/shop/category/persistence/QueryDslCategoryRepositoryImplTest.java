@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.repository.QueryCategoryRepository;
 import shop.yesaladin.shop.category.dto.CategoryOnlyIdDto;
+import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 import shop.yesaladin.shop.category.dummy.CategoryDummy;
 import shop.yesaladin.shop.category.exception.CategoryNotFoundException;
 
@@ -242,7 +243,21 @@ class QueryDslCategoryRepositoryImplTest {
 
         // then
         assertThat(category.getChildren().size() > 0).isTrue();
-        System.out.println("category.getChildren() = " + category.getChildren());
+    }
+
+    @Disabled("로컬 DB 테스트 용")
+    @Test
+    void findCategoriesByParentId_realDB() throws Exception {
+        int size = 3;
+        // given
+        PageRequest pageRequest = PageRequest.of(0, size);
+
+        //when
+        Page<Category> page = queryCategoryRepository.findCategoriesByParentId(pageRequest, 10000L);
+        log.info("{}", page.getTotalPages());
+
+        //then
+        assertThat(page.getContent().size()).isEqualTo(size);
     }
 
 }

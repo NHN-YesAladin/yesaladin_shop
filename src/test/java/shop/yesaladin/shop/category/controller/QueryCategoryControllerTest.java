@@ -1,8 +1,11 @@
 package shop.yesaladin.shop.category.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -15,12 +18,14 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -54,6 +59,8 @@ class QueryCategoryControllerTest {
     @DisplayName("id를 통한 카테고리 조회 성공")
     void getCategoryById() throws Exception {
         // given
+        ArgumentCaptor<Long> longArgumentCaptor = ArgumentCaptor.forClass(Long.class);
+
         Category category = Category.builder().id(id).name(name).isShown(true).build();
         CategoryResponseDto responseDto = CategoryResponseDto.fromEntity(category);
         when(queryCategoryService.findCategoryById(id)).thenReturn(responseDto);
@@ -67,12 +74,17 @@ class QueryCategoryControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", equalTo(id.intValue())))
                 .andExpect(jsonPath("$.name", equalTo(name)));
+
+        verify(queryCategoryService, times(1)).findCategoryById(longArgumentCaptor.capture());
+        assertThat(longArgumentCaptor.getValue()).isEqualTo(id);
     }
 
     @Test
     @DisplayName("id를 통한 카테고리 조회 실패 - 없는 카테고리")
     void getCategoryById_categoryNotFound_fail() throws Exception {
         // given
+        ArgumentCaptor<Long> longArgumentCaptor = ArgumentCaptor.forClass(Long.class);
+
         when(queryCategoryService.findCategoryById(id)).thenThrow(new CategoryNotFoundException(id));
 
         // when
@@ -81,12 +93,19 @@ class QueryCategoryControllerTest {
 
         // then
         perform.andDo(print()).andExpect(status().isNotFound());
+
+        verify(queryCategoryService, times(1)).findCategoryById(longArgumentCaptor.capture());
+        assertThat(longArgumentCaptor.getValue()).isEqualTo(id);
     }
 
     @Test
     @DisplayName("페이징을 통한 카테고리 조회 성공")
     void getCategoriesByParentId() throws Exception {
         // given
+        ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
+        ArgumentCaptor<Long> longArgumentCaptor = ArgumentCaptor.forClass(Long.class);
+
+
         long parentId = 100L;
         Category parent = CategoryDummy.dummyParent(parentId);
         List<CategoryResponseDto> dtoList = new ArrayList<>();
@@ -100,21 +119,24 @@ class QueryCategoryControllerTest {
                     .build();
             dtoList.add(CategoryResponseDto.fromEntity(category));
         }
-        int page = 1;
-        int size = 3;
+        Integer page = 0;
+        Integer size = 3;
+        int first = page * size;
         Page<CategoryResponseDto> dtoPage = new PageImpl<>(
-                dtoList,
+                dtoList.subList(first, first + size),
                 PageRequest.of(page, size),
                 dtoList.size()
         );
-
         when(queryCategoryService.findCategoriesByParentId(any(),any())).thenReturn(dtoPage);
 
         // when
         ResultActions perform = mockMvc.perform(get("/v1/categories").param(
-                "parentId",
-                parent.getId().toString()
-        ).contentType(MediaType.APPLICATION_JSON));
+                        "parentId",
+                        parent.getId().toString()
+                )
+                .param("page", page.toString())
+                .param("size", size.toString())
+                .contentType(MediaType.APPLICATION_JSON));
 
         // then
         perform.andDo(print())
@@ -124,6 +146,55 @@ class QueryCategoryControllerTest {
                 .andExpect(jsonPath("$.totalDataCount", equalTo(dtoList.size())))
                 .andExpect(jsonPath("$.dataList.[0].id", equalTo(dtoList.get(0).getId().intValue())))
                 .andExpect(jsonPath("$.dataList.[0].name", equalTo(dtoList.get(0).getName())));
+
+        verify(queryCategoryService, times(1)).findCategoriesByParentId(
+                pageableCaptor.capture(),
+                longArgumentCaptor.capture()
+        );
+        assertThat(pageableCaptor.getValue()).isEqualTo(PageRequest.of(page, size));
+        assertThat(longArgumentCaptor.getValue()).isEqualTo(parentId);
+
+    }
+
+    @Test
+    @DisplayName("페이징 없는 2차 카테고리 조회 성공 ")
+    void getChildCategoriesByParentId() throws Exception {
+        // given
+        ArgumentCaptor<Long> longArgumentCaptor = ArgumentCaptor.forClass(Long.class);
+
+        long parentId = 100L;
+        Category parent = CategoryDummy.dummyParent(parentId);
+        List<CategoryResponseDto> dtoList = new ArrayList<>();
+        for (int i = 1; i <= 15; i++) {
+            Category category = Category.builder()
+                    .id((long) i)
+                    .name(name + i)
+                    .parent(parent)
+                    .depth(Category.DEPTH_CHILD)
+                    .isShown(true)
+                    .build();
+            dtoList.add(CategoryResponseDto.fromEntity(category));
+        }
+        when(queryCategoryService.findChildCategoriesByParentId(parentId)).thenReturn(dtoList);
+
+        // when
+        ResultActions perform = mockMvc.perform(get(
+                "/v1/categories/{parentId}/children",
+                parentId
+        ).param("parentId", parent.getId().toString()).contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[0].id", equalTo(dtoList.get(0).getId().intValue())))
+                .andExpect(jsonPath("$.[0].name", equalTo(dtoList.get(0).getName())))
+                .andExpect(jsonPath("$.[0].isShown", equalTo(dtoList.get(0).getIsShown())));
+
+        verify(
+                queryCategoryService,
+                times(1)
+        ).findChildCategoriesByParentId(longArgumentCaptor.capture());
+        assertThat(longArgumentCaptor.getValue()).isEqualTo(parentId);
     }
 
 }

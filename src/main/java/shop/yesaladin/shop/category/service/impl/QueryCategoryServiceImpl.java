@@ -48,7 +48,7 @@ public class QueryCategoryServiceImpl implements QueryCategoryService {
             responseDtos.add(CategoryResponseDto.fromEntity(category));
         }
 
-        return new PageImpl<>(responseDtos, pageable, responseDtos.size());
+        return new PageImpl<>(responseDtos, pageable, categoryPage.getTotalElements());
     }
 
     /**
