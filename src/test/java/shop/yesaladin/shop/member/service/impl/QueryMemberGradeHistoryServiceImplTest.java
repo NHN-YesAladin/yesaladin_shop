@@ -40,7 +40,7 @@ class QueryMemberGradeHistoryServiceImplTest {
     QueryMemberGradeHistoryService queryMemberGradeHistoryService;
 
     Clock clock = Clock.fixed(
-            Instant.parse("2023-01-01T00:00:00.000Z"),
+            Instant.parse("2023-03-10T00:00:00.000Z"),
             ZoneId.of("UTC")
     );
     QueryMemberGradeHistoryRepository queryMemberGradeHistoryRepository;
@@ -89,8 +89,8 @@ class QueryMemberGradeHistoryServiceImplTest {
     @Test
     void findByMemberId() {
         Long memberId = member.getId();
-        LocalDate startDate = LocalDate.of(2022, 1, 1);
-        LocalDate endDate = LocalDate.of(2023, 1, 1);
+        LocalDate startDate = LocalDate.of(2023, 1, 10);
+        LocalDate endDate = LocalDate.of(2023, 1, 12);
 
         PeriodQueryRequestDto periodQueryRequestDto = ReflectionUtils.newInstance(
                 PeriodQueryRequestDto.class,
