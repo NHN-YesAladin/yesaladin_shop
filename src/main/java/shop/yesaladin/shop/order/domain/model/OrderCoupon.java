@@ -14,12 +14,12 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import shop.yesaladin.shop.order.domain.dummy.CouponIssuance;
+import shop.yesaladin.shop.member.domain.model.MemberCoupon;
 
 /**
  * 주문에 사용한 쿠폰 엔티티입니다.
  *
- * @author 최예린
+ * @author 최예린, 서민지
  * @since 1.0
  */
 @Getter
@@ -38,22 +38,22 @@ public class OrderCoupon {
     private MemberOrder memberOrder;
 
     @ManyToOne
-    @MapsId(value = "couponIssuanceId")
-    @JoinColumn(name = "coupon_issuance_id", nullable = false)
-    private CouponIssuance couponIssuance;
+    @MapsId(value = "memberCouponId")
+    @JoinColumn(name = "member_coupon_id", nullable = false)
+    private MemberCoupon memberCoupon;
 
     /**
      * 주문에 사용한 쿠폰 엔티티 생성 메소드입니다.
      *
      * @param memberOrder 회원주문 데이터
-     * @param couponIssuance 회원이 소유한 쿠폰
+     * @param memberCoupon 회원이 소유한 쿠폰
      * @return 주문에 사용한 쿠폰 엔티티
      * @author 최예린
      * @since 1.0
      */
-    public static OrderCoupon create(MemberOrder memberOrder, CouponIssuance couponIssuance) {
-        Pk pk = new Pk(memberOrder.getId(), couponIssuance.getId());
-        return new OrderCoupon(pk, memberOrder, couponIssuance);
+    public static OrderCoupon create(MemberOrder memberOrder, MemberCoupon memberCoupon) {
+        Pk pk = new Pk(memberOrder.getId(), memberCoupon.getId());
+        return new OrderCoupon(pk, memberOrder, memberCoupon);
     }
 
     /**
@@ -72,7 +72,7 @@ public class OrderCoupon {
         @Column(name = "member_order_id", nullable = false)
         private long memberOrderId;
 
-        @Column(name = "coupon_issuance_id", nullable = false)
-        private long couponIssuanceId;
+        @Column(name = "member_coupon_id", nullable = false)
+        private long memberCouponId;
     }
 }
