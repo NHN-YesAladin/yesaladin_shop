@@ -106,6 +106,7 @@ public class Category {
         this.name = nameBeforeChanging;
     }
 
+    //TODO 연관관계 편의 메서드 필요성 검토
     public void addChildren() {
         this.parent.getChildren().add(this);
     }

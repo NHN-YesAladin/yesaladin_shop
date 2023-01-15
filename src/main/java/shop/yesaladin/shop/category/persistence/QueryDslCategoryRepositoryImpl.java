@@ -66,11 +66,9 @@ public class QueryDslCategoryRepositoryImpl implements QueryCategoryRepository {
     @Override
     public Optional<Category> findByName(String name) {
         QCategory category = QCategory.category;
-        Optional<Category> categoryOptional = Optional.ofNullable(queryFactory.selectFrom(category)
+        return Optional.ofNullable(queryFactory.selectFrom(category)
                 .where(category.name.eq(name))
                 .fetchFirst());
-
-        return categoryOptional;
     }
 
     /**
@@ -133,6 +131,14 @@ public class QueryDslCategoryRepositoryImpl implements QueryCategoryRepository {
                 .fetch();
     }
 
+    /**
+     * 동적 쿼리를 위한 메서드
+     *  1차 카테고리의 id가 null이 아니면 where절에서 적용
+     *
+     * @param category Q객체
+     * @param parentId 찾고자하는 1차 카테고리의 id , nullable
+     * @return
+     */
     private BooleanExpression parentIdEq(QCategory category, Long parentId) {
         if (parentId == null) {
             return null;
@@ -140,6 +146,14 @@ public class QueryDslCategoryRepositoryImpl implements QueryCategoryRepository {
         return category.parent.id.eq(parentId);
     }
 
+    /**
+     * 동적 쿼리를 위한 메서드
+     *  카테고리의 깊이가 null이 아니면 where절에서 적용
+     *
+     * @param category Q객체
+     * @param depth 찾고자하는 카테고리의 깊이 , nullable
+     * @return
+     */
     private BooleanExpression depthEq(QCategory category, Integer depth) {
 
         if (depth == null) {
@@ -158,13 +172,12 @@ public class QueryDslCategoryRepositoryImpl implements QueryCategoryRepository {
     @Override
     public Optional<Category> findById(Long id) {
         QCategory category = QCategory.category;
-        Optional<Category> categoryOptional = Optional.ofNullable(queryFactory.selectFrom(category)
+
+        return Optional.ofNullable(queryFactory.selectFrom(category)
                 .leftJoin(category.parent)
                 .fetchJoin()
                 .where(category.id.eq(id))
                 .fetchFirst());
-
-        return categoryOptional;
     }
 
 

@@ -115,7 +115,6 @@ public class QueryCategoryServiceImpl implements QueryCategoryService {
      * @param id 부모 카테고리의 id
      * @return 조회된 부모 Category
      */
-    //TODO 테스트 필요 - 카테고리 자기 참조 구현시 테스트 예정
     @Transactional(readOnly = true)
     @Override
     public Category findInnerCategoryById(long id) {

@@ -30,7 +30,6 @@ class QueryDslCategoryRepositoryImplTest {
     Category parentCategory;
     Category childCategory;
     Long parentId = 10000L;
-    Long childId = 10100L;
     @Autowired
     private QueryCategoryRepository queryCategoryRepository;
 

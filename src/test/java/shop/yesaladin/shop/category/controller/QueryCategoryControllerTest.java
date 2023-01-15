@@ -158,6 +158,37 @@ class QueryCategoryControllerTest {
     }
 
     @Test
+    @DisplayName("모든 1차 카테고리 조회 성공")
+    void getParentCategories() throws Exception {
+        // given
+
+        List<CategoryResponseDto> dtoList = new ArrayList<>();
+        for (int i = 1; i <= 15; i++) {
+            Category category = Category.builder()
+                    .id((long) i)
+                    .name(name + i)
+                    .depth(Category.DEPTH_PARENT)
+                    .isShown(true)
+                    .build();
+            dtoList.add(CategoryResponseDto.fromEntity(category));
+        }
+        when(queryCategoryService.findParentCategories()).thenReturn(dtoList);
+
+        // when
+        ResultActions perform = mockMvc.perform(get(
+                "/v1/categories/parents").contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[0].id", equalTo(dtoList.get(0).getId().intValue())))
+                .andExpect(jsonPath("$.[0].name", equalTo(dtoList.get(0).getName())))
+                .andExpect(jsonPath("$.[0].isShown", equalTo(dtoList.get(0).getIsShown())));
+
+        verify(queryCategoryService, times(1)).findParentCategories();
+    }
+
+    @Test
     @DisplayName("페이징 없는 2차 카테고리 조회 성공 ")
     void getChildCategoriesByParentId() throws Exception {
         // given
@@ -182,7 +213,7 @@ class QueryCategoryControllerTest {
         ResultActions perform = mockMvc.perform(get(
                 "/v1/categories/{parentId}/children",
                 parentId
-        ).param("parentId", parent.getId().toString()).contentType(MediaType.APPLICATION_JSON));
+        ).contentType(MediaType.APPLICATION_JSON));
 
         // then
         perform.andDo(print())
