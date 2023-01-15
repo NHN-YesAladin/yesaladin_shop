@@ -28,7 +28,7 @@ public class PaymentCodeConverter implements AttributeConverter<PaymentCode, Int
     }
 
     /**
-     * 결제코드를 PaymentCode 타입으로 변환합니다.
+     * 결제코드 Id 를 PaymentCode 타입으로 변환합니다.
      *
      * @param integer 결제코드의 Id
      * @return 결제코드

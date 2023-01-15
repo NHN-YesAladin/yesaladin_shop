@@ -13,7 +13,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
-import shop.yesaladin.shop.order.domain.dummy.CouponIssuance;
+import shop.yesaladin.shop.member.domain.model.MemberCoupon;
 import shop.yesaladin.shop.order.domain.model.MemberOrder;
 import shop.yesaladin.shop.order.domain.model.OrderUsedCoupon;
 import shop.yesaladin.shop.order.domain.model.OrderUsedCoupon.Pk;
@@ -35,7 +35,7 @@ class JpaOrderUsedCouponRepositoryTest {
     private Member member;
     private MemberAddress memberAddress;
     private MemberOrder memberOrder;
-    private CouponIssuance couponIssuance;
+    private MemberCoupon memberCoupon;
 
     private OrderUsedCoupon orderUsedCoupon;
 
@@ -49,12 +49,12 @@ class JpaOrderUsedCouponRepositoryTest {
         entityManager.persist(memberAddress);
 
         memberOrder = DummyOrder.memberOrder(member, memberAddress);
-        couponIssuance = DummyCouponIssuance.couponIssuance;
+        memberCoupon = DummyCouponIssuance.memberCoupon;
 
         entityManager.persist(memberOrder);
-        entityManager.persist(couponIssuance);
+        entityManager.persist(memberCoupon);
 
-        orderUsedCoupon = OrderUsedCoupon.create(memberOrder, couponIssuance);
+        orderUsedCoupon = OrderUsedCoupon.create(memberOrder, memberCoupon);
     }
 
     @Test
@@ -64,7 +64,7 @@ class JpaOrderUsedCouponRepositoryTest {
 
         //then
         assertThat(savedOrderUsedCoupon.getMemberOrder()).isEqualTo(memberOrder);
-        assertThat(savedOrderUsedCoupon.getCouponIssuance()).isEqualTo(couponIssuance);
+        assertThat(savedOrderUsedCoupon.getMemberCoupon()).isEqualTo(memberCoupon);
     }
 
     @Test
@@ -80,6 +80,6 @@ class JpaOrderUsedCouponRepositoryTest {
         assertThat(foundOrderUsedCoupon).isPresent();
         assertThat(foundOrderUsedCoupon.get().getPk()).isEqualTo(pk);
         assertThat(foundOrderUsedCoupon.get().getMemberOrder()).isEqualTo(memberOrder);
-        assertThat(foundOrderUsedCoupon.get().getCouponIssuance()).isEqualTo(couponIssuance);
+        assertThat(foundOrderUsedCoupon.get().getMemberCoupon()).isEqualTo(memberCoupon);
     }
 }

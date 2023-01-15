@@ -323,7 +323,7 @@ class CommandCategoryControllerTest {
         perform.andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id", equalTo(toEntity.getId().intValue())))
+                .andExpect(jsonPath("$.id", equalTo(responseDto.getId().intValue())))
                 .andExpect(jsonPath("$.name", equalTo(toEntity.getName())))
                 .andExpect(jsonPath("$.isShown", equalTo(toEntity.isShown())));
 
@@ -331,7 +331,7 @@ class CommandCategoryControllerTest {
                 longArgumentCaptor.capture(),
                 dtoArgumentCaptor.capture()
         );
-        assertThat(longArgumentCaptor.getValue()).isEqualTo(responseDto.getId());
+        assertThat(longArgumentCaptor.getValue()).isEqualTo(id);
         assertThat(dtoArgumentCaptor.getValue().getName()).isEqualTo(categoryRequestDto.getName());
         assertThat(dtoArgumentCaptor.getValue().getParentId()).isEqualTo(categoryRequestDto.getParentId());
         assertThat(dtoArgumentCaptor.getValue().getIsShown()).isEqualTo(categoryRequestDto.getIsShown());

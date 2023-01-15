@@ -37,7 +37,7 @@ public class Review {
     @JoinColumn(name = "order_product_id", nullable = false)
     private OrderProduct orderProduct;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
     @Column(nullable = false)
