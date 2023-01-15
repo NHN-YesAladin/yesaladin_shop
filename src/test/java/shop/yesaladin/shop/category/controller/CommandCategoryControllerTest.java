@@ -8,14 +8,25 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentRequest;
+import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
+import static shop.yesaladin.shop.docs.DocumentFormatGenerator.defaultValue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,9 +34,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.category.domain.model.Category;
@@ -34,7 +47,7 @@ import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 import shop.yesaladin.shop.category.dummy.CategoryDummy;
 import shop.yesaladin.shop.category.service.inter.CommandCategoryService;
 
-
+@AutoConfigureRestDocs
 @WebMvcTest(CommandCategoryController.class)
 class CommandCategoryControllerTest {
 
@@ -88,6 +101,8 @@ class CommandCategoryControllerTest {
         assertThat(argumentCaptor.getValue().getName()).isEqualTo(createDto.getName());
         assertThat(argumentCaptor.getValue().getOrder()).isEqualTo(createDto.getOrder());
         assertThat(argumentCaptor.getValue().getParentId()).isEqualTo(createDto.getParentId());
+
+        documentCreateCategory(perform,"create-parent-category");
     }
 
     @Test
@@ -123,6 +138,41 @@ class CommandCategoryControllerTest {
         assertThat(argumentCaptor.getValue().getName()).isEqualTo(createDto.getName());
         assertThat(argumentCaptor.getValue().getOrder()).isEqualTo(createDto.getOrder());
         assertThat(argumentCaptor.getValue().getParentId()).isEqualTo(createDto.getParentId());
+
+        documentCreateCategory(perform, "create-child-category");
+    }
+
+    private static void documentCreateCategory(ResultActions perform,String identifier) throws Exception {
+        perform.andDo(document(
+                identifier,
+                getDocumentRequest(),
+                getDocumentResponse(),
+                requestFields(
+                        fieldWithPath("name").type(JsonFieldType.STRING).description("카테고리 이름"),
+                        fieldWithPath("isShown").type(JsonFieldType.BOOLEAN)
+                                .description("카테고리 노출 여부")
+                                .attributes(defaultValue(true)),
+                        fieldWithPath("order").type(JsonFieldType.NUMBER)
+                                .description("카테고리 순서")
+                                .optional(),
+                        fieldWithPath("parentId").type(JsonFieldType.NUMBER)
+                                .description("부모 카테고리(=1차 카테고리)의 아이디")
+                                .optional()
+                ),
+                responseFields(
+                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("카테고리 아이디"),
+                        fieldWithPath("name").type(JsonFieldType.STRING).description("카테고리 이름"),
+                        fieldWithPath("isShown").type(JsonFieldType.BOOLEAN)
+                                .description("카테고리 노출 여부"),
+                        fieldWithPath("order").type(JsonFieldType.NUMBER)
+                                .optional()
+                                .description("카테고리 순서"),
+                        fieldWithPath("parentId").type(JsonFieldType.NUMBER).optional()
+                                .description("부모 카테고리(=1차 카테고리)의 아이디"),
+                        fieldWithPath("parentName").type(JsonFieldType.STRING).optional()
+                                .description("부모 카테고리(=1차 카테고리)의 이름")
+                )
+        ));
     }
 
 
@@ -140,6 +190,7 @@ class CommandCategoryControllerTest {
         perform.andDo(print()).andExpect(status().isBadRequest());
 
         verify(commandCategoryService, never()).create(any());
+
     }
 
     @Test
@@ -168,7 +219,7 @@ class CommandCategoryControllerTest {
 
         // when
         ResultActions perform = mockMvc.perform(put(
-                "/v1/categories/" + toEntity.getId()).contentType(MediaType.APPLICATION_JSON)
+                "/v1/categories/{id}", toEntity.getId()).contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(categoryRequestDto)));
 
         // then
@@ -187,6 +238,8 @@ class CommandCategoryControllerTest {
         assertThat(dtoArgumentCaptor.getValue().getName()).isEqualTo(categoryRequestDto.getName());
         assertThat(dtoArgumentCaptor.getValue().getParentId()).isEqualTo(categoryRequestDto.getParentId());
         assertThat(dtoArgumentCaptor.getValue().getIsShown()).isEqualTo(categoryRequestDto.getIsShown());
+
+        documentModifyCategory(perform,"update-parent-fields-category");
     }
 
     @Test
@@ -233,6 +286,7 @@ class CommandCategoryControllerTest {
         assertThat(dtoArgumentCaptor.getValue().getName()).isEqualTo(categoryRequestDto.getName());
         assertThat(dtoArgumentCaptor.getValue().getParentId()).isEqualTo(categoryRequestDto.getParentId());
         assertThat(dtoArgumentCaptor.getValue().getIsShown()).isEqualTo(categoryRequestDto.getIsShown());
+
     }
 
     @Test
@@ -243,12 +297,13 @@ class CommandCategoryControllerTest {
         ArgumentCaptor<CategoryRequestDto> dtoArgumentCaptor = ArgumentCaptor.forClass(
                 CategoryRequestDto.class);
 
+        Long id = 10300L;
         String changeName = "참고서";
         CategoryRequestDto categoryRequestDto = new CategoryRequestDto(
                 changeName,
                 childCategory.isShown(),
                 childCategory.getOrder(),
-                childCategory.getParent().getId()
+                null
         );
         Category toEntity = categoryRequestDto.toEntity(
                 parentCategory.getId() + Category.TERM_OF_PARENT_ID,
@@ -261,7 +316,7 @@ class CommandCategoryControllerTest {
 
         // when
         ResultActions perform = mockMvc.perform(put(
-                "/v1/categories/" + toEntity.getId()).contentType(MediaType.APPLICATION_JSON)
+                "/v1/categories/{id}", id).contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(categoryRequestDto)));
 
         // then
@@ -280,6 +335,8 @@ class CommandCategoryControllerTest {
         assertThat(dtoArgumentCaptor.getValue().getName()).isEqualTo(categoryRequestDto.getName());
         assertThat(dtoArgumentCaptor.getValue().getParentId()).isEqualTo(categoryRequestDto.getParentId());
         assertThat(dtoArgumentCaptor.getValue().getIsShown()).isEqualTo(categoryRequestDto.getIsShown());
+
+        documentModifyCategory(perform,"update-child-to-parent-category");
     }
 
     @Test
@@ -311,7 +368,7 @@ class CommandCategoryControllerTest {
 
         // when
         ResultActions perform = mockMvc.perform(put(
-                "/v1/categories/" + toEntity.getId()).contentType(MediaType.APPLICATION_JSON)
+                "/v1/categories/{id}", toEntity.getId()).contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(categoryRequestDto)));
 
         // then
@@ -330,8 +387,45 @@ class CommandCategoryControllerTest {
         assertThat(dtoArgumentCaptor.getValue().getName()).isEqualTo(categoryRequestDto.getName());
         assertThat(dtoArgumentCaptor.getValue().getParentId()).isEqualTo(otherParentId);
         assertThat(dtoArgumentCaptor.getValue().getIsShown()).isEqualTo(categoryRequestDto.getIsShown());
+
+        documentModifyCategory(perform,"update-child-other-parent-category");
     }
 
+    private static void documentModifyCategory(ResultActions perform,String identifier) throws Exception {
+        perform.andDo(document(
+                identifier,
+                getDocumentRequest(),
+                getDocumentResponse(),
+                pathParameters(
+                        parameterWithName("id").description("수정할 카테고리 아이디")
+                ),
+                requestFields(
+                        fieldWithPath("name").type(JsonFieldType.STRING).description("카테고리 이름"),
+                        fieldWithPath("isShown").type(JsonFieldType.BOOLEAN)
+                                .description("카테고리 노출 여부")
+                                .attributes(defaultValue(true)),
+                        fieldWithPath("order").type(JsonFieldType.NUMBER)
+                                .description("카테고리 순서")
+                                .optional(),
+                        fieldWithPath("parentId").type(JsonFieldType.NUMBER)
+                                .description("부모 카테고리(=1차 카테고리)의 아이디")
+                                .optional()
+                ),
+                responseFields(
+                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("카테고리 아이디"),
+                        fieldWithPath("name").type(JsonFieldType.STRING).description("카테고리 이름"),
+                        fieldWithPath("isShown").type(JsonFieldType.BOOLEAN)
+                                .description("카테고리 노출 여부"),
+                        fieldWithPath("order").type(JsonFieldType.NUMBER)
+                                .optional()
+                                .description("카테고리 순서"),
+                        fieldWithPath("parentId").type(JsonFieldType.NUMBER).optional()
+                                .description("부모 카테고리(=1차 카테고리)의 아이디"),
+                        fieldWithPath("parentName").type(JsonFieldType.STRING).optional()
+                                .description("부모 카테고리(=1차 카테고리)의 이름")
+                )
+        ));
+    }
 
     @Test
     @DisplayName("카테고리 수정 실패 - name이 null 인 경우")
@@ -367,7 +461,7 @@ class CommandCategoryControllerTest {
         doNothing().when(commandCategoryService).delete(parentCategory.getId());
         // when
         ResultActions perform = mockMvc.perform(delete(
-                "/v1/categories/" + parentCategory.getId()));
+                "/v1/categories/{id}", parentCategory.getId()));
 
         // then
         perform.andDo(print())
@@ -377,6 +471,18 @@ class CommandCategoryControllerTest {
         verify(commandCategoryService, times(1)).delete(longArgumentCaptor.capture());
         assertThat(longArgumentCaptor.getValue().intValue()).isEqualTo(parentCategory.getId()
                 .intValue());
+
+        perform.andDo(document(
+                "delete-category",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                pathParameters(
+                        parameterWithName("id").description("삭제할 카테고리 아이디")
+                ),
+                responseFields(
+                        fieldWithPath("result").type(JsonFieldType.STRING).description("삭제 성공 메시지")
+                )
+        ));
 
     }
 
