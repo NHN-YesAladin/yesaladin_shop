@@ -60,6 +60,9 @@ include::{snippets}/update-child-to-parent-category/http-request.adoc[]
 ====== 2차 카테고리 수정 요청 - 다른 1차 카테고리로 이동
 include::{snippets}/update-child-other-parent-category/http-request.adoc[]
 
+==== Path Parameter
+include::{snippets}/update-parent-fields-category/path-parameters.adoc[]
+
 ==== response
 
 ===== Body
