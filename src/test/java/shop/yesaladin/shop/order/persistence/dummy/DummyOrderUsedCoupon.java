@@ -2,13 +2,13 @@ package shop.yesaladin.shop.order.persistence.dummy;
 
 import shop.yesaladin.shop.member.domain.model.MemberCoupon;
 import shop.yesaladin.shop.order.domain.model.MemberOrder;
-import shop.yesaladin.shop.order.domain.model.OrderCoupon;
+import shop.yesaladin.shop.order.domain.model.OrderUsedCoupon;
 
 public class DummyOrderUsedCoupon {
 
-    public static OrderCoupon orderUsedCoupon(
+    public static OrderUsedCoupon orderUsedCoupon(
             MemberOrder memberOrder, MemberCoupon memberCoupon
     ) {
-        return OrderCoupon.create(memberOrder, memberCoupon);
+        return OrderUsedCoupon.create(memberOrder, memberCoupon);
     }
 }

@@ -26,8 +26,8 @@ import shop.yesaladin.shop.member.domain.model.MemberCoupon;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @Entity
-@Table(name = "order_coupons")
-public class OrderCoupon {
+@Table(name = "order_used_coupons")
+public class OrderUsedCoupon {
 
     @EmbeddedId
     private Pk pk;
@@ -51,9 +51,9 @@ public class OrderCoupon {
      * @author 최예린
      * @since 1.0
      */
-    public static OrderCoupon create(MemberOrder memberOrder, MemberCoupon memberCoupon) {
+    public static OrderUsedCoupon create(MemberOrder memberOrder, MemberCoupon memberCoupon) {
         Pk pk = new Pk(memberOrder.getId(), memberCoupon.getId());
-        return new OrderCoupon(pk, memberOrder, memberCoupon);
+        return new OrderUsedCoupon(pk, memberOrder, memberCoupon);
     }
 
     /**

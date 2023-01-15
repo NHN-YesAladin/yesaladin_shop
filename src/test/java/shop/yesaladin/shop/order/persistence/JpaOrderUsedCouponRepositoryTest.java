@@ -15,8 +15,8 @@ import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.member.domain.model.MemberCoupon;
 import shop.yesaladin.shop.order.domain.model.MemberOrder;
-import shop.yesaladin.shop.order.domain.model.OrderCoupon;
-import shop.yesaladin.shop.order.domain.model.OrderCoupon.Pk;
+import shop.yesaladin.shop.order.domain.model.OrderUsedCoupon;
+import shop.yesaladin.shop.order.domain.model.OrderUsedCoupon.Pk;
 import shop.yesaladin.shop.order.persistence.dummy.DummyCouponIssuance;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMemberAddress;
@@ -24,7 +24,7 @@ import shop.yesaladin.shop.order.persistence.dummy.DummyOrder;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-class JpaOrderCouponRepositoryTest {
+class JpaOrderUsedCouponRepositoryTest {
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -37,7 +37,7 @@ class JpaOrderCouponRepositoryTest {
     private MemberOrder memberOrder;
     private MemberCoupon memberCoupon;
 
-    private OrderCoupon orderCoupon;
+    private OrderUsedCoupon orderUsedCoupon;
 
 
     @BeforeEach
@@ -54,27 +54,27 @@ class JpaOrderCouponRepositoryTest {
         entityManager.persist(memberOrder);
         entityManager.persist(memberCoupon);
 
-        orderCoupon = OrderCoupon.create(memberOrder, memberCoupon);
+        orderUsedCoupon = OrderUsedCoupon.create(memberOrder, memberCoupon);
     }
 
     @Test
     void save() {
         //when
-        OrderCoupon savedOrderCoupon = orderUsedCouponRepository.save(orderCoupon);
+        OrderUsedCoupon savedOrderUsedCoupon = orderUsedCouponRepository.save(orderUsedCoupon);
 
         //then
-        assertThat(savedOrderCoupon.getMemberOrder()).isEqualTo(memberOrder);
-        assertThat(savedOrderCoupon.getMemberCoupon()).isEqualTo(memberCoupon);
+        assertThat(savedOrderUsedCoupon.getMemberOrder()).isEqualTo(memberOrder);
+        assertThat(savedOrderUsedCoupon.getMemberCoupon()).isEqualTo(memberCoupon);
     }
 
     @Test
     void findById() {
         //given
-        entityManager.persist(orderCoupon);
-        Pk pk = orderCoupon.getPk();
+        entityManager.persist(orderUsedCoupon);
+        Pk pk = orderUsedCoupon.getPk();
 
         //when
-        Optional<OrderCoupon> foundOrderUsedCoupon = orderUsedCouponRepository.findById(pk);
+        Optional<OrderUsedCoupon> foundOrderUsedCoupon = orderUsedCouponRepository.findById(pk);
 
         //then
         assertThat(foundOrderUsedCoupon).isPresent();

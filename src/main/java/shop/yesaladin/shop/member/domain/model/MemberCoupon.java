@@ -51,6 +51,6 @@ public class MemberCoupon {
     @Column(name = "expiration_date", nullable = false)
     private LocalDate expirationDate;
 
-    @Column(name = "used+datetime")
+    @Column(name = "used_datetime")
     private LocalDateTime usedDatetime;
 }
