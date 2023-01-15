@@ -65,25 +65,30 @@ class QueryCategoryServiceTest {
                 list.size()
         );
 
-        when(queryCategoryRepository.findCategoriesByParentId(any(),any())).thenReturn(categoryPage);
+        when(queryCategoryRepository.findCategoriesByParentId(any(),
+                any())).thenReturn(categoryPage);
 
         //when
         Page<CategoryResponseDto> categoryResponseDtoPage = queryCategoryService.findCategoriesByParentId(
                 pageRequest,
-                parent.getId());
-        log.info("categoryPage.getTotalElements() : {}",categoryPage.getTotalElements());
-        log.info("categoryResponseDtoPage.getTotalElements() : {}",categoryResponseDtoPage.getTotalElements());
+                parent.getId()
+        );
+        log.info("categoryPage.getTotalElements() : {}", categoryPage.getTotalElements());
+        log.info("categoryResponseDtoPage.getTotalElements() : {}",
+                categoryResponseDtoPage.getTotalElements());
 
         //then
         assertThat(categoryResponseDtoPage.getPageable()).isEqualTo(pageRequest);
-        assertThat(categoryResponseDtoPage.getContent().size()).isEqualTo(categoryPage.getContent().size());
+        assertThat(categoryResponseDtoPage.getContent().size()).isEqualTo(categoryPage.getContent()
+                .size());
 
         verify(
                 queryCategoryRepository,
                 times(1)
         ).findCategoriesByParentId(pageableArgumentCaptor.capture(), longArgumentCaptor.capture());
 
-        assertThat(pageableArgumentCaptor.getValue().getOffset()).isEqualTo(pageRequest.getOffset());
+        assertThat(pageableArgumentCaptor.getValue()
+                .getOffset()).isEqualTo(pageRequest.getOffset());
         assertThat(longArgumentCaptor.getValue()).isEqualTo(parent.getId());
     }
 
@@ -145,8 +150,8 @@ class QueryCategoryServiceTest {
             categories.add(category);
         }
         Collections.reverse(categories);
-        when(queryCategoryRepository.findCategories(any(), eq(Category.DEPTH_PARENT))).thenReturn(categories);
-
+        when(queryCategoryRepository.findCategories(any(), eq(Category.DEPTH_PARENT))).thenReturn(
+                categories);
 
         // when
         List<CategoryResponseDto> responseDtos = queryCategoryService.findParentCategories();
@@ -157,7 +162,10 @@ class QueryCategoryServiceTest {
         assertThat(responseDtos.get(0).getOrder()).isEqualTo(categories.get(0).getOrder());
         assertThat(responseDtos.get(0).getParentId()).isNull();
 
-        verify(queryCategoryRepository, times(1)).findCategories(longArgumentCaptor.capture(), eq(Category.DEPTH_PARENT));
+        verify(queryCategoryRepository, times(1)).findCategories(
+                longArgumentCaptor.capture(),
+                eq(Category.DEPTH_PARENT)
+        );
         assertThat(longArgumentCaptor.getValue()).isNull();
     }
 
@@ -191,8 +199,12 @@ class QueryCategoryServiceTest {
         assertThat(responseDtos.get(0).getId()).isEqualTo(categories.get(0).getId());
         assertThat(responseDtos.get(0).getName()).isEqualTo(categories.get(0).getName());
         assertThat(responseDtos.get(0).getOrder()).isEqualTo(categories.get(0).getOrder());
-        assertThat(responseDtos.get(0).getParentId()).isEqualTo(categories.get(0).getParent().getId());
-        assertThat(responseDtos.get(0).getParentName()).isEqualTo(categories.get(0).getParent().getName());
+        assertThat(responseDtos.get(0).getParentId()).isEqualTo(categories.get(0)
+                .getParent()
+                .getId());
+        assertThat(responseDtos.get(0).getParentName()).isEqualTo(categories.get(0)
+                .getParent()
+                .getName());
 
         verify(queryCategoryRepository, times(1)).findCategories(
                 longArgumentCaptor.capture(),

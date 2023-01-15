@@ -97,14 +97,17 @@ public class Category {
     }
 
     /**
-     * FK 제약조건으로 인해 삭제가 불가한 카테고리에 disable 이라는 기능을 추가
-     *  disable = true
+     * FK 제약조건으로 인해 삭제가 불가한 카테고리에 disable 이라는 기능을 추가 disable = true
      *
      * @param nameBeforeChanging 변경감지로 인해 이름이 변경 되는 경우, 기존 엔티티의 이름을 저장하기 위하여 사용
      */
     public void disableCategory(String nameBeforeChanging) {
         this.isDisable = true;
         this.name = nameBeforeChanging;
+    }
+
+    public void addChildren() {
+        this.parent.getChildren().add(this);
     }
 
     public void changeParent(Category parent) {

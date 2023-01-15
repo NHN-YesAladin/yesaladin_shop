@@ -33,22 +33,18 @@ import shop.yesaladin.shop.publish.domain.model.Publisher;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class JpaProductCategoryRepositoryTest {
 
-    @Autowired
-    private TestEntityManager entityManager;
-
-    @Autowired
-    private JpaProductCategoryRepository repository;
-
-    private String name = "국내도서";
     String isbn = "00000-000XX-XXX-XXX";
-
     ProductCategory productCategory;
-
     SubscribeProduct subscribeProduct;
     Publisher publisher;
     File thumbNailFile;
     File ebookFile;
     TotalDiscountRate totalDiscountRate;
+    @Autowired
+    private TestEntityManager entityManager;
+    @Autowired
+    private JpaProductCategoryRepository repository;
+    private String name = "국내도서";
 
     @BeforeEach
     void setUp() {
@@ -58,12 +54,14 @@ class JpaProductCategoryRepositoryTest {
         ebookFile = entityManager.persist(DummyFile.dummy(".pdf"));
         totalDiscountRate = entityManager.persist(DummyTotalDiscountRate.dummy());
 
-        Product product = DummyProduct.dummy(isbn,
+        Product product = DummyProduct.dummy(
+                isbn,
                 subscribeProduct,
                 publisher,
                 thumbNailFile,
                 ebookFile,
-                totalDiscountRate);
+                totalDiscountRate
+        );
         Category category = CategoryDummy.dummyParent();
 
         entityManager.persist(product);

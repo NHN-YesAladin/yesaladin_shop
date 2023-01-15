@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.repository.QueryCategoryRepository;
 import shop.yesaladin.shop.category.dto.CategoryOnlyIdDto;
-import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 import shop.yesaladin.shop.category.dummy.CategoryDummy;
 import shop.yesaladin.shop.category.exception.CategoryNotFoundException;
 
@@ -28,14 +27,12 @@ class QueryDslCategoryRepositoryImplTest {
 
     @PersistenceContext
     EntityManager em;
-
-    @Autowired
-    private QueryCategoryRepository queryCategoryRepository;
-
     Category parentCategory;
     Category childCategory;
     Long parentId = 10000L;
     Long childId = 10100L;
+    @Autowired
+    private QueryCategoryRepository queryCategoryRepository;
 
     @BeforeEach
     void setUp() {
@@ -57,8 +54,10 @@ class QueryDslCategoryRepositoryImplTest {
         PageRequest pageRequest = PageRequest.of(1, size);
 
         //when
-        Page<Category> page = queryCategoryRepository.findCategoriesByParentId(pageRequest,
-                parentCategory.getId());
+        Page<Category> page = queryCategoryRepository.findCategoriesByParentId(
+                pageRequest,
+                parentCategory.getId()
+        );
         log.info("{}", page.getContent().size());
 
         //then
@@ -83,10 +82,10 @@ class QueryDslCategoryRepositoryImplTest {
         // given
         em.persist(parentCategory);
 
-         // when
+        // when
         CategoryOnlyIdDto onlyId = queryCategoryRepository.getLatestIdByDepth(parentCategory.getDepth());
 
-         // then
+        // then
         assertThat(onlyId.getId()).isEqualTo(parentCategory.getId());
     }
 
@@ -214,7 +213,6 @@ class QueryDslCategoryRepositoryImplTest {
         // then
         assertThat(categories.size()).isEqualTo(2);
     }
-
 
 
     @Test

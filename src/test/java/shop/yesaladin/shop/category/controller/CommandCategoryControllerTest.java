@@ -2,7 +2,6 @@ package shop.yesaladin.shop.category.controller;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.never;
@@ -39,15 +38,14 @@ class CommandCategoryControllerTest {
 
     @Autowired
     ObjectMapper objectMapper;
-    @Autowired
-    private MockMvc mockMvc;
-    @MockBean
-    private CommandCategoryService commandCategoryService;
-
     Category parentCategory;
     Category childCategory;
     Long parentId = 10000L;
     Long childId = 10100L;
+    @Autowired
+    private MockMvc mockMvc;
+    @MockBean
+    private CommandCategoryService commandCategoryService;
 
     @BeforeEach
     void setUp() {
@@ -66,7 +64,8 @@ class CommandCategoryControllerTest {
                 null
         );
 
-        given(commandCategoryService.create(any())).willReturn(CategoryResponseDto.fromEntity(parentCategory));
+        given(commandCategoryService.create(any())).willReturn(CategoryResponseDto.fromEntity(
+                parentCategory));
 
         // when
         ResultActions perform = mockMvc.perform(post("/v1/categories").contentType(MediaType.APPLICATION_JSON)
@@ -142,7 +141,10 @@ class CommandCategoryControllerTest {
                 parentCategory.getDepth(),
                 null
         );
-        given(commandCategoryService.update(any(), any())).willReturn(CategoryResponseDto.fromEntity(
+        given(commandCategoryService.update(
+                any(),
+                any()
+        )).willReturn(CategoryResponseDto.fromEntity(
                 toEntity));
 
         // when
@@ -177,7 +179,10 @@ class CommandCategoryControllerTest {
                 childCategory.getDepth(),
                 childCategory.getParent()
         );
-        given(commandCategoryService.update(any(), any())).willReturn(CategoryResponseDto.fromEntity(
+        given(commandCategoryService.update(
+                any(),
+                any()
+        )).willReturn(CategoryResponseDto.fromEntity(
                 toEntity));
 
         // when
@@ -212,7 +217,10 @@ class CommandCategoryControllerTest {
                 Category.DEPTH_PARENT,
                 null
         );
-        given(commandCategoryService.update(any(), any())).willReturn(CategoryResponseDto.fromEntity(
+        given(commandCategoryService.update(
+                any(),
+                any()
+        )).willReturn(CategoryResponseDto.fromEntity(
                 toEntity));
 
         // when
@@ -250,7 +258,10 @@ class CommandCategoryControllerTest {
                 childCategory.getDepth(),
                 otherParentCategory
         );
-        given(commandCategoryService.update(any(), any())).willReturn(CategoryResponseDto.fromEntity(
+        given(commandCategoryService.update(
+                any(),
+                any()
+        )).willReturn(CategoryResponseDto.fromEntity(
                 toEntity));
 
         // when
@@ -281,7 +292,10 @@ class CommandCategoryControllerTest {
                 parentCategory.getDepth(),
                 null
         );
-        given(commandCategoryService.update(any(), any())).willReturn(CategoryResponseDto.fromEntity(
+        given(commandCategoryService.update(
+                any(),
+                any()
+        )).willReturn(CategoryResponseDto.fromEntity(
                 toEntity));
 
         // when

@@ -52,8 +52,8 @@ public class QueryCategoryServiceImpl implements QueryCategoryService {
     }
 
     /**
-     *  1차 카테고리를 조회 하기 위한 기능
-     *   queryCategoryRepository.findCategories(null,1차 카테고리의 깊이)를 사용하여 조회 (동적 쿼리)
+     * 1차 카테고리를 조회 하기 위한 기능 queryCategoryRepository.findCategories(null,1차 카테고리의 깊이)를 사용하여 조회 (동적
+     * 쿼리)
      *
      * @return CategoryResponse 카테고리의 일부 정보를 담고 있는 dto
      */
@@ -67,7 +67,7 @@ public class QueryCategoryServiceImpl implements QueryCategoryService {
      * parentId 혹은 depth를 통해 category를 찾아 dto로 변환하는 기능
      *
      * @param parentId 찾고자하는 카테고리의 parentId
-     * @param depth 찾고자하는 카테고리의 depth
+     * @param depth    찾고자하는 카테고리의 depth
      * @return CategorySimpleDto 카테고리의 기본 정보를 담고있는 dto
      */
     private List<CategoryResponseDto> getCategoryResponseDtos(Long parentId, Integer depth) {
@@ -124,10 +124,10 @@ public class QueryCategoryServiceImpl implements QueryCategoryService {
 
     /**
      * 카테고리 조회
-     * @throws CategoryNotFoundException 해당하는 id의 카테고리가 없을 경우
      *
      * @param id
      * @return
+     * @throws CategoryNotFoundException 해당하는 id의 카테고리가 없을 경우
      */
     private Category tryGetCategoryById(long id) {
         return queryCategoryRepository.findById(id)

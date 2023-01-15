@@ -3,7 +3,6 @@ package shop.yesaladin.shop.category.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -105,7 +104,6 @@ class QueryCategoryControllerTest {
         ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
         ArgumentCaptor<Long> longArgumentCaptor = ArgumentCaptor.forClass(Long.class);
 
-
         long parentId = 100L;
         Category parent = CategoryDummy.dummyParent(parentId);
         List<CategoryResponseDto> dtoList = new ArrayList<>();
@@ -127,7 +125,7 @@ class QueryCategoryControllerTest {
                 PageRequest.of(page, size),
                 dtoList.size()
         );
-        when(queryCategoryService.findCategoriesByParentId(any(),any())).thenReturn(dtoPage);
+        when(queryCategoryService.findCategoriesByParentId(any(), any())).thenReturn(dtoPage);
 
         // when
         ResultActions perform = mockMvc.perform(get("/v1/categories").param(
@@ -144,7 +142,10 @@ class QueryCategoryControllerTest {
                 .andExpect(jsonPath("$.totalPage", equalTo(dtoList.size() / size)))
                 .andExpect(jsonPath("$.currentPage", equalTo(page)))
                 .andExpect(jsonPath("$.totalDataCount", equalTo(dtoList.size())))
-                .andExpect(jsonPath("$.dataList.[0].id", equalTo(dtoList.get(0).getId().intValue())))
+                .andExpect(jsonPath(
+                        "$.dataList.[0].id",
+                        equalTo(dtoList.get(0).getId().intValue())
+                ))
                 .andExpect(jsonPath("$.dataList.[0].name", equalTo(dtoList.get(0).getName())));
 
         verify(queryCategoryService, times(1)).findCategoriesByParentId(

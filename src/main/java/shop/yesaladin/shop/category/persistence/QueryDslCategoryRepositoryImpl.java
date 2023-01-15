@@ -9,7 +9,6 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
@@ -71,10 +70,6 @@ public class QueryDslCategoryRepositoryImpl implements QueryCategoryRepository {
                 .where(category.name.eq(name))
                 .fetchFirst());
 
-        if (categoryOptional.isEmpty()) {
-            return Optional.empty();
-        }
-
         return categoryOptional;
     }
 
@@ -122,10 +117,8 @@ public class QueryDslCategoryRepositoryImpl implements QueryCategoryRepository {
 
 
     /**
-     *
-     *
      * @param parentId 찾고자하는 카테고리의 parentId
-     * @param depth 찾고자하는 카테고리의 깊이
+     * @param depth    찾고자하는 카테고리의 깊이
      * @return Category 엔티티
      */
     @Override
@@ -170,10 +163,6 @@ public class QueryDslCategoryRepositoryImpl implements QueryCategoryRepository {
                 .fetchJoin()
                 .where(category.id.eq(id))
                 .fetchFirst());
-
-        if (categoryOptional.isEmpty()) {
-            return Optional.empty();
-        }
 
         return categoryOptional;
     }

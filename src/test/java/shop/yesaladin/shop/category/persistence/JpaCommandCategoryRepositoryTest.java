@@ -14,13 +14,13 @@ import shop.yesaladin.shop.category.dummy.CategoryDummy;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class JpaCategoryRepositoryTest {
+class JpaCommandCategoryRepositoryTest {
 
     @Autowired
     TestEntityManager em;
 
     @Autowired
-    private JpaCategoryRepository jpaCategoryRepository;
+    private JpaCommandCategoryRepository jpaCommandCategoryRepository;
 
     private Category sample;
     private String name = "국내도서";
@@ -34,7 +34,7 @@ class JpaCategoryRepositoryTest {
     @Test
     void save() {
         //when
-        Category save = jpaCategoryRepository.save(sample);
+        Category save = jpaCommandCategoryRepository.save(sample);
 
         //then
         assertThat(save.getName()).isEqualTo(name);
@@ -47,13 +47,12 @@ class JpaCategoryRepositoryTest {
         Category persistedCategory = em.persist(sample);
 
         // when
-        jpaCategoryRepository.deleteById(persistedCategory.getId());
+        jpaCommandCategoryRepository.deleteById(persistedCategory.getId());
         Category category = em.find(Category.class, persistedCategory.getId());
 
         // then
         assertThat(category).isNull();
     }
-
 
 
 }

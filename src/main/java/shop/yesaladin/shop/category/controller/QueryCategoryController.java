@@ -1,7 +1,6 @@
 package shop.yesaladin.shop.category.controller;
 
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;

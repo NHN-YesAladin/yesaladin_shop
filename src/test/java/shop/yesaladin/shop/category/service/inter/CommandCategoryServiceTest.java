@@ -23,15 +23,14 @@ import shop.yesaladin.shop.category.service.impl.CommandCategoryServiceImpl;
 
 class CommandCategoryServiceTest {
 
-    private CommandCategoryRepository commandCategoryRepository;
-    private QueryCategoryRepository queryCategoryRepository;
-    private QueryCategoryService queryCategoryService;
-    private CommandCategoryService commandCategoryService;
-
     Category parentCategory;
     Category childCategory;
     Long parentId = 10000L;
     Long childId = 10100L;
+    private CommandCategoryRepository commandCategoryRepository;
+    private QueryCategoryRepository queryCategoryRepository;
+    private QueryCategoryService queryCategoryService;
+    private CommandCategoryService commandCategoryService;
 
     @BeforeEach
     void setUp() {
@@ -61,9 +60,11 @@ class CommandCategoryServiceTest {
         );
         CategoryOnlyIdDto idDto = new CategoryOnlyIdDto(
                 parentCategory.getId() + Category.TERM_OF_PARENT_ID);
-        Category toEntity = createDto.toEntity(parentCategory.getId(),
+        Category toEntity = createDto.toEntity(
+                parentCategory.getId(),
                 parentCategory.getDepth(),
-                null);
+                null
+        );
 
         when(commandCategoryRepository.save(any())).thenReturn(toEntity);
         when(queryCategoryRepository.getLatestIdByDepth(Category.DEPTH_PARENT)).thenReturn(idDto);
@@ -94,13 +95,17 @@ class CommandCategoryServiceTest {
         CategoryOnlyIdDto idDto = new CategoryOnlyIdDto(
                 childCategory.getId() + Category.TERM_OF_CHILD_ID);
 
-        Category toEntity = createDto.toEntity(childCategory.getId(),
+        Category toEntity = createDto.toEntity(
+                childCategory.getId(),
                 childCategory.getDepth(),
-                childCategory.getParent());
+                childCategory.getParent()
+        );
 
         when(commandCategoryRepository.save(any())).thenReturn(toEntity);
-        when(queryCategoryRepository.getLatestChildIdByDepthAndParentId(Category.DEPTH_CHILD,
-                childCategory.getParent().getId())).thenReturn(idDto);
+        when(queryCategoryRepository.getLatestChildIdByDepthAndParentId(
+                Category.DEPTH_CHILD,
+                childCategory.getParent().getId()
+        )).thenReturn(idDto);
 
         //when
         CategoryResponseDto categoryResponseDto = commandCategoryService.create(createDto);
@@ -131,7 +136,8 @@ class CommandCategoryServiceTest {
                 null
         );
 
-        when(queryCategoryService.findInnerCategoryById(parentCategory.getId())).thenReturn(parentCategory);
+        when(queryCategoryService.findInnerCategoryById(parentCategory.getId())).thenReturn(
+                parentCategory);
 
         // when
         CategoryResponseDto responseDto = commandCategoryService.update(
@@ -160,7 +166,8 @@ class CommandCategoryServiceTest {
                 childCategory.getParent().getId()
         );
 
-        when(queryCategoryService.findInnerCategoryById(childCategory.getId())).thenReturn(childCategory);
+        when(queryCategoryService.findInnerCategoryById(childCategory.getId())).thenReturn(
+                childCategory);
 
         // when
         CategoryResponseDto responseDto = commandCategoryService.update(
@@ -195,10 +202,10 @@ class CommandCategoryServiceTest {
                 null
         );
 
-        when(queryCategoryService.findInnerCategoryById(childCategory.getId())).thenReturn(childCategory);
+        when(queryCategoryService.findInnerCategoryById(childCategory.getId())).thenReturn(
+                childCategory);
         when(commandCategoryRepository.save(any())).thenReturn(toEntity);
         when(queryCategoryRepository.getLatestIdByDepth(Category.DEPTH_PARENT)).thenReturn(idDto);
-
 
         // when
         CategoryResponseDto responseDto = commandCategoryService.update(
@@ -239,7 +246,8 @@ class CommandCategoryServiceTest {
                 otherParentCategory
         );
 
-        when(queryCategoryService.findInnerCategoryById(childCategory.getId())).thenReturn(childCategory);
+        when(queryCategoryService.findInnerCategoryById(childCategory.getId())).thenReturn(
+                childCategory);
         when(commandCategoryRepository.save(any())).thenReturn(toEntity);
         when(queryCategoryRepository.getLatestChildIdByDepthAndParentId(
                 Category.DEPTH_CHILD,
@@ -258,7 +266,10 @@ class CommandCategoryServiceTest {
         assertThat(childCategory.isDisable()).isEqualTo(true);
 
         verify(queryCategoryService, times(1)).findInnerCategoryById(childCategory.getId());
-        verify(queryCategoryService, times(1)).findInnerCategoryById(categoryRequestDto.getParentId());
+        verify(
+                queryCategoryService,
+                times(1)
+        ).findInnerCategoryById(categoryRequestDto.getParentId());
         verify(commandCategoryRepository, times(1)).save(any());
         verify(
                 queryCategoryRepository,

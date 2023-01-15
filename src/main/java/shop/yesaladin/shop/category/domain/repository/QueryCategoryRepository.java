@@ -6,7 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.dto.CategoryOnlyIdDto;
-import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 
 /**
  * 카테고리 조회용(R) 레포지토리 인터페이스
@@ -35,18 +34,16 @@ public interface QueryCategoryRepository {
     Optional<Category> findByName(String name);
 
     /**
-     * 카테고리 id의 마지막 값을 depth와 부모 id를 통해 조회
-     *   2차 카테고리의 마지막 id를 찾아오기 위해 사용
+     * 카테고리 id의 마지막 값을 depth와 부모 id를 통해 조회 2차 카테고리의 마지막 id를 찾아오기 위해 사용
      *
-     * @param depth 2차 카테고리의 깊이 값인 1이 입력됨
+     * @param depth    2차 카테고리의 깊이 값인 1이 입력됨
      * @param parentId 2차 카테고리가 가지고있는 부모 id
      * @return Long id 만 가지고있음
      */
     CategoryOnlyIdDto getLatestChildIdByDepthAndParentId(int depth, Long parentId);
 
     /**
-     * 카테고리의 id의 마지막 값을 depth를 통해 조회
-     *   1차 카테고리의 마지막 id를 찾아오기 위해 사용
+     * 카테고리의 id의 마지막 값을 depth를 통해 조회 1차 카테고리의 마지막 id를 찾아오기 위해 사용
      *
      * @param depth 1차 카테고리의 깊이 값인 0이 입력됨
      * @return Long id 만 가지고있음
@@ -57,12 +54,11 @@ public interface QueryCategoryRepository {
      * parentId 혹은 depth를 통해 category를 찾을 때 사용
      *
      * @param parentId 찾고자하는 카테고리의 parentId
-     * @param depth 찾고자하는 카테고리의 depth
+     * @param depth    찾고자하는 카테고리의 depth
      * @return CategorySimpleDto 카테고리의 기본 정보를 담고있는 dto
      */
 
     List<Category> findCategories(Long parentId, Integer depth);
-
 
 
     /**
