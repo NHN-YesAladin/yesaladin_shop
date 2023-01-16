@@ -1,0 +1,108 @@
+= Category
+
+=== 카테고리 생성
+
+==== curl
+====== 1차 카테고리 생성 요청
+include::{snippets}/create-parent-category/curl-request.adoc[]
+====== 2차 카테고리 생성 요청
+include::{snippets}/create-child-category/curl-request.adoc[]
+
+==== request
+
+===== Body
+
+
+include::{snippets}/create-parent-category/request-fields.adoc[]
+
+===== Example
+====== 1차 카테고리 생성 요청
+include::{snippets}/create-parent-category/http-request.adoc[]
+====== 2차 카테고리 생성 요청
+include::{snippets}/create-child-category/http-request.adoc[]
+
+==== response
+
+===== Body
+
+include::{snippets}/create-parent-category/response-fields.adoc[]
+
+===== Example
+====== 1차 카테고리 생성 응답
+include::{snippets}/create-parent-category/http-response.adoc[]
+====== 2차 카테고리 생성 응답
+include::{snippets}/create-child-category/http-response.adoc[]
+
+---
+
+=== 카테고리 수정
+
+==== curl
+====== 1차 카테고리 수정 요청
+include::{snippets}/update-parent-fields-category/curl-request.adoc[]
+====== 2차 카테고리 수정 요청 - 1차 카테고리로 변경
+include::{snippets}/update-child-to-parent-category/curl-request.adoc[]
+====== 2차 카테고리 수정 요청 - 다른 1차 카테고리로 이동
+include::{snippets}/update-child-other-parent-category/curl-request.adoc[]
+
+==== request
+
+===== Body
+
+
+include::{snippets}/update-parent-fields-category/request-fields.adoc[]
+
+===== Example
+====== 1차 카테고리 수정 요청
+include::{snippets}/update-parent-fields-category/http-request.adoc[]
+====== 2차 카테고리 수정 요청 - 1차 카테고리로 변경
+include::{snippets}/update-child-to-parent-category/http-request.adoc[]
+====== 2차 카테고리 수정 요청 - 다른 1차 카테고리로 이동
+include::{snippets}/update-child-other-parent-category/http-request.adoc[]
+
+==== Path Parameter
+include::{snippets}/update-parent-fields-category/path-parameters.adoc[]
+
+==== response
+
+===== Body
+
+include::{snippets}/update-parent-fields-category/response-fields.adoc[]
+
+===== Example
+====== 1차 카테고리 수정 응답
+include::{snippets}/update-parent-fields-category/http-response.adoc[]
+====== 2차 카테고리 수정 응답 - 1차 카테고리로 변경 완료
+include::{snippets}/update-child-to-parent-category/http-response.adoc[]
+====== 2차 카테고리 수정 응답 - 다른 1차 카테고리로 이동 완료
+include::{snippets}/update-child-other-parent-category/http-response.adoc[]
+
+
+---
+
+=== 카테고리 삭제
+
+==== curl
+====== 카테고리 삭제 요청
+include::{snippets}/delete-category/curl-request.adoc[]
+
+==== request
+
+==== Path Parameter
+include::{snippets}/delete-category/path-parameters.adoc[]
+
+===== Example
+include::{snippets}/delete-category/http-request.adoc[]
+
+
+==== response
+
+===== Body
+
+include::{snippets}/delete-category/response-fields.adoc[]
+
+===== Example
+include::{snippets}/delete-category/http-response.adoc[]
+
+
+---

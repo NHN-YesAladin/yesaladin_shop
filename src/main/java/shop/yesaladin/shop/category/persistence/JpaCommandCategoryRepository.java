@@ -12,7 +12,7 @@ import shop.yesaladin.shop.category.domain.repository.CommandCategoryRepository;
  * @since 1.0
  */
 
-public interface JpaCategoryRepository extends Repository<Category, Long>,
+public interface JpaCommandCategoryRepository extends Repository<Category, Long>,
         CommandCategoryRepository {
 
 
