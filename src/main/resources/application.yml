@@ -13,3 +13,6 @@ spring:
     username: sa
     password:
 
+elastic:
+  host: 103.218.159.211:9200
+
