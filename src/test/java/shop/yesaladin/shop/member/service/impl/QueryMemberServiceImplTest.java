@@ -1,6 +1,7 @@
 package shop.yesaladin.shop.member.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +13,7 @@ import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRoleRepository;
 import shop.yesaladin.shop.member.dto.MemberDto;
 import shop.yesaladin.shop.member.dto.MemberLoginResponseDto;
+import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 
 class QueryMemberServiceImplTest {
 
@@ -31,6 +33,19 @@ class QueryMemberServiceImplTest {
     }
 
     @Test
+    void findMemberById_failed_whenMemberNotFound() throws Exception {
+        //given
+        long id = 1L;
+
+        Mockito.when(repository.findById(id))
+                .thenReturn(Optional.empty());
+
+        //when then
+        assertThatThrownBy(() -> service.findMemberById(id))
+                .isInstanceOf(MemberNotFoundException.class);
+    }
+
+    @Test
     void findMemberById() throws Exception {
         //given
         long id = 1L;
@@ -44,6 +59,19 @@ class QueryMemberServiceImplTest {
 
         //then
         assertThat(actualMember.getId()).isEqualTo(expectedMember.getId());
+    }
+
+    @Test
+    void findMemberByNickname_failed_whenMemberNotFound() throws Exception {
+        //given
+        String nickname = "Ramos";
+
+        Mockito.when(repository.findMemberByNickname(nickname))
+                .thenReturn(Optional.empty());
+
+        //when then
+        assertThatThrownBy(() -> service.findMemberByNickname(nickname))
+                .isInstanceOf(MemberNotFoundException.class);
     }
 
     @Test
@@ -63,6 +91,19 @@ class QueryMemberServiceImplTest {
     }
 
     @Test
+    void findMemberByLoginId_failed_whenMemberNotFound() throws Exception {
+        //given
+        String loginId = "test1234";
+
+        Mockito.when(repository.findMemberByLoginId(loginId))
+                .thenReturn(Optional.empty());
+
+        //when then
+        assertThatThrownBy(() -> service.findMemberByLoginId(loginId))
+                .isInstanceOf(MemberNotFoundException.class);
+    }
+
+    @Test
     void findMemberByLoginId() throws Exception {
         //given
         String loginId = "test1234";
@@ -76,6 +117,19 @@ class QueryMemberServiceImplTest {
 
         //then
         assertThat(actualMember.getLoginId()).isEqualTo(expectedMember.getLoginId());
+    }
+
+    @Test
+    void findMemberLoginInfoByLoginId_failed_whenMemberNotFound() throws Exception {
+        //given
+        String loginId = "test1234";
+
+        Mockito.when(repository.findMemberByLoginId(loginId))
+                .thenReturn(Optional.empty());
+
+        //when, then
+        assertThatThrownBy(() -> service.findMemberLoginInfoByLoginId(loginId))
+                .isInstanceOf(MemberNotFoundException.class);
     }
 
     @Test
