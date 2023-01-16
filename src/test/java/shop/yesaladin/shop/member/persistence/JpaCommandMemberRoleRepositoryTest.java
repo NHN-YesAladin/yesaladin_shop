@@ -51,27 +51,4 @@ class JpaCommandMemberRoleRepositoryTest {
         assertThat(savedMemberRole.getRole().getName()).isEqualTo(role.getName());
         assertThat(savedMemberRole.getMember().getName()).isEqualTo(member.getName());
     }
-
-//    @Test
-//    void findById() throws Exception {
-//        //given
-//        member = MemberDummy.dummy();
-//        Member savedMember = entityManager.persist(member);
-//        Role savedRole = entityManager.persist(role);
-//
-//        memberRole = MemberRoleDummy.dummy(savedMember, savedRole);
-//
-//        //when
-//        memberRoleRepository.save(memberRole);
-//
-//        //when
-//        Optional<MemberRole> optionalMemberRole = memberRoleRepository.findById(memberRole.getId());
-//
-//        //then
-//        assertThat(optionalMemberRole).isPresent();
-//        assertThat(optionalMemberRole.get().getMember().getName()).isEqualTo(memberRole.getMember()
-//                .getName());
-//        assertThat(optionalMemberRole.get().getRole().getName()).isEqualTo(memberRole.getRole()
-//                .getName());
-//    }
 }

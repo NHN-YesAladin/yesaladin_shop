@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import shop.yesaladin.shop.member.domain.model.MemberRole;
 import shop.yesaladin.shop.member.domain.model.MemberRole.Pk;
+import shop.yesaladin.shop.member.domain.model.querydsl.QMemberRole;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRoleRepository;
 
 @RequiredArgsConstructor
@@ -17,11 +18,19 @@ public class QueryDslQueryMemberRoleRepository implements QueryMemberRoleReposit
 
     @Override
     public Optional<MemberRole> findById(Pk pk) {
-        return Optional.empty();
+        QMemberRole memberRole = QMemberRole.memberRole;
+        return Optional.ofNullable(queryFactory.selectFrom(memberRole)
+                .where(memberRole.id.eq(pk))
+                .fetchFirst());
     }
 
     @Override
-    public List<String> findMemberRolesByMemberId(Long id) {
-        return null;
+    public List<String> findMemberRolesByMemberId(Long memberId) {
+        QMemberRole memberRole = QMemberRole.memberRole;
+
+        return queryFactory.select(memberRole.role.name)
+                .from(memberRole)
+                .where(memberRole.member.id.eq(memberId))
+                .fetch();
     }
 }
