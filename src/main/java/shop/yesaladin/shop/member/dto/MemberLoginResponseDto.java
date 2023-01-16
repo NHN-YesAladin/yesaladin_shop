@@ -3,7 +3,6 @@ package shop.yesaladin.shop.member.dto;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 /**
  * Auth 서버에서 login을 위해 필요한 member 정보를 담은 클래스입니다.
@@ -12,7 +11,6 @@ import lombok.NoArgsConstructor;
  * @since : 1.0
  */
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
 public class MemberLoginResponseDto {
 

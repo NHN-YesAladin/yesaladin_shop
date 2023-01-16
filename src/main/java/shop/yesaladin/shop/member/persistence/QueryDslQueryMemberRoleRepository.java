@@ -10,6 +10,12 @@ import shop.yesaladin.shop.member.domain.model.MemberRole.Pk;
 import shop.yesaladin.shop.member.domain.model.querydsl.QMemberRole;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRoleRepository;
 
+/**
+ * 회원 등급 조회 관련 QueryDsl Repository 구현체 입니다.
+ *
+ * @author : 송학현
+ * @since : 1.0
+ */
 @RequiredArgsConstructor
 @Repository
 public class QueryDslQueryMemberRoleRepository implements QueryMemberRoleRepository {

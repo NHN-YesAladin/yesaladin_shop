@@ -1,6 +1,7 @@
 package shop.yesaladin.shop.member.service.impl;
 
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,8 +53,11 @@ public class QueryMemberServiceImpl implements QueryMemberService {
     @Transactional(readOnly = true)
     @Override
     public MemberDto findMemberByLoginId(String loginId) {
-        Member member = queryMemberRepository.findMemberByLoginId(loginId)
-                .orElseThrow(() -> new MemberNotFoundException("Member Login Id: " + loginId));
+        Member member = getMemberByLoginId(
+                loginId,
+                queryMemberRepository.findMemberByLoginId(loginId),
+                "Member Login Id: "
+        );
         return MemberDto.fromEntity(member);
     }
 
@@ -84,8 +88,11 @@ public class QueryMemberServiceImpl implements QueryMemberService {
     @Transactional(readOnly = true)
     @Override
     public MemberLoginResponseDto findMemberLoginInfoByLoginId(String loginId) {
-        Member member = queryMemberRepository.findMemberByLoginId(loginId)
-                .orElseThrow(() -> new MemberNotFoundException("Member Login Id: " + loginId));
+        Member member = getMemberByLoginId(
+                loginId,
+                queryMemberRepository.findMemberByLoginId(loginId),
+                "Member Login Id: "
+        );
 
         List<String> roles = queryMemberRoleRepository.findMemberRolesByMemberId(
                 member.getId());
@@ -99,5 +106,10 @@ public class QueryMemberServiceImpl implements QueryMemberService {
                 member.getPassword(),
                 roles
         );
+    }
+
+    private Member getMemberByLoginId(String loginId, Optional<Member> memberByLoginId, String s) {
+        return memberByLoginId
+                .orElseThrow(() -> new MemberNotFoundException(s + loginId));
     }
 }

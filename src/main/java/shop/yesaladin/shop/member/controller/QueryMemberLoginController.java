@@ -31,7 +31,7 @@ public class QueryMemberLoginController {
      * @since : 1.0
      */
     @GetMapping("/login/{loginId}")
-    public ResponseEntity doLogin(@PathVariable String loginId) {
+    public ResponseEntity<MemberLoginResponseDto> doLogin(@PathVariable String loginId) {
         MemberLoginResponseDto response = queryMemberService.findMemberLoginInfoByLoginId(
                 loginId);
         return ResponseEntity.ok(response);
