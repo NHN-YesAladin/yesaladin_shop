@@ -59,7 +59,6 @@ public class ProductCategory {
     @Getter
     @Embeddable
     public static class Pk implements Serializable {
-
         @Column(name = "category_id", nullable = false)
         private Long categoryId;
 
