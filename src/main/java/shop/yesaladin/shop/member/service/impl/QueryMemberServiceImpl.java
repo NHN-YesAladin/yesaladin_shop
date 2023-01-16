@@ -1,10 +1,12 @@
 package shop.yesaladin.shop.member.service.impl;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
+import shop.yesaladin.shop.member.domain.repository.QueryMemberRoleRepository;
 import shop.yesaladin.shop.member.dto.MemberDto;
 import shop.yesaladin.shop.member.dto.MemberLoginResponseDto;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
@@ -21,6 +23,7 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 public class QueryMemberServiceImpl implements QueryMemberService {
 
     private final QueryMemberRepository queryMemberRepository;
+    private final QueryMemberRoleRepository queryMemberRoleRepository;
 
     /**
      * 회원을 primary key로 조회 하기 위한 메서드 입니다.
@@ -70,9 +73,31 @@ public class QueryMemberServiceImpl implements QueryMemberService {
         return MemberDto.fromEntity(member);
     }
 
+    /**
+     * 회원의 로그인 요청에 대해 유저 정보와 권한 정보를 함께 조회 하기 위한 메서드 입니다.
+     *
+     * @param loginId member의 loginId
+     * @return login 대상의 유저 정보와 권한 정보를 담은 DTO
+     * @author : 송학현
+     * @since : 1.0
+     */
     @Transactional(readOnly = true)
     @Override
     public MemberLoginResponseDto findMemberLoginInfoByLoginId(String loginId) {
-        return null;
+        Member member = queryMemberRepository.findMemberByLoginId(loginId)
+                .orElseThrow(() -> new MemberNotFoundException("Member Login Id: " + loginId));
+
+        List<String> roles = queryMemberRoleRepository.findMemberRolesByMemberId(
+                member.getId());
+
+        return new MemberLoginResponseDto(
+                member.getId(),
+                member.getName(),
+                member.getNickname(),
+                member.getLoginId(),
+                member.getEmail(),
+                member.getPassword(),
+                roles
+        );
     }
 }
