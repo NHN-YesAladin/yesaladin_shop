@@ -23,7 +23,7 @@ public interface CommandCategoryService {
     /**
      * 카테고리 수정을 위한 기능
      *
-     * @param id 수정하고자 하는 카테고리 id
+     * @param id            수정하고자 하는 카테고리 id
      * @param createRequest 카테고리의 일부 정보를 담은 request Dto
      * @return CategoryResponse 카테고리의 일부 정보를 담은 response Dto
      */

@@ -47,12 +47,19 @@ public class ProductCategory {
     @JoinColumn(name = "product_id")
     private Product product;
 
+    public ProductCategory(Category category, Product product) {
+        this.category = category;
+        this.product = product;
+        this.pk = new Pk(category.getId(), product.getId());
+
+    }
+
     /**
      * 상품 카테고리에 사용한 복합키
      *
      * @author : 배수한
      * @since : 1.0
-     */ 
+     */
     @AllArgsConstructor
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     @EqualsAndHashCode
@@ -64,12 +71,5 @@ public class ProductCategory {
 
         @Column(name = "product_id", nullable = false)
         private Long productId;
-    }
-
-    public ProductCategory(Category category, Product product) {
-        this.category = category;
-        this.product = product;
-        this.pk = new Pk(category.getId(), product.getId());
-
     }
 }

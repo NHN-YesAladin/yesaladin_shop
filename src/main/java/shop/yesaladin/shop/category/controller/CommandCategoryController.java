@@ -1,7 +1,5 @@
 package shop.yesaladin.shop.category.controller;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,21 +38,20 @@ public class CommandCategoryController {
      * 카테고리를 생성하기위해 Post 요청을 처리하는 기능
      *
      * @param categoryRequestDto 생성시 필요한 이름, 노출 여부, 상위 카테고리 id가 존재
-     * @return ResponseEntity로 카테고리 생성 성공시 201 코드 및 생성된 카테고리의 id를 반환
-     * @throws URISyntaxException
+     * @return ResponseEntity로 카테고리 생성 성공시 생성된 카테고리의 일부 데이터를 반환
      */
     @PostMapping
-    public ResponseEntity<CategoryResponseDto> createCategory(
+    public CategoryResponseDto createCategory(
             @Valid @RequestBody CategoryRequestDto categoryRequestDto
-    ) throws URISyntaxException {
+    ) {
         CategoryResponseDto categoryResponseDto = commandCategoryService.create(categoryRequestDto);
-        return ResponseEntity.created(new URI(categoryResponseDto.getId().toString())).build();
+        return categoryResponseDto;
     }
 
     /**
      * 카테고리를 수정하기위해 Put 요청을 처리하는 기능
      *
-     * @param categoryId 수정하고자 하는 카테고리의 id
+     * @param categoryId         수정하고자 하는 카테고리의 id
      * @param categoryRequestDto 생성시 필요한 이름, 노출 여부, 상위 카테고리 id가 존재
      * @return ResponseEntity로 카테고리 수정 성공시 200 코드 및 카테고리의 일부 데이터 반환
      */
