@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
 import shop.yesaladin.shop.member.dto.MemberDto;
+import shop.yesaladin.shop.member.dto.MemberLoginResponseDto;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 
@@ -67,5 +68,11 @@ public class QueryMemberServiceImpl implements QueryMemberService {
         Member member = queryMemberRepository.findMemberByNickname(nickname)
                 .orElseThrow(() -> new MemberNotFoundException("Member Nickname: " + nickname));
         return MemberDto.fromEntity(member);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public MemberLoginResponseDto findMemberLoginInfoByLoginId(String loginId) {
+        return null;
     }
 }
