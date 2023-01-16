@@ -1,6 +1,7 @@
 package shop.yesaladin.shop.member.service.inter;
 
 import shop.yesaladin.shop.member.dto.MemberDto;
+import shop.yesaladin.shop.member.dto.MemberLoginResponseDto;
 
 
 /**
@@ -40,4 +41,14 @@ public interface QueryMemberService {
      * @since : 1.0
      */
     MemberDto findMemberByNickname(String nickname);
+
+    /**
+     * 회원의 로그인 요청에 대해 유저 정보와 권한 정보를 함께 조회 하기 위한 메서드 입니다.
+     *
+     * @param loginId member의 loginId
+     * @return login 대상의 유저 정보와 권한 정보를 담은 DTO
+     * @author : 송학현
+     * @since : 1.0
+     */
+    MemberLoginResponseDto findMemberLoginInfoByLoginId(String loginId);
 }
