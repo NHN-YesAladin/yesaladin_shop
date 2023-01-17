@@ -17,6 +17,6 @@ class HealthCheckControllerTest {
     @Test
     void healthCheck() throws Exception {
         mockMvc.perform(get("/monitor/l7check"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isOk());
     }
 }

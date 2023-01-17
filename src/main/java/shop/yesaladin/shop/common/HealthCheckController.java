@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class HealthCheckController {
 
-    private boolean checked;
+    private boolean checked = true;
 
     @GetMapping("/monitor/l7check")
     public ResponseEntity healthCheck() {
