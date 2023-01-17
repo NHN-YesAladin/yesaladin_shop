@@ -2,8 +2,11 @@
 <configuration>
     <include resource="org/springframework/boot/logging/logback/base.xml"/>
     <springProperty scope="context" name="application_name" source="spring.application.name"/>
+    <springProperty scope="context" name="logstash_connect_info"
+            source="log.logstash.connect-info"/>
+    <springProperty scope="context" name="profile" source="spring.profiles.active"/>
     <appender name="logstash" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
-        <destination>${LOGSTASH_CONNECT_INFO}</destination>
+        <destination>${logstash_connect_info}</destination>
         <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
     </appender>
     <root level="INFO">
