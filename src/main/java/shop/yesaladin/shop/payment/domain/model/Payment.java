@@ -67,10 +67,10 @@ public class Payment {
     private String status;
 
     @Column(name = "requested_datetime", nullable = false)
-    private LocalDate requestedDatetime;
+    private LocalDateTime requestedDatetime;
 
     @Column(name = "approved_datetime", nullable = false)
-    private LocalDate approvedDatetime;
+    private LocalDateTime approvedDatetime;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)

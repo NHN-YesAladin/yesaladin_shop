@@ -27,7 +27,7 @@ import shop.yesaladin.shop.category.dto.CategoryOnlyIdDto;
 @Slf4j
 @RequiredArgsConstructor
 @Repository
-public class QueryDslCategoryRepositoryImpl implements QueryCategoryRepository {
+public class QueryDslCategoryRepository implements QueryCategoryRepository {
 
     private final JPAQueryFactory queryFactory;
 
