@@ -13,11 +13,11 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
-import shop.yesaladin.shop.order.domain.dummy.CouponIssuance;
+import shop.yesaladin.shop.member.domain.model.MemberCoupon;
 import shop.yesaladin.shop.order.domain.model.MemberOrder;
 import shop.yesaladin.shop.order.domain.model.OrderUsedCoupon;
 import shop.yesaladin.shop.order.domain.model.OrderUsedCoupon.Pk;
-import shop.yesaladin.shop.order.persistence.dummy.DummyCouponIssuance;
+import shop.yesaladin.shop.order.persistence.dummy.DummyMemberCoupon;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMemberAddress;
 import shop.yesaladin.shop.order.persistence.dummy.DummyOrder;
@@ -32,29 +32,27 @@ class JpaOrderUsedCouponRepositoryTest {
     @Autowired
     private JpaOrderUsedCouponRepository orderUsedCouponRepository;
 
-    private Member member;
-    private MemberAddress memberAddress;
     private MemberOrder memberOrder;
-    private CouponIssuance couponIssuance;
+    private MemberCoupon memberCoupon;
 
     private OrderUsedCoupon orderUsedCoupon;
 
 
     @BeforeEach
     void setUp() {
-        member = DummyMember.member();
+        Member member = DummyMember.member();
         entityManager.persist(member);
 
-        memberAddress = DummyMemberAddress.address(member);
+        MemberAddress memberAddress = DummyMemberAddress.address(member);
         entityManager.persist(memberAddress);
 
         memberOrder = DummyOrder.memberOrder(member, memberAddress);
-        couponIssuance = DummyCouponIssuance.couponIssuance;
+        memberCoupon = DummyMemberCoupon.memberCoupon(member);
 
         entityManager.persist(memberOrder);
-        entityManager.persist(couponIssuance);
+        entityManager.persist(memberCoupon);
 
-        orderUsedCoupon = OrderUsedCoupon.create(memberOrder, couponIssuance);
+        orderUsedCoupon = OrderUsedCoupon.create(memberOrder, memberCoupon);
     }
 
     @Test
@@ -63,8 +61,8 @@ class JpaOrderUsedCouponRepositoryTest {
         OrderUsedCoupon savedOrderUsedCoupon = orderUsedCouponRepository.save(orderUsedCoupon);
 
         //then
-        assertThat(savedOrderUsedCoupon.getMemberOrder()).isEqualTo(memberOrder);
-        assertThat(savedOrderUsedCoupon.getCouponIssuance()).isEqualTo(couponIssuance);
+        assertThat(savedOrderUsedCoupon.getMemberOrder()).isSameAs(memberOrder);
+        assertThat(savedOrderUsedCoupon.getMemberCoupon()).isSameAs(memberCoupon);
     }
 
     @Test
@@ -79,7 +77,7 @@ class JpaOrderUsedCouponRepositoryTest {
         //then
         assertThat(foundOrderUsedCoupon).isPresent();
         assertThat(foundOrderUsedCoupon.get().getPk()).isEqualTo(pk);
-        assertThat(foundOrderUsedCoupon.get().getMemberOrder()).isEqualTo(memberOrder);
-        assertThat(foundOrderUsedCoupon.get().getCouponIssuance()).isEqualTo(couponIssuance);
+        assertThat(foundOrderUsedCoupon.get().getMemberOrder()).isSameAs(memberOrder);
+        assertThat(foundOrderUsedCoupon.get().getMemberCoupon()).isSameAs(memberCoupon);
     }
 }

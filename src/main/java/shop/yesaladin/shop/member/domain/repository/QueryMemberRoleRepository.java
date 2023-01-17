@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.member.domain.repository;
 
+import java.util.List;
 import java.util.Optional;
 import shop.yesaladin.shop.member.domain.model.MemberRole;
 import shop.yesaladin.shop.member.domain.model.MemberRole.Pk;
@@ -21,4 +22,14 @@ public interface QueryMemberRoleRepository {
      * @since : 1.0
      */
     Optional<MemberRole> findById(Pk pk);
+
+    /**
+     * 회원의 PK를 통해 해당 회원의 Role 리스트를 조회 합니다.
+     *
+     * @param id 회원 테이블의 PK 입니다.
+     * @return 해당 회원의 Role 리스트
+     * @author : 송학현
+     * @since : 1.0
+     */
+    List<String> findMemberRolesByMemberId(Long id);
 }

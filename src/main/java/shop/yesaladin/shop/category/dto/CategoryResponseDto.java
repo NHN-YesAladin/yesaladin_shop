@@ -35,9 +35,8 @@ public class CategoryResponseDto {
     private String parentName;
 
     /**
-     * 입력받은 카테고리를 통해 CategoryResponse 변환
-     *  1차 카테고리일 경우(category.getParent() == null) : parentId, parentName 없이 변환
-     *  2차 카테고리일 경우 : 모든 변수에 값을 채워서 전달
+     * 입력받은 카테고리를 통해 CategoryResponse 변환 1차 카테고리일 경우(category.getParent() == null) : parentId,
+     * parentName 없이 변환 2차 카테고리일 경우 : 모든 변수에 값을 채워서 전달
      *
      * @param category 변환하고자 하는 Category
      * @return CategoryResponse 카테고리의 일부 데이터
