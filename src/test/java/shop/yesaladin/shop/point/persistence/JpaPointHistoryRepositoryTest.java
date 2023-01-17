@@ -25,7 +25,7 @@ class JpaPointHistoryRepositoryTest {
     EntityManager entityManager;
 
     @Autowired
-    JpaPointHistoryRepository jpaPointHistoryRepository;
+    JpaCommandPointHistoryRepository jpaPointHistoryRepository;
 
     long amount = 1000;
     LocalDateTime createDateTime = LocalDateTime.of(2023, 1, 1, 12, 0, 0);
@@ -51,22 +51,6 @@ class JpaPointHistoryRepositoryTest {
         assertThat(actual.getMember()).isSameAs(pointHistory.getMember());
     }
 
-    @Test
-    void findById() {
-        PointHistory pointHistory = createPointHistory();
-
-        entityManager.persist(pointHistory);
-        Long id = pointHistory.getId();
-
-        Optional<PointHistory> actual = jpaPointHistoryRepository.findById(id);
-
-        assertThat(actual).isPresent();
-        assertThat(actual.get().getAmount()).isEqualTo(pointHistory.getAmount());
-        assertThat(actual.get().getCreateDateTime()).isEqualTo(pointHistory.getCreateDateTime());
-        assertThat(actual.get().getPointCode()).isEqualTo(pointHistory.getPointCode());
-        assertThat(actual.get().getMember()).isSameAs(pointHistory.getMember());
-
-    }
 
     private PointHistory createPointHistory() {
         return PointHistory.builder()

@@ -24,7 +24,8 @@ import shop.yesaladin.shop.member.exception.MemberRoleNotFoundException;
 @RestControllerAdvice
 public class ControllerAdvice {
 
-    @ExceptionHandler(value = {CategoryNotFoundException.class, MemberRoleNotFoundException.class})
+    @ExceptionHandler(value = {CategoryNotFoundException.class, MemberRoleNotFoundException.class,
+            MemberNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<String> handleNotFoundException(Exception ex) {
         log.error("[NOT_FOUND] handleNotFoundException", ex);
@@ -32,8 +33,7 @@ public class ControllerAdvice {
     }
 
     @ExceptionHandler({MethodArgumentNotValidException.class,
-            HttpMessageNotReadableException.class,
-            MemberNotFoundException.class})
+            HttpMessageNotReadableException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<String> handleValidationException(Exception ex) {
         log.error("[BAD_REQUEST] handleValidationException", ex);

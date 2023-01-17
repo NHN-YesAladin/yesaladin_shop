@@ -21,4 +21,14 @@ public interface QueryPointHistoryRepository {
      */
     Optional<PointHistory> findById(long id);
 
+    /**
+     * 회원 아이디를 통해 회원이 가진 포인트를 계산합니다.
+     *
+     * @param memberId 회원의 Id
+     * @return 회원의 포인트
+     * @author 최예린
+     * @since 1.0
+     */
+    long getMemberPointByMemberId(long memberId);
+
 }

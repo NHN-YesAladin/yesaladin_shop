@@ -1,13 +1,14 @@
 package shop.yesaladin.shop.point.service.impl;
 
-import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.point.domain.model.PointCode;
 import shop.yesaladin.shop.point.domain.model.PointHistory;
 import shop.yesaladin.shop.point.domain.repository.CommandPointHistoryRepository;
+import shop.yesaladin.shop.point.dto.PointHistoryRequestDto;
 import shop.yesaladin.shop.point.dto.PointHistoryResponseDto;
 import shop.yesaladin.shop.point.service.inter.CommandPointHistoryService;
 
@@ -25,33 +26,34 @@ public class CommandPointHistoryServiceImpl implements CommandPointHistoryServic
     private final QueryMemberService queryMemberService;
 
     @Override
-    public PointHistoryResponseDto use(long memberId, long amount) {
+    @Transactional
+    public PointHistoryResponseDto use(long memberId, PointHistoryRequestDto request) {
         PointHistory pointHistory = createPointHistory(
                 memberId,
-                amount,
+                request,
                 PointCode.USE
         );
         return PointHistoryResponseDto.fromEntity(commandPointHistoryRepository.save(pointHistory));
     }
 
     @Override
-    public PointHistoryResponseDto save(long memberId, long amount) {
+    @Transactional
+    public PointHistoryResponseDto save(long memberId, PointHistoryRequestDto request) {
         PointHistory pointHistory = createPointHistory(
                 memberId,
-                amount,
+                request,
                 PointCode.SAVE
         );
         return PointHistoryResponseDto.fromEntity(commandPointHistoryRepository.save(pointHistory));
     }
 
-    private PointHistory createPointHistory(long memberId, long amount, PointCode pointCode) {
+    private PointHistory createPointHistory(
+            long memberId,
+            PointHistoryRequestDto request,
+            PointCode pointCode
+    ) {
         Member member = queryMemberService.findMemberById(memberId).toEntity();
 
-        PointHistory pointHistory = PointHistory.builder()
-                .amount(amount)
-                .createDateTime(LocalDateTime.now())
-                .pointCode(pointCode)
-                .member(member).build();
-        return pointHistory;
+        return request.toEntity(pointCode, member);
     }
 }
