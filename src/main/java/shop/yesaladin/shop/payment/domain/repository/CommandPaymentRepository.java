@@ -9,6 +9,5 @@ import shop.yesaladin.shop.payment.domain.model.Payment;
  * @since 1.0
  */
 public interface CommandPaymentRepository {
-
     Payment save(Payment payment);
 }
