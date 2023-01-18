@@ -27,8 +27,10 @@ public class QueryPaymentController {
 
     private final QueryPaymentService queryPaymentService;
 
-    @GetMapping("/{orderId}")
+    @GetMapping(value = "/{orderId}",params = "id=order")
     public PaymentCompleteSimpleResponseDto getPaymentByOrderId(@PathVariable Long orderId) {
         return queryPaymentService.findByOrderId(orderId);
     }
+
+    //TODO /v1/payments/1 -> 은 페이먼트 아이디 용으로 두는게 나을듯
 }

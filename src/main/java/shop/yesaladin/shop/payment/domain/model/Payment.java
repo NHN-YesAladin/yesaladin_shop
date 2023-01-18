@@ -34,10 +34,6 @@ import shop.yesaladin.shop.payment.persistence.converter.PaymentCodeConverter;
 @Entity
 public class Payment {
 
-    public static final String STATUS_DONE = "DONE";
-    public static final String STATUS_CANCELED = "CANCELED";
-
-
     @Id
     @Column(length = 200)
     private String id;
@@ -48,8 +44,7 @@ public class Payment {
     @Column(name = "order_name", nullable = false, length = 100)
     private String orderName;
 
-    @Column(nullable = false, length = 50)
-    private String method;
+
 
     @Column(nullable = false, length = 3)
     private String currency;
@@ -69,9 +64,6 @@ public class Payment {
     @Column(nullable = false)
     private long vat;
 
-    @Column(nullable = false, length = 20)
-    private String status;
-
     @Column(name = "requested_datetime", nullable = false)
     private LocalDateTime requestedDatetime;
 
@@ -85,6 +77,14 @@ public class Payment {
     @Column(name = "payment_code_id")
     @Convert(converter = PaymentCodeConverter.class)
     private PaymentCode paymentCode;
+
+    @Column(name = "method_code_id")
+    @Convert(converter = PaymentCodeConverter.class)
+    private PaymentCode method;
+
+    @Column(name = "status_code_id")
+    @Convert(converter = PaymentCodeConverter.class)
+    private PaymentCode status;
 
     @OneToOne(mappedBy = "payment", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private PaymentCard paymentCard;
@@ -100,7 +100,7 @@ public class Payment {
         this.paymentCancel = paymentCancel;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(PaymentCode status) {
         this.status = status;
     }
 }

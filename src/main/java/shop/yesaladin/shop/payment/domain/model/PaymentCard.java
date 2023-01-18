@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import shop.yesaladin.shop.payment.persistence.converter.PaymentCardAcquirerCodeConverter;
 import shop.yesaladin.shop.payment.persistence.converter.PaymentCodeConverter;
 
 /**
@@ -41,12 +42,6 @@ public class PaymentCard {
 
     @Column(nullable = false)
     private long amount;
-
-    @Column(name = "issuer_code", nullable = false, length = 50)
-    private String issuerCode;
-
-    @Column(name = "acquirer_code", nullable = false, length = 50)
-    private String acquirerCode;
 
     @Column(nullable = false, length = 20)
     private String number;
@@ -76,4 +71,12 @@ public class PaymentCard {
     @Column(name = "owner_code_id")
     @Convert(converter = PaymentCodeConverter.class)
     private PaymentCode ownerCode;
+
+    @Column(name = "issuer_code_id")
+    @Convert(converter = PaymentCardAcquirerCodeConverter.class)
+    private PaymentCardAcquirerCode issuerCode;
+
+    @Column(name = "acquirer_code_id")
+    @Convert(converter = PaymentCardAcquirerCodeConverter.class)
+    private PaymentCardAcquirerCode acquirerCode;
 }

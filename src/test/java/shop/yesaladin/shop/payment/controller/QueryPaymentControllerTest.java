@@ -1,7 +1,9 @@
 package shop.yesaladin.shop.payment.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.equalToObject;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -99,18 +101,17 @@ class QueryPaymentControllerTest {
         ResultActions perform = mockMvc.perform(get(
                 "/v1/payments/{orderId}",
                 memberOrder.getId()
-        ).contentType(MediaType.APPLICATION_JSON));
+        ).queryParam("id", "order").contentType(MediaType.APPLICATION_JSON));
 
         // then
         perform.andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.paymentId", equalTo(payment.getId())))
-//                .andExpect(jsonPath("$.approvedDateTime", equalTo(payment.getApprovedDatetime())))
                 .andExpect(jsonPath("$.orderId", equalTo(payment.getOrder().getId().intValue())))
                 .andExpect(jsonPath("$.cardNumber", equalTo(payment.getPaymentCard().getNumber())))
                 .andExpect(jsonPath(
                         "$.cardAcquirerCode",
-                        equalTo(payment.getPaymentCard().getAcquirerCode())
+                        containsString(payment.getPaymentCard().getAcquirerCode().toString())
                 ));
         verify(queryPaymentService, times(1)).findByOrderId(longArgumentCaptor.capture());
         assertThat(longArgumentCaptor.getValue()).isEqualTo(orderId);

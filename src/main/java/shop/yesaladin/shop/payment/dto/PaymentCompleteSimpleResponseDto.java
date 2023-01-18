@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import shop.yesaladin.shop.payment.domain.model.Payment;
+import shop.yesaladin.shop.payment.domain.model.PaymentCardAcquirerCode;
 import shop.yesaladin.shop.payment.domain.model.PaymentCode;
 
 /**
@@ -23,7 +24,7 @@ import shop.yesaladin.shop.payment.domain.model.PaymentCode;
 @AllArgsConstructor
 public class PaymentCompleteSimpleResponseDto {
     private String paymentId;
-    private String method;
+    private PaymentCode method;
     private String currency;
     private long totalAmount;
     private LocalDateTime approvedDateTime;
@@ -36,7 +37,7 @@ public class PaymentCompleteSimpleResponseDto {
     private String cardNumber;
     private int cardInstallmentPlanMonths;
     private String cardApproveNumber;
-    private String cardAcquirerCode;
+    private PaymentCardAcquirerCode cardAcquirerCode;
 
     public static PaymentCompleteSimpleResponseDto fromEntity(Payment payment) {
        return PaymentCompleteSimpleResponseDto.builder()

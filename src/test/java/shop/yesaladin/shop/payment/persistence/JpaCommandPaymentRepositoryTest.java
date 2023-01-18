@@ -19,6 +19,7 @@ import shop.yesaladin.shop.order.persistence.dummy.DummyOrder;
 import shop.yesaladin.shop.payment.domain.model.Payment;
 import shop.yesaladin.shop.payment.domain.model.PaymentCancel;
 import shop.yesaladin.shop.payment.domain.model.PaymentCard;
+import shop.yesaladin.shop.payment.domain.model.PaymentCode;
 import shop.yesaladin.shop.payment.dummy.DummyPayment;
 import shop.yesaladin.shop.payment.dummy.DummyPaymentCancel;
 import shop.yesaladin.shop.payment.dummy.DummyPaymentCard;
@@ -83,7 +84,7 @@ class JpaCommandPaymentRepositoryTest {
         // when
         Payment foundPayment = entityManager.find(Payment.class, paymentId);
         PaymentCancel paymentCancel = DummyPaymentCancel.paymentCancel(foundPayment);
-        foundPayment.setStatus(Payment.STATUS_CANCELED);
+        foundPayment.setStatus(PaymentCode.CANCELED);
         foundPayment.setPaymentCancel(paymentCancel);
         entityManager.persist(foundPayment);
         entityManager.flush();
@@ -91,7 +92,7 @@ class JpaCommandPaymentRepositoryTest {
 
         // then
         Payment found = entityManager.find(Payment.class, payment.getId());
-        assertThat(found.getStatus()).isEqualTo(Payment.STATUS_CANCELED);
+        assertThat(found.getStatus()).isEqualTo(PaymentCode.CANCELED);
         assertThat(found.getPaymentCancel()
                 .getCancelAmount()).isEqualTo(paymentCancel.getCancelAmount());
         assertThat(found.getPaymentCancel()
