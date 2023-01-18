@@ -1,11 +1,19 @@
 package shop.yesaladin.shop.payment.persistence;
 
+import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
+import shop.yesaladin.shop.category.domain.model.querydsl.QCategory;
+import shop.yesaladin.shop.order.domain.model.querydsl.QOrder;
 import shop.yesaladin.shop.payment.domain.model.Payment;
+import shop.yesaladin.shop.payment.domain.model.querydsl.QPayment;
+import shop.yesaladin.shop.payment.domain.model.querydsl.QPaymentCancel;
+import shop.yesaladin.shop.payment.domain.model.querydsl.QPaymentCard;
 import shop.yesaladin.shop.payment.domain.repository.QueryPaymentRepository;
 
 /**
@@ -24,13 +32,51 @@ public class QueryDslPaymentRepository implements QueryPaymentRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Optional<Payment> findById(String id) {
-        queryFactory.select()
-        return Optional.empty();
+    public Optional<Payment> findById(String id, Long orderId) {
+        QPayment payment = QPayment.payment;
+        QPaymentCard paymentCard = QPaymentCard.paymentCard;
+        QPaymentCancel paymentCancel = QPaymentCancel.paymentCancel;
+        QOrder order = QOrder.order;
+
+        return Optional.ofNullable(queryFactory.selectFrom(payment)
+                .innerJoin(payment.order, order)
+                .fetchJoin()
+                .innerJoin(payment.paymentCard, paymentCard)
+                .fetchJoin()
+                .leftJoin(payment.paymentCancel, paymentCancel)
+                .fetchJoin()
+                .where(paymentIdEq(payment, id), orderIdEq(payment, orderId))
+                .fetchFirst());
     }
 
-    @Override
-    public Optional<Payment> findById(Long orderId) {
-        return Optional.empty();
+    /**
+     * 동적 쿼리를 위한 메서드
+     *  payment의 id가 null이 아니면 where 절에서 적용
+     *
+     * @param payment Q객체
+     * @param paymentId 찾고자하는 결제 정보 id
+     * @return BooleanExpression where 절에서 사용
+     */
+    private BooleanExpression paymentIdEq(QPayment payment, String paymentId) {
+        if (Objects.isNull(paymentId)) {
+            return null;
+        }
+        return payment.id.eq(paymentId);
     }
+
+    /**
+     * 동적 쿼리를 위한 메서드
+     *  payment와 연관관계가 있는 주문의 id가 null이 아니면 where 절에서 적용
+     *
+     * @param payment Q객체
+     * @param orderId 찾고자하는 결제 정보와 연관관계가 있는 order id
+     * @return BooleanExpression where 절에서 사용
+     */
+    private BooleanExpression orderIdEq(QPayment payment, Long orderId) {
+        if (Objects.isNull(orderId)) {
+            return null;
+        }
+        return payment.order.id.eq(orderId);
+    }
+
 }
