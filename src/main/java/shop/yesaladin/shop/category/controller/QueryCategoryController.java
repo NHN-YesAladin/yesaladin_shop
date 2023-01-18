@@ -26,6 +26,7 @@ import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/v1/categories")
+//TODO security에서 처리 가능한지 확인 필요
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class QueryCategoryController {
 

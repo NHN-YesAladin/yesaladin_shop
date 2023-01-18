@@ -8,13 +8,13 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
-import shop.yesaladin.shop.category.domain.model.querydsl.QCategory;
 import shop.yesaladin.shop.order.domain.model.querydsl.QOrder;
 import shop.yesaladin.shop.payment.domain.model.Payment;
 import shop.yesaladin.shop.payment.domain.model.querydsl.QPayment;
 import shop.yesaladin.shop.payment.domain.model.querydsl.QPaymentCancel;
 import shop.yesaladin.shop.payment.domain.model.querydsl.QPaymentCard;
 import shop.yesaladin.shop.payment.domain.repository.QueryPaymentRepository;
+import shop.yesaladin.shop.payment.dto.PaymentCompleteSimpleResponseDto;
 
 /**
  * QueryDsl을 활용하여 결제 정보를 조회할때 사용
@@ -31,6 +31,14 @@ public class QueryDslPaymentRepository implements QueryPaymentRepository {
 
     private final JPAQueryFactory queryFactory;
 
+    /**
+     * 결제 정보 엔티티를 찾기 위한 메서드
+     *  Order, PaymentCard, PaymentCancel 과 조인하여 데이터를 불러온다.
+     *
+     * @param id 동적 쿼리용으로, 찾고자하는 paymentId를 의미한다
+     * @param orderId 동적 쿼리용으로, 찾고자하는 orderId를 의미한다
+     * @return Optional<Payment>
+     */
     @Override
     public Optional<Payment> findById(String id, Long orderId) {
         QPayment payment = QPayment.payment;
@@ -45,6 +53,46 @@ public class QueryDslPaymentRepository implements QueryPaymentRepository {
                 .fetchJoin()
                 .leftJoin(payment.paymentCancel, paymentCancel)
                 .fetchJoin()
+                .where(paymentIdEq(payment, id), orderIdEq(payment, orderId))
+                .fetchFirst());
+    }
+
+    /**
+     * 간단하게 화면에 보여줄 결제 정보 엔티티를 찾기위한 메서드
+     *   dto projection을 통해 데이터를 select 한다
+     *
+     * @param id 동적 쿼리용으로, 찾고자하는 paymentId를 의미한다
+     * @param orderId orderId 동적 쿼리용으로, 찾고자하는 orderId를 의미한다
+     * @return Optional<PaymentCompleteSimpleResponseDto>
+     */
+    @Override
+    public Optional<PaymentCompleteSimpleResponseDto> findSimpleDtoById(String id, Long orderId) {
+        QPayment payment = QPayment.payment;
+        QPaymentCard paymentCard = QPaymentCard.paymentCard;
+        QPaymentCancel paymentCancel = QPaymentCancel.paymentCancel;
+        QOrder order = QOrder.order;
+
+        return Optional.ofNullable(queryFactory.select(
+                        Projections.constructor(PaymentCompleteSimpleResponseDto.class,
+                                payment.id,
+                                payment.method,
+                                payment.currency,
+                                payment.totalAmount,
+                                payment.approvedDatetime,
+                                payment.order.id,
+                                payment.order.name,
+                                payment.paymentCard.cardCode,
+                                payment.paymentCard.ownerCode,
+                                payment.paymentCard.number,
+                                payment.paymentCard.installmentPlanMonths,
+                                payment.paymentCard.approveNo,
+                                payment.paymentCard.acquirerCode
+                        )
+                )
+                .from(payment)
+                .innerJoin(payment.order, order)
+                .innerJoin(payment.paymentCard, paymentCard)
+                .leftJoin(payment.paymentCancel, paymentCancel)
                 .where(paymentIdEq(payment, id), orderIdEq(payment, orderId))
                 .fetchFirst());
     }

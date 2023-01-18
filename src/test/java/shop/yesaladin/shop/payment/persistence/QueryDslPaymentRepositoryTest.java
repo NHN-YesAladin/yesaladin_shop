@@ -2,7 +2,6 @@ package shop.yesaladin.shop.payment.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Optional;
 import javax.persistence.EntityManager;
@@ -21,6 +20,7 @@ import shop.yesaladin.shop.order.persistence.dummy.DummyMemberAddress;
 import shop.yesaladin.shop.order.persistence.dummy.DummyOrder;
 import shop.yesaladin.shop.payment.domain.model.Payment;
 import shop.yesaladin.shop.payment.domain.model.PaymentCard;
+import shop.yesaladin.shop.payment.dto.PaymentCompleteSimpleResponseDto;
 import shop.yesaladin.shop.payment.dummy.DummyPayment;
 import shop.yesaladin.shop.payment.dummy.DummyPaymentCard;
 import shop.yesaladin.shop.payment.exception.PaymentNotFoundException;
@@ -30,6 +30,7 @@ import shop.yesaladin.shop.payment.exception.PaymentNotFoundException;
 @Transactional
 @SpringBootTest
 class QueryDslPaymentRepositoryTest {
+
     @Autowired
     private QueryDslPaymentRepository queryDslPaymentRepository;
     @PersistenceContext
@@ -144,7 +145,98 @@ class QueryDslPaymentRepositoryTest {
         );
 
         // then
-        assertThatThrownBy(() -> wrongPayment.orElseThrow(() -> new PaymentNotFoundException(notFoundId))).isInstanceOf(
+        assertThatThrownBy(() -> wrongPayment.orElseThrow(() -> new PaymentNotFoundException(
+                notFoundId))).isInstanceOf(
+                PaymentNotFoundException.class);
+    }
+
+    @Test
+    void findSimpleDtoById_paymentId() {
+        // when
+        PaymentCompleteSimpleResponseDto responseDto = queryDslPaymentRepository.findSimpleDtoById(
+                        paymentId,
+                        null
+                )
+                .orElseThrow(() -> new PaymentNotFoundException(paymentId));
+
+        // then
+        assertThat(responseDto.getPaymentId()).isEqualTo(paymentId);
+        assertThat(responseDto.getMethod()).isEqualTo(payment.getMethod());
+
+        assertThat(responseDto.getOrderId()).isEqualTo(memberOrder.getId());
+        assertThat(responseDto.getOrderName()).isEqualTo(memberOrder.getName());
+
+        assertThat(responseDto.getCardCode()).isEqualTo(paymentCard.getCardCode());
+        assertThat(responseDto.getCardNumber()).isEqualTo(paymentCard.getNumber());
+
+        log.info("result : {}", responseDto);
+    }
+
+    @Test
+    void findSimpleDtoById_orderId() {
+        // when
+        PaymentCompleteSimpleResponseDto responseDto = queryDslPaymentRepository.findSimpleDtoById(
+                        null,
+                        memberOrder.getId()
+                )
+                .orElseThrow(() -> new PaymentNotFoundException(paymentId));
+
+        // then
+        assertThat(responseDto.getPaymentId()).isEqualTo(paymentId);
+        assertThat(responseDto.getMethod()).isEqualTo(payment.getMethod());
+
+        assertThat(responseDto.getOrderId()).isEqualTo(memberOrder.getId());
+        assertThat(responseDto.getOrderName()).isEqualTo(memberOrder.getName());
+
+        assertThat(responseDto.getCardCode()).isEqualTo(paymentCard.getCardCode());
+        assertThat(responseDto.getCardNumber()).isEqualTo(paymentCard.getNumber());
+    }
+
+    @Test
+    void findSimpleDtoById_both_paymentId_orderId() {
+        // when
+        PaymentCompleteSimpleResponseDto responseDto = queryDslPaymentRepository.findSimpleDtoById(
+                        paymentId,
+                        memberOrder.getId()
+                )
+                .orElseThrow(() -> new PaymentNotFoundException(paymentId));
+
+        // then
+        assertThat(responseDto.getPaymentId()).isEqualTo(paymentId);
+        assertThat(responseDto.getMethod()).isEqualTo(payment.getMethod());
+
+        assertThat(responseDto.getOrderId()).isEqualTo(memberOrder.getId());
+        assertThat(responseDto.getOrderName()).isEqualTo(memberOrder.getName());
+
+        assertThat(responseDto.getCardCode()).isEqualTo(paymentCard.getCardCode());
+        assertThat(responseDto.getCardNumber()).isEqualTo(paymentCard.getNumber());
+    }
+
+    @Test
+    void findSimpleDtoById_wrongPaymentId_fail() {
+        // when
+        String wrongId = "Wrong ID";
+        Optional<PaymentCompleteSimpleResponseDto> wrongDto = queryDslPaymentRepository.findSimpleDtoById(
+                wrongId,
+                memberOrder.getId()
+        );
+
+        // then
+        assertThatThrownBy(() -> wrongDto.orElseThrow(() -> new PaymentNotFoundException(wrongId))).isInstanceOf(
+                PaymentNotFoundException.class);
+    }
+
+    @Test
+    void findSimpleDtoById_wrongOrderId_fail() {
+        // when
+        Long notFoundId = 1000L;
+        Optional<PaymentCompleteSimpleResponseDto> wrongDto = queryDslPaymentRepository.findSimpleDtoById(
+                paymentId,
+                notFoundId
+        );
+
+        // then
+        assertThatThrownBy(() -> wrongDto.orElseThrow(() -> new PaymentNotFoundException(notFoundId))).isInstanceOf(
                 PaymentNotFoundException.class);
     }
 }

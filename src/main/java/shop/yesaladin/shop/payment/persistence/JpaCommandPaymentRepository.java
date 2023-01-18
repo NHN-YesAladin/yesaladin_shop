@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.payment.persistence;
 
-import java.util.Optional;
 import org.springframework.data.repository.Repository;
 import shop.yesaladin.shop.payment.domain.model.Payment;
 import shop.yesaladin.shop.payment.domain.repository.CommandPaymentRepository;

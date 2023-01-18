@@ -1,7 +1,5 @@
 package shop.yesaladin.shop.payment.exception;
 
-import java.util.Objects;
-
 /**
  * @author 배수한
  * @since 1.0

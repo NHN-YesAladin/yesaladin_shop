@@ -1,10 +1,13 @@
 package shop.yesaladin.shop.payment.dto;
 
 import java.time.LocalDateTime;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import shop.yesaladin.shop.payment.domain.model.Payment;
+import shop.yesaladin.shop.payment.domain.model.PaymentCode;
 
 /**
  * 결제 정보에 대한 간략한 정보만 담을 dto
@@ -13,23 +16,44 @@ import lombok.Getter;
  * @since 1.0
  */
 
+@ToString
 @Getter
 @Builder
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor
+@AllArgsConstructor
 public class PaymentCompleteSimpleResponseDto {
     private String paymentId;
     private String method;
     private String currency;
-    private Long totalAmount;
+    private long totalAmount;
     private LocalDateTime approvedDateTime;
 
     private Long orderId;
     private String orderName;
 
-    private String cardCode;
-    private String cardOwnerCode;
+    private PaymentCode cardCode;
+    private PaymentCode cardOwnerCode;
     private String cardNumber;
-    private Integer cardInstallmentPlanMonths;
+    private int cardInstallmentPlanMonths;
     private String cardApproveNumber;
-    private String acquirerName;
+    private String cardAcquirerCode;
+
+    public static PaymentCompleteSimpleResponseDto fromEntity(Payment payment) {
+       return PaymentCompleteSimpleResponseDto.builder()
+                .paymentId(payment.getId())
+                .method(payment.getMethod())
+                .currency(payment.getCurrency())
+                .totalAmount(payment.getTotalAmount())
+                .approvedDateTime(payment.getApprovedDatetime())
+                .orderId(payment.getOrder().getId())
+                .orderName(payment.getOrder().getName())
+                .cardCode(payment.getPaymentCard().getCardCode())
+                .cardOwnerCode(payment.getPaymentCard().getOwnerCode())
+                .cardNumber(payment.getPaymentCard().getNumber())
+                .cardInstallmentPlanMonths(payment.getPaymentCard().getInstallmentPlanMonths())
+                .cardApproveNumber(payment.getPaymentCard().getApproveNo())
+                .cardAcquirerCode(payment.getPaymentCard().getAcquirerCode())
+                .build();
+
+    }
 }
