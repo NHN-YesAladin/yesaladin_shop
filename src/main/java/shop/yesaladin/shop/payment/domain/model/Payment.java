@@ -35,6 +35,10 @@ import shop.yesaladin.shop.payment.persistence.converter.PaymentCodeConverter;
 @Entity
 public class Payment {
 
+    public static final String STATUS_DONE = "DONE";
+    public static final String STATUS_CANCELED = "CANCELED";
+
+
     @Id
     @Column(length = 200)
     private String id;

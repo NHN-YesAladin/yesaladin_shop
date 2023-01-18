@@ -84,7 +84,7 @@ class JpaCommandPaymentRepositoryTest {
         // when
         Payment foundPayment = entityManager.find(Payment.class, paymentId);
         PaymentCancel paymentCancel = DummyPaymentCancel.paymentCancel(foundPayment);
-        foundPayment.setStatus("CANCELED");
+        foundPayment.setStatus(Payment.STATUS_CANCELED);
         foundPayment.setPaymentCancel(paymentCancel);
         entityManager.persist(foundPayment);
         entityManager.flush();
@@ -92,7 +92,7 @@ class JpaCommandPaymentRepositoryTest {
 
         // then
         Payment found = entityManager.find(Payment.class, payment.getId());
-        assertThat(found.getStatus()).isEqualTo("CANCELED");
+        assertThat(found.getStatus()).isEqualTo(Payment.STATUS_CANCELED);
         assertThat(found.getPaymentCancel()
                 .getCancelAmount()).isEqualTo(paymentCancel.getCancelAmount());
         assertThat(found.getPaymentCancel()

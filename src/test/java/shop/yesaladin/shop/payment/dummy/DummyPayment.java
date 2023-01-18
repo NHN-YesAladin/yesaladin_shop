@@ -21,7 +21,7 @@ public class DummyPayment {
                 .suppliedAmount(totalAmount)
                 .taxFreeAmount(0L)
                 .vat(0L)
-                .status("DONE")
+                .status(Payment.STATUS_DONE)
                 .requestedDatetime(LocalDateTime.now())
                 .approvedDatetime(LocalDateTime.now())
                 .order(order)
