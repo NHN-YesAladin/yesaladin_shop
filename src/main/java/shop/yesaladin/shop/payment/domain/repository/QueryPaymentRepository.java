@@ -11,6 +11,5 @@ import shop.yesaladin.shop.payment.domain.model.Payment;
  */
 public interface QueryPaymentRepository {
 
-    Optional<Payment> findById(String id);
-    Optional<Payment> findById(Long orderId);
+    Optional<Payment> findById(String id, Long orderId);
 }

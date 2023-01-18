@@ -8,7 +8,7 @@ import shop.yesaladin.shop.payment.domain.model.PaymentCode;
 
 public class DummyPayment {
 
-    public static Payment dummyPayment(String id, Order order) {
+    public static Payment payment(String id, Order order) {
         long totalAmount = order.getShippingFee() + order.getWrappingFee();
         return Payment.builder()
                 .id(id)

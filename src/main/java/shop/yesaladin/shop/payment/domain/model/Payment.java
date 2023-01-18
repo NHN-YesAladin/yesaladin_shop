@@ -2,6 +2,7 @@ package shop.yesaladin.shop.payment.domain.model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -15,6 +16,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.payment.persistence.converter.PaymentCodeConverter;
 
@@ -24,6 +26,7 @@ import shop.yesaladin.shop.payment.persistence.converter.PaymentCodeConverter;
  * @author 서민지
  * @since 1.0
  */
+@ToString
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -79,4 +82,22 @@ public class Payment {
     @Column(name = "payment_code_id")
     @Convert(converter = PaymentCodeConverter.class)
     private PaymentCode paymentCode;
+
+    @OneToOne(mappedBy = "payment", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private PaymentCard paymentCard;
+
+    @OneToOne(mappedBy = "payment", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private PaymentCancel paymentCancel;
+
+    public void setPaymentCard(PaymentCard paymentCard) {
+        this.paymentCard = paymentCard;
+    }
+
+    public void setPaymentCancel(PaymentCancel paymentCancel) {
+        this.paymentCancel = paymentCancel;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }
