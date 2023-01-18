@@ -12,6 +12,18 @@ spring:
     url: jdbc:h2:mem:/test
     username: sa
     password:
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
 elastic:
   host: 103.218.159.211:9200
 
+logging:
+  level:
+    org:
+      hibernate:
+        type:
+          descriptor:
+            sql: trace
