@@ -3,6 +3,7 @@ package shop.yesaladin.shop.member.service.impl;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.member.domain.model.Member;
@@ -19,6 +20,7 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberService;
  * @author : 송학현, 최예린
  * @since : 1.0
  */
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class QueryMemberServiceImpl implements QueryMemberService {

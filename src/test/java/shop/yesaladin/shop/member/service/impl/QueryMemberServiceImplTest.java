@@ -151,7 +151,7 @@ class QueryMemberServiceImplTest {
                 loginId);
 
         //then
-        assertThat(response.getRole()).hasSize(1);
+        assertThat(response.getRoles()).hasSize(1);
         assertThat(response.getLoginId()).isEqualTo(loginId);
         assertThat(response.getId()).isEqualTo(memberId);
     }
