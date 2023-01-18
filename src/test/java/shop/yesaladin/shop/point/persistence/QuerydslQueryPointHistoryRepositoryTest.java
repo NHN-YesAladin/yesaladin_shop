@@ -1,7 +1,10 @@
 package shop.yesaladin.shop.point.persistence;
 
 
+import java.awt.Point;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -58,7 +61,41 @@ class QuerydslQueryPointHistoryRepositoryTest {
     }
 
     @Test
+    void findByMemberId() {
+        //given
+        long memberId = 1L;
+        LocalDate startDate = LocalDate.of(2023, 1, 1);
+        LocalDate endDate = LocalDate.of(2023, 2, 1);
+
+        //when
+        List<PointHistory> result = queryPointHistoryRepository.findByMemberId(memberId, startDate, endDate);
+
+        //then
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void findByPointCode() {
+        //given
+        PointCode pointCode = PointCode.USE;
+        LocalDate startDate = LocalDate.of(2023, 1, 1);
+        LocalDate endDate = LocalDate.of(2023, 2, 1);
+
+        //when
+        List<PointHistory> result = queryPointHistoryRepository.findByPointCode(pointCode, startDate, endDate);
+
+        //then
+        assertThat(result).isEmpty();
+    }
+    @Test
     void getMemberPointByMemberId() {
+        setPointHistory(3, 5);
+
+        long memberId = member.getId();
+
+        long point = queryPointHistoryRepository.getMemberPointByMemberId(memberId);
+
+        assertThat(point).isEqualTo(-1000);
 
     }
 
@@ -70,6 +107,7 @@ class QuerydslQueryPointHistoryRepositoryTest {
                 .build();
     }
     void setPointHistory(int save, int use) {
+        entityManager.persist(createPointHistory(member, PointCode.SUM));
         for (int i = 0; i < save; i++) {
             entityManager.persist(createPointHistory(member, PointCode.SAVE));
         }

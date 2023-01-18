@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.point.domain.model.PointCode;
 import shop.yesaladin.shop.point.domain.model.PointHistory;
@@ -17,8 +18,9 @@ import shop.yesaladin.shop.point.domain.model.PointHistory;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class PointHistoryResponseDto {
-    private long id;
-    private long amount;
+
+    private Long id;
+    private Long amount;
     private LocalDateTime createDateTime;
     private PointCode pointCode;
     private Member member;

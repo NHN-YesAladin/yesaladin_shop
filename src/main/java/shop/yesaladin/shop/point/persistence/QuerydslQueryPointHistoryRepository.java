@@ -2,7 +2,9 @@ package shop.yesaladin.shop.point.persistence;
 
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -26,6 +28,43 @@ public class QuerydslQueryPointHistoryRepository implements QueryPointHistoryRep
                 .where(pointHistory.id.eq(id))
                 .fetchFirst());
     }
+
+    @Override
+    public List<PointHistory> findByMemberId(
+            long memberId,
+            LocalDate startDate,
+            LocalDate endDate
+    ) {
+        QPointHistory pointHistory = QPointHistory.pointHistory;
+
+        return queryFactory.select(pointHistory)
+                .from(pointHistory)
+                .where(pointHistory.member.id.eq(memberId)
+                        .and(pointHistory.createDateTime.between(
+                                startDate.atStartOfDay(),
+                                endDate.plusDays(1).atStartOfDay()
+                        )))
+                .fetch();
+    }
+
+    @Override
+    public List<PointHistory> findByPointCode(
+            PointCode pointCode,
+            LocalDate startDate,
+            LocalDate endDate
+    ) {
+        QPointHistory pointHistory = QPointHistory.pointHistory;
+
+        return queryFactory.select(pointHistory)
+                .from(pointHistory)
+                .where(pointHistory.pointCode.eq(pointCode)
+                        .and(pointHistory.createDateTime.between(
+                                startDate.atStartOfDay(),
+                                endDate.plusDays(1).atStartOfDay()
+                        )))
+                .fetch();
+    }
+
 
     @Override
     public long getMemberPointByMemberId(long memberId) {
@@ -54,14 +93,15 @@ public class QuerydslQueryPointHistoryRepository implements QueryPointHistoryRep
             long curPoint = lastPointHistory.get().getAmount();
             LocalDateTime lastUpdateDate = lastPointHistory.get().getCreateDateTime();
 
-            return curPoint + queryFactory.select(expression)
+            return curPoint + Optional.ofNullable(queryFactory.select(expression)
                     .from(pointHistory)
                     .where(pointHistory.member.id.eq(memberId)
-                            .and(pointHistory.createDateTime.after(lastUpdateDate))).fetchFirst();
-        } else {
-            return queryFactory.select(expression)
-                    .from(pointHistory)
-                    .where(pointHistory.member.id.eq(memberId)).fetchFirst();
+                            .and(pointHistory.createDateTime.after(lastUpdateDate)
+                                    .or(pointHistory.createDateTime.eq(lastUpdateDate))))
+                    .fetchFirst()).orElse(0L);
         }
+        return Optional.ofNullable(queryFactory.select(expression)
+                .from(pointHistory)
+                .where(pointHistory.member.id.eq(memberId)).fetchFirst()).orElse(0L);
     }
 }

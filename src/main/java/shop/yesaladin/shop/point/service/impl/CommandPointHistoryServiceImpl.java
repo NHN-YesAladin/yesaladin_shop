@@ -8,8 +8,10 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.point.domain.model.PointCode;
 import shop.yesaladin.shop.point.domain.model.PointHistory;
 import shop.yesaladin.shop.point.domain.repository.CommandPointHistoryRepository;
+import shop.yesaladin.shop.point.domain.repository.QueryPointHistoryRepository;
 import shop.yesaladin.shop.point.dto.PointHistoryRequestDto;
 import shop.yesaladin.shop.point.dto.PointHistoryResponseDto;
+import shop.yesaladin.shop.point.exception.OverPointUseException;
 import shop.yesaladin.shop.point.service.inter.CommandPointHistoryService;
 
 /**
@@ -23,6 +25,7 @@ import shop.yesaladin.shop.point.service.inter.CommandPointHistoryService;
 public class CommandPointHistoryServiceImpl implements CommandPointHistoryService {
 
     private final CommandPointHistoryRepository commandPointHistoryRepository;
+    private final QueryPointHistoryRepository queryPointHistoryRepository;
     private final QueryMemberService queryMemberService;
 
     @Override
@@ -33,7 +36,17 @@ public class CommandPointHistoryServiceImpl implements CommandPointHistoryServic
                 request,
                 PointCode.USE
         );
+        checkMemberHasEnoughPoint(memberId, request);
+
         return PointHistoryResponseDto.fromEntity(commandPointHistoryRepository.save(pointHistory));
+    }
+
+    private void checkMemberHasEnoughPoint(long memberId, PointHistoryRequestDto request) {
+        long amount = queryPointHistoryRepository.getMemberPointByMemberId(memberId);
+
+        if (request.getAmount() > amount) {
+            throw new OverPointUseException(memberId, amount);
+        }
     }
 
     @Override

@@ -12,7 +12,7 @@ import shop.yesaladin.shop.point.domain.model.PointHistory;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class PointHistoryRequestDto {
 
     @NotNull
