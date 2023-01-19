@@ -5,5 +5,10 @@ spring:
     url: jdbc:h2:mem:/test
     username: sa
     password:
+  servlet:
+    multipart:
+      max-file-size: 200MB
+      max-request-size: 200MB
+
 elastic:
   host: 103.218.159.211:9200

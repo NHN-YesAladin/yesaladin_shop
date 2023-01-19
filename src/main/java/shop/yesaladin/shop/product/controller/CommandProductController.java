@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.shop.product.dto.ProductCreateDto;
-import shop.yesaladin.shop.product.dto.ProductResponseDto;
+import shop.yesaladin.shop.product.dto.ProductOnlyIdDto;
 import shop.yesaladin.shop.product.service.inter.CommandProductService;
 
 /**
@@ -22,24 +22,24 @@ import shop.yesaladin.shop.product.service.inter.CommandProductService;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/v1/products")
-public class ProductController {
+public class CommandProductController {
 
     private final CommandProductService commandProductService;
 
     /**
-     * [POST /products] 요청을 받아 상품을 생성하고 생성된 상품 객체를 리턴합니다.
+     * [POST /products] 요청을 받아 상품을 생성하여 등록합니다.
      *
-     * @param productCreateDto 관리자에게서 입력받은 상품 생성정보
-     * @return 생성된 상품을 담은 ResponseEntity
+     * @param createDto 관리자에게서 입력받은 상품을 생성하기 위한 요청 파라미터
+     * @return 생성된 상품 정보를 담은 ResponseEntity
+     * @throws URISyntaxException URI 문법을 어긴 경우 던지는 예외
      * @author 이수정
      * @since 1.0
      */
     @PostMapping
-    public ResponseEntity registerProduct(@Valid @RequestBody ProductCreateDto productCreateDto)
+    public ResponseEntity registerProduct(@Valid @RequestBody ProductCreateDto createDto)
             throws URISyntaxException {
-        ProductResponseDto productResponseDto = commandProductService.create(productCreateDto);
+        ProductOnlyIdDto product = commandProductService.create(createDto);
 
-        return ResponseEntity.created(new URI(productResponseDto.getId().toString()))
-                .body(productResponseDto);
+        return ResponseEntity.created(new URI(product.getId().toString())).body(product);
     }
 }
