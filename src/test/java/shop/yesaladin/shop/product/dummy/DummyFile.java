@@ -7,7 +7,7 @@ public class DummyFile {
 
     public static File dummy(String extension) {
         return File.builder()
-                .name("UUID." + extension)
+                .url("UUID." + extension)
                 .uploadDateTime(LocalDateTime.now())
                 .build();
     }

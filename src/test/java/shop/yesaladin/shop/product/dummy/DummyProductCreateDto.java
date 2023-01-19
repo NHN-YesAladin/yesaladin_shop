@@ -7,19 +7,20 @@ import shop.yesaladin.shop.product.dto.ProductCreateDto;
 public class DummyProductCreateDto {
 
     public static ProductCreateDto dummy(String ISBN) {
-        List<String> tags = new ArrayList<>() {
-        };
-        tags.add("아름다운");
-        tags.add("슬픈");
+        List<Long> authors = new ArrayList<>(){};
+        authors.add(1L);
+
+        List<Long> tags = new ArrayList<>() {};
+        tags.add(1L);
+        tags.add(2L);
 
         return new ProductCreateDto(
                 ISBN,
                 "더미",
                 "목차",
                 "상품 더미 입니다.",
-                "테스트",
-                "",
-                "귈벗",
+                authors,
+                1L,
                 30000,
                 15,
                 true,

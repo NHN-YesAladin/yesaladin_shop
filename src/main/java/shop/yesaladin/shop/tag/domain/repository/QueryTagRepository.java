@@ -1,15 +1,19 @@
 package shop.yesaladin.shop.tag.domain.repository;
 
-import java.util.Optional;
 import shop.yesaladin.shop.tag.domain.model.Tag;
 
+import java.util.List;
+import java.util.Optional;
+
 /**
- * 태그 조회 관련 repository 클래스입니다.
+ * 태그 조회 관련 Repository Interface 입니다.
  *
  * @author 이수정
  * @since 1.0
  */
 public interface QueryTagRepository {
+
+    Optional<Tag> findById(Long id);
 
     Optional<Tag> findByName(String name);
 }
