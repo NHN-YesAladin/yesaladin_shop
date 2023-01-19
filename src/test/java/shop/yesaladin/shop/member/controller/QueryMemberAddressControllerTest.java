@@ -3,11 +3,11 @@ package shop.yesaladin.shop.member.controller;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.startsWith;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -107,7 +107,8 @@ class QueryMemberAddressControllerTest {
                                 .description("등록된 배송지 주소"),
                         fieldWithPath("[].default").type(JsonFieldType.BOOLEAN)
                                 .description("등록된 배송지의 대표주소 여부"),
-                        fieldWithPath("[].member.id").type(JsonFieldType.NUMBER).description("회원의 Pk"),
+                        fieldWithPath("[].member.id").type(JsonFieldType.NUMBER)
+                                .description("회원의 Pk"),
                         fieldWithPath("[].member.nickname").type(JsonFieldType.STRING)
                                 .description("회원의 닉네임"),
                         fieldWithPath("[].member.name").type(JsonFieldType.STRING)
