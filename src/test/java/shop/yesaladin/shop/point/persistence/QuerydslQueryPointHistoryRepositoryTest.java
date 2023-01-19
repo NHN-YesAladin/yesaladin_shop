@@ -1,14 +1,14 @@
 package shop.yesaladin.shop.point.persistence;
 
 
-import java.awt.Point;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import static org.assertj.core.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +35,7 @@ class QuerydslQueryPointHistoryRepositoryTest {
     long amount = 1000;
     LocalDateTime createDateTime = LocalDateTime.now();
     PointCode pointCode = PointCode.USE;
+
     @BeforeEach
     void setUp() {
         member = MemberDummy.dummy();
@@ -68,7 +69,11 @@ class QuerydslQueryPointHistoryRepositoryTest {
         LocalDate endDate = LocalDate.of(2023, 2, 1);
 
         //when
-        List<PointHistory> result = queryPointHistoryRepository.findByMemberId(memberId, startDate, endDate);
+        List<PointHistory> result = queryPointHistoryRepository.findByMemberId(
+                memberId,
+                startDate,
+                endDate
+        );
 
         //then
         assertThat(result).isEmpty();
@@ -82,11 +87,16 @@ class QuerydslQueryPointHistoryRepositoryTest {
         LocalDate endDate = LocalDate.of(2023, 2, 1);
 
         //when
-        List<PointHistory> result = queryPointHistoryRepository.findByPointCode(pointCode, startDate, endDate);
+        List<PointHistory> result = queryPointHistoryRepository.findByPointCode(
+                pointCode,
+                startDate,
+                endDate
+        );
 
         //then
         assertThat(result).isEmpty();
     }
+
     @Test
     void getMemberPointByMemberId() {
         setPointHistory(3, 5);
@@ -106,6 +116,7 @@ class QuerydslQueryPointHistoryRepositoryTest {
                 .createDateTime(createDateTime)
                 .build();
     }
+
     void setPointHistory(int save, int use) {
         entityManager.persist(createPointHistory(member, PointCode.SUM));
         for (int i = 0; i < save; i++) {
