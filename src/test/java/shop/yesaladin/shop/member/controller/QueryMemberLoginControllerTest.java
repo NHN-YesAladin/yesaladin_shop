@@ -83,7 +83,7 @@ class QueryMemberLoginControllerTest {
 
         //when
         Mockito.when(queryMemberService.findMemberLoginInfoByLoginId(loginId))
-                        .thenReturn(response);
+                .thenReturn(response);
 
         //then
         ResultActions resultActions = mockMvc.perform(get("/v1/members/login/{loginId}", loginId))
@@ -95,7 +95,7 @@ class QueryMemberLoginControllerTest {
                 .andExpect(jsonPath("$.loginId", equalTo(loginId)))
                 .andExpect(jsonPath("$.email", equalTo(email)))
                 .andExpect(jsonPath("$.password", equalTo(password)))
-                .andExpect(jsonPath("$.role", equalTo(roles)));
+                .andExpect(jsonPath("$.roles", equalTo(roles)));
 
         verify(queryMemberService, times(1)).findMemberLoginInfoByLoginId(loginId);
 
@@ -120,7 +120,7 @@ class QueryMemberLoginControllerTest {
                                 .description("회원의 email"),
                         fieldWithPath("password").type(JsonFieldType.STRING)
                                 .description("회원의 password"),
-                        fieldWithPath("role").type(JsonFieldType.ARRAY)
+                        fieldWithPath("roles").type(JsonFieldType.ARRAY)
                                 .description("회원의 권한 리스트")
                 )
         ));
