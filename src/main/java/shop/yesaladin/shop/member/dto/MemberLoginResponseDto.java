@@ -20,5 +20,5 @@ public class MemberLoginResponseDto {
     private String loginId;
     private String email;
     private String password;
-    private List<String> role;
+    private List<String> roles;
 }
