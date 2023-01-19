@@ -13,12 +13,18 @@ import shop.yesaladin.shop.point.domain.model.PointHistory;
 import shop.yesaladin.shop.point.domain.model.querydsl.QPointHistory;
 import shop.yesaladin.shop.point.domain.repository.QueryPointHistoryRepository;
 
+/**
+ * {@inheritDoc}
+ */
 @Repository
 @RequiredArgsConstructor
 public class QuerydslQueryPointHistoryRepository implements QueryPointHistoryRepository {
 
     private final JPAQueryFactory queryFactory;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Optional<PointHistory> findById(long id) {
         QPointHistory pointHistory = QPointHistory.pointHistory;
@@ -29,6 +35,9 @@ public class QuerydslQueryPointHistoryRepository implements QueryPointHistoryRep
                 .fetchFirst());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<PointHistory> findByMemberId(
             long memberId,
@@ -47,6 +56,9 @@ public class QuerydslQueryPointHistoryRepository implements QueryPointHistoryRep
                 .fetch();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<PointHistory> findByPointCode(
             PointCode pointCode,
@@ -65,7 +77,9 @@ public class QuerydslQueryPointHistoryRepository implements QueryPointHistoryRep
                 .fetch();
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public long getMemberPointByMemberId(long memberId) {
         QPointHistory pointHistory = QPointHistory.pointHistory;
