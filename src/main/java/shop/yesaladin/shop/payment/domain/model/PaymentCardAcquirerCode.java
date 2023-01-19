@@ -26,6 +26,7 @@ public enum PaymentCardAcquirerCode {
         return krName;
     }
 
+    //TODO front에서 결제단으로 넘어오지 않는 경우 사용할 필요 없음
     @JsonCreator
     public static PaymentCardAcquirerCode fromJson(@JsonProperty("cardAcquirerCode") String krName) {
         return Arrays.stream(PaymentCardAcquirerCode.values())

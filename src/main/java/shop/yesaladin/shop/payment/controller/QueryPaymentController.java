@@ -11,7 +11,7 @@ import shop.yesaladin.shop.payment.dto.PaymentCompleteSimpleResponseDto;
 import shop.yesaladin.shop.payment.service.inter.QueryPaymentService;
 
 /**
- * 결제 정보를 조회하는 api를 제공하는 RestController
+ * 결제 정보를 조회하는 api를 제공하기위한 RestController
  *
  * @author 배수한
  * @since 1.0

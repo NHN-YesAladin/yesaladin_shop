@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,7 +101,7 @@ class JpaCommandPaymentRepositoryTest {
     }
 
     @Test
-    @DisplayName("CascadeType.ALL이 안걸려있는 엔티티가 삭제 될 경우, 해당 엔티티만 삭제 확인 ")
+    @DisplayName("카드정보만 삭제 - CascadeType.persist와 merge가 영향을 주지 않는 것을 확인")
     void delete_onlyPaymentCard() throws Exception {
         // given
         entityManager.persist(payment);
@@ -119,8 +120,9 @@ class JpaCommandPaymentRepositoryTest {
         assertThat(found.getId()).isEqualTo(payment.getId());
     }
 
+    @Disabled("CasadeType.Persist, merge로 변경 후 연관관계 있을 경우 삭제 불가")
     @Test
-    @DisplayName("CascadeType.ALL가 걸린 엔티티가 삭제 될 경우, 해당 엔티티 아래에있는 엔티티까지 삭제 확인 ")
+//    @DisplayName("CascadeType.ALL가 걸린 엔티티가 삭제 될 경우, 해당 엔티티 아래에있는 엔티티까지 삭제 확인 ")
     void delete_payment_thenBothDeleted() throws Exception {
         // given
         entityManager.persist(payment);
@@ -129,7 +131,8 @@ class JpaCommandPaymentRepositoryTest {
 
         // when
         Payment foundPayment = entityManager.find(Payment.class, payment.getId());
-        jpaCommandPaymentRepository.delete(foundPayment);
+//        jpaCommandPaymentRepository.deleteById(foundPayment.getId());
+        entityManager.remove(foundPayment);
         entityManager.flush();
         entityManager.clear();
 

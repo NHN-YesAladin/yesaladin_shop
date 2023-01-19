@@ -13,5 +13,5 @@ import shop.yesaladin.shop.payment.domain.model.Payment;
 public interface CommandPaymentRepository {
     Payment save(Payment payment);
 
-    void delete(Payment payment);
+    void deleteById(String paymentId);
 }

@@ -19,7 +19,7 @@ public class DummyPaymentCard {
                 .installmentPlanMonths(0)
                 .approveNo("0000011")
                 .useCardPoint(false)
-                .acquireStatus("READY")
+                .acquireStatus(PaymentCode.READY)
                 .isInterestFree(false)
                 .interestPayer("NONE")
                 .cardCode(PaymentCode.CREDIT)

@@ -86,10 +86,12 @@ public class Payment {
     @Convert(converter = PaymentCodeConverter.class)
     private PaymentCode status;
 
-    @OneToOne(mappedBy = "payment", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "payment", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST,
+            CascadeType.MERGE})
     private PaymentCard paymentCard;
 
-    @OneToOne(mappedBy = "payment", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "payment", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST,
+            CascadeType.MERGE})
     private PaymentCancel paymentCancel;
 
     public void setPaymentCard(PaymentCard paymentCard) {

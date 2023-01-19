@@ -55,9 +55,6 @@ public class PaymentCard {
     @Column(name = "use_card_point", nullable = false)
     private boolean useCardPoint;
 
-    @Column(name = "acquire_status", nullable = false, length = 20)
-    private String acquireStatus;
-
     @Column(name = "is_interest_free", nullable = false)
     private boolean isInterestFree;
 
@@ -71,6 +68,10 @@ public class PaymentCard {
     @Column(name = "owner_code_id")
     @Convert(converter = PaymentCodeConverter.class)
     private PaymentCode ownerCode;
+
+    @Column(name = "acquire_status_code_id")
+    @Convert(converter = PaymentCodeConverter.class)
+    private PaymentCode acquireStatus;
 
     @Column(name = "issuer_code_id")
     @Convert(converter = PaymentCardAcquirerCodeConverter.class)
