@@ -82,9 +82,10 @@ public class ControllerAdvice {
 
     @ExceptionHandler({CustomJsonProcessingException.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseEntity<String> handleJsonProcessingException(Exception ex) {
+    public ResponseEntity<ErrorResponseDto> handleJsonProcessingException(Exception ex) {
         log.error("[INTERNAL_SERVER_ERROR] handleJsonProcessingException", ex);
-        return ResponseEntity.internalServerError().build();
+        ErrorResponseDto error = new ErrorResponseDto(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
 
     @ExceptionHandler(Exception.class)
