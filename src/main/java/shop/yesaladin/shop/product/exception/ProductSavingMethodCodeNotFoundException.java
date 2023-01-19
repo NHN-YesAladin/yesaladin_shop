@@ -9,6 +9,6 @@ package shop.yesaladin.shop.product.exception;
 public class ProductSavingMethodCodeNotFoundException extends RuntimeException {
 
     public ProductSavingMethodCodeNotFoundException(int id) {
-        super("ProductSavingMethodCode Not Found : " + id + "(ID)");
+        super("ProductSavingMethodCode " + id + "(ID) is not found.");
     }
 }
