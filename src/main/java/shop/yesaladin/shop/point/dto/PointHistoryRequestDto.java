@@ -28,7 +28,7 @@ public class PointHistoryRequestDto {
      * dto 클래스를 엔티티 클래스로 변환시켜줍니다.
      *
      * @param pointCode 포인트 코드(사용/적립)
-     * @param member 회원 정보
+     * @param member    회원 정보
      * @author 최예린
      * @since 1.0
      */

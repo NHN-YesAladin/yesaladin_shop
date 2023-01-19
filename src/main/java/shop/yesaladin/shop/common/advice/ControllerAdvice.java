@@ -12,6 +12,7 @@ import shop.yesaladin.shop.category.exception.CategoryNotFoundException;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.exception.MemberProfileAlreadyExistException;
 import shop.yesaladin.shop.member.exception.MemberRoleNotFoundException;
+import shop.yesaladin.shop.point.exception.InvalidCodeParameterException;
 import shop.yesaladin.shop.point.exception.OverPointUseException;
 
 /**
@@ -34,7 +35,8 @@ public class ControllerAdvice {
     }
 
     @ExceptionHandler({MethodArgumentNotValidException.class,
-            HttpMessageNotReadableException.class, OverPointUseException.class})
+            HttpMessageNotReadableException.class, OverPointUseException.class,
+            InvalidCodeParameterException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<String> handleValidationException(Exception ex) {
         log.error("[BAD_REQUEST] handleValidationException", ex);

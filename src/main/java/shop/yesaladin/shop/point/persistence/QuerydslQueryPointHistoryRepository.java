@@ -16,8 +16,8 @@ import shop.yesaladin.shop.point.domain.repository.QueryPointHistoryRepository;
 /**
  * {@inheritDoc}
  */
-@Repository
 @RequiredArgsConstructor
+@Repository
 public class QuerydslQueryPointHistoryRepository implements QueryPointHistoryRepository {
 
     private final JPAQueryFactory queryFactory;
@@ -90,8 +90,7 @@ public class QuerydslQueryPointHistoryRepository implements QueryPointHistoryRep
                 .where(pointHistory.member.id.eq(memberId)
                         .and(pointHistory.pointCode.eq(PointCode.SUM)))
                 .orderBy(pointHistory.createDateTime.desc())
-                .limit(1)
-                .fetchOne());
+                .fetchFirst());
 
         NumberExpression<Long> expression = pointHistory.pointCode.when(PointCode.SAVE)
                 .then(pointHistory.amount)

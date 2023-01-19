@@ -20,8 +20,8 @@ import shop.yesaladin.shop.point.service.inter.CommandPointHistoryService;
  * @author 최예린
  * @since 1.0
  */
-@Service
 @RequiredArgsConstructor
+@Service
 public class CommandPointHistoryServiceImpl implements CommandPointHistoryService {
 
     private final CommandPointHistoryRepository commandPointHistoryRepository;
@@ -37,8 +37,9 @@ public class CommandPointHistoryServiceImpl implements CommandPointHistoryServic
                 PointCode.USE
         );
         checkMemberHasEnoughPoint(memberId, request);
+        PointHistory savedPointHistory = commandPointHistoryRepository.save(pointHistory);
 
-        return PointHistoryResponseDto.fromEntity(commandPointHistoryRepository.save(pointHistory));
+        return PointHistoryResponseDto.fromEntity(savedPointHistory);
     }
 
     private void checkMemberHasEnoughPoint(long memberId, PointHistoryRequestDto request) {
@@ -57,7 +58,9 @@ public class CommandPointHistoryServiceImpl implements CommandPointHistoryServic
                 request,
                 PointCode.SAVE
         );
-        return PointHistoryResponseDto.fromEntity(commandPointHistoryRepository.save(pointHistory));
+        PointHistory savedPointHistory = commandPointHistoryRepository.save(pointHistory);
+
+        return PointHistoryResponseDto.fromEntity(savedPointHistory);
     }
 
     private PointHistory createPointHistory(
