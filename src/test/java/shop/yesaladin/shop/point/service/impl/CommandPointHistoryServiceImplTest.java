@@ -126,7 +126,7 @@ class CommandPointHistoryServiceImplTest {
 
         //then
         assertThat(result.getAmount()).isEqualTo(amount);
-        assertThat(result.getMember().getId()).isEqualTo(member.getId());
+        assertThat(result.getMemberId()).isEqualTo(memberId);
         assertThat(result.getPointCode()).isEqualTo(pointCode);
 
         ArgumentCaptor<PointHistory> captor = ArgumentCaptor.forClass(PointHistory.class);
@@ -190,7 +190,7 @@ class CommandPointHistoryServiceImplTest {
 
         //then
         assertThat(result.getAmount()).isEqualTo(amount);
-        assertThat(result.getMember().getId()).isEqualTo(member.getId());
+        assertThat(result.getMemberId()).isEqualTo(memberId);
         assertThat(result.getPointCode()).isEqualTo(pointCode);
 
         ArgumentCaptor<PointHistory> captor = ArgumentCaptor.forClass(PointHistory.class);

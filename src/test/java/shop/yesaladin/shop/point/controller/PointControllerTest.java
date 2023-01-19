@@ -150,7 +150,6 @@ class PointControllerTest {
         //given
         long memberId = 1L;
         Long amount = 1000L;
-        Member member = MemberDummy.dummyWithId(memberId);
 
         PointHistoryRequestDto request = ReflectionUtils.newInstance(
                 PointHistoryRequestDto.class,
@@ -164,7 +163,7 @@ class PointControllerTest {
                 curAmount,
                 LocalDateTime.now(),
                 PointCode.USE,
-                member
+                memberId
         );
         Mockito.when(commandPointHistoryService.use(eq(memberId), any())).thenReturn(response);
         //when
@@ -177,7 +176,7 @@ class PointControllerTest {
         result.andExpect(jsonPath("$.id", equalTo((int) pointHistoryId)));
         result.andExpect(jsonPath("$.amount", equalTo((int) curAmount)));
         result.andExpect(jsonPath("$.pointCode", equalTo("USE")));
-        result.andExpect(jsonPath("$.member.id", equalTo((int) memberId)));
+        result.andExpect(jsonPath("$.memberId", equalTo((int) memberId)));
 
         ArgumentCaptor<PointHistoryRequestDto> captor = ArgumentCaptor.forClass(
                 PointHistoryRequestDto.class);
@@ -197,11 +196,11 @@ class PointControllerTest {
                 responseFields(
                         fieldWithPath("id").type(JsonFieldType.NUMBER).description("포인트 등록 내역 pk"),
                         fieldWithPath("amount").type(JsonFieldType.NUMBER).description("포인트 양"),
-                        fieldWithPath("createDateTime").type(JsonFieldType.NUMBER)
+                        fieldWithPath("createDateTime").type(JsonFieldType.STRING)
                                 .description("포인트내역 등록 일시"),
-                        fieldWithPath("pointCode").type(JsonFieldType.NUMBER)
+                        fieldWithPath("pointCode").type(JsonFieldType.STRING)
                                 .description("포인트내역 등록 코드: 사용"),
-                        fieldWithPath("member").type(JsonFieldType.NUMBER).description("회원 정보")
+                        fieldWithPath("memberId").type(JsonFieldType.NUMBER).description("회원 아이디")
                 )
         ));
     }
@@ -256,14 +255,13 @@ class PointControllerTest {
         );
         long pointHistoryId = 1;
         long curAmount = 1000;
-        Member member = MemberDummy.dummyWithId(memberId);
         PointHistoryResponseDto response = ReflectionUtils.newInstance(
                 PointHistoryResponseDto.class,
                 pointHistoryId,
                 curAmount,
                 LocalDateTime.now(),
                 PointCode.SAVE,
-                member
+                memberId
         );
         Mockito.when(commandPointHistoryService.save(eq(memberId), any())).thenReturn(response);
 
@@ -278,7 +276,7 @@ class PointControllerTest {
         result.andExpect(jsonPath("$.id", equalTo((int) pointHistoryId)));
         result.andExpect(jsonPath("$.amount", equalTo((int) curAmount)));
         result.andExpect(jsonPath("$.pointCode", equalTo("SAVE")));
-        result.andExpect(jsonPath("$.member.id", equalTo((int) memberId)));
+        result.andExpect(jsonPath("$.memberId", equalTo((int) memberId)));
 
         ArgumentCaptor<PointHistoryRequestDto> captor = ArgumentCaptor.forClass(
                 PointHistoryRequestDto.class);
@@ -298,11 +296,11 @@ class PointControllerTest {
                 responseFields(
                         fieldWithPath("id").type(JsonFieldType.NUMBER).description("포인트 등록 내역 pk"),
                         fieldWithPath("amount").type(JsonFieldType.NUMBER).description("포인트 양"),
-                        fieldWithPath("createDateTime").type(JsonFieldType.NUMBER)
+                        fieldWithPath("createDateTime").type(JsonFieldType.STRING)
                                 .description("포인트내역 등록 일시"),
-                        fieldWithPath("pointCode").type(JsonFieldType.NUMBER)
+                        fieldWithPath("pointCode").type(JsonFieldType.STRING)
                                 .description("포인트내역 등록 코드: 적립"),
-                        fieldWithPath("member").type(JsonFieldType.NUMBER).description("회원 정보")
+                        fieldWithPath("memberId").type(JsonFieldType.NUMBER).description("회원 아이디")
                 )
         ));
     }

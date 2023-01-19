@@ -225,7 +225,7 @@ class CommandMemberControllerTest {
                 .content(objectMapper.writeValueAsString(request)));
 
         //then
-        perform.andDo(print()).andExpect(status().isBadRequest());
+        perform.andDo(print()).andExpect(status().isNotFound());
 
         verify(commandMemberService, times(1)).update(anyLong(), requestArgumentCaptor.capture());
         assertThat(requestArgumentCaptor.getValue().getNickname()).isEqualTo(request.getNickname());
@@ -268,7 +268,7 @@ class CommandMemberControllerTest {
         ResultActions perform = mockMvc.perform(put("/v1/members/{memberId}/block", memberId));
 
         //then
-        perform.andDo(print()).andExpect(status().isBadRequest());
+        perform.andDo(print()).andExpect(status().isNotFound());
 
         verify(commandMemberService, times(1)).block(memberId);
 
@@ -305,7 +305,7 @@ class CommandMemberControllerTest {
         ).contentType(MediaType.APPLICATION_JSON));
 
         //then
-        perform.andDo(print()).andExpect(status().isBadRequest());
+        perform.andDo(print()).andExpect(status().isNotFound());
 
         verify(commandMemberService, times(1)).unblock(memberId);
     }
