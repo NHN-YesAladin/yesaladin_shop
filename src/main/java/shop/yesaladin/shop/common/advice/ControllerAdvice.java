@@ -12,6 +12,8 @@ import shop.yesaladin.shop.category.exception.CategoryNotFoundException;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.exception.MemberProfileAlreadyExistException;
 import shop.yesaladin.shop.member.exception.MemberRoleNotFoundException;
+import shop.yesaladin.shop.point.exception.InvalidCodeParameterException;
+import shop.yesaladin.shop.point.exception.OverPointUseException;
 
 /**
  * 공용으로 사용하는 예외 처리
@@ -24,7 +26,8 @@ import shop.yesaladin.shop.member.exception.MemberRoleNotFoundException;
 @RestControllerAdvice
 public class ControllerAdvice {
 
-    @ExceptionHandler(value = {CategoryNotFoundException.class, MemberRoleNotFoundException.class})
+    @ExceptionHandler(value = {CategoryNotFoundException.class, MemberRoleNotFoundException.class,
+            MemberNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<String> handleNotFoundException(Exception ex) {
         log.error("[NOT_FOUND] handleNotFoundException", ex);
@@ -32,8 +35,8 @@ public class ControllerAdvice {
     }
 
     @ExceptionHandler({MethodArgumentNotValidException.class,
-            HttpMessageNotReadableException.class,
-            MemberNotFoundException.class})
+            HttpMessageNotReadableException.class, OverPointUseException.class,
+            InvalidCodeParameterException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<String> handleValidationException(Exception ex) {
         log.error("[BAD_REQUEST] handleValidationException", ex);
