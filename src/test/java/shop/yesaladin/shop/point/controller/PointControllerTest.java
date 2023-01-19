@@ -1,6 +1,7 @@
 package shop.yesaladin.shop.point.controller;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.startsWith;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
@@ -75,7 +76,9 @@ class PointControllerTest {
                 .content(objectMapper.writeValueAsString(request)));
 
         //then
-        result.andExpect(status().isBadRequest());
+        result.andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message", startsWith("Invalid Code Parameter:")));
 
         //docs
         result.andDo(document(
@@ -87,6 +90,9 @@ class PointControllerTest {
                 requestFields(
                         fieldWithPath("amount").type(JsonFieldType.NUMBER)
                                 .description("사용한 포인트 양")
+                ),
+                responseFields(
+                        fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
                 )
         ));
     }
@@ -103,7 +109,7 @@ class PointControllerTest {
         );
 
         Mockito.when(commandPointHistoryService.use(eq(memberId), any())).thenThrow(
-                MemberNotFoundException.class);
+                new MemberNotFoundException("Member Id: " + memberId));
 
         //when
         ResultActions result = mockMvc.perform(post("/v1/points/{memberId}", memberId)
@@ -112,7 +118,9 @@ class PointControllerTest {
                 .content(objectMapper.writeValueAsString(request)));
 
         //then
-        result.andExpect(status().isNotFound());
+        result.andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message", startsWith("Member not found")));
 
         ArgumentCaptor<PointHistoryRequestDto> captor = ArgumentCaptor.forClass(
                 PointHistoryRequestDto.class);
@@ -130,6 +138,9 @@ class PointControllerTest {
                 requestFields(
                         fieldWithPath("amount").type(JsonFieldType.NUMBER)
                                 .description("사용한 포인트 양")
+                ),
+                responseFields(
+                        fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
                 )
         ));
     }
@@ -147,7 +158,7 @@ class PointControllerTest {
         );
 
         Mockito.when(commandPointHistoryService.use(eq(memberId), any())).thenThrow(
-                OverPointUseException.class);
+                new OverPointUseException(memberId, amount));
 
         //when
         ResultActions result = mockMvc.perform(post("/v1/points/{memberId}", memberId)
@@ -156,7 +167,9 @@ class PointControllerTest {
                 .content(objectMapper.writeValueAsString(request)));
 
         //then
-        result.andExpect(status().isBadRequest());
+        result.andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message", startsWith("Over Point Use")));
 
         ArgumentCaptor<PointHistoryRequestDto> captor = ArgumentCaptor.forClass(
                 PointHistoryRequestDto.class);
@@ -174,6 +187,9 @@ class PointControllerTest {
                 requestFields(
                         fieldWithPath("amount").type(JsonFieldType.NUMBER)
                                 .description("사용한 포인트 양")
+                ),
+                responseFields(
+                        fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
                 )
         ));
     }
@@ -254,7 +270,7 @@ class PointControllerTest {
         );
 
         Mockito.when(commandPointHistoryService.save(eq(memberId), any())).thenThrow(
-                MemberNotFoundException.class);
+                new MemberNotFoundException("Member Id: " + memberId));
 
         //when
         ResultActions result = mockMvc.perform(post("/v1/points/{memberId}", memberId)
@@ -263,7 +279,9 @@ class PointControllerTest {
                 .content(objectMapper.writeValueAsString(request)));
 
         //then
-        result.andExpect(status().isNotFound());
+        result.andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message", startsWith("Member not found")));
 
         ArgumentCaptor<PointHistoryRequestDto> captor = ArgumentCaptor.forClass(
                 PointHistoryRequestDto.class);
@@ -281,7 +299,11 @@ class PointControllerTest {
                 requestFields(
                         fieldWithPath("amount").type(JsonFieldType.NUMBER)
                                 .description("적립한 포인트 양")
+                ),
+                responseFields(
+                        fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
                 )
+
         ));
     }
 
