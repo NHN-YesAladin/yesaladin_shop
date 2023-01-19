@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import shop.yesaladin.shop.category.exception.CategoryNotFoundException;
 import shop.yesaladin.shop.common.dto.ErrorResponseDto;
+import shop.yesaladin.shop.member.exception.MemberAddressNotFoundException;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.exception.MemberProfileAlreadyExistException;
 import shop.yesaladin.shop.member.exception.MemberRoleNotFoundException;
@@ -28,7 +29,7 @@ import shop.yesaladin.shop.point.exception.OverPointUseException;
 public class ControllerAdvice {
 
     @ExceptionHandler(value = {CategoryNotFoundException.class, MemberRoleNotFoundException.class,
-            MemberNotFoundException.class})
+            MemberNotFoundException.class, MemberAddressNotFoundException.class})
     public ResponseEntity<ErrorResponseDto> handleNotFoundException(Exception ex) {
         log.error("[NOT_FOUND] handleNotFoundException", ex);
         ErrorResponseDto error = new ErrorResponseDto(ex.getMessage());
