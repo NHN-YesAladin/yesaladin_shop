@@ -31,8 +31,8 @@ public class CategoryRequestDto {
     /**
      * 카테고리 수정을 위해 해당 dto 를 Category 로 변환
      *
-     * @param id 카테고리 id
-     * @param depth 2차 카테고리일 경우 '0', 1차 카테고리일 경우 '1'
+     * @param id     카테고리 id
+     * @param depth  2차 카테고리일 경우 '0', 1차 카테고리일 경우 '1'
      * @param parent 2차 카테고리일 경우 사용, 1차 카테고리일 경우 null 입력
      * @return
      */

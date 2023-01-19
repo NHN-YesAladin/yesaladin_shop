@@ -1,14 +1,10 @@
-eureka:
-  client:
-    enabled: false
-
 spring:
   application:
     name: yesaladin-shop
-  cloud:
-    config:
-      enabled: false
   datasource:
     url: jdbc:h2:mem:/test
     username: sa
     password:
+elastic:
+  host: 103.218.159.211:9200
+

@@ -1,11 +1,16 @@
 package shop.yesaladin.shop.member.service.impl;
 
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
+import shop.yesaladin.shop.member.domain.repository.QueryMemberRoleRepository;
 import shop.yesaladin.shop.member.dto.MemberDto;
+import shop.yesaladin.shop.member.dto.MemberLoginResponseDto;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 
@@ -15,11 +20,13 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberService;
  * @author : 송학현, 최예린
  * @since : 1.0
  */
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class QueryMemberServiceImpl implements QueryMemberService {
 
     private final QueryMemberRepository queryMemberRepository;
+    private final QueryMemberRoleRepository queryMemberRoleRepository;
 
     /**
      * 회원을 primary key로 조회 하기 위한 메서드 입니다.
@@ -48,8 +55,11 @@ public class QueryMemberServiceImpl implements QueryMemberService {
     @Transactional(readOnly = true)
     @Override
     public MemberDto findMemberByLoginId(String loginId) {
-        Member member = queryMemberRepository.findMemberByLoginId(loginId)
-                .orElseThrow(() -> new MemberNotFoundException("Member Login Id: " + loginId));
+        Member member = getMemberByLoginId(
+                loginId,
+                queryMemberRepository.findMemberByLoginId(loginId),
+                "Member Login Id: "
+        );
         return MemberDto.fromEntity(member);
     }
 
@@ -67,5 +77,41 @@ public class QueryMemberServiceImpl implements QueryMemberService {
         Member member = queryMemberRepository.findMemberByNickname(nickname)
                 .orElseThrow(() -> new MemberNotFoundException("Member Nickname: " + nickname));
         return MemberDto.fromEntity(member);
+    }
+
+    /**
+     * 회원의 로그인 요청에 대해 유저 정보와 권한 정보를 함께 조회 하기 위한 메서드 입니다.
+     *
+     * @param loginId member의 loginId
+     * @return login 대상의 유저 정보와 권한 정보를 담은 DTO
+     * @author : 송학현
+     * @since : 1.0
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public MemberLoginResponseDto findMemberLoginInfoByLoginId(String loginId) {
+        Member member = getMemberByLoginId(
+                loginId,
+                queryMemberRepository.findMemberByLoginId(loginId),
+                "Member Login Id: "
+        );
+
+        List<String> roles = queryMemberRoleRepository.findMemberRolesByMemberId(
+                member.getId());
+
+        return new MemberLoginResponseDto(
+                member.getId(),
+                member.getName(),
+                member.getNickname(),
+                member.getLoginId(),
+                member.getEmail(),
+                member.getPassword(),
+                roles
+        );
+    }
+
+    private Member getMemberByLoginId(String loginId, Optional<Member> memberByLoginId, String s) {
+        return memberByLoginId
+                .orElseThrow(() -> new MemberNotFoundException(s + loginId));
     }
 }
