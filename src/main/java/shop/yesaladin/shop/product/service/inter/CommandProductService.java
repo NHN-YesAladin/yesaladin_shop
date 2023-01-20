@@ -2,7 +2,6 @@ package shop.yesaladin.shop.product.service.inter;
 
 import shop.yesaladin.shop.product.dto.ProductCreateDto;
 import shop.yesaladin.shop.product.dto.ProductOnlyIdDto;
-import shop.yesaladin.shop.product.dto.ProductResponseDto;
 
 /**
  * 상품 등록/수정/삭제을 위한 Service Interface 입니다.

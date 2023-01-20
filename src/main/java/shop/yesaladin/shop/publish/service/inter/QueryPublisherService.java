@@ -2,8 +2,6 @@ package shop.yesaladin.shop.publish.service.inter;
 
 import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
 
-import java.util.List;
-
 /**
  * 출판사 조회를 위한 Service Interface 입니다.
  *

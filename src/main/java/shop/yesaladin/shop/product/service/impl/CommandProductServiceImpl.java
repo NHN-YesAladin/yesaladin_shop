@@ -1,44 +1,37 @@
 package shop.yesaladin.shop.product.service.impl;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import shop.yesaladin.shop.file.dto.FileResponseDto;
 import shop.yesaladin.shop.file.service.inter.CommandFileService;
 import shop.yesaladin.shop.file.service.inter.QueryFileService;
-import shop.yesaladin.shop.member.domain.model.Member;
-import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
 import shop.yesaladin.shop.product.domain.repository.*;
-import shop.yesaladin.shop.product.dto.*;
+import shop.yesaladin.shop.product.dto.ProductCreateDto;
+import shop.yesaladin.shop.product.dto.ProductOnlyIdDto;
 import shop.yesaladin.shop.product.exception.AlreadyProductExistsException;
 import shop.yesaladin.shop.product.exception.TotalDiscountRateNotExistsException;
 import shop.yesaladin.shop.product.service.inter.CommandProductService;
-import shop.yesaladin.shop.product.service.inter.CommandSubscribeProductService;
-import shop.yesaladin.shop.product.service.inter.QuerySubscribeProductService;
-import shop.yesaladin.shop.product.service.inter.QueryTotalDiscountRateService;
 import shop.yesaladin.shop.publish.domain.model.Publish;
-import shop.yesaladin.shop.publish.domain.model.Publisher;
 import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
 import shop.yesaladin.shop.publish.service.inter.CommandPublishService;
-import shop.yesaladin.shop.publish.service.inter.CommandPublisherService;
 import shop.yesaladin.shop.publish.service.inter.QueryPublishService;
 import shop.yesaladin.shop.publish.service.inter.QueryPublisherService;
 import shop.yesaladin.shop.tag.domain.model.ProductTag;
 import shop.yesaladin.shop.tag.domain.model.Tag;
-import shop.yesaladin.shop.tag.dto.TagResponseDto;
 import shop.yesaladin.shop.tag.service.inter.CommandProductTagService;
-import shop.yesaladin.shop.tag.service.inter.CommandTagService;
 import shop.yesaladin.shop.tag.service.inter.QueryTagService;
 import shop.yesaladin.shop.writing.domain.model.Author;
 import shop.yesaladin.shop.writing.domain.model.Writing;
 import shop.yesaladin.shop.writing.service.inter.CommandWritingService;
 import shop.yesaladin.shop.writing.service.inter.QueryAuthorService;
+
+import javax.transaction.Transactional;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * 상품 생성을 위한 Service 구현체 입니다.
@@ -82,12 +75,7 @@ public class CommandProductServiceImpl implements CommandProductService {
 
 
     /**
-     * 상품을 생성하여 저장합니다. 생성된 상품 객체를 리턴합니다.
-     *
-     * @param dto 관리자에게서 입력받은 상품 생성정보
-     * @return 생성된 상품 객체
-     * @author 이수정
-     * @since 1.0
+     * {@inheritDoc}
      */
     @Transactional
     @Override

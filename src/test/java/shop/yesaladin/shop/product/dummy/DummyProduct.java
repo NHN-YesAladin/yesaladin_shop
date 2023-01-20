@@ -26,7 +26,7 @@ public class DummyProduct {
                 .preferentialShowRanking(2)
                 .subscribeProduct(DummySubscribeProduct.dummy())
                 .thumbnailFile(DummyFile.dummy("png"))
-                .ebookFile(DummyFile.dummy("pdf"))
+                .ebookFile(null)
                 .productTypeCode(DummyProductTypeCode.dummy())
                 .totalDiscountRate(DummyTotalDiscountRate.dummy())
                 .productSavingMethodCode(DummyProductSavingMethodCode.dummy())

@@ -23,12 +23,7 @@ public class QueryPublishServiceImpl implements QueryPublishService {
     private final QueryPublishRepository queryPublishRepository;
 
     /**
-     * 출판한 상품을 기준으로 출판를 조회하여 조회된 출판 Dto를 반환합니다.
-     *
-     * @param product 출판을 조회할 product
-     * @return 조회된 출판 dto
-     * @author 이수정
-     * @since 1.0
+     * {@inheritDoc}
      */
     @Transactional(readOnly = true)
     @Override

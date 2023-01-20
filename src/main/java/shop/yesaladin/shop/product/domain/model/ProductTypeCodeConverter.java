@@ -1,9 +1,10 @@
 package shop.yesaladin.shop.product.domain.model;
 
-import java.util.Arrays;
+import shop.yesaladin.shop.product.exception.ProductTypeCodeNotFoundException;
+
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
-import shop.yesaladin.shop.product.exception.ProductTypeCodeNotFoundException;
+import java.util.Arrays;
 
 /**
  * Enum 클래스로 만들어진 ProductTypeCode 테이블을 entity와 DB 사이의 변환하기 위한 클래스입니다.

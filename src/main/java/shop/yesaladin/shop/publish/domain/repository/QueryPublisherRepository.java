@@ -2,7 +2,6 @@ package shop.yesaladin.shop.publish.domain.repository;
 
 import shop.yesaladin.shop.publish.domain.model.Publisher;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
