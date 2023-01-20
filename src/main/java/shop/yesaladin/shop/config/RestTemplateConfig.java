@@ -1,4 +1,4 @@
-package shop.yesaladin.front.config;
+package shop.yesaladin.shop.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,7 +9,7 @@ import org.springframework.web.client.RestTemplate;
 /**
  * RestTemplate 설정 클래스
  *
- * @author : 송학현
+ * @author : 배수한
  * @since : 1.0
  */
 @Configuration
@@ -20,8 +20,6 @@ public class RestTemplateConfig {
      *
      * @param clientHttpRequestFactory client, server 커넥션 설정 factory class.
      * @return RestTemplate 반환.
-     * @author : 송학현
-     * @since : 1.0
      */
     @Bean
     public RestTemplate restTemplate(ClientHttpRequestFactory clientHttpRequestFactory) {
@@ -32,8 +30,6 @@ public class RestTemplateConfig {
      * client와 server간 connection 객체를 생성 및 타임아웃 등의 설정을 위한 Bean 설정
      *
      * @return ClientHttpRequestFactory의 구현체 SimpleClientHttpRequestFactory
-     * @author : 송학현
-     * @since : 1.0
      */
     @Bean
     public ClientHttpRequestFactory clientHttpRequestFactory() {
