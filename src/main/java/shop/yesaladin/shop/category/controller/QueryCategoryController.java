@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,7 +25,6 @@ import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/v1/categories")
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class QueryCategoryController {
 
     private final QueryCategoryService queryCategoryService;
