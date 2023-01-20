@@ -29,12 +29,7 @@ public class QueryMemberServiceImpl implements QueryMemberService {
     private final QueryMemberRoleRepository queryMemberRoleRepository;
 
     /**
-     * 회원을 primary key로 조회 하기 위한 메서드 입니다.
-     *
-     * @param id member의 primary key
-     * @return 회원 조회 결과
-     * @author : 송학현, 최예린
-     * @since : 1.0
+     * {@inheritDoc}
      */
     @Transactional(readOnly = true)
     @Override
@@ -45,12 +40,7 @@ public class QueryMemberServiceImpl implements QueryMemberService {
     }
 
     /**
-     * 회원을 unique column인 loginId를 기준 으로 조회 하기 위한 메서드 입니다.
-     *
-     * @param loginId member의 loginId
-     * @return 회원 조회 결과
-     * @author : 송학현, 최예린
-     * @since : 1.0
+     * {@inheritDoc}
      */
     @Transactional(readOnly = true)
     @Override
@@ -64,12 +54,7 @@ public class QueryMemberServiceImpl implements QueryMemberService {
     }
 
     /**
-     * 회원을 unique column인 nickname을 기준 으로 조회 하기 위한 메서드 입니다.
-     *
-     * @param nickname member의 nickname
-     * @return 회원 조회 결과
-     * @author : 송학현, 최예린
-     * @since : 1.0
+     * {@inheritDoc}
      */
     @Transactional(readOnly = true)
     @Override
@@ -80,12 +65,7 @@ public class QueryMemberServiceImpl implements QueryMemberService {
     }
 
     /**
-     * 회원의 로그인 요청에 대해 유저 정보와 권한 정보를 함께 조회 하기 위한 메서드 입니다.
-     *
-     * @param loginId member의 loginId
-     * @return login 대상의 유저 정보와 권한 정보를 담은 DTO
-     * @author : 송학현
-     * @since : 1.0
+     * {@inheritDoc}
      */
     @Transactional(readOnly = true)
     @Override
@@ -113,5 +93,32 @@ public class QueryMemberServiceImpl implements QueryMemberService {
     private Member getMemberByLoginId(String loginId, Optional<Member> memberByLoginId, String s) {
         return memberByLoginId
                 .orElseThrow(() -> new MemberNotFoundException(s + loginId));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public boolean existsLoginId(String loginId) {
+        return queryMemberRepository.existsMemberByLoginId(loginId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public boolean existsNickname(String nickname) {
+        return queryMemberRepository.existsMemberByNickname(nickname);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public boolean existsEmail(String email) {
+        return queryMemberRepository.existsMemberByEmail(email);
     }
 }
