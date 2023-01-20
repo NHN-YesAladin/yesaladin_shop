@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.payment.domain.model;
 
+import java.util.Arrays;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -23,6 +24,13 @@ public enum PaymentCode {
 
     private final int code;
     private final String krName;
+
+    public static PaymentCode findByName(String krName) {
+        return Arrays.stream(PaymentCode.values())
+                .filter(code -> code.getKrName().equals(krName))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+    }
 
     @Override
     public String toString() {

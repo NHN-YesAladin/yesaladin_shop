@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.payment.domain.model;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import java.time.LocalDateTime;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -17,6 +18,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import shop.yesaladin.shop.order.domain.model.Order;
+import shop.yesaladin.shop.payment.dto.PaymentCompleteSimpleResponseDto;
 import shop.yesaladin.shop.payment.persistence.converter.PaymentCodeConverter;
 
 /**
@@ -38,13 +40,11 @@ public class Payment {
     @Column(length = 200)
     private String id;
 
-    @Column(name = "last_transaction_key", nullable = false, length = 64)
+    @Column(name = "last_transaction_key", length = 64)
     private String lastTransactionKey;
 
     @Column(name = "order_name", nullable = false, length = 100)
     private String orderName;
-
-
 
     @Column(nullable = false, length = 3)
     private String currency;
@@ -105,4 +105,51 @@ public class Payment {
     public void setStatus(PaymentCode status) {
         this.status = status;
     }
+
+    public static Payment toEntity(JsonNode jsonNode, Order order) {
+        String paymentId = jsonNode.get("paymentKey").asText();
+
+        Payment payment = Payment.builder()
+                .id(paymentId)
+                .lastTransactionKey(jsonNode.get("lastTransactionKey").asText())
+                .orderName(jsonNode.get("orderName").asText())
+                .currency(jsonNode.get("currency").asText())
+                .totalAmount(jsonNode.get("totalAmount").asLong())
+                .balanceAmount(jsonNode.get("balanceAmount").asLong())
+                .suppliedAmount(jsonNode.get("suppliedAmount").asLong())
+                .taxFreeAmount(jsonNode.get("taxFreeAmount").asLong())
+                .vat(jsonNode.get("vat").asLong())
+                .requestedDatetime(LocalDateTime.parse(jsonNode.get("requestedAt").asText()))
+                .approvedDatetime(LocalDateTime.parse(jsonNode.get("approvedAt").asText()))
+                .order(order)
+                .paymentCode(PaymentCode.valueOf(jsonNode.get("type").asText()))
+                .method(PaymentCode.findByName(jsonNode.get("method").asText()))
+                .status(PaymentCode.valueOf(jsonNode.get("status").asText()))
+                .build();
+        PaymentCard paymentCard = PaymentCard.builder()
+                .id(paymentId)
+                .payment(payment)
+                .amount(jsonNode.get("card").get("amount").asLong())
+                .number(jsonNode.get("card").get("number").asText())
+                .installmentPlanMonths(jsonNode.get("card").get("installmentPlanMonths").asInt())
+                .approveNo(jsonNode.get("card").get("approveNo").asText())
+                .useCardPoint(jsonNode.get("card").get("useCardPoint").asBoolean())
+                .isInterestFree(jsonNode.get("card").get("isInterestFree").asBoolean())
+                .interestPayer(jsonNode.get("card").get("interestPayer").asText())
+                .cardCode(PaymentCode.findByName(jsonNode.get("card").get("cardType").asText()))
+                .ownerCode(PaymentCode.findByName(jsonNode.get("card").get("ownerType").asText()))
+                .acquireStatus(PaymentCode.valueOf(jsonNode.get("card")
+                        .get("acquireStatus")
+                        .asText()))
+                .issuerCode(PaymentCardAcquirerCode.valueOf(jsonNode.get("card")
+                        .get("issuerCode")
+                        .asText()))
+                .acquirerCode(PaymentCardAcquirerCode.valueOf(jsonNode.get("card")
+                        .get("acquirerCode")
+                        .asText()))
+                .build();
+        payment.setPaymentCard(paymentCard);
+        return payment;
+    }
 }
+

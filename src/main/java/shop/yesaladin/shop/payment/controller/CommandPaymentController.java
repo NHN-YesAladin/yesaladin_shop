@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.payment.controller;
 
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -23,9 +24,10 @@ import shop.yesaladin.shop.payment.dto.PaymentRequestDto;
 @RequestMapping("/v1/payments")
 public class CommandPaymentController {
 
-    @PostMapping
-    public PaymentCompleteSimpleResponseDto test(@RequestBody PaymentRequestDto requestDto) {
+    @PostMapping("/confirm")
+    public PaymentCompleteSimpleResponseDto confirmPayment(@Valid @RequestBody PaymentRequestDto requestDto) {
         log.error("{}", requestDto);
+
         return null;
     }
 }

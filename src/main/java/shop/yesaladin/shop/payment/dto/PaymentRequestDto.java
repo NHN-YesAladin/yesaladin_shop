@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.payment.dto;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -11,7 +12,7 @@ import shop.yesaladin.shop.payment.domain.model.PaymentCardAcquirerCode;
 import shop.yesaladin.shop.payment.domain.model.PaymentCode;
 
 /**
- * 결제 정보를 생성하기 위해 사용하는 요청 dto
+ * 결제 정보를 생성하기 위해 사용하는 요청 Dto from Toss
  *
  * @author 배수한
  * @since 1.0
@@ -21,6 +22,10 @@ import shop.yesaladin.shop.payment.domain.model.PaymentCode;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class PaymentRequestDto {
-    private PaymentCode cardCode;
-    private PaymentCardAcquirerCode cardAcquirerCode;
+    @NotBlank
+    private String paymentKey;
+    @NotBlank
+    private String orderId;
+    @NotNull
+    private Long amount;
 }

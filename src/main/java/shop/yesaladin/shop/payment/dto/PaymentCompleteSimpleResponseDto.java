@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.payment.dto;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,7 +30,7 @@ public class PaymentCompleteSimpleResponseDto {
     private long totalAmount;
     private LocalDateTime approvedDateTime;
 
-    private Long orderId;
+    private String orderNumber;
     private String orderName;
 
     private PaymentCode cardCode;
@@ -46,7 +47,7 @@ public class PaymentCompleteSimpleResponseDto {
                 .currency(payment.getCurrency())
                 .totalAmount(payment.getTotalAmount())
                 .approvedDateTime(payment.getApprovedDatetime())
-                .orderId(payment.getOrder().getId())
+                .orderNumber(payment.getOrder().getOrderNumber())
                 .orderName(payment.getOrder().getName())
                 .cardCode(payment.getPaymentCard().getCardCode())
                 .cardOwnerCode(payment.getPaymentCard().getOwnerCode())
@@ -55,6 +56,6 @@ public class PaymentCompleteSimpleResponseDto {
                 .cardApproveNumber(payment.getPaymentCard().getApproveNo())
                 .cardAcquirerCode(payment.getPaymentCard().getAcquirerCode())
                 .build();
-
     }
+
 }

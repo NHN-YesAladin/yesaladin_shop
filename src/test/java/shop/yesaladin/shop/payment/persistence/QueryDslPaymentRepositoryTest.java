@@ -163,7 +163,7 @@ class QueryDslPaymentRepositoryTest {
         assertThat(responseDto.getPaymentId()).isEqualTo(paymentId);
         assertThat(responseDto.getMethod()).isEqualTo(payment.getMethod());
 
-        assertThat(responseDto.getOrderId()).isEqualTo(memberOrder.getId());
+        assertThat(responseDto.getOrderNumber()).isEqualTo(memberOrder.getId());
         assertThat(responseDto.getOrderName()).isEqualTo(memberOrder.getName());
 
         assertThat(responseDto.getCardCode()).isEqualTo(paymentCard.getCardCode());
@@ -185,7 +185,7 @@ class QueryDslPaymentRepositoryTest {
         assertThat(responseDto.getPaymentId()).isEqualTo(paymentId);
         assertThat(responseDto.getMethod()).isEqualTo(payment.getMethod());
 
-        assertThat(responseDto.getOrderId()).isEqualTo(memberOrder.getId());
+        assertThat(responseDto.getOrderNumber()).isEqualTo(memberOrder.getId());
         assertThat(responseDto.getOrderName()).isEqualTo(memberOrder.getName());
 
         assertThat(responseDto.getCardCode()).isEqualTo(paymentCard.getCardCode());
@@ -205,7 +205,7 @@ class QueryDslPaymentRepositoryTest {
         assertThat(responseDto.getPaymentId()).isEqualTo(paymentId);
         assertThat(responseDto.getMethod()).isEqualTo(payment.getMethod());
 
-        assertThat(responseDto.getOrderId()).isEqualTo(memberOrder.getId());
+        assertThat(responseDto.getOrderNumber()).isEqualTo(memberOrder.getId());
         assertThat(responseDto.getOrderName()).isEqualTo(memberOrder.getName());
 
         assertThat(responseDto.getCardCode()).isEqualTo(paymentCard.getCardCode());
