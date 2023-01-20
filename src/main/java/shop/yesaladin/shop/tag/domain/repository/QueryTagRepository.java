@@ -2,6 +2,7 @@ package shop.yesaladin.shop.tag.domain.repository;
 
 import shop.yesaladin.shop.tag.domain.model.Tag;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -15,4 +16,6 @@ public interface QueryTagRepository {
     Optional<Tag> findById(Long id);
 
     Optional<Tag> findByName(String name);
+
+    List<Tag> findAll();
 }

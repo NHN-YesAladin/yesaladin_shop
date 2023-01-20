@@ -1,19 +1,22 @@
 package shop.yesaladin.shop.tag.dto;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.tag.domain.model.ProductTag.Pk;
 import shop.yesaladin.shop.tag.domain.model.Tag;
 
 /**
- * 태그관계 데이터를 반환받는 DTO 입니다.
+ * 태그관계 데이터를 반환받는 Dto 입니다.
  *
  * @author 이수정
  * @since 1.0
  */
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor
 public class ProductTagResponseDto {
 

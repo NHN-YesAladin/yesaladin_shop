@@ -29,7 +29,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 class JpaWritingRepositoryTest {
 
     private final String ISBN = "0000000000001";
-    private final String NAME = "저자1";
     private final String URL = "https://api-storage.cloud.toast.com/v1/AUTH_/container/domain/type";
 
     @Autowired
@@ -39,8 +38,6 @@ class JpaWritingRepositoryTest {
     private JpaWritingRepository repository;
 
     private Product product;
-    private Author author;
-    private Writing writing;
 
     @BeforeEach
     void setUp() {
@@ -55,30 +52,40 @@ class JpaWritingRepositoryTest {
         entityManager.persist(totalDiscountRate);
 
         product = DummyProduct.dummy(ISBN, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate);
-        author = DummyAuthor.dummy(NAME, null);
 
         entityManager.persist(product);
-        entityManager.persist(author);
-
-        writing = Writing.create(product, author);
     }
 
     @Test
     @DisplayName("집필 저장")
     void save() {
+        // given
+        String name = "저자1";
+
+        Author author = DummyAuthor.dummy(name, null);
+        entityManager.persist(author);
+
+        Writing writing = Writing.create(product, author);
+
         // when
         Writing savedWriting = repository.save(writing);
 
         // then
         assertThat(savedWriting).isNotNull();
         assertThat(savedWriting.getProduct().getISBN()).isEqualTo(ISBN);
-        assertThat(savedWriting.getAuthor().getName()).isEqualTo(NAME);
+        assertThat(savedWriting.getAuthor().getName()).isEqualTo(name);
     }
 
     @Test
     @DisplayName("상품으로 집필 삭제")
     void deleteByProduct() {
         // given
+        String name = "저자1";
+
+        Author author = DummyAuthor.dummy(name, null);
+        entityManager.persist(author);
+
+        Writing writing = Writing.create(product, author);
         entityManager.persist(writing);
 
         // when
@@ -93,20 +100,42 @@ class JpaWritingRepositoryTest {
     @DisplayName("상품으로 집필 조회")
     void findByProduct() {
         // given
-        entityManager.persist(writing);
+        String name1 = "저자1";
+        String name2 = "저자2";
+
+        Author author1 = DummyAuthor.dummy(name1, null);
+        Author author2 = DummyAuthor.dummy(name2, null);
+        entityManager.persist(author1);
+        entityManager.persist(author2);
+
+        Writing writing1 = Writing.create(product, author1);
+        Writing writing2 = Writing.create(product, author2);
+        entityManager.persist(writing1);
+        entityManager.persist(writing2);
 
         // when
         List<Writing> foundWritings = repository.findByProduct(product);
 
         // then
         assertThat(foundWritings).isNotNull();
-        assertThat(foundWritings.size()).isEqualTo(1);
+        assertThat(foundWritings.size()).isEqualTo(2);
+        assertThat(foundWritings.get(0).getAuthor().getName()).isEqualTo(name1);
+        assertThat(foundWritings.get(1).getAuthor().getName()).isEqualTo(name2);
+        assertThat(foundWritings.get(0).getProduct()).isEqualTo(product);
+        assertThat(foundWritings.get(0).getProduct().getISBN()).isEqualTo(ISBN);
+        assertThat(foundWritings.get(0).getProduct()).isEqualTo(foundWritings.get(1).getProduct());
     }
 
     @Test
-    @DisplayName("상품으로 존재 여부 확인_존재 O")
+    @DisplayName("상품으로 집필 존재 여부 확인_존재 O")
     void existsByProduct_true() {
         // given
+        String name = "저자1";
+
+        Author author = DummyAuthor.dummy(name, null);
+        entityManager.persist(author);
+
+        Writing writing = Writing.create(product, author);
         entityManager.persist(writing);
 
         // when
@@ -117,7 +146,7 @@ class JpaWritingRepositoryTest {
     }
 
     @Test
-    @DisplayName("상품으로 존재 여부 확인_존재 X")
+    @DisplayName("상품으로 집필 존재 여부 확인_존재 X")
     void existsByProduct_false() {
         // when
         boolean isExists = repository.existsByProduct(product);
