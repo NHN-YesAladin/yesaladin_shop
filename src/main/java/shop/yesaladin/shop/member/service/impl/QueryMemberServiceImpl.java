@@ -121,4 +121,13 @@ public class QueryMemberServiceImpl implements QueryMemberService {
     public boolean existsEmail(String email) {
         return queryMemberRepository.existsMemberByEmail(email);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public boolean existsPhone(String phone) {
+        return queryMemberRepository.existsMemberByPhone(phone);
+    }
 }
