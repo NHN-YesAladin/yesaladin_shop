@@ -1,16 +1,17 @@
 package shop.yesaladin.shop.tag.service.impl;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import shop.yesaladin.shop.tag.domain.model.Tag;
 import shop.yesaladin.shop.tag.domain.repository.QueryTagRepository;
 import shop.yesaladin.shop.tag.dto.TagResponseDto;
 import shop.yesaladin.shop.tag.service.inter.QueryTagService;
+
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class QueryTagServiceImplTest {
 

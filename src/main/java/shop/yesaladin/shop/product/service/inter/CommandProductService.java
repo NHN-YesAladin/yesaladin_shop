@@ -4,7 +4,7 @@ import shop.yesaladin.shop.product.dto.ProductCreateDto;
 import shop.yesaladin.shop.product.dto.ProductOnlyIdDto;
 
 /**
- * 상품 등록/수정/삭제을 위한 Service Interface 입니다.
+ * 상품 등록/수정/삭제를 위한 Service Interface 입니다.
  *
  * @author 이수정
  * @since 1.0
