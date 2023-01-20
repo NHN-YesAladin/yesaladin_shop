@@ -24,12 +24,7 @@ public class QueryProductTagServiceImpl implements QueryProductTagService {
     private final QueryProductTagRepository queryProductTagRepository;
 
     /**
-     * 해당 상품의 태그 관계를 조회하고, Dto List로 반환합니다.
-     *
-     * @param product 관계를 조회할 상품
-     * @return 조회된 태그 관계 dto List
-     * @author 이수정
-     * @since 1.0
+     * {@inheritDoc}
      */
     @Transactional(readOnly = true)
     @Override
