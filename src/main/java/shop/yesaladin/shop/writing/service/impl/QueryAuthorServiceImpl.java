@@ -6,10 +6,12 @@ import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.writing.domain.model.Author;
 import shop.yesaladin.shop.writing.domain.repository.QueryAuthorRepository;
 import shop.yesaladin.shop.writing.dto.AuthorResponseDto;
+import shop.yesaladin.shop.writing.dto.AuthorsResponseDto;
 import shop.yesaladin.shop.writing.exception.AuthorNotFoundException;
 import shop.yesaladin.shop.writing.service.inter.QueryAuthorService;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -25,12 +27,7 @@ public class QueryAuthorServiceImpl implements QueryAuthorService {
     private final QueryAuthorRepository queryAuthorRepository;
 
     /**
-     * ID에 해당하는 저자를 조회하여 Dto로 반환합니다.
-     *
-     * @param id 저자를 찾아낼 id
-     * @return 조회된 저자 dto
-     * @author 이수정
-     * @since 1.0
+     * {@inheritDoc}
      */
     @Transactional(readOnly = true)
     @Override
@@ -39,5 +36,17 @@ public class QueryAuthorServiceImpl implements QueryAuthorService {
                 .orElseThrow(() -> new AuthorNotFoundException(id));
 
         return new AuthorResponseDto(author.getId(), author.getName(), author.getMember());
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public List<AuthorsResponseDto> findAll() {
+        return queryAuthorRepository.findAll().stream()
+                .map(author -> new AuthorsResponseDto(author.getId(), author.getName(), Objects.isNull(author.getMember()) ? null : author.getMember().getLoginId()))
+                .collect(Collectors.toList());
     }
 }

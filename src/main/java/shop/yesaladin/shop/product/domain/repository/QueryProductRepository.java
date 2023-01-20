@@ -1,7 +1,8 @@
 package shop.yesaladin.shop.product.domain.repository;
 
-import java.util.Optional;
 import shop.yesaladin.shop.product.domain.model.Product;
+
+import java.util.Optional;
 
 /**
  * 상품 조회 관련 repository 클래스입니다.

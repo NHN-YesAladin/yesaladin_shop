@@ -22,4 +22,12 @@ public interface CommandWritingService {
      */
     WritingResponseDto register(Writing writing);
 
+    /**
+     * product에 맞는 집필데이터를 삭제합니다.
+     *
+     * @param product 삭제할 집필데이터의 product
+     * @author 이수정
+     * @since 1.0
+     */
+    void deleteByProduct(Product product);
 }

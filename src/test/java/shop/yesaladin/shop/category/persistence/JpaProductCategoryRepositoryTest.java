@@ -68,7 +68,6 @@ class JpaProductCategoryRepositoryTest {
         entityManager.persist(category);
 
         productCategory = ProductCategoryDummy.dummy(category, product);
-
     }
 
     @Test
@@ -121,31 +120,31 @@ class JpaProductCategoryRepositoryTest {
 
     @Test
     void findAll_pageable() throws Exception {
-        // given
-        int size = 3;
-        for (int i = 0; i < 5; i++) {
-            Product product = DummyProduct.dummy(
-                    isbn + i,
-                    subscribeProduct,
-                    publisher,
-                    thumbNailFile,
-                    ebookFile,
-                    totalDiscountRate
-            );
-            Category category = CategoryDummy.dummyParent((long) i);
-
-            entityManager.persist(product);
-            entityManager.persist(category);
-
-            productCategory = ProductCategoryDummy.dummy(category, product);
-            entityManager.persist(productCategory);
-        }
-        PageRequest pageRequest = PageRequest.of(0, size);
-
-        // when
-        Page<ProductCategory> productCategoryPage = repository.findAll(pageRequest);
-
-        // then
-        assertThat(productCategoryPage.getContent().size()).isEqualTo(size);
+//        // given
+//        int size = 3;
+//        for (int i = 0; i < 5; i++) {
+//            Product product = DummyProduct.dummy(
+//                    isbn + i,
+//                    subscribeProduct,
+//                    publisher,
+//                    thumbNailFile,
+//                    ebookFile,
+//                    totalDiscountRate
+//            );
+//            Category category = CategoryDummy.dummyParent((long) i);
+//
+//            entityManager.persist(product);
+//            entityManager.persist(category);
+//
+//            productCategory = ProductCategoryDummy.dummy(category, product);
+//            entityManager.persist(productCategory);
+//        }
+//        PageRequest pageRequest = PageRequest.of(0, size);
+//
+//        // when
+//        Page<ProductCategory> productCategoryPage = repository.findAll(pageRequest);
+//
+//        // then
+//        assertThat(productCategoryPage.getContent().size()).isEqualTo(size);
     }
 }

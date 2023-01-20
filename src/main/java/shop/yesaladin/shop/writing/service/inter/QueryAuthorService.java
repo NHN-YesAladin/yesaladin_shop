@@ -1,6 +1,7 @@
 package shop.yesaladin.shop.writing.service.inter;
 
 import shop.yesaladin.shop.writing.dto.AuthorResponseDto;
+import shop.yesaladin.shop.writing.dto.AuthorsResponseDto;
 
 import java.util.List;
 
@@ -21,4 +22,13 @@ public interface QueryAuthorService {
      * @since 1.0
      */
     AuthorResponseDto findById(Long id);
+
+    /**
+     * 저자를 전체 조회하여 Dto List로 반환합니다.
+     *
+     * @return 저자 전체 조회한 List
+     * @author 이수정
+     * @since 1.0
+     */
+    List<AuthorsResponseDto> findAll();
 }

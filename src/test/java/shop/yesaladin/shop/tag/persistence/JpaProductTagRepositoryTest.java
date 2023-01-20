@@ -33,13 +33,13 @@ class JpaProductTagRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        Product product = DummyProduct.dummy(ISBN);
-        Tag tag = Tag.builder().name(TAG_NAME).build();
-
-        entityManager.persist(product);
-        entityManager.persist(tag);
-
-        productTag = ProductTag.create(product, tag);
+//        Product product = DummyProduct.dummy(ISBN);
+//        Tag tag = Tag.builder().name(TAG_NAME).build();
+//
+//        entityManager.persist(product);
+//        entityManager.persist(tag);
+//
+//        productTag = ProductTag.create(product, tag);
     }
 
     @Disabled

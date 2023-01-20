@@ -2,7 +2,6 @@ package shop.yesaladin.shop.tag.domain.repository;
 
 import shop.yesaladin.shop.tag.domain.model.Tag;
 
-import java.util.List;
 import java.util.Optional;
 
 /**

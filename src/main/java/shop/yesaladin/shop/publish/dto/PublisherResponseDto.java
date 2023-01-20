@@ -1,10 +1,6 @@
 package shop.yesaladin.shop.publish.dto;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import shop.yesaladin.shop.publish.domain.model.Publisher;
 
 /**

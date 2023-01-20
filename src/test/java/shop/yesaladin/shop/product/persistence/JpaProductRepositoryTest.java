@@ -2,6 +2,10 @@ package shop.yesaladin.shop.product.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -24,7 +28,8 @@ import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class JpaProductRepositoryTest {
 
-    private final String ISBN = "00000-000XX-XXX-XXX";
+    private final String ISBN = "0000000000001";
+    private final String URL = "https://api-storage.cloud.toast.com/v1/AUTH_/container/domain/type";
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -32,13 +37,18 @@ class JpaProductRepositoryTest {
     @Autowired
     private JpaProductRepository jpaProductRepository;
 
+    Clock clock = Clock.fixed(
+            Instant.parse("2023-03-10T00:00:00.000Z"),
+            ZoneId.of("UTC")
+    );
+
     private Product product;
 
     @BeforeEach
     void setUp() {
         SubscribeProduct subscribeProduct = DummySubscribeProduct.dummy();
-        File thumbnailFile = DummyFile.dummy("png");
-        File ebookFile = DummyFile.dummy("pdf");
+        File thumbnailFile = DummyFile.dummy(URL + "/image.png", LocalDateTime.now(clock));
+        File ebookFile = DummyFile.dummy(URL + "/ebook.pdf", LocalDateTime.now(clock));
         TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
 
         entityManager.persist(subscribeProduct);

@@ -1,10 +1,6 @@
 package shop.yesaladin.shop.product.dto;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
 
 /**

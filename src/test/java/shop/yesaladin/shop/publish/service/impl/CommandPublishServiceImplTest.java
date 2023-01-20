@@ -5,7 +5,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import shop.yesaladin.shop.product.domain.model.Product;
@@ -24,15 +28,19 @@ class CommandPublishServiceImplTest {
     private CommandPublishService commandPublishService;
     private CommandPublishRepository commandPublishRepository;
 
+    private final Clock clock = Clock.fixed(
+            Instant.parse("2023-01-20T00:00:00.000Z"),
+            ZoneId.of("UTC")
+    );
+
     private Publish publish;
 
     @BeforeEach
     void setUp() {
         Product product = DummyProduct.dummy(ISBN);
         Publisher publisher = DummyPublisher.dummy();
-        LocalDateTime now = LocalDateTime.now();
 
-        publish = Publish.create(product, publisher, now.toLocalDate().toString());
+        publish = Publish.create(product, publisher, LocalDateTime.now(clock).toLocalDate().toString());
 
         commandPublishRepository = mock(CommandPublishRepository.class);
         commandPublishService = new CommandPublishServiceImpl(commandPublishRepository);

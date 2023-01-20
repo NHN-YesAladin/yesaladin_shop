@@ -5,7 +5,9 @@ import org.springframework.stereotype.Service;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.writing.domain.model.Writing;
 import shop.yesaladin.shop.writing.domain.repository.CommandWritingRepository;
+import shop.yesaladin.shop.writing.domain.repository.QueryWritingRepository;
 import shop.yesaladin.shop.writing.dto.WritingResponseDto;
+import shop.yesaladin.shop.writing.exception.WritingNotFoundException;
 import shop.yesaladin.shop.writing.service.inter.CommandWritingService;
 
 import javax.transaction.Transactional;
@@ -21,6 +23,8 @@ import javax.transaction.Transactional;
 public class CommandWritingServiceImpl implements CommandWritingService {
 
     private final CommandWritingRepository commandWritingRepository;
+
+    private final QueryWritingRepository queryWritingRepository;
 
     /**
      * 집필을 저장하고, 생성된 집필 dto를 반환합니다.
@@ -39,5 +43,22 @@ public class CommandWritingServiceImpl implements CommandWritingService {
                 savedWriting.getProduct(),
                 savedWriting.getAuthor()
         );
+    }
+
+    /**
+     * product에 맞는 집필을 삭제합니다.
+     *
+     * @param product 삭제할 집필의 product
+     * @throws WritingNotFoundException 삭제할 집필이 존재하지 않는 경우
+     * @author 이수정
+     * @since 1.0
+     */
+    @Transactional
+    @Override
+    public void deleteByProduct(Product product) {
+        if (!queryWritingRepository.existsByProduct(product)) {
+            throw new WritingNotFoundException(product);
+        }
+        commandWritingRepository.deleteByProduct(product);
     }
 }
