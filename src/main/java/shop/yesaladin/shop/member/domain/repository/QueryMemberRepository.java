@@ -80,4 +80,14 @@ public interface QueryMemberRepository {
      * @since : 1.0
      */
     boolean existsMemberByEmail(String email);
+
+    /**
+     * 회원의 phone 을 통해 회원이 존재 하는지 유무를 판별합니다.
+     *
+     * @param phone 회원의 phone 입니다.
+     * @return 존재 유무
+     * @author : 송학현
+     * @since : 1.0
+     */
+    boolean existsMemberByPhone(String phone);
 }

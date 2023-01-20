@@ -182,4 +182,51 @@ class QueryMemberControllerTest {
                         .description("email 중복 여부"))
         ));
     }
+
+    @Test
+    void existsPhone_whenNotExist_return_false() throws Exception {
+        //given
+        String phone = "01011112222";
+
+        //when
+        Mockito.when(queryMemberService.existsPhone(phone)).thenReturn(false);
+
+        //then
+        mockMvc.perform(get("/v1/members/checkPhone/{phone}", phone))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.result", equalTo(false)))
+                .andDo(print());
+
+        verify(queryMemberService, times(1)).existsPhone(phone);
+    }
+
+    @Test
+    void existsPhone() throws Exception {
+        //given
+        String phone = "01011112222";
+
+        //when
+        Mockito.when(queryMemberService.existsPhone(phone)).thenReturn(true);
+
+        //then
+        ResultActions resultActions = mockMvc.perform(get("/v1/members/checkPhone/{phone}", phone))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.result", equalTo(true)));
+
+        verify(queryMemberService, times(1)).existsPhone(phone);
+
+        //docs
+        resultActions.andDo(document(
+                "existsPhone",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                pathParameters(
+                        parameterWithName("phone").description("중복 체크 대상 phone")
+                ),
+                responseFields(fieldWithPath("result").type(JsonFieldType.BOOLEAN)
+                        .description("phone 중복 여부"))
+        ));
+    }
 }
