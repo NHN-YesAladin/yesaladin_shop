@@ -1,22 +1,10 @@
 package shop.yesaladin.shop.writing.domain.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import shop.yesaladin.shop.member.domain.model.Member;
+import lombok.*;
 import shop.yesaladin.shop.product.domain.model.Product;
+
+import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * 집필의 엔터티 클래스입니다.
@@ -32,18 +20,49 @@ import shop.yesaladin.shop.product.domain.model.Product;
 @Entity
 public class Writing {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @EmbeddedId
+    private Pk pk;
 
-    @Column(name = "author_name", nullable = false, length = 50)
-    private String authorName;
-
-    @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId(value = "productId")
+    @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
 
-    @OneToOne
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @MapsId(value = "authorId")
+    @ManyToOne
+    @JoinColumn(name = "author_id")
+    private Author author;
+
+    /**
+     * 집필 엔터티를 생성해 반환합니다.
+     *
+     * @param product 집필한 상품
+     * @param author  집필한 저자
+     * @return 생성한 집필 엔터티
+     * @author 이수정
+     * @since 1.0
+     */
+    public static Writing create(Product product, Author author) {
+        return Writing.builder()
+                .pk(new Pk(product.getId(), author.getId()))
+                .product(product)
+                .author(author)
+                .build();
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @EqualsAndHashCode
+    @Embeddable
+    public static class Pk implements Serializable {
+
+        @Column(name = "product_id", nullable = false)
+        private Long productId;
+
+        @Column(name = "author_id", nullable = false)
+        private Long authorId;
+
+    }
 }

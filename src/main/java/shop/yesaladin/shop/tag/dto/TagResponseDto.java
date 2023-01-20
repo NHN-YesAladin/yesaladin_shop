@@ -1,10 +1,6 @@
 package shop.yesaladin.shop.tag.dto;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import shop.yesaladin.shop.tag.domain.model.Tag;
 
 /**

@@ -68,7 +68,7 @@ class JpaProductCategoryRepositoryTest {
         entityManager.persist(category);
 
         productCategory = ProductCategoryDummy.dummy(category, product);
-
+        
     }
 
     @Test
