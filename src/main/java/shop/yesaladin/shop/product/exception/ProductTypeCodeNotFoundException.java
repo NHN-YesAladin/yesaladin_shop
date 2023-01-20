@@ -9,6 +9,6 @@ package shop.yesaladin.shop.product.exception;
 public class ProductTypeCodeNotFoundException extends RuntimeException {
 
     public ProductTypeCodeNotFoundException(int id) {
-        super("ProductTypeCode Not Found : " + id + "(ID)");
+        super("ProductTypeCode " + id + "(ID) is not found.");
     }
 }
