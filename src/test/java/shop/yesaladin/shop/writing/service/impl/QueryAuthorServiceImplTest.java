@@ -54,7 +54,7 @@ class QueryAuthorServiceImplTest {
     }
 
     @Test
-    @DisplayName("Id로 저자 조회 실패_존재하지 않는 Id로 저자를 조회하려 하는 경우 예외 발생")
+    @DisplayName("ID로 저자 조회 실패_존재하지 않는 ID로 저자를 조회하려 하는 경우 예외 발생")
     void findById_notFoundId_throwAuthorNotFoundException() {
         // given
         Long id = 1L;
@@ -68,9 +68,12 @@ class QueryAuthorServiceImplTest {
     @DisplayName("저자 전체 조회 성공")
     void findAll() {
         // given
+        String name1 = "저자1";
+        String name2 = "저자2";
+
         List<Author> authors = Arrays.asList(
-                DummyAuthor.dummy("저자1", MemberDummy.dummyWithId(1L)),
-                DummyAuthor.dummy("저자2", null)
+                DummyAuthor.dummy(name1, MemberDummy.dummyWithId(1L)),
+                DummyAuthor.dummy(name2, null)
         );
 
         Mockito.when(queryAuthorRepository.findAll()).thenReturn(authors);
@@ -80,7 +83,7 @@ class QueryAuthorServiceImplTest {
 
         // then
         assertThat(response.size()).isEqualTo(2);
-        assertThat(response.get(0).getName()).isEqualTo("저자1");
-        assertThat(response.get(1).getName()).isEqualTo("저자2");
+        assertThat(response.get(0).getName()).isEqualTo(name1);
+        assertThat(response.get(1).getName()).isEqualTo(name2);
     }
 }

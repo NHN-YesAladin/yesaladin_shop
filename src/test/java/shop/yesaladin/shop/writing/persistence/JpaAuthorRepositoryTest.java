@@ -41,7 +41,7 @@ class JpaAuthorRepositoryTest {
     }
 
     @Test
-    @DisplayName("저자 Id 조회")
+    @DisplayName("저자 ID로 조회")
     void findById() {
         // given
         Author author = DummyAuthor.dummy("저자1", null);

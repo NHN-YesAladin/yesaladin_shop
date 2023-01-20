@@ -8,6 +8,7 @@ import shop.yesaladin.shop.publish.domain.model.Publisher;
 
 public class DummyProduct {
 
+    // TODO: 삭제 예정입니다. 연관된 테스트 모두 수정해주세요!!
     public static Product dummy(String ISBN) {
         return Product.builder()
                 .ISBN(ISBN)

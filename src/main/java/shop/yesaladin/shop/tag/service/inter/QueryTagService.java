@@ -1,6 +1,9 @@
 package shop.yesaladin.shop.tag.service.inter;
 
 import shop.yesaladin.shop.tag.dto.TagResponseDto;
+import shop.yesaladin.shop.tag.dto.TagsResponseDto;
+
+import java.util.List;
 
 
 /**
@@ -30,4 +33,13 @@ public interface QueryTagService {
      * @since 1.0
      */
     TagResponseDto findByName(String name);
+
+    /**
+     * 태그를 전체 조회하여 Dto List를 반환합니다.
+     *
+     * @return 태그 전체 조회한 List
+     * @author 이수정
+     * @since 1.0
+     */
+    List<TagsResponseDto> findAll();
 }
