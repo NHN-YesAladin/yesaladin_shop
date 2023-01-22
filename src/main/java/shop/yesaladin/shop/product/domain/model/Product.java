@@ -2,6 +2,9 @@ package shop.yesaladin.shop.product.domain.model;
 
 import lombok.*;
 import shop.yesaladin.shop.file.domain.model.File;
+import shop.yesaladin.shop.product.exception.AlreadyDeletedProductException;
+import shop.yesaladin.shop.product.persistence.converter.ProductSavingMethodCodeConverter;
+import shop.yesaladin.shop.product.persistence.converter.ProductTypeCodeConverter;
 
 import javax.persistence.*;
 
@@ -56,6 +59,9 @@ public class Product {
     @Column(name = "preferential_show_ranking", nullable = false)
     private int preferentialShowRanking;
 
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subscribe_product_id")
@@ -81,4 +87,10 @@ public class Product {
     @Convert(converter = ProductSavingMethodCodeConverter.class)
     private ProductSavingMethodCode productSavingMethodCode;
 
+    public void deleteProduct() {
+        if (this.isDeleted == true) {
+            throw new AlreadyDeletedProductException(id);
+        }
+        this.isDeleted = true;
+    }
 }

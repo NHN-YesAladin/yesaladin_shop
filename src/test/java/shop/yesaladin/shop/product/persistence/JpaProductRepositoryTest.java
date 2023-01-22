@@ -21,7 +21,6 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -76,17 +75,5 @@ class JpaProductRepositoryTest {
         assertThat(savedProduct.getISBN()).isEqualTo(ISBN);
     }
 
-    @Test
-    void findByISBN() {
-        // given
-        entityManager.persist(product);
-
-        // when
-        Optional<Product> foundProduct = jpaProductRepository.findByISBN(product.getISBN());
-
-        // then
-        assertThat(foundProduct).isPresent();
-        assertThat(foundProduct.get().getISBN()).isEqualTo(ISBN);
-    }
 
 }

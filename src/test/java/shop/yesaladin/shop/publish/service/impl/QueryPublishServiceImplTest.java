@@ -7,26 +7,17 @@ import org.mockito.Mockito;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.dummy.*;
 import shop.yesaladin.shop.publish.domain.model.Publish;
-import shop.yesaladin.shop.publish.domain.model.Publisher;
 import shop.yesaladin.shop.publish.domain.repository.QueryPublishRepository;
 import shop.yesaladin.shop.publish.dto.PublishResponseDto;
-import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
 import shop.yesaladin.shop.publish.service.inter.QueryPublishService;
-import shop.yesaladin.shop.tag.domain.model.ProductTag;
-import shop.yesaladin.shop.tag.domain.model.Tag;
-import shop.yesaladin.shop.tag.dto.ProductTagResponseDto;
 
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
-import java.util.OptionalInt;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 class QueryPublishServiceImplTest {

@@ -93,4 +93,18 @@ class JpaPublishRepositoryTest {
         assertThat(foundPublish.get().getProduct()).isEqualTo(product);
         assertThat(foundPublish.get().getProduct().getISBN()).isEqualTo(ISBN);
     }
+
+    @Test
+    @DisplayName("상품으로 출판 관계 삭제")
+    void deleteByProduct() {
+        // given
+        entityManager.persist(publish);
+
+        // when
+        repository.deleteByProduct(product);
+
+        // then
+        Publish foundPublish = entityManager.find(Publish.class, publish.getPk());
+        assertThat(foundPublish).isNull();
+    }
 }

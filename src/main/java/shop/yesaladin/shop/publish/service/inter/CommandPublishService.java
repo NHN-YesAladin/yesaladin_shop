@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.publish.service.inter;
 
+import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.publish.domain.model.Publish;
 import shop.yesaladin.shop.publish.dto.PublishResponseDto;
 
@@ -20,4 +21,6 @@ public interface CommandPublishService {
      * @since 1.0
      */
     PublishResponseDto register(Publish publish);
+
+    void deleteByProduct(Product product);
 }

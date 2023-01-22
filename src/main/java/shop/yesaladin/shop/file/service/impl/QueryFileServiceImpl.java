@@ -10,7 +10,7 @@ import shop.yesaladin.shop.file.exception.FileNotFoundException;
 import shop.yesaladin.shop.file.service.inter.QueryFileService;
 
 /**
- * 파일 조회를 위한 Service 구현체 입니다.
+ * 파일 조회를 위한 Service 구현체입니다.
  *
  * @author 이수정
  * @since 1.0
@@ -22,7 +22,12 @@ public class QueryFileServiceImpl implements QueryFileService {
     private final QueryFileRepository queryFileRepository;
 
     /**
-     * {@inheritDoc}
+     * Id로 파일을 조회해 반환합니다.
+     *
+     * @param id 찾고자하는 파일의 id
+     * @return 찾은 파일 엔터티
+     * @author 이수정
+     * @since 1.0
      */
     @Transactional(readOnly = true)
     @Override
@@ -32,4 +37,21 @@ public class QueryFileServiceImpl implements QueryFileService {
 
         return new FileResponseDto(file.getId(), file.getUrl(), file.getUploadDateTime());
     }
+
+//    /**
+//     * url로 파일을 조회해 반환합니다.
+//     *
+//     * @param url 찾고자 하는 파일의 url
+//     * @return 찾은 파일 엔터티
+//     * @author 이수정
+//     * @since 1.0
+//     */
+//    @Transactional(readOnly = true)
+//    @Override
+//    public FileResponseDto findByUrl(String url) {
+//        File file = queryFileRepository.findByUrl(url)
+//                .orElseThrow(() -> new FileNotFoundException(url));
+//
+//        return new FileResponseDto(file.getId(), file.getUrl(), file.getUploadDateTime());
+//    }
 }

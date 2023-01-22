@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * 상품 등록 후 등록한 상품의 id를 받아오는 DTO 입니다.
+ * 상품유형 전체 조회를 응답하기 위한 Dto 입니다.
  *
  * @author 이수정
  * @since 1.0
@@ -15,7 +15,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductResponseDto {
+public class ProductTypeResponseDto {
 
-    private Long id;
+    private int id;
+    private String type;
 }

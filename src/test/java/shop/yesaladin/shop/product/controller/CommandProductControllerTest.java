@@ -9,7 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import shop.yesaladin.shop.product.dto.ProductCreateDto;
-import shop.yesaladin.shop.product.dto.ProductResponseDto;
+import shop.yesaladin.shop.product.dto.ProductOnlyIdDto;
 import shop.yesaladin.shop.product.dummy.DummyProductCreateDto;
 import shop.yesaladin.shop.product.service.inter.CommandProductService;
 
@@ -28,12 +28,12 @@ class CommandProductControllerTest {
     private CommandProductService commandProductService;
 
     private ProductCreateDto productCreateDto;
-    private ProductResponseDto productResponseDto;
+    private ProductOnlyIdDto productOnlyIdDto;
 
     @BeforeEach
     void setUp() {
         productCreateDto = DummyProductCreateDto.dummy(ISBN);
-        productResponseDto = new ProductResponseDto(ID);
+        productOnlyIdDto = new ProductOnlyIdDto(ID);
     }
 
     @Disabled

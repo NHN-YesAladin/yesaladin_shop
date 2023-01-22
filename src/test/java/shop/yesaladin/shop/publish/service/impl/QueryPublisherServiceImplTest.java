@@ -4,17 +4,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import shop.yesaladin.shop.product.domain.model.Product;
-import shop.yesaladin.shop.product.dummy.*;
+import shop.yesaladin.shop.product.dummy.DummyPublisher;
 import shop.yesaladin.shop.publish.domain.model.Publisher;
 import shop.yesaladin.shop.publish.domain.repository.QueryPublisherRepository;
 import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
 import shop.yesaladin.shop.publish.exception.PublisherNotFoundException;
 import shop.yesaladin.shop.publish.service.inter.QueryPublisherService;
-import shop.yesaladin.shop.tag.domain.model.Tag;
-import shop.yesaladin.shop.tag.dto.TagResponseDto;
-import shop.yesaladin.shop.tag.dto.TagsResponseDto;
-import shop.yesaladin.shop.tag.exception.TagNotFoundException;
 
 import java.util.Arrays;
 import java.util.List;

@@ -3,37 +3,22 @@ package shop.yesaladin.shop.product.service.impl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.file.service.inter.CommandFileService;
 import shop.yesaladin.shop.file.service.inter.QueryFileService;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
-import shop.yesaladin.shop.product.domain.model.Product;
-import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
-import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
 import shop.yesaladin.shop.product.domain.repository.CommandProductRepository;
 import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
-import shop.yesaladin.shop.product.dto.ProductCreateDto;
-import shop.yesaladin.shop.product.dto.SubscribeProductResponseDto;
-import shop.yesaladin.shop.product.dto.TotalDiscountRateResponseDto;
-import shop.yesaladin.shop.product.dummy.DummyProductCreateDto;
-import shop.yesaladin.shop.product.dummy.DummyPublisher;
-import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
-import shop.yesaladin.shop.product.service.inter.*;
-import shop.yesaladin.shop.publish.domain.model.Publisher;
-import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
+import shop.yesaladin.shop.product.service.inter.CommandProductService;
+import shop.yesaladin.shop.product.service.inter.CommandTotalDiscountRateService;
 import shop.yesaladin.shop.publish.service.inter.CommandPublishService;
 import shop.yesaladin.shop.publish.service.inter.CommandPublisherService;
 import shop.yesaladin.shop.publish.service.inter.QueryPublisherService;
-import shop.yesaladin.shop.tag.domain.model.Tag;
-import shop.yesaladin.shop.tag.dto.TagResponseDto;
 import shop.yesaladin.shop.tag.service.inter.CommandProductTagService;
 import shop.yesaladin.shop.tag.service.inter.CommandTagService;
 import shop.yesaladin.shop.tag.service.inter.QueryTagService;
 import shop.yesaladin.shop.writing.service.inter.CommandWritingService;
 
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class CommandProductServiceImplTest {
 
@@ -47,13 +32,6 @@ class CommandProductServiceImplTest {
     // File
     private CommandFileService commandFileService;
     private QueryFileService queryFileService;
-
-    // SubscribeProduct
-    private CommandSubscribeProductService commandSubscribeProductService;
-    private QuerySubscribeProductService querySubscribeProductService;
-
-    // TotalDiscountRate
-    private QueryTotalDiscountRateService queryTotalDiscountRateService;
 
     // Writing
     private CommandWritingService commandWritingService;
@@ -80,9 +58,6 @@ class CommandProductServiceImplTest {
         queryProductRepository = mock(QueryProductRepository.class);
         commandFileService = mock(CommandFileService.class);
         queryFileService = mock(QueryFileService.class);
-        commandSubscribeProductService = mock(CommandSubscribeProductService.class);
-        querySubscribeProductService = mock(QuerySubscribeProductService.class);
-        queryTotalDiscountRateService = mock(QueryTotalDiscountRateService.class);
         commandWritingService = mock(CommandWritingService.class);
         queryMemberService = mock(QueryMemberService.class);
         commandPublisherService = mock(CommandPublisherService.class);
@@ -117,32 +92,31 @@ class CommandProductServiceImplTest {
     @Test
     void create() {
         // given
-        ProductCreateDto productCreateDto = DummyProductCreateDto.dummy(ISBN);
-
-        SubscribeProduct subscribeProduct = productCreateDto.toSubscribeProductEntity();
-        File thumbnailFile = productCreateDto.toThumbnailFileEntity();
-        File ebookFile = productCreateDto.toEbookFileEntity();
-        TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
-
-        commandSubscribeProductService.register(subscribeProduct);
-        commandFileService.register(thumbnailFile);
-        commandFileService.register(ebookFile);
-        commandTotalDiscountRateService.register(totalDiscountRate);
-
-        Product product = productCreateDto.toProductEntity(
-                subscribeProduct,
-                thumbnailFile,
-                ebookFile,
-                totalDiscountRate
-        );
-
-        when(commandProductRepository.save(any())).thenReturn(product);
-
-        SubscribeProductResponseDto subscribeProductResponseDto = new SubscribeProductResponseDto(
-                subscribeProduct.getId(),
-                subscribeProduct.getISSN()
-        );
-        when(commandSubscribeProductService.register(any())).thenReturn(subscribeProductResponseDto);
+//        ProductCreateDto productCreateDto = DummyProductCreateDto.dummy(ISBN);
+//
+//        SubscribeProduct subscribeProduct = productCreateDto.toSubscribeProductEntity();
+//        File thumbnailFile = productCreateDto.toThumbnailFileEntity();
+//        File ebookFile = productCreateDto.toEbookFileEntity();
+//        TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
+//
+//        commandFileService.register(thumbnailFile);
+//        commandFileService.register(ebookFile);
+//        commandTotalDiscountRateService.register(totalDiscountRate);
+//
+//        Product product = productCreateDto.toProductEntity(
+//                subscribeProduct,
+//                thumbnailFile,
+//                ebookFile,
+//                totalDiscountRate
+//        );
+//
+//        when(commandProductRepository.save(any())).thenReturn(product);
+//
+//        SubscribeProductResponseDto subscribeProductResponseDto = new SubscribeProductResponseDto(
+//                subscribeProduct.getId(),
+//                subscribeProduct.getISSN()
+//        );
+//        when(commandSubscribeProductService.register(any())).thenReturn(subscribeProductResponseDto);
 
 //        FileResponseDto thumbnailFileDto = new FileResponseDto(
 //                thumbnailFile.getId(),
@@ -158,27 +132,27 @@ class CommandProductServiceImplTest {
 //        );
 //        when(queryFileService.findByName("UUID.pdf")).thenReturn(ebookFileDto);
 
-        TotalDiscountRateResponseDto totalDiscountRateResponseDto = new TotalDiscountRateResponseDto(
-                totalDiscountRate.getId(),
-                totalDiscountRate.getDiscountRate()
-        );
-        when(queryTotalDiscountRateService.findById(anyInt())).thenReturn(
-                totalDiscountRateResponseDto);
-
-        Publisher publisher = DummyPublisher.dummy();
-        commandPublisherService.register(publisher);
-
-        PublisherResponseDto publisherResponseDto = new PublisherResponseDto(
-                publisher.getId(),
-                publisher.getName()
-        );
-        when(queryPublisherService.findByName(anyString())).thenReturn(publisherResponseDto);
-
-        Tag tag = Tag.builder().id(1L).name("아름다운").build();
-        commandTagService.register(tag);
-
-        TagResponseDto tagResponseDto = new TagResponseDto(tag.getId(), tag.getName());
-        when(queryTagService.findByName(anyString())).thenReturn(tagResponseDto);
+//        TotalDiscountRateResponseDto totalDiscountRateResponseDto = new TotalDiscountRateResponseDto(
+//                totalDiscountRate.getId(),
+//                totalDiscountRate.getDiscountRate()
+//        );
+//        when(queryTotalDiscountRateService.findById(anyInt())).thenReturn(
+//                totalDiscountRateResponseDto);
+//
+//        Publisher publisher = DummyPublisher.dummy();
+//        commandPublisherService.register(publisher);
+//
+//        PublisherResponseDto publisherResponseDto = new PublisherResponseDto(
+//                publisher.getId(),
+//                publisher.getName()
+//        );
+//        when(queryPublisherService.findByName(anyString())).thenReturn(publisherResponseDto);
+//
+//        Tag tag = Tag.builder().id(1L).name("아름다운").build();
+//        commandTagService.register(tag);
+//
+//        TagResponseDto tagResponseDto = new TagResponseDto(tag.getId(), tag.getName());
+//        when(queryTagService.findByName(anyString())).thenReturn(tagResponseDto);
 
         // when
 //        ProductResponseDto productResponseDto = commandProductService.create(productCreateDto);

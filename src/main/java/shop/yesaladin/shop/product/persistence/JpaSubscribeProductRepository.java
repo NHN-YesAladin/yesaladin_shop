@@ -6,7 +6,7 @@ import shop.yesaladin.shop.product.domain.repository.CommandSubscribeProductRepo
 import shop.yesaladin.shop.product.domain.repository.QuerySubscribeProductRepository;
 
 /**
- * 구독상품 repository 구현체입니다.
+ * 구독상품 Repository 구현체 입니다.
  *
  * @author 이수정
  * @since 1.0

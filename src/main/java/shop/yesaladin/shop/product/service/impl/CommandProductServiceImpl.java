@@ -2,6 +2,7 @@ package shop.yesaladin.shop.product.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.file.dto.FileResponseDto;
 import shop.yesaladin.shop.file.service.inter.CommandFileService;
 import shop.yesaladin.shop.file.service.inter.QueryFileService;
@@ -11,7 +12,9 @@ import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
 import shop.yesaladin.shop.product.domain.repository.*;
 import shop.yesaladin.shop.product.dto.ProductCreateDto;
 import shop.yesaladin.shop.product.dto.ProductOnlyIdDto;
+import shop.yesaladin.shop.product.dto.ProductUpdateDto;
 import shop.yesaladin.shop.product.exception.AlreadyProductExistsException;
+import shop.yesaladin.shop.product.exception.ProductNotFoundException;
 import shop.yesaladin.shop.product.exception.TotalDiscountRateNotExistsException;
 import shop.yesaladin.shop.product.service.inter.CommandProductService;
 import shop.yesaladin.shop.publish.domain.model.Publish;
@@ -75,7 +78,12 @@ public class CommandProductServiceImpl implements CommandProductService {
 
 
     /**
-     * {@inheritDoc}
+     * 상품을 생성하여 저장합니다. 생성된 상품 객체를 리턴합니다.
+     *
+     * @param dto 관리자에게서 입력받은 상품 생성정보
+     * @return 생성된 상품 객체
+     * @author 이수정
+     * @since 1.0
      */
     @Transactional
     @Override
@@ -145,5 +153,97 @@ public class CommandProductServiceImpl implements CommandProductService {
         // TODO: add Category
 
         return new ProductOnlyIdDto(product.getId());
+    }
+
+    /**
+     * 상품 정보를 수정합니다. 수정된 상품 객체를 리턴합니다.
+     *
+     * @param id  수정할 상품의 Id
+     * @param dto 상품 정보 수정을 위한 Dto
+     * @return 수정된 상품 정보를 담은 Dto
+     * @author 이수정
+     * @since 1.0
+     */
+    @Transactional
+    @Override
+    public ProductOnlyIdDto update(Long id, ProductUpdateDto dto) {
+        Product product = queryProductRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException(id));
+
+        // SubscribeProduct
+        SubscribeProduct subscribeProduct = product.getSubscribeProduct();
+        if (Objects.nonNull(dto.getISSN())) {
+            subscribeProduct = querySubscribeProductRepository.findByISSN(dto.getISSN()).orElse(null);
+            if (Objects.isNull(subscribeProduct)) {
+                subscribeProduct = commandSubscribeProductRepository.save(dto.toSubscribeProductEntity());
+            }
+        }
+
+        // ThumbnailFile
+        File thumbnailFile = queryFileService.findById(product.getThumbnailFile().getId()).toEntity();
+        commandFileService.register(dto.changeThumbnailFile(thumbnailFile));
+
+        // EbookFile
+        File ebookFile = null;
+        if (Objects.nonNull(product.getEbookFile())) {
+            ebookFile = queryFileService.findById(product.getEbookFile().getId()).toEntity();
+            commandFileService.register(dto.changeEbookFile(ebookFile));
+        }
+
+        // Writing
+        commandWritingService.deleteByProduct(product);
+
+        List<Author> authors = dto.getAuthors().stream()
+                .map(authorId -> queryAuthorService.findById(authorId).toEntity())
+                .collect(Collectors.toList());
+
+        for (Author author : authors) {
+            commandWritingService.register(Writing.create(product, author));
+        }
+
+
+        // Publish
+        commandPublishService.deleteByProduct(product);
+
+        PublisherResponseDto publisher = queryPublisherService.findById(dto.getPublisherId());
+        commandPublishService.register(Publish.create(product, publisher.toEntity(), dto.getPublishedDate()));
+
+
+        // Tag
+        commandProductTagService.deleteByProduct(product);
+
+        List<Tag> tags = dto.getTags().stream()
+                .map(tagId -> queryTagService.findById(tagId).toEntity())
+                .collect(Collectors.toList());
+
+        for (Tag tag : tags) {
+            commandProductTagService.register(ProductTag.create(product, Tag.builder().id(tag.getId()).name(tag.getName()).build()));
+        }
+
+        // TODO: add Category
+
+        // Product
+        product = dto.changeProduct(product, subscribeProduct, thumbnailFile, ebookFile, product.getTotalDiscountRate());
+        commandProductRepository.save(product);
+
+        return new ProductOnlyIdDto(product.getId());
+    }
+
+    /**
+     * 상품을 삭제상태로 변경합니다.
+     *
+     * @param id 삭제할 상품의 Id
+     * @author 이수정
+     * @since 1.0
+     */
+    @Transactional
+    @Override
+    public void softDelete(Long id) {
+        Product product = queryProductRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException(id));
+
+        product.deleteProduct();
+
+        commandProductRepository.save(product);
     }
 }

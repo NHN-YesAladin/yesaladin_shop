@@ -1,5 +1,6 @@
-package shop.yesaladin.shop.product.domain.model;
+package shop.yesaladin.shop.product.persistence.converter;
 
+import shop.yesaladin.shop.product.domain.model.ProductTypeCode;
 import shop.yesaladin.shop.product.exception.ProductTypeCodeNotFoundException;
 
 import javax.persistence.AttributeConverter;

@@ -14,4 +14,6 @@ import java.util.Optional;
 public interface QueryPublishRepository {
 
     Optional<Publish> findByProduct(Product product);
+
+    boolean existsByProduct(Product product);
 }

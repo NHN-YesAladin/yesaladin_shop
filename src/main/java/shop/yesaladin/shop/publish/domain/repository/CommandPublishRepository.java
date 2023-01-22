@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.publish.domain.repository;
 
+import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.publish.domain.model.Publish;
 
 /**
@@ -11,4 +12,6 @@ import shop.yesaladin.shop.publish.domain.model.Publish;
 public interface CommandPublishRepository {
 
     Publish save(Publish publish);
+
+    void deleteByProduct(Product product);
 }
