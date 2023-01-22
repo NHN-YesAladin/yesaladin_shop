@@ -19,14 +19,4 @@ public interface QueryFileService {
      * @since 1.0
      */
     FileResponseDto findById(Long id);
-
-//    /**
-//     * url로 파일을 조회해 반환합니다.
-//     *
-//     * @param url 찾고자 하는 파일의 url
-//     * @return 찾은 파일 엔터티
-//     * @author 이수정
-//     * @since 1.0
-//     */
-//    FileResponseDto findByUrl(String url);
 }
