@@ -40,14 +40,7 @@ public class FileStorageServiceImpl implements FileStorageService {
     private RestTemplate restTemplate;
 
     /**
-     * 파일을 저장할 url을 만들어 반환합니다.
-     *
-     * @param domainName 파일을 저장할 컨테이너 내의 도메인 경로
-     * @param typeName   파일을 저장할 도메인 내의 파일 유형 경로
-     * @param fileName   저장할 파일의 uuid.확장자 형태의 이름
-     * @return 파일을 저장할 url
-     * @author 이수정
-     * @since 1.0
+     * {@inheritDoc}
      */
     private String getUrl(
             @NonNull String domainName,
@@ -66,15 +59,7 @@ public class FileStorageServiceImpl implements FileStorageService {
     }
 
     /**
-     * 요청받은 파일을 업로드하고 파일의 url과 업로드 시간을 반환합니다.
-     *
-     * @param token      오브젝트 스토리지 인증 토큰
-     * @param domainName 파일을 저장할 컨테이너 내의 도메인 경로
-     * @param typeName   파일을 저장할 도메인 내의 파일 유형 경로
-     * @param file       요청받은 파일
-     * @return 저장된 파일의 정보를 담은 dto
-     * @author 이수정
-     * @since 1.0
+     * {@inheritDoc}
      */
     @Override
     public FileUploadResponseDto fileUpload(

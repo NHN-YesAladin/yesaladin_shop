@@ -20,7 +20,6 @@ import shop.yesaladin.shop.product.service.inter.CommandProductService;
 import shop.yesaladin.shop.publish.domain.model.Publish;
 import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
 import shop.yesaladin.shop.publish.service.inter.CommandPublishService;
-import shop.yesaladin.shop.publish.service.inter.QueryPublishService;
 import shop.yesaladin.shop.publish.service.inter.QueryPublisherService;
 import shop.yesaladin.shop.tag.domain.model.ProductTag;
 import shop.yesaladin.shop.tag.domain.model.Tag;
@@ -68,7 +67,6 @@ public class CommandProductServiceImpl implements CommandProductService {
     private final QueryAuthorService queryAuthorService;
 
     // Publish
-    private final QueryPublishService queryPublishService;
     private final CommandPublishService commandPublishService;
     private final QueryPublisherService queryPublisherService;
 
@@ -78,12 +76,7 @@ public class CommandProductServiceImpl implements CommandProductService {
 
 
     /**
-     * 상품을 생성하여 저장합니다. 생성된 상품 객체를 리턴합니다.
-     *
-     * @param dto 관리자에게서 입력받은 상품 생성정보
-     * @return 생성된 상품 객체
-     * @author 이수정
-     * @since 1.0
+     * {@inheritDoc}
      */
     @Transactional
     @Override
@@ -156,13 +149,7 @@ public class CommandProductServiceImpl implements CommandProductService {
     }
 
     /**
-     * 상품 정보를 수정합니다. 수정된 상품 객체를 리턴합니다.
-     *
-     * @param id  수정할 상품의 Id
-     * @param dto 상품 정보 수정을 위한 Dto
-     * @return 수정된 상품 정보를 담은 Dto
-     * @author 이수정
-     * @since 1.0
+     * {@inheritDoc}
      */
     @Transactional
     @Override
@@ -230,11 +217,7 @@ public class CommandProductServiceImpl implements CommandProductService {
     }
 
     /**
-     * 상품을 삭제상태로 변경합니다.
-     *
-     * @param id 삭제할 상품의 Id
-     * @author 이수정
-     * @since 1.0
+     * {@inheritDoc}
      */
     @Transactional
     @Override

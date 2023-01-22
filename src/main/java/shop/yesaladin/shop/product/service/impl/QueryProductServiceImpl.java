@@ -41,12 +41,7 @@ public class QueryProductServiceImpl implements QueryProductService {
     private final QueryProductTagService queryProductTagService;
 
     /**
-     * 아이디가 id인 상품을 찾아 반환합니다.
-     *
-     * @param id 찾고자하는 상품의 id
-     * @return 찾은 상품 엔터티
-     * @author 이수정
-     * @since 1.0
+     * {@inheritDoc}
      */
     @Transactional(readOnly = true)
     @Override
@@ -91,12 +86,7 @@ public class QueryProductServiceImpl implements QueryProductService {
     }
 
     /**
-     * 페이징된 상품 리스트를 반환합니다.
-     *
-     * @param pageable 페이징 처리를 위한 객체
-     * @return 페이징 조회된 상품 dto를 담은 객체
-     * @author 이수정
-     * @since 1.0
+     * {@inheritDoc}
      */
     @Transactional(readOnly = true)
     @Override

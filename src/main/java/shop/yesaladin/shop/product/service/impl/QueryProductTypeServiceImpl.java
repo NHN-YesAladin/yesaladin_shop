@@ -21,11 +21,7 @@ import java.util.stream.Collectors;
 public class QueryProductTypeServiceImpl implements QueryProductTypeService {
 
     /**
-     * 상품유형을 전체 조회합니다.
-     *
-     * @return 출판사 전체 조회한 List
-     * @author 이수정
-     * @since 1.0
+     * {@inheritDoc}
      */
     @Transactional(readOnly = true)
     @Override

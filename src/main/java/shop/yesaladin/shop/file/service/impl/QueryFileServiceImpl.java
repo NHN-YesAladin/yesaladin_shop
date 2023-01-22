@@ -22,12 +22,7 @@ public class QueryFileServiceImpl implements QueryFileService {
     private final QueryFileRepository queryFileRepository;
 
     /**
-     * Id로 파일을 조회해 반환합니다.
-     *
-     * @param id 찾고자하는 파일의 id
-     * @return 찾은 파일 엔터티
-     * @author 이수정
-     * @since 1.0
+     * {@inheritDoc}
      */
     @Transactional(readOnly = true)
     @Override
@@ -37,21 +32,4 @@ public class QueryFileServiceImpl implements QueryFileService {
 
         return new FileResponseDto(file.getId(), file.getUrl(), file.getUploadDateTime());
     }
-
-//    /**
-//     * url로 파일을 조회해 반환합니다.
-//     *
-//     * @param url 찾고자 하는 파일의 url
-//     * @return 찾은 파일 엔터티
-//     * @author 이수정
-//     * @since 1.0
-//     */
-//    @Transactional(readOnly = true)
-//    @Override
-//    public FileResponseDto findByUrl(String url) {
-//        File file = queryFileRepository.findByUrl(url)
-//                .orElseThrow(() -> new FileNotFoundException(url));
-//
-//        return new FileResponseDto(file.getId(), file.getUrl(), file.getUploadDateTime());
-//    }
 }

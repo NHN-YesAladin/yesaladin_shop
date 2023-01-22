@@ -25,12 +25,7 @@ public class CommandPublishServiceImpl implements CommandPublishService {
     private final QueryPublishRepository queryPublishRepository;
 
     /**
-     * 출판을 DB에 등록하고 등록된 출판 Dto를 반환합니다.
-     *
-     * @param publish 출판관계 엔터티
-     * @return 등록된 출판 Dto
-     * @author 이수정
-     * @since 1.0
+     * {@inheritDoc}
      */
     @Transactional
     @Override
@@ -46,11 +41,7 @@ public class CommandPublishServiceImpl implements CommandPublishService {
     }
 
     /**
-     * 출판 관계를 삭제합니다.
-     *
-     * @param product 삭제하고자 하는 출판의 상품
-     * @author 이수정
-     * @since 1.0
+     * {@inheritDoc}
      */
     @Transactional
     @Override

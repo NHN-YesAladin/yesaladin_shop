@@ -21,12 +21,7 @@ public class CommandPublisherServiceImpl implements CommandPublisherService {
     private final CommandPublisherRepository commandPublisherRepository;
 
     /**
-     * 출판사를 DB에 등록하고, 저장한 출판사 Dto를 반환합니다.
-     *
-     * @param publisher 출판사 엔터티
-     * @return 저장된 출판사 Dto
-     * @author 이수정
-     * @since 1.0
+     * {@inheritDoc}
      */
     @Transactional
     @Override
