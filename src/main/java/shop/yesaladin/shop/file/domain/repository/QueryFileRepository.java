@@ -13,6 +13,4 @@ import java.util.Optional;
 public interface QueryFileRepository {
 
     Optional<File> findById(Long id);
-
-    Optional<File> findByUrl(String url);
 }
