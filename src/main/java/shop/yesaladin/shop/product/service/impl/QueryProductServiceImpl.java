@@ -34,6 +34,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class QueryProductServiceImpl implements QueryProductService {
 
+    private final int PERCENT_DENOMINATOR_VALUE = 100;
+    private final long ROUND_OFF_VALUE = 10;
+
     private final QueryProductRepository queryProductRepository;
 
     private final QueryWritingService queryWritingService;
@@ -156,7 +159,7 @@ public class QueryProductServiceImpl implements QueryProductService {
      * @since 1.0
      */
     private long calcSellingPrice(Product product, int rate) {
-        return Math.round((product.getActualPrice() - product.getActualPrice() * rate / 100) / 10) * 10L;
+        return Math.round((product.getActualPrice() - product.getActualPrice() * rate / PERCENT_DENOMINATOR_VALUE) / ROUND_OFF_VALUE) * ROUND_OFF_VALUE;
     }
 
     /**
