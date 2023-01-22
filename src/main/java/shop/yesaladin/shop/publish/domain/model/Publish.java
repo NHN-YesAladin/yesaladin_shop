@@ -38,6 +38,16 @@ public class Publish {
     @JoinColumn(name = "publisher_id")
     private Publisher publisher;
 
+    /**
+     * 출판 엔터티를 생성해 반환합니다.
+     *
+     * @param product       출판된 상품 엔터티
+     * @param publisher     출판한 출판사 엔터티
+     * @param publishedDate 출판일
+     * @return 출판 엔터티
+     * @author 이수정
+     * @since 1.0
+     */
     public static Publish create(Product product, Publisher publisher, String publishedDate) {
         Pk pk = new Pk(product.getId(), publisher.getId());
         return new Publish(
@@ -61,5 +71,6 @@ public class Publish {
 
         @Column(name = "publisher_id", nullable = false)
         private Long publisherId;
+
     }
 }

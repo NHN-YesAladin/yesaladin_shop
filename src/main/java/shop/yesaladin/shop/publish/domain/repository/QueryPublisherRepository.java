@@ -2,6 +2,7 @@ package shop.yesaladin.shop.publish.domain.repository;
 
 import shop.yesaladin.shop.publish.domain.model.Publisher;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -15,4 +16,6 @@ public interface QueryPublisherRepository {
     Optional<Publisher> findById(Long id);
 
     Optional<Publisher> findByName(String name);
+
+    List<Publisher> findAll();
 }
