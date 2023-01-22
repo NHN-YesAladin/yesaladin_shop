@@ -14,15 +14,6 @@ public class DummyFile {
             ZoneId.of("UTC")
     );
 
-    // TODO: 삭제 예정입니다!!
-    public static File dummy(String url, LocalDateTime uploadDateTime) {
-        return File.builder()
-                .url(url)
-                .uploadDateTime(uploadDateTime)
-                .build();
-    }
-
-
     public static File dummy(String url) {
         return File.builder()
                 .url(url)

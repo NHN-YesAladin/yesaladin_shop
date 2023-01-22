@@ -40,14 +40,7 @@ public class FileStorageServiceImpl implements FileStorageService {
     private RestTemplate restTemplate;
 
     /**
-     * 파일을 저장할 url을 만들어 반환합니다.
-     *
-     * @param domainName 파일을 저장할 컨테이너 내의 도메인 경로
-     * @param typeName   파일을 저장할 도메인 내의 파일 유형 경로
-     * @param fileName   저장할 파일의 uuid.확장자 형태의 이름
-     * @return 파일을 저장할 url
-     * @author 이수정
-     * @since 1.0
+     * {@inheritDoc}
      */
     private String getUrl(
             @NonNull String domainName,

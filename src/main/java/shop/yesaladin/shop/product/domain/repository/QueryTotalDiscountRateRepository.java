@@ -5,7 +5,7 @@ import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
 import java.util.Optional;
 
 /**
- * 전체 할인율 조회 관련 repository 클래스입니다.
+ * 전체 할인율 조회 관련 Repository Interface 입니다.
  *
  * @author 이수정
  * @since 1.0

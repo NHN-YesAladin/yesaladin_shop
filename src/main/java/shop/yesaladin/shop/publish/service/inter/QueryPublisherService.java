@@ -2,6 +2,8 @@ package shop.yesaladin.shop.publish.service.inter;
 
 import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
 
+import java.util.List;
+
 /**
  * 출판사 조회를 위한 Service Interface 입니다.
  *
@@ -29,4 +31,13 @@ public interface QueryPublisherService {
      * @since 1.0
      */
     PublisherResponseDto findByName(String name);
+
+    /**
+     * 출판사를 전체 조회하여 전체 조회한 Dto List를 반환합니다..
+     *
+     * @return 출판사 전체 조회한 List
+     * @author 이수정
+     * @since 1.0
+     */
+    List<PublisherResponseDto> findAll();
 }

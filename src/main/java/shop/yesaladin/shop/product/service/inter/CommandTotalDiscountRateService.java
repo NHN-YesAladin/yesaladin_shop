@@ -11,5 +11,13 @@ import shop.yesaladin.shop.product.dto.TotalDiscountRateResponseDto;
  */
 public interface CommandTotalDiscountRateService {
 
-    TotalDiscountRateResponseDto register(TotalDiscountRate totalDiscountRate);
+    /**
+     * 전체 할인율을 수정하여 DB에 저장하고, 수정한 전체 할인율 객체를 리턴합니다.
+     *
+     * @param totalDiscountRate 전체 할인율 엔터티
+     * @return 등록된 전체 할인율 객체
+     * @author 이수정
+     * @since 1.0
+     */
+    TotalDiscountRateResponseDto modify(TotalDiscountRate totalDiscountRate);
 }

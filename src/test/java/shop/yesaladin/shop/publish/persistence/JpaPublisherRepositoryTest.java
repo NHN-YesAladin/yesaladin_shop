@@ -1,16 +1,17 @@
 package shop.yesaladin.shop.publish.persistence;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import shop.yesaladin.shop.product.dummy.DummyPublisher;
 import shop.yesaladin.shop.publish.domain.model.Publisher;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,13 +20,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class JpaPublisherRepositoryTest {
 
-    private final String PUBLISHER_NAME = "길벗";
-
-    @PersistenceContext
-    private EntityManager entityManager;
+    @Autowired
+    private TestEntityManager entityManager;
 
     @Autowired
-    private JpaPublisherRepository jpaPublisherRepository;
+    private JpaPublisherRepository repository;
 
     private Publisher publisher;
 
@@ -35,25 +34,55 @@ class JpaPublisherRepositoryTest {
     }
 
     @Test
+    @DisplayName("출판사 저장")
     void save() {
         // when
-        Publisher savedPublisher = jpaPublisherRepository.save(publisher);
+        Publisher savedPublisher = repository.save(publisher);
 
         // then
         assertThat(savedPublisher).isNotNull();
-        assertThat(savedPublisher.getName()).isEqualTo(PUBLISHER_NAME);
+        assertThat(savedPublisher.getName()).isEqualTo("출판사");
     }
 
     @Test
+    @DisplayName("태그 ID로 조회")
+    void findById() {
+        // given
+        Publisher savedPublisher = entityManager.persist(publisher);
+
+        // when
+        Optional<Publisher> optionalPublisher = repository.findById(savedPublisher.getId());
+
+        // then
+        assertThat(optionalPublisher).isPresent();
+        assertThat(optionalPublisher.get().getName()).isEqualTo(publisher.getName());
+    }
+
+    @Test
+    @DisplayName("출판사 이름으로 조회")
     void findByName() {
+        // given
+        Publisher savedPublisher = entityManager.persist(publisher);
+
+        // when
+        Optional<Publisher> optionalPublisher = repository.findByName(savedPublisher.getName());
+
+        // then
+        assertThat(optionalPublisher).isPresent();
+        assertThat(optionalPublisher.get().getId()).isEqualTo(publisher.getId());
+    }
+
+    @Test
+    @DisplayName("출판사 전체 조회")
+    void findAll() {
         // given
         entityManager.persist(publisher);
 
         // when
-        Optional<Publisher> foundPublisher = jpaPublisherRepository.findByName(publisher.getName());
+        List<Publisher> foundPublishers = repository.findAll();
 
         // then
-        assertThat(foundPublisher).isPresent();
-        assertThat(foundPublisher.get().getName()).isEqualTo(publisher.getName());
+        assertThat(foundPublishers.size()).isEqualTo(1);
+        assertThat(foundPublishers.contains(publisher)).isTrue();
     }
 }

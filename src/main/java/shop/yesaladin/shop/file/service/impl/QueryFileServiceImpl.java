@@ -10,7 +10,7 @@ import shop.yesaladin.shop.file.exception.FileNotFoundException;
 import shop.yesaladin.shop.file.service.inter.QueryFileService;
 
 /**
- * 파일 조회를 위한 Service 구현체 입니다.
+ * 파일 조회를 위한 Service 구현체입니다.
  *
  * @author 이수정
  * @since 1.0
