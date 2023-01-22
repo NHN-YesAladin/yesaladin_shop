@@ -37,18 +37,13 @@ class JpaProductRepositoryTest {
     @Autowired
     private JpaProductRepository jpaProductRepository;
 
-    Clock clock = Clock.fixed(
-            Instant.parse("2023-03-10T00:00:00.000Z"),
-            ZoneId.of("UTC")
-    );
-
     private Product product;
 
     @BeforeEach
     void setUp() {
         SubscribeProduct subscribeProduct = DummySubscribeProduct.dummy();
-        File thumbnailFile = DummyFile.dummy(URL + "/image.png", LocalDateTime.now(clock));
-        File ebookFile = DummyFile.dummy(URL + "/ebook.pdf", LocalDateTime.now(clock));
+        File thumbnailFile = DummyFile.dummy(URL + "/image.png");
+        File ebookFile = DummyFile.dummy(URL + "/ebook.pdf");
         TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
 
         entityManager.persist(subscribeProduct);

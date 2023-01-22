@@ -36,21 +36,4 @@ class CommandProductControllerTest {
         productOnlyIdDto = new ProductOnlyIdDto(ID);
     }
 
-    @Disabled
-    @Test
-    void registerProduct() throws Exception {
-        // given
-//        given(commandProductService.create(any())).willReturn(productResponseDto);
-//
-//        // when
-//        ResultActions perform = mockMvc.perform(post("/v1/products")
-//                .content(objectMapper.writeValueAsString(productCreateDto))
-//                .contentType(MediaType.APPLICATION_JSON));
-//
-//        // then
-//        perform.andExpect(status().isCreated())
-//                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(jsonPath("$.id", equalTo(productResponseDto.getId().intValue())))
-//                .andDo(print());
-    }
 }
