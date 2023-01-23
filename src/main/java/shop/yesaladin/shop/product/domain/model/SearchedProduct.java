@@ -1,12 +1,9 @@
 package shop.yesaladin.shop.product.domain.model;
 
-import java.time.LocalDate;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.data.elasticsearch.annotations.Document;
+
+import java.time.LocalDate;
 
 @Getter
 @ToString

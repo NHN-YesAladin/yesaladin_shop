@@ -98,6 +98,7 @@ public class QueryMemberServiceImpl implements QueryMemberService {
     /**
      * {@inheritDoc}
      */
+    @Transactional(readOnly = true)
     @Override
     public boolean existsLoginId(String loginId) {
         return queryMemberRepository.existsMemberByLoginId(loginId);
@@ -106,6 +107,7 @@ public class QueryMemberServiceImpl implements QueryMemberService {
     /**
      * {@inheritDoc}
      */
+    @Transactional(readOnly = true)
     @Override
     public boolean existsNickname(String nickname) {
         return queryMemberRepository.existsMemberByNickname(nickname);
@@ -114,8 +116,18 @@ public class QueryMemberServiceImpl implements QueryMemberService {
     /**
      * {@inheritDoc}
      */
+    @Transactional(readOnly = true)
     @Override
     public boolean existsEmail(String email) {
         return queryMemberRepository.existsMemberByEmail(email);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public boolean existsPhone(String phone) {
+        return queryMemberRepository.existsMemberByPhone(phone);
     }
 }

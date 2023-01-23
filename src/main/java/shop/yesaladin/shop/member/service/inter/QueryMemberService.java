@@ -81,4 +81,14 @@ public interface QueryMemberService {
      * @since : 1.0
      */
     boolean existsEmail(String email);
+
+    /**
+     * 회원 가입 시 입력할 phone을 사전에 중복 판별을 하기 위한 메서드 입니다.
+     *
+     * @param phone 중복 체크 대상 phone
+     * @return phone의 존재 유무
+     * @author : 송학현
+     * @since : 1.0
+     */
+    boolean existsPhone(String phone);
 }

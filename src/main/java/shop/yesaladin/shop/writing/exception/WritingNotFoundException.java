@@ -15,4 +15,8 @@ public class WritingNotFoundException extends RuntimeException {
         super("Writing is not found by this product(" + product.getId() + ") and author("
                 + author.getId() + ").");
     }
+
+    public WritingNotFoundException(Product product) {
+        super("Writing is not found by this product(" + product.getId() + ").");
+    }
 }

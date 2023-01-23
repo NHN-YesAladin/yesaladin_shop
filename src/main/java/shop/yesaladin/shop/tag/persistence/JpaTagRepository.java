@@ -6,7 +6,7 @@ import shop.yesaladin.shop.tag.domain.repository.CommandTagRepository;
 import shop.yesaladin.shop.tag.domain.repository.QueryTagRepository;
 
 /**
- * 상품 태그 repository 구현체입니다.
+ * 상품 태그 Repository 구현체 입니다.
  *
  * @author 이수정
  * @since 1.0
