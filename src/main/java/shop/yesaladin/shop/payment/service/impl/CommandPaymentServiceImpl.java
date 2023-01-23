@@ -46,6 +46,9 @@ public class CommandPaymentServiceImpl implements CommandPaymentService {
      */
     @Override
     public PaymentCompleteSimpleResponseDto confirmTossRequest(PaymentRequestDto requestDto) {
+        // 이미 입력되어있지 않은 주문이라면 결제 승인 처리를 할 필요가 없으므로 예외처리
+        Order order = queryOrderService.getOrderByNumber(requestDto.getOrderId());
+
         UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(
                 "https://api.tosspayments.com/v1/payments/confirm").build();
 
@@ -74,7 +77,6 @@ public class CommandPaymentServiceImpl implements CommandPaymentService {
         log.info("{}", responseFromToss);
 
         //database에 저장
-        Order order = queryOrderService.getOrderByNumber(responseFromToss.get("orderId").asText());
         Payment payment = commandPaymentRepository.save(Payment.toEntity(responseFromToss, order));
 
         return PaymentCompleteSimpleResponseDto.fromEntity(payment);

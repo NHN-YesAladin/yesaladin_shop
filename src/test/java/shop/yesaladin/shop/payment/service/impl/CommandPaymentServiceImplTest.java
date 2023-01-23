@@ -142,7 +142,10 @@ class CommandPaymentServiceImplTest {
         assertThatThrownBy(() -> paymentService.confirmTossRequest(requestDto)).isInstanceOf(
                 PaymentFailException.class);
 
-        verify(orderService, never()).getOrderByNumber(any());
+        verify(orderService, times(1)).getOrderByNumber(stringArgumentCaptor.capture());
+        assertThat(stringArgumentCaptor.getValue()).isEqualTo(exchange.getBody()
+                .get("orderId")
+                .asText());
 
         verify(paymentRepository, never()).save(any());
     }
