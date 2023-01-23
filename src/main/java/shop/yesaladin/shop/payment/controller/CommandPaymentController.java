@@ -35,6 +35,6 @@ public class CommandPaymentController {
                 requestDto);
         log.info("return : {}", paymentCompleteSimpleResponseDto);
 
-        return null;
+        return paymentCompleteSimpleResponseDto;
     }
 }
