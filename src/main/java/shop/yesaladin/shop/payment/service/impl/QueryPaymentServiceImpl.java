@@ -23,6 +23,10 @@ public class QueryPaymentServiceImpl implements QueryPaymentService {
 
     private final QueryPaymentRepository queryPaymentRepository;
 
+    /**
+     * {@inheritDoc}
+     *
+     */
     @Transactional(readOnly = true)
     @Override
     public PaymentCompleteSimpleResponseDto findByOrderId(Long orderId) {

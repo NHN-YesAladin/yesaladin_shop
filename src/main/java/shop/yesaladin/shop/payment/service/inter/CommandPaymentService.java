@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.payment.service.inter;
 
-import shop.yesaladin.shop.payment.domain.model.Payment;
 import shop.yesaladin.shop.payment.dto.PaymentCompleteSimpleResponseDto;
 import shop.yesaladin.shop.payment.dto.PaymentRequestDto;
 

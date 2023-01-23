@@ -3,7 +3,6 @@ package shop.yesaladin.shop.payment.controller;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,14 +26,14 @@ public class CommandPaymentController {
 
     private final CommandPaymentService paymentService;
 
-
+    /**
+     * shop서버로 부터 승인 요청이 들어와 toss로 부터 승인을 받고 db에 결제 정보를 저장하는 기능을 가진 컨트롤러
+     *
+     * @param requestDto 결제 요청 정보가 담긴 dto
+     * @return 결제 정보
+     */
     @PostMapping("/confirm")
     public PaymentCompleteSimpleResponseDto confirmPayment(@Valid @RequestBody PaymentRequestDto requestDto) {
-        log.info("requestDto : {}", requestDto);
-        PaymentCompleteSimpleResponseDto paymentCompleteSimpleResponseDto = paymentService.confirmTossRequest(
-                requestDto);
-        log.info("return : {}", paymentCompleteSimpleResponseDto);
-
-        return paymentCompleteSimpleResponseDto;
+        return paymentService.confirmTossRequest(requestDto);
     }
 }

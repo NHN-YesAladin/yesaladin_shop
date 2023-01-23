@@ -3,7 +3,6 @@ package shop.yesaladin.shop.payment.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.equalToObject;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -132,7 +131,8 @@ class QueryPaymentControllerTest {
                                 .description("결제 총 금액"),
                         fieldWithPath("approvedDateTime").type(JsonFieldType.STRING)
                                 .description("결제 승인 일시"),
-                        fieldWithPath("orderNumber").type(JsonFieldType.STRING).description("주문 번호"),
+                        fieldWithPath("orderNumber").type(JsonFieldType.STRING)
+                                .description("주문 번호"),
                         fieldWithPath("orderName").type(JsonFieldType.STRING).description("주문명"),
                         fieldWithPath("cardCode").type(JsonFieldType.STRING).description("카드 종류"),
                         fieldWithPath("cardOwnerCode").type(JsonFieldType.STRING)

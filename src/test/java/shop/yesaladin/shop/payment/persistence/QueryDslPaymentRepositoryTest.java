@@ -73,6 +73,13 @@ class QueryDslPaymentRepositoryTest {
         // then
         assertThat(foundPayment.getId()).isEqualTo(paymentId);
         assertThat(foundPayment.getStatus()).isEqualTo(payment.getStatus());
+        assertThat(foundPayment.getLastTransactionKey()).isEqualTo(payment.getLastTransactionKey());
+        assertThat(foundPayment.getBalanceAmount()).isEqualTo(payment.getBalanceAmount());
+        assertThat(foundPayment.getSuppliedAmount()).isEqualTo(payment.getSuppliedAmount());
+        assertThat(foundPayment.getTaxFreeAmount()).isEqualTo(payment.getTaxFreeAmount());
+        assertThat(foundPayment.getVat()).isEqualTo(payment.getVat());
+        assertThat(foundPayment.getRequestedDatetime()).isEqualTo(payment.getRequestedDatetime());
+        assertThat(foundPayment.getPaymentCode()).isEqualTo(payment.getPaymentCode());
 
         assertThat(foundPayment.getOrder()
                 .getOrderNumber()).isEqualTo(memberOrder.getOrderNumber());
@@ -81,6 +88,13 @@ class QueryDslPaymentRepositoryTest {
         assertThat(foundPayment.getPaymentCard().getAmount()).isEqualTo(paymentCard.getAmount());
         assertThat(foundPayment.getPaymentCard()
                 .getApproveNo()).isEqualTo(paymentCard.getApproveNo());
+        assertThat(foundPayment.getPaymentCard().getId()).isEqualTo(paymentCard.getId());
+        assertThat(foundPayment.getPaymentCard().getPayment().getId()).isEqualTo(paymentCard.getPayment().getId());
+        assertThat(foundPayment.getPaymentCard().isUseCardPoint()).isEqualTo(paymentCard.isUseCardPoint());
+        assertThat(foundPayment.getPaymentCard().isInterestFree()).isEqualTo(paymentCard.isInterestFree());
+        assertThat(foundPayment.getPaymentCard().getInterestPayer()).isEqualTo(paymentCard.getInterestPayer());
+        assertThat(foundPayment.getPaymentCard().getAcquireStatus()).isEqualTo(paymentCard.getAcquireStatus());
+        assertThat(foundPayment.getPaymentCard().getIssuerCode()).isEqualTo(paymentCard.getIssuerCode());
     }
 
     @Test
@@ -92,6 +106,13 @@ class QueryDslPaymentRepositoryTest {
         // then
         assertThat(foundPayment.getId()).isEqualTo(paymentId);
         assertThat(foundPayment.getStatus()).isEqualTo(payment.getStatus());
+        assertThat(foundPayment.getLastTransactionKey()).isEqualTo(payment.getLastTransactionKey());
+        assertThat(foundPayment.getBalanceAmount()).isEqualTo(payment.getBalanceAmount());
+        assertThat(foundPayment.getSuppliedAmount()).isEqualTo(payment.getSuppliedAmount());
+        assertThat(foundPayment.getTaxFreeAmount()).isEqualTo(payment.getTaxFreeAmount());
+        assertThat(foundPayment.getVat()).isEqualTo(payment.getVat());
+        assertThat(foundPayment.getRequestedDatetime()).isEqualTo(payment.getRequestedDatetime());
+        assertThat(foundPayment.getPaymentCode()).isEqualTo(payment.getPaymentCode());
 
         assertThat(foundPayment.getOrder()
                 .getOrderNumber()).isEqualTo(memberOrder.getOrderNumber());
@@ -100,6 +121,13 @@ class QueryDslPaymentRepositoryTest {
         assertThat(foundPayment.getPaymentCard().getAmount()).isEqualTo(paymentCard.getAmount());
         assertThat(foundPayment.getPaymentCard()
                 .getApproveNo()).isEqualTo(paymentCard.getApproveNo());
+        assertThat(foundPayment.getPaymentCard().getId()).isEqualTo(paymentCard.getId());
+        assertThat(foundPayment.getPaymentCard().getPayment().getId()).isEqualTo(paymentCard.getPayment().getId());
+        assertThat(foundPayment.getPaymentCard().isUseCardPoint()).isEqualTo(paymentCard.isUseCardPoint());
+        assertThat(foundPayment.getPaymentCard().isInterestFree()).isEqualTo(paymentCard.isInterestFree());
+        assertThat(foundPayment.getPaymentCard().getInterestPayer()).isEqualTo(paymentCard.getInterestPayer());
+        assertThat(foundPayment.getPaymentCard().getAcquireStatus()).isEqualTo(paymentCard.getAcquireStatus());
+        assertThat(foundPayment.getPaymentCard().getIssuerCode()).isEqualTo(paymentCard.getIssuerCode());
     }
 
     @Test
@@ -111,6 +139,13 @@ class QueryDslPaymentRepositoryTest {
         // then
         assertThat(foundPayment.getId()).isEqualTo(paymentId);
         assertThat(foundPayment.getStatus()).isEqualTo(payment.getStatus());
+        assertThat(foundPayment.getLastTransactionKey()).isEqualTo(payment.getLastTransactionKey());
+        assertThat(foundPayment.getBalanceAmount()).isEqualTo(payment.getBalanceAmount());
+        assertThat(foundPayment.getSuppliedAmount()).isEqualTo(payment.getSuppliedAmount());
+        assertThat(foundPayment.getTaxFreeAmount()).isEqualTo(payment.getTaxFreeAmount());
+        assertThat(foundPayment.getVat()).isEqualTo(payment.getVat());
+        assertThat(foundPayment.getRequestedDatetime()).isEqualTo(payment.getRequestedDatetime());
+        assertThat(foundPayment.getPaymentCode()).isEqualTo(payment.getPaymentCode());
 
         assertThat(foundPayment.getOrder()
                 .getOrderNumber()).isEqualTo(memberOrder.getOrderNumber());
@@ -119,6 +154,13 @@ class QueryDslPaymentRepositoryTest {
         assertThat(foundPayment.getPaymentCard().getAmount()).isEqualTo(paymentCard.getAmount());
         assertThat(foundPayment.getPaymentCard()
                 .getApproveNo()).isEqualTo(paymentCard.getApproveNo());
+        assertThat(foundPayment.getPaymentCard().getId()).isEqualTo(paymentCard.getId());
+        assertThat(foundPayment.getPaymentCard().getPayment().getId()).isEqualTo(paymentCard.getPayment().getId());
+        assertThat(foundPayment.getPaymentCard().isUseCardPoint()).isEqualTo(paymentCard.isUseCardPoint());
+        assertThat(foundPayment.getPaymentCard().isInterestFree()).isEqualTo(paymentCard.isInterestFree());
+        assertThat(foundPayment.getPaymentCard().getInterestPayer()).isEqualTo(paymentCard.getInterestPayer());
+        assertThat(foundPayment.getPaymentCard().getAcquireStatus()).isEqualTo(paymentCard.getAcquireStatus());
+        assertThat(foundPayment.getPaymentCard().getIssuerCode()).isEqualTo(paymentCard.getIssuerCode());
     }
 
     @Test

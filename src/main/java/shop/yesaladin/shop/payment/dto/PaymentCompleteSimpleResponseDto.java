@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.payment.dto;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,6 +23,7 @@ import shop.yesaladin.shop.payment.domain.model.PaymentCode;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PaymentCompleteSimpleResponseDto {
+
     private String paymentId;
     private PaymentCode method;
     private String currency;
@@ -41,7 +41,7 @@ public class PaymentCompleteSimpleResponseDto {
     private PaymentCardAcquirerCode cardAcquirerCode;
 
     public static PaymentCompleteSimpleResponseDto fromEntity(Payment payment) {
-       return PaymentCompleteSimpleResponseDto.builder()
+        return PaymentCompleteSimpleResponseDto.builder()
                 .paymentId(payment.getId())
                 .method(payment.getMethod())
                 .currency(payment.getCurrency())

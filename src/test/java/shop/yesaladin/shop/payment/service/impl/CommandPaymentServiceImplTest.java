@@ -12,20 +12,12 @@ import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.Base64;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.order.domain.model.MemberOrder;
@@ -34,12 +26,9 @@ import shop.yesaladin.shop.order.persistence.dummy.DummyMemberAddress;
 import shop.yesaladin.shop.order.persistence.dummy.DummyOrder;
 import shop.yesaladin.shop.order.service.inter.QueryOrderService;
 import shop.yesaladin.shop.payment.domain.model.Payment;
-import shop.yesaladin.shop.payment.domain.model.PaymentCard;
 import shop.yesaladin.shop.payment.domain.repository.CommandPaymentRepository;
 import shop.yesaladin.shop.payment.dto.PaymentCompleteSimpleResponseDto;
 import shop.yesaladin.shop.payment.dto.PaymentRequestDto;
-import shop.yesaladin.shop.payment.dummy.DummyPayment;
-import shop.yesaladin.shop.payment.dummy.DummyPaymentCard;
 import shop.yesaladin.shop.payment.exception.PaymentFailException;
 import shop.yesaladin.shop.payment.service.inter.CommandPaymentService;
 
@@ -89,7 +78,6 @@ class CommandPaymentServiceImplTest {
                 15000L
         );
 
-
         JsonNode jsonNode = mapper.readTree(jsonBody);
         ResponseEntity<JsonNode> exchange = new ResponseEntity<>(jsonNode, HttpStatus.OK);
         when(restTemplate.exchange(
@@ -133,7 +121,6 @@ class CommandPaymentServiceImplTest {
                 "zaIkFmBcYW4k_J9rOl0M2b7",
                 15000L
         );
-
 
         JsonNode jsonNode = mapper.readTree(jsonBody);
         ResponseEntity<JsonNode> exchange = new ResponseEntity<>(jsonNode, HttpStatus.NOT_FOUND);

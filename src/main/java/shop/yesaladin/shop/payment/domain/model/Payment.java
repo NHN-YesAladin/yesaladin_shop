@@ -20,7 +20,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import shop.yesaladin.shop.order.domain.model.Order;
-import shop.yesaladin.shop.payment.dto.PaymentCompleteSimpleResponseDto;
 import shop.yesaladin.shop.payment.persistence.converter.PaymentCodeConverter;
 
 /**
@@ -29,7 +28,6 @@ import shop.yesaladin.shop.payment.persistence.converter.PaymentCodeConverter;
  * @author 서민지
  * @since 1.0
  */
-@ToString
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -96,18 +94,6 @@ public class Payment {
             CascadeType.MERGE})
     private PaymentCancel paymentCancel;
 
-    public void setPaymentCard(PaymentCard paymentCard) {
-        this.paymentCard = paymentCard;
-    }
-
-    public void setPaymentCancel(PaymentCancel paymentCancel) {
-        this.paymentCancel = paymentCancel;
-    }
-
-    public void setStatus(PaymentCode status) {
-        this.status = status;
-    }
-
     public static Payment toEntity(JsonNode jsonNode, Order order) {
         String paymentId = jsonNode.get("paymentKey").asText();
 
@@ -157,6 +143,18 @@ public class Payment {
                 .build();
         payment.setPaymentCard(paymentCard);
         return payment;
+    }
+
+    public void setPaymentCard(PaymentCard paymentCard) {
+        this.paymentCard = paymentCard;
+    }
+
+    public void setPaymentCancel(PaymentCancel paymentCancel) {
+        this.paymentCancel = paymentCancel;
+    }
+
+    public void setStatus(PaymentCode status) {
+        this.status = status;
     }
 }
 

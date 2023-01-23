@@ -1,9 +1,7 @@
 package shop.yesaladin.shop.payment.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,10 +14,10 @@ import lombok.ToString;
  * @since 1.0
  */
 @Getter
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class PaymentRequestDto {
+
     @NotBlank
     private String paymentKey;
     @NotBlank

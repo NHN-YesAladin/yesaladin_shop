@@ -2,6 +2,7 @@ package shop.yesaladin.shop.payment.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Base64;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
@@ -34,7 +35,7 @@ import shop.yesaladin.shop.payment.service.inter.CommandPaymentService;
 @RequiredArgsConstructor
 @Service
 public class CommandPaymentServiceImpl implements CommandPaymentService {
-    //TODO gitActions 에서 관리할 정보인지 검토 필요
+
     private static final String TOSS_SECRET_KEY = "test_sk_MGjLJoQ1aVZPoLzaRvg8w6KYe2RN:";
     private final RestTemplate restTemplate;
     private final CommandPaymentRepository commandPaymentRepository;
@@ -42,7 +43,6 @@ public class CommandPaymentServiceImpl implements CommandPaymentService {
 
     /**
      * {@inheritDoc}
-     *
      */
     @Override
     public PaymentCompleteSimpleResponseDto confirmTossRequest(PaymentRequestDto requestDto) {
@@ -68,6 +68,9 @@ public class CommandPaymentServiceImpl implements CommandPaymentService {
         }
 
         JsonNode responseFromToss = exchange.getBody();
+        if (Objects.isNull(responseFromToss)) {
+            throw new PaymentFailException("Body is empty");
+        }
         log.info("{}", responseFromToss);
 
         //database에 저장

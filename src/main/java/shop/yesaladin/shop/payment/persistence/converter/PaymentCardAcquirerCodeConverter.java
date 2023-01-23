@@ -12,7 +12,8 @@ import shop.yesaladin.shop.payment.domain.model.PaymentCardAcquirerCode;
  * @since 1.0
  */
 @Converter
-public class PaymentCardAcquirerCodeConverter implements AttributeConverter<PaymentCardAcquirerCode, Integer> {
+public class PaymentCardAcquirerCodeConverter implements
+        AttributeConverter<PaymentCardAcquirerCode, Integer> {
 
     /**
      * 결제매입사코드를 Integer 타입으로 변환합니다.

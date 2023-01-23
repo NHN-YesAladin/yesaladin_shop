@@ -17,8 +17,7 @@ import shop.yesaladin.shop.payment.domain.repository.QueryPaymentRepository;
 import shop.yesaladin.shop.payment.dto.PaymentCompleteSimpleResponseDto;
 
 /**
- * QueryDsl을 활용하여 결제 정보를 조회할때 사용
- *   결제 취소 정보, 결제 카드 정보는 결제 정보를 조회 할 때 함께 조회가 되어야하기 때문에 대부분 join 되어있다.
+ * QueryDsl을 활용하여 결제 정보를 조회할때 사용 결제 취소 정보, 결제 카드 정보는 결제 정보를 조회 할 때 함께 조회가 되어야하기 때문에 대부분 join 되어있다.
  *
  * @author 배수한
  * @since 1.0
@@ -32,10 +31,9 @@ public class QueryDslPaymentRepository implements QueryPaymentRepository {
     private final JPAQueryFactory queryFactory;
 
     /**
-     * 결제 정보 엔티티를 찾기 위한 메서드
-     *  Order, PaymentCard, PaymentCancel 과 조인하여 데이터를 불러온다.
+     * 결제 정보 엔티티를 찾기 위한 메서드 Order, PaymentCard, PaymentCancel 과 조인하여 데이터를 불러온다.
      *
-     * @param id 동적 쿼리용으로, 찾고자하는 paymentId를 의미한다
+     * @param id      동적 쿼리용으로, 찾고자하는 paymentId를 의미한다
      * @param orderId 동적 쿼리용으로, 찾고자하는 orderId를 의미한다
      * @return Optional<Payment>
      */
@@ -58,10 +56,9 @@ public class QueryDslPaymentRepository implements QueryPaymentRepository {
     }
 
     /**
-     * 간단하게 화면에 보여줄 결제 정보 엔티티를 찾기위한 메서드
-     *   dto projection을 통해 데이터를 select 한다
+     * 간단하게 화면에 보여줄 결제 정보 엔티티를 찾기위한 메서드 dto projection을 통해 데이터를 select 한다
      *
-     * @param id 동적 쿼리용으로, 찾고자하는 paymentId를 의미한다
+     * @param id      동적 쿼리용으로, 찾고자하는 paymentId를 의미한다
      * @param orderId orderId 동적 쿼리용으로, 찾고자하는 orderId를 의미한다
      * @return Optional<PaymentCompleteSimpleResponseDto>
      */
@@ -73,7 +70,8 @@ public class QueryDslPaymentRepository implements QueryPaymentRepository {
         QOrder order = QOrder.order;
 
         return Optional.ofNullable(queryFactory.select(
-                        Projections.constructor(PaymentCompleteSimpleResponseDto.class,
+                        Projections.constructor(
+                                PaymentCompleteSimpleResponseDto.class,
                                 payment.id,
                                 payment.method,
                                 payment.currency,
@@ -98,10 +96,9 @@ public class QueryDslPaymentRepository implements QueryPaymentRepository {
     }
 
     /**
-     * 동적 쿼리를 위한 메서드
-     *  payment의 id가 null이 아니면 where 절에서 적용
+     * 동적 쿼리를 위한 메서드 payment의 id가 null이 아니면 where 절에서 적용
      *
-     * @param payment Q객체
+     * @param payment   Q객체
      * @param paymentId 찾고자하는 결제 정보 id
      * @return BooleanExpression where 절에서 사용
      */
@@ -113,8 +110,7 @@ public class QueryDslPaymentRepository implements QueryPaymentRepository {
     }
 
     /**
-     * 동적 쿼리를 위한 메서드
-     *  payment와 연관관계가 있는 주문의 id가 null이 아니면 where 절에서 적용
+     * 동적 쿼리를 위한 메서드 payment와 연관관계가 있는 주문의 id가 null이 아니면 where 절에서 적용
      *
      * @param payment Q객체
      * @param orderId 찾고자하는 결제 정보와 연관관계가 있는 order id

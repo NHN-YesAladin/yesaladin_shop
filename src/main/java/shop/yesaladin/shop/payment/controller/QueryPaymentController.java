@@ -2,7 +2,6 @@ package shop.yesaladin.shop.payment.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,16 +20,19 @@ import shop.yesaladin.shop.payment.service.inter.QueryPaymentService;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/v1/payments")
-//TODO security에서 처리 가능한지 확인 필요
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class QueryPaymentController {
 
     private final QueryPaymentService queryPaymentService;
 
-    @GetMapping(value = "/{orderId}",params = "id=order")
+    /**
+     * OrderId를 통해 결제정보 조회를 하는 컨트롤러
+     *
+     * @param orderId 주문 id
+     * @return 결제 정보
+     */
+    @GetMapping(value = "/{orderId}", params = "id=order")
     public PaymentCompleteSimpleResponseDto getPaymentByOrderId(@PathVariable Long orderId) {
         return queryPaymentService.findByOrderId(orderId);
     }
 
-    //TODO /v1/payments/1 -> 은 페이먼트 아이디 용으로 두는게 나을듯
 }

@@ -1,7 +1,5 @@
 package shop.yesaladin.shop.payment.domain.model;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Arrays;
 import lombok.Getter;
@@ -30,7 +28,8 @@ public enum PaymentCardAcquirerCode {
     SUHYEOP(23, "34", "Sh수협은행"), DINERS(24, "6D", "다이너스 클럽"),
     DISCOVER(25, "6I", "디스커버"), MASTER(26, "4M", "마스터카드"),
     UNIONPAY(27, "3C", "유니온페이"), AMEX(28, "7A", "아메리칸 익스프레스"),
-    JCB(29, "4J", "JCB"), VISA(30, "4V", "VISA"),;
+    JCB(29, "4J", "JCB"), VISA(30, "4V", "VISA"),
+    ;
 
     private final int id;
     private final String code;
@@ -53,4 +52,4 @@ public enum PaymentCardAcquirerCode {
     public String toString() {
         return krName;
     }
-    }
+}
