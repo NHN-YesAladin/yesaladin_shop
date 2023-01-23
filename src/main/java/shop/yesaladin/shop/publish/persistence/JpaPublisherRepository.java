@@ -6,7 +6,7 @@ import shop.yesaladin.shop.publish.domain.repository.CommandPublisherRepository;
 import shop.yesaladin.shop.publish.domain.repository.QueryPublisherRepository;
 
 /**
- * 출판사 repository 구현체입니다.
+ * 출판사 Repository 구현체 입니다.
  *
  * @author 이수정
  * @since 1.0
