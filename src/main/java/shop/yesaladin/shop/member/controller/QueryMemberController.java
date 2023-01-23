@@ -59,4 +59,17 @@ public class QueryMemberController {
     public MemberProfileExistResponseDto existsEmail(@PathVariable String email) {
         return new MemberProfileExistResponseDto(queryMemberService.existsEmail(email));
     }
+
+    /**
+     * 회원 가입 시 phone의 중복 여부를 판별 하기 위한 기능 입니다.
+     *
+     * @param phone PathVariable로 넘어온 중복 체크 대상 phone
+     * @return phone 중복 여부
+     * @author : 송학현
+     * @since : 1.0
+     */
+    @GetMapping("/checkPhone/{phone}")
+    public MemberProfileExistResponseDto existsPhone(@PathVariable String phone) {
+        return new MemberProfileExistResponseDto(queryMemberService.existsPhone(phone));
+    }
 }

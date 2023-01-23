@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.tag.dto;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,13 +14,20 @@ import shop.yesaladin.shop.tag.domain.model.Tag;
  */
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor
 public class TagResponseDto {
 
     private Long id;
     private String name;
 
+    /**
+     * Dto를 바탕으로 태그 엔터티를 생성해 반환합니다.
+     *
+     * @return 생성된 태그 엔터티
+     * @author 이수정
+     * @since 1.0
+     */
     public Tag toEntity() {
         return Tag.builder().id(id).name(name).build();
     }

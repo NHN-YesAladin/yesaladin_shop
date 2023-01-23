@@ -6,7 +6,7 @@ public class DummyPublisher {
 
     public static Publisher dummy() {
         return Publisher.builder()
-                .name("길벗")
+                .name("출판사")
                 .build();
     }
 

@@ -8,3 +8,13 @@ spring:
 elastic:
   host: 103.218.159.211:9200
 
+
+# 테스트용 스토리지
+storage-token:
+  auth-url: https://api-identity.infrastructure.cloud.toast.com/v2.0/tokens
+  storage-url: https://api-storage.cloud.toast.com/v1
+  tenant-id: fcb81f74e379456b8ca0e091d351a7af
+  storage-account: AUTH_fcb81f74e379456b8ca0e091d351a7af
+  container-name: yesaladinTest
+  username: tidh1640@naver.com
+  password: yesaladin
