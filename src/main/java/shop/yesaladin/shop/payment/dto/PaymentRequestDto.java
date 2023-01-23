@@ -1,15 +1,13 @@
 package shop.yesaladin.shop.payment.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
-import shop.yesaladin.shop.payment.domain.model.PaymentCardAcquirerCode;
-import shop.yesaladin.shop.payment.domain.model.PaymentCode;
 
 /**
  * 결제 정보를 생성하기 위해 사용하는 요청 Dto from Toss
@@ -19,8 +17,8 @@ import shop.yesaladin.shop.payment.domain.model.PaymentCode;
  */
 @Getter
 @ToString
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor
+@AllArgsConstructor
 public class PaymentRequestDto {
     @NotBlank
     private String paymentKey;

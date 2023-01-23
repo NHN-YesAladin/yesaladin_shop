@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import shop.yesaladin.shop.payment.domain.model.Payment;
 import shop.yesaladin.shop.payment.domain.repository.CommandPaymentRepository;
 import shop.yesaladin.shop.payment.dto.PaymentCompleteSimpleResponseDto;
 import shop.yesaladin.shop.payment.dto.PaymentRequestDto;
+import shop.yesaladin.shop.payment.exception.PaymentFailException;
 import shop.yesaladin.shop.payment.service.inter.CommandPaymentService;
 
 /**
@@ -38,6 +40,10 @@ public class CommandPaymentServiceImpl implements CommandPaymentService {
     private final CommandPaymentRepository commandPaymentRepository;
     private final QueryOrderService queryOrderService;
 
+    /**
+     * {@inheritDoc}
+     *
+     */
     @Override
     public PaymentCompleteSimpleResponseDto confirmTossRequest(PaymentRequestDto requestDto) {
         UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(
@@ -56,6 +62,11 @@ public class CommandPaymentServiceImpl implements CommandPaymentService {
                 entity,
                 JsonNode.class
         );
+
+        if (exchange.getStatusCode() != HttpStatus.OK) {
+            throw new PaymentFailException(exchange.getBody());
+        }
+
         JsonNode responseFromToss = exchange.getBody();
         log.info("{}", responseFromToss);
 

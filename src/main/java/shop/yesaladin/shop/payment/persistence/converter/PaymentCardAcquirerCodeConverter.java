@@ -22,7 +22,7 @@ public class PaymentCardAcquirerCodeConverter implements AttributeConverter<Paym
      */
     @Override
     public Integer convertToDatabaseColumn(PaymentCardAcquirerCode paymentCardAcquirerCode) {
-        return paymentCardAcquirerCode.getCode();
+        return paymentCardAcquirerCode.getId();
     }
 
     /**
@@ -34,7 +34,7 @@ public class PaymentCardAcquirerCodeConverter implements AttributeConverter<Paym
     @Override
     public PaymentCardAcquirerCode convertToEntityAttribute(Integer integer) {
         return Arrays.stream(PaymentCardAcquirerCode.values())
-                .filter(code -> integer.equals(code.getCode()))
+                .filter(code -> integer.equals(code.getId()))
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
     }

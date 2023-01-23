@@ -107,7 +107,7 @@ class QueryPaymentControllerTest {
         perform.andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.paymentId", equalTo(payment.getId())))
-                .andExpect(jsonPath("$.orderId", equalTo(payment.getOrder().getId().intValue())))
+                .andExpect(jsonPath("$.orderNumber", equalTo(payment.getOrder().getOrderNumber())))
                 .andExpect(jsonPath("$.cardNumber", equalTo(payment.getPaymentCard().getNumber())))
                 .andExpect(jsonPath(
                         "$.cardAcquirerCode",
@@ -132,7 +132,7 @@ class QueryPaymentControllerTest {
                                 .description("결제 총 금액"),
                         fieldWithPath("approvedDateTime").type(JsonFieldType.STRING)
                                 .description("결제 승인 일시"),
-                        fieldWithPath("orderId").type(JsonFieldType.NUMBER).description("주문 아이디"),
+                        fieldWithPath("orderNumber").type(JsonFieldType.STRING).description("주문 번호"),
                         fieldWithPath("orderName").type(JsonFieldType.STRING).description("주문명"),
                         fieldWithPath("cardCode").type(JsonFieldType.STRING).description("카드 종류"),
                         fieldWithPath("cardOwnerCode").type(JsonFieldType.STRING)

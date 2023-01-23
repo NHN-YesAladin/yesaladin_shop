@@ -2,6 +2,8 @@ package shop.yesaladin.shop.payment.domain.model;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -119,8 +121,13 @@ public class Payment {
                 .suppliedAmount(jsonNode.get("suppliedAmount").asLong())
                 .taxFreeAmount(jsonNode.get("taxFreeAmount").asLong())
                 .vat(jsonNode.get("vat").asLong())
-                .requestedDatetime(LocalDateTime.parse(jsonNode.get("requestedAt").asText()))
-                .approvedDatetime(LocalDateTime.parse(jsonNode.get("approvedAt").asText()))
+                .requestedDatetime(ZonedDateTime.parse(jsonNode.get("requestedAt").asText())
+                        .withZoneSameInstant(
+                                ZoneId.of("Asia/Seoul"))
+                        .toLocalDateTime())
+                .approvedDatetime(ZonedDateTime.parse(jsonNode.get("approvedAt").asText())
+                        .withZoneSameInstant(ZoneId.of("Asia/Seoul"))
+                        .toLocalDateTime())
                 .order(order)
                 .paymentCode(PaymentCode.valueOf(jsonNode.get("type").asText()))
                 .method(PaymentCode.findByName(jsonNode.get("method").asText()))
@@ -141,10 +148,10 @@ public class Payment {
                 .acquireStatus(PaymentCode.valueOf(jsonNode.get("card")
                         .get("acquireStatus")
                         .asText()))
-                .issuerCode(PaymentCardAcquirerCode.valueOf(jsonNode.get("card")
+                .issuerCode(PaymentCardAcquirerCode.findByName(jsonNode.get("card")
                         .get("issuerCode")
                         .asText()))
-                .acquirerCode(PaymentCardAcquirerCode.valueOf(jsonNode.get("card")
+                .acquirerCode(PaymentCardAcquirerCode.findByName(jsonNode.get("card")
                         .get("acquirerCode")
                         .asText()))
                 .build();

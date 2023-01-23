@@ -2,6 +2,8 @@ package shop.yesaladin.shop.payment.dummy;
 
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.payment.domain.model.Payment;
 import shop.yesaladin.shop.payment.domain.model.PaymentCode;
@@ -22,8 +24,12 @@ public class DummyPayment {
                 .taxFreeAmount(0L)
                 .vat(0L)
                 .status(PaymentCode.DONE)
-                .requestedDatetime(LocalDateTime.now())
-                .approvedDatetime(LocalDateTime.now())
+                .requestedDatetime(ZonedDateTime.now().withZoneSameInstant(
+                                ZoneId.of("Asia/Seoul"))
+                        .toLocalDateTime())
+                .approvedDatetime(ZonedDateTime.now().withZoneSameInstant(
+                                ZoneId.of("Asia/Seoul"))
+                        .toLocalDateTime())
                 .order(order)
                 .paymentCode(PaymentCode.NORMAL)
                 .build();

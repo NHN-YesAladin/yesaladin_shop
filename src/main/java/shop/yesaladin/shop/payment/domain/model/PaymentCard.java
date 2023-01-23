@@ -58,7 +58,7 @@ public class PaymentCard {
     @Column(name = "is_interest_free", nullable = false)
     private boolean isInterestFree;
 
-    @Column(name = "interest_payer", nullable = false, length = 20)
+    @Column(name = "interest_payer", length = 20)
     private String interestPayer;
 
     @Column(name = "card_code_id")

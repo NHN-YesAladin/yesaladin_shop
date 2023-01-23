@@ -69,7 +69,7 @@ class QueryPaymentServiceImplTest {
         // then
         assertThat(returnedDto.getCardNumber()).isEqualTo(payment.getPaymentCard().getNumber());
         assertThat(returnedDto.getPaymentId()).isEqualTo(payment.getId());
-        assertThat(returnedDto.getOrderNumber()).isEqualTo(payment.getOrder().getId());
+        assertThat(returnedDto.getOrderNumber()).isEqualTo(payment.getOrder().getOrderNumber());
 
         verify(queryPaymentRepository, times(1)).findSimpleDtoById(
                 stringArgumentCaptor.capture(),

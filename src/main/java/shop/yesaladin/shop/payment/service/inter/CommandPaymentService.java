@@ -12,6 +12,12 @@ import shop.yesaladin.shop.payment.dto.PaymentRequestDto;
  */
 public interface CommandPaymentService {
 
+    /**
+     * 토스로부터 결제 승인을 받기 위한 메서드
+     *
+     * @param requestDto 필수 결제 정보가 포함되어있는 dto
+     * @return 결제 정보
+     */
     PaymentCompleteSimpleResponseDto confirmTossRequest(PaymentRequestDto requestDto);
 
 }

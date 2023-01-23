@@ -21,7 +21,7 @@ public class DummyPaymentCard {
                 .useCardPoint(false)
                 .acquireStatus(PaymentCode.READY)
                 .isInterestFree(false)
-                .interestPayer("NONE")
+                .interestPayer(null)
                 .cardCode(PaymentCode.CREDIT)
                 .ownerCode(PaymentCode.INDIVIDUAL)
                 .build();

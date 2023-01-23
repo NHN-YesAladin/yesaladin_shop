@@ -79,7 +79,7 @@ public class QueryDslPaymentRepository implements QueryPaymentRepository {
                                 payment.currency,
                                 payment.totalAmount,
                                 payment.approvedDatetime,
-                                payment.order.id,
+                                payment.order.orderNumber,
                                 payment.order.name,
                                 payment.paymentCard.cardCode,
                                 payment.paymentCard.ownerCode,
