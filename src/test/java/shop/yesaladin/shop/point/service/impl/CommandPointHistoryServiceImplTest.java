@@ -3,7 +3,7 @@ package shop.yesaladin.shop.point.service.impl;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -18,7 +18,6 @@ import shop.yesaladin.shop.member.dto.MemberDto;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
-import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
 import shop.yesaladin.shop.point.domain.model.PointCode;
 import shop.yesaladin.shop.point.domain.model.PointHistory;
 import shop.yesaladin.shop.point.domain.repository.CommandPointHistoryRepository;
@@ -52,61 +51,63 @@ class CommandPointHistoryServiceImplTest {
     @Test
     void use_fail_MemberNotFound() {
         //given
-        long memberId = 1L;
+        String loginId = "user@1";
         long amount = 1000;
         PointHistoryRequestDto request = ReflectionUtils.newInstance(
                 PointHistoryRequestDto.class,
+                loginId,
                 amount
         );
 
-        Mockito.when(queryMemberService.findMemberById(memberId))
+        Mockito.when(queryMemberService.findMemberByLoginId(loginId))
                 .thenThrow(MemberNotFoundException.class);
 
         //when, then
-        assertThatThrownBy(() -> commandPointHistoryService.use(memberId, request)).isInstanceOf(
+        assertThatThrownBy(() -> commandPointHistoryService.use(request)).isInstanceOf(
                 MemberNotFoundException.class);
 
-        verify(queryMemberService, times(1)).findMemberById(anyLong());
+        verify(queryMemberService, times(1)).findMemberByLoginId(anyString());
     }
 
     @Test
     void use_fail_OverPointUse() {
         //given
-        long memberId = 1L;
+        String loginId = "user@1";
         long amount = 1000;
         PointHistoryRequestDto request = ReflectionUtils.newInstance(
                 PointHistoryRequestDto.class,
+                loginId,
                 amount
         );
 
-        Member member = DummyMember.member();
+        Member member = MemberDummy.dummyWithLoginId(loginId);
 
-        Mockito.when(queryMemberService.findMemberById(memberId))
+        Mockito.when(queryMemberService.findMemberByLoginId(loginId))
                 .thenReturn(MemberDto.fromEntity(member));
-        Mockito.when(queryPointHistoryRepository.getMemberPointByMemberId(memberId))
-                .thenReturn(500L);
+        Mockito.when(queryPointHistoryRepository.getMemberPointByLoginId(loginId)).thenReturn(500L);
 
         //when, then
-        assertThatThrownBy(() -> commandPointHistoryService.use(memberId, request)).isInstanceOf(
+        assertThatThrownBy(() -> commandPointHistoryService.use(request)).isInstanceOf(
                 OverPointUseException.class);
 
-        verify(queryMemberService, times(1)).findMemberById(anyLong());
-        verify(queryPointHistoryRepository, times(1)).getMemberPointByMemberId(anyLong());
+        verify(queryMemberService, times(1)).findMemberByLoginId(anyString());
+        verify(queryPointHistoryRepository, times(1)).getMemberPointByLoginId(anyString());
     }
 
     @Test
     void use() {
         //given
-        long memberId = 1L;
+        String loginId = "user@1";
         long amount = 1000;
         PointCode pointCode = PointCode.USE;
 
         PointHistoryRequestDto request = ReflectionUtils.newInstance(
                 PointHistoryRequestDto.class,
+                loginId,
                 amount
         );
 
-        Member member = MemberDummy.dummyWithId(memberId);
+        Member member = MemberDummy.dummyWithLoginId(loginId);
         PointHistory response = PointHistory.builder()
                 .id(1L)
                 .amount(amount)
@@ -114,24 +115,23 @@ class CommandPointHistoryServiceImplTest {
                 .createDateTime(LocalDateTime.now())
                 .member(member).build();
 
-        Mockito.when(queryMemberService.findMemberById(memberId))
+        Mockito.when(queryMemberService.findMemberByLoginId(loginId))
                 .thenReturn(MemberDto.fromEntity(member));
-        Mockito.when(queryPointHistoryRepository.getMemberPointByMemberId(memberId))
+        Mockito.when(queryPointHistoryRepository.getMemberPointByLoginId(loginId))
                 .thenReturn(2000L);
-        Mockito.when(commandPointHistoryRepository.save(any()))
-                .thenReturn(response);
+        Mockito.when(commandPointHistoryRepository.save(any())).thenReturn(response);
 
         //when
-        PointHistoryResponseDto result = commandPointHistoryService.use(memberId, request);
+        PointHistoryResponseDto result = commandPointHistoryService.use(request);
 
         //then
         assertThat(result.getAmount()).isEqualTo(amount);
-        assertThat(result.getMemberId()).isEqualTo(memberId);
+        assertThat(result.getLoginId()).isEqualTo(loginId);
         assertThat(result.getPointCode()).isEqualTo(pointCode);
 
         ArgumentCaptor<PointHistory> captor = ArgumentCaptor.forClass(PointHistory.class);
-        verify(queryMemberService, times(1)).findMemberById(anyLong());
-        verify(queryPointHistoryRepository, times(1)).getMemberPointByMemberId(anyLong());
+        verify(queryMemberService, times(1)).findMemberByLoginId(loginId);
+        verify(queryPointHistoryRepository, times(1)).getMemberPointByLoginId(loginId);
         verify(commandPointHistoryRepository, times(1)).save(captor.capture());
 
         assertThat(captor.getValue().getAmount()).isEqualTo(amount);
@@ -142,37 +142,39 @@ class CommandPointHistoryServiceImplTest {
     @Test
     void save_fail_MemberNotFound() {
         //given
-        long memberId = 1L;
+        String loginId = "user@1";
         long amount = 1000;
         PointHistoryRequestDto request = ReflectionUtils.newInstance(
                 PointHistoryRequestDto.class,
+                loginId,
                 amount
         );
 
-        Mockito.when(queryMemberService.findMemberById(memberId))
+        Mockito.when(queryMemberService.findMemberByLoginId(loginId))
                 .thenThrow(MemberNotFoundException.class);
 
         //when, then
-        assertThatThrownBy(() -> commandPointHistoryService.save(memberId, request)).isInstanceOf(
+        assertThatThrownBy(() -> commandPointHistoryService.save(request)).isInstanceOf(
                 MemberNotFoundException.class);
 
-        verify(queryMemberService, times(1)).findMemberById(anyLong());
+        verify(queryMemberService, times(1)).findMemberByLoginId(anyString());
 
     }
 
     @Test
     void save() {
         //given
-        long memberId = 1L;
+        String loginId = "user@1";
         long amount = 1000;
         PointCode pointCode = PointCode.SAVE;
 
         PointHistoryRequestDto request = ReflectionUtils.newInstance(
                 PointHistoryRequestDto.class,
+                loginId,
                 amount
         );
 
-        Member member = MemberDummy.dummyWithId(memberId);
+        Member member = MemberDummy.dummyWithLoginId(loginId);
         PointHistory response = PointHistory.builder()
                 .id(1L)
                 .amount(amount)
@@ -180,21 +182,21 @@ class CommandPointHistoryServiceImplTest {
                 .createDateTime(LocalDateTime.now())
                 .member(member).build();
 
-        Mockito.when(queryMemberService.findMemberById(memberId))
+        Mockito.when(queryMemberService.findMemberByLoginId(loginId))
                 .thenReturn(MemberDto.fromEntity(member));
         Mockito.when(commandPointHistoryRepository.save(any()))
                 .thenReturn(response);
 
         //when
-        PointHistoryResponseDto result = commandPointHistoryService.save(memberId, request);
+        PointHistoryResponseDto result = commandPointHistoryService.save(request);
 
         //then
         assertThat(result.getAmount()).isEqualTo(amount);
-        assertThat(result.getMemberId()).isEqualTo(memberId);
+        assertThat(result.getLoginId()).isEqualTo(loginId);
         assertThat(result.getPointCode()).isEqualTo(pointCode);
 
         ArgumentCaptor<PointHistory> captor = ArgumentCaptor.forClass(PointHistory.class);
-        verify(queryMemberService, times(1)).findMemberById(anyLong());
+        verify(queryMemberService, times(1)).findMemberByLoginId(anyString());
         verify(commandPointHistoryRepository, times(1)).save(captor.capture());
 
         assertThat(captor.getValue().getAmount()).isEqualTo(amount);

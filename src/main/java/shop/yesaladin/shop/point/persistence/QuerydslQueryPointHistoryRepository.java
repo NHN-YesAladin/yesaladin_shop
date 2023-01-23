@@ -39,8 +39,8 @@ public class QuerydslQueryPointHistoryRepository implements QueryPointHistoryRep
      * {@inheritDoc}
      */
     @Override
-    public List<PointHistory> findByMemberId(
-            long memberId,
+    public List<PointHistory> findByLoginId(
+            String loginId,
             LocalDate startDate,
             LocalDate endDate
     ) {
@@ -48,7 +48,7 @@ public class QuerydslQueryPointHistoryRepository implements QueryPointHistoryRep
 
         return queryFactory.select(pointHistory)
                 .from(pointHistory)
-                .where(pointHistory.member.id.eq(memberId)
+                .where(pointHistory.member.loginId.eq(loginId)
                         .and(pointHistory.createDateTime.between(
                                 startDate.atStartOfDay(),
                                 endDate.plusDays(1).atStartOfDay()
@@ -81,13 +81,13 @@ public class QuerydslQueryPointHistoryRepository implements QueryPointHistoryRep
      * {@inheritDoc}
      */
     @Override
-    public long getMemberPointByMemberId(long memberId) {
+    public long getMemberPointByLoginId(String loginId) {
         QPointHistory pointHistory = QPointHistory.pointHistory;
 
         Optional<PointHistory> lastPointHistory = Optional.ofNullable(queryFactory.select(
                         pointHistory)
                 .from(pointHistory)
-                .where(pointHistory.member.id.eq(memberId)
+                .where(pointHistory.member.loginId.eq(loginId)
                         .and(pointHistory.pointCode.eq(PointCode.SUM)))
                 .orderBy(pointHistory.createDateTime.desc())
                 .fetchFirst());
@@ -108,13 +108,13 @@ public class QuerydslQueryPointHistoryRepository implements QueryPointHistoryRep
 
             return curPoint + Optional.ofNullable(queryFactory.select(expression)
                     .from(pointHistory)
-                    .where(pointHistory.member.id.eq(memberId)
+                    .where(pointHistory.member.loginId.eq(loginId)
                             .and(pointHistory.createDateTime.after(lastUpdateDate)
                                     .or(pointHistory.createDateTime.eq(lastUpdateDate))))
                     .fetchFirst()).orElse(0L);
         }
         return Optional.ofNullable(queryFactory.select(expression)
                 .from(pointHistory)
-                .where(pointHistory.member.id.eq(memberId)).fetchFirst()).orElse(0L);
+                .where(pointHistory.member.loginId.eq(loginId)).fetchFirst()).orElse(0L);
     }
 }

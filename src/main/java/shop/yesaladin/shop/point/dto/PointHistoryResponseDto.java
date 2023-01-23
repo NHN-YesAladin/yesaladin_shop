@@ -21,7 +21,7 @@ public class PointHistoryResponseDto {
     private Long amount;
     private LocalDateTime createDateTime;
     private PointCode pointCode;
-    private Long memberId;
+    private String loginId;
 
     /**
      * 엔티티 클래스를 dto 클래스로 변환시켜줍니다.
@@ -37,7 +37,7 @@ public class PointHistoryResponseDto {
                 pointHistory.getAmount(),
                 pointHistory.getCreateDateTime(),
                 pointHistory.getPointCode(),
-                pointHistory.getMember().getId()
+                pointHistory.getMember().getLoginId()
         );
     }
 }

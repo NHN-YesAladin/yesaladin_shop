@@ -30,45 +30,36 @@ public class CommandPointHistoryServiceImpl implements CommandPointHistoryServic
 
     @Override
     @Transactional
-    public PointHistoryResponseDto use(long memberId, PointHistoryRequestDto request) {
-        PointHistory pointHistory = createPointHistory(
-                memberId,
-                request,
-                PointCode.USE
-        );
-        checkMemberHasEnoughPoint(memberId, request);
+    public PointHistoryResponseDto use(PointHistoryRequestDto request) {
+        PointHistory pointHistory = createPointHistory(request, PointCode.USE);
+        checkMemberHasEnoughPoint(request);
         PointHistory savedPointHistory = commandPointHistoryRepository.save(pointHistory);
 
         return PointHistoryResponseDto.fromEntity(savedPointHistory);
     }
 
-    private void checkMemberHasEnoughPoint(long memberId, PointHistoryRequestDto request) {
-        long amount = queryPointHistoryRepository.getMemberPointByMemberId(memberId);
+    private void checkMemberHasEnoughPoint(PointHistoryRequestDto request) {
+        long amount = queryPointHistoryRepository.getMemberPointByLoginId(request.getLoginId());
 
         if (request.getAmount() > amount) {
-            throw new OverPointUseException(memberId, amount);
+            throw new OverPointUseException(request.getLoginId(), amount);
         }
     }
 
     @Override
     @Transactional
-    public PointHistoryResponseDto save(long memberId, PointHistoryRequestDto request) {
-        PointHistory pointHistory = createPointHistory(
-                memberId,
-                request,
-                PointCode.SAVE
-        );
+    public PointHistoryResponseDto save(PointHistoryRequestDto request) {
+        PointHistory pointHistory = createPointHistory(request, PointCode.SAVE);
         PointHistory savedPointHistory = commandPointHistoryRepository.save(pointHistory);
 
         return PointHistoryResponseDto.fromEntity(savedPointHistory);
     }
 
     private PointHistory createPointHistory(
-            long memberId,
             PointHistoryRequestDto request,
             PointCode pointCode
     ) {
-        Member member = queryMemberService.findMemberById(memberId).toEntity();
+        Member member = queryMemberService.findMemberByLoginId(request.getLoginId()).toEntity();
 
         return request.toEntity(pointCode, member);
     }

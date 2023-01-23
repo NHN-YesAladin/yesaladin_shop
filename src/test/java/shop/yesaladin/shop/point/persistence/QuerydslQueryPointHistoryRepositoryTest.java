@@ -62,15 +62,15 @@ class QuerydslQueryPointHistoryRepositoryTest {
     }
 
     @Test
-    void findByMemberId() {
+    void findByLoginId() {
         //given
-        long memberId = 1L;
+        String loginId = "loginId";
         LocalDate startDate = LocalDate.of(2023, 1, 1);
         LocalDate endDate = LocalDate.of(2023, 2, 1);
 
         //when
-        List<PointHistory> result = queryPointHistoryRepository.findByMemberId(
-                memberId,
+        List<PointHistory> result = queryPointHistoryRepository.findByLoginId(
+                loginId,
                 startDate,
                 endDate
         );
@@ -98,12 +98,12 @@ class QuerydslQueryPointHistoryRepositoryTest {
     }
 
     @Test
-    void getMemberPointByMemberId() {
+    void getMemberPointByLoginId() {
         setPointHistory(3, 5);
 
-        long memberId = member.getId();
+        String loginId = member.getLoginId();
 
-        long point = queryPointHistoryRepository.getMemberPointByMemberId(memberId);
+        long point = queryPointHistoryRepository.getMemberPointByLoginId(loginId);
 
         assertThat(point).isEqualTo(-1000);
 

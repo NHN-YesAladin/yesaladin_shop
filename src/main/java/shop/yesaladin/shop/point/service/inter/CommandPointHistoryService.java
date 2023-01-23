@@ -14,22 +14,20 @@ public interface CommandPointHistoryService {
     /**
      * 포인트 사용 내역을 등록합니다.
      *
-     * @param memberId 회원 아이디
      * @param request  사용한 포인트 양
      * @return 등록된 포인트내역
      * @author 최예린
      * @since 1.0
      */
-    PointHistoryResponseDto use(long memberId, PointHistoryRequestDto request);
+    PointHistoryResponseDto use(PointHistoryRequestDto request);
 
     /**
      * 포인트 적립 내역을 등록합니다.
      *
-     * @param memberId 회원 아이디
      * @param request  적립한 포인트 양
      * @return 등록된 포인트내역
      * @author 최예린
      * @since 1.0
      */
-    PointHistoryResponseDto save(long memberId, PointHistoryRequestDto request);
+    PointHistoryResponseDto save(PointHistoryRequestDto request);
 }
