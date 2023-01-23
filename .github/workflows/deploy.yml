@@ -68,7 +68,7 @@ jobs:
           script: ${{ secrets.STARTUP_SCRIPT }}
           
       - name: SSH Remote Commands
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v0.1.6
         with:
           host: ${{ secrets.HOST2 }}
           key: ${{ secrets.KEY2 }}
