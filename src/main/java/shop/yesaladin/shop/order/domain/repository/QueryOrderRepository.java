@@ -10,7 +10,9 @@ import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 /**
  * 주문 조회 관련 repository 클래스입니다.
  *
- * @author 최예린, 김홍대
+ * @author 최예린
+ * @author 김홍대
+ * @author 배수한
  * @since 1.0
  */
 public interface QueryOrderRepository {
@@ -81,4 +83,11 @@ public interface QueryOrderRepository {
      */
     long getCountOfOrdersInPeriodByMemberId(LocalDate startDate, LocalDate endDate, long memberId);
 
+    /**
+     * unique key인 주문 번호를 통해 주문 데이터를 조회합니다.
+     *
+     * @param orderNumber 주문번호
+     * @return 조회된 주문 데이터
+     */
+    Optional<Order> findByOrderNumber(String orderNumber);
 }

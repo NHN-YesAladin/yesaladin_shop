@@ -49,7 +49,6 @@ include::{snippets}/update-child-other-parent-category/curl-request.adoc[]
 
 ===== Body
 
-
 include::{snippets}/update-parent-fields-category/request-fields.adoc[]
 
 ===== Example

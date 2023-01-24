@@ -3,6 +3,7 @@ package shop.yesaladin.shop.order.service.impl;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,8 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.common.exception.PageOffsetOutOfBoundsException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
+import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
+import shop.yesaladin.shop.order.exception.OrderNotFoundException;
 import shop.yesaladin.shop.order.service.inter.QueryOrderService;
 
 /**
@@ -29,6 +32,10 @@ public class QueryOrderServiceImpl implements QueryOrderService {
     private final QueryMemberService queryMemberService;
     private final Clock clock;
 
+    /**
+     * {@inheritDoc}
+     *
+     */
     @Override
     @Transactional(readOnly = true)
     public Page<OrderSummaryDto> getAllOrderListInPeriod(
@@ -43,7 +50,12 @@ public class QueryOrderServiceImpl implements QueryOrderService {
         return queryOrderRepository.findAllOrdersInPeriod(startDate, endDate, pageable);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     */
     @Override
+    @Transactional(readOnly = true)
     public Page<OrderSummaryDto> getAllOrderListInPeriodByMemberId(
             PeriodQueryRequestDto queryDto, long memberId, Pageable pageable
     ) {
@@ -60,6 +72,17 @@ public class QueryOrderServiceImpl implements QueryOrderService {
                 memberId,
                 pageable
         );
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Order getOrderByNumber(String number) {
+        return queryOrderRepository.findByOrderNumber(number)
+                .orElseThrow(() -> new OrderNotFoundException(number));
     }
 
     private void checkRequestedOffsetInBounds(
