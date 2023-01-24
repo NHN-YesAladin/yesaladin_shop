@@ -5,9 +5,6 @@ import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.ProductTypeCode;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
-import shop.yesaladin.shop.publish.domain.model.Publisher;
-
-import javax.servlet.http.HttpServletRequest;
 
 public class DummyProduct {
 

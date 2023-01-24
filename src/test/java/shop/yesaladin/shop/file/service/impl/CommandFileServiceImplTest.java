@@ -1,7 +1,6 @@
 package shop.yesaladin.shop.file.service.impl;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import shop.yesaladin.shop.file.domain.model.File;
@@ -9,10 +8,6 @@ import shop.yesaladin.shop.file.domain.repository.CommandFileRepository;
 import shop.yesaladin.shop.file.dto.FileResponseDto;
 import shop.yesaladin.shop.file.service.inter.CommandFileService;
 import shop.yesaladin.shop.product.dummy.DummyFile;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;

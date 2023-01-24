@@ -13,7 +13,6 @@ import shop.yesaladin.shop.writing.dummy.DummyAuthor;
 import shop.yesaladin.shop.writing.exception.AuthorNotFoundException;
 import shop.yesaladin.shop.writing.service.inter.QueryAuthorService;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 

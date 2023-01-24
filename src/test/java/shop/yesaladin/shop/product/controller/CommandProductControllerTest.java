@@ -1,9 +1,7 @@
 package shop.yesaladin.shop.product.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -21,13 +19,10 @@ import shop.yesaladin.shop.product.dto.ProductUpdateDto;
 import shop.yesaladin.shop.product.dummy.DummyProductCreateDto;
 import shop.yesaladin.shop.product.dummy.DummyProductUpdateDto;
 import shop.yesaladin.shop.product.service.inter.CommandProductService;
-import shop.yesaladin.shop.publish.service.inter.QueryPublisherService;
-
-import static org.mockito.ArgumentMatchers.any;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
