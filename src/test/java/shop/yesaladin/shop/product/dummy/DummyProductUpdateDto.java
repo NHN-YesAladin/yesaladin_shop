@@ -1,20 +1,20 @@
 package shop.yesaladin.shop.product.dummy;
 
 import shop.yesaladin.shop.product.dto.ProductCreateDto;
+import shop.yesaladin.shop.product.dto.ProductUpdateDto;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DummyProductCreateDto {
+public class DummyProductUpdateDto {
 
-    public static ProductCreateDto dummy(String ISBN) {
+    public static ProductUpdateDto dummy(String title) {
         List<Long> authors = List.of(1L);
 
         List<Long> tags = List.of(1L, 2L);
 
-        return new ProductCreateDto(
-                ISBN,
-                "더미",
+        return new ProductUpdateDto(
+                title,
                 "목차",
                 "상품 더미 입니다.",
                 authors,
@@ -36,7 +36,8 @@ public class DummyProductCreateDto {
                 "2023-01-17T00:23:17",
                 "BESTSELLER",
                 "SELLING_PRICE",
-                tags
+                tags,
+                false
         );
     }
 

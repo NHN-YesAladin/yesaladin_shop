@@ -25,7 +25,6 @@ import shop.yesaladin.shop.file.service.inter.StorageAuthService;
 public class FileStorageController {
 
     private final FileStorageService fileStorageService;
-    private final StorageAuthService storageAuthService;
 
     /**
      * 요청받은 파일을 Object Storage에 업로드하고 파일 url을 응답합니다.
@@ -33,7 +32,7 @@ public class FileStorageController {
      * @param file       업로드할 Multipartfile
      * @param domainName 업로드할 컨테이너 내부의 도메인 명
      * @param typeName   업로드할 파일의 유형명
-     * @return 업로드한 파일의 url
+     * @return 업로드한 파일의 정보
      * @author 이수정
      * @since 1.0
      */
@@ -43,10 +42,7 @@ public class FileStorageController {
             @PathVariable String domainName,
             @PathVariable String typeName
     ) {
-        String token = storageAuthService.getAuthToken();
-
         FileUploadResponseDto responseDto = fileStorageService.fileUpload(
-                token,
                 domainName,
                 typeName,
                 file

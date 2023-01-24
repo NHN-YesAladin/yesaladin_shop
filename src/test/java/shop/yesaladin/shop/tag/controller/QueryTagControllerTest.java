@@ -42,7 +42,7 @@ class QueryTagControllerTest {
 
     @BeforeEach
     void setUp() {
-        tags = Arrays.asList(
+        tags = List.of(
                 new TagsResponseDto(1L, "행복한"),
                 new TagsResponseDto(2L, "슬픈")
         );

@@ -1,6 +1,7 @@
 package shop.yesaladin.shop.file.service.impl;
 
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
@@ -15,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import shop.yesaladin.shop.file.dto.FileUploadResponseDto;
 import shop.yesaladin.shop.file.service.inter.FileStorageService;
+import shop.yesaladin.shop.file.service.inter.StorageAuthService;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -28,6 +30,7 @@ import java.util.UUID;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class FileStorageServiceImpl implements FileStorageService {
 
     @Value("${storage-token.storage-url}")
@@ -36,6 +39,8 @@ public class FileStorageServiceImpl implements FileStorageService {
     private String storageAccount;
     @Value("${storage-token.container-name}")
     private String containerName;
+
+    private final StorageAuthService storageAuthService;
 
     private RestTemplate restTemplate;
 
@@ -63,11 +68,11 @@ public class FileStorageServiceImpl implements FileStorageService {
      */
     @Override
     public FileUploadResponseDto fileUpload(
-            String token,
             String domainName,
             String typeName,
             MultipartFile file
     ) {
+        String token = storageAuthService.getAuthToken();
 
         // InputStream을 요청 본문에 추가할 수 있도록 RequestCallback 오버라이드
         final RequestCallback requestCallback = new RequestCallback() {
@@ -88,18 +93,11 @@ public class FileStorageServiceImpl implements FileStorageService {
                 restTemplate.getMessageConverters()
         );
 
-        long start = System.currentTimeMillis();
-        log.info("start : " + start);
-
         // API 호출
         String filename = UUID.randomUUID() + "." + FilenameUtils.getExtension(file.getOriginalFilename());
         String url = getUrl(domainName, typeName, filename);
         restTemplate.execute(url, HttpMethod.PUT, requestCallback, responseExtractor);
 
-        long end = System.currentTimeMillis();
-        log.info("end : " + end);
-
-        log.info("upload end : " + (end - start));
         return new FileUploadResponseDto(url, LocalDateTime.now().toString());
     }
 }

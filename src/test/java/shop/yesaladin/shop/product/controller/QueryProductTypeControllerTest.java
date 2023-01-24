@@ -1,4 +1,4 @@
-package shop.yesaladin.shop.writing.controller;
+package shop.yesaladin.shop.product.controller;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,8 +12,10 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import shop.yesaladin.shop.writing.dto.AuthorsResponseDto;
-import shop.yesaladin.shop.writing.service.inter.QueryAuthorService;
+import shop.yesaladin.shop.product.domain.model.ProductTypeCode;
+import shop.yesaladin.shop.product.dto.ProductTypeResponseDto;
+import shop.yesaladin.shop.product.service.inter.QueryProductTypeService;
+import shop.yesaladin.shop.publish.controller.QueryPublisherController;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,33 +31,33 @@ import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentRequest;
 import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
 
 @AutoConfigureRestDocs
-@WebMvcTest(QueryAuthorController.class)
-class QueryAuthorControllerTest {
+@WebMvcTest(QueryProductTypeController.class)
+class QueryProductTypeControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
-    private QueryAuthorService queryAuthorService;
+    private QueryProductTypeService service;
 
-    private List<AuthorsResponseDto> authors;
+    private List<ProductTypeResponseDto> productTypes;
 
     @BeforeEach
     void setUp() {
-        authors = List.of(
-                new AuthorsResponseDto(1L, "저자1", "happyAuthor"),
-                new AuthorsResponseDto(2L, "저자2", "sadAuthor")
+        productTypes = List.of(
+                new ProductTypeResponseDto(1, ProductTypeCode.NONE.toString()),
+                new ProductTypeResponseDto(2, ProductTypeCode.DISCOUNTS.toString())
         );
     }
 
     @Test
-    @DisplayName("저자 전체 조회 성공")
-    void getAuthors() throws Exception {
+    @DisplayName("상품 유형 전체 조회 성공")
+    void getProductTypes() throws Exception {
         // given
-        Mockito.when(queryAuthorService.findAll()).thenReturn(authors);
+        Mockito.when(service.findAll()).thenReturn(productTypes);
 
         // when
-        ResultActions result = mockMvc.perform(get("/v1/authors")
+        ResultActions result = mockMvc.perform(get("/v1/product-types")
                 .contentType(MediaType.APPLICATION_JSON));
 
         // then
@@ -64,20 +66,17 @@ class QueryAuthorControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$[0].id", equalTo(1)))
                 .andExpect(jsonPath("$[1].id", equalTo(2)))
-                .andExpect(jsonPath("$[0].name", equalTo("저자1")))
-                .andExpect(jsonPath("$[1].name", equalTo("저자2")))
-                .andExpect(jsonPath("$[0].loginId", equalTo("happyAuthor")))
-                .andExpect(jsonPath("$[1].loginId", equalTo("sadAuthor")));
+                .andExpect(jsonPath("$[0].type", equalTo(ProductTypeCode.NONE.toString())))
+                .andExpect(jsonPath("$[1].type", equalTo(ProductTypeCode.DISCOUNTS.toString())));
 
         // docs
         result.andDo(document(
-                "find-all-author",
+                "find-all-product-type",
                 getDocumentRequest(),
                 getDocumentResponse(),
                 responseFields(
-                        fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("저자 아이디"),
-                        fieldWithPath("[].name").type(JsonFieldType.STRING).description("저자 이름"),
-                        fieldWithPath("[].loginId").type(JsonFieldType.STRING).description("저자 로그인 아이디")
+                        fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("상품 유형 아이디"),
+                        fieldWithPath("[].type").type(JsonFieldType.STRING).description("상품 유형 이름")
                 )
         ));
     }
