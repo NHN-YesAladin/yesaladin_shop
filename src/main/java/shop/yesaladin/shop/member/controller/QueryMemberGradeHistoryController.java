@@ -21,7 +21,7 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberGradeHistoryService;
  */
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/v1/members/{memberId}/grade-histories")
+@RequestMapping("/v1/members/{loginId}/grade-histories")
 public class QueryMemberGradeHistoryController {
 
     private final QueryMemberGradeHistoryService queryMemberGradeHistoryService;
@@ -29,7 +29,7 @@ public class QueryMemberGradeHistoryController {
     /**
      * 회원의 등급 변경 내역을 조회합니다.
      *
-     * @param memberId 회원의 id
+     * @param loginId 회원의 id
      * @return 회원의 등급 변경 내역
      * @author 최예린
      * @since 1.0
@@ -37,9 +37,9 @@ public class QueryMemberGradeHistoryController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<MemberGradeHistoryQueryResponseDto> getMemberGrades(
-            @PathVariable Long memberId,
+            @PathVariable String loginId,
             @RequestBody PeriodQueryRequestDto request
     ) {
-        return queryMemberGradeHistoryService.findByMemberId(memberId, request);
+        return queryMemberGradeHistoryService.findByLoginId(loginId, request);
     }
 }

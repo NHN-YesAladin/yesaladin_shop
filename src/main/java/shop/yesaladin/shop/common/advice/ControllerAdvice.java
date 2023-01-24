@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import shop.yesaladin.shop.category.exception.CategoryNotFoundException;
 import shop.yesaladin.shop.common.dto.ErrorResponseDto;
 import shop.yesaladin.shop.common.exception.CustomJsonProcessingException;
+import shop.yesaladin.shop.common.exception.InvalidPeriodConditionException;
 import shop.yesaladin.shop.file.exception.FileNotFoundException;
 import shop.yesaladin.shop.member.exception.AlreadyBlockedMemberException;
 import shop.yesaladin.shop.member.exception.AlreadyUnblockedMemberException;
@@ -72,6 +73,7 @@ public class ControllerAdvice {
             HttpMessageNotReadableException.class,
             OverPointUseException.class,
             InvalidCodeParameterException.class,
+            InvalidPeriodConditionException.class,
             AlreadyDeletedProductException.class,
             AlreadyProductExistsException.class,
             AlreadyBlockedMemberException.class,

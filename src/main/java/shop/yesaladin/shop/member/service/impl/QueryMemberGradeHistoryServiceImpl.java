@@ -7,7 +7,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberGradeHistoryRepository;
+import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
 import shop.yesaladin.shop.member.dto.MemberGradeHistoryQueryResponseDto;
+import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberGradeHistoryService;
 
 /**
@@ -21,17 +23,24 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberGradeHistoryService;
 public class QueryMemberGradeHistoryServiceImpl implements QueryMemberGradeHistoryService {
 
     private final QueryMemberGradeHistoryRepository queryMemberGradeHistoryRepository;
+    private final QueryMemberRepository queryMemberRepository;
     private final Clock clock;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional(readOnly = true)
-    public List<MemberGradeHistoryQueryResponseDto> findByMemberId(
-            long memberId,
+    public List<MemberGradeHistoryQueryResponseDto> findByLoginId(
+            String loginId,
             PeriodQueryRequestDto request
     ) {
         request.validate(clock);
-        return queryMemberGradeHistoryRepository.findByMemberIdAndPeriod(
-                memberId,
+        if(!queryMemberRepository.existsMemberByLoginId(loginId)) {
+            throw new MemberNotFoundException("Member loginId:" + loginId);
+        }
+        return queryMemberGradeHistoryRepository.findByLoginIdAndPeriod(
+                loginId,
                 request.getStartDateOrDefaultValue(clock),
                 request.getEndDateOrDefaultValue(clock)
         );
