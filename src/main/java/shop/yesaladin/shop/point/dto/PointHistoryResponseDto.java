@@ -1,7 +1,6 @@
 package shop.yesaladin.shop.point.dto;
 
 import java.time.LocalDateTime;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import shop.yesaladin.shop.point.domain.model.PointCode;
@@ -14,14 +13,14 @@ import shop.yesaladin.shop.point.domain.model.PointHistory;
  * @since 1.0
  */
 @Getter
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class PointHistoryResponseDto {
 
     private Long id;
     private Long amount;
     private LocalDateTime createDateTime;
     private PointCode pointCode;
-    private Long memberId;
+    private String loginId;
 
     /**
      * 엔티티 클래스를 dto 클래스로 변환시켜줍니다.
@@ -37,7 +36,7 @@ public class PointHistoryResponseDto {
                 pointHistory.getAmount(),
                 pointHistory.getCreateDateTime(),
                 pointHistory.getPointCode(),
-                pointHistory.getMember().getId()
+                pointHistory.getMember().getLoginId()
         );
     }
 }
