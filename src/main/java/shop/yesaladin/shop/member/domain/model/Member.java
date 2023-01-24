@@ -152,7 +152,7 @@ public class Member {
      * @since : 1.0
      */
     public void withdrawMember() {
-        String deleteUniqueField = "deleted user" + this.id;
+        String deleteUniqueField = "deleted-" + this.id;
         this.isWithdrawal = true;
         this.withdrawalDate = LocalDate.now();
         this.name = deleteUniqueField;

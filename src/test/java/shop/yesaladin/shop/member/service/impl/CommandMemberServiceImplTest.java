@@ -301,7 +301,7 @@ class CommandMemberServiceImplTest {
         String name = "testName";
         String loginId = "loginId";
 
-        String deletedField = "deleted user" + 1L;
+        String deletedField = "deleted-" + 1L;
 
         Member member = Member.builder()
                 .id(1L)
