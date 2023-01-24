@@ -28,6 +28,9 @@ public class CommandPointHistoryServiceImpl implements CommandPointHistoryServic
     private final QueryPointHistoryRepository queryPointHistoryRepository;
     private final QueryMemberService queryMemberService;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
     public PointHistoryResponseDto use(PointHistoryRequestDto request) {
@@ -46,6 +49,9 @@ public class CommandPointHistoryServiceImpl implements CommandPointHistoryServic
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
     public PointHistoryResponseDto save(PointHistoryRequestDto request) {

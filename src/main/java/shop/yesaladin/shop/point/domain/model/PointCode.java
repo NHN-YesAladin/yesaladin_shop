@@ -18,6 +18,14 @@ public enum PointCode {
 
     private final int code;
 
+    /**
+     * 코드로 포인트 코드를 찾아냅니다.
+     *
+     * @param code 코드
+     * @return 포인트 코드
+     * @author 최예린
+     * @since 1.0
+     */
     public static PointCode findByCode(String code) {
         return Arrays.stream(PointCode.values())
                 .filter(x -> x.name().equals(code.toUpperCase()))
