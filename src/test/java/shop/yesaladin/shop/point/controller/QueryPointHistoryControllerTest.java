@@ -20,15 +20,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentRequest;
 import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
+import static shop.yesaladin.shop.docs.DocumentFormatGenerator.defaultValue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
@@ -60,14 +59,6 @@ class QueryPointHistoryControllerTest {
     @Autowired
     ObjectMapper objectMapper;
 
-    private static Stream<Arguments> getPointHistoriesByLoginIdData() {
-        return Stream.of(
-                Arguments.of("use", "사용 포인트 내역 조회"),
-                Arguments.of("save", "적립 포인트 내역 조회"),
-                Arguments.of(null, "전체 포인트 내역 조회")
-        );
-    }
-
     @Test
     @DisplayName("회원의 포인트내역 조회 실패 - 유효하지 않는 파라미터 값")
     void getPointHistoriesByLoginId_fail_InvalidCodeParameter() throws Exception {
@@ -86,6 +77,15 @@ class QueryPointHistoryControllerTest {
                 "get-point-histories-by-loginId-fail-invalid-code-parameter",
                 getDocumentRequest(),
                 getDocumentResponse(),
+                requestParameters(
+                        parameterWithName("code").description("포인트 사용/적립 구분"),
+                        parameterWithName("page").description("페이지 번호")
+                                .optional()
+                                .attributes(defaultValue(10)),
+                        parameterWithName("size").description("페이지 요소 개수")
+                                .optional()
+                                .attributes(defaultValue(0))
+                ),
                 pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 requestParameters(parameterWithName("code").description("포인트 사용/적립 구분 코드")),
                 responseFields(
@@ -95,7 +95,7 @@ class QueryPointHistoryControllerTest {
     }
 
     @Test
-    @DisplayName("회원의 전체 포인트내역 조회")
+    @DisplayName("회원의 전체 포인트내역 조회-성공")
     void getPointHistoriesByLoginId_all() throws Exception {
         //given
         String loginId = "user@1";
@@ -105,7 +105,9 @@ class QueryPointHistoryControllerTest {
                 .thenReturn(response);
 
         //when
-        ResultActions result = mockMvc.perform(get("/v1/points/{loginId}", loginId));
+        ResultActions result = mockMvc.perform(get("/v1/points/{loginId}", loginId)
+                .param("size", "5")
+                .param("page", "0"));
 
         //then
         result.andExpect(status().isOk())
@@ -132,6 +134,14 @@ class QueryPointHistoryControllerTest {
                 getDocumentRequest(),
                 getDocumentResponse(),
                 pathParameters(parameterWithName("loginId").description("회원의 아이디")),
+                requestParameters(
+                        parameterWithName("page").description("페이지 번호")
+                                .optional()
+                                .attributes(defaultValue(10)),
+                        parameterWithName("size").description("페이지 요소 개수")
+                                .optional()
+                                .attributes(defaultValue(0))
+                ),
                 responseFields(
                         fieldWithPath("totalPage").type(JsonFieldType.NUMBER).description("전체 페이지"),
                         fieldWithPath("currentPage").type(JsonFieldType.NUMBER)
@@ -153,17 +163,22 @@ class QueryPointHistoryControllerTest {
     }
 
     @Test
-    @DisplayName("회원의 사용/적립 포인트내역 조회")
+    @DisplayName("회원의 사용/적립 포인트내역 조회-성공")
     void getPointHistoriesByLoginId() throws Exception {
         //given
         String loginId = "user@1";
         PointCode pointCode = PointCode.USE;
 
-        Mockito.when(pointHistoryService.getPointHistoriesWithLoginIdAndCode(eq(loginId), eq(
-                pointCode), any())).thenReturn(getPageableData(5, pointCode, loginId));
+        Mockito.when(pointHistoryService.getPointHistoriesWithLoginIdAndCode(
+                eq(loginId),
+                eq(pointCode),
+                any()
+        )).thenReturn(getPageableData(5, pointCode, loginId));
 
         ResultActions result = mockMvc.perform(get("/v1/points/{loginId}", loginId)
-                .param("code", "use"));
+                .param("code", "USE")
+                .param("page", "0")
+                .param("size", "5"));
 
         //then
         result.andExpect(status().isOk())
@@ -177,8 +192,9 @@ class QueryPointHistoryControllerTest {
                 .andExpect(jsonPath("$.totalDataCount", equalTo(5)));
 
         ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
-        verify(pointHistoryService, times(1)).getPointHistoriesWithLoginId(
+        verify(pointHistoryService, times(1)).getPointHistoriesWithLoginIdAndCode(
                 anyString(),
+                any(),
                 captor.capture()
         );
 
@@ -190,7 +206,15 @@ class QueryPointHistoryControllerTest {
                 getDocumentRequest(),
                 getDocumentResponse(),
                 pathParameters(parameterWithName("loginId").description("회원의 아이디")),
-                requestParameters(parameterWithName("code").description("포인트 사용/적립 구분")),
+                requestParameters(
+                        parameterWithName("code").description("포인트 사용/적립 구분"),
+                        parameterWithName("page").description("페이지 번호")
+                                .optional()
+                                .attributes(defaultValue(10)),
+                        parameterWithName("size").description("페이지 요소 개수")
+                                .optional()
+                                .attributes(defaultValue(0))
+                ),
                 responseFields(
                         fieldWithPath("totalPage").type(JsonFieldType.NUMBER).description("전체 페이지"),
                         fieldWithPath("currentPage").type(JsonFieldType.NUMBER)
