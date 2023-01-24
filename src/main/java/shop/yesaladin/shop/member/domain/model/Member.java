@@ -144,4 +144,24 @@ public class Member {
     public void changeNickname(String newNickname) {
         this.nickname = newNickname;
     }
+
+    /**
+     * Member entity를 soft delete 하기 위한 기능 입니다.
+     *
+     * @author : 송학현
+     * @since : 1.0
+     */
+    public void withdrawMember() {
+        String deleteUniqueField = "deleted user" + this.id;
+        this.isWithdrawal = true;
+        this.withdrawalDate = LocalDate.now();
+        this.name = deleteUniqueField;
+        this.nickname = deleteUniqueField;
+        this.birthYear = 0;
+        this.birthMonth = 0;
+        this.birthDay = 0;
+        this.email = deleteUniqueField;
+        this.phone = deleteUniqueField;
+        this.password = "";
+    }
 }

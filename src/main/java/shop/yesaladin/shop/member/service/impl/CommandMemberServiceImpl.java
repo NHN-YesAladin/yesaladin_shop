@@ -17,6 +17,7 @@ import shop.yesaladin.shop.member.dto.MemberCreateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberCreateResponseDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateResponseDto;
+import shop.yesaladin.shop.member.dto.MemberWithdrawResponseDto;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.exception.MemberProfileAlreadyExistException;
 import shop.yesaladin.shop.member.exception.MemberRoleNotFoundException;
@@ -165,5 +166,19 @@ public class CommandMemberServiceImpl implements CommandMemberService {
         if (member.isPresent()) {
             throw new MemberProfileAlreadyExistException(target);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public MemberWithdrawResponseDto withDraw(String loginId) {
+        Member member = queryMemberRepository.findMemberByLoginId(loginId)
+                .orElseThrow(() -> new MemberNotFoundException("Member loginId: " + loginId));
+
+        member.withdrawMember();
+
+        return MemberWithdrawResponseDto.fromEntity(member);
     }
 }
