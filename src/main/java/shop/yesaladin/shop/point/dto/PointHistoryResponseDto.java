@@ -1,7 +1,6 @@
 package shop.yesaladin.shop.point.dto;
 
 import java.time.LocalDateTime;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import shop.yesaladin.shop.point.domain.model.PointCode;
@@ -14,7 +13,7 @@ import shop.yesaladin.shop.point.domain.model.PointHistory;
  * @since 1.0
  */
 @Getter
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class PointHistoryResponseDto {
 
     private Long id;

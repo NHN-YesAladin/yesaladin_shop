@@ -39,9 +39,9 @@ import shop.yesaladin.shop.point.dto.PointHistoryResponseDto;
 import shop.yesaladin.shop.point.exception.OverPointUseException;
 import shop.yesaladin.shop.point.service.inter.CommandPointHistoryService;
 
-@WebMvcTest(CommandPointHistoryController.class)
 @AutoConfigureRestDocs
-class PointControllerTest {
+@WebMvcTest(CommandPointHistoryController.class)
+class CommandPointControllerTest {
 
     @Autowired
     private MockMvc mockMvc;

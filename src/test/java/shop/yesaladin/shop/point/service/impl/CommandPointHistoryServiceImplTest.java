@@ -80,7 +80,7 @@ class CommandPointHistoryServiceImplTest {
                 amount
         );
 
-        Member member = MemberDummy.dummyWithLoginId(loginId);
+        Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
 
         Mockito.when(queryMemberService.findMemberByLoginId(loginId))
                 .thenReturn(MemberDto.fromEntity(member));
@@ -107,7 +107,7 @@ class CommandPointHistoryServiceImplTest {
                 amount
         );
 
-        Member member = MemberDummy.dummyWithLoginId(loginId);
+        Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
         PointHistory response = PointHistory.builder()
                 .id(1L)
                 .amount(amount)
@@ -174,7 +174,7 @@ class CommandPointHistoryServiceImplTest {
                 amount
         );
 
-        Member member = MemberDummy.dummyWithLoginId(loginId);
+        Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
         PointHistory response = PointHistory.builder()
                 .id(1L)
                 .amount(amount)

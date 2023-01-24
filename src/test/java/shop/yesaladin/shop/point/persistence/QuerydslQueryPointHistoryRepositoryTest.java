@@ -13,12 +13,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
 import shop.yesaladin.shop.point.domain.model.PointCode;
 import shop.yesaladin.shop.point.domain.model.PointHistory;
 import shop.yesaladin.shop.point.domain.repository.QueryPointHistoryRepository;
+import shop.yesaladin.shop.point.dto.PointHistoryResponseDto;
 
 @Transactional
 @SpringBootTest
@@ -31,6 +34,8 @@ class QuerydslQueryPointHistoryRepositoryTest {
     QueryPointHistoryRepository queryPointHistoryRepository;
 
     Member member;
+    String loginId = "user@1";
+    Pageable pageable = Pageable.ofSize(5);
 
     long amount = 1000;
     LocalDateTime createDateTime = LocalDateTime.now();
@@ -38,7 +43,7 @@ class QuerydslQueryPointHistoryRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        member = MemberDummy.dummy();
+        member = MemberDummy.dummyWithLoginId(loginId);
         entityManager.persist(member);
     }
 
@@ -64,7 +69,6 @@ class QuerydslQueryPointHistoryRepositoryTest {
     @Test
     void findByLoginId() {
         //given
-        String loginId = "loginId";
         LocalDate startDate = LocalDate.of(2023, 1, 1);
         LocalDate endDate = LocalDate.of(2023, 2, 1);
 
@@ -109,8 +113,76 @@ class QuerydslQueryPointHistoryRepositoryTest {
 
     }
 
+    @Test
+    void getByLoginIdAndPointCode() {
+        //given
+        setPointHistory(5, 5);
+
+        //when
+        Page<PointHistoryResponseDto> result = queryPointHistoryRepository.getByLoginIdAndPointCode(
+                loginId,
+                pointCode,
+                pageable
+        );
+
+        //then
+        assertThat(result.getPageable()).isEqualTo(pageable);
+        assertThat(result.getContent()).hasSize(5);
+    }
+
+    @Test
+    void getByLoginId() {
+        //given
+        setPointHistory(5, 5);
+
+        //when
+        Page<PointHistoryResponseDto> result = queryPointHistoryRepository.getByLoginId(
+                loginId,
+                pageable
+        );
+
+        //then
+        assertThat(result.getPageable()).isEqualTo(pageable);
+        assertThat(result.getContent()).hasSize(5);
+        result.get().forEach(System.out::println);
+        assertThat(result.getTotalElements()).isEqualTo(10);
+    }
+
+    @Test
+    void getByPointCode() {
+        //given
+        setPointHistory(5, 5);
+
+        //when
+        Page<PointHistoryResponseDto> result = queryPointHistoryRepository.getByPointCode(
+                pointCode,
+                pageable
+        );
+
+        //then
+        assertThat(result.getPageable()).isEqualTo(pageable);
+        assertThat(result.getContent()).hasSize(5);
+    }
+
+    @Test
+    void getBy() {
+        //given
+        setPointHistory(5, 5);
+
+        //when
+        Page<PointHistoryResponseDto> result = queryPointHistoryRepository.getBy(
+                pageable
+        );
+
+        //then
+        assertThat(result.getPageable()).isEqualTo(pageable);
+        assertThat(result.getContent()).hasSize(5);
+        assertThat(result.getTotalElements()).isEqualTo(10);
+    }
+
     PointHistory createPointHistory(Member member, PointCode pointCode) {
-        return PointHistory.builder().amount(amount)
+        return PointHistory.builder()
+                .amount(amount)
                 .pointCode(pointCode)
                 .member(member)
                 .createDateTime(createDateTime)
