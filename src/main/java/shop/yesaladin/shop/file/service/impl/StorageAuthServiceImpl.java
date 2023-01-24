@@ -33,7 +33,11 @@ public class StorageAuthServiceImpl implements StorageAuthService {
     private String password;
 
     /**
-     * {@inheritDoc}
+     * 요청 본문(tenantId, username, password)을 생성합니다.
+     *
+     * @return 생성된 요청 본문
+     * @author 이수정
+     * @since 1.0
      */
     public TokenRequest makeTokenRequest() {
         TokenRequest tokenRequest = new TokenRequest();

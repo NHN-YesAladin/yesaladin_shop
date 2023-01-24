@@ -36,13 +36,13 @@ class QueryPublisherControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private QueryPublisherService queryPublisherService;
+    private QueryPublisherService service;
 
     private List<PublisherResponseDto> publishers;
 
     @BeforeEach
     void setUp() {
-        publishers = Arrays.asList(
+        publishers = List.of(
                 new PublisherResponseDto(1L, "출판사1"),
                 new PublisherResponseDto(2L, "출판사2")
         );
@@ -52,7 +52,7 @@ class QueryPublisherControllerTest {
     @DisplayName("출판사 전체 조회 성공")
     void getPublishers() throws Exception {
         // given
-        Mockito.when(queryPublisherService.findAll()).thenReturn(publishers);
+        Mockito.when(service.findAll()).thenReturn(publishers);
 
         // when
         ResultActions result = mockMvc.perform(get("/v1/publishers")

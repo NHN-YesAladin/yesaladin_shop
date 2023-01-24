@@ -100,7 +100,7 @@ class QueryTagServiceImplTest {
         String name1 = "행복한";
         String name2 = "슬픈";
 
-        List<Tag> tags = Arrays.asList(
+        List<Tag> tags = List.of(
                 Tag.builder().name(name1).build(),
                 Tag.builder().name(name2).build()
         );

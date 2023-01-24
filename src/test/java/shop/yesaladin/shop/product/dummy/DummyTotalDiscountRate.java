@@ -6,6 +6,7 @@ public class DummyTotalDiscountRate {
 
     public static TotalDiscountRate dummy() {
         return TotalDiscountRate.builder()
+                .id(1)
                 .discountRate(10)
                 .build();
     }

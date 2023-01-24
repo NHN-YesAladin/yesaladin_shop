@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.product.domain.repository;
 
+import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.RelatedProduct;
 
 import java.util.List;
@@ -12,5 +13,5 @@ import java.util.List;
  */
 public interface QueryRelatedProductRepository {
 
-    List<RelatedProduct> findByProductMainId(Long id);
+    List<RelatedProduct> findByProductMain(Product product);
 }
