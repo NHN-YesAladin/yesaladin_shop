@@ -10,6 +10,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -25,6 +26,7 @@ import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentRequest;
 import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDate;
 import java.util.stream.Stream;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,6 +54,8 @@ import shop.yesaladin.shop.member.dto.MemberCreateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberCreateResponseDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateResponseDto;
+import shop.yesaladin.shop.member.dto.MemberWithdrawRequestDto;
+import shop.yesaladin.shop.member.dto.MemberWithdrawResponseDto;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.CommandMemberService;
 
@@ -79,6 +83,7 @@ class CommandMemberControllerTest {
     private MemberCreateResponseDto createResponse;
     private MemberUpdateResponseDto updateResponse;
     private MemberBlockResponseDto blockResponse;
+    private MemberWithdrawResponseDto withdrawResponse;
 
     private static Stream<Arguments> updateMemberRequestData() {
         return Stream.of(
@@ -482,6 +487,100 @@ class CommandMemberControllerTest {
                         fieldWithPath("loginId").type(JsonFieldType.STRING).description("회원의 아이디"),
                         fieldWithPath("blocked").type(JsonFieldType.BOOLEAN)
                                 .description("회원의 차단 여부")
+                )
+        ));
+    }
+
+    @Test
+    void withdrawMember_fail_invalidMember() throws Exception {
+        //given
+        String invalidLoginId = "invalidLoginId";
+
+        MemberWithdrawRequestDto request = ReflectionUtils.newInstance(
+                MemberWithdrawRequestDto.class,
+                invalidLoginId
+        );
+
+        Mockito.when(commandMemberService.withDraw(request.getLoginId()))
+                .thenThrow(new MemberNotFoundException("Member loginId: " + request.getLoginId()));
+
+        //when
+        ResultActions perform = mockMvc.perform(delete("/v1/members/withdraw")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
+
+        //then
+        verify(commandMemberService, times(1)).withDraw(invalidLoginId);
+
+        //docs
+        perform.andDo(document(
+                "withdraw-member-fail-member-not-found",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                requestFields(
+                        fieldWithPath("loginId").type(JsonFieldType.STRING)
+                                .description("탈퇴할 회원의 아이디")
+                ),
+                responseFields(
+                        fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
+                )
+        ));
+    }
+
+    @Test
+    void withdrawMember() throws Exception {
+        String loginId = "loginId";
+
+        MemberWithdrawRequestDto request = ReflectionUtils.newInstance(
+                MemberWithdrawRequestDto.class,
+                loginId
+        );
+
+        Member withdrawMember = Member.builder()
+                .id(1L)
+                .name("deleted-1")
+                .isWithdrawal(true)
+                .withdrawalDate(LocalDate.now())
+                .build();
+
+        withdrawResponse = MemberWithdrawResponseDto.fromEntity(withdrawMember);
+
+        Mockito.when(commandMemberService.withDraw(request.getLoginId()))
+                .thenReturn(withdrawResponse);
+
+        //when
+        ResultActions perform = mockMvc.perform(delete("/v1/members/withdraw")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
+
+        //then
+        perform.andDo(print()).andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id", equalTo(withdrawMember.getId().intValue())))
+                .andExpect(jsonPath("$.name", equalTo(withdrawMember.getName())))
+                .andExpect(jsonPath("$.withdrawal", equalTo(withdrawMember.isWithdrawal())))
+                .andExpect(jsonPath(
+                        "$.withdrawalDate",
+                        equalTo(withdrawMember.getWithdrawalDate().toString())
+                ));
+
+        verify(commandMemberService, times(1)).withDraw(loginId);
+
+        //docs
+        perform.andDo(document(
+                "withdraw-member-success",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                requestFields(
+                        fieldWithPath("loginId").type(JsonFieldType.STRING)
+                                .description("탈퇴할 회원의 아이디")
+                ),
+                responseFields(
+                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("회원의 Pk"),
+                        fieldWithPath("name").type(JsonFieldType.STRING).description("회원의 이름"),
+                        fieldWithPath("withdrawal").type(JsonFieldType.BOOLEAN).description("회원의 탈퇴 여부"),
+                        fieldWithPath("withdrawalDate").type(JsonFieldType.STRING)
+                                .description("회원의 탈퇴일")
                 )
         ));
     }

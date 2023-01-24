@@ -14,7 +14,7 @@ public class MemberWithdrawResponseDto {
 
     private Long id;
     private String name;
-    private boolean isWithdrawal;
+    private boolean withdrawal;
     private LocalDate withdrawalDate;
 
     public static MemberWithdrawResponseDto fromEntity(Member member) {
