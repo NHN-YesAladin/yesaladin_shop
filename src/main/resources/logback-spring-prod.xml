@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <configuration>
+    <property name="LOG_TEMP" value="Log/"/>
     <include resource="org/springframework/boot/logging/logback/base.xml"/>
     <springProperty scope="context" name="application_name" source="spring.application.name"/>
     <springProperty scope="context" name="logstash_connect_info"
