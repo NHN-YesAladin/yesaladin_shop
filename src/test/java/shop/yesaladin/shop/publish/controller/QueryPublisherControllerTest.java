@@ -15,7 +15,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
 import shop.yesaladin.shop.publish.service.inter.QueryPublisherService;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;

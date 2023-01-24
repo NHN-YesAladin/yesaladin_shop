@@ -15,7 +15,6 @@ import shop.yesaladin.shop.tag.domain.repository.QueryProductTagRepository;
 import shop.yesaladin.shop.tag.dto.ProductTagResponseDto;
 import shop.yesaladin.shop.tag.service.inter.QueryProductTagService;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;

@@ -16,7 +16,6 @@ import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
 import shop.yesaladin.shop.product.dto.ProductsResponseDto;
 import shop.yesaladin.shop.product.dummy.DummyFile;
 import shop.yesaladin.shop.product.dummy.DummyProduct;
-import shop.yesaladin.shop.product.dummy.DummyProductsResponseDto;
 import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
 import shop.yesaladin.shop.product.service.inter.QueryProductService;
 import shop.yesaladin.shop.publish.domain.model.Publish;
@@ -35,7 +34,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 
 class QueryProductServiceImplTest {
@@ -110,7 +110,7 @@ class QueryProductServiceImplTest {
         for (Long i = 1L; i <= 9L; i++) {
             String isbn = "000000000000" + i;
 
-            File thumbnailFile = DummyFile.dummy(URL + "/image"+ i +".png");
+            File thumbnailFile = DummyFile.dummy(URL + "/image" + i + ".png");
             File ebookFile = DummyFile.dummy(URL + "/ebook" + i + ".pdf");
             SubscribeProduct subscribeProduct = SubscribeProduct.builder().id(1L).ISSN("00000001").build();
             TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();

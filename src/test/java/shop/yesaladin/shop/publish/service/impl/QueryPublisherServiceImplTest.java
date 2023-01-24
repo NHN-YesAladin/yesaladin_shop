@@ -11,7 +11,6 @@ import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
 import shop.yesaladin.shop.publish.exception.PublisherNotFoundException;
 import shop.yesaladin.shop.publish.service.inter.QueryPublisherService;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 

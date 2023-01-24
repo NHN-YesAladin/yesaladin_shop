@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.product.dummy;
 
-import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
 import shop.yesaladin.shop.product.dto.ProductsResponseDto;
 
 import java.util.List;

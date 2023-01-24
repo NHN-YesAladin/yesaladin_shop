@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import shop.yesaladin.shop.file.dto.FileUploadResponseDto;
 import shop.yesaladin.shop.file.service.inter.FileStorageService;
-import shop.yesaladin.shop.file.service.inter.StorageAuthService;
 
 /**
  * 파일 업로드/다운로드를 위한 RestController 입니다.

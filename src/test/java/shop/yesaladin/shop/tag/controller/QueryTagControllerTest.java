@@ -15,7 +15,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.tag.dto.TagsResponseDto;
 import shop.yesaladin.shop.tag.service.inter.QueryTagService;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;

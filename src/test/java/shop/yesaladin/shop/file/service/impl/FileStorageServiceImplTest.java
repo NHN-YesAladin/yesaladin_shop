@@ -3,7 +3,6 @@ package shop.yesaladin.shop.file.service.impl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.client.RestTemplate;
@@ -12,10 +11,8 @@ import shop.yesaladin.shop.file.service.inter.FileStorageService;
 import shop.yesaladin.shop.file.service.inter.StorageAuthService;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 class FileStorageServiceImplTest {

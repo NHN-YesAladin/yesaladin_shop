@@ -16,7 +16,6 @@ import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.servlet.http.HttpServletRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

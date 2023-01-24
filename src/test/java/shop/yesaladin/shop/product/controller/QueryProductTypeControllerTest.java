@@ -15,9 +15,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.product.domain.model.ProductTypeCode;
 import shop.yesaladin.shop.product.dto.ProductTypeResponseDto;
 import shop.yesaladin.shop.product.service.inter.QueryProductTypeService;
-import shop.yesaladin.shop.publish.controller.QueryPublisherController;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;

@@ -11,7 +11,6 @@ import shop.yesaladin.shop.tag.dto.TagsResponseDto;
 import shop.yesaladin.shop.tag.exception.TagNotFoundException;
 import shop.yesaladin.shop.tag.service.inter.QueryTagService;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
