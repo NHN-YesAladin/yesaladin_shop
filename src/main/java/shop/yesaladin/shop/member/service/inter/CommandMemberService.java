@@ -5,6 +5,7 @@ import shop.yesaladin.shop.member.dto.MemberCreateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberCreateResponseDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateResponseDto;
+import shop.yesaladin.shop.member.dto.MemberWithdrawResponseDto;
 
 /**
  * Create, Update, Delete 를 Controller Layer에서 사용하기 위한 service interface
@@ -52,4 +53,15 @@ public interface CommandMemberService {
      * @since 1.0
      */
     MemberBlockResponseDto unblock(Long id);
+
+
+    /**
+     * 회원 탈퇴를 위한 기능 입니다.
+     *
+     * @param loginId 회원의 loginId
+     * @return 회원 탈퇴 결과를 담은 DTO
+     * @author : 송학현
+     * @since : 1.0
+     */
+    MemberWithdrawResponseDto withDraw(String loginId);
 }

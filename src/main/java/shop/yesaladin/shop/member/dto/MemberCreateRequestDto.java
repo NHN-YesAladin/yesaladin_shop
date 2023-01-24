@@ -51,7 +51,6 @@ public class MemberCreateRequestDto {
 
     @NotBlank
     @Size(min = 8, max = 8)
-    // TODO: 정규식 수정할 것
     @Pattern(regexp = "^[0-9]{8}")
     private String birth;
 
