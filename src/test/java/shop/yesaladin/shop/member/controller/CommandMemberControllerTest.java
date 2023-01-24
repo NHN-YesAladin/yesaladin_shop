@@ -186,9 +186,45 @@ class CommandMemberControllerTest {
                 .andExpect(jsonPath("$.name", equalTo(member.getName())))
                 .andExpect(jsonPath("$.nickname", equalTo(member.getNickname())))
                 .andExpect(jsonPath("$.loginId", equalTo(member.getLoginId())))
-                .andExpect(jsonPath("$.role", equalTo(ROLE_MEMBER)));
+                .andExpect(jsonPath("$.role", equalTo(ROLE_MEMBER)))
+                .andExpect(jsonPath("$.memberGrade", equalTo(MemberGrade.WHITE.getName())));
 
         verify(commandMemberService, times(1)).create(any());
+
+        //docs
+        perform.andDo(document(
+                "register-member-success",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                requestFields(
+                        fieldWithPath("name").type(JsonFieldType.STRING)
+                                .description("회원의 이름"),
+                        fieldWithPath("nickname").type(JsonFieldType.STRING)
+                                .description("회원의 닉네임"),
+                        fieldWithPath("loginId").type(JsonFieldType.STRING)
+                                .description("회원의 아이디"),
+                        fieldWithPath("email").type(JsonFieldType.STRING)
+                                .description("회원의 이메일"),
+                        fieldWithPath("phone").type(JsonFieldType.STRING)
+                                .description("회원의 아이디"),
+                        fieldWithPath("password").type(JsonFieldType.STRING)
+                                .description("회원의 패스워드"),
+                        fieldWithPath("birth").type(JsonFieldType.STRING)
+                                .description("회원의 생년월일"),
+                        fieldWithPath("gender").type(JsonFieldType.STRING)
+                                .description("회원의 성별")
+                ),
+                responseFields(
+                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("회원의 pk"),
+                        fieldWithPath("name").type(JsonFieldType.STRING).description("회원의 이름"),
+                        fieldWithPath("nickname").type(JsonFieldType.STRING).description("회원의 닉네임"),
+                        fieldWithPath("loginId").type(JsonFieldType.STRING).description("회원의 아이디"),
+                        fieldWithPath("memberGrade").type(JsonFieldType.STRING)
+                                .description("회원의 등급"),
+                        fieldWithPath("role").type(JsonFieldType.STRING)
+                                .description("회원의 권한")
+                )
+        ));
     }
 
     @Test
@@ -578,7 +614,8 @@ class CommandMemberControllerTest {
                 responseFields(
                         fieldWithPath("id").type(JsonFieldType.NUMBER).description("회원의 Pk"),
                         fieldWithPath("name").type(JsonFieldType.STRING).description("회원의 이름"),
-                        fieldWithPath("withdrawal").type(JsonFieldType.BOOLEAN).description("회원의 탈퇴 여부"),
+                        fieldWithPath("withdrawal").type(JsonFieldType.BOOLEAN)
+                                .description("회원의 탈퇴 여부"),
                         fieldWithPath("withdrawalDate").type(JsonFieldType.STRING)
                                 .description("회원의 탈퇴일")
                 )
