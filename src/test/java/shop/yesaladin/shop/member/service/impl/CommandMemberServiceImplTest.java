@@ -25,8 +25,10 @@ import shop.yesaladin.shop.member.dto.MemberCreateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberCreateResponseDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateResponseDto;
+import shop.yesaladin.shop.member.dto.MemberWithdrawResponseDto;
 import shop.yesaladin.shop.member.dummy.MemberRoleDummy;
 import shop.yesaladin.shop.member.dummy.RoleDummy;
+import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.exception.MemberProfileAlreadyExistException;
 
 class CommandMemberServiceImplTest {
@@ -67,7 +69,7 @@ class CommandMemberServiceImplTest {
 
         Mockito.when(queryRoleRepository.findById(roleId)).thenReturn(Optional.of(role));
         Mockito.when(queryMemberRepository.existsMemberByLoginId(loginId))
-                        .thenReturn(true);
+                .thenReturn(true);
         Mockito.when(queryMemberRepository.existsMemberByNickname(nickname))
                 .thenReturn(false);
         Mockito.when(queryMemberRepository.existsMemberByEmail(email))
@@ -166,8 +168,8 @@ class CommandMemberServiceImplTest {
 
         Mockito.when(queryRoleRepository.findById(roleId)).thenReturn(Optional.of(role));
         // memberRole 등록
-        Mockito.when(commandMemberRoleRepository.save(any())).thenReturn(MemberRoleDummy.dummy(member, role));
-
+        Mockito.when(commandMemberRoleRepository.save(any()))
+                .thenReturn(MemberRoleDummy.dummy(member, role));
 
         Mockito.when(createDto.toEntity()).thenReturn(member);
 
@@ -274,5 +276,50 @@ class CommandMemberServiceImplTest {
         assertThat(actualMember.isBlocked()).isFalse();
 
         verify(queryMemberRepository, times(1)).findById(id);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 회원을 삭제 시 예외가 발생한다.")
+    void withdrawMember_fail_whenMemberNotExist() throws Exception {
+        //given
+        String loginId = "loginId";
+
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId)).thenReturn(Optional.empty());
+
+        //when
+        assertThatThrownBy(() -> service.withDraw(loginId))
+                .isInstanceOf(MemberNotFoundException.class);
+
+        //then
+        verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
+    }
+
+    @Test
+    @DisplayName("회원 삭제(soft delete) 성공")
+    void withdrawMember() throws Exception {
+        //given
+        long id = 1L;
+        String name = "testName";
+        String loginId = "loginId";
+
+        String deletedField = "" + id;
+
+        Member member = Member.builder()
+                .id(id)
+                .name(name)
+                .loginId(loginId)
+                .build();
+
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId)).thenReturn(Optional.of(member));
+
+        //when
+        MemberWithdrawResponseDto response = service.withDraw(loginId);
+
+        //then
+        assertThat(response.getId()).isEqualTo(id);
+        assertThat(response.getName()).isEqualTo(deletedField);
+        assertThat(response.isWithdrawal()).isTrue();
+
+        verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
     }
 }
