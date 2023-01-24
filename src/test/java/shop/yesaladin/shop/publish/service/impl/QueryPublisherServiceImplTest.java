@@ -96,7 +96,7 @@ class QueryPublisherServiceImplTest {
         String name1 = "출판사1";
         String name2 = "출판사2";
 
-        List<Publisher> publishers = Arrays.asList(
+        List<Publisher> publishers = List.of(
                 Publisher.builder().name(name1).build(),
                 Publisher.builder().name(name2).build()
         );

@@ -168,13 +168,13 @@ public class CommandProductServiceImpl implements CommandProductService {
 
         // ThumbnailFile
         File thumbnailFile = queryFileService.findById(product.getThumbnailFile().getId()).toEntity();
-        commandFileService.register(dto.changeThumbnailFile(thumbnailFile));
+        thumbnailFile = commandFileService.register(dto.changeThumbnailFile(thumbnailFile)).toEntity();
 
         // EbookFile
         File ebookFile = null;
         if (Objects.nonNull(product.getEbookFile())) {
             ebookFile = queryFileService.findById(product.getEbookFile().getId()).toEntity();
-            commandFileService.register(dto.changeEbookFile(ebookFile));
+            ebookFile = commandFileService.register(dto.changeEbookFile(ebookFile)).toEntity();
         }
 
         // Writing

@@ -71,7 +71,7 @@ class QueryAuthorServiceImplTest {
         String name1 = "저자1";
         String name2 = "저자2";
 
-        List<Author> authors = Arrays.asList(
+        List<Author> authors = List.of(
                 DummyAuthor.dummy(name1, MemberDummy.dummyWithId(1L)),
                 DummyAuthor.dummy(name2, null)
         );
