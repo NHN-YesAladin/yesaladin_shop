@@ -298,13 +298,14 @@ class CommandMemberServiceImplTest {
     @DisplayName("회원 삭제(soft delete) 성공")
     void withdrawMember() throws Exception {
         //given
+        long id = 1L;
         String name = "testName";
         String loginId = "loginId";
 
-        String deletedField = "deleted-" + 1L;
+        String deletedField = "" + id;
 
         Member member = Member.builder()
-                .id(1L)
+                .id(id)
                 .name(name)
                 .loginId(loginId)
                 .build();
@@ -315,7 +316,7 @@ class CommandMemberServiceImplTest {
         MemberWithdrawResponseDto response = service.withDraw(loginId);
 
         //then
-        assertThat(response.getId()).isEqualTo(1L);
+        assertThat(response.getId()).isEqualTo(id);
         assertThat(response.getName()).isEqualTo(deletedField);
         assertThat(response.isWithdrawal()).isTrue();
 

@@ -152,7 +152,7 @@ public class Member {
      * @since : 1.0
      */
     public void withdrawMember() {
-        String deleteUniqueField = "deleted-" + this.id;
+        String deleteUniqueField = "" + this.id;
         this.isWithdrawal = true;
         this.withdrawalDate = LocalDate.now();
         this.name = deleteUniqueField;
@@ -160,7 +160,6 @@ public class Member {
         this.birthYear = 0;
         this.birthMonth = 0;
         this.birthDay = 0;
-        this.email = deleteUniqueField;
         this.phone = deleteUniqueField;
         this.password = "";
     }
