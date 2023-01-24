@@ -116,7 +116,7 @@ public class Member {
      */
     public void unblockMember() {
         if (!this.isBlocked) {
-            throw new AlreadyUnblockedMemberException(this.id);
+            throw new AlreadyUnblockedMemberException(this.loginId);
         }
         this.isBlocked = false;
     }
@@ -129,7 +129,7 @@ public class Member {
      */
     public void blockMember() {
         if (this.isBlocked) {
-            throw new AlreadyBlockedMemberException(this.id);
+            throw new AlreadyBlockedMemberException(this.loginId);
         }
         this.isBlocked = true;
     }

@@ -24,6 +24,9 @@ public class QueryDslQueryMemberGradeHistoryRepository implements
 
     private final JPAQueryFactory queryFactory;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Optional<MemberGradeHistoryQueryResponseDto> findById(long id) {
         QMemberGradeHistory memberGradeHistory = QMemberGradeHistory.memberGradeHistory;
@@ -34,16 +37,19 @@ public class QueryDslQueryMemberGradeHistoryRepository implements
                         memberGradeHistory.updateDate,
                         memberGradeHistory.previousPaidAmount,
                         memberGradeHistory.memberGrade,
-                        memberGradeHistory.member
+                        memberGradeHistory.member.loginId
                 ))
                 .from(memberGradeHistory)
                 .where(memberGradeHistory.id.eq(id))
                 .fetchFirst());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public List<MemberGradeHistoryQueryResponseDto> findByMemberIdAndPeriod(
-            long memberId,
+    public List<MemberGradeHistoryQueryResponseDto> findByLoginIdAndPeriod(
+            String loginId,
             LocalDate startDate,
             LocalDate endDate
     ) {
@@ -55,10 +61,11 @@ public class QueryDslQueryMemberGradeHistoryRepository implements
                         memberGradeHistory.updateDate,
                         memberGradeHistory.previousPaidAmount,
                         memberGradeHistory.memberGrade,
-                        memberGradeHistory.member
+                        memberGradeHistory.member.loginId
                 ))
                 .from(memberGradeHistory)
-                .where(memberGradeHistory.updateDate.between(startDate, endDate))
+                .where(memberGradeHistory.member.loginId.eq(loginId)
+                        .and(memberGradeHistory.updateDate.between(startDate, endDate)))
                 .fetch();
     }
 }

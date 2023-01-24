@@ -32,10 +32,10 @@ public class CommandMemberAddressServiceImpl implements CommandMemberAddressServ
     @Override
     @Transactional
     public MemberAddressCreateResponseDto save(
-            long memberId,
+            String loginId,
             MemberAddressCreateRequestDto request
     ) {
-        Member member = tryGetMemberById(memberId);
+        Member member = tryGetMemberById(loginId);
 
         MemberAddress newMemberAddress = request.toEntity(member);
 
@@ -46,13 +46,13 @@ public class CommandMemberAddressServiceImpl implements CommandMemberAddressServ
 
     @Override
     @Transactional
-    public MemberAddressUpdateResponseDto markAsDefault(long memberId, long addressId) {
+    public MemberAddressUpdateResponseDto markAsDefault(String loginId, long addressId) {
         MemberAddress memberAddress = tryGetMemberAddressByMemberIdAndMemberAddressId(
-                memberId,
+                loginId,
                 addressId
         );
 
-        commandMemberAddressRepository.updateIsDefaultToFalseByMemberId(memberId);
+        commandMemberAddressRepository.updateIsDefaultToFalseByLoginId(loginId);
 
         memberAddress.markAsDefault();
 
@@ -61,8 +61,8 @@ public class CommandMemberAddressServiceImpl implements CommandMemberAddressServ
 
     @Override
     @Transactional
-    public long delete(long memberId, long addressId) {
-        if (!queryMemberAddressRepository.existByMemberIdAndMemberAddressId(memberId, addressId)) {
+    public long delete(String loginId, long addressId) {
+        if (!queryMemberAddressRepository.existByLoginIdAndMemberAddressId(loginId, addressId)) {
             throw new MemberAddressNotFoundException(addressId);
         }
 
@@ -72,18 +72,18 @@ public class CommandMemberAddressServiceImpl implements CommandMemberAddressServ
     }
 
     private MemberAddress tryGetMemberAddressByMemberIdAndMemberAddressId(
-            long memberId,
+            String loginId,
             long addressId
     ) {
-        return queryMemberAddressRepository.getByMemberIdAndMemberAddressId(
-                memberId,
+        return queryMemberAddressRepository.getByLoginIdAndMemberAddressId(
+                loginId,
                 addressId
         ).orElseThrow(() -> new MemberAddressNotFoundException(addressId));
     }
 
 
-    private Member tryGetMemberById(long memberId) {
-        return queryMemberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException("Member Id: " + memberId));
+    private Member tryGetMemberById(String loginId) {
+        return queryMemberRepository.findMemberByLoginId(loginId)
+                .orElseThrow(() -> new MemberNotFoundException("Member Id: " + loginId));
     }
 }

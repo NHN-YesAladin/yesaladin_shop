@@ -28,32 +28,31 @@ public interface CommandMemberService {
     /**
      * 회원 정보 수정을 위한 기능입니다.
      *
-     * @param id        정보를 수정한 회원 id
+     * @param loginId   정보를 수정한 회원 아이디
      * @param updateDto 수정한 회원 정보 dto
      * @return 수정된 결과를 반환할 dto
      * @author 최예린
      * @since 1.0
      */
-    MemberUpdateResponseDto update(Long id, MemberUpdateRequestDto updateDto);
+    MemberUpdateResponseDto update(String loginId, MemberUpdateRequestDto updateDto);
 
     /**
      * 회원을 차단 하기 위한 기능입니다.
      *
-     * @param id 차단할 회원 id
+     * @param loginId 차단할 회원 아이디
      * @author 최예린
      * @since 1.0
      */
-    MemberBlockResponseDto block(Long id);
+    MemberBlockResponseDto block(String loginId);
 
     /**
      * 회원 차단해지를 위한 기능 입니다.
      *
-     * @param id 차단해지할 회원 id
+     * @param loginId 차단해지할 회원 아이디
      * @author 최예린
      * @since 1.0
      */
-    MemberBlockResponseDto unblock(Long id);
-
+    MemberBlockResponseDto unblock(String loginId);
 
     /**
      * 회원 탈퇴를 위한 기능 입니다.

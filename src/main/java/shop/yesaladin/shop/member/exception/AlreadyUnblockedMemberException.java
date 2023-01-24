@@ -8,7 +8,7 @@ package shop.yesaladin.shop.member.exception;
  */
 public class AlreadyUnblockedMemberException extends RuntimeException {
 
-    public AlreadyUnblockedMemberException(Long id) {
-        super("Already Unblocked Member: " + id);
+    public AlreadyUnblockedMemberException(String loginId) {
+        super("Already Unblocked Member: " + loginId);
     }
 }

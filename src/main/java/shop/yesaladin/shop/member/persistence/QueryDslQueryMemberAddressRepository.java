@@ -44,26 +44,26 @@ public class QueryDslQueryMemberAddressRepository implements QueryMemberAddressR
     }
 
     @Override
-    public Optional<MemberAddress> getByMemberIdAndMemberAddressId(
-            long memberId,
+    public Optional<MemberAddress> getByLoginIdAndMemberAddressId(
+            String loginId,
             long memberAddressId
     ) {
         QMemberAddress memberAddress = QMemberAddress.memberAddress;
 
         return Optional.ofNullable(queryFactory.select(memberAddress)
                 .from(memberAddress)
-                .where(memberAddress.member.id.eq(memberId)
+                .where(memberAddress.member.loginId.eq(loginId)
                         .and(memberAddress.id.eq(memberAddressId)))
                 .fetchFirst());
     }
 
     @Override
-    public boolean existByMemberIdAndMemberAddressId(long memberId, long memberAddressId) {
+    public boolean existByLoginIdAndMemberAddressId(String loginId, long memberAddressId) {
         QMemberAddress memberAddress = QMemberAddress.memberAddress;
 
         MemberAddress result = queryFactory.select(memberAddress)
                 .from(memberAddress)
-                .where(memberAddress.member.id.eq(memberId)
+                .where(memberAddress.member.loginId.eq(loginId)
                         .and(memberAddress.id.eq(memberAddressId)))
                 .fetchFirst();
 

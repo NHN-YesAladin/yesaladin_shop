@@ -25,10 +25,13 @@ public class QueryMemberAddressServiceImpl implements QueryMemberAddressService 
     private final QueryMemberRepository queryMemberRepository;
     private final QueryMemberAddressRepository queryMemberAddressRepository;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional(readOnly = true)
-    public List<MemberAddressQueryDto> findByMemberId(long memberId) {
-        Member member = tryGetMemberById(memberId);
+    public List<MemberAddressQueryDto> findByLoginId(String loginId) {
+        Member member = tryGetMemberById(loginId);
 
         return queryMemberAddressRepository.findByMember(member)
                 .stream()
@@ -36,8 +39,8 @@ public class QueryMemberAddressServiceImpl implements QueryMemberAddressService 
                 .collect(Collectors.toList());
     }
 
-    private Member tryGetMemberById(long memberId) {
-        return queryMemberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException("Member Not Found: " + memberId));
+    private Member tryGetMemberById(String loginId) {
+        return queryMemberRepository.findMemberByLoginId(loginId)
+                .orElseThrow(() -> new MemberNotFoundException("Member loginId: " + loginId));
     }
 }

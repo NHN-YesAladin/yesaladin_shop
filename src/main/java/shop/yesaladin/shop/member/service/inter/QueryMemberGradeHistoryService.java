@@ -16,14 +16,14 @@ public interface QueryMemberGradeHistoryService {
     /**
      * 회원의 등급내역을 조회 하기 위한 메서드 입니다.
      *
-     * @param memberId 조회할 회원 id
+     * @param loginId 조회할 회원 id
      * @param request  조회할 기간
      * @return 회원의 등급 내역
      * @author 최예린
      * @since 1.0
      */
-    List<MemberGradeHistoryQueryResponseDto> findByMemberId(
-            long memberId,
+    List<MemberGradeHistoryQueryResponseDto> findByLoginId(
+            String loginId,
             PeriodQueryRequestDto request
     );
 }

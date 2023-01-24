@@ -14,8 +14,10 @@ public interface QueryMemberAddressService {
     /**
      * 회원의 배송지 목록들을 조회합니다.
      *
-     * @param memberId 회원 id
+     * @param loginId 회원 아이디
      * @return 회원의 배송지 목록
+     * @author 최예린
+     * @since 1.0
      */
-    List<MemberAddressQueryDto> findByMemberId(long memberId);
+    List<MemberAddressQueryDto> findByLoginId(String loginId);
 }
