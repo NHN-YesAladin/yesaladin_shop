@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import shop.yesaladin.shop.member.dto.MemberBlockResponseDto;
 import shop.yesaladin.shop.member.dto.MemberCreateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberCreateResponseDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateRequestDto;
@@ -57,13 +58,12 @@ public class CommandMemberController {
      * @since 1.0
      */
     @PutMapping("/{memberId}")
-    public ResponseEntity<MemberUpdateResponseDto> updateMember(
+    @ResponseStatus(HttpStatus.OK)
+    public MemberUpdateResponseDto updateMember(
             @Valid @RequestBody MemberUpdateRequestDto updateDto,
             @PathVariable("memberId") Long id
     ) {
-        MemberUpdateResponseDto response = commandMemberService.update(id, updateDto);
-
-        return ResponseEntity.ok(response);
+        return commandMemberService.update(id, updateDto);
     }
 
     /**
@@ -75,8 +75,8 @@ public class CommandMemberController {
      */
     @PutMapping("/{memberId}/block")
     @ResponseStatus(HttpStatus.OK)
-    public void blockMember(@PathVariable("memberId") Long id) {
-        commandMemberService.block(id);
+    public MemberBlockResponseDto blockMember(@PathVariable("memberId") Long id) {
+        return commandMemberService.block(id);
     }
 
     /**
@@ -87,8 +87,9 @@ public class CommandMemberController {
      * @since 1.0
      */
     @PutMapping("/{memberId}/unblock")
-    public void unblockMember(@PathVariable("memberId") Long id) {
-        commandMemberService.unblock(id);
+    @ResponseStatus(HttpStatus.OK)
+    public MemberBlockResponseDto unblockMember(@PathVariable("memberId") Long id) {
+        return commandMemberService.unblock(id);
     }
 
 }

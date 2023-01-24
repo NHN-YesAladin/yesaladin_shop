@@ -151,8 +151,112 @@ class QueryMemberServiceImplTest {
                 loginId);
 
         //then
-        assertThat(response.getRole()).hasSize(1);
+        assertThat(response.getRoles()).hasSize(1);
         assertThat(response.getLoginId()).isEqualTo(loginId);
         assertThat(response.getId()).isEqualTo(memberId);
+    }
+
+    @Test
+    void existsMemberByLoginId_whenNotExists_return_false() throws Exception {
+        //given
+        String loginId = "test1234";
+
+        //when
+        boolean result = service.existsLoginId(loginId);
+
+        //then
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void existsMemberByLoginId_whenExists_return_true() throws Exception {
+        //given
+        String loginId = "test1234";
+
+        Mockito.when(repository.existsMemberByLoginId(loginId)).thenReturn(true);
+
+        //when
+        boolean result = service.existsLoginId(loginId);
+
+        //then
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void existsMemberByNickname_whenNotExists_return_false() throws Exception {
+        //given
+        String nickname = "testNickname";
+
+        //when
+        boolean result = service.existsNickname(nickname);
+
+        //then
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void existsMemberByNickname_whenExists_return_true() throws Exception {
+        //given
+        String nickname = "testNickname";
+
+        Mockito.when(repository.existsMemberByNickname(nickname)).thenReturn(true);
+
+        //when
+        boolean result = service.existsNickname(nickname);
+
+        //then
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void existsMemberByEmail_whenNotExists_return_false() throws Exception {
+        //given
+        String email = "test@test.com";
+
+        //when
+        boolean result = service.existsEmail(email);
+
+        //then
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void existsMemberByEmail_whenExists_return_true() throws Exception {
+        //given
+        String email = "test@test.com";
+
+        Mockito.when(repository.existsMemberByEmail(email)).thenReturn(true);
+
+        //when
+        boolean result = service.existsEmail(email);
+
+        //then
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void existsMemberByPhone_whenNotExists_return_false() throws Exception {
+        //given
+        String phone = "01011112222";
+
+        //when
+        boolean result = service.existsPhone(phone);
+
+        //then
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void existsMemberByPhone_whenExists_return_true() throws Exception {
+        //given
+        String phone = "01011112222";
+
+        Mockito.when(repository.existsMemberByPhone(phone)).thenReturn(true);
+
+        //when
+        boolean result = service.existsPhone(phone);
+
+        //then
+        assertThat(result).isTrue();
     }
 }

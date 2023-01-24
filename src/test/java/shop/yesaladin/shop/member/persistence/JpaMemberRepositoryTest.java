@@ -130,4 +130,16 @@ class JpaMemberRepositoryTest {
         //then
         assertThat(result).isTrue();
     }
+
+    @Test
+    void existsMemberByPhone() throws Exception {
+        //given
+        Member savedMember = entityManager.persist(member);
+
+        //when
+        boolean result = repository.existsMemberByPhone(savedMember.getPhone());
+
+        //then
+        assertThat(result).isTrue();
+    }
 }

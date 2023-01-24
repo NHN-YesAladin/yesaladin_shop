@@ -51,4 +51,44 @@ public interface QueryMemberService {
      * @since : 1.0
      */
     MemberLoginResponseDto findMemberLoginInfoByLoginId(String loginId);
+
+    /**
+     * 회원 가입 시 입력할 loginId를 사전에 중복 판별을 하기 위한 메서드 입니다.
+     *
+     * @param loginId 중복 체크 대상 loginId
+     * @return loginId의 존재 유무
+     * @author : 송학현
+     * @since : 1.0
+     */
+    boolean existsLoginId(String loginId);
+
+    /**
+     * 회원 가입 시 입력할 nickname을 사전에 중복 판별을 하기 위한 메서드 입니다.
+     *
+     * @param nickname 중복 체크 대상 nickname
+     * @return nickname의 존재 유무
+     * @author : 송학현
+     * @since : 1.0
+     */
+    boolean existsNickname(String nickname);
+
+    /**
+     * 회원 가입 시 입력할 email을 사전에 중복 판별을 하기 위한 메서드 입니다.
+     *
+     * @param email 중복 체크 대상 email
+     * @return email의 존재 유무
+     * @author : 송학현
+     * @since : 1.0
+     */
+    boolean existsEmail(String email);
+
+    /**
+     * 회원 가입 시 입력할 phone을 사전에 중복 판별을 하기 위한 메서드 입니다.
+     *
+     * @param phone 중복 체크 대상 phone
+     * @return phone의 존재 유무
+     * @author : 송학현
+     * @since : 1.0
+     */
+    boolean existsPhone(String phone);
 }

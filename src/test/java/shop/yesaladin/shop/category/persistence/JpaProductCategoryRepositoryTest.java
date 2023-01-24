@@ -33,11 +33,13 @@ import shop.yesaladin.shop.publish.domain.model.Publisher;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class JpaProductCategoryRepositoryTest {
 
-    String isbn = "00000-000XX-XXX-XXX";
+    private final String ISBN = "000000000000";
+    private final String URL = "https://api-storage.cloud.toast.com/v1/AUTH_/container/domain/type";
+
     ProductCategory productCategory;
     SubscribeProduct subscribeProduct;
     Publisher publisher;
-    File thumbNailFile;
+    File thumbnailFile;
     File ebookFile;
     TotalDiscountRate totalDiscountRate;
     @Autowired
@@ -48,27 +50,24 @@ class JpaProductCategoryRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        subscribeProduct = entityManager.persist(DummySubscribeProduct.dummy());
-        publisher = entityManager.persist(DummyPublisher.dummy());
-        thumbNailFile = entityManager.persist(DummyFile.dummy(".png"));
-        ebookFile = entityManager.persist(DummyFile.dummy(".pdf"));
-        totalDiscountRate = entityManager.persist(DummyTotalDiscountRate.dummy());
+        subscribeProduct = DummySubscribeProduct.dummy();
+        thumbnailFile = DummyFile.dummy(URL + "/image.png");
+        ebookFile = DummyFile.dummy(URL + "/ebook.pdf");
+        totalDiscountRate = DummyTotalDiscountRate.dummy();
 
-        Product product = DummyProduct.dummy(
-                isbn,
-                subscribeProduct,
-                publisher,
-                thumbNailFile,
-                ebookFile,
-                totalDiscountRate
-        );
+        entityManager.persist(subscribeProduct);
+        entityManager.persist(thumbnailFile);
+        entityManager.persist(ebookFile);
+        entityManager.persist(totalDiscountRate);
+
+        Product product = DummyProduct.dummy(ISBN + 9, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate);
         Category category = CategoryDummy.dummyParent();
 
         entityManager.persist(product);
         entityManager.persist(category);
 
         productCategory = ProductCategoryDummy.dummy(category, product);
-
+        
     }
 
     @Test
@@ -124,14 +123,7 @@ class JpaProductCategoryRepositoryTest {
         // given
         int size = 3;
         for (int i = 0; i < 5; i++) {
-            Product product = DummyProduct.dummy(
-                    isbn + i,
-                    subscribeProduct,
-                    publisher,
-                    thumbNailFile,
-                    ebookFile,
-                    totalDiscountRate
-            );
+            Product product = DummyProduct.dummy(ISBN + i, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate);
             Category category = CategoryDummy.dummyParent((long) i);
 
             entityManager.persist(product);
