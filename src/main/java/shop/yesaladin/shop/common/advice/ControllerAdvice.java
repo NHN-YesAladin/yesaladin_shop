@@ -12,6 +12,8 @@ import shop.yesaladin.shop.category.exception.CategoryNotFoundException;
 import shop.yesaladin.shop.common.dto.ErrorResponseDto;
 import shop.yesaladin.shop.common.exception.CustomJsonProcessingException;
 import shop.yesaladin.shop.file.exception.FileNotFoundException;
+import shop.yesaladin.shop.member.exception.AlreadyBlockedMemberException;
+import shop.yesaladin.shop.member.exception.AlreadyUnblockedMemberException;
 import shop.yesaladin.shop.member.exception.MemberAddressNotFoundException;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.exception.MemberProfileAlreadyExistException;
@@ -71,7 +73,9 @@ public class ControllerAdvice {
             OverPointUseException.class,
             InvalidCodeParameterException.class,
             AlreadyDeletedProductException.class,
-            AlreadyProductExistsException.class
+            AlreadyProductExistsException.class,
+            AlreadyBlockedMemberException.class,
+            AlreadyUnblockedMemberException.class
     })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorResponseDto> handleValidationException(Exception ex) {
