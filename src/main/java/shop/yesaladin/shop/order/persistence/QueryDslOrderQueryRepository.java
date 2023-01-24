@@ -33,6 +33,10 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
 
     private final JPAQueryFactory queryFactory;
 
+    /**
+     * {@inheritDoc}
+     *
+     */
     @Override
     public Optional<Order> findById(Long id) {
         QOrder order = QOrder.order;
@@ -55,6 +59,10 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
                 .fetchFirst());
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     */
     @Override
     public Page<OrderSummaryDto> findAllOrdersInPeriod(
             LocalDate startDate, LocalDate endDate, Pageable pageable
@@ -85,6 +93,10 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
         return PageableExecutionUtils.getPage(data, pageable, countQuery::fetchFirst);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     */
     @Override
     public Page<OrderSummaryDto> findAllOrdersInPeriodByMemberId(
             LocalDate startDate, LocalDate endDate, long memberId, Pageable pageable
@@ -115,6 +127,10 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
         return PageableExecutionUtils.getPage(data, pageable, countQuery::fetchFirst);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     */
     @Override
     public long getCountOfOrdersInPeriod(LocalDate startDate, LocalDate endDate) {
         QOrder order = QOrder.order;
@@ -124,6 +140,10 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
         )).fetchFirst();
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     */
     @Override
     public long getCountOfOrdersInPeriodByMemberId(
             LocalDate startDate,
@@ -138,5 +158,31 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
                         LocalDateTime.of(startDate, LocalTime.MIDNIGHT),
                         LocalDateTime.of(endDate, LocalTime.MIDNIGHT)
                 )).fetchFirst();
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     */
+    @Override
+    public Optional<Order> findByOrderNumber(String orderNumber) {
+        QOrder order = QOrder.order;
+
+        Optional<OrderCode> orderCode = Optional.ofNullable(queryFactory.select(order.orderCode)
+                .from(order)
+                .where(order.orderNumber.eq(orderNumber))
+                .fetchFirst());
+
+        if (orderCode.isEmpty()) {
+            return Optional.empty();
+        }
+
+        PathBuilder<? extends Order> orderDetails = new PathBuilder<>(orderCode.get()
+                .getOrderClass(), "order");
+
+        return Optional.ofNullable(queryFactory.select(orderDetails)
+                .from(orderDetails)
+                .where(orderDetails.get("orderNumber").eq(orderNumber))
+                .fetchFirst());
     }
 }

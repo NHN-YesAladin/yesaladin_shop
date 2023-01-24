@@ -271,4 +271,47 @@ class QueryDslOrderQueryRepositoryTest {
         Assertions.assertThat(actual).isEqualTo(4);
     }
 
+    @Test
+    @DisplayName("주문 번호로 비회원 주문 조회에 성공한다.")
+    void findByOrderNumberNonMemberOrderTest() throws Exception {
+        // when
+        Optional<Order> actual = queryRepository.findByOrderNumber(nonMemberOrderList.get(0)
+                .getOrderNumber());
+
+        // then
+        Assertions.assertThat(actual).isPresent();
+        Assertions.assertThat(actual.get().getOrderNumber())
+                .isEqualTo(nonMemberOrderList.get(0).getOrderNumber());
+        Assertions.assertThat(actual.get())
+                .isInstanceOf(OrderCode.NON_MEMBER_ORDER.getOrderClass());
+    }
+
+    @Test
+    @DisplayName("주문번호로 회원 주문 조회에 성공한다.")
+    void findByOrderNumberMemberOrderTest() {
+        // when
+        Optional<Order> actual = queryRepository.findByOrderNumber(memberOrderList.get(0)
+                .getOrderNumber());
+
+        // then
+        Assertions.assertThat(actual).isPresent();
+        Assertions.assertThat(actual.get().getOrderNumber())
+                .isEqualTo(memberOrderList.get(0).getOrderNumber());
+        Assertions.assertThat(actual.get()).isInstanceOf(OrderCode.MEMBER_ORDER.getOrderClass());
+    }
+
+    @Test
+    @DisplayName("주문번호로 구독 주문 조회에 성공한다.")
+    void findByOrderNumberSubscribeOrderTest() {
+        // when
+        Optional<Order> actual = queryRepository.findByOrderNumber(subscribeList.get(0)
+                .getOrderNumber());
+
+        // then
+        Assertions.assertThat(actual).isPresent();
+        Assertions.assertThat(actual.get().getOrderNumber())
+                .isEqualTo(subscribeList.get(0).getOrderNumber());
+        Assertions.assertThat(actual.get())
+                .isInstanceOf(OrderCode.MEMBER_SUBSCRIBE.getOrderClass());
+    }
 }
