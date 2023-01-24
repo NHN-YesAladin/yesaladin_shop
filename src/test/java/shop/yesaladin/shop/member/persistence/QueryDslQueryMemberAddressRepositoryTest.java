@@ -71,12 +71,12 @@ class QueryDslQueryMemberAddressRepositoryTest {
     void getByMemberIdAndMemberAddressId() {
         //given
         entityManager.persist(memberAddress);
-        Long memberId = member.getId();
+        String loginId = member.getLoginId();
         Long addressId = memberAddress.getId();
 
         //when
-        Optional<MemberAddress> result = queryMemberAddressRepository.getByMemberIdAndMemberAddressId(
-                memberId,
+        Optional<MemberAddress> result = queryMemberAddressRepository.getByLoginIdAndMemberAddressId(
+                loginId,
                 addressId
         );
 
@@ -92,12 +92,12 @@ class QueryDslQueryMemberAddressRepositoryTest {
     void existByMemberIdAndMemberAddressId() {
         //given
         entityManager.persist(memberAddress);
-        Long memberId = member.getId();
+        String loginId = member.getLoginId();
         Long addressId = memberAddress.getId();
 
         //when
-        boolean result = queryMemberAddressRepository.existByMemberIdAndMemberAddressId(
-                memberId,
+        boolean result = queryMemberAddressRepository.existByLoginIdAndMemberAddressId(
+                loginId,
                 addressId
         );
 
