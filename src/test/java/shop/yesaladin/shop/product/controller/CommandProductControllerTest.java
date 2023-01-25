@@ -22,8 +22,12 @@ import shop.yesaladin.shop.product.service.inter.CommandProductService;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
@@ -66,7 +70,7 @@ class CommandProductControllerTest {
         Mockito.when(service.create(any())).thenReturn(productOnlyIdDto);
 
         // when
-        ResultActions result = mockMvc.perform(post("/v1/products")
+        ResultActions result = mockMvc.perform(post("/shop/v1/products")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(productCreateDto)));
 
@@ -75,6 +79,8 @@ class CommandProductControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("id", equalTo(1)));
+
+        verify(service, times(1)).create(any());
 
         // docs
         result.andDo(document(
@@ -120,7 +126,7 @@ class CommandProductControllerTest {
         Mockito.when(service.update(any(), any())).thenReturn(productOnlyIdDto);
 
         // when
-        ResultActions result = mockMvc.perform(post("/v1/products/{productId}", ID)
+        ResultActions result = mockMvc.perform(put("/shop/v1/products/{productId}", ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(productUpdateDto)));
 
@@ -128,11 +134,14 @@ class CommandProductControllerTest {
         result.andDo(print())
                 .andExpect(status().isOk());
 
+        verify(service, times(1)).update(anyLong(), any());
+
         // docs
         result.andDo(document(
                 "update-product",
                 getDocumentRequest(),
                 getDocumentResponse(),
+                pathParameters(parameterWithName("productId").description("상품 아이디")),
                 requestFields(
                         fieldWithPath("title").type(JsonFieldType.STRING).description("제목"),
                         fieldWithPath("contents").type(JsonFieldType.STRING).description("목차"),
@@ -158,6 +167,9 @@ class CommandProductControllerTest {
                         fieldWithPath("productSavingMethodCode").type(JsonFieldType.STRING).description("상품 적립 방식"),
                         fieldWithPath("tags").type(JsonFieldType.ARRAY).description("태그"),
                         fieldWithPath("isForcedOutOfStock").type(JsonFieldType.BOOLEAN).description("강제 품절 여부")
+                ),
+                responseFields(
+                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("수정된 상품 아이디")
                 )
         ));
     }
@@ -166,7 +178,7 @@ class CommandProductControllerTest {
     @DisplayName("상품 삭제 성공")
     void deleteProduct() throws Exception {
         // when
-        ResultActions result = mockMvc.perform(post("/v1/products/{productId}", ID));
+        ResultActions result = mockMvc.perform(post("/shop/v1/products/{productId}", ID));
 
         // then
         result.andDo(print()).andExpect(status().isOk());
@@ -178,5 +190,7 @@ class CommandProductControllerTest {
                 getDocumentResponse(),
                 pathParameters(parameterWithName("productId").description("삭제할 상품의 아이디"))
         ));
+
+        verify(service, times(1)).softDelete(ID);
     }
 }

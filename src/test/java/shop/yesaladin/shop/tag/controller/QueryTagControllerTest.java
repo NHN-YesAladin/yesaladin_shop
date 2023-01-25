@@ -54,7 +54,7 @@ class QueryTagControllerTest {
         Mockito.when(queryTagService.findAll()).thenReturn(tags);
 
         // when
-        ResultActions result = mockMvc.perform(get("/v1/tags")
+        ResultActions result = mockMvc.perform(get("/shop/v1/tags")
                 .contentType(MediaType.APPLICATION_JSON));
 
         // then

@@ -36,17 +36,15 @@ public class FileStorageController {
      * @since 1.0
      */
     @PostMapping("/file-upload/{domainName}/{typeName}")
-    public ResponseEntity fileUpload(
+    public FileUploadResponseDto fileUpload(
             MultipartFile file,
             @PathVariable String domainName,
             @PathVariable String typeName
     ) {
-        FileUploadResponseDto responseDto = fileStorageService.fileUpload(
+        return fileStorageService.fileUpload(
                 domainName,
                 typeName,
                 file
         );
-
-        return ResponseEntity.ok().body(responseDto);
     }
 }

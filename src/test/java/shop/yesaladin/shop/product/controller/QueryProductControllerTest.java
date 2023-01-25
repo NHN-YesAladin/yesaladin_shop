@@ -26,6 +26,8 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -47,10 +49,6 @@ class QueryProductControllerTest {
     @MockBean
     private QueryProductService service;
 
-    @BeforeEach
-    void setUp() {
-    }
-
     @Test
     @DisplayName("상품 상세 조회 성공")
     void findProductById() throws Exception {
@@ -60,13 +58,15 @@ class QueryProductControllerTest {
         Mockito.when(service.findById(anyLong())).thenReturn(responseDto);
 
         // when
-        ResultActions result = mockMvc.perform(get("/v1/products/{productId}", ID)
+        ResultActions result = mockMvc.perform(get("/shop/v1/products/{productId}", ID)
                 .contentType(MediaType.APPLICATION_JSON));
 
         // then
         result.andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+
+        verify(service, times(1)).findById(ID);
 
         // docs
         result.andDo(document(
@@ -113,7 +113,7 @@ class QueryProductControllerTest {
         Mockito.when(service.findAll(any(), any())).thenReturn(page);
 
         // when
-        ResultActions result = mockMvc.perform(get("/v1/products")
+        ResultActions result = mockMvc.perform(get("/shop/v1/products")
                 .param("page", "0")
                 .param("size", "5")
                 .contentType(MediaType.APPLICATION_JSON));
@@ -122,6 +122,8 @@ class QueryProductControllerTest {
         result.andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+
+        verify(service, times(1)).findAll(any(), any());
 
         // docs
         result.andDo(document(

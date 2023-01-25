@@ -1,27 +1,27 @@
 package shop.yesaladin.shop.file.service.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Value;
+import shop.yesaladin.shop.config.ObjectStorageProperties;
 import shop.yesaladin.shop.file.service.inter.StorageAuthService;
 
+import static org.mockito.Mockito.mock;
+
+
+@RequiredArgsConstructor
 class StorageAuthServiceImplTest {
 
-    @Value("${storage-token.auth-url}")
-    private String authUrl;
-    @Value("${storage-token.tenant-id}")
-    private String tenantId;
-    @Value("${storage-token.username}")
-    private String username;
-    @Value("${storage-token.password}")
-    private String password;
-
     private StorageAuthService service;
+    private ObjectStorageProperties objectStorage;
 
     @BeforeEach
     void setUp() {
-        service = new StorageAuthServiceImpl();
+        objectStorage = mock(ObjectStorageProperties.class);
+        service = new StorageAuthServiceImpl(
+                objectStorage
+        );
     }
 
     @Test

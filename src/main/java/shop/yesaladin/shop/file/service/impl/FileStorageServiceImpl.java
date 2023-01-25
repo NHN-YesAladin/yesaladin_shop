@@ -5,15 +5,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpMessageConverterExtractor;
 import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import shop.yesaladin.shop.config.ClockConfiguration;
+import shop.yesaladin.shop.config.ObjectStorageProperties;
 import shop.yesaladin.shop.file.dto.FileUploadResponseDto;
 import shop.yesaladin.shop.file.service.inter.FileStorageService;
 import shop.yesaladin.shop.file.service.inter.StorageAuthService;
@@ -29,20 +29,15 @@ import java.util.UUID;
  * @since 1.0
  */
 @Slf4j
-@Service
 @RequiredArgsConstructor
+@Service
 public class FileStorageServiceImpl implements FileStorageService {
-
-    @Value("${storage-token.storage-url}")
-    private String storageUrl;
-    @Value("${storage-token.storage-account}")
-    private String storageAccount;
-    @Value("${storage-token.container-name}")
-    private String containerName;
 
     private final StorageAuthService storageAuthService;
 
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
+    private final ObjectStorageProperties objectStorage;
+    private final ClockConfiguration clock;
 
     /**
      * {@inheritDoc}
@@ -55,9 +50,9 @@ public class FileStorageServiceImpl implements FileStorageService {
         StringBuilder stringBuilder = new StringBuilder();
 
         return stringBuilder
-                .append(storageUrl).append("/")
-                .append(storageAccount).append("/")
-                .append(containerName).append("/")
+                .append(objectStorage.getStorageUrl()).append("/")
+                .append(objectStorage.getStorageAccount()).append("/")
+                .append(objectStorage.getContainerName()).append("/")
                 .append(domainName).append("/")
                 .append(typeName).append("/")
                 .append(fileName).toString();
@@ -75,17 +70,10 @@ public class FileStorageServiceImpl implements FileStorageService {
         String token = storageAuthService.getAuthToken();
 
         // InputStream을 요청 본문에 추가할 수 있도록 RequestCallback 오버라이드
-        final RequestCallback requestCallback = new RequestCallback() {
-            public void doWithRequest(final ClientHttpRequest request) throws IOException {
+        final RequestCallback requestCallback = (request) ->  {
                 request.getHeaders().add("X-Auth-Token", token);
                 IOUtils.copy(file.getInputStream(), request.getBody());
-            }
         };
-
-        // 오버라이드한 RequestCallback을 사용할 수 있도록 설정
-        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-        requestFactory.setBufferRequestBody(false);
-        restTemplate = new RestTemplate(requestFactory);
 
         HttpMessageConverterExtractor<String> responseExtractor
                 = new HttpMessageConverterExtractor<String>(
@@ -98,6 +86,6 @@ public class FileStorageServiceImpl implements FileStorageService {
         String url = getUrl(domainName, typeName, filename);
         restTemplate.execute(url, HttpMethod.PUT, requestCallback, responseExtractor);
 
-        return new FileUploadResponseDto(url, LocalDateTime.now().toString());
+        return new FileUploadResponseDto(url, LocalDateTime.now(clock.clock()).toString());
     }
 }

@@ -20,6 +20,8 @@ import shop.yesaladin.shop.product.dummy.DummyFile;
 
 import java.io.FileInputStream;
 
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -57,7 +59,7 @@ class FileStorageControllerTest {
                 .thenReturn(new FileUploadResponseDto(file.getUrl(), file.getUploadDateTime().toString()));
 
         // when
-        ResultActions result = mockMvc.perform(post("/v1/files/file-upload/{domainName}/{typeName}", "domain", "type")
+        ResultActions result = mockMvc.perform(post("/shop/v1/files/file-upload/{domainName}/{typeName}", "domain", "type")
                 .content(multipartFile.getBytes()));
 
         // then
@@ -65,6 +67,8 @@ class FileStorageControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("url", equalTo(URL + "/image.jpg")));
+
+        verify(service, times(1)).fileUpload(anyString(), anyString(), any());
 
         // docs
         result.andDo(document(
