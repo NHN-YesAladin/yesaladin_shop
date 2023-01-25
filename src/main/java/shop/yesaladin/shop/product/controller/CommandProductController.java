@@ -22,7 +22,7 @@ import java.net.URISyntaxException;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/products")
+@RequestMapping("/shop/v1/products")
 public class CommandProductController {
 
     private final CommandProductService commandProductService;

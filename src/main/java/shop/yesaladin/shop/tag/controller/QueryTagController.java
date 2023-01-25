@@ -18,7 +18,7 @@ import java.util.List;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/tags")
+@RequestMapping("/shop/v1/tags")
 public class QueryTagController {
 
     private final QueryTagService queryTagService;

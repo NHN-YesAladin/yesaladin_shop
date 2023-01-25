@@ -18,7 +18,7 @@ import java.util.List;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/product-types")
+@RequestMapping("/shop/v1/product-types")
 public class QueryProductTypeController {
 
     private final QueryProductTypeService queryProductTypeService;
