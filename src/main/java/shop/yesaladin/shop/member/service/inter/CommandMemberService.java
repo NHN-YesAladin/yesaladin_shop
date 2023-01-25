@@ -1,8 +1,10 @@
 package shop.yesaladin.shop.member.service.inter;
 
+import shop.yesaladin.shop.member.dto.MemberBlockRequestDto;
 import shop.yesaladin.shop.member.dto.MemberBlockResponseDto;
 import shop.yesaladin.shop.member.dto.MemberCreateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberCreateResponseDto;
+import shop.yesaladin.shop.member.dto.MemberUnblockResponseDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateResponseDto;
 import shop.yesaladin.shop.member.dto.MemberWithdrawResponseDto;
@@ -40,10 +42,11 @@ public interface CommandMemberService {
      * 회원을 차단 하기 위한 기능입니다.
      *
      * @param loginId 차단할 회원 아이디
+     * @param request 차단 사유
      * @author 최예린
      * @since 1.0
      */
-    MemberBlockResponseDto block(String loginId);
+    MemberBlockResponseDto block(String loginId, MemberBlockRequestDto request);
 
     /**
      * 회원 차단해지를 위한 기능 입니다.
@@ -52,7 +55,7 @@ public interface CommandMemberService {
      * @author 최예린
      * @since 1.0
      */
-    MemberBlockResponseDto unblock(String loginId);
+    MemberUnblockResponseDto unblock(String loginId);
 
     /**
      * 회원 탈퇴를 위한 기능 입니다.

@@ -34,10 +34,11 @@ class MemberTest {
     @Test
     void blockMember_failedWithAlreadyBlockedMember() {
         //given
+        String blockedReason = "Bad Guy";
         Member unblockedMember = Member.builder().id(1L).isBlocked(true).build();
 
         //when, then
-        assertThatThrownBy(unblockedMember::blockMember).isInstanceOf(
+        assertThatThrownBy(() -> unblockedMember.blockMember(blockedReason)).isInstanceOf(
                 AlreadyBlockedMemberException.class);
 
     }
@@ -45,10 +46,11 @@ class MemberTest {
     @Test
     void blockMember() {
         //given
+        String blockedReason = "Bad Guy";
         Member unblockedMember = Member.builder().id(1L).isBlocked(false).build();
 
         //when
-        unblockedMember.blockMember();
+        unblockedMember.blockMember(blockedReason);
 
         //then
         assertThat(unblockedMember.isBlocked()).isTrue();
