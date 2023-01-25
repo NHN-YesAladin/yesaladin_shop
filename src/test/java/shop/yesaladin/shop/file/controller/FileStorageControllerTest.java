@@ -59,7 +59,7 @@ class FileStorageControllerTest {
                 .thenReturn(new FileUploadResponseDto(file.getUrl(), file.getUploadDateTime().toString()));
 
         // when
-        ResultActions result = mockMvc.perform(post("/shop/v1/files/file-upload/{domainName}/{typeName}", "domain", "type")
+        ResultActions result = mockMvc.perform(post("/v1/files/file-upload/{domainName}/{typeName}", "domain", "type")
                 .content(multipartFile.getBytes()));
 
         // then

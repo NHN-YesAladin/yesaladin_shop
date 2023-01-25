@@ -18,7 +18,7 @@ import java.util.List;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/shop/v1/authors")
+@RequestMapping("/v1/authors")
 public class QueryAuthorController {
 
     private final QueryAuthorService queryAuthorService;

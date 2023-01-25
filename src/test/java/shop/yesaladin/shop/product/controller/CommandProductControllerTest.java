@@ -70,7 +70,7 @@ class CommandProductControllerTest {
         Mockito.when(service.create(any())).thenReturn(productOnlyIdDto);
 
         // when
-        ResultActions result = mockMvc.perform(post("/shop/v1/products")
+        ResultActions result = mockMvc.perform(post("/v1/products")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(productCreateDto)));
 
@@ -126,7 +126,7 @@ class CommandProductControllerTest {
         Mockito.when(service.update(any(), any())).thenReturn(productOnlyIdDto);
 
         // when
-        ResultActions result = mockMvc.perform(put("/shop/v1/products/{productId}", ID)
+        ResultActions result = mockMvc.perform(put("/v1/products/{productId}", ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(productUpdateDto)));
 
@@ -178,7 +178,7 @@ class CommandProductControllerTest {
     @DisplayName("상품 삭제 성공")
     void deleteProduct() throws Exception {
         // when
-        ResultActions result = mockMvc.perform(post("/shop/v1/products/{productId}", ID));
+        ResultActions result = mockMvc.perform(post("/v1/products/{productId}", ID));
 
         // then
         result.andDo(print()).andExpect(status().isOk());

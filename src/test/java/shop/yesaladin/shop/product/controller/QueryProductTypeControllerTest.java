@@ -52,7 +52,7 @@ class QueryProductTypeControllerTest {
         Mockito.when(service.findAll()).thenReturn(productTypes);
 
         // when
-        ResultActions result = mockMvc.perform(get("/shop/v1/product-types")
+        ResultActions result = mockMvc.perform(get("/v1/product-types")
                 .contentType(MediaType.APPLICATION_JSON));
 
         // then

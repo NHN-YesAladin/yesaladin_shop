@@ -57,7 +57,7 @@ class QueryProductControllerTest {
         Mockito.when(service.findById(anyLong())).thenReturn(responseDto);
 
         // when
-        ResultActions result = mockMvc.perform(get("/shop/v1/products/{productId}", ID)
+        ResultActions result = mockMvc.perform(get("/v1/products/{productId}", ID)
                 .contentType(MediaType.APPLICATION_JSON));
 
         // then
@@ -112,7 +112,7 @@ class QueryProductControllerTest {
         Mockito.when(service.findAll(any(), any())).thenReturn(page);
 
         // when
-        ResultActions result = mockMvc.perform(get("/shop/v1/products")
+        ResultActions result = mockMvc.perform(get("/v1/products")
                 .param("page", "0")
                 .param("size", "5")
                 .contentType(MediaType.APPLICATION_JSON));

@@ -54,7 +54,7 @@ class QueryPublisherControllerTest {
         Mockito.when(service.findAll()).thenReturn(publishers);
 
         // when
-        ResultActions result = mockMvc.perform(get("/shop/v1/publishers")
+        ResultActions result = mockMvc.perform(get("/v1/publishers")
                 .contentType(MediaType.APPLICATION_JSON));
 
         // then

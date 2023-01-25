@@ -54,7 +54,7 @@ class QueryAuthorControllerTest {
         Mockito.when(queryAuthorService.findAll()).thenReturn(authors);
 
         // when
-        ResultActions result = mockMvc.perform(get("/shop/v1/authors")
+        ResultActions result = mockMvc.perform(get("/v1/authors")
                 .contentType(MediaType.APPLICATION_JSON));
 
         // then

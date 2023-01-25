@@ -19,7 +19,7 @@ import shop.yesaladin.shop.file.service.inter.FileStorageService;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/shop/v1/files")
+@RequestMapping("/v1/files")
 public class FileStorageController {
 
     private final FileStorageService fileStorageService;

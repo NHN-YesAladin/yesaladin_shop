@@ -19,7 +19,7 @@ import shop.yesaladin.shop.product.service.inter.QueryProductService;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/shop/v1/products")
+@RequestMapping("/v1/products")
 public class QueryProductController {
 
     private final QueryProductService queryProductService;
