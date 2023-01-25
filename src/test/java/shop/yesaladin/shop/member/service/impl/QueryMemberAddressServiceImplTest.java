@@ -70,7 +70,7 @@ class QueryMemberAddressServiceImplTest {
         //then
         assertThat(result).hasSize(10);
         assertThat(result.stream()
-                .filter(x -> !Objects.equals(x.getMember().getLoginId(), loginId))
+                .filter(x -> !Objects.equals(x.getLoginId(), loginId))
                 .findFirst()).isEmpty();
     }
 
