@@ -15,7 +15,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.tag.dto.TagsResponseDto;
 import shop.yesaladin.shop.tag.service.inter.QueryTagService;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -42,7 +41,7 @@ class QueryTagControllerTest {
 
     @BeforeEach
     void setUp() {
-        tags = Arrays.asList(
+        tags = List.of(
                 new TagsResponseDto(1L, "행복한"),
                 new TagsResponseDto(2L, "슬픈")
         );

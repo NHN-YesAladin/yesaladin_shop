@@ -1,6 +1,5 @@
-package shop.yesaladin.shop.publish.controller;
+package shop.yesaladin.shop.product.controller;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -12,12 +11,15 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
-import shop.yesaladin.shop.publish.service.inter.QueryPublisherService;
+import shop.yesaladin.shop.product.domain.model.ProductTypeCode;
+import shop.yesaladin.shop.product.dto.ProductTypeResponseDto;
+import shop.yesaladin.shop.product.service.inter.QueryProductTypeService;
 
 import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -28,33 +30,29 @@ import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentRequest;
 import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
 
 @AutoConfigureRestDocs
-@WebMvcTest(QueryPublisherController.class)
-class QueryPublisherControllerTest {
+@WebMvcTest(QueryProductTypeController.class)
+class QueryProductTypeControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
-    private QueryPublisherService service;
+    private QueryProductTypeService service;
 
-    private List<PublisherResponseDto> publishers;
-
-    @BeforeEach
-    void setUp() {
-        publishers = List.of(
-                new PublisherResponseDto(1L, "출판사1"),
-                new PublisherResponseDto(2L, "출판사2")
-        );
-    }
+    private List<ProductTypeResponseDto> productTypes = List.of(
+            new ProductTypeResponseDto(1, ProductTypeCode.NONE.toString()),
+            new ProductTypeResponseDto(2, ProductTypeCode.DISCOUNTS.toString())
+    );
+    ;
 
     @Test
-    @DisplayName("출판사 전체 조회 성공")
-    void getPublishers() throws Exception {
+    @DisplayName("상품 유형 전체 조회 성공")
+    void getProductTypes() throws Exception {
         // given
-        Mockito.when(service.findAll()).thenReturn(publishers);
+        Mockito.when(service.findAll()).thenReturn(productTypes);
 
         // when
-        ResultActions result = mockMvc.perform(get("/v1/publishers")
+        ResultActions result = mockMvc.perform(get("/v1/product-types")
                 .contentType(MediaType.APPLICATION_JSON));
 
         // then
@@ -63,17 +61,19 @@ class QueryPublisherControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$[0].id", equalTo(1)))
                 .andExpect(jsonPath("$[1].id", equalTo(2)))
-                .andExpect(jsonPath("$[0].name", equalTo("출판사1")))
-                .andExpect(jsonPath("$[1].name", equalTo("출판사2")));
+                .andExpect(jsonPath("$[0].type", equalTo(ProductTypeCode.NONE.toString())))
+                .andExpect(jsonPath("$[1].type", equalTo(ProductTypeCode.DISCOUNTS.toString())));
+
+        verify(service, times(1)).findAll();
 
         // docs
         result.andDo(document(
-                "find-all-publisher",
+                "find-all-product-type",
                 getDocumentRequest(),
                 getDocumentResponse(),
                 responseFields(
-                        fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("출판사 아이디"),
-                        fieldWithPath("[].name").type(JsonFieldType.STRING).description("출판사 이름")
+                        fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("상품 유형 아이디"),
+                        fieldWithPath("[].type").type(JsonFieldType.STRING).description("상품 유형 이름")
                 )
         ));
     }

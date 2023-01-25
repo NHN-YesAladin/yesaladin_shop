@@ -67,7 +67,7 @@ public class ProductCreateDto {
     // 판매 여부
     private Boolean isSale;
 
-    // 수량, 출간일, 노출우선순위부
+    // 수량, 출간일, 노출우선순위
     @PositiveOrZero
     private long quantity;
     @NotBlank
