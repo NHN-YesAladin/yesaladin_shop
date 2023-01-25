@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +26,7 @@ import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/v1/categories")
+@CrossOrigin({"http://localhost:8080", "http://localhost:9090", "https://www.yesaladin.shop"})
 public class QueryCategoryController {
 
     private final QueryCategoryService queryCategoryService;
@@ -68,7 +70,7 @@ public class QueryCategoryController {
      *
      * @return 카테고리의 일부 데이터를 List화 하여 반환
      */
-    @GetMapping("/parents")
+    @GetMapping(params = "cate=parents")
     public List<CategoryResponseDto> getParentCategories() {
         return queryCategoryService.findParentCategories();
     }
@@ -79,7 +81,7 @@ public class QueryCategoryController {
      * @param parentId
      * @return
      */
-    @GetMapping("/{parentId}/children")
+    @GetMapping(value = "/{parentId}", params = "cate=children")
     public List<CategoryResponseDto> getChildCategoriesByParentId(@PathVariable Long parentId) {
         return queryCategoryService.findChildCategoriesByParentId(parentId);
     }
