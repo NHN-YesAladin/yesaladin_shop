@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpMessageConverterExtractor;
 import org.springframework.web.client.RequestCallback;
@@ -18,7 +17,6 @@ import shop.yesaladin.shop.file.dto.FileUploadResponseDto;
 import shop.yesaladin.shop.file.service.inter.FileStorageService;
 import shop.yesaladin.shop.file.service.inter.StorageAuthService;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -70,9 +68,9 @@ public class FileStorageServiceImpl implements FileStorageService {
         String token = storageAuthService.getAuthToken();
 
         // InputStream을 요청 본문에 추가할 수 있도록 RequestCallback 오버라이드
-        final RequestCallback requestCallback = (request) ->  {
-                request.getHeaders().add("X-Auth-Token", token);
-                IOUtils.copy(file.getInputStream(), request.getBody());
+        final RequestCallback requestCallback = (request) -> {
+            request.getHeaders().add("X-Auth-Token", token);
+            IOUtils.copy(file.getInputStream(), request.getBody());
         };
 
         HttpMessageConverterExtractor<String> responseExtractor
