@@ -3,7 +3,6 @@ package shop.yesaladin.shop.member.dto;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
 
 /**
@@ -19,7 +18,7 @@ public class MemberAddressQueryDto {
     private Long id;
     private String address;
     private boolean isDefault;
-    private Member member;
+    private String loginId;
 
     /**
      * MemberAddress를 MemberAddressQueryDto 객체로 변환해주는 기능입니다.
@@ -34,7 +33,7 @@ public class MemberAddressQueryDto {
                 memberAddress.getId(),
                 memberAddress.getAddress(),
                 memberAddress.isDefault(),
-                memberAddress.getMember()
+                memberAddress.getMember().getLoginId()
         );
     }
 }
