@@ -1,5 +1,98 @@
 = Category
 
+=== 카테고리 아이디를 통한 단건 조회
+
+==== curl
+include::{snippets}/get-category-by-id/curl-request.adoc[]
+
+
+==== request
+===== Path Variable
+include::{snippets}/get-category-by-id/path-parameters.adoc[]
+
+===== Example
+include::{snippets}/get-category-by-id/http-request.adoc[]
+
+
+==== response
+===== Body
+include::{snippets}/get-category-by-id/response-fields.adoc[]
+
+===== Example
+include::{snippets}/get-category-by-id/http-response.adoc[]
+
+---
+
+=== 1차 카테고리 아이디를 통한 2차 카테고리 조회 (페이징)
+
+==== curl
+include::{snippets}/get-categories-by-parent-id-paging/curl-request.adoc[]
+
+
+==== request
+===== Query Param
+include::{snippets}/get-categories-by-parent-id-paging/request-parameters.adoc[]
+
+===== Example
+include::{snippets}/get-categories-by-parent-id-paging/http-request.adoc[]
+
+
+==== response
+===== Body
+include::{snippets}/get-categories-by-parent-id-paging/response-fields.adoc[]
+
+===== Example
+include::{snippets}/get-categories-by-parent-id-paging/http-response.adoc[]
+
+---
+
+=== 모든 1차 카테고리 조회 (페이징x)
+
+==== curl
+include::{snippets}/get-parent-categories/curl-request.adoc[]
+
+
+==== request
+===== Query Param
+include::{snippets}/get-parent-categories/request-parameters.adoc[]
+
+===== Example
+include::{snippets}/get-parent-categories/http-request.adoc[]
+
+
+==== response
+===== Body
+include::{snippets}/get-parent-categories/response-fields.adoc[]
+
+===== Example
+include::{snippets}/get-parent-categories/http-response.adoc[]
+
+---
+
+=== 1차 카테고리의 자녀(2차) 카테고리 조회 (페이징x)
+
+==== curl
+include::{snippets}/get-child-categories-by-parent-id/curl-request.adoc[]
+
+
+==== request
+===== Query Param
+include::{snippets}/get-child-categories-by-parent-id/request-parameters.adoc[]
+
+===== Example
+include::{snippets}/get-child-categories-by-parent-id/http-request.adoc[]
+
+
+==== response
+===== Body
+include::{snippets}/get-child-categories-by-parent-id/response-fields.adoc[]
+
+===== Example
+include::{snippets}/get-child-categories-by-parent-id/http-response.adoc[]
+
+---
+---
+
 === 카테고리 생성
 
 ==== curl
@@ -8,11 +101,9 @@ include::{snippets}/create-parent-category/curl-request.adoc[]
 ====== 2차 카테고리 생성 요청
 include::{snippets}/create-child-category/curl-request.adoc[]
 
+
 ==== request
-
 ===== Body
-
-
 include::{snippets}/create-parent-category/request-fields.adoc[]
 
 ===== Example
@@ -21,10 +112,9 @@ include::{snippets}/create-parent-category/http-request.adoc[]
 ====== 2차 카테고리 생성 요청
 include::{snippets}/create-child-category/http-request.adoc[]
 
+
 ==== response
-
 ===== Body
-
 include::{snippets}/create-parent-category/response-fields.adoc[]
 
 ===== Example
@@ -45,10 +135,11 @@ include::{snippets}/update-child-to-parent-category/curl-request.adoc[]
 ====== 2차 카테고리 수정 요청 - 다른 1차 카테고리로 이동
 include::{snippets}/update-child-other-parent-category/curl-request.adoc[]
 
+
 ==== request
-
+==== Path Parameter
+include::{snippets}/update-parent-fields-category/path-parameters.adoc[]
 ===== Body
-
 include::{snippets}/update-parent-fields-category/request-fields.adoc[]
 
 ===== Example
@@ -59,13 +150,9 @@ include::{snippets}/update-child-to-parent-category/http-request.adoc[]
 ====== 2차 카테고리 수정 요청 - 다른 1차 카테고리로 이동
 include::{snippets}/update-child-other-parent-category/http-request.adoc[]
 
-==== Path Parameter
-include::{snippets}/update-parent-fields-category/path-parameters.adoc[]
 
 ==== response
-
 ===== Body
-
 include::{snippets}/update-parent-fields-category/response-fields.adoc[]
 
 ===== Example
@@ -85,8 +172,8 @@ include::{snippets}/update-child-other-parent-category/http-response.adoc[]
 ====== 카테고리 삭제 요청
 include::{snippets}/delete-category/curl-request.adoc[]
 
-==== request
 
+==== request
 ==== Path Parameter
 include::{snippets}/delete-category/path-parameters.adoc[]
 
@@ -95,9 +182,7 @@ include::{snippets}/delete-category/http-request.adoc[]
 
 
 ==== response
-
 ===== Body
-
 include::{snippets}/delete-category/response-fields.adoc[]
 
 ===== Example
