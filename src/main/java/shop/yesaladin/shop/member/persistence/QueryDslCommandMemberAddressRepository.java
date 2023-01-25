@@ -30,17 +30,19 @@ public class QueryDslCommandMemberAddressRepository implements CommandMemberAddr
     @Override
     public void deleteById(Long id) {
         QMemberAddress memberAddress = QMemberAddress.memberAddress;
-
         queryFactory.delete(memberAddress)
-                .where(memberAddress.id.eq(id));
+                .where(memberAddress.id.eq(id))
+                .execute();
     }
 
     @Override
-    public void updateIsDefaultToFalseByMemberId(Long memberId) {
+    public void updateIsDefaultToFalseByLoginId(String loginId) {
         QMemberAddress memberAddress = QMemberAddress.memberAddress;
 
         queryFactory.update(memberAddress)
-                .where(memberAddress.member.id.eq(memberId).and(memberAddress.isDefault).isTrue())
+                .where(memberAddress.member.loginId.eq(loginId)
+                        .and(memberAddress.isDefault)
+                        .isTrue())
                 .set(memberAddress.isDefault, false);
     }
 }

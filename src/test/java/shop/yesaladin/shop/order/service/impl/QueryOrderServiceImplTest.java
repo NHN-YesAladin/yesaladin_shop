@@ -5,12 +5,14 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.ReflectionUtils;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,9 +21,17 @@ import org.springframework.data.support.PageableExecutionUtils;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.common.exception.InvalidPeriodConditionException;
 import shop.yesaladin.shop.common.exception.PageOffsetOutOfBoundsException;
+import shop.yesaladin.shop.member.domain.model.Member;
+import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
+import shop.yesaladin.shop.order.domain.model.MemberOrder;
+import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
+import shop.yesaladin.shop.order.exception.OrderNotFoundException;
+import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
+import shop.yesaladin.shop.order.persistence.dummy.DummyMemberAddress;
+import shop.yesaladin.shop.order.persistence.dummy.DummyOrder;
 
 class QueryOrderServiceImplTest {
 
@@ -187,5 +197,50 @@ class QueryOrderServiceImplTest {
         // then
         Assertions.assertThatThrownBy(() -> service.getAllOrderListInPeriod(queryDto, pageable))
                 .isInstanceOf(PageOffsetOutOfBoundsException.class);
+    }
+
+    @Test
+    @DisplayName("주문 번호로 주문을 조회에 성공한다.")
+    void getOrderByNumber() throws Exception {
+        // given
+        ArgumentCaptor<String> stringArgumentCaptor = ArgumentCaptor.forClass(String.class);
+
+        Member member = DummyMember.member();
+        MemberAddress memberAddress = DummyMemberAddress.address(member);
+        MemberOrder memberOrder = DummyOrder.memberOrder(member, memberAddress);
+        Mockito.when(repository.findByOrderNumber(Mockito.any()))
+                .thenReturn(Optional.of(memberOrder));
+
+        // when
+        Order order = service.getOrderByNumber(memberOrder.getOrderNumber());
+
+        // then
+        Assertions.assertThat(order.getOrderNumber()).isEqualTo(memberOrder.getOrderNumber());
+        Assertions.assertThat(order.getName()).isEqualTo(memberOrder.getName());
+
+        Mockito.verify(repository, Mockito.times(1))
+                .findByOrderNumber(stringArgumentCaptor.capture());
+        Assertions.assertThat(stringArgumentCaptor.getValue())
+                .isEqualTo(memberOrder.getOrderNumber());
+
+    }
+
+    @Test
+    @DisplayName("잘못된 주문 번호로 주문을 조회에 실패하여 예외가 발생한다.")
+    void getOrderByNumberFailWrongNumber() throws Exception {
+        // given
+        ArgumentCaptor<String> stringArgumentCaptor = ArgumentCaptor.forClass(String.class);
+        String wrongData = "WrongData";
+
+        // when
+        // then
+        Assertions.assertThatThrownBy(() -> service.getOrderByNumber(wrongData))
+                .isInstanceOf(OrderNotFoundException.class);
+
+        Mockito.verify(repository, Mockito.times(1))
+                .findByOrderNumber(stringArgumentCaptor.capture());
+        Assertions.assertThat(stringArgumentCaptor.getValue())
+                .isEqualTo(wrongData);
+
     }
 }

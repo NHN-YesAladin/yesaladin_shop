@@ -3,15 +3,12 @@ package shop.yesaladin.shop.point.controller;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.startsWith;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -42,9 +39,9 @@ import shop.yesaladin.shop.point.dto.PointHistoryResponseDto;
 import shop.yesaladin.shop.point.exception.OverPointUseException;
 import shop.yesaladin.shop.point.service.inter.CommandPointHistoryService;
 
-@WebMvcTest(PointController.class)
 @AutoConfigureRestDocs
-class PointControllerTest {
+@WebMvcTest(CommandPointHistoryController.class)
+class CommandPointControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -59,18 +56,19 @@ class PointControllerTest {
     @DisplayName("포인트 사용 실패 - 잘못된 파라미터를 요청한 경우")
     void createPointHistory_fail_InvalidCodeParameter() throws Exception {
         //given
-        long memberId = 1L;
+        String loginId = "user@1";
         Long amount = 1000L;
         PointHistoryRequestDto request = ReflectionUtils.newInstance(
                 PointHistoryRequestDto.class,
+                loginId,
                 amount
         );
 
-        Mockito.when(commandPointHistoryService.use(eq(memberId), any())).thenThrow(
-                MemberNotFoundException.class);
+        Mockito.when(commandPointHistoryService.use(any()))
+                .thenThrow(MemberNotFoundException.class);
 
         //when
-        ResultActions result = mockMvc.perform(post("/v1/points/{memberId}", memberId)
+        ResultActions result = mockMvc.perform(post("/v1/points")
                 .param("code", "asel")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
@@ -85,11 +83,10 @@ class PointControllerTest {
                 "create-point-history-fail-invalid-point-parameter",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("memberId").description("회원의 Pk")),
                 requestParameters(parameterWithName("code").description("포인트 사용/적립 구분")),
                 requestFields(
-                        fieldWithPath("amount").type(JsonFieldType.NUMBER)
-                                .description("사용한 포인트 양")
+                        fieldWithPath("loginId").type(JsonFieldType.STRING).description("회원의 아이디"),
+                        fieldWithPath("amount").type(JsonFieldType.NUMBER).description("사용한 포인트 양")
                 ),
                 responseFields(
                         fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
@@ -101,18 +98,19 @@ class PointControllerTest {
     @DisplayName("포인트 사용 실패 - 존재하지 않는 회원 아이디인 경우")
     void createPointHistory_use_fail_NotFoundMember() throws Exception {
         //given
-        long memberId = 1L;
+        String loginId = "user@1";
         Long amount = 1000L;
         PointHistoryRequestDto request = ReflectionUtils.newInstance(
                 PointHistoryRequestDto.class,
+                loginId,
                 amount
         );
 
-        Mockito.when(commandPointHistoryService.use(eq(memberId), any())).thenThrow(
-                new MemberNotFoundException("Member Id: " + memberId));
+        Mockito.when(commandPointHistoryService.use(any())).thenThrow(
+                new MemberNotFoundException("Member Id: " + loginId));
 
         //when
-        ResultActions result = mockMvc.perform(post("/v1/points/{memberId}", memberId)
+        ResultActions result = mockMvc.perform(post("/v1/points")
                 .param("code", "use")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
@@ -125,19 +123,19 @@ class PointControllerTest {
         ArgumentCaptor<PointHistoryRequestDto> captor = ArgumentCaptor.forClass(
                 PointHistoryRequestDto.class);
         Mockito.verify(commandPointHistoryService, Mockito.times(1))
-                .use(anyLong(), captor.capture());
-        Assertions.assertThat(captor.getValue().getAmount()).isEqualTo(request.getAmount());
+                .use(captor.capture());
+        Assertions.assertThat(captor.getValue().getAmount()).isEqualTo(amount);
+        Assertions.assertThat(captor.getValue().getLoginId()).isEqualTo(loginId);
 
         //docs
         result.andDo(document(
                 "create-point-history-use-fail-member-not-found",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("memberId").description("회원의 Pk")),
                 requestParameters(parameterWithName("code").description("포인트 사용/적립 구분")),
                 requestFields(
-                        fieldWithPath("amount").type(JsonFieldType.NUMBER)
-                                .description("사용한 포인트 양")
+                        fieldWithPath("loginId").type(JsonFieldType.STRING).description("회원의 아이디"),
+                        fieldWithPath("amount").type(JsonFieldType.NUMBER).description("사용한 포인트 양")
                 ),
                 responseFields(
                         fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
@@ -149,19 +147,20 @@ class PointControllerTest {
     @DisplayName("포인트 사용 실패 - 회원이 소유한 포인트보다 많이 사용하고자한 경우")
     void createPointHistory_use_fail_OverPoint() throws Exception {
         //given
-        long memberId = 1L;
+        String loginId = "user@1";
         Long amount = 100000L;
 
         PointHistoryRequestDto request = ReflectionUtils.newInstance(
                 PointHistoryRequestDto.class,
+                loginId,
                 amount
         );
 
-        Mockito.when(commandPointHistoryService.use(eq(memberId), any())).thenThrow(
-                new OverPointUseException(memberId, amount));
+        Mockito.when(commandPointHistoryService.use(any())).thenThrow(
+                new OverPointUseException(loginId, amount));
 
         //when
-        ResultActions result = mockMvc.perform(post("/v1/points/{memberId}", memberId)
+        ResultActions result = mockMvc.perform(post("/v1/points")
                 .param("code", "use")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
@@ -174,19 +173,19 @@ class PointControllerTest {
         ArgumentCaptor<PointHistoryRequestDto> captor = ArgumentCaptor.forClass(
                 PointHistoryRequestDto.class);
         Mockito.verify(commandPointHistoryService, Mockito.times(1))
-                .use(anyLong(), captor.capture());
+                .use(captor.capture());
         Assertions.assertThat(captor.getValue().getAmount()).isEqualTo(amount);
+        Assertions.assertThat(captor.getValue().getLoginId()).isEqualTo(loginId);
 
         //docs
         result.andDo(document(
                 "create-point-history-use-fail-over-point",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("memberId").description("회원의 Pk")),
                 requestParameters(parameterWithName("code").description("포인트 사용/적립 구분")),
                 requestFields(
-                        fieldWithPath("amount").type(JsonFieldType.NUMBER)
-                                .description("사용한 포인트 양")
+                        fieldWithPath("loginId").type(JsonFieldType.STRING).description("회원의 아이디"),
+                        fieldWithPath("amount").type(JsonFieldType.NUMBER).description("사용한 포인트 양")
                 ),
                 responseFields(
                         fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
@@ -198,11 +197,12 @@ class PointControllerTest {
     @DisplayName("포인트 사용 성공")
     void createPointHistory_use_success() throws Exception {
         //given
-        long memberId = 1L;
+        String loginId = "user@1";
         Long amount = 1000L;
 
         PointHistoryRequestDto request = ReflectionUtils.newInstance(
                 PointHistoryRequestDto.class,
+                loginId,
                 amount
         );
         long pointHistoryId = 1;
@@ -213,11 +213,11 @@ class PointControllerTest {
                 curAmount,
                 LocalDateTime.now(),
                 PointCode.USE,
-                memberId
+                loginId
         );
-        Mockito.when(commandPointHistoryService.use(eq(memberId), any())).thenReturn(response);
+        Mockito.when(commandPointHistoryService.use(any())).thenReturn(response);
         //when
-        ResultActions result = mockMvc.perform(post("/v1/points/{memberId}", memberId)
+        ResultActions result = mockMvc.perform(post("/v1/points")
                 .param("code", "use")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
@@ -227,24 +227,24 @@ class PointControllerTest {
         result.andExpect(jsonPath("$.id", equalTo((int) pointHistoryId)));
         result.andExpect(jsonPath("$.amount", equalTo((int) curAmount)));
         result.andExpect(jsonPath("$.pointCode", equalTo("USE")));
-        result.andExpect(jsonPath("$.memberId", equalTo((int) memberId)));
+        result.andExpect(jsonPath("$.loginId", equalTo(loginId)));
 
         ArgumentCaptor<PointHistoryRequestDto> captor = ArgumentCaptor.forClass(
                 PointHistoryRequestDto.class);
         Mockito.verify(commandPointHistoryService, Mockito.times(1))
-                .use(anyLong(), captor.capture());
-        Assertions.assertThat(captor.getValue().getAmount()).isEqualTo(request.getAmount());
+                .use(captor.capture());
+        Assertions.assertThat(captor.getValue().getAmount()).isEqualTo(amount);
+        Assertions.assertThat(captor.getValue().getLoginId()).isEqualTo(loginId);
 
         //docs
         result.andDo(document(
                 "create-point-history-use-success",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("memberId").description("회원의 Pk")),
                 requestParameters(parameterWithName("code").description("포인트 사용/적립 구분")),
                 requestFields(
-                        fieldWithPath("amount").type(JsonFieldType.NUMBER)
-                                .description("사용한 포인트 양")
+                        fieldWithPath("loginId").type(JsonFieldType.STRING).description("회원의 아이디"),
+                        fieldWithPath("amount").type(JsonFieldType.NUMBER).description("사용한 포인트 양")
                 ),
                 responseFields(
                         fieldWithPath("id").type(JsonFieldType.NUMBER).description("포인트 등록 내역 pk"),
@@ -253,7 +253,7 @@ class PointControllerTest {
                                 .description("포인트내역 등록 일시"),
                         fieldWithPath("pointCode").type(JsonFieldType.STRING)
                                 .description("포인트내역 등록 코드: 사용"),
-                        fieldWithPath("memberId").type(JsonFieldType.NUMBER).description("회원 아이디")
+                        fieldWithPath("loginId").type(JsonFieldType.STRING).description("회원 아이디")
                 )
         ));
     }
@@ -262,18 +262,19 @@ class PointControllerTest {
     @DisplayName("포인트 적립 실패 - 존재하지 않는 회원 아이디인 경우")
     void createPointHistory_save_fail_MemberNotFound() throws Exception {
         //given
-        long memberId = 1L;
+        String loginId = "user@1";
         Long amount = 1000L;
         PointHistoryRequestDto request = ReflectionUtils.newInstance(
                 PointHistoryRequestDto.class,
+                loginId,
                 amount
         );
 
-        Mockito.when(commandPointHistoryService.save(eq(memberId), any())).thenThrow(
-                new MemberNotFoundException("Member Id: " + memberId));
+        Mockito.when(commandPointHistoryService.save(any())).thenThrow(
+                new MemberNotFoundException("Member Id: " + loginId));
 
         //when
-        ResultActions result = mockMvc.perform(post("/v1/points/{memberId}", memberId)
+        ResultActions result = mockMvc.perform(post("/v1/points")
                 .param("code", "save")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
@@ -286,19 +287,19 @@ class PointControllerTest {
         ArgumentCaptor<PointHistoryRequestDto> captor = ArgumentCaptor.forClass(
                 PointHistoryRequestDto.class);
         Mockito.verify(commandPointHistoryService, Mockito.times(1))
-                .save(anyLong(), captor.capture());
-        Assertions.assertThat(captor.getValue().getAmount()).isEqualTo(request.getAmount());
+                .save(captor.capture());
+        Assertions.assertThat(captor.getValue().getAmount()).isEqualTo(amount);
+        Assertions.assertThat(captor.getValue().getLoginId()).isEqualTo(loginId);
 
         //docs
         result.andDo(document(
                 "create-point-history-save-fail-member-not-found",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("memberId").description("회원의 Pk")),
                 requestParameters(parameterWithName("code").description("포인트 사용/적립 구분")),
                 requestFields(
-                        fieldWithPath("amount").type(JsonFieldType.NUMBER)
-                                .description("적립한 포인트 양")
+                        fieldWithPath("loginId").type(JsonFieldType.STRING).description("회원의 아이디"),
+                        fieldWithPath("amount").type(JsonFieldType.NUMBER).description("적립한 포인트 양")
                 ),
                 responseFields(
                         fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
@@ -311,10 +312,11 @@ class PointControllerTest {
     @DisplayName("포인트 적립 성공")
     void createPointHistory_save_success() throws Exception {
         //given
-        long memberId = 1L;
+        String loginId = "user@1";
         Long amount = 1000L;
         PointHistoryRequestDto request = ReflectionUtils.newInstance(
                 PointHistoryRequestDto.class,
+                loginId,
                 amount
         );
         long pointHistoryId = 1;
@@ -325,12 +327,12 @@ class PointControllerTest {
                 curAmount,
                 LocalDateTime.now(),
                 PointCode.SAVE,
-                memberId
+                loginId
         );
-        Mockito.when(commandPointHistoryService.save(eq(memberId), any())).thenReturn(response);
+        Mockito.when(commandPointHistoryService.save(any())).thenReturn(response);
 
         //when
-        ResultActions result = mockMvc.perform(post("/v1/points/{memberId}", memberId)
+        ResultActions result = mockMvc.perform(post("/v1/points")
                 .param("code", "save")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
@@ -341,24 +343,24 @@ class PointControllerTest {
         result.andExpect(jsonPath("$.id", equalTo((int) pointHistoryId)));
         result.andExpect(jsonPath("$.amount", equalTo((int) curAmount)));
         result.andExpect(jsonPath("$.pointCode", equalTo("SAVE")));
-        result.andExpect(jsonPath("$.memberId", equalTo((int) memberId)));
+        result.andExpect(jsonPath("$.loginId", equalTo(loginId)));
 
         ArgumentCaptor<PointHistoryRequestDto> captor = ArgumentCaptor.forClass(
                 PointHistoryRequestDto.class);
         Mockito.verify(commandPointHistoryService, Mockito.times(1))
-                .save(anyLong(), captor.capture());
-        Assertions.assertThat(captor.getValue().getAmount()).isEqualTo(request.getAmount());
+                .save(captor.capture());
+        Assertions.assertThat(captor.getValue().getAmount()).isEqualTo(amount);
+        Assertions.assertThat(captor.getValue().getLoginId()).isEqualTo(loginId);
 
         //docs
         result.andDo(document(
                 "create-point-history-save-success",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("memberId").description("회원의 Pk")),
                 requestParameters(parameterWithName("code").description("포인트 사용/적립 구분")),
                 requestFields(
-                        fieldWithPath("amount").type(JsonFieldType.NUMBER)
-                                .description("적립한 포인트 양")
+                        fieldWithPath("loginId").type(JsonFieldType.STRING).description("회원의 아이디"),
+                        fieldWithPath("amount").type(JsonFieldType.NUMBER).description("적립한 포인트 양")
                 ),
                 responseFields(
                         fieldWithPath("id").type(JsonFieldType.NUMBER).description("포인트 등록 내역 pk"),
@@ -367,7 +369,7 @@ class PointControllerTest {
                                 .description("포인트내역 등록 일시"),
                         fieldWithPath("pointCode").type(JsonFieldType.STRING)
                                 .description("포인트내역 등록 코드: 적립"),
-                        fieldWithPath("memberId").type(JsonFieldType.NUMBER).description("회원 아이디")
+                        fieldWithPath("loginId").type(JsonFieldType.STRING).description("회원 아이디")
                 )
         ));
     }

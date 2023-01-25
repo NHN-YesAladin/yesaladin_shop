@@ -26,15 +26,15 @@ public interface QueryMemberGradeHistoryRepository {
     /**
      * 회원의 id를 통해 회원의 등급 변경 이력을 조회 합니다.
      *
-     * @param memberId  회원 id
+     * @param loginId   회원 id
      * @param startDate 조회 시작일
      * @param endDate   조회 종료일
      * @return 회원의 등급변경 내역
      * @author 최예린
      * @since 1.0
      */
-    List<MemberGradeHistoryQueryResponseDto> findByMemberIdAndPeriod(
-            long memberId,
+    List<MemberGradeHistoryQueryResponseDto> findByLoginIdAndPeriod(
+            String loginId,
             LocalDate startDate,
             LocalDate endDate
     );

@@ -23,7 +23,7 @@ import shop.yesaladin.shop.category.exception.CategoryNotFoundException;
 @Slf4j
 @Transactional
 @SpringBootTest
-class QueryDslCategoryRepositoryImplTest {
+class QueryDslCategoryRepositoryTest {
 
     @PersistenceContext
     EntityManager em;

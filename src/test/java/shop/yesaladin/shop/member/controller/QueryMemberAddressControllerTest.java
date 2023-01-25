@@ -49,18 +49,17 @@ class QueryMemberAddressControllerTest {
 
     String address = "Gwang Ju";
     Boolean isDefault = false;
-    Member member = MemberDummy.dummyWithId(1L);
 
     @Test
     void getMemberAddressByMemberId_fail_MemberNotFound() throws Exception {
         //given
-        long memberId = 1L;
+        String loginId = "user@1";
 
-        Mockito.when(queryMemberAddressService.findByMemberId(memberId))
-                .thenThrow(new MemberNotFoundException("MemberId: " + memberId));
+        Mockito.when(queryMemberAddressService.findByLoginId(loginId))
+                .thenThrow(new MemberNotFoundException("Member loginId: " + loginId));
 
         //when
-        ResultActions result = mockMvc.perform(get("/v1/members/{memberId}/addresses", memberId));
+        ResultActions result = mockMvc.perform(get("/v1/members/{loginId}/addresses", loginId));
 
         //then
         result.andExpect(status().isNotFound())
@@ -72,7 +71,7 @@ class QueryMemberAddressControllerTest {
                 "get-member-address-fail-member-not-found",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("memberId").description("회원의 Pk")),
+                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 responseFields(
                         fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
                 )
@@ -82,25 +81,25 @@ class QueryMemberAddressControllerTest {
     @Test
     void getMemberAddressByMemberId() throws Exception {
         //given
-        long memberId = 1L;
+        String loginId = "user@1";
 
-        Mockito.when(queryMemberAddressService.findByMemberId(memberId))
-                .thenReturn(getMemberAddressList(10));
+        Mockito.when(queryMemberAddressService.findByLoginId(loginId))
+                .thenReturn(getMemberAddressList(10, loginId));
 
         //when
-        ResultActions result = mockMvc.perform(get("/v1/members/{memberId}/addresses", memberId));
+        ResultActions result = mockMvc.perform(get("/v1/members/{loginId}/addresses", loginId));
 
         //then
         result.andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$[0].member.id", equalTo((int) memberId)));
+                .andExpect(jsonPath("$[0].member.loginId", equalTo(loginId)));
 
         //docs
         result.andDo(document(
                 "get-member-address-success",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("memberId").description("회원의 Pk")),
+                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 responseFields(
                         fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("등록된 배송지 Pk"),
                         fieldWithPath("[].address").type(JsonFieldType.STRING)
@@ -143,7 +142,9 @@ class QueryMemberAddressControllerTest {
         ));
     }
 
-    List<MemberAddressQueryDto> getMemberAddressList(int cnt) {
+    List<MemberAddressQueryDto> getMemberAddressList(int cnt, String loginId) {
+        Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
+
         List<MemberAddressQueryDto> memberAddressQueryList = new ArrayList<>();
         for (int i = 0; i < cnt; i++) {
             memberAddressQueryList.add(MemberAddressQueryDto.fromEntity(MemberAddress.builder()

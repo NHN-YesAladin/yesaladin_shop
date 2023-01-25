@@ -3,7 +3,7 @@ package shop.yesaladin.shop.member.service.impl;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -53,7 +53,7 @@ class CommandMemberAddressServiceImplTest {
 
     @Test
     void save_failedByMemberNotFound() {
-        Long memberId = 1L;
+        String loginId = "user@1";
 
         MemberAddressCreateRequestDto request = ReflectionUtils.newInstance(
                 MemberAddressCreateRequestDto.class,
@@ -61,17 +61,17 @@ class CommandMemberAddressServiceImplTest {
                 isDefault
         );
 
-        Mockito.when(queryMemberRepository.findById(memberId))
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
                 .thenThrow(MemberNotFoundException.class);
 
-        assertThatThrownBy(() -> commandMemberAddressService.save(memberId, request)).isInstanceOf(
+        assertThatThrownBy(() -> commandMemberAddressService.save(loginId, request)).isInstanceOf(
                 MemberNotFoundException.class);
     }
 
     @Test
     void save() {
-        Long memberId = 1L;
-        Member member = MemberDummy.dummyWithId(memberId);
+        Member member = MemberDummy.dummyWithId(1L);
+        String loginId = member.getLoginId();
 
         MemberAddressCreateRequestDto request = ReflectionUtils.newInstance(
                 MemberAddressCreateRequestDto.class,
@@ -80,95 +80,96 @@ class CommandMemberAddressServiceImplTest {
         );
         MemberAddress memberAddress = getMemberAddress(member);
 
-        Mockito.when(queryMemberRepository.findById(memberId)).thenReturn(Optional.of(member));
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
+                .thenReturn(Optional.of(member));
         Mockito.when(commandMemberAddressRepository.save(any())).thenReturn(memberAddress);
 
-        MemberAddressCreateResponseDto actual = commandMemberAddressService.save(memberId, request);
+        MemberAddressCreateResponseDto actual = commandMemberAddressService.save(loginId, request);
 
         assertThat(actual.getAddress()).isEqualTo(address);
         assertThat(actual.getIsDefault()).isEqualTo(isDefault);
-        assertThat(actual.getMember().getId()).isEqualTo(memberId);
+        assertThat(actual.getMember().getLoginId()).isEqualTo(loginId);
 
         ArgumentCaptor<MemberAddress> captor = ArgumentCaptor.forClass(MemberAddress.class);
 
-        verify(queryMemberRepository, times(1)).findById(anyLong());
+        verify(queryMemberRepository, times(1)).findMemberByLoginId(anyString());
         verify(commandMemberAddressRepository, times(1)).save(captor.capture());
 
         MemberAddress capturedMemberAddress = captor.getValue();
         assertThat(capturedMemberAddress.getAddress()).isEqualTo(memberAddress.getAddress());
         assertThat(capturedMemberAddress.getMember().getId()).isEqualTo(memberAddress.getMember()
                 .getId());
+        assertThat(capturedMemberAddress.getMember()
+                .getLoginId()).isEqualTo(memberAddress.getMember().getLoginId());
     }
 
     @Test
     void markAsDefault_failedByMemberAddressNotFound() {
-        Long memberId = 1L;
-        Long addressId = 1L;
+        String loginId = "user@1";
+        long addressId = 1L;
 
-        Mockito.when(queryMemberAddressRepository.getByMemberIdAndMemberAddressId(
-                memberId,
+        Mockito.when(queryMemberAddressRepository.getByLoginIdAndMemberAddressId(
+                loginId,
                 addressId
         )).thenThrow(
                 MemberAddressNotFoundException.class);
 
         assertThatThrownBy(() -> commandMemberAddressService.markAsDefault(
-                memberId,
+                loginId,
                 addressId
-        )).isInstanceOf(
-                MemberAddressNotFoundException.class);
+        )).isInstanceOf(MemberAddressNotFoundException.class);
     }
 
     @Test
     void markAsDefault() {
-        Long memberId = 1L;
-        Long addressId = 1L;
+        Member member = MemberDummy.dummyWithId(1L);
+        String loginId = member.getLoginId();
+        long addressId = 1L;
 
-        Member member = MemberDummy.dummyWithId(memberId);
         MemberAddress memberAddress = getMemberAddress(member);
 
-        Mockito.when(queryMemberAddressRepository.getByMemberIdAndMemberAddressId(
-                memberId,
+        Mockito.when(queryMemberAddressRepository.getByLoginIdAndMemberAddressId(
+                loginId,
                 addressId
         )).thenReturn(
                 Optional.of(memberAddress));
 
         MemberAddressUpdateResponseDto result = commandMemberAddressService.markAsDefault(
-                memberId,
+                loginId,
                 addressId
         );
 
         assertThat(result.getAddress()).isEqualTo(address);
-        assertThat(result.getMember().getId()).isEqualTo(memberId);
+        assertThat(result.getMember().getLoginId()).isEqualTo(loginId);
     }
 
     @Test
     void delete_failedByMemberAddressNotFound() {
-        Long memberId = 1L;
-        Long addressId = 1L;
+        String loginId = "user@1";
+        long addressId = 1L;
 
-        Mockito.when(queryMemberAddressRepository.existByMemberIdAndMemberAddressId(
-                memberId,
+        Mockito.when(queryMemberAddressRepository.existByLoginIdAndMemberAddressId(
+                loginId,
                 addressId
         )).thenReturn(false);
 
         assertThatThrownBy(() -> commandMemberAddressService.delete(
-                memberId,
+                loginId,
                 addressId
-        )).isInstanceOf(
-                MemberAddressNotFoundException.class);
+        )).isInstanceOf(MemberAddressNotFoundException.class);
     }
 
     @Test
     void delete() {
-        Long memberId = 1L;
-        Long addressId = 1L;
+        String loginId = "user@1";
+        long addressId = 1L;
 
-        Mockito.when(queryMemberAddressRepository.existByMemberIdAndMemberAddressId(
-                memberId,
+        Mockito.when(queryMemberAddressRepository.existByLoginIdAndMemberAddressId(
+                loginId,
                 addressId
         )).thenReturn(true);
 
-        long result = commandMemberAddressService.delete(memberId, addressId);
+        long result = commandMemberAddressService.delete(loginId, addressId);
 
         assertThat(result).isEqualTo(addressId);
     }
