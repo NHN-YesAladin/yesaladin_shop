@@ -76,6 +76,15 @@ public class Member {
     @Column(name = "is_blocked", nullable = false)
     private boolean isBlocked;
 
+    @Column(name = "blocked_reason")
+    private String blockedReason;
+
+    @Column(name = "blocked_date")
+    private LocalDate blockedDate;
+
+    @Column(name = "unblocked_date")
+    private LocalDate unblockedDate;
+
     @Column(name = "member_grade_id")
     @Convert(converter = MemberGradeCodeConverter.class)
     private MemberGrade memberGrade;

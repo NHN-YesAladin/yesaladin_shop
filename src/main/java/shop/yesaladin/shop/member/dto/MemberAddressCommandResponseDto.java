@@ -4,7 +4,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
 
 /**
@@ -16,20 +15,20 @@ import shop.yesaladin.shop.member.domain.model.MemberAddress;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class MemberAddressCreateResponseDto {
+public class MemberAddressCommandResponseDto {
 
     private Long id;
     private String address;
 
     private Boolean isDefault;
-    private Member member;
+    private String loginId;
 
-    public static MemberAddressCreateResponseDto fromEntity(MemberAddress memberAddress) {
-        return new MemberAddressCreateResponseDto(
+    public static MemberAddressCommandResponseDto fromEntity(MemberAddress memberAddress) {
+        return new MemberAddressCommandResponseDto(
                 memberAddress.getId(),
                 memberAddress.getAddress(),
                 memberAddress.isDefault(),
-                memberAddress.getMember()
+                memberAddress.getMember().getLoginId()
         );
     }
 }

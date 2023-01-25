@@ -41,11 +41,8 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import shop.yesaladin.shop.member.domain.model.Member;
+import shop.yesaladin.shop.member.dto.MemberAddressCommandResponseDto;
 import shop.yesaladin.shop.member.dto.MemberAddressCreateRequestDto;
-import shop.yesaladin.shop.member.dto.MemberAddressCreateResponseDto;
-import shop.yesaladin.shop.member.dto.MemberAddressUpdateResponseDto;
-import shop.yesaladin.shop.member.dummy.MemberDummy;
 import shop.yesaladin.shop.member.exception.MemberAddressNotFoundException;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.CommandMemberAddressService;
@@ -184,13 +181,12 @@ class CommandMemberAddressControllerTest {
 
         Map<String, Object> request = Map.of("address", address, "isDefault", isDefault);
 
-        Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
-        MemberAddressCreateResponseDto response = ReflectionUtils.newInstance(
-                MemberAddressCreateResponseDto.class,
+        MemberAddressCommandResponseDto response = ReflectionUtils.newInstance(
+                MemberAddressCommandResponseDto.class,
                 addressId,
                 address,
                 isDefault,
-                member
+                loginId
         );
 
         Mockito.when(commandMemberAddressService.save(eq(loginId), any())).thenReturn(response);
@@ -206,7 +202,7 @@ class CommandMemberAddressControllerTest {
                 .andExpect(jsonPath("$.id", equalTo((int) addressId)))
                 .andExpect(jsonPath("$.address", equalTo(address)))
                 .andExpect(jsonPath("$.isDefault", equalTo(isDefault)))
-                .andExpect(jsonPath("$.member.loginId", equalTo(loginId)));
+                .andExpect(jsonPath("$.loginId", equalTo(loginId)));
 
         ArgumentCaptor<MemberAddressCreateRequestDto> captor = ArgumentCaptor.forClass(
                 MemberAddressCreateRequestDto.class);
@@ -235,37 +231,7 @@ class CommandMemberAddressControllerTest {
                                 .description("등록된 배송지 주소"),
                         fieldWithPath("isDefault").type(JsonFieldType.BOOLEAN)
                                 .description("등록된 배송지의 대표주소 여부"),
-                        fieldWithPath("member.id").type(JsonFieldType.NUMBER).description("회원의 Pk"),
-                        fieldWithPath("member.nickname").type(JsonFieldType.STRING)
-                                .description("회원의 닉네임"),
-                        fieldWithPath("member.name").type(JsonFieldType.STRING)
-                                .description("회원의 이름"),
-                        fieldWithPath("member.loginId").type(JsonFieldType.STRING)
-                                .description("회원의 아이디"),
-                        fieldWithPath("member.password").type(JsonFieldType.STRING)
-                                .description("회원의 비밀번호"),
-                        fieldWithPath("member.birthYear").type(JsonFieldType.NUMBER)
-                                .description("회원의 생년"),
-                        fieldWithPath("member.birthMonth").type(JsonFieldType.NUMBER)
-                                .description("회원의 생월"),
-                        fieldWithPath("member.birthDay").type(JsonFieldType.NUMBER)
-                                .description("회원의 생일"),
-                        fieldWithPath("member.email").type(JsonFieldType.STRING)
-                                .description("회원의 이메일"),
-                        fieldWithPath("member.phone").type(JsonFieldType.STRING)
-                                .description("회원의 핸드폰번호"),
-                        fieldWithPath("member.signUpDate").type(JsonFieldType.STRING)
-                                .description("회원의 가입일"),
-                        fieldWithPath("member.withdrawalDate").type(JsonFieldType.STRING)
-                                .description("회원의 탈퇴일").optional(),
-                        fieldWithPath("member.withdrawal").type(JsonFieldType.BOOLEAN)
-                                .description("회원의 탈퇴여부"),
-                        fieldWithPath("member.blocked").type(JsonFieldType.BOOLEAN)
-                                .description("회원의 차단여부"),
-                        fieldWithPath("member.memberGrade").type(JsonFieldType.STRING)
-                                .description("회원의 등급"),
-                        fieldWithPath("member.memberGenderCode").type(JsonFieldType.STRING)
-                                .description("회원의 성별")
+                        fieldWithPath("loginId").type(JsonFieldType.STRING).description("회원의 아이디")
                 )
         ));
     }
@@ -314,11 +280,12 @@ class CommandMemberAddressControllerTest {
         long addressId = 1L;
         String loginId = "user@1";
 
-        Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
-        MemberAddressUpdateResponseDto response = ReflectionUtils.newInstance(
-                MemberAddressUpdateResponseDto.class,
+        MemberAddressCommandResponseDto response = ReflectionUtils.newInstance(
+                MemberAddressCommandResponseDto.class,
+                addressId,
                 address,
-                member
+                true,
+                loginId
         );
         Mockito.when(commandMemberAddressService.markAsDefault(loginId, addressId))
                 .thenReturn(response);
@@ -333,8 +300,10 @@ class CommandMemberAddressControllerTest {
         //then
         result.andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id", equalTo((int) addressId)))
                 .andExpect(jsonPath("$.address", equalTo(address)))
-                .andExpect(jsonPath("$.member.loginId", equalTo(loginId)));
+                .andExpect(jsonPath("$.isDefault", equalTo(true)))
+                .andExpect(jsonPath("$.loginId", equalTo(loginId)));
 
         //docs
         result.andDo(document(
@@ -346,39 +315,12 @@ class CommandMemberAddressControllerTest {
                         parameterWithName("addressId").description("배송지 Pk")
                 ),
                 responseFields(
+                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("등록된 배송지 Pk"),
                         fieldWithPath("address").type(JsonFieldType.STRING)
-                                .description("대표 배송지 주소"),
-                        fieldWithPath("member.id").type(JsonFieldType.NUMBER).description("회원의 Pk"),
-                        fieldWithPath("member.nickname").type(JsonFieldType.STRING)
-                                .description("회원의 닉네임"),
-                        fieldWithPath("member.name").type(JsonFieldType.STRING)
-                                .description("회원의 이름"),
-                        fieldWithPath("member.loginId").type(JsonFieldType.STRING)
-                                .description("회원의 아이디"),
-                        fieldWithPath("member.password").type(JsonFieldType.STRING)
-                                .description("회원의 비밀번호"),
-                        fieldWithPath("member.birthYear").type(JsonFieldType.NUMBER)
-                                .description("회원의 생년"),
-                        fieldWithPath("member.birthMonth").type(JsonFieldType.NUMBER)
-                                .description("회원의 생월"),
-                        fieldWithPath("member.birthDay").type(JsonFieldType.NUMBER)
-                                .description("회원의 생일"),
-                        fieldWithPath("member.email").type(JsonFieldType.STRING)
-                                .description("회원의 이메일"),
-                        fieldWithPath("member.phone").type(JsonFieldType.STRING)
-                                .description("회원의 핸드폰번호"),
-                        fieldWithPath("member.signUpDate").type(JsonFieldType.STRING)
-                                .description("회원의 가입일"),
-                        fieldWithPath("member.withdrawalDate").type(JsonFieldType.STRING)
-                                .description("회원의 탈퇴일").optional(),
-                        fieldWithPath("member.withdrawal").type(JsonFieldType.BOOLEAN)
-                                .description("회원의 탈퇴여부"),
-                        fieldWithPath("member.blocked").type(JsonFieldType.BOOLEAN)
-                                .description("회원의 차단여부"),
-                        fieldWithPath("member.memberGrade").type(JsonFieldType.STRING)
-                                .description("회원의 등급"),
-                        fieldWithPath("member.memberGenderCode").type(JsonFieldType.STRING)
-                                .description("회원의 성별")
+                                .description("등록된 배송지 주소"),
+                        fieldWithPath("isDefault").type(JsonFieldType.BOOLEAN)
+                                .description("등록된 배송지의 대표주소 여부"),
+                        fieldWithPath("loginId").type(JsonFieldType.STRING).description("회원의 아이디")
                 )
         ));
     }
