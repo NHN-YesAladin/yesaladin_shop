@@ -60,7 +60,7 @@ public class QueryProductServiceImpl implements QueryProductService {
 
         long pointPrice = 0;
         if (product.isGivenPoint()) {
-            pointPrice = Math.round((product.getActualPrice() * product.getGivenPointRate() / 100) / 10) * 10L;
+            pointPrice = Math.round((product.getActualPrice() * product.getGivenPointRate() / 100f) / 10f) * 10L;
         }
 
         List<String> authors = findAuthorsByProduct(product);
