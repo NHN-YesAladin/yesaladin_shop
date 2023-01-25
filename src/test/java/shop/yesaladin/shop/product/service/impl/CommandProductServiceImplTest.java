@@ -13,7 +13,9 @@ import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
 import shop.yesaladin.shop.product.domain.repository.*;
+import shop.yesaladin.shop.product.dto.ProductCreateDto;
 import shop.yesaladin.shop.product.dto.ProductOnlyIdDto;
+import shop.yesaladin.shop.product.dto.ProductUpdateDto;
 import shop.yesaladin.shop.product.dummy.*;
 import shop.yesaladin.shop.product.service.inter.CommandProductService;
 import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
@@ -127,24 +129,26 @@ class CommandProductServiceImplTest {
         Mockito.when(queryTagService.findById(1L)).thenReturn(new TagResponseDto(1L, "아름다운"));
         Mockito.when(queryTagService.findById(2L)).thenReturn(new TagResponseDto(2L, "슬픈"));
 
+        ProductCreateDto dto = DummyProductCreateDto.dummy(isbn);
+
         // when
-        ProductOnlyIdDto productOnlyIdDto = service.create(DummyProductCreateDto.dummy(isbn));
+        ProductOnlyIdDto productOnlyIdDto = service.create(dto);
 
         // then
         assertThat(productOnlyIdDto).isNotNull();
         assertThat(productOnlyIdDto.getId()).isEqualTo(1L);
 
-        verify(commandFileService, atLeastOnce()).register(any());
-        verify(querySubscribeProductRepository, times(1)).findByISSN(any());
-        verify(queryTotalDiscountRateRepository, times(1)).findById(anyInt());
-        verify(queryProductRepository, times(1)).findByISBN(anyString());
+        verify(commandFileService, times(2)).register(any());
+        verify(querySubscribeProductRepository, times(1)).findByISSN(dto.getISSN());
+        verify(queryTotalDiscountRateRepository, times(1)).findById(1);
+        verify(queryProductRepository, times(1)).findByISBN(isbn);
         verify(commandProductRepository, times(1)).save(any());
-        verify(queryAuthorService, atLeastOnce()).findById(anyLong());
-        verify(commandWritingService, atLeastOnce()).register(any());
-        verify(queryPublisherService, times(1)).findById(anyLong());
+        verify(queryAuthorService, times(1)).findById(dto.getAuthors().get(0));
+        verify(commandWritingService, times(1)).register(any());
+        verify(queryPublisherService, times(1)).findById(dto.getPublisherId());
         verify(commandPublishService, times(1)).register(any());
-        verify(queryTagService, atLeastOnce()).findById(any());
-        verify(commandProductTagService, atLeastOnce()).register(any());
+        verify(queryTagService, times(2)).findById(any());
+        verify(commandProductTagService, times(2)).register(any());
     }
 
     @Disabled
@@ -153,6 +157,7 @@ class CommandProductServiceImplTest {
     void update() {
         // given
         String isbn = "0000000000001";
+        Long id = 1L;
 
         File thumbnailFile = DummyFile.dummy(URL + "/image1.png");
         File ebookFile = DummyFile.dummy(URL + "/ebook1.pdf");
@@ -184,30 +189,30 @@ class CommandProductServiceImplTest {
 
         Mockito.when(queryTagService.findById(1L)).thenReturn(new TagResponseDto(1L, "아름다운"));
         Mockito.when(queryTagService.findById(2L)).thenReturn(new TagResponseDto(2L, "슬픈"));
-        Mockito.when(queryTagService.findById(3L)).thenReturn(new TagResponseDto(3L, "우울한"));
 
-        Product updateProduct = DummyProduct.dummy(1L, isbn, updateSubscribeProduct, updateThumbnailFile, updateEbookFile, totalDiscountRate);
+        Product updateProduct = DummyProduct.dummy(id, isbn, updateSubscribeProduct, updateThumbnailFile, updateEbookFile, totalDiscountRate);
         Mockito.when(commandProductRepository.save(any())).thenReturn(updateProduct);
 
         // when
-        ProductOnlyIdDto productOnlyIdDto = service.update(1L, DummyProductUpdateDto.dummy("제목2"));
+        ProductUpdateDto dto = DummyProductUpdateDto.dummy("제목2");
+        ProductOnlyIdDto productOnlyIdDto = service.update(1L, dto);
 
         // then
         assertThat(productOnlyIdDto).isNotNull();
-        assertThat(productOnlyIdDto.getId()).isEqualTo(1L);
+        assertThat(productOnlyIdDto.getId()).isEqualTo(id);
 
-        verify(queryProductRepository, times(1)).findById(anyLong());
-        verify(querySubscribeProductRepository, times(1)).findByISSN(any());
-        verify(commandFileService, atLeastOnce()).register(any());
-        verify(commandWritingService, times(1)).deleteByProduct(any());
-        verify(queryAuthorService, atLeastOnce()).findById(anyLong());
-        verify(commandWritingService, atLeastOnce()).register(any());
-        verify(commandPublishService, times(1)).deleteByProduct(any());
-        verify(queryPublisherService, times(1)).findById(anyLong());
+        verify(queryProductRepository, times(1)).findById(id);
+        verify(querySubscribeProductRepository, times(1)).findByISSN(dto.getISSN());
+        verify(commandFileService, times(2)).register(any());
+        verify(commandWritingService, times(1)).deleteByProduct(product);
+        verify(queryAuthorService, times(1)).findById(dto.getAuthors().get(0));
+        verify(commandWritingService, times(1)).register(any());
+        verify(commandPublishService, times(1)).deleteByProduct(product);
+        verify(queryPublisherService, times(1)).findById(dto.getPublisherId());
         verify(commandPublishService, times(1)).register(any());
-        verify(commandProductTagService, times(1)).deleteByProduct(any());
-        verify(queryTagService, atLeastOnce()).findById(any());
-        verify(commandProductTagService, atLeastOnce()).register(any());
+        verify(commandProductTagService, times(1)).deleteByProduct(product);
+        verify(queryTagService, times(2)).findById(any());
+        verify(commandProductTagService, times(2)).register(any());
         verify(commandProductRepository, times(1)).save(any());
     }
 
@@ -216,20 +221,21 @@ class CommandProductServiceImplTest {
     void softDelete() {
         // given
         String isbn = "0000000000001";
+        Long id = 1L;
 
         File thumbnailFile = DummyFile.dummy(URL + "/image1.png");
         File ebookFile = DummyFile.dummy(URL + "/ebook1.pdf");
         SubscribeProduct subscribeProduct = SubscribeProduct.builder().id(1L).ISSN("00000001").build();
         TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
 
-        Product product = DummyProduct.dummy(1L, isbn, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate);
+        Product product = DummyProduct.dummy(id, isbn, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate);
         Mockito.when(queryProductRepository.findById(anyLong())).thenReturn(Optional.ofNullable(product));
 
         // when
-        service.softDelete(anyLong());
+        service.softDelete(id);
 
         // then
-        verify(queryProductRepository, times(1)).findById(anyLong());
-        verify(commandProductRepository, times(1)).save(any());
+        verify(queryProductRepository, times(1)).findById(id);
+        verify(commandProductRepository, times(1)).save(product);
     }
 }

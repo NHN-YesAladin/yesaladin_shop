@@ -3,12 +3,13 @@ package shop.yesaladin.shop.file.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import shop.yesaladin.shop.common.exception.CustomJsonProcessingException;
+import shop.yesaladin.shop.config.ObjectStorageProperties;
 import shop.yesaladin.shop.file.dto.TokenJsonDto;
 import shop.yesaladin.shop.file.dto.TokenRequest;
 import shop.yesaladin.shop.file.service.inter.StorageAuthService;
@@ -20,17 +21,11 @@ import shop.yesaladin.shop.file.service.inter.StorageAuthService;
  * @since 1.0
  */
 @Slf4j
+@RequiredArgsConstructor
 @Service
 public class StorageAuthServiceImpl implements StorageAuthService {
 
-    @Value("${storage-token.auth-url}")
-    private String authUrl;
-    @Value("${storage-token.tenant-id}")
-    private String tenantId;
-    @Value("${storage-token.username}")
-    private String username;
-    @Value("${storage-token.password}")
-    private String password;
+    private final ObjectStorageProperties objectStorage;
 
     /**
      * 요청 본문(tenantId, username, password)을 생성합니다.
@@ -42,9 +37,9 @@ public class StorageAuthServiceImpl implements StorageAuthService {
     public TokenRequest makeTokenRequest() {
         TokenRequest tokenRequest = new TokenRequest();
 
-        tokenRequest.getAuth().setTenantId(tenantId);
-        tokenRequest.getAuth().getPasswordCredentials().setUsername(username);
-        tokenRequest.getAuth().getPasswordCredentials().setPassword(password);
+        tokenRequest.getAuth().setTenantId(objectStorage.getTenantId());
+        tokenRequest.getAuth().getPasswordCredentials().setUsername(objectStorage.getUsername());
+        tokenRequest.getAuth().getPasswordCredentials().setPassword(objectStorage.getPassword());
 
         return tokenRequest;
     }
@@ -63,7 +58,7 @@ public class StorageAuthServiceImpl implements StorageAuthService {
         // 토큰 요청
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.exchange(
-                authUrl,
+                objectStorage.getAuthUrl(),
                 HttpMethod.POST,
                 httpEntity,
                 String.class

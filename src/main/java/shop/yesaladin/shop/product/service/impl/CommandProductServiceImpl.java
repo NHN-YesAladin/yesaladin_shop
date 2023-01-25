@@ -173,8 +173,8 @@ public class CommandProductServiceImpl implements CommandProductService {
         // EbookFile
         File ebookFile = null;
         if (Objects.nonNull(product.getEbookFile())) {
-            ebookFile = queryFileService.findById(product.getEbookFile().getId()).toEntity();
-            ebookFile = commandFileService.register(dto.changeEbookFile(ebookFile)).toEntity();
+            File foundEbookFile = queryFileService.findById(product.getEbookFile().getId()).toEntity();
+            ebookFile = commandFileService.register(dto.changeEbookFile(foundEbookFile)).toEntity();
         }
 
         // Writing

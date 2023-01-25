@@ -19,6 +19,8 @@ import shop.yesaladin.shop.product.service.inter.QueryProductTypeService;
 import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -38,15 +40,10 @@ class QueryProductTypeControllerTest {
     @MockBean
     private QueryProductTypeService service;
 
-    private List<ProductTypeResponseDto> productTypes;
-
-    @BeforeEach
-    void setUp() {
-        productTypes = List.of(
-                new ProductTypeResponseDto(1, ProductTypeCode.NONE.toString()),
-                new ProductTypeResponseDto(2, ProductTypeCode.DISCOUNTS.toString())
-        );
-    }
+    private List<ProductTypeResponseDto> productTypes = List.of(
+            new ProductTypeResponseDto(1, ProductTypeCode.NONE.toString()),
+            new ProductTypeResponseDto(2, ProductTypeCode.DISCOUNTS.toString())
+    );;
 
     @Test
     @DisplayName("상품 유형 전체 조회 성공")
@@ -55,7 +52,7 @@ class QueryProductTypeControllerTest {
         Mockito.when(service.findAll()).thenReturn(productTypes);
 
         // when
-        ResultActions result = mockMvc.perform(get("/v1/product-types")
+        ResultActions result = mockMvc.perform(get("/shop/v1/product-types")
                 .contentType(MediaType.APPLICATION_JSON));
 
         // then
@@ -66,6 +63,8 @@ class QueryProductTypeControllerTest {
                 .andExpect(jsonPath("$[1].id", equalTo(2)))
                 .andExpect(jsonPath("$[0].type", equalTo(ProductTypeCode.NONE.toString())))
                 .andExpect(jsonPath("$[1].type", equalTo(ProductTypeCode.DISCOUNTS.toString())));
+
+        verify(service, times(1)).findAll();
 
         // docs
         result.andDo(document(
