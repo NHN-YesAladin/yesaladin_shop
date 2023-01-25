@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import shop.yesaladin.shop.member.domain.model.Member;
 
 /**
- * 회원 차단 이후 MemberController 에서 클라이언트 에게 반환하기 위한 결과 DTO 입니다.
+ * 회원 차단해지 이후 MemberController 에서 클라이언트 에게 반환하기 위한 결과 DTO 입니다.
  *
  * @author 최예린
  * @since 1.0
@@ -16,14 +16,13 @@ import shop.yesaladin.shop.member.domain.model.Member;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class MemberBlockResponseDto {
+public class MemberUnblockResponseDto {
 
     private Long id;
     private String name;
     private String loginId;
     private Boolean isBlocked;
-    private LocalDate blockedDate;
-    private String blockedReason;
+    private LocalDate unblockedDate;
 
     /**
      * Member Entity를 DTO로 변한하기 위한 메서드 입니다.
@@ -33,14 +32,13 @@ public class MemberBlockResponseDto {
      * @author 최예린
      * @since 1.0
      */
-    public static MemberBlockResponseDto fromEntity(Member member) {
-        return new MemberBlockResponseDto(
+    public static MemberUnblockResponseDto fromEntity(Member member) {
+        return new MemberUnblockResponseDto(
                 member.getId(),
                 member.getName(),
                 member.getLoginId(),
                 member.isBlocked(),
-                member.getBlockedDate(),
-                member.getBlockedReason()
+                member.getUnblockedDate()
         );
     }
 }

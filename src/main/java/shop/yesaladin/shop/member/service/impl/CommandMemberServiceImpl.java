@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.member.service.impl;
 
+import java.time.LocalDate;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,9 +13,11 @@ import shop.yesaladin.shop.member.domain.repository.CommandMemberRepository;
 import shop.yesaladin.shop.member.domain.repository.CommandMemberRoleRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryRoleRepository;
+import shop.yesaladin.shop.member.dto.MemberBlockRequestDto;
 import shop.yesaladin.shop.member.dto.MemberBlockResponseDto;
 import shop.yesaladin.shop.member.dto.MemberCreateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberCreateResponseDto;
+import shop.yesaladin.shop.member.dto.MemberUnblockResponseDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateResponseDto;
 import shop.yesaladin.shop.member.dto.MemberWithdrawResponseDto;
@@ -122,10 +125,10 @@ public class CommandMemberServiceImpl implements CommandMemberService {
      */
     @Transactional
     @Override
-    public MemberBlockResponseDto block(String loginId) {
+    public MemberBlockResponseDto block(String loginId, MemberBlockRequestDto request) {
         Member member = tryGetMemberById(loginId);
 
-        member.blockMember();
+        member.blockMember(request.getBlockedReason());
 
         return MemberBlockResponseDto.fromEntity(member);
     }
@@ -135,12 +138,12 @@ public class CommandMemberServiceImpl implements CommandMemberService {
      */
     @Transactional
     @Override
-    public MemberBlockResponseDto unblock(String loginId) {
+    public MemberUnblockResponseDto unblock(String loginId) {
         Member member = tryGetMemberById(loginId);
 
         member.unblockMember();
 
-        return MemberBlockResponseDto.fromEntity(member);
+        return MemberUnblockResponseDto.fromEntity(member);
     }
 
     private Member tryGetMemberById(String loginId) {
