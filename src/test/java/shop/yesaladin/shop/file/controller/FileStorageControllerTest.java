@@ -20,11 +20,11 @@ import shop.yesaladin.shop.product.dummy.DummyFile;
 
 import java.io.FileInputStream;
 
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;

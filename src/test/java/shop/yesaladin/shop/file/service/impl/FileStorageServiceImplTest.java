@@ -1,11 +1,9 @@
 package shop.yesaladin.shop.file.service.impl;
 
-import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,9 +14,6 @@ import shop.yesaladin.shop.file.service.inter.StorageAuthService;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneId;
 
 import static org.mockito.Mockito.mock;
 

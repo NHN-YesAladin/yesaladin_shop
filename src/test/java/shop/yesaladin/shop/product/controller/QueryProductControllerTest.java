@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.product.controller;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

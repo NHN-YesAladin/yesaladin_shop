@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.product.controller;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -43,7 +42,8 @@ class QueryProductTypeControllerTest {
     private List<ProductTypeResponseDto> productTypes = List.of(
             new ProductTypeResponseDto(1, ProductTypeCode.NONE.toString()),
             new ProductTypeResponseDto(2, ProductTypeCode.DISCOUNTS.toString())
-    );;
+    );
+    ;
 
     @Test
     @DisplayName("상품 유형 전체 조회 성공")
