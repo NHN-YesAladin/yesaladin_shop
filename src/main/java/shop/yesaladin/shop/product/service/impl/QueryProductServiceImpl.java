@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class QueryProductServiceImpl implements QueryProductService {
 
-    private final int PERCENT_DENOMINATOR_VALUE = 100;
+    private final float PERCENT_DENOMINATOR_VALUE = 100;
     private final long ROUND_OFF_VALUE = 10;
 
     private final QueryProductRepository queryProductRepository;
@@ -60,7 +60,7 @@ public class QueryProductServiceImpl implements QueryProductService {
 
         long pointPrice = 0;
         if (product.isGivenPoint()) {
-            pointPrice = Math.round((product.getActualPrice() * product.getGivenPointRate() / 100f) / 10f) * 10L;
+            pointPrice = Math.round((product.getActualPrice() * product.getGivenPointRate() / PERCENT_DENOMINATOR_VALUE) / ROUND_OFF_VALUE) * ROUND_OFF_VALUE;
         }
 
         List<String> authors = findAuthorsByProduct(product);
