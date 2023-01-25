@@ -6,10 +6,23 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentRequest;
+import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
+import static shop.yesaladin.shop.docs.DocumentFormatGenerator.defaultValue;
+import static shop.yesaladin.shop.docs.DocumentFormatGenerator.getDateFormat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
@@ -19,6 +32,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
@@ -26,6 +40,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.category.domain.model.Category;
@@ -33,7 +48,7 @@ import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 import shop.yesaladin.shop.category.dummy.CategoryDummy;
 import shop.yesaladin.shop.category.exception.CategoryNotFoundException;
 import shop.yesaladin.shop.category.service.inter.QueryCategoryService;
-
+@AutoConfigureRestDocs
 @WebMvcTest(QueryCategoryController.class)
 class QueryCategoryControllerTest {
 
@@ -66,7 +81,7 @@ class QueryCategoryControllerTest {
 
         // when
         ResultActions perform = mockMvc.perform(get(
-                "/v1/categories/" + id).contentType(MediaType.APPLICATION_JSON));
+                "/v1/categories/{categoryId}", id).contentType(MediaType.APPLICATION_JSON));
 
         // then
         perform.andDo(print())
@@ -76,6 +91,28 @@ class QueryCategoryControllerTest {
 
         verify(queryCategoryService, times(1)).findCategoryById(longArgumentCaptor.capture());
         assertThat(longArgumentCaptor.getValue()).isEqualTo(id);
+
+        perform.andDo(document(
+                "get-category-by-id",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                pathParameters(
+                        parameterWithName("categoryId").description("찾고자하는 카테고리의 아이디")
+                ),
+                responseFields(
+                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("카테고리 아이디"),
+                        fieldWithPath("name").type(JsonFieldType.STRING).description("카테고리 이름"),
+                        fieldWithPath("isShown").type(JsonFieldType.BOOLEAN)
+                                .description("카테고리 노출 여부"),
+                        fieldWithPath("order").type(JsonFieldType.NUMBER)
+                                .optional()
+                                .description("카테고리 순서"),
+                        fieldWithPath("parentId").type(JsonFieldType.NUMBER).optional()
+                                .description("부모 카테고리(=1차 카테고리)의 아이디"),
+                        fieldWithPath("parentName").type(JsonFieldType.STRING).optional()
+                                .description("부모 카테고리(=1차 카테고리)의 이름")
+                )
+        ));
     }
 
     @Test
@@ -88,13 +125,25 @@ class QueryCategoryControllerTest {
 
         // when
         ResultActions perform = mockMvc.perform(get(
-                "/v1/categories/" + id).contentType(MediaType.APPLICATION_JSON));
+                "/v1/categories/{categoryId}", id).contentType(MediaType.APPLICATION_JSON));
 
         // then
         perform.andDo(print()).andExpect(status().isNotFound());
 
         verify(queryCategoryService, times(1)).findCategoryById(longArgumentCaptor.capture());
         assertThat(longArgumentCaptor.getValue()).isEqualTo(id);
+
+        perform.andDo(document(
+                "get-category-by-id-not-found-fail",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                pathParameters(
+                        parameterWithName("categoryId").description("찾고자하는 카테고리의 아이디")
+                ),
+                responseFields(
+                        fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
+                )
+        ));
     }
 
     @Test
@@ -155,6 +204,45 @@ class QueryCategoryControllerTest {
         assertThat(pageableCaptor.getValue()).isEqualTo(PageRequest.of(page, size));
         assertThat(longArgumentCaptor.getValue()).isEqualTo(parentId);
 
+        perform.andDo(document(
+                "get-categories-by-parent-id-paging",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                requestParameters(
+                        parameterWithName("parentId").description("찾고자하는 카테고리의 부모인 카테고리의 id"),
+                        parameterWithName("size").description("페이지네이션 사이즈")
+                                .optional()
+                                .attributes(defaultValue(20)),
+                        parameterWithName("page").description("페이지네이션 페이지 번호")
+                                .optional()
+                                .attributes(defaultValue(0))
+                ),
+                responseFields(
+                        fieldWithPath("totalPage").type(JsonFieldType.NUMBER)
+                                .description("총 페이지 수"),
+                        fieldWithPath("currentPage").type(JsonFieldType.NUMBER)
+                                .description("현재 페이지 번호"),
+                        fieldWithPath("totalDataCount").type(JsonFieldType.NUMBER)
+                                .description("모든 데이터의 수"),
+                        fieldWithPath("dataList").type(JsonFieldType.ARRAY)
+                                .description("조회된 카테고리 요약 데이터 리스트"),
+                        fieldWithPath("dataList.[].id").type(JsonFieldType.NUMBER)
+                                .description("카테고리 아이디"),
+                        fieldWithPath("dataList.[].name").type(JsonFieldType.STRING)
+                                .description("카테고리 이름"),
+                        fieldWithPath("dataList.[].isShown").type(JsonFieldType.BOOLEAN)
+                                .description("카테고리 노출 여부"),
+                        fieldWithPath("dataList.[].order").type(JsonFieldType.NUMBER)
+                                .optional()
+                                .description("카테고리 순서"),
+                        fieldWithPath("dataList.[].parentId").type(JsonFieldType.NUMBER).optional()
+                                .description("부모 카테고리(=1차 카테고리)의 아이디"),
+                        fieldWithPath("dataList.[].parentName").type(JsonFieldType.STRING)
+                                .optional()
+                                .description("부모 카테고리(=1차 카테고리)의 이름")
+                )
+        ));
+
     }
 
     @Test
@@ -176,7 +264,8 @@ class QueryCategoryControllerTest {
 
         // when
         ResultActions perform = mockMvc.perform(get(
-                "/v1/categories/parents").contentType(MediaType.APPLICATION_JSON));
+                "/v1/categories").queryParam("cate", "parents")
+                .contentType(MediaType.APPLICATION_JSON));
 
         // then
         perform.andDo(print())
@@ -186,6 +275,32 @@ class QueryCategoryControllerTest {
                 .andExpect(jsonPath("$.[0].isShown", equalTo(dtoList.get(0).getIsShown())));
 
         verify(queryCategoryService, times(1)).findParentCategories();
+
+        perform.andDo(document(
+                "get-parent-categories",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                requestParameters(
+                        parameterWithName("cate").description("모든 1차 카테고리를 불러 올 때 사용")
+                                .attributes(defaultValue("parents"))
+                ),
+                responseFields(
+                        fieldWithPath("[].id").type(JsonFieldType.NUMBER)
+                                .description("1차 카테고리 아이디"),
+                        fieldWithPath("[].name").type(JsonFieldType.STRING)
+                                .description("1차 카테고리 이름"),
+                        fieldWithPath("[].isShown").type(JsonFieldType.BOOLEAN)
+                                .description("1차 카테고리 노출 여부"),
+                        fieldWithPath("[].order").type(JsonFieldType.NUMBER)
+                                .optional()
+                                .description("1차 카테고리 순서"),
+                        fieldWithPath("[].parentId").type(JsonFieldType.NUMBER).optional()
+                                .description("부모 카테고리(=1차 카테고리)의 아이디 - null"),
+                        fieldWithPath("[].parentName").type(JsonFieldType.STRING)
+                                .optional()
+                                .description("부모 카테고리(=1차 카테고리)의 이름 - null")
+                )
+        ));
     }
 
     @Test
@@ -211,9 +326,9 @@ class QueryCategoryControllerTest {
 
         // when
         ResultActions perform = mockMvc.perform(get(
-                "/v1/categories/{parentId}/children",
+                "/v1/categories/{parentId}",
                 parentId
-        ).contentType(MediaType.APPLICATION_JSON));
+        ).queryParam("cate", "children").contentType(MediaType.APPLICATION_JSON));
 
         // then
         perform.andDo(print())
@@ -227,6 +342,36 @@ class QueryCategoryControllerTest {
                 times(1)
         ).findChildCategoriesByParentId(longArgumentCaptor.capture());
         assertThat(longArgumentCaptor.getValue()).isEqualTo(parentId);
+
+        perform.andDo(document(
+                "get-child-categories-by-parent-id",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                pathParameters(
+                        parameterWithName("parentId").description("찾고자하는 카테고리의 부모인 카테고리의 id")
+                ),
+                requestParameters(
+                        parameterWithName("cate").description("해당하는 아이디의 2차 카테고리를 모두 조회하는 경우 사용")
+                                .attributes(defaultValue("children"))
+                ),
+                responseFields(
+                        fieldWithPath("[].id").type(JsonFieldType.NUMBER)
+                                .description("2차 카테고리 아이디"),
+                        fieldWithPath("[].name").type(JsonFieldType.STRING)
+                                .description("2차 카테고리 이름"),
+                        fieldWithPath("[].isShown").type(JsonFieldType.BOOLEAN)
+                                .description("2차 카테고리 노출 여부"),
+                        fieldWithPath("[].order").type(JsonFieldType.NUMBER)
+                                .optional()
+                                .description("2차 카테고리 순서"),
+                        fieldWithPath("[].parentId").type(JsonFieldType.NUMBER).optional()
+                                .description("부모 카테고리(=1차 카테고리)의 아이디"),
+                        fieldWithPath("[].parentName").type(JsonFieldType.STRING)
+                                .optional()
+                                .description("부모 카테고리(=1차 카테고리)의 이름")
+                )
+        ));
+
     }
 
 }

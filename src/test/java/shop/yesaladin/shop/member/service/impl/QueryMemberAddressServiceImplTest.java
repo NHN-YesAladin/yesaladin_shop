@@ -41,36 +41,36 @@ class QueryMemberAddressServiceImplTest {
     }
 
     @Test
-    void findByMemberId_failedByMemberNotFound() {
+    void findByLoginId_failedByMemberNotFound() {
         //given
-        Long memberId = 1L;
-        Member member = MemberDummy.dummyWithId(memberId);
+        String loginId = "user@1";
 
-        Mockito.when(queryMemberRepository.findById(memberId))
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
                 .thenThrow(MemberNotFoundException.class);
+
         //when,then
-        assertThatThrownBy(() -> queryMemberAddressService.findByMemberId(memberId)).isInstanceOf(
+        assertThatThrownBy(() -> queryMemberAddressService.findByLoginId(loginId)).isInstanceOf(
                 MemberNotFoundException.class);
     }
 
     @Test
-    void findByMemberId() {
+    void findByLoginId() {
         //given
-        Long memberId = 1L;
-        Member member = MemberDummy.dummyWithId(memberId);
+        String loginId = "user@1";
+        Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
 
-        Mockito.when(queryMemberRepository.findById(memberId))
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
                 .thenReturn(Optional.of(member));
 
         Mockito.when(queryMemberAddressRepository.findByMember(member))
                 .thenReturn(getMemberAddressList(10, member));
         //when
-        List<MemberAddressQueryDto> result = queryMemberAddressService.findByMemberId(memberId);
+        List<MemberAddressQueryDto> result = queryMemberAddressService.findByLoginId(loginId);
 
         //then
         assertThat(result).hasSize(10);
         assertThat(result.stream()
-                .filter(x -> !Objects.equals(x.getMember().getId(), memberId))
+                .filter(x -> !Objects.equals(x.getMember().getLoginId(), loginId))
                 .findFirst()).isEmpty();
     }
 

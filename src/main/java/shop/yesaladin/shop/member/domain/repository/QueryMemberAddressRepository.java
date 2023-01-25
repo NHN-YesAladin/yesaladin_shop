@@ -36,22 +36,22 @@ public interface QueryMemberAddressRepository {
     /**
      * 회원의 특정한 배송지를 조회합니다.
      *
-     * @param memberId        회원 id
+     * @param loginId         회원 아이디
      * @param memberAddressId 배송지 id
      * @return 회원의 배송지
      * @author 최예린
      * @since 1.0
      */
-    Optional<MemberAddress> getByMemberIdAndMemberAddressId(long memberId, long memberAddressId);
+    Optional<MemberAddress> getByLoginIdAndMemberAddressId(String loginId, long memberAddressId);
 
     /**
      * 회원의 특정한 배송지가 있는지 확인합니다.
      *
-     * @param memberId        회원 id
+     * @param loginId        회원 id
      * @param memberAddressId 배송지 id
      * @return 회원의 배송지 유무
      * @author 최예린
      * @since 1.0
      */
-    boolean existByMemberIdAndMemberAddressId(long memberId, long memberAddressId);
+    boolean existByLoginIdAndMemberAddressId(String loginId, long memberAddressId);
 }

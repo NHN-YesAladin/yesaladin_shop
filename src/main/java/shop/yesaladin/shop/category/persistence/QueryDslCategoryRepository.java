@@ -27,7 +27,7 @@ import shop.yesaladin.shop.category.dto.CategoryOnlyIdDto;
 @Slf4j
 @RequiredArgsConstructor
 @Repository
-public class QueryDslCategoryRepositoryImpl implements QueryCategoryRepository {
+public class QueryDslCategoryRepository implements QueryCategoryRepository {
 
     private final JPAQueryFactory queryFactory;
 
@@ -140,7 +140,7 @@ public class QueryDslCategoryRepositoryImpl implements QueryCategoryRepository {
      * @return
      */
     private BooleanExpression parentIdEq(QCategory category, Long parentId) {
-        if (parentId == null) {
+        if (Objects.isNull(parentId)) {
             return null;
         }
         return category.parent.id.eq(parentId);
@@ -156,7 +156,7 @@ public class QueryDslCategoryRepositoryImpl implements QueryCategoryRepository {
      */
     private BooleanExpression depthEq(QCategory category, Integer depth) {
 
-        if (depth == null) {
+        if (Objects.isNull(depth)) {
             return null;
         }
         return category.depth.eq(depth);

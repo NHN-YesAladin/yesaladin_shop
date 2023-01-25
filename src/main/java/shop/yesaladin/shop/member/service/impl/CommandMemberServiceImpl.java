@@ -17,6 +17,7 @@ import shop.yesaladin.shop.member.dto.MemberCreateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberCreateResponseDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateResponseDto;
+import shop.yesaladin.shop.member.dto.MemberWithdrawResponseDto;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.exception.MemberProfileAlreadyExistException;
 import shop.yesaladin.shop.member.exception.MemberRoleNotFoundException;
@@ -100,18 +101,12 @@ public class CommandMemberServiceImpl implements CommandMemberService {
     }
 
     /**
-     * 회원 정보 수정을 위한 기능입니다.
-     *
-     * @param id        정보를 수정한 회원 id
-     * @param updateDto 수정한 회원 정보 dto
-     * @return 수정된 결과를 반환할 dto
-     * @author 최예린
-     * @since 1.0
+     * {@inheritDoc}
      */
     @Transactional
     @Override
-    public MemberUpdateResponseDto update(Long id, MemberUpdateRequestDto updateDto) {
-        Member member = tryGetMemberById(id);
+    public MemberUpdateResponseDto update(String loginId, MemberUpdateRequestDto updateDto) {
+        Member member = tryGetMemberById(loginId);
 
         checkUniqueData(
                 queryMemberRepository.findMemberByNickname(updateDto.getNickname()),
@@ -123,16 +118,12 @@ public class CommandMemberServiceImpl implements CommandMemberService {
     }
 
     /**
-     * 회원 차단을 위한 기능 입니다.
-     *
-     * @param id 차단할 회원 id
-     * @author 최예린
-     * @since 1.0
+     * {@inheritDoc}
      */
     @Transactional
     @Override
-    public MemberBlockResponseDto block(Long id) {
-        Member member = tryGetMemberById(id);
+    public MemberBlockResponseDto block(String loginId) {
+        Member member = tryGetMemberById(loginId);
 
         member.blockMember();
 
@@ -140,30 +131,40 @@ public class CommandMemberServiceImpl implements CommandMemberService {
     }
 
     /**
-     * 회원 차단해지를 위한 기능 입니다.
-     *
-     * @param id 차단해지할 회원 id
-     * @author 최예린
-     * @since 1.0
+     * {@inheritDoc}
      */
     @Transactional
     @Override
-    public MemberBlockResponseDto unblock(Long id) {
-        Member member = tryGetMemberById(id);
+    public MemberBlockResponseDto unblock(String loginId) {
+        Member member = tryGetMemberById(loginId);
 
         member.unblockMember();
 
         return MemberBlockResponseDto.fromEntity(member);
     }
 
-    private Member tryGetMemberById(Long id) {
-        return queryMemberRepository.findById(id)
-                .orElseThrow(() -> new MemberNotFoundException("Member Id: " + id));
+    private Member tryGetMemberById(String loginId) {
+        return queryMemberRepository.findMemberByLoginId(loginId)
+                .orElseThrow(() -> new MemberNotFoundException("Member loginId: " + loginId));
     }
 
     private void checkUniqueData(Optional<Member> member, String target) {
         if (member.isPresent()) {
             throw new MemberProfileAlreadyExistException(target);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public MemberWithdrawResponseDto withDraw(String loginId) {
+        Member member = queryMemberRepository.findMemberByLoginId(loginId)
+                .orElseThrow(() -> new MemberNotFoundException("Member loginId: " + loginId));
+
+        member.withdrawMember();
+
+        return MemberWithdrawResponseDto.fromEntity(member);
     }
 }

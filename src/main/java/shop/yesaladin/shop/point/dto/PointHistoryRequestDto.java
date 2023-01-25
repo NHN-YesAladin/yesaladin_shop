@@ -22,6 +22,8 @@ import shop.yesaladin.shop.point.domain.model.PointHistory;
 public class PointHistoryRequestDto {
 
     @NotNull
+    private String loginId;
+    @NotNull
     private Long amount;
 
     /**

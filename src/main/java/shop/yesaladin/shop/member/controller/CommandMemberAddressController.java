@@ -24,7 +24,7 @@ import shop.yesaladin.shop.member.service.inter.CommandMemberAddressService;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/members/{memberId}/addresses")
+@RequestMapping("/v1/members/{loginId}/addresses")
 public class CommandMemberAddressController {
 
     private final CommandMemberAddressService commandMemberAddressService;
@@ -32,7 +32,7 @@ public class CommandMemberAddressController {
     /**
      * 회원지 배송 등록을 위한 기능입니다.
      *
-     * @param memberId 회원 id
+     * @param loginId 회원 id
      * @param request  등록할 배송지 데이터
      * @return 등록된 배송지 데이터
      * @author 최예린
@@ -41,16 +41,16 @@ public class CommandMemberAddressController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public MemberAddressCreateResponseDto createMemberAddress(
-            @PathVariable Long memberId,
+            @PathVariable String loginId,
             @Valid @RequestBody MemberAddressCreateRequestDto request
     ) {
-        return commandMemberAddressService.save(memberId, request);
+        return commandMemberAddressService.save(loginId, request);
     }
 
     /**
      * 회원의 배송지를 대표 배송지로 설정하는 기능입니다.
      *
-     * @param memberId  회원 id
+     * @param loginId  회원 id
      * @param addressId 대표로 지정할 배송지 id
      * @return 회원의 대표 배송지 정보
      * @author 최예린
@@ -59,23 +59,23 @@ public class CommandMemberAddressController {
     @PutMapping("/{addressId}")
     @ResponseStatus(HttpStatus.OK)
     public MemberAddressUpdateResponseDto markAsDefaultAddress(
-            @PathVariable Long memberId,
+            @PathVariable String loginId,
             @PathVariable Long addressId
     ) {
-        return commandMemberAddressService.markAsDefault(memberId, addressId);
+        return commandMemberAddressService.markAsDefault(loginId, addressId);
     }
 
     /**
      * 회원의 배송지를 삭제하는 기능입니다.
      *
-     * @param memberId  회원 id
+     * @param loginId  회원 id
      * @param addressId 삭제할 배송 id
      * @author 최예린
      * @since 1.0
      */
     @DeleteMapping("/{addressId}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteMemberAddress(@PathVariable Long memberId, @PathVariable Long addressId) {
-        commandMemberAddressService.delete(memberId, addressId);
+    public void deleteMemberAddress(@PathVariable String loginId, @PathVariable Long addressId) {
+        commandMemberAddressService.delete(loginId, addressId);
     }
 }

@@ -19,7 +19,7 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberAddressService;
  */
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/v1/members/{memberId}/addresses")
+@RequestMapping("/v1/members/{loginId}/addresses")
 public class QueryMemberAddressController {
 
     private final QueryMemberAddressService queryMemberAddressService;
@@ -27,14 +27,14 @@ public class QueryMemberAddressController {
     /**
      * 회원아이디를 통해 배송지를 조회합니다.
      *
-     * @param memberId 회원 id
+     * @param loginId 회원 아이디
      * @return 회원의 배송지 목록
      * @author 최예린
      * @since 1.0
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<MemberAddressQueryDto> getMemberAddressByMemberId(@PathVariable Long memberId) {
-        return queryMemberAddressService.findByMemberId(memberId);
+    public List<MemberAddressQueryDto> getMemberAddressByMemberId(@PathVariable String loginId) {
+        return queryMemberAddressService.findByLoginId(loginId);
     }
 }
