@@ -45,8 +45,8 @@ public interface CommandProductService {
     /**
      * 상품 재고수량을 지정한 수량만큼 차감합니다.
      *
-     * @param id        차감할 상품의 Id
-     * @param quantity  차감할 수량
+     * @param id       차감할 상품의 Id
+     * @param quantity 차감할 수량
      * @author 이수정
      * @since 1.0
      */

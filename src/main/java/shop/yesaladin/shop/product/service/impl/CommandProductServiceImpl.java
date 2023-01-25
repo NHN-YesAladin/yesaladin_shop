@@ -242,10 +242,11 @@ public class CommandProductServiceImpl implements CommandProductService {
                 .orElseThrow(() -> new ProductNotFoundException(id));
 
         long sellQuantity = product.getQuantity();
-        if (sellQuantity - requestedQuantity < 0) {
+        long deductedQuantity = sellQuantity - requestedQuantity;
+        if (deductedQuantity < 0) {
             throw new RequestedQuantityLargerThanSellQuantityException(requestedQuantity, sellQuantity);
         }
-        product.changeQuantity(sellQuantity - requestedQuantity);
+        product.changeQuantity(deductedQuantity);
 
         commandProductRepository.save(product);
     }

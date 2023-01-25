@@ -3,6 +3,7 @@ package shop.yesaladin.shop.product.domain.model;
 import lombok.*;
 import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.product.exception.AlreadyDeletedProductException;
+import shop.yesaladin.shop.product.exception.NegativeOrZeroQuantityException;
 import shop.yesaladin.shop.product.persistence.converter.ProductSavingMethodCodeConverter;
 import shop.yesaladin.shop.product.persistence.converter.ProductTypeCodeConverter;
 
@@ -94,7 +95,7 @@ public class Product {
      * @since 1.0
      */
     public void deleteProduct() {
-        if (this.isDeleted == true) {
+        if (this.isDeleted) {
             throw new AlreadyDeletedProductException(id);
         }
         this.isDeleted = true;
@@ -108,6 +109,9 @@ public class Product {
      * @since 1.0
      */
     public void changeQuantity(long quantity) {
+        if (quantity < 0) {
+            throw new NegativeOrZeroQuantityException((int) quantity);
+        }
         this.quantity = quantity;
     }
 }
