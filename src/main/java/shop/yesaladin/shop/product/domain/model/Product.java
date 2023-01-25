@@ -87,10 +87,27 @@ public class Product {
     @Convert(converter = ProductSavingMethodCodeConverter.class)
     private ProductSavingMethodCode productSavingMethodCode;
 
+    /**
+     * 상품 soft delete를 위해 isDeleted를 true로 바꿉니다.
+     *
+     * @author 이수정
+     * @since 1.0
+     */
     public void deleteProduct() {
         if (this.isDeleted == true) {
             throw new AlreadyDeletedProductException(id);
         }
         this.isDeleted = true;
+    }
+
+    /**
+     * 상품의 재고수량을 바꿉니다.
+     *
+     * @param quantity 바꿀 재고수량
+     * @author 이수정
+     * @since 1.0
+     */
+    public void changeQuantity(long quantity) {
+        this.quantity = quantity;
     }
 }
