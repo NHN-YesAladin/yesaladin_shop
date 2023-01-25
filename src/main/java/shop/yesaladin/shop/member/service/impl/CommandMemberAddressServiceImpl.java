@@ -9,8 +9,7 @@ import shop.yesaladin.shop.member.domain.repository.CommandMemberAddressReposito
 import shop.yesaladin.shop.member.domain.repository.QueryMemberAddressRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
 import shop.yesaladin.shop.member.dto.MemberAddressCreateRequestDto;
-import shop.yesaladin.shop.member.dto.MemberAddressCreateResponseDto;
-import shop.yesaladin.shop.member.dto.MemberAddressUpdateResponseDto;
+import shop.yesaladin.shop.member.dto.MemberAddressCommandResponseDto;
 import shop.yesaladin.shop.member.exception.MemberAddressNotFoundException;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.CommandMemberAddressService;
@@ -31,7 +30,7 @@ public class CommandMemberAddressServiceImpl implements CommandMemberAddressServ
 
     @Override
     @Transactional
-    public MemberAddressCreateResponseDto save(
+    public MemberAddressCommandResponseDto save(
             String loginId,
             MemberAddressCreateRequestDto request
     ) {
@@ -41,12 +40,12 @@ public class CommandMemberAddressServiceImpl implements CommandMemberAddressServ
 
         MemberAddress savedMemberAddress = commandMemberAddressRepository.save(newMemberAddress);
 
-        return MemberAddressCreateResponseDto.fromEntity(savedMemberAddress);
+        return MemberAddressCommandResponseDto.fromEntity(savedMemberAddress);
     }
 
     @Override
     @Transactional
-    public MemberAddressUpdateResponseDto markAsDefault(String loginId, long addressId) {
+    public MemberAddressCommandResponseDto markAsDefault(String loginId, long addressId) {
         MemberAddress memberAddress = tryGetMemberAddressByMemberIdAndMemberAddressId(
                 loginId,
                 addressId
@@ -56,7 +55,7 @@ public class CommandMemberAddressServiceImpl implements CommandMemberAddressServ
 
         memberAddress.markAsDefault();
 
-        return MemberAddressUpdateResponseDto.fromEntity(memberAddress);
+        return MemberAddressCommandResponseDto.fromEntity(memberAddress);
     }
 
     @Override

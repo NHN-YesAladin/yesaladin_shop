@@ -27,7 +27,9 @@ import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 @RestController
 @RequestMapping("/v1/categories")
 // 테스트 상황에 카테고리 조회 필요시, Front 프로젝트의 port를 8080 혹은 9090으로 놓고 테스트
-@CrossOrigin({"http://localhost:8080", "http://localhost:9090", "https://www.yesaladin.shop"})
+@CrossOrigin(origins = {"http://localhost:8080", "http://localhost:9090",
+        "http://test.yesaladin.shop:9090",
+        "https://www.yesaladin.shop"})
 public class QueryCategoryController {
 
     private final QueryCategoryService queryCategoryService;

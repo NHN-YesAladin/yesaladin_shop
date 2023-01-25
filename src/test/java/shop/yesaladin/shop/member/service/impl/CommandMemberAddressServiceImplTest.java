@@ -19,8 +19,7 @@ import shop.yesaladin.shop.member.domain.repository.CommandMemberAddressReposito
 import shop.yesaladin.shop.member.domain.repository.QueryMemberAddressRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
 import shop.yesaladin.shop.member.dto.MemberAddressCreateRequestDto;
-import shop.yesaladin.shop.member.dto.MemberAddressCreateResponseDto;
-import shop.yesaladin.shop.member.dto.MemberAddressUpdateResponseDto;
+import shop.yesaladin.shop.member.dto.MemberAddressCommandResponseDto;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
 import shop.yesaladin.shop.member.exception.MemberAddressNotFoundException;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
@@ -84,11 +83,11 @@ class CommandMemberAddressServiceImplTest {
                 .thenReturn(Optional.of(member));
         Mockito.when(commandMemberAddressRepository.save(any())).thenReturn(memberAddress);
 
-        MemberAddressCreateResponseDto actual = commandMemberAddressService.save(loginId, request);
+        MemberAddressCommandResponseDto actual = commandMemberAddressService.save(loginId, request);
 
         assertThat(actual.getAddress()).isEqualTo(address);
         assertThat(actual.getIsDefault()).isEqualTo(isDefault);
-        assertThat(actual.getMember().getLoginId()).isEqualTo(loginId);
+        assertThat(actual.getLoginId()).isEqualTo(loginId);
 
         ArgumentCaptor<MemberAddress> captor = ArgumentCaptor.forClass(MemberAddress.class);
 
@@ -134,13 +133,14 @@ class CommandMemberAddressServiceImplTest {
         )).thenReturn(
                 Optional.of(memberAddress));
 
-        MemberAddressUpdateResponseDto result = commandMemberAddressService.markAsDefault(
+        MemberAddressCommandResponseDto result = commandMemberAddressService.markAsDefault(
                 loginId,
                 addressId
         );
 
         assertThat(result.getAddress()).isEqualTo(address);
-        assertThat(result.getMember().getLoginId()).isEqualTo(loginId);
+        assertThat(result.getIsDefault()).isTrue();
+        assertThat(result.getLoginId()).isEqualTo(loginId);
     }
 
     @Test

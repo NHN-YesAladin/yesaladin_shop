@@ -92,7 +92,10 @@ class QueryMemberAddressControllerTest {
         //then
         result.andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$[0].member.loginId", equalTo(loginId)));
+                .andExpect(jsonPath("$[0].id", equalTo(1)))
+                .andExpect(jsonPath("$[0].address", equalTo(address)))
+                .andExpect(jsonPath("$[0].default", equalTo(isDefault)))
+                .andExpect(jsonPath("$[0].loginId", equalTo(loginId)));
 
         //docs
         result.andDo(document(
@@ -106,38 +109,7 @@ class QueryMemberAddressControllerTest {
                                 .description("등록된 배송지 주소"),
                         fieldWithPath("[].default").type(JsonFieldType.BOOLEAN)
                                 .description("등록된 배송지의 대표주소 여부"),
-                        fieldWithPath("[].member.id").type(JsonFieldType.NUMBER)
-                                .description("회원의 Pk"),
-                        fieldWithPath("[].member.nickname").type(JsonFieldType.STRING)
-                                .description("회원의 닉네임"),
-                        fieldWithPath("[].member.name").type(JsonFieldType.STRING)
-                                .description("회원의 이름"),
-                        fieldWithPath("[].member.loginId").type(JsonFieldType.STRING)
-                                .description("회원의 아이디"),
-                        fieldWithPath("[].member.password").type(JsonFieldType.STRING)
-                                .description("회원의 비밀번호"),
-                        fieldWithPath("[].member.birthYear").type(JsonFieldType.NUMBER)
-                                .description("회원의 생년"),
-                        fieldWithPath("[].member.birthMonth").type(JsonFieldType.NUMBER)
-                                .description("회원의 생월"),
-                        fieldWithPath("[].member.birthDay").type(JsonFieldType.NUMBER)
-                                .description("회원의 생일"),
-                        fieldWithPath("[].member.email").type(JsonFieldType.STRING)
-                                .description("회원의 이메일"),
-                        fieldWithPath("[].member.phone").type(JsonFieldType.STRING)
-                                .description("회원의 핸드폰번호"),
-                        fieldWithPath("[].member.signUpDate").type(JsonFieldType.STRING)
-                                .description("회원의 가입일"),
-                        fieldWithPath("[].member.withdrawalDate").type(JsonFieldType.STRING)
-                                .description("회원의 탈퇴일").optional(),
-                        fieldWithPath("[].member.withdrawal").type(JsonFieldType.BOOLEAN)
-                                .description("회원의 탈퇴여부"),
-                        fieldWithPath("[].member.blocked").type(JsonFieldType.BOOLEAN)
-                                .description("회원의 차단여부"),
-                        fieldWithPath("[].member.memberGrade").type(JsonFieldType.STRING)
-                                .description("회원의 등급"),
-                        fieldWithPath("[].member.memberGenderCode").type(JsonFieldType.STRING)
-                                .description("회원의 성별")
+                        fieldWithPath("[].loginId").type(JsonFieldType.STRING).description("회원의 아이디")
                 )
         ));
     }

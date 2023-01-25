@@ -1,8 +1,7 @@
 package shop.yesaladin.shop.member.service.inter;
 
 import shop.yesaladin.shop.member.dto.MemberAddressCreateRequestDto;
-import shop.yesaladin.shop.member.dto.MemberAddressCreateResponseDto;
-import shop.yesaladin.shop.member.dto.MemberAddressUpdateResponseDto;
+import shop.yesaladin.shop.member.dto.MemberAddressCommandResponseDto;
 
 /**
  * 회원지 배송을 등록/수정/삭제를 위한 service interface
@@ -21,7 +20,7 @@ public interface CommandMemberAddressService {
      * @author 최예린
      * @since 1.0
      */
-    MemberAddressCreateResponseDto save(String loginId, MemberAddressCreateRequestDto request);
+    MemberAddressCommandResponseDto save(String loginId, MemberAddressCreateRequestDto request);
 
     /**
      * 회원의 대표 배송지를 등록합니다.
@@ -32,7 +31,7 @@ public interface CommandMemberAddressService {
      * @author 최예린
      * @since 1.0
      */
-    MemberAddressUpdateResponseDto markAsDefault(String loginId, long addressId);
+    MemberAddressCommandResponseDto markAsDefault(String loginId, long addressId);
 
     /**
      * 회원의 배송지를 삭제합니다.
