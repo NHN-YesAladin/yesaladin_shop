@@ -1,7 +1,8 @@
 package shop.yesaladin.shop.member.controller;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.member.dto.MemberGradeHistoryQueryResponseDto;
 import shop.yesaladin.shop.member.service.inter.QueryMemberGradeHistoryService;
@@ -36,10 +38,18 @@ public class QueryMemberGradeHistoryController {
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<MemberGradeHistoryQueryResponseDto> getMemberGrades(
+    public PaginatedResponseDto<MemberGradeHistoryQueryResponseDto> getMemberGrades(
             @PathVariable String loginId,
-            @RequestBody PeriodQueryRequestDto request
+            @RequestBody PeriodQueryRequestDto request,
+            Pageable pageable
     ) {
-        return queryMemberGradeHistoryService.findByLoginId(loginId, request);
+        Page<MemberGradeHistoryQueryResponseDto> response = queryMemberGradeHistoryService.getByLoginId(loginId, request, pageable);
+
+        return PaginatedResponseDto.<MemberGradeHistoryQueryResponseDto>builder()
+                .totalPage(response.getTotalPages())
+                .currentPage(response.getNumber())
+                .totalDataCount(response.getTotalElements())
+                .dataList(response.getContent())
+                .build();
     }
 }

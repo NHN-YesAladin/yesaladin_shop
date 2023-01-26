@@ -11,6 +11,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberGradeHistory;
@@ -31,6 +33,8 @@ class QueryDslQueryMemberGradeHistoryRepositoryTest {
 
     Member member;
     String loginId = "user@1";
+    Pageable pageable = Pageable.ofSize(10);
+
 
     @BeforeEach
     void setUp() {
@@ -71,10 +75,11 @@ class QueryDslQueryMemberGradeHistoryRepositoryTest {
         addMemberGradeHistoryData(expectedCnt);
 
         //when
-        List<MemberGradeHistoryQueryResponseDto> actual = queryMemberGradeHistoryRepository.findByLoginIdAndPeriod(
+        Page<MemberGradeHistoryQueryResponseDto> actual = queryMemberGradeHistoryRepository.findByLoginIdAndPeriod(
                 loginId,
                 startDate,
-                endDate
+                endDate,
+                pageable
         );
 
         //then

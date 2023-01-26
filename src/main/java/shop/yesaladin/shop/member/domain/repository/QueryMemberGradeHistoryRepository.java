@@ -3,6 +3,8 @@ package shop.yesaladin.shop.member.domain.repository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.member.dto.MemberGradeHistoryQueryResponseDto;
 
 /**
@@ -33,9 +35,10 @@ public interface QueryMemberGradeHistoryRepository {
      * @author 최예린
      * @since 1.0
      */
-    List<MemberGradeHistoryQueryResponseDto> findByLoginIdAndPeriod(
+    Page<MemberGradeHistoryQueryResponseDto> findByLoginIdAndPeriod(
             String loginId,
             LocalDate startDate,
-            LocalDate endDate
+            LocalDate endDate,
+            Pageable pageable
     );
 }
