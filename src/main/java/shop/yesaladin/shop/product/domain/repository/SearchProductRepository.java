@@ -16,20 +16,24 @@ public interface SearchProductRepository {
      * 카테고리 id를 이용한 검색하는 메소드
      *
      * @param id 검색할 카테고리 id
+     * @param offset 검색하고 싶은 페이지 위치
+     * @param size   검색하고 싶은 상품 갯수
      * @return 검색된 상품 리스트
      * @
      */
-    List<SearchedProductResponseDto> searchProductsByCategoryId(Long id);
+    List<SearchedProductResponseDto> searchProductsByCategoryId(Long id, int offset, int size);
 
     /**
      * 카테고리 이름으로 상품을 검색하는 메서드
      *
      * @param name 검색하고 싶은 카테고리 이름
+     * @param offset 검색하고 싶은 페이지 위치
+     * @param size   검색하고 싶은 상품 갯수
      * @return 해당 카테고리 상품 리스트
      * @author : 김선홍
      * @since : 1.0
      */
-    List<SearchedProductResponseDto> searchProductsByCategoryName(String name);
+    List<SearchedProductResponseDto> searchProductsByCategoryName(String name, int offset, int size);
 
     /**
      * 상품 이름으로 상품을 검색하는 메서드

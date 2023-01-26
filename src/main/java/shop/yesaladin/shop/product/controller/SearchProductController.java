@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.shop.product.dto.SearchProductRequestDto;
 import shop.yesaladin.shop.product.dto.SearchedProductResponseDto;
@@ -25,6 +26,7 @@ import shop.yesaladin.shop.product.service.inter.SearchProductService;
 @RestController
 @RequestMapping("/search/product")
 public class SearchProductController {
+
     private final SearchProductService searchProductService;
 
     /**
@@ -120,8 +122,12 @@ public class SearchProductController {
      * @since : 1.0
      */
     @GetMapping("/category/id/{id}")
-    List<SearchedProductResponseDto> searchProductByCategoryId(@PathVariable Long id) {
-        return searchProductService.searchProductsByCategoryId(id);
+    List<SearchedProductResponseDto> searchProductByCategoryId(
+            @PathVariable Long id,
+            @RequestParam int offset,
+            @RequestParam int size
+    ) {
+        return searchProductService.searchProductsByCategoryId(id, offset, size);
     }
 
     /**
@@ -133,7 +139,11 @@ public class SearchProductController {
      * @since : 1.0
      */
     @GetMapping("/category/name/{name}")
-    List<SearchedProductResponseDto> searchProductByCategoryName(@PathVariable String name) {
-        return searchProductService.searchProductsByCategoryName(name);
+    List<SearchedProductResponseDto> searchProductByCategoryName(
+            @PathVariable String name,
+            @RequestParam int offset,
+            @RequestParam int size
+    ) {
+        return searchProductService.searchProductsByCategoryName(name, offset, size);
     }
 }

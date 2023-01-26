@@ -30,16 +30,6 @@ import shop.yesaladin.shop.product.service.inter.SearchProductService;
 public class SearchProductServiceImpl implements SearchProductService {
 
     private final SearchProductRepository searchProductRepository;
-    private final StorageAuthService storageAuthService;
-    private final RestTemplate restTemplate;
-    @Value("${storage-token.storage-url}")
-    private String objectStorageUrl;
-    @Value("${storage-token.storage-account}")
-    private String account;
-    @Value("${storage-token.container-name}")
-    private String container;
-    @Value("${storage-token.thumbnail-path}")
-    private String thumbnailPath;
 
     /**
      * 카테고리 id로 상품을 검색하는 메서드
@@ -50,8 +40,10 @@ public class SearchProductServiceImpl implements SearchProductService {
      * @since : 1.0
      */
     @Override
-    public List<SearchedProductResponseDto> searchProductsByCategoryId(Long id) {
-        return getThumbnailFileUrl(searchProductsByCategoryId(id));
+    public List<SearchedProductResponseDto> searchProductsByCategoryId(
+            Long id, int offset, int size
+    ) {
+        return searchProductsByCategoryId(id, offset, size);
     }
 
     /**
@@ -63,56 +55,61 @@ public class SearchProductServiceImpl implements SearchProductService {
      * @since : 1.0
      */
     @Override
-    public List<SearchedProductResponseDto> searchProductsByCategoryName(String name) {
-        return getThumbnailFileUrl(searchProductRepository.searchProductsByCategoryName(name));
+    public List<SearchedProductResponseDto> searchProductsByCategoryName(
+            String name, int offset, int size
+    ) {
+        return searchProductRepository.searchProductsByCategoryName(name, offset, size);
     }
 
     /**
      * 상품 제목으로 상품을 검색하는 메서드
      *
-     * @param title 검색하고 싶은 상품 제목
+     * @param title  검색하고 싶은 상품 제목
      * @param offset 검색하고 싶은 페이지 위치
-     * @param size 검색하고 싶은 상품 갯수
+     * @param size   검색하고 싶은 상품 갯수
      * @return 해당 이름의 상품 리스트
      * @author : 김선홍
      * @since : 1.0
      */
     @Override
     public List<SearchedProductResponseDto> searchProductsByProductTitle(
-            String title, int offset, int size) {
-        return getThumbnailFileUrl(searchProductRepository.searchProductsByProductTitle(title, offset, size));
+            String title, int offset, int size
+    ) {
+        return searchProductRepository.searchProductsByProductTitle(title, offset, size);
     }
 
     /**
      * 상품 내용으로 상품을 검색하는 메서드
      *
      * @param content 검색하고 싶은 상품 내용
-     * @param offset 검색하고 싶은 페이지 위치
-     * @param size 검색하고 싶은 상품 갯수
+     * @param offset  검색하고 싶은 페이지 위치
+     * @param size    검색하고 싶은 상품 갯수
      * @return 해당 카테고리 상품 리스트
      * @author : 김선홍
      * @since : 1.0
      */
     @Override
     public List<SearchedProductResponseDto> searchProductsByProductContent(
-            String content, int offset, int size) {
-        return getThumbnailFileUrl(searchProductRepository.searchProductsByProductContent(content, offset, size));
+            String content, int offset, int size
+    ) {
+        return searchProductRepository.searchProductsByProductContent(content, offset, size);
     }
 
     /**
      * 상품 isbn로 상품을 검색하는 메서드
      *
-     * @param isbn 검색하고 싶은 카테고리 이름
+     * @param isbn   검색하고 싶은 카테고리 이름
      * @param offset 검색하고 싶은 페이지 위치
-     * @param size 검색하고 싶은 상품 갯수
+     * @param size   검색하고 싶은 상품 갯수
      * @return 해당 카테고리 상품 리스트
      * @author : 김선홍
      * @since : 1.0
      */
     @Override
     public List<SearchedProductResponseDto> searchProductsByProductISBN(
-            String isbn, int offset, int size) {
-        return getThumbnailFileUrl(searchProductRepository.searchProductsByProductISBN(isbn, offset, size));
+            String isbn, int offset, int size
+    ) {
+        return searchProductRepository.searchProductsByProductISBN(isbn, offset, size);
     }
 
     /**
@@ -120,31 +117,33 @@ public class SearchProductServiceImpl implements SearchProductService {
      *
      * @param author 검색하고 싶은 작가 이름
      * @param offset 검색하고 싶은 페이지 위치
-     * @param size 검색하고 싶은 상품 갯수
+     * @param size   검색하고 싶은 상품 갯수
      * @return 해당 카테고리 상품 리스트
      * @author : 김선홍
      * @since : 1.0
      */
     @Override
     public List<SearchedProductResponseDto> searchProductsByProductAuthor(
-            String author, int offset, int size) {
-        return getThumbnailFileUrl(searchProductRepository.searchProductsByProductAuthor(author, offset, size));
+            String author, int offset, int size
+    ) {
+        return searchProductRepository.searchProductsByProductAuthor(author, offset, size);
     }
 
     /**
      * 출판사 이름으로 상품을 검색하는 메서드
      *
      * @param publisher 검색하고 싶은 출판사 이름
-     * @param offset 검색하고 싶은 페이지 위치
-     * @param size 검색하고 싶은 상품 갯수
+     * @param offset    검색하고 싶은 페이지 위치
+     * @param size      검색하고 싶은 상품 갯수
      * @return 해당 카테고리 상품 리스트
      * @author : 김선홍
      * @since : 1.0
      */
     @Override
     public List<SearchedProductResponseDto> searchProductsByPublisher(
-            String publisher, int offset, int size) {
-        return getThumbnailFileUrl(searchProductRepository.searchProductsByPublisher(publisher, offset, size));
+            String publisher, int offset, int size
+    ) {
+        return searchProductRepository.searchProductsByPublisher(publisher, offset, size);
     }
 
     /**
@@ -159,60 +158,6 @@ public class SearchProductServiceImpl implements SearchProductService {
      */
     @Override
     public List<SearchedProductResponseDto> searchProductsByTag(String tag, int offset, int size) {
-        return getThumbnailFileUrl(searchProductRepository.searchProductsByTag(tag, offset, size));
-    }
-
-    List<SearchedProductResponseDto> getThumbnailFileUrl(List<SearchedProductResponseDto> list) {
-        String token = storageAuthService.getAuthToken();
-
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        httpHeaders.add("X-Auth-Token", token);
-
-        HttpEntity<String> httpEntity = new HttpEntity<>(null, httpHeaders);
-
-        String uri = UriComponentsBuilder.fromHttpUrl(objectStorageUrl.concat("/"))
-                .path(account.concat("/").concat(container))
-                .queryParam("path", thumbnailPath)
-                .toUriString();
-
-        ResponseEntity<String> response = restTemplate.exchange(
-                uri, HttpMethod.GET, httpEntity, String.class
-        );
-
-        for(SearchedProductResponseDto dto: list) {
-            if(!Objects.requireNonNull(response.getBody()).contains(dto.getThumbnailFileUrl().getName())) {
-                throw new FileNotFoundException(dto.getThumbnailFileUrl().getName());
-            }
-            dto.getThumbnailFileUrl().setName(uri.concat("/").concat(dto.getThumbnailFileUrl().getName()));
-        }
-        return list;
-    }
-
-    List<SearchedProductResponseDto> getEbookFileUrl(List<SearchedProductResponseDto> list) {
-        String token = storageAuthService.getAuthToken();
-
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        httpHeaders.add("X-Auth-Token", token);
-
-        HttpEntity<String> httpEntity = new HttpEntity<>(null, httpHeaders);
-
-        String uri = UriComponentsBuilder.fromHttpUrl(objectStorageUrl.concat("/"))
-                .path(account.concat("/").concat(container))
-                .queryParam("path", "product/ebook")
-                .toUriString();
-
-        ResponseEntity<String> response = restTemplate.exchange(
-                uri, HttpMethod.GET, httpEntity, String.class
-        );
-
-        for(SearchedProductResponseDto dto: list) {
-            if(!Objects.requireNonNull(response.getBody()).contains(dto.getEbookFileUrl().getName())) {
-                throw new FileNotFoundException(dto.getEbookFileUrl().getName());
-            }
-            dto.getEbookFileUrl().setName(uri.concat("/").concat(dto.getEbookFileUrl().getName()));
-        }
-        return list;
+        return searchProductRepository.searchProductsByTag(tag, offset, size);
     }
 }

@@ -19,7 +19,7 @@ public interface SearchProductService {
      * @author : 김선홍
      * @since : 1.0
      */
-    List<SearchedProductResponseDto> searchProductsByCategoryId(Long id);
+    List<SearchedProductResponseDto> searchProductsByCategoryId(Long id, int offset, int size);
 
     /**
      * 카테고리 이름으로 상품을 검색하는 메서드
@@ -29,7 +29,7 @@ public interface SearchProductService {
      * @author : 김선홍
      * @since : 1.0
      */
-    List<SearchedProductResponseDto> searchProductsByCategoryName(String name);
+    List<SearchedProductResponseDto> searchProductsByCategoryName(String name, int offset, int size);
 
     /**
      * 상품 제목으로 상품을 검색하는 메서드

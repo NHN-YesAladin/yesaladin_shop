@@ -8,6 +8,7 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import java.time.LocalDate;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.springframework.data.elasticsearch.annotations.WriteTypeHint;
 import shop.yesaladin.shop.product.dto.SearchedProductResponseDto;
 
 @Getter
@@ -15,7 +16,7 @@ import shop.yesaladin.shop.product.dto.SearchedProductResponseDto;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(indexName = "products")
+@Document(indexName = "products", writeTypeHint = WriteTypeHint.FALSE)
 public class SearchedProduct {
     @Id
     @Field(name = "id", type = FieldType.Long)
@@ -68,10 +69,8 @@ public class SearchedProduct {
     private List<SearchedAuthor> authors;
     @Field(name = "tags", type = FieldType.Object)
     private List<SearchedTags> tags;
-    @Field(name = "RelatedProduct", type = FieldType.Long)
-    private List<Long> relatedProduct;
     @Field(name = "SubscribeProduct", type = FieldType.Object)
-    private List<SearchedIssn> subscribeProduct;
+    private List<SubscribeProduct> subscribeProduct;
 
     @Getter
     @Setter
@@ -87,7 +86,7 @@ public class SearchedProduct {
 
     @Getter
     @AllArgsConstructor
-    public static class SearchedIssn {
+    public static class SubscribeProduct {
         @Field(name = "id", type = FieldType.Long)
         long id;
         @Field(name = "ISSN", type = FieldType.Keyword)
@@ -157,26 +156,15 @@ public class SearchedProduct {
         return SearchedProductResponseDto.builder()
                 .id(id)
                 .title(title)
-                .ISBN(ISBN)
-                .relatedProduct(relatedProduct)
-                .contents(contents)
-                .description(description)
                 .authors(authors)
-                .actualPrice(actualPrice)
                 .sellingPrice(actualPrice - actualPrice *  (discountRate / 100))
                 .discountRate(discountRate)
-                .pointPrice(actualPrice *  (givenPointRate / 100))
-                .givenPointRate(givenPointRate)
-                .isSubscriptionAvailable(isSubscriptionAvailable)
                 .publisher(publisher)
+                .categories(categories)
                 .publishedDate(publishedDate.toString())
                 .thumbnailFileUrl(thumbnailFile)
-                .ebookFileUrl(ebookFile)
-                .categories(categories)
                 .authors(authors)
                 .tags(tags)
-                .relatedProduct(relatedProduct)
-                .subscribeProduct(subscribeProduct)
                 .build();
     }
 }
