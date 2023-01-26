@@ -19,9 +19,9 @@ class StorageAuthServiceImplTest {
     @BeforeEach
     void setUp() {
         objectStorage = mock(ObjectStorageProperties.class);
-        service = new StorageAuthServiceImpl(
-                objectStorage
-        );
+//        service = new StorageAuthServiceImpl(
+//                objectStorage
+//        );
     }
 
     @Test

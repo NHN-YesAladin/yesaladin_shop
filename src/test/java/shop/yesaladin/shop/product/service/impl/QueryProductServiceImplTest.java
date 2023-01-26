@@ -103,11 +103,11 @@ class QueryProductServiceImplTest {
     }
 
     @Test
-    @DisplayName("상품 전체 조회 성공")
+    @DisplayName("상품 전체 사용자용 전체 조회 성공")
     void findAll() {
         // given
         List<Product> products = new ArrayList<>();
-        for (Long i = 1L; i <= 9L; i++) {
+        for (long i = 1L; i <= 9L; i++) {
             String isbn = "000000000000" + i;
 
             File thumbnailFile = DummyFile.dummy(URL + "/image" + i + ".png");
@@ -116,6 +116,10 @@ class QueryProductServiceImplTest {
             TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
 
             Product product = DummyProduct.dummy(i, isbn, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate);
+            if (i < 5L) {
+                product.deleteProduct();
+                continue;
+            }
             products.add(product);
 
             Publish publish = Publish.create(product, Publisher.builder().id(1L).name("출판사").build(), LocalDateTime.now(clock).toLocalDate().toString());
@@ -133,6 +137,47 @@ class QueryProductServiceImplTest {
 
         // when
         Page<ProductsResponseDto> response = service.findAll(PageRequest.of(0, 5), null);
+
+        // then
+        assertThat(response.getTotalElements()).isEqualTo(5);
+        assertThat(response.getContent().get(0).getId()).isEqualTo(5L);
+        assertThat(response.getContent().get(4).getId()).isEqualTo(9L);
+    }
+
+    @Test
+    @DisplayName("상품 관리자용 전체 조회 성공")
+    void findAllForManager() {
+        // given
+        List<Product> products = new ArrayList<>();
+        for (long i = 1L; i <= 9L; i++) {
+            String isbn = "000000000000" + i;
+
+            File thumbnailFile = DummyFile.dummy(URL + "/image" + i + ".png");
+            File ebookFile = DummyFile.dummy(URL + "/ebook" + i + ".pdf");
+            SubscribeProduct subscribeProduct = SubscribeProduct.builder().id(1L).ISSN("00000001").build();
+            TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
+
+            Product product = DummyProduct.dummy(i, isbn, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate);
+            if (i < 5L) {
+                product.deleteProduct();
+            }
+            products.add(product);
+
+            Publish publish = Publish.create(product, Publisher.builder().id(1L).name("출판사").build(), LocalDateTime.now(clock).toLocalDate().toString());
+            Mockito.when(queryPublishService.findByProduct(any()))
+                    .thenReturn(new PublishResponseDto(publish.getPk(), publish.getPublishedDate(), publish.getProduct(), publish.getPublisher()));
+        }
+
+        Page<Product> page = new PageImpl<>(
+                products,
+                PageRequest.of(0, 5),
+                products.size()
+        );
+
+        Mockito.when(queryProductRepository.findAllForManager(any())).thenReturn(page);
+
+        // when
+        Page<ProductsResponseDto> response = service.findAllForManager(PageRequest.of(0, 5), null);
 
         // then
         assertThat(response.getTotalElements()).isEqualTo(9);

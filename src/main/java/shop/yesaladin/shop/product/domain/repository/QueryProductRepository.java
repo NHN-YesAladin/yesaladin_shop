@@ -18,6 +18,10 @@ public interface QueryProductRepository {
 
     Optional<Product> findByISBN(String ISBN);
 
+    Page<Product> findAllForManager(Pageable pageable);
+
+    Page<Product> findAllByTypeIdForManager(Pageable pageable, Integer typeId);
+
     Page<Product> findAll(Pageable pageable);
 
     Page<Product> findAllByTypeId(Pageable pageable, Integer typeId);
