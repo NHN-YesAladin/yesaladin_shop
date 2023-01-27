@@ -13,9 +13,7 @@ import shop.yesaladin.shop.product.domain.repository.*;
 import shop.yesaladin.shop.product.dto.ProductCreateDto;
 import shop.yesaladin.shop.product.dto.ProductOnlyIdDto;
 import shop.yesaladin.shop.product.dto.ProductUpdateDto;
-import shop.yesaladin.shop.product.exception.AlreadyProductExistsException;
-import shop.yesaladin.shop.product.exception.ProductNotFoundException;
-import shop.yesaladin.shop.product.exception.TotalDiscountRateNotExistsException;
+import shop.yesaladin.shop.product.exception.*;
 import shop.yesaladin.shop.product.service.inter.CommandProductService;
 import shop.yesaladin.shop.publish.domain.model.Publish;
 import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
@@ -168,13 +166,13 @@ public class CommandProductServiceImpl implements CommandProductService {
 
         // ThumbnailFile
         File thumbnailFile = queryFileService.findById(product.getThumbnailFile().getId()).toEntity();
-        commandFileService.register(dto.changeThumbnailFile(thumbnailFile));
+        thumbnailFile = commandFileService.register(dto.changeThumbnailFile(thumbnailFile)).toEntity();
 
         // EbookFile
         File ebookFile = null;
         if (Objects.nonNull(product.getEbookFile())) {
-            ebookFile = queryFileService.findById(product.getEbookFile().getId()).toEntity();
-            commandFileService.register(dto.changeEbookFile(ebookFile));
+            File foundEbookFile = queryFileService.findById(product.getEbookFile().getId()).toEntity();
+            ebookFile = commandFileService.register(dto.changeEbookFile(foundEbookFile)).toEntity();
         }
 
         // Writing
@@ -226,6 +224,29 @@ public class CommandProductServiceImpl implements CommandProductService {
                 .orElseThrow(() -> new ProductNotFoundException(id));
 
         product.deleteProduct();
+
+        commandProductRepository.save(product);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public void deductQuantity(Long id, int requestedQuantity) {
+        if (requestedQuantity <= 0) {
+            throw new NegativeOrZeroQuantityException(requestedQuantity);
+        }
+
+        Product product = queryProductRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException(id));
+
+        long sellQuantity = product.getQuantity();
+        long deductedQuantity = sellQuantity - requestedQuantity;
+        if (deductedQuantity < 0) {
+            throw new RequestedQuantityLargerThanSellQuantityException(requestedQuantity, sellQuantity);
+        }
+        product.changeQuantity(deductedQuantity);
 
         commandProductRepository.save(product);
     }

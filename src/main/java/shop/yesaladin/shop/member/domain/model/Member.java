@@ -128,6 +128,7 @@ public class Member {
             throw new AlreadyUnblockedMemberException(this.loginId);
         }
         this.isBlocked = false;
+        this.unblockedDate = LocalDate.now();
     }
 
     /**
@@ -136,11 +137,13 @@ public class Member {
      * @author 최예린
      * @since 1.0
      */
-    public void blockMember() {
+    public void blockMember(String blockedReason) {
         if (this.isBlocked) {
             throw new AlreadyBlockedMemberException(this.loginId);
         }
         this.isBlocked = true;
+        this.blockedReason = blockedReason;
+        this.blockedDate = LocalDate.now();
     }
 
     /**

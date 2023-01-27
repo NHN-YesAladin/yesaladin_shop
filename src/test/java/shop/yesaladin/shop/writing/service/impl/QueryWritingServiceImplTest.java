@@ -16,7 +16,6 @@ import shop.yesaladin.shop.writing.dto.WritingResponseDto;
 import shop.yesaladin.shop.writing.dummy.DummyAuthor;
 import shop.yesaladin.shop.writing.service.inter.QueryWritingService;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -55,7 +54,7 @@ class QueryWritingServiceImplTest {
     @DisplayName("상품으로 집필 조회 성공")
     void findByProduct() {
         // given
-        List<Writing> writings = Arrays.asList(
+        List<Writing> writings = List.of(
                 Writing.create(product, DummyAuthor.dummy("저자1", MemberDummy.dummyWithId(1L))),
                 Writing.create(product, DummyAuthor.dummy("저자2", null))
         );

@@ -24,7 +24,7 @@ public interface QueryProductService {
     ProductDetailResponseDto findById(long id);
 
     /**
-     * 페이징된 상품 리스트를 반환합니다.
+     * 페이징된 모든사용자용 상품 리스트를 반환합니다.
      *
      * @param pageable 페이징 처리를 위한 객체
      * @return 페이징 조회된 상품 dto를 담은 객체
@@ -32,4 +32,14 @@ public interface QueryProductService {
      * @since 1.0
      */
     Page<ProductsResponseDto> findAll(Pageable pageable, Integer typeId);
+
+    /**
+     * 페이징된 관리자용 상품 리스트를 반환합니다.
+     *
+     * @param pageable 페이징 처리를 위한 객체
+     * @return 페이징 조회된 상품 dto를 담은 객체
+     * @author 이수정
+     * @since 1.0
+     */
+    Page<ProductsResponseDto> findAllForManager(Pageable pageable, Integer typeId);
 }

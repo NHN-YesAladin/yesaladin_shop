@@ -15,7 +15,6 @@ import shop.yesaladin.shop.tag.domain.repository.QueryProductTagRepository;
 import shop.yesaladin.shop.tag.dto.ProductTagResponseDto;
 import shop.yesaladin.shop.tag.service.inter.QueryProductTagService;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -55,7 +54,7 @@ class QueryProductTagServiceImplTest {
         String name1 = "행복한";
         String name2 = "슬픈";
 
-        List<ProductTag> productTags = Arrays.asList(
+        List<ProductTag> productTags = List.of(
                 ProductTag.create(product, Tag.builder().name(name1).build()),
                 ProductTag.create(product, Tag.builder().name(name2).build())
         );

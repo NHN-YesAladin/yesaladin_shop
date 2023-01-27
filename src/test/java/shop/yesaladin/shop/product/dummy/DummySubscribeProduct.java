@@ -6,7 +6,7 @@ public class DummySubscribeProduct {
 
     public static SubscribeProduct dummy() {
         return SubscribeProduct.builder()
-                .ISSN("0000-XXXX")
+                .ISSN("0000XXXX")
                 .build();
     }
 

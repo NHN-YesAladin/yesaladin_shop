@@ -3,6 +3,8 @@ package shop.yesaladin.shop.member.service.impl;
 import java.time.Clock;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
@@ -31,9 +33,10 @@ public class QueryMemberGradeHistoryServiceImpl implements QueryMemberGradeHisto
      */
     @Override
     @Transactional(readOnly = true)
-    public List<MemberGradeHistoryQueryResponseDto> findByLoginId(
+    public Page<MemberGradeHistoryQueryResponseDto> getByLoginId(
             String loginId,
-            PeriodQueryRequestDto request
+            PeriodQueryRequestDto request,
+            Pageable pageable
     ) {
         request.validate(clock);
         if(!queryMemberRepository.existsMemberByLoginId(loginId)) {
@@ -42,7 +45,8 @@ public class QueryMemberGradeHistoryServiceImpl implements QueryMemberGradeHisto
         return queryMemberGradeHistoryRepository.findByLoginIdAndPeriod(
                 loginId,
                 request.getStartDateOrDefaultValue(clock),
-                request.getEndDateOrDefaultValue(clock)
+                request.getEndDateOrDefaultValue(clock),
+                pageable
         );
     }
 }
