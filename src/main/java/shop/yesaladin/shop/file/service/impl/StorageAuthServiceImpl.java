@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import shop.yesaladin.shop.common.exception.CustomJsonProcessingException;
 import shop.yesaladin.shop.config.ObjectStorageProperties;
 import shop.yesaladin.shop.file.dto.TokenJsonDto;
 import shop.yesaladin.shop.file.dto.TokenRequest;
@@ -69,7 +70,7 @@ public class StorageAuthServiceImpl implements StorageAuthService {
 
             return tokenJsonDto.getAccess().getToken().getId();
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            throw new CustomJsonProcessingException(e);
         }
 
 
