@@ -1,7 +1,6 @@
 package shop.yesaladin.shop.member.domain.repository;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +30,7 @@ public interface QueryMemberGradeHistoryRepository {
      * @param loginId   회원 id
      * @param startDate 조회 시작일
      * @param endDate   조회 종료일
+     * @param pageable  페이지와 사이즈
      * @return 회원의 등급변경 내역
      * @author 최예린
      * @since 1.0

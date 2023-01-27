@@ -31,7 +31,9 @@ public class QueryMemberGradeHistoryController {
     /**
      * 회원의 등급 변경 내역을 조회합니다.
      *
-     * @param loginId 회원의 id
+     * @param loginId  회원의 id
+     * @param request  회원 등급 변경 내역 기간
+     * @param pageable 페이지와 사이즈
      * @return 회원의 등급 변경 내역
      * @author 최예린
      * @since 1.0
@@ -43,7 +45,11 @@ public class QueryMemberGradeHistoryController {
             @RequestBody PeriodQueryRequestDto request,
             Pageable pageable
     ) {
-        Page<MemberGradeHistoryQueryResponseDto> response = queryMemberGradeHistoryService.getByLoginId(loginId, request, pageable);
+        Page<MemberGradeHistoryQueryResponseDto> response = queryMemberGradeHistoryService.getByLoginId(
+                loginId,
+                request,
+                pageable
+        );
 
         return PaginatedResponseDto.<MemberGradeHistoryQueryResponseDto>builder()
                 .totalPage(response.getTotalPages())
