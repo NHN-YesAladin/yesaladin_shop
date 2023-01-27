@@ -20,7 +20,7 @@ public class SearchedProductResponseDto {
     private String title;
     private int discountRate;
     private long sellingPrice;
-    private boolean isForcedOutOfStack;
+    private Boolean isForcedOutOfStack;
     private SearchedFile thumbnailFileUrl;
     private SearchedPublisher publisher;
     private String publishedDate;

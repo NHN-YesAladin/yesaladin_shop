@@ -102,9 +102,9 @@ public class SearchedProduct {
         @Field(name = "name", type = FieldType.Keyword)
         private final String name;
         @Field(name = "is_shown", type = FieldType.Boolean)
-        private final boolean isShown;
+        private final Boolean isShown;
         @Field(name = "disable", type = FieldType.Boolean)
-        private final boolean disable;
+        private final Boolean disable;
     }
 
     @Getter
@@ -147,7 +147,7 @@ public class SearchedProduct {
     @AllArgsConstructor
     public static class SearchedPublisher {
         @Field(name = "id", type = FieldType.Integer)
-        private int id;
+        private Long id;
         @Field(name = "name", type = FieldType.Keyword)
         private String name;
     }

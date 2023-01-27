@@ -1,10 +1,16 @@
 package shop.yesaladin.shop.product.controller;
 
 import java.util.List;
+import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,6 +28,7 @@ import shop.yesaladin.shop.product.service.inter.SearchProductService;
  * @since : 1.0
  */
 @Slf4j
+@Validated
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/search/product")
@@ -38,7 +45,7 @@ public class SearchProductController {
      * @since : 1.0
      */
     @GetMapping("/title")
-    List<SearchedProductResponseDto> searchProductByTitle(@RequestBody SearchProductRequestDto requestDto) {
+    List<SearchedProductResponseDto> searchProductByTitle(@Valid @RequestBody SearchProductRequestDto requestDto) {
         return searchProductService.searchProductsByProductTitle(
                 requestDto.getQuery(), requestDto.getOffset(), requestDto.getSize());
     }
@@ -52,7 +59,7 @@ public class SearchProductController {
      * @since : 1.0
      */
     @GetMapping("/content")
-    List<SearchedProductResponseDto> searchProductByContent(@RequestBody SearchProductRequestDto requestDto) {
+    List<SearchedProductResponseDto> searchProductByContent(@Valid @RequestBody SearchProductRequestDto requestDto) {
         return searchProductService.searchProductsByProductContent(
                 requestDto.getQuery(), requestDto.getOffset(), requestDto.getSize());
     }
@@ -66,7 +73,7 @@ public class SearchProductController {
      * @since : 1.0
      */
     @GetMapping("/isbn")
-    List<SearchedProductResponseDto> searchProductByISBN(@RequestBody SearchProductRequestDto requestDto) {
+    List<SearchedProductResponseDto> searchProductByISBN(@Valid @RequestBody SearchProductRequestDto requestDto) {
         return searchProductService.searchProductsByProductISBN(
                 requestDto.getQuery(), requestDto.getOffset(), requestDto.getSize());
     }
@@ -80,7 +87,7 @@ public class SearchProductController {
      * @since : 1.0
      */
     @GetMapping("/author")
-    List<SearchedProductResponseDto> searchProductByAuthor(@RequestBody SearchProductRequestDto requestDto) {
+    List<SearchedProductResponseDto> searchProductByAuthor(@Valid @RequestBody SearchProductRequestDto requestDto) {
         return searchProductService.searchProductsByProductAuthor(
                 requestDto.getQuery(), requestDto.getOffset(), requestDto.getSize());
     }
@@ -94,7 +101,7 @@ public class SearchProductController {
      * @since : 1.0
      */
     @GetMapping("/publisher")
-    List<SearchedProductResponseDto> searchProductByPublisher(@RequestBody SearchProductRequestDto requestDto) {
+    List<SearchedProductResponseDto> searchProductByPublisher(@Valid @RequestBody SearchProductRequestDto requestDto) {
         return searchProductService.searchProductsByPublisher(
                 requestDto.getQuery(), requestDto.getOffset(), requestDto.getSize());
     }
@@ -108,7 +115,7 @@ public class SearchProductController {
      * @since : 1.0
      */
     @GetMapping("/tag")
-    List<SearchedProductResponseDto> searchProductByTag(@RequestBody SearchProductRequestDto requestDto) {
+    List<SearchedProductResponseDto> searchProductByTag(@Valid @RequestBody SearchProductRequestDto requestDto) {
         return searchProductService.searchProductsByTag(
                 requestDto.getQuery(), requestDto.getOffset(), requestDto.getSize());
     }
@@ -116,7 +123,7 @@ public class SearchProductController {
     /**
      * 카테고리 id로 상품을 검색하는 컨트롤러 메서드
      *
-     * @param id 검색할 카테고리 id
+     * @param requestDto 요청한 상품의 카테고리 id, 페이징 위치, 갯수
      * @return 요청된 조건에 대한 상품 리스트
      * @author : 김선홍
      * @since : 1.0
@@ -124,8 +131,8 @@ public class SearchProductController {
     @GetMapping("/category/id/{id}")
     List<SearchedProductResponseDto> searchProductByCategoryId(
             @PathVariable Long id,
-            @RequestParam int offset,
-            @RequestParam int size
+            @RequestParam(name = "offset") @Min(value = 0) Integer offset,
+            @RequestParam(name = "size") @Min(value = 1) @Max(value = 20) Integer size
     ) {
         return searchProductService.searchProductsByCategoryId(id, offset, size);
     }
@@ -133,17 +140,17 @@ public class SearchProductController {
     /**
      * 카테고리 이름으로 상품을 검색하는 컨트롤러 메서드
      *
-     * @param name 검색할 카테고리 이름
+     * @param requestDto 요청한 상품의 카테고리 이름, 페이징 위치, 갯수
      * @return 요청된 조건에 대한 상품 리스트
      * @author : 김선홍
      * @since : 1.0
      */
-    @GetMapping("/category/name/{name}")
-    List<SearchedProductResponseDto> searchProductByCategoryName(
-            @PathVariable String name,
-            @RequestParam int offset,
-            @RequestParam int size
-    ) {
-        return searchProductService.searchProductsByCategoryName(name, offset, size);
+    @GetMapping("/category/name")
+    List<SearchedProductResponseDto> searchProductByCategoryName(@Valid @RequestBody SearchProductRequestDto requestDto) {
+        return searchProductService.searchProductsByCategoryName(
+                requestDto.getQuery(),
+                requestDto.getOffset(),
+                requestDto.getSize()
+        );
     }
 }

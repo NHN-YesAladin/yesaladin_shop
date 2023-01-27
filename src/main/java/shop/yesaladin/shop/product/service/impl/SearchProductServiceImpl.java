@@ -43,7 +43,7 @@ public class SearchProductServiceImpl implements SearchProductService {
     public List<SearchedProductResponseDto> searchProductsByCategoryId(
             Long id, int offset, int size
     ) {
-        return searchProductsByCategoryId(id, offset, size);
+        return searchProductRepository.searchProductsByCategoryId(id, offset, size);
     }
 
     /**

@@ -15,7 +15,7 @@ public class SearchProductRequestDto {
     @NotBlank
     @NotNull
     String query;
-    @Min(value = 1)
+    @Min(value = 0)
     int offset;
     @Min(value = 1)
     @Max(value = 20)
