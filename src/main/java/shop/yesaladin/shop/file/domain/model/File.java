@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import org.springframework.data.annotation.LastModifiedDate;
 
 /**
  * 파일의 엔터티 클래스입니다.
@@ -26,7 +27,11 @@ public class File {
     @Column(name = "url", nullable = false, length = 180)
     private String url;
 
+    @LastModifiedDate
     @Column(name = "upload_datetime", nullable = false)
     private LocalDateTime uploadDateTime;
 
+    public void updateFileUrl(String newUrl) {
+        this.url = newUrl;
+    }
 }

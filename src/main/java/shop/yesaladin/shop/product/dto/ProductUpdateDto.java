@@ -1,20 +1,23 @@
 package shop.yesaladin.shop.product.dto;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 import shop.yesaladin.shop.file.domain.model.File;
-import shop.yesaladin.shop.product.domain.model.*;
-
-import javax.validation.constraints.Max;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
+import shop.yesaladin.shop.product.domain.model.Product;
+import shop.yesaladin.shop.product.domain.model.ProductSavingMethodCode;
+import shop.yesaladin.shop.product.domain.model.ProductTypeCode;
+import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
+import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
 
 /**
  * 상품 수정을 위한 Dto 입니다.
@@ -27,6 +30,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductUpdateDto {
+
     // 상품 설명
     @NotBlank
     @Length(max = 255)
@@ -146,25 +150,6 @@ public class ProductUpdateDto {
      */
     public SubscribeProduct toSubscribeProductEntity() {
         return SubscribeProduct.builder().ISSN(ISSN).build();
-    }
-
-    /**
-     * DTO를 바탕으로 ThumbnailFile을 수정하여 반환합니다.
-     *
-     * @param thumbnailFile 기존의 썸네일 파일 엔터티
-     * @return 정보수정을 한 썸네일 파일 엔터티
-     * @author 이수정
-     * @since 1.0
-     */
-    public File changeThumbnailFile(File thumbnailFile) {
-        return File.builder()
-                .id(thumbnailFile.getId())
-                .url(thumbnailFileUrl)
-                .uploadDateTime(LocalDateTime.parse(
-                        thumbnailFileUploadDateTime,
-                        DateTimeFormatter.ISO_LOCAL_DATE_TIME
-                ))
-                .build();
     }
 
     /**

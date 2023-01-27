@@ -4,11 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.product.domain.model.Product;
+import shop.yesaladin.shop.product.dto.ProductTagCreateDto;
 import shop.yesaladin.shop.tag.domain.model.ProductTag;
+import shop.yesaladin.shop.tag.domain.model.Tag;
 import shop.yesaladin.shop.tag.domain.repository.CommandProductTagRepository;
 import shop.yesaladin.shop.tag.domain.repository.QueryProductTagRepository;
 import shop.yesaladin.shop.tag.dto.ProductTagResponseDto;
 import shop.yesaladin.shop.tag.service.inter.CommandProductTagService;
+import shop.yesaladin.shop.tag.service.inter.QueryTagService;
 
 /**
  * 태그 관계 등록을 위한 Service 구현체 입니다.
@@ -22,14 +25,19 @@ public class CommandProductTagServiceImpl implements CommandProductTagService {
 
     private final CommandProductTagRepository commandProductTagRepository;
     private final QueryProductTagRepository queryProductTagRepository;
+    private final QueryTagService queryTagService;
 
     /**
      * {@inheritDoc}
      */
     @Transactional
     @Override
-    public ProductTagResponseDto register(ProductTag productTag) {
-        ProductTag savedProductTag = commandProductTagRepository.save(productTag);
+    public ProductTagResponseDto register(ProductTagCreateDto createDto) {
+        Tag tag = queryTagService.findById(createDto.getTagId()).toEntity();
+        ProductTag savedProductTag = commandProductTagRepository.save(ProductTag.create(
+                createDto.getProduct(),
+                tag
+        ));
 
         return new ProductTagResponseDto(
                 savedProductTag.getPk(),

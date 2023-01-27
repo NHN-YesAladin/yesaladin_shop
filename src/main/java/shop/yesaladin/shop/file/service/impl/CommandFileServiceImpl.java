@@ -1,13 +1,14 @@
 package shop.yesaladin.shop.file.service.impl;
 
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.file.domain.repository.CommandFileRepository;
+import shop.yesaladin.shop.file.domain.repository.QueryFileRepository;
 import shop.yesaladin.shop.file.dto.FileResponseDto;
+import shop.yesaladin.shop.file.exception.FileNotFoundException;
 import shop.yesaladin.shop.file.service.inter.CommandFileService;
-
-import javax.transaction.Transactional;
 
 /**
  * 파일 등록을 위한 Service 구현체 입니다.
@@ -19,6 +20,7 @@ import javax.transaction.Transactional;
 @RequiredArgsConstructor
 public class CommandFileServiceImpl implements CommandFileService {
 
+    private final QueryFileRepository queryFileRepository;
     private final CommandFileRepository commandFileRepository;
 
     /**
@@ -33,6 +35,19 @@ public class CommandFileServiceImpl implements CommandFileService {
                 savedFile.getId(),
                 savedFile.getUrl(),
                 savedFile.getUploadDateTime()
+        );
+    }
+
+    @Transactional
+    @Override
+    public FileResponseDto changeFile(long fileId, String fileUrl) {
+        File targetFile = queryFileRepository.findById(fileId)
+                .orElseThrow(() -> new FileNotFoundException(fileId));
+        targetFile.updateFileUrl(fileUrl);
+        return new FileResponseDto(
+                targetFile.getId(),
+                targetFile.getUrl(),
+                targetFile.getUploadDateTime()
         );
     }
 }

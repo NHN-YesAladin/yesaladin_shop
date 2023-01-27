@@ -20,4 +20,6 @@ public interface CommandFileService {
      * @since 1.0
      */
     FileResponseDto register(File file);
+
+    FileResponseDto changeFile(long fileId, String fileUrl);
 }
