@@ -250,4 +250,32 @@ public class CommandProductServiceImpl implements CommandProductService {
 
         commandProductRepository.save(product);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public void changeIsSale(long id) {
+        Product product = queryProductRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException(id));
+
+        product.changeIsSale();
+
+        commandProductRepository.save(product);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public void changeIsForcedOutOfStock(long id) {
+        Product product = queryProductRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException(id));
+
+        product.changeIsForcedOutOfStock();
+
+        commandProductRepository.save(product);
+    }
 }

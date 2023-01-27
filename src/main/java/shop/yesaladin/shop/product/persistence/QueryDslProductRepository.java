@@ -143,7 +143,7 @@ public class QueryDslProductRepository implements QueryProductRepository {
         List<Product> products = queryFactory
                 .select(product)
                 .from(product)
-                .where(product.isDeleted.isFalse())
+                .where(product.isDeleted.isFalse().and(product.isSale.isTrue()))
                 .orderBy(product.preferentialShowRanking.asc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -176,7 +176,7 @@ public class QueryDslProductRepository implements QueryProductRepository {
         List<Product> products = queryFactory
                 .select(product)
                 .from(product)
-                .where(product.productTypeCode.eq(productTypeCode.get()).and(product.isDeleted.isFalse()))
+                .where(product.productTypeCode.eq(productTypeCode.get()).and(product.isDeleted.isFalse().and(product.isSale.isTrue())))
                 .orderBy(product.preferentialShowRanking.asc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())

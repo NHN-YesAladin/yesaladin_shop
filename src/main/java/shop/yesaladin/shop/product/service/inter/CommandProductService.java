@@ -51,4 +51,22 @@ public interface CommandProductService {
      * @since 1.0
      */
     void deductQuantity(Long id, int quantity);
+
+    /**
+     * 상품의 판매여부를 변경합니다.
+     *
+     * @param id 판매여부를 변경할 상품의 Id
+     * @author 이수정
+     * @since 1.0
+     */
+    void changeIsSale(long id);
+
+    /**
+     * 상품의 강제품절여부를 변경합니다.
+     *
+     * @param id 강제품절여부를 변경할 상품의 Id
+     * @author 이수정
+     * @since 1.0
+     */
+    void changeIsForcedOutOfStock(long id);
 }

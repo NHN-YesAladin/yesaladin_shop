@@ -27,7 +27,9 @@ public class ProductsResponseDto {
     private long sellingPrice;
     private int discountRate;
 
-    private Boolean isOutOfStock;
+    private long quantity;
+    private Boolean isSale;
+    private Boolean isForcedOutOfStock;
     private Boolean isShown;
     private Boolean isDeleted;
 
