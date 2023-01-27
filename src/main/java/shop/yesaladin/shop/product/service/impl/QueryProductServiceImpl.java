@@ -93,14 +93,39 @@ public class QueryProductServiceImpl implements QueryProductService {
      */
     @Transactional(readOnly = true)
     @Override
-    public Page<ProductsResponseDto> findAll(Pageable pageable, Integer typeId) {
-        Page<Product> products = getPaginatedProducts(
+    public Page<ProductsResponseDto> findAllForManager(Pageable pageable, Integer typeId) {
+        Page<Product> page = getPaginatedProductsForManager(
                 pageable,
                 typeId
         );
 
-        List<ProductsResponseDto> contents = new ArrayList<>();
-        for (Product product : products.getContent()) {
+        return getProductResponses(pageable, page);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public Page<ProductsResponseDto> findAll(Pageable pageable, Integer typeId) {
+        Page<Product> page = getPaginatedProducts(
+                pageable,
+                typeId
+        );
+
+        return getProductResponses(pageable, page);
+    }
+
+    /**
+     * 전체 조회된 page 객체를 바탕으로 전체 조회 화면에 내보낼 정보를 담은 dto page 객체를 반환합니다.
+     *
+     * @param pageable 페이징 처리를 위한 객체
+     * @param page     페이징 전체 조회된 객체
+     * @return dto page 객체
+     */
+    private Page<ProductsResponseDto> getProductResponses(Pageable pageable, Page<Product> page) {
+        List<ProductsResponseDto> products = new ArrayList<>();
+        for (Product product : page.getContent()) {
 
             int rate = product.getTotalDiscountRate().getDiscountRate();
             if (product.isSeparatelyDiscount()) {
@@ -114,7 +139,7 @@ public class QueryProductServiceImpl implements QueryProductService {
 
             List<String> tags = findTagsByProduct(product);
 
-            contents.add(new ProductsResponseDto(
+            products.add(new ProductsResponseDto(
                     product.getId(),
                     product.getTitle(),
                     authors,
@@ -130,11 +155,11 @@ public class QueryProductServiceImpl implements QueryProductService {
             ));
         }
 
-        return new PageImpl<>(contents, pageable, contents.size());
+        return new PageImpl<>(products, pageable, products.size());
     }
 
     /**
-     * 상품 유형에 따라 알맞은 전체 조회를 진행하고 Paging된 조회 결과를 반환합니다.
+     * 상품 유형에 따라 알맞은 전체 사용자용 전체 조회를 진행하고 Paging된 조회 결과를 반환합니다.
      *
      * @param pageable page 와 size를 자동으로 parsing 하여줌
      * @param typeId   상품 유형 Id
@@ -147,6 +172,22 @@ public class QueryProductServiceImpl implements QueryProductService {
             return queryProductRepository.findAll(pageable);
         }
         return queryProductRepository.findAllByTypeId(pageable, typeId);
+    }
+
+    /**
+     * 상품 유형에 따라 알맞은 관리자용 전체 조회를 진행하고 Paging된 조회 결과를 반환합니다.
+     *
+     * @param pageable page 와 size를 자동으로 parsing 하여줌
+     * @param typeId   상품 유형 Id
+     * @return 전체 조회된 Page 객체
+     * @author 이수정
+     * @since 1.0
+     */
+    private Page<Product> getPaginatedProductsForManager(Pageable pageable, Integer typeId) {
+        if (Objects.isNull(typeId)) {
+            return queryProductRepository.findAllForManager(pageable);
+        }
+        return queryProductRepository.findAllByTypeIdForManager(pageable, typeId);
     }
 
     /**

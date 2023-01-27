@@ -119,14 +119,34 @@ class QueryDslProductRepositoryTest {
     }
 
     @Test
-    @DisplayName("상품 전체 조회")
+    @DisplayName("상품 전체 사용자용 전체 조회")
     void findAll() {
+        // given
+        entityManager.persist(product1);
+        product2.deleteProduct();
+        entityManager.persist(product2);
+
+        // when
+        Page<Product> products = repository.findAll(PageRequest.of(0, 5));
+
+        // then
+        assertThat(products).isNotNull();
+        assertThat(products.getTotalElements()).isEqualTo(1);
+        assertThat(products.getContent().get(0).getISBN()).isEqualTo(ISBN1);
+        assertThat(products.getContent().get(0).getThumbnailFile()).isEqualTo(thumbnailFile1);
+        assertThat(products.getContent().get(0).getEbookFile()).isEqualTo(ebookFile1);
+        assertThat(products.getContent().get(0).getProductTypeCode()).isEqualTo(ProductTypeCode.BESTSELLER);
+    }
+
+    @Test
+    @DisplayName("상품 관리자용 전체 조회")
+    void findAllForManager() {
         // given
         entityManager.persist(product1);
         entityManager.persist(product2);
 
         // when
-        Page<Product> products = repository.findAll(PageRequest.of(0, 5));
+        Page<Product> products = repository.findAllForManager(PageRequest.of(0, 5));
 
         // then
         assertThat(products).isNotNull();

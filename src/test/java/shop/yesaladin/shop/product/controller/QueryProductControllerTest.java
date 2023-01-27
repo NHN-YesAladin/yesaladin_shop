@@ -96,12 +96,76 @@ class QueryProductControllerTest {
     }
 
     @Test
-    @DisplayName("상품 페이징 조회 성공")
+    @DisplayName("관리자용 상품 페이징 조회 성공")
+    void getProductsForManager() throws Exception {
+        // given
+        List<ProductsResponseDto> products = new ArrayList<>();
+        for (long i = 1L; i <= 10L; i++) {
+            products.add(DummyProductsResponseDto.dummy(i));
+        }
+        for (long i = 11L; i <= 15L; i++) {
+            products.add(DummyProductsResponseDto.deletedDummy(i));
+        }
+
+        Page<ProductsResponseDto> page = new PageImpl<>(
+                products,
+                PageRequest.of(0, 5),
+                products.size()
+        );
+        Mockito.when(service.findAllForManager(any(), any())).thenReturn(page);
+
+        // when
+        ResultActions result = mockMvc.perform(get("/v1/products/manager")
+                .param("page", "0")
+                .param("size", "5")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+
+        verify(service, times(1)).findAllForManager(PageRequest.of(0, 5), null);
+
+        // docs
+        result.andDo(document(
+                "find-all-for-manager-product",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                requestParameters(
+                        parameterWithName("size").description("페이지네이션 사이즈"),
+                        parameterWithName("page").description("페이지네이션 페이지 번호")
+                ),
+                responseFields(
+                        fieldWithPath("totalPage").type(JsonFieldType.NUMBER).description("전체 페이지"),
+                        fieldWithPath("currentPage").type(JsonFieldType.NUMBER).description("현재 페이지"),
+                        fieldWithPath("totalDataCount").type(JsonFieldType.NUMBER).description("데이터 개수"),
+                        fieldWithPath("dataList.[].id").type(JsonFieldType.NUMBER).description("상품 아이디"),
+                        fieldWithPath("dataList.[].title").type(JsonFieldType.STRING).description("제목"),
+                        fieldWithPath("dataList.[].authors").type(JsonFieldType.ARRAY).description("작가"),
+                        fieldWithPath("dataList.[].publisher").type(JsonFieldType.STRING).description("출판사"),
+                        fieldWithPath("dataList.[].publishedDate").type(JsonFieldType.STRING).description("출간일"),
+                        fieldWithPath("dataList.[].sellingPrice").type(JsonFieldType.NUMBER).description("판매가"),
+                        fieldWithPath("dataList.[].discountRate").type(JsonFieldType.NUMBER).description("할인율"),
+                        fieldWithPath("dataList.[].isOutOfStock").type(JsonFieldType.BOOLEAN).description("품절여부"),
+                        fieldWithPath("dataList.[].isShown").type(JsonFieldType.BOOLEAN).description("노출여부"),
+                        fieldWithPath("dataList.[].isDeleted").type(JsonFieldType.BOOLEAN).description("삭제여부"),
+                        fieldWithPath("dataList.[].thumbnailFileUrl").type(JsonFieldType.STRING).description("썸네일 파일 URL"),
+                        fieldWithPath("dataList.[].tags").type(JsonFieldType.ARRAY).description("태그")
+                )
+        ));
+    }
+
+    @Test
+    @DisplayName("모든 사용자용 상품 페이징 조회 성공")
     void getProducts() throws Exception {
         // given
         List<ProductsResponseDto> products = new ArrayList<>();
-        for (Long i = 1L; i <= 15L; i++) {
+        for (long i = 1L; i <= 10L; i++) {
             products.add(DummyProductsResponseDto.dummy(i));
+        }
+        for (long i = 11L; i <= 15L; i++) {
+            products.add(DummyProductsResponseDto.deletedDummy(i));
         }
 
         Page<ProductsResponseDto> page = new PageImpl<>(
@@ -122,7 +186,7 @@ class QueryProductControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
 
-        verify(service, times(1)).findAll(any(), any());
+        verify(service, times(1)).findAll(PageRequest.of(0, 5), null);
 
         // docs
         result.andDo(document(

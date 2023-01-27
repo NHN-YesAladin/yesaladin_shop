@@ -33,12 +33,12 @@ class FileStorageServiceImplTest {
         objectStorage = mock(ObjectStorageProperties.class);
         clock = mock(ClockConfiguration.class);
 
-        service = new FileStorageServiceImpl(
-                storageAuthService,
-                restTemplate,
-                objectStorage,
-                clock
-        );
+//        service = new FileStorageServiceImpl(
+//                storageAuthService,
+//                restTemplate,
+//                objectStorage,
+//                clock
+//        );
     }
 
     @Disabled

@@ -11,12 +11,12 @@ import org.springframework.web.client.HttpMessageConverterExtractor;
 import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
-import shop.yesaladin.shop.config.ClockConfiguration;
 import shop.yesaladin.shop.config.ObjectStorageProperties;
 import shop.yesaladin.shop.file.dto.FileUploadResponseDto;
 import shop.yesaladin.shop.file.service.inter.FileStorageService;
 import shop.yesaladin.shop.file.service.inter.StorageAuthService;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -35,7 +35,7 @@ public class FileStorageServiceImpl implements FileStorageService {
 
     private final RestTemplate restTemplate;
     private final ObjectStorageProperties objectStorage;
-    private final ClockConfiguration clock;
+    private final Clock clock;
 
     /**
      * {@inheritDoc}
@@ -84,6 +84,6 @@ public class FileStorageServiceImpl implements FileStorageService {
         String url = getUrl(domainName, typeName, filename);
         restTemplate.execute(url, HttpMethod.PUT, requestCallback, responseExtractor);
 
-        return new FileUploadResponseDto(url, LocalDateTime.now(clock.clock()).toString());
+        return new FileUploadResponseDto(url, LocalDateTime.now(clock).toString());
     }
 }

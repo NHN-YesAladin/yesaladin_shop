@@ -2,7 +2,6 @@ package shop.yesaladin.shop.file.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
@@ -26,6 +25,8 @@ import shop.yesaladin.shop.file.service.inter.StorageAuthService;
 public class StorageAuthServiceImpl implements StorageAuthService {
 
     private final ObjectStorageProperties objectStorage;
+    private final RestTemplate restTemplate;
+    private final ObjectMapper mapper;
 
     /**
      * 요청 본문(tenantId, username, password)을 생성합니다.
@@ -56,7 +57,6 @@ public class StorageAuthServiceImpl implements StorageAuthService {
         HttpEntity<TokenRequest> httpEntity = new HttpEntity<>(makeTokenRequest(), httpHeaders);
 
         // 토큰 요청
-        RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.exchange(
                 objectStorage.getAuthUrl(),
                 HttpMethod.POST,
@@ -66,13 +66,14 @@ public class StorageAuthServiceImpl implements StorageAuthService {
 
         // Json 매핑
         try {
-            ObjectMapper mapper = new JsonMapper();
             TokenJsonDto tokenJsonDto = mapper.readValue(response.getBody(), TokenJsonDto.class);
 
             return tokenJsonDto.getAccess().getToken().getId();
         } catch (JsonProcessingException e) {
             throw new CustomJsonProcessingException(e);
         }
+
+
     }
 
 }

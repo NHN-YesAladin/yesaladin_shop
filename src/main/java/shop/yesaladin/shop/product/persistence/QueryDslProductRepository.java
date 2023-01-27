@@ -73,7 +73,7 @@ public class QueryDslProductRepository implements QueryProductRepository {
 
 
     /**
-     * 상품을 Paging하여 전체 조회합니다.
+     * 상품을 Paging하여 관리자용 전체 조회합니다.
      *
      * @param pageable page, size 정보를 담은 Pagination을 위한 객체
      * @return 조회된 상품 엔터티 Page
@@ -81,7 +81,7 @@ public class QueryDslProductRepository implements QueryProductRepository {
      * @since 1.0
      */
     @Override
-    public Page<Product> findAll(Pageable pageable) {
+    public Page<Product> findAllForManager(Pageable pageable) {
         QProduct product = QProduct.product;
 
         List<Product> products = queryFactory
@@ -96,7 +96,64 @@ public class QueryDslProductRepository implements QueryProductRepository {
     }
 
     /**
-     * 상품을 상품 유형별로 Paging하여 전체 조회합니다.
+     * 상품을 상품 유형별로 Paging하여 관리자용 전체 조회합니다.
+     *
+     * @param pageable page, size 정보를 담은 Pagination을 위한 객체
+     * @param typeId   조회할 상품 유형 Id
+     * @return 조회된 상품 엔터티 Page
+     * @author 이수정
+     * @since 1.0
+     */
+    @Override
+    public Page<Product> findAllByTypeIdForManager(Pageable pageable, Integer typeId) {
+        QProduct product = QProduct.product;
+
+        Optional<ProductTypeCode> productTypeCode = Arrays.stream(ProductTypeCode.values())
+                .filter(value -> typeId.equals(value.getId()))
+                .findAny();
+
+        if (productTypeCode.isEmpty()) {
+            throw new ProductTypeCodeNotFoundException(typeId);
+        }
+
+        List<Product> products = queryFactory
+                .select(product)
+                .from(product)
+                .where(product.productTypeCode.eq(productTypeCode.get()))
+                .orderBy(product.preferentialShowRanking.asc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        return new PageImpl<>(products, pageable, products.size());
+    }
+
+    /**
+     * 상품을 Paging하여 전체 사용자용 전체 조회합니다.
+     *
+     * @param pageable page, size 정보를 담은 Pagination을 위한 객체
+     * @return 조회된 상품 엔터티 Page
+     * @author 이수정
+     * @since 1.0
+     */
+    @Override
+    public Page<Product> findAll(Pageable pageable) {
+        QProduct product = QProduct.product;
+
+        List<Product> products = queryFactory
+                .select(product)
+                .from(product)
+                .where(product.isDeleted.isFalse())
+                .orderBy(product.preferentialShowRanking.asc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        return new PageImpl<>(products, pageable, products.size());
+    }
+
+    /**
+     * 상품을 상품 유형별로 Paging하여 전체 사용자용 전체 조회합니다.
      *
      * @param pageable page, size 정보를 담은 Pagination을 위한 객체
      * @param typeId   조회할 상품 유형 Id
@@ -119,7 +176,7 @@ public class QueryDslProductRepository implements QueryProductRepository {
         List<Product> products = queryFactory
                 .select(product)
                 .from(product)
-                .where(product.productTypeCode.eq(productTypeCode.get()))
+                .where(product.productTypeCode.eq(productTypeCode.get()).and(product.isDeleted.isFalse()))
                 .orderBy(product.preferentialShowRanking.asc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
