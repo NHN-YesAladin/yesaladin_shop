@@ -43,4 +43,10 @@ public class ProductDetailResponseDto {
     private String contents;
 
     private String description;
+
+    // 판매여부 관련
+    private long quantity;
+    private boolean isForcedOutOfStock;
+    private boolean isSale;
+    private boolean isDeleted;
 }

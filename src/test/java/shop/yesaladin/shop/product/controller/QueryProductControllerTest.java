@@ -90,7 +90,11 @@ class QueryProductControllerTest {
                         fieldWithPath("subscriptionAvailable").type(JsonFieldType.BOOLEAN).description("구독 가능여부"),
                         fieldWithPath("issn").type(JsonFieldType.STRING).description("ISSN"),
                         fieldWithPath("contents").type(JsonFieldType.STRING).description("목차"),
-                        fieldWithPath("description").type(JsonFieldType.STRING).description("설명")
+                        fieldWithPath("description").type(JsonFieldType.STRING).description("설명"),
+                        fieldWithPath("quantity").type(JsonFieldType.NUMBER).description("수량"),
+                        fieldWithPath("forcedOutOfStock").type(JsonFieldType.BOOLEAN).description("강제품절여부"),
+                        fieldWithPath("sale").type(JsonFieldType.BOOLEAN).description("판매여부"),
+                        fieldWithPath("deleted").type(JsonFieldType.BOOLEAN).description("삭제여부")
                 )
         ));
     }

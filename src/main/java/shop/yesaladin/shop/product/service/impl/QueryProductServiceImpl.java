@@ -84,7 +84,11 @@ public class QueryProductServiceImpl implements QueryProductService {
                 product.isSubscriptionAvailable(),
                 product.getSubscribeProduct().getISSN(),
                 product.getContents(),
-                product.getDescription()
+                product.getDescription(),
+                product.getQuantity(),
+                product.isForcedOutOfStock(),
+                product.isSale(),
+                product.isDeleted()
         );
     }
 
