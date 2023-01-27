@@ -4,6 +4,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,7 +22,6 @@ import shop.yesaladin.shop.member.dto.MemberCreateResponseDto;
 import shop.yesaladin.shop.member.dto.MemberUnblockResponseDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateResponseDto;
-import shop.yesaladin.shop.member.dto.MemberWithdrawRequestDto;
 import shop.yesaladin.shop.member.dto.MemberWithdrawResponseDto;
 import shop.yesaladin.shop.member.service.inter.CommandMemberService;
 
@@ -31,6 +31,7 @@ import shop.yesaladin.shop.member.service.inter.CommandMemberService;
  * @author : 송학현, 최예린
  * @since : 1.0
  */
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/v1/members")
@@ -106,14 +107,15 @@ public class CommandMemberController {
     /**
      * 회원 탈퇴를 위한 Delete 요청을 처리하는 기능입니다.
      *
-     * @param request 회원 탈퇴 요청 DTO
+     * @param loginId 회원 탈퇴 대상 loginId
      * @return 회원 탈퇴 결과
      * @author : 송학현
      * @since : 1.0
      */
-    @DeleteMapping("/withdraw")
+    @DeleteMapping("/withdraw/{loginId}")
     @ResponseStatus(HttpStatus.OK)
-    public MemberWithdrawResponseDto deleteMember(@Valid @RequestBody MemberWithdrawRequestDto request) {
-        return commandMemberService.withDraw(request.getLoginId());
+    public MemberWithdrawResponseDto deleteMember(@PathVariable String loginId) {
+        log.info("request={}",loginId);
+        return commandMemberService.withDraw(loginId);
     }
 }

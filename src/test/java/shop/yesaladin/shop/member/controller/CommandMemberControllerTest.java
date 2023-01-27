@@ -56,7 +56,6 @@ import shop.yesaladin.shop.member.dto.MemberCreateResponseDto;
 import shop.yesaladin.shop.member.dto.MemberUnblockResponseDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateResponseDto;
-import shop.yesaladin.shop.member.dto.MemberWithdrawRequestDto;
 import shop.yesaladin.shop.member.dto.MemberWithdrawResponseDto;
 import shop.yesaladin.shop.member.exception.AlreadyBlockedMemberException;
 import shop.yesaladin.shop.member.exception.AlreadyUnblockedMemberException;
@@ -706,18 +705,15 @@ class CommandMemberControllerTest {
         //given
         String invalidLoginId = "invalidLoginId";
 
-        MemberWithdrawRequestDto request = ReflectionUtils.newInstance(
-                MemberWithdrawRequestDto.class,
-                invalidLoginId
-        );
-
-        Mockito.when(commandMemberService.withDraw(request.getLoginId()))
-                .thenThrow(new MemberNotFoundException("Member loginId: " + request.getLoginId()));
+        Mockito.when(commandMemberService.withDraw(invalidLoginId))
+                .thenThrow(new MemberNotFoundException("Member loginId: " + invalidLoginId));
 
         //when
-        ResultActions perform = mockMvc.perform(delete("/v1/members/withdraw")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)));
+        ResultActions perform = mockMvc.perform(delete(
+                "/v1/members/withdraw/{loginId}",
+                invalidLoginId
+        )
+                .contentType(MediaType.APPLICATION_JSON));
 
         //then
         verify(commandMemberService, times(1)).withDraw(invalidLoginId);
@@ -727,10 +723,7 @@ class CommandMemberControllerTest {
                 "withdraw-member-fail-member-not-found",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                requestFields(
-                        fieldWithPath("loginId").type(JsonFieldType.STRING)
-                                .description("탈퇴할 회원의 아이디")
-                ),
+                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 responseFields(
                         fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
                 )
@@ -741,11 +734,6 @@ class CommandMemberControllerTest {
     void withdrawMember() throws Exception {
         String loginId = "loginId";
 
-        MemberWithdrawRequestDto request = ReflectionUtils.newInstance(
-                MemberWithdrawRequestDto.class,
-                loginId
-        );
-
         Member withdrawMember = Member.builder()
                 .id(1L)
                 .name("deleted-1")
@@ -755,13 +743,12 @@ class CommandMemberControllerTest {
 
         withdrawResponse = MemberWithdrawResponseDto.fromEntity(withdrawMember);
 
-        Mockito.when(commandMemberService.withDraw(request.getLoginId()))
+        Mockito.when(commandMemberService.withDraw(loginId))
                 .thenReturn(withdrawResponse);
 
         //when
-        ResultActions perform = mockMvc.perform(delete("/v1/members/withdraw")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)));
+        ResultActions perform = mockMvc.perform(delete("/v1/members/withdraw/{loginId}", loginId)
+                .contentType(MediaType.APPLICATION_JSON));
 
         //then
         perform.andDo(print()).andExpect(status().isOk())
@@ -781,10 +768,7 @@ class CommandMemberControllerTest {
                 "withdraw-member-success",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                requestFields(
-                        fieldWithPath("loginId").type(JsonFieldType.STRING)
-                                .description("탈퇴할 회원의 아이디")
-                ),
+                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 responseFields(
                         fieldWithPath("id").type(JsonFieldType.NUMBER).description("회원의 Pk"),
                         fieldWithPath("name").type(JsonFieldType.STRING).description("회원의 이름"),
