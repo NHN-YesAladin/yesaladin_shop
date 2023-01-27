@@ -723,7 +723,7 @@ class CommandMemberControllerTest {
                 "withdraw-member-fail-member-not-found",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
+                pathParameters(parameterWithName("loginId").description("탈퇴할 회원의 아이디")),
                 responseFields(
                         fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
                 )
@@ -768,7 +768,7 @@ class CommandMemberControllerTest {
                 "withdraw-member-success",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
+                pathParameters(parameterWithName("loginId").description("탈퇴할 회원의 아이디")),
                 responseFields(
                         fieldWithPath("id").type(JsonFieldType.NUMBER).description("회원의 Pk"),
                         fieldWithPath("name").type(JsonFieldType.STRING).description("회원의 이름"),
