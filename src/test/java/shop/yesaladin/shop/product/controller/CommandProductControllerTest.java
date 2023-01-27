@@ -183,6 +183,8 @@ class CommandProductControllerTest {
         // then
         result.andDo(print()).andExpect(status().isOk());
 
+        verify(service, times(1)).softDelete(ID);
+
         // docs
         result.andDo(document(
                 "delete-product",
@@ -190,7 +192,45 @@ class CommandProductControllerTest {
                 getDocumentResponse(),
                 pathParameters(parameterWithName("productId").description("삭제할 상품의 아이디"))
         ));
+    }
 
-        verify(service, times(1)).softDelete(ID);
+    @Test
+    @DisplayName("상품 판매여부 변경 성공")
+    void changeProductIsSale() throws Exception {
+        // when
+        ResultActions result = mockMvc.perform(post("/v1/products/{productId}/is-sale", ID));
+
+        // then
+        result.andDo(print()).andExpect(status().isOk());
+
+        verify(service, times(1)).changeIsSale(ID);
+
+        // docs
+        result.andDo(document(
+                "change-product-is-sale",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                pathParameters(parameterWithName("productId").description("판매여부를 변경할 상품의 아이디"))
+        ));
+    }
+
+    @Test
+    @DisplayName("상품 강제품절여부 변경 성공")
+    void changeProductIsForcedOutOfStock() throws Exception {
+        // when
+        ResultActions result = mockMvc.perform(post("/v1/products/{productId}/is-forced-out-of-stock", ID));
+
+        // then
+        result.andDo(print()).andExpect(status().isOk());
+
+        verify(service, times(1)).changeIsForcedOutOfStock(ID);
+
+        // docs
+        result.andDo(document(
+                "change-product-is-forced-out-of-stock",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                pathParameters(parameterWithName("productId").description("강제품절여부를 변경할 상품의 아이디"))
+        ));
     }
 }
