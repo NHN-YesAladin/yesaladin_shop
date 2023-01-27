@@ -11,6 +11,12 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.annotations.WriteTypeHint;
 import shop.yesaladin.shop.product.dto.SearchedProductResponseDto;
 
+/**
+ * 엘라스틱 서치 상품 인덱스
+ *
+ * @author : 김선홍
+ * @since : 1.0
+ */
 @Getter
 @ToString
 @Builder

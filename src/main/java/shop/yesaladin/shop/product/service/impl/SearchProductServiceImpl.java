@@ -1,21 +1,9 @@
 package shop.yesaladin.shop.product.service.impl;
 
 import java.util.List;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
-import shop.yesaladin.shop.file.exception.FileNotFoundException;
-import shop.yesaladin.shop.file.service.inter.StorageAuthService;
 import shop.yesaladin.shop.product.domain.repository.SearchProductRepository;
-import shop.yesaladin.shop.product.dto.SearchProductRequestDto;
 import shop.yesaladin.shop.product.dto.SearchedProductResponseDto;
 import shop.yesaladin.shop.product.service.inter.SearchProductService;
 
