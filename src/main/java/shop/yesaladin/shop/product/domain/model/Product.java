@@ -89,7 +89,7 @@ public class Product {
     private ProductSavingMethodCode productSavingMethodCode;
 
     /**
-     * 상품 soft delete를 위해 isDeleted를 true로 바꿉니다.
+     * 상품 soft delete를 위해 isDeleted를 true로, isSale을 false로 바꿉니다.
      *
      * @author 이수정
      * @since 1.0
@@ -99,6 +99,7 @@ public class Product {
             throw new AlreadyDeletedProductException(id);
         }
         this.isDeleted = true;
+        this.isSale = false;
     }
 
     /**
