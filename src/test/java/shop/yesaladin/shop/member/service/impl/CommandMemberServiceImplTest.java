@@ -20,17 +20,19 @@ import shop.yesaladin.shop.member.domain.repository.CommandMemberRepository;
 import shop.yesaladin.shop.member.domain.repository.CommandMemberRoleRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryRoleRepository;
+import shop.yesaladin.shop.member.dto.MemberBlockRequestDto;
 import shop.yesaladin.shop.member.dto.MemberBlockResponseDto;
 import shop.yesaladin.shop.member.dto.MemberCreateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberCreateResponseDto;
+import shop.yesaladin.shop.member.dto.MemberUnblockResponseDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateResponseDto;
+import shop.yesaladin.shop.member.dto.MemberWithdrawResponseDto;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
 import shop.yesaladin.shop.member.dummy.MemberRoleDummy;
 import shop.yesaladin.shop.member.dummy.RoleDummy;
 import shop.yesaladin.shop.member.exception.AlreadyBlockedMemberException;
 import shop.yesaladin.shop.member.exception.AlreadyUnblockedMemberException;
-import shop.yesaladin.shop.member.dto.MemberWithdrawResponseDto;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.exception.MemberProfileAlreadyExistException;
 
@@ -275,11 +277,16 @@ class CommandMemberServiceImplTest {
         //given
         String loginId = "loginId";
 
+        String blockedReason = "You are bad guy";
+        MemberBlockRequestDto request = ReflectionUtils.newInstance(
+                MemberBlockRequestDto.class,
+                blockedReason
+        );
         Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
                 .thenThrow(new MemberNotFoundException("Member loginId " + loginId));
 
         //when, then
-        assertThatThrownBy(() -> service.block(loginId)).isInstanceOf(MemberNotFoundException.class);
+        assertThatThrownBy(() -> service.block(loginId, request)).isInstanceOf(MemberNotFoundException.class);
 
         verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
     }
@@ -290,6 +297,12 @@ class CommandMemberServiceImplTest {
         //given
         String loginId = "loginId";
 
+        String blockedReason = "You are bad guy";
+        MemberBlockRequestDto request = ReflectionUtils.newInstance(
+                MemberBlockRequestDto.class,
+                blockedReason
+        );
+
         Member member = Member.builder()
                 .loginId(loginId)
                 .isBlocked(true).build();
@@ -298,7 +311,7 @@ class CommandMemberServiceImplTest {
                 .thenReturn(Optional.of(member));
 
         //when, then
-        assertThatThrownBy(() -> service.block(loginId)).isInstanceOf(AlreadyBlockedMemberException.class);
+        assertThatThrownBy(() -> service.block(loginId, request)).isInstanceOf(AlreadyBlockedMemberException.class);
 
         verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
     }
@@ -309,6 +322,12 @@ class CommandMemberServiceImplTest {
         //given
         String loginId = "loginId";
 
+        String blockedReason = "You are bad guy";
+        MemberBlockRequestDto request = ReflectionUtils.newInstance(
+                MemberBlockRequestDto.class,
+                blockedReason
+        );
+
         Member member = Member.builder()
                 .loginId(loginId)
                 .isBlocked(false).build();
@@ -317,11 +336,11 @@ class CommandMemberServiceImplTest {
                 .thenReturn(Optional.of(member));
 
         //when
-        MemberBlockResponseDto actualMember = service.block(loginId);
+        MemberBlockResponseDto actualMember = service.block(loginId, request);
 
         //then
         assertThat(actualMember.getLoginId()).isEqualTo(loginId);
-        assertThat(actualMember.isBlocked()).isTrue();
+        assertThat(actualMember.getIsBlocked()).isTrue();
 
         verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
     }
@@ -375,11 +394,11 @@ class CommandMemberServiceImplTest {
                 .thenReturn(Optional.of(member));
 
         //when
-        MemberBlockResponseDto actualMember = service.unblock(loginId);
+        MemberUnblockResponseDto actualMember = service.unblock(loginId);
 
         //then
         assertThat(actualMember.getLoginId()).isEqualTo(loginId);
-        assertThat(actualMember.isBlocked()).isFalse();
+        assertThat(actualMember.getIsBlocked()).isFalse();
 
         verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
     }
@@ -390,7 +409,8 @@ class CommandMemberServiceImplTest {
         //given
         String loginId = "loginId";
 
-        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId)).thenReturn(Optional.empty());
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
+                .thenReturn(Optional.empty());
 
         //when
         assertThatThrownBy(() -> service.withDraw(loginId))
@@ -416,7 +436,8 @@ class CommandMemberServiceImplTest {
                 .loginId(loginId)
                 .build();
 
-        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId)).thenReturn(Optional.of(member));
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
+                .thenReturn(Optional.of(member));
 
         //when
         MemberWithdrawResponseDto response = service.withDraw(loginId);

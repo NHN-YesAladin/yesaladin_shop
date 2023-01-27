@@ -13,7 +13,6 @@ import shop.yesaladin.shop.writing.dummy.DummyAuthor;
 import shop.yesaladin.shop.writing.exception.AuthorNotFoundException;
 import shop.yesaladin.shop.writing.service.inter.QueryAuthorService;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -71,7 +70,7 @@ class QueryAuthorServiceImplTest {
         String name1 = "저자1";
         String name2 = "저자2";
 
-        List<Author> authors = Arrays.asList(
+        List<Author> authors = List.of(
                 DummyAuthor.dummy(name1, MemberDummy.dummyWithId(1L)),
                 DummyAuthor.dummy(name2, null)
         );

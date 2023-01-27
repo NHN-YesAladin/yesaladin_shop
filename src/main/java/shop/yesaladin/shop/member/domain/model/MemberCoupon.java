@@ -1,7 +1,5 @@
 package shop.yesaladin.shop.member.domain.model;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -41,16 +39,4 @@ public class MemberCoupon {
 
     @Column(name = "coupon_code", nullable = false, unique = true, length = 36)
     private String couponCode;
-
-    @Column(name = "is_used", nullable = false)
-    private boolean isUsed;
-
-    @Column(name = "created_datetime", nullable = false)
-    private LocalDateTime createdDatetime;
-
-    @Column(name = "expiration_date", nullable = false)
-    private LocalDate expirationDate;
-
-    @Column(name = "used_datetime")
-    private LocalDateTime usedDatetime;
 }

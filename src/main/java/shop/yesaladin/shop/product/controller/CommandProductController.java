@@ -49,18 +49,16 @@ public class CommandProductController {
      *
      * @param id        수정할 상품의 Id
      * @param updateDto 상품 정보 수정을 위한 Dto
-     * @return 수정된 상품 정보를 담은 ResponseEntity
+     * @return 수정된 상품 정보를 담은 Dto
      * @author 이수정
      * @since 1.0
      */
     @PutMapping("/{productId}")
-    public ResponseEntity updateProduct(
+    public ProductOnlyIdDto updateProduct(
             @PathVariable("productId") long id,
             @Valid @RequestBody ProductUpdateDto updateDto
     ) {
-        ProductOnlyIdDto product = commandProductService.update(id, updateDto);
-
-        return ResponseEntity.ok().body(product);
+        return commandProductService.update(id, updateDto);
     }
 
 
@@ -72,7 +70,7 @@ public class CommandProductController {
      * @since 1.0
      */
     @PostMapping("/{productId}")
-    public ResponseEntity deleteProduct(@PathVariable("productId") long id) {
+    public ResponseEntity<Void> deleteProduct(@PathVariable("productId") long id) {
         commandProductService.softDelete(id);
 
         return ResponseEntity.ok().build();

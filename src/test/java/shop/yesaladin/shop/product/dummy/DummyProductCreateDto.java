@@ -2,20 +2,14 @@ package shop.yesaladin.shop.product.dummy;
 
 import shop.yesaladin.shop.product.dto.ProductCreateDto;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class DummyProductCreateDto {
 
     public static ProductCreateDto dummy(String ISBN) {
-        List<Long> authors = new ArrayList<>() {
-        };
-        authors.add(1L);
+        List<Long> authors = List.of(1L);
 
-        List<Long> tags = new ArrayList<>() {
-        };
-        tags.add(1L);
-        tags.add(2L);
+        List<Long> tags = List.of(1L, 2L);
 
         return new ProductCreateDto(
                 ISBN,

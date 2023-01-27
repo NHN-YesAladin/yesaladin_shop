@@ -5,12 +5,13 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class MemberWithdrawRequestDto {
-
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class MemberBlockRequestDto {
     @NotBlank
-    private String loginId;
+    @Length(min = 2, max = 255)
+    private String blockedReason;
 }

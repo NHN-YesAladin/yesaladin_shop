@@ -26,6 +26,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.common.exception.InvalidPeriodConditionException;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberGradeHistoryRepository;
@@ -63,13 +65,17 @@ class QueryMemberGradeHistoryServiceImplTest {
     @MethodSource(value = "getPeriodQueryRequestData")
     @DisplayName("회원의 등급내역 조회 실패 - 유효하지않은 기간")
     void findByMemberId_failedByInvalidPeriodCondition(PeriodQueryRequestDto request, String info) {
-        assertThatThrownBy(() -> queryMemberGradeHistoryService.findByLoginId(
+        Pageable pageable = Pageable.ofSize(10);
+
+        assertThatThrownBy(() -> queryMemberGradeHistoryService.getByLoginId(
                 loginId,
-                request
+                request,
+                pageable
         )).isInstanceOf(InvalidPeriodConditionException.class);
 
         verify(queryMemberGradeHistoryRepository, never()).findByLoginIdAndPeriod(
                 anyString(),
+                any(),
                 any(),
                 any()
         );
@@ -98,6 +104,7 @@ class QueryMemberGradeHistoryServiceImplTest {
         //given
         LocalDate startDate = LocalDate.of(2023, 1, 10);
         LocalDate endDate = LocalDate.of(2023, 1, 12);
+        Pageable pageable = Pageable.ofSize(10);
 
         PeriodQueryRequestDto request = ReflectionUtils.newInstance(
                 PeriodQueryRequestDto.class,
@@ -107,14 +114,16 @@ class QueryMemberGradeHistoryServiceImplTest {
         Mockito.when(queryMemberRepository.existsMemberByLoginId(loginId)).thenReturn(false);
 
         //when, then
-        assertThatThrownBy(() -> queryMemberGradeHistoryService.findByLoginId(
+        assertThatThrownBy(() -> queryMemberGradeHistoryService.getByLoginId(
                 loginId,
-                request
+                request,
+                pageable
         )).isInstanceOf(MemberNotFoundException.class);
 
         verify(queryMemberRepository, times(1)).existsMemberByLoginId(loginId);
         verify(queryMemberGradeHistoryRepository, never()).findByLoginIdAndPeriod(
                 anyString(),
+                any(),
                 any(),
                 any()
         );
@@ -125,6 +134,7 @@ class QueryMemberGradeHistoryServiceImplTest {
     void findByMemberId() {
         LocalDate startDate = LocalDate.of(2023, 1, 10);
         LocalDate endDate = LocalDate.of(2023, 1, 12);
+        Pageable pageable = Pageable.ofSize(10);
 
         PeriodQueryRequestDto periodQueryRequestDto = ReflectionUtils.newInstance(
                 PeriodQueryRequestDto.class,
@@ -135,12 +145,14 @@ class QueryMemberGradeHistoryServiceImplTest {
         Mockito.when(queryMemberGradeHistoryRepository.findByLoginIdAndPeriod(
                 eq(loginId),
                 any(),
+                any(),
                 any()
-        )).thenReturn(new ArrayList<>(Collections.emptyList()));
+        )).thenReturn(Page.empty());
 
-        List<MemberGradeHistoryQueryResponseDto> actual = queryMemberGradeHistoryService.findByLoginId(
+        Page<MemberGradeHistoryQueryResponseDto> actual = queryMemberGradeHistoryService.getByLoginId(
                 loginId,
-                periodQueryRequestDto
+                periodQueryRequestDto,
+                pageable
         );
 
         assertThat(actual).isEmpty();
@@ -152,7 +164,8 @@ class QueryMemberGradeHistoryServiceImplTest {
         verify(queryMemberGradeHistoryRepository, times(1)).findByLoginIdAndPeriod(
                 anyString(),
                 firstCaptor.capture(),
-                secondCaptor.capture()
+                secondCaptor.capture(),
+                any()
         );
 
         assertThat(firstCaptor.getValue().getYear()).isEqualTo(startDate.getYear());

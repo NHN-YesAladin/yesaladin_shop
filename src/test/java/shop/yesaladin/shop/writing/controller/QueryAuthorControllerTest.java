@@ -15,7 +15,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.writing.dto.AuthorsResponseDto;
 import shop.yesaladin.shop.writing.service.inter.QueryAuthorService;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -42,7 +41,7 @@ class QueryAuthorControllerTest {
 
     @BeforeEach
     void setUp() {
-        authors = Arrays.asList(
+        authors = List.of(
                 new AuthorsResponseDto(1L, "저자1", "happyAuthor"),
                 new AuthorsResponseDto(2L, "저자2", "sadAuthor")
         );

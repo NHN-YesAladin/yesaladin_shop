@@ -6,6 +6,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 import shop.yesaladin.shop.member.domain.model.querydsl.QMemberGradeHistory;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberGradeHistoryRepository;
@@ -48,14 +51,15 @@ public class QueryDslQueryMemberGradeHistoryRepository implements
      * {@inheritDoc}
      */
     @Override
-    public List<MemberGradeHistoryQueryResponseDto> findByLoginIdAndPeriod(
+    public Page<MemberGradeHistoryQueryResponseDto> findByLoginIdAndPeriod(
             String loginId,
             LocalDate startDate,
-            LocalDate endDate
+            LocalDate endDate,
+            Pageable pageable
     ) {
         QMemberGradeHistory memberGradeHistory = QMemberGradeHistory.memberGradeHistory;
 
-        return queryFactory.select(Projections.constructor(
+        List<MemberGradeHistoryQueryResponseDto> content = queryFactory.select(Projections.constructor(
                         MemberGradeHistoryQueryResponseDto.class,
                         memberGradeHistory.id,
                         memberGradeHistory.updateDate,
@@ -67,5 +71,13 @@ public class QueryDslQueryMemberGradeHistoryRepository implements
                 .where(memberGradeHistory.member.loginId.eq(loginId)
                         .and(memberGradeHistory.updateDate.between(startDate, endDate)))
                 .fetch();
+
+        Long totalCount = queryFactory.select(memberGradeHistory.count())
+                .from(memberGradeHistory)
+                .where(memberGradeHistory.member.loginId.eq(loginId)
+                        .and(memberGradeHistory.updateDate.between(startDate, endDate)))
+                .fetchFirst();
+
+        return PageableExecutionUtils.getPage(content, pageable, () -> totalCount);
     }
 }
