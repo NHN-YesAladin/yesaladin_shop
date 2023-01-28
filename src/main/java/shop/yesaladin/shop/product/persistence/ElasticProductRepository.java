@@ -1,7 +1,9 @@
 package shop.yesaladin.shop.product.persistence;
 
 
+import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
+import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -203,7 +205,10 @@ public class ElasticProductRepository implements SearchProductRepository {
                 .withPageable(PageRequest.of(offset, size))
                 .build();
 
-        SearchHits<SearchedProduct> result = elasticsearchOperations.search(query, SearchedProduct.class);
+        SearchHits<SearchedProduct> result = elasticsearchOperations.search(
+                query,
+                SearchedProduct.class
+        );
 
         return SearchedProductResponseDto.builder()
                 .products(result.stream()
@@ -232,15 +237,18 @@ public class ElasticProductRepository implements SearchProductRepository {
             String field
     ) {
         NativeQuery query = NativeQuery.builder()
-                .withFilter(NativeQuery.builder()
-                        .withQuery(q -> q.term(t -> t.field(field).value(value)))
-                        .getQuery())
-                .withFilter(getCategoryDisableFilter())
-                .withFilter(getCategoryIsShownFilter())
+                .withFilter(QueryBuilders.bool(v -> v.must(
+                        getTermQuery(field, value),
+                        getCategoryDisableFilter(),
+                        getCategoryIsShownFilter()
+                )))
                 .withPageable(PageRequest.of(offset, size))
                 .build();
 
-        SearchHits<SearchedProduct> result = elasticsearchOperations.search(query, SearchedProduct.class);
+        SearchHits<SearchedProduct> result = elasticsearchOperations.search(
+                query,
+                SearchedProduct.class
+        );
 
         return SearchedProductResponseDto.builder()
                 .products(result.stream()
@@ -269,12 +277,13 @@ public class ElasticProductRepository implements SearchProductRepository {
             int size
     ) {
         NativeQuery query = NativeQuery.builder()
-                .withFilter(NativeQuery.builder()
-                        .withQuery(q -> q.term(t -> t.field(field).value(value)))
-                        .getQuery())
+                .withFilter(getTermQuery(field, value))
                 .withPageable(PageRequest.of(offset, size))
                 .build();
-        SearchHits<SearchedProduct> result = elasticsearchOperations.search(query, SearchedProduct.class);
+        SearchHits<SearchedProduct> result = elasticsearchOperations.search(
+                query,
+                SearchedProduct.class
+        );
 
         return SearchedProductManagerResponseDto.builder()
                 .products(result.stream()
@@ -308,6 +317,21 @@ public class ElasticProductRepository implements SearchProductRepository {
     private Query getCategoryIsShownFilter() {
         return NativeQuery.builder()
                 .withQuery(q -> q.term(t -> t.field(CATEGORIES_IS_SHOWN).value(true)))
+                .getQuery();
+    }
+
+    /**
+     * Term 쿼리를 얻는 메서드
+     *
+     * @param field 필드
+     * @param value 밸류
+     * @return 쿼리
+     * @author : 김선홍
+     * @since : 1.0
+     */
+    private Query getTermQuery(String field, String value) {
+        return NativeQuery.builder()
+                .withQuery(q -> q.term(t -> t.field(field).value(value)))
                 .getQuery();
     }
 }

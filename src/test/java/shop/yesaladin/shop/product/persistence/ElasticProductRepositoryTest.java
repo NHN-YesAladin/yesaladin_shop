@@ -67,7 +67,7 @@ class ElasticProductRepositoryTest {
     @Test
     @DisplayName("출판사로 검색 테스트")
     void testSearchProductsByPublisher() {
-        SearchedProductResponseDto result = searchProductRepository.searchProductsByPublisher("publisher", 0, 1);
+        SearchedProductResponseDto result = searchProductRepository.searchProductsByPublisher("아ㅓㅇ라ㅓ", 0, 1);
         assertThat(result.getProducts()).isEmpty();
         assertThat(result.getCount()).isZero();
     }
