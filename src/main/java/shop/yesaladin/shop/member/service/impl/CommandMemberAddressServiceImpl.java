@@ -8,8 +8,8 @@ import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.member.domain.repository.CommandMemberAddressRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberAddressRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
-import shop.yesaladin.shop.member.dto.MemberAddressCreateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberAddressCommandResponseDto;
+import shop.yesaladin.shop.member.dto.MemberAddressCreateRequestDto;
 import shop.yesaladin.shop.member.exception.MemberAddressNotFoundException;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.CommandMemberAddressService;
@@ -61,11 +61,12 @@ public class CommandMemberAddressServiceImpl implements CommandMemberAddressServ
     @Override
     @Transactional
     public long delete(String loginId, long addressId) {
-        if (!queryMemberAddressRepository.existByLoginIdAndMemberAddressId(loginId, addressId)) {
-            throw new MemberAddressNotFoundException(addressId);
-        }
+        MemberAddress memberAddress = tryGetMemberAddressByMemberIdAndMemberAddressId(
+                loginId,
+                addressId
+        );
 
-        commandMemberAddressRepository.deleteById(addressId);
+        memberAddress.delete();
 
         return addressId;
     }

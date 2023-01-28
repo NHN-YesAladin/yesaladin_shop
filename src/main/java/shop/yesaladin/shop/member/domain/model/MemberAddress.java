@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import shop.yesaladin.shop.member.exception.AlreadyDeletedAddressException;
 
 /**
  * 회원 배송지 엔티티 클래스 입니다.
@@ -39,6 +40,9 @@ public class MemberAddress {
     @Column(name = "is_default", nullable = false)
     private boolean isDefault;
 
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
@@ -51,5 +55,17 @@ public class MemberAddress {
      */
     public void markAsDefault() {
         this.isDefault = true;
+    }
+    /**
+     * 배송지를 삭제합니다.
+     *
+     * @author 최예린
+     * @since 1.0
+     */
+    public void delete() {
+        if(this.isDeleted) {
+            throw new AlreadyDeletedAddressException(this.id);
+        }
+        this.isDeleted = true;
     }
 }

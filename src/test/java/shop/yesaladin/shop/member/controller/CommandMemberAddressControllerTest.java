@@ -43,6 +43,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.member.dto.MemberAddressCommandResponseDto;
 import shop.yesaladin.shop.member.dto.MemberAddressCreateRequestDto;
+import shop.yesaladin.shop.member.exception.AlreadyDeletedAddressException;
 import shop.yesaladin.shop.member.exception.MemberAddressNotFoundException;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.CommandMemberAddressService;
@@ -349,6 +350,42 @@ class CommandMemberAddressControllerTest {
         //docs
         result.andDo(document(
                 "delete-member-address-fail-member-address-not-found",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                pathParameters(
+                        parameterWithName("loginId").description("회원의 아이디"),
+                        parameterWithName("addressId").description("배송지 Pk")
+                ),
+                responseFields(
+                        fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
+                )
+        ));
+    }
+
+    @Test
+    @DisplayName("배송지 삭제 실패-이미 삭제된 배송지")
+    void deleteMemberAddress_fail_AlreadyDeletedAddress() throws Exception {
+        //given
+        long addressId = 1L;
+        String loginId = "user@1";
+
+        Mockito.when(commandMemberAddressService.delete(loginId, addressId))
+                .thenThrow(new AlreadyDeletedAddressException(addressId));
+        //when
+        ResultActions result = mockMvc.perform(delete(
+                "/v1/members/{loginId}/addresses/{addressId}",
+                loginId,
+                addressId
+        ));
+
+        //then
+        result.andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message", startsWith("Already Deleted Address :")));
+
+        //docs
+        result.andDo(document(
+                "delete-member-address-fail-already-deleted-address",
                 getDocumentRequest(),
                 getDocumentResponse(),
                 pathParameters(
