@@ -1,10 +1,12 @@
 package shop.yesaladin.shop.category.controller;
 
+import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import shop.yesaladin.shop.category.dto.CategoryOrderRequestDto;
 import shop.yesaladin.shop.category.dto.CategoryRequestDto;
 import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 import shop.yesaladin.shop.category.dto.ResultCodeDto;
@@ -65,6 +68,16 @@ public class CommandCategoryController {
                 categoryRequestDto
         );
         return ResponseEntity.ok(categoryResponseDto);
+    }
+
+    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:9090",
+            "http://test.yesaladin.shop:9090",
+            "https://www.yesaladin.shop"})
+    @PutMapping("/order")
+    public ResultCodeDto modifyCategoriesOrder(@Valid @RequestBody List<CategoryOrderRequestDto> responseList) {
+        System.out.println(responseList);
+        commandCategoryService.updateOrder(responseList);
+        return new ResultCodeDto("Success");
     }
 
     /**

@@ -9,6 +9,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,19 +30,16 @@ class CommandCategoryServiceTest {
     Long childId = 10100L;
     private CommandCategoryRepository commandCategoryRepository;
     private QueryCategoryRepository queryCategoryRepository;
-    private QueryCategoryService queryCategoryService;
     private CommandCategoryService commandCategoryService;
 
     @BeforeEach
     void setUp() {
         commandCategoryRepository = mock(CommandCategoryRepository.class);
-        queryCategoryService = mock(QueryCategoryService.class);
         queryCategoryRepository = mock(QueryCategoryRepository.class);
 
         commandCategoryService = new CommandCategoryServiceImpl(
                 commandCategoryRepository,
-                queryCategoryRepository,
-                queryCategoryService
+                queryCategoryRepository
         );
 
         parentCategory = CategoryDummy.dummyParent(parentId);
@@ -106,6 +104,8 @@ class CommandCategoryServiceTest {
                 Category.DEPTH_CHILD,
                 childCategory.getParent().getId()
         )).thenReturn(idDto);
+        when(queryCategoryRepository.findById(parentCategory.getId())).thenReturn(
+                Optional.of(parentCategory));
 
         //when
         CategoryResponseDto categoryResponseDto = commandCategoryService.create(createDto);
@@ -122,6 +122,8 @@ class CommandCategoryServiceTest {
                 Category.DEPTH_CHILD,
                 childCategory.getParent().getId()
         );
+        verify(queryCategoryRepository, times(1)).findById(parentCategory.getId());
+
     }
 
     @Test
@@ -136,8 +138,8 @@ class CommandCategoryServiceTest {
                 null
         );
 
-        when(queryCategoryService.findInnerCategoryById(parentCategory.getId())).thenReturn(
-                parentCategory);
+        when(queryCategoryRepository.findById(parentCategory.getId())).thenReturn(
+                Optional.of(parentCategory));
 
         // when
         CategoryResponseDto responseDto = commandCategoryService.update(
@@ -150,7 +152,7 @@ class CommandCategoryServiceTest {
         assertThat(responseDto.getName()).isEqualTo(categoryRequestDto.getName());
         assertThat(parentCategory.getDepth()).isEqualTo(Category.DEPTH_PARENT);
 
-        verify(queryCategoryService, times(1)).findInnerCategoryById(parentCategory.getId());
+        verify(queryCategoryRepository, times(1)).findById(parentCategory.getId());
     }
 
 
@@ -166,8 +168,8 @@ class CommandCategoryServiceTest {
                 childCategory.getParent().getId()
         );
 
-        when(queryCategoryService.findInnerCategoryById(childCategory.getId())).thenReturn(
-                childCategory);
+        when(queryCategoryRepository.findById(childCategory.getId())).thenReturn(
+                Optional.of(childCategory));
 
         // when
         CategoryResponseDto responseDto = commandCategoryService.update(
@@ -180,7 +182,7 @@ class CommandCategoryServiceTest {
         assertThat(responseDto.getName()).isEqualTo(categoryRequestDto.getName());
         assertThat(childCategory.getDepth()).isEqualTo(Category.DEPTH_CHILD);
 
-        verify(queryCategoryService, times(1)).findInnerCategoryById(childCategory.getId());
+        verify(queryCategoryRepository, times(1)).findById(childCategory.getId());
     }
 
     @Test
@@ -202,8 +204,8 @@ class CommandCategoryServiceTest {
                 null
         );
 
-        when(queryCategoryService.findInnerCategoryById(childCategory.getId())).thenReturn(
-                childCategory);
+        when(queryCategoryRepository.findById(childCategory.getId())).thenReturn(
+                Optional.of(childCategory));
         when(commandCategoryRepository.save(any())).thenReturn(toEntity);
         when(queryCategoryRepository.getLatestIdByDepth(Category.DEPTH_PARENT)).thenReturn(idDto);
 
@@ -218,7 +220,7 @@ class CommandCategoryServiceTest {
         assertThat(responseDto.getName()).isEqualTo(categoryRequestDto.getName());
         assertThat(childCategory.isDisable()).isEqualTo(true);
 
-        verify(queryCategoryService, times(1)).findInnerCategoryById(childCategory.getId());
+        verify(queryCategoryRepository, times(1)).findById(childCategory.getId());
         verify(commandCategoryRepository, times(1)).save(any());
         verify(queryCategoryRepository, times(1)).getLatestIdByDepth(Category.DEPTH_PARENT);
     }
@@ -246,13 +248,16 @@ class CommandCategoryServiceTest {
                 otherParentCategory
         );
 
-        when(queryCategoryService.findInnerCategoryById(childCategory.getId())).thenReturn(
-                childCategory);
+        when(queryCategoryRepository.findById(childCategory.getId())).thenReturn(
+                Optional.of(childCategory));
+        when(queryCategoryRepository.findById(otherParentCategory.getId())).thenReturn(
+                Optional.of(otherParentCategory));
         when(commandCategoryRepository.save(any())).thenReturn(toEntity);
         when(queryCategoryRepository.getLatestChildIdByDepthAndParentId(
                 Category.DEPTH_CHILD,
                 categoryRequestDto.getParentId()
         )).thenReturn(idDto);
+
 
         // when
         CategoryResponseDto responseDto = commandCategoryService.update(
@@ -265,11 +270,10 @@ class CommandCategoryServiceTest {
         assertThat(responseDto.getName()).isEqualTo(categoryRequestDto.getName());
         assertThat(childCategory.isDisable()).isEqualTo(true);
 
-        verify(queryCategoryService, times(1)).findInnerCategoryById(childCategory.getId());
-        verify(
-                queryCategoryService,
-                times(1)
-        ).findInnerCategoryById(categoryRequestDto.getParentId());
+        verify(queryCategoryRepository, times(1)).findById(childCategory.getId());
+        verify(queryCategoryRepository, times(1)).findById(otherParentCategory.getId());
+
+
         verify(commandCategoryRepository, times(1)).save(any());
         verify(
                 queryCategoryRepository,

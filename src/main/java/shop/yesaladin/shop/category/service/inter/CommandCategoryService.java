@@ -1,5 +1,7 @@
 package shop.yesaladin.shop.category.service.inter;
 
+import java.util.List;
+import shop.yesaladin.shop.category.dto.CategoryOrderRequestDto;
 import shop.yesaladin.shop.category.dto.CategoryRequestDto;
 import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 
@@ -36,4 +38,7 @@ public interface CommandCategoryService {
      * @param id 삭제하고자 하는 카테고리 id
      */
     void delete(Long id);
+
+
+    void updateOrder(List<CategoryOrderRequestDto> requestList);
 }
