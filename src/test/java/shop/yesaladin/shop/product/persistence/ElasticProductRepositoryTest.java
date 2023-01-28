@@ -38,7 +38,7 @@ class ElasticProductRepositoryTest {
     }
 
     @Test
-    @DisplayName("상품 ISBN으로 검색 테스트")
+    @DisplayName("상품 isbn으로 검색 테스트")
     void testSearchProductsByISBN() {
         List<SearchedProductResponseDto> result = searchProductRepository.searchProductsByProductISBN("isbn", 0, 1);
         assertThat(result).isEmpty();

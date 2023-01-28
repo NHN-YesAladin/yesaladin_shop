@@ -51,16 +51,7 @@ public class ElasticProductRepository implements SearchProductRepository {
             int offset,
             int size
     ) {
-        Query query = NativeQuery.builder()
-                .withFilter(NativeQuery.builder()
-                        .withQuery(q -> q.term(t -> t.field(CATEGORIES_ID).value(id)))
-                        .getQuery())
-                .withPageable(PageRequest.of(offset, size))
-                .build();
-
-        return elasticsearchOperations.search(query, SearchedProduct.class).stream()
-                .map(searchedProductSearchHit -> searchedProductSearchHit.getContent().toDto())
-                .collect(Collectors.toList());
+        return searchProductByCategory(CATEGORIES_ID, String.valueOf(id), offset, size);
     }
 
     /**
@@ -79,16 +70,7 @@ public class ElasticProductRepository implements SearchProductRepository {
             int offset,
             int size
     ) {
-        Query query = NativeQuery.builder()
-                .withFilter(NativeQuery.builder()
-                        .withQuery(q -> q.term(t -> t.field(CATEGORIES_NAME).value(name)))
-                        .getQuery())
-                .withPageable(PageRequest.of(offset, size))
-                .build();
-
-        return elasticsearchOperations.search(query, SearchedProduct.class).stream()
-                .map(searchedProductSearchHit -> searchedProductSearchHit.getContent().toDto())
-                .collect(Collectors.toList());
+        return searchProductByCategory(CATEGORIES_NAME, name, offset, size);
     }
 
     /**
@@ -105,20 +87,7 @@ public class ElasticProductRepository implements SearchProductRepository {
     public List<SearchedProductResponseDto> searchProductsByProductTitle(
             String title, int offset, int size
     ) {
-        Query query = NativeQuery.builder()
-                .withQuery(q -> q.multiMatch(v -> v.query(title).fields(TITLE, TAG)))
-                .withFilter(NativeQuery.builder()
-                        .withQuery(q -> q.term(t -> t.field(CATEGORIES_DISABLE).value(false)))
-                        .getQuery())
-                .withFilter(NativeQuery.builder()
-                        .withQuery(q -> q.term(t -> t.field(CATEGORIES_IS_SHOWN).value(true)))
-                        .getQuery())
-                .withPageable(PageRequest.of(offset, size))
-                .build();
-
-        return elasticsearchOperations.search(query, SearchedProduct.class).stream()
-                .map(searchedProductSearchHit -> searchedProductSearchHit.getContent().toDto())
-                .collect(Collectors.toList());
+        return searchProductByMultiQuery(title, offset, size, List.of(TITLE, TAG));
     }
 
     /**
@@ -135,20 +104,7 @@ public class ElasticProductRepository implements SearchProductRepository {
     public List<SearchedProductResponseDto> searchProductsByProductContent(
             String content, int offset, int size
     ) {
-        Query query = NativeQuery.builder()
-                .withQuery(q -> q.multiMatch(v -> v.query(content).fields(CONTENT, TAG, DESCRIPTION)))
-                .withFilter(NativeQuery.builder()
-                        .withQuery(q -> q.term(t -> t.field(CATEGORIES_DISABLE).value(false)))
-                        .getQuery())
-                .withFilter(NativeQuery.builder()
-                        .withQuery(q -> q.term(t -> t.field(CATEGORIES_IS_SHOWN).value(true)))
-                        .getQuery())
-                .withPageable(PageRequest.of(offset, size))
-                .build();
-
-        return elasticsearchOperations.search(query, SearchedProduct.class).stream()
-                .map(searchedProductSearchHit -> searchedProductSearchHit.getContent().toDto())
-                .collect(Collectors.toList());
+        return searchProductByMultiQuery(content, offset, size, List.of(CONTENT, TAG, DESCRIPTION));
     }
 
     /**
@@ -165,22 +121,7 @@ public class ElasticProductRepository implements SearchProductRepository {
     public List<SearchedProductResponseDto> searchProductsByProductISBN(
             String isbn, int offset, int size
     ) {
-        Query query = NativeQuery.builder()
-                .withFilter(NativeQuery.builder()
-                        .withQuery(q -> q.term(t -> t.field(ISBN).value(isbn)))
-                        .getQuery())
-                .withFilter(NativeQuery.builder()
-                        .withQuery(q -> q.term(t -> t.field(CATEGORIES_DISABLE).value(false)))
-                        .getQuery())
-                .withFilter(NativeQuery.builder()
-                        .withQuery(q -> q.term(t -> t.field(CATEGORIES_IS_SHOWN).value(true)))
-                        .getQuery())
-                .withPageable(PageRequest.of(offset, size))
-                .build();
-
-        return elasticsearchOperations.search(query, SearchedProduct.class).stream()
-                .map(searchedProductSearchHit -> searchedProductSearchHit.getContent().toDto())
-                .collect(Collectors.toList());
+        return searchProductByTermQuery(isbn, offset, size, ISBN);
     }
 
     /**
@@ -199,20 +140,7 @@ public class ElasticProductRepository implements SearchProductRepository {
             int offset,
             int size
     ) {
-        Query query = NativeQuery.builder()
-                .withQuery(q -> q.term(t -> t.field(AUTHORS_NAME).value(author)))
-                .withFilter(NativeQuery.builder()
-                        .withQuery(q -> q.term(t -> t.field(CATEGORIES_DISABLE).value(false)))
-                        .getQuery())
-                .withFilter(NativeQuery.builder()
-                        .withQuery(q -> q.term(t -> t.field(CATEGORIES_IS_SHOWN).value(true)))
-                        .getQuery())
-                .withPageable(PageRequest.of(offset, size))
-                .build();
-
-        return elasticsearchOperations.search(query, SearchedProduct.class).stream()
-                .map(searchedProductSearchHit -> searchedProductSearchHit.getContent().toDto())
-                .collect(Collectors.toList());
+        return searchProductByTermQuery(author, offset, size, AUTHORS_NAME);
     }
 
     /**
@@ -229,8 +157,43 @@ public class ElasticProductRepository implements SearchProductRepository {
     public List<SearchedProductResponseDto> searchProductsByPublisher(
             String publisher, int offset, int size
     ) {
+        return searchProductByTermQuery(publisher, offset, size, PUBLISHER_NAME);
+    }
+
+    /**
+     * 태그 이름으로 상품을 검색하는 메서드
+     *
+     * @param tag    검색하고 싶은 태그 이름
+     * @param offset 검색하고 싶은 페이지 위치
+     * @param size   검색하고 싶은 상품 갯수
+     * @return 해당 태그의 상품 리스트
+     * @author : 김선홍
+     * @since : 1.0
+     */
+    @Override
+    public List<SearchedProductResponseDto> searchProductsByTag(String tag, int offset, int size) {
+        return searchProductByTermQuery(tag, offset, size, TAG);
+    }
+
+    /**
+     * 멀티 필드와 형태소분석을 통해상품을 검색하는 메서드
+     *
+     * @param value 멀티 필드에 검색하고 싶은 값
+     * @param offset 검색하고 싶은 페이지 위치
+     * @param size 검색하고 싶은 상품 갯수
+     * @param fields 검색할 필드들
+     * @return 검색된 상품들
+     * @author : 김선홍
+     * @since : 1.0
+     */
+    public List<SearchedProductResponseDto> searchProductByMultiQuery(
+            String value,
+            int offset,
+            int size,
+            List<String> fields
+    ) {
         Query query = NativeQuery.builder()
-                .withQuery(q -> q.term(t -> t.field(PUBLISHER_NAME).value(publisher)))
+                .withQuery(q -> q.multiMatch(v -> v.query(value).fields(fields)))
                 .withFilter(NativeQuery.builder()
                         .withQuery(q -> q.term(t -> t.field(CATEGORIES_DISABLE).value(false)))
                         .getQuery())
@@ -246,27 +209,59 @@ public class ElasticProductRepository implements SearchProductRepository {
     }
 
     /**
-     * 태그 이름으로 상품을 검색하는 메서드
+     * 필터에서 TermQuery를 통해 상품을 검색하는 메서드
      *
-     * @param tag    검색하고 싶은 태그 이름
+     * @param value 필드에 검색하고 싶은 값
      * @param offset 검색하고 싶은 페이지 위치
-     * @param size   검색하고 싶은 상품 갯수
-     * @return 해당 태그의 상품 리스트
+     * @param size 검색하고 싶은 상품 갯수
+     * @param field 검색할 필드
+     * @return 검색된 상품들
      * @author : 김선홍
      * @since : 1.0
      */
-    @Override
-    public List<SearchedProductResponseDto> searchProductsByTag(String tag, int offset, int size) {
+    public List<SearchedProductResponseDto> searchProductByTermQuery(
+            String value,
+            int offset,
+            int size,
+            String field
+    ) {
         Query query = NativeQuery.builder()
-                .withQuery(q -> q.term(t -> t.field(TAG).value(tag)))
                 .withFilter(NativeQuery.builder()
-                        .withQuery(q -> q.term(t -> t.field(CATEGORIES_DISABLE).value(true)))
+                        .withQuery(q -> q.term(t -> t.field(field).value(value)))
+                        .getQuery())
+                .withFilter(NativeQuery.builder()
+                        .withQuery(q -> q.term(t -> t.field(CATEGORIES_DISABLE).value(false)))
                         .getQuery())
                 .withFilter(NativeQuery.builder()
                         .withQuery(q -> q.term(t -> t.field(CATEGORIES_IS_SHOWN).value(true)))
                         .getQuery())
                 .withPageable(PageRequest.of(offset, size))
                 .build();
+
+        return elasticsearchOperations.search(query, SearchedProduct.class).stream()
+                .map(searchedProductSearchHit -> searchedProductSearchHit.getContent().toDto())
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 카테고리를 기준으로 검색하는 메서드
+     *
+     * @param value 필드에 검색하고 싶은 값
+     * @param offset 검색하고 싶은 페이지 위치
+     * @param size 검색하고 싶은 상품 갯수
+     * @param field 검색할 필드
+     * @return 검색된 상품들
+     * @author : 김선홍
+     * @since : 1.0
+     */
+    public List<SearchedProductResponseDto> searchProductByCategory(String field, String value, int offset, int size) {
+        Query query = NativeQuery.builder()
+                .withFilter(NativeQuery.builder()
+                        .withQuery(q -> q.term(t -> t.field(field).value(value)))
+                        .getQuery())
+                .withPageable(PageRequest.of(offset, size))
+                .build();
+
         return elasticsearchOperations.search(query, SearchedProduct.class).stream()
                 .map(searchedProductSearchHit -> searchedProductSearchHit.getContent().toDto())
                 .collect(Collectors.toList());

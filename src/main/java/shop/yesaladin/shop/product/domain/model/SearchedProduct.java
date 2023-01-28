@@ -28,7 +28,7 @@ public class SearchedProduct {
     @Field(name = "id", type = FieldType.Long)
     private Long id;
     @Field(name = "ISBN", type = FieldType.Keyword)
-    private String ISBN;
+    private String isbn;
     @Field(name = "title", type = FieldType.Text)
     private String title;
     @Field(name = "contents", type = FieldType.Text)
@@ -96,7 +96,7 @@ public class SearchedProduct {
         @Field(name = "id", type = FieldType.Long)
         long id;
         @Field(name = "ISSN", type = FieldType.Keyword)
-        String ISSN;
+        String issn;
     }
     @Getter
     @AllArgsConstructor

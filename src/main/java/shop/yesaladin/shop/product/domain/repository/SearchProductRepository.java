@@ -126,4 +126,53 @@ public interface SearchProductRepository {
      * @since : 1.0
      */
     List<SearchedProductResponseDto> searchProductsByTag(String tag, int offset, int size);
+
+    /**
+     * 멀티 필드와 형태소분석을 통해상품을 검색하는 메서드
+     *
+     * @param value 멀티 필드에 검색하고 싶은 값
+     * @param offset 검색하고 싶은 페이지 위치
+     * @param size 검색하고 싶은 상품 갯수
+     * @param fields 검색할 필드들
+     * @return 검색된 상품들
+     * @author : 김선홍
+     * @since : 1.0
+     */
+    List<SearchedProductResponseDto> searchProductByMultiQuery(
+            String value,
+            int offset,
+            int size,
+            List<String> fields
+    );
+
+    /**
+     * 필터에서 TermQuery를 통해 상품을 검색하는 메서드
+     *
+     * @param value 필드에 검색하고 싶은 값
+     * @param offset 검색하고 싶은 페이지 위치
+     * @param size 검색하고 싶은 상품 갯수
+     * @param field 검색할 필드
+     * @return 검색된 상품들
+     * @author : 김선홍
+     * @since : 1.0
+     */
+    List<SearchedProductResponseDto> searchProductByTermQuery(
+            String value,
+            int offset,
+            int size,
+            String field
+    );
+
+    /**
+     * 카테고리를 기준으로 검색하는 메서드
+     *
+     * @param value 필드에 검색하고 싶은 값
+     * @param offset 검색하고 싶은 페이지 위치
+     * @param size 검색하고 싶은 상품 갯수
+     * @param field 검색할 필드
+     * @return 검색된 상품들
+     * @author : 김선홍
+     * @since : 1.0
+     */
+    List<SearchedProductResponseDto> searchProductByCategory(String field, String value, int offset, int size);
 }

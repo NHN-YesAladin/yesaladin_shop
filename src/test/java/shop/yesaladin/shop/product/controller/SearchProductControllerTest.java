@@ -56,6 +56,18 @@ class SearchProductControllerTest {
 
     SearchedProductResponseDto dto;
     List<SearchedProductResponseDto> dummy;
+    private static final String ZERO = "0";
+    private static final String ONE = "1";
+    private static final String MIN = "-1";
+    private static final String TWOONE = "21";
+    private static final String TITLE = "title";
+    private static final String CONTENT = "content";
+    private static final String ISBN = "isbn";
+    private static final String AUTHOR = "author";
+    private static final String PUBLISHER = "publisher";
+    private static final String TAG = "tag";
+    private static final String CATEGORY_ID = "1";
+    private static final String CATEGORY_NAME = "name";
 
     @BeforeEach
     void setUp() {
@@ -78,108 +90,65 @@ class SearchProductControllerTest {
     }
 
     @Test
-    @DisplayName("상품의 제목으로 검색 시 페이지 위치가 0보다 작을 경우 BadRequest")
-    void testSearchProductByTitleOffsetLessThanZeroThrBadRequest() throws Exception {
-        //given
-        String title = "title";
-        SearchProductRequestDto requestDto = new SearchProductRequestDto();
-        requestDto.setQuery(title);
-        requestDto.setOffset(-1);
-        requestDto.setSize(1);
-
+    @DisplayName("상품의 제목으로 검색 시 페이지 위치가 0보다 작을 경우 ConstraintViolationException")
+    void testSearchProductByTitleOffsetLessThanZeroThrConstraintViolationException()
+            throws Exception {
         //when
-        ResultActions resultActions = mockMvc.perform(get("/search/product/title")
-                .contentType(MediaType.APPLICATION_JSON)
+        ResultActions resultActions = mockMvc.perform(get("/search/products")
                 .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestDto)));
+                .param("title", TITLE)
+                .param("offset", MIN)
+                .param("size", ONE));
         //then
-        resultActions.andExpect(status().isBadRequest())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message", startsWith("Validation failed")));
+        resultActions.andExpect(status().is5xxServerError());
 
-        verify(searchProductService, never()).searchProductsByProductTitle(title, -1, 1);
-
-        //doc
-        resultActions.andDo(
-                document(
-                        "search-product-fail-offset-minus-validation-error",
-                        getDocumentRequest(),
-                        getDocumentResponse(),
-                        requestFields(
-                                fieldWithPath("query").type(JsonFieldType.STRING)
-                                        .description("검색 내용"),
-                                fieldWithPath("offset").type(JsonFieldType.NUMBER)
-                                        .description("페이지 위치"),
-                                fieldWithPath("size").type(JsonFieldType.NUMBER)
-                                        .description("데이터 수")
-                        ),
-                        responseFields(
-                                fieldWithPath("message").type(JsonFieldType.STRING)
-                                        .description("에러 메세지")
-                        )
-                ));
+        verify(searchProductService, never()).searchProductsByProductTitle(TITLE, -1, 1);
     }
 
     @Test
-    @DisplayName("상품의 제목으로 검색 시 요청갯수가 1보다 작을 경우 BadRequest")
-    void testSearchProductByTitleSizeLessThanOneThrBadRequest() throws Exception {
-        //given
-        String title = "title";
-        SearchProductRequestDto requestDto = new SearchProductRequestDto();
-        requestDto.setQuery(title);
-        requestDto.setOffset(0);
-        requestDto.setSize(0);
+    @DisplayName("상품의 제목으로 검색 시 요청갯수가 1보다 작을 경우 ConstraintViolationException")
+    void testSearchProductByTitleSizeLessThanOneThrConstraintViolationException() throws Exception {
         //when
-        ResultActions resultActions = mockMvc.perform(get("/search/product/title")
-                .contentType(MediaType.APPLICATION_JSON)
+        ResultActions resultActions = mockMvc.perform(get("/search/products")
                 .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestDto)));
+                .param("title", TITLE)
+                .param("offset", ZERO)
+                .param("size", ZERO));
         //then
-        resultActions.andExpect(status().isBadRequest())
-                .andDo(print());
+        resultActions.andExpect(status().is5xxServerError()).andDo(print());
 
-        verify(searchProductService, never()).searchProductsByProductTitle(title, -1, 1);
+        verify(searchProductService, never()).searchProductsByProductTitle(TITLE, 0, 0);
     }
 
     @Test
-    @DisplayName("상품의 제목으로 검색 시 요청갯수가 20보다 클 경우 BadRequest")
-    void testSearchProductByTitleSizeMoreThanTwentyThrBadRequest() throws Exception {
-        //given
-        String title = "title";
-        SearchProductRequestDto requestDto = new SearchProductRequestDto();
-        requestDto.setQuery(title);
-        requestDto.setOffset(0);
-        requestDto.setSize(21);
+    @DisplayName("상품의 제목으로 검색 시 요청갯수가 20보다 클 경우 ConstraintViolationException")
+    void testSearchProductByTitleSizeMoreThanTwentyThrConstraintViolationException()
+            throws Exception {
         //when
-        ResultActions resultActions = mockMvc.perform(get("/search/product/title")
-                .contentType(MediaType.APPLICATION_JSON)
+        ResultActions resultActions = mockMvc.perform(get("/search/products")
                 .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestDto)));
+                .param("title", TITLE)
+                .param("offset", ZERO)
+                .param("size", TWOONE));
         //then
-        resultActions.andExpect(status().isBadRequest())
-                .andDo(print());
+        resultActions.andExpect(status().is5xxServerError()).andDo(print());
 
-        verify(searchProductService, never()).searchProductsByProductTitle(title, -1, 1);
+        verify(searchProductService, never()).searchProductsByProductTitle(TITLE, 0, 21);
     }
 
     @Test
     @DisplayName("상품의 제목으로 검색 성공")
     void testSearchProductByTitleSuccess() throws Exception {
-        //given
-        String title = "title";
-        SearchProductRequestDto requestDto = new SearchProductRequestDto();
-        requestDto.setQuery(title);
-        requestDto.setOffset(0);
-        requestDto.setSize(1);
-
-        Mockito.when(searchProductService.searchProductsByProductTitle(title, 0, 1))
+        Mockito.when(searchProductService.searchProductsByProductTitle(TITLE, 0, 1))
                 .thenReturn(dummy);
 
         //when
-        ResultActions resultActions = mockMvc.perform(get("/search/product/title")
+        ResultActions resultActions = mockMvc.perform(get("/search/products")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestDto)));
+                .param("title", TITLE)
+                .param("offset", ZERO)
+                .param("size", ONE));
         //then
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id", equalTo(-1)))
@@ -225,90 +194,71 @@ class SearchProductControllerTest {
                         equalTo(dto.getAuthors().get(0).getName())
                 ))
                 .andExpect(jsonPath("$[0].tags[0].id", equalTo(1)))
-                .andExpect(jsonPath("$[0].tags[0].name", equalTo(dto.getTags().get(0).getName())));
+                .andExpect(jsonPath("$[0].tags[0].name", equalTo(dto.getTags().get(0).getName())))
+                .andDo(print());
 
-        verify(searchProductService, atLeastOnce()).searchProductsByProductTitle(title, 0, 1);
+        verify(searchProductService, atLeastOnce()).searchProductsByProductTitle(TITLE, 0, 1);
     }
 
     @Test
-    @DisplayName("상품의 내용으로 검색 시 페이지 위치가 0보다 작을 경우 BadRequest")
-    void testSearchProductByContentOffsetLessThanZeroThrBadRequest() throws Exception {
-        //given
-        SearchProductRequestDto requestDto = new SearchProductRequestDto();
-        requestDto.setQuery("content");
-        requestDto.setOffset(-1);
-        requestDto.setSize(1);
-
+    @DisplayName("상품의 내용으로 검색 시 페이지 위치가 0보다 작을 경우 ConstraintViolationException")
+    void testSearchProductByContentOffsetLessThanZeroThrConstraintViolationException()
+            throws Exception {
         //when
-        ResultActions resultActions = mockMvc.perform(get("/search/product/content")
-                .contentType(MediaType.APPLICATION_JSON)
+        ResultActions resultActions = mockMvc.perform(get("/search/products")
                 .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestDto)));
+                .param("content", CONTENT)
+                .param("offset", MIN)
+                .param("size", ONE));
         //then
-        resultActions.andExpect(status().isBadRequest())
-                .andDo(print());
+        resultActions.andExpect(status().is5xxServerError()).andDo(print());
+        verify(searchProductService, never()).searchProductsByProductContent(CONTENT, -1, 0);
     }
 
     @Test
-    @DisplayName("상품의 내용으로 검색 시 요청갯수가 1보다 작을 경우 BadRequest")
-    void testSearchProductByContentSizeLessThanOneThrBadRequest() throws Exception {
-        //given
-        String content = "content";
-        SearchProductRequestDto requestDto = new SearchProductRequestDto();
-        requestDto.setQuery(content);
-        requestDto.setOffset(0);
-        requestDto.setSize(0);
+    @DisplayName("상품의 내용으로 검색 시 요청갯수가 1보다 작을 경우 ConstraintViolationException")
+    void testSearchProductByContentSizeLessThanOneThrConstraintViolationException()
+            throws Exception {
         //when
-        ResultActions resultActions = mockMvc.perform(get("/search/product/content")
-                .contentType(MediaType.APPLICATION_JSON)
+        ResultActions resultActions = mockMvc.perform(get("/search/products")
                 .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestDto)));
+                .param("content", CONTENT)
+                .param("offset", ZERO)
+                .param("size", ZERO));
         //then
-        resultActions.andExpect(status().isBadRequest())
-                .andDo(print());
+        resultActions.andExpect(status().is5xxServerError()).andDo(print());
 
-        verify(searchProductService, never()).searchProductsByProductContent(content, -1, 1);
+        verify(searchProductService, never()).searchProductsByProductContent(CONTENT, 0, 0);
     }
 
     @Test
-    @DisplayName("상품의 내용으로 검색 시 요청갯수가 20보다 클 경우 BadRequest")
-    void testSearchContentByTitleSizeMoreThanTwentyThrBadRequest() throws Exception {
-        //given
-        String content = "content";
-        SearchProductRequestDto requestDto = new SearchProductRequestDto();
-        requestDto.setQuery(content);
-        requestDto.setOffset(0);
-        requestDto.setSize(21);
+    @DisplayName("상품의 내용으로 검색 시 요청갯수가 20보다 클 경우 ConstraintViolationException")
+    void testSearchContentByTitleSizeMoreThanTwentyThrConstraintViolationException()
+            throws Exception {
         //when
-        ResultActions resultActions = mockMvc.perform(get("/search/product/content")
-                .contentType(MediaType.APPLICATION_JSON)
+        ResultActions resultActions = mockMvc.perform(get("/search/products")
                 .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestDto)));
+                .param("content", CONTENT)
+                .param("offset", ZERO)
+                .param("size", TWOONE));
         //then
-        resultActions.andExpect(status().isBadRequest())
-                .andDo(print());
+        resultActions.andExpect(status().is5xxServerError()).andDo(print());
 
-        verify(searchProductService, never()).searchProductsByProductContent(content, -1, 1);
+        verify(searchProductService, never()).searchProductsByProductContent(CONTENT, 0, 21);
     }
 
     @Test
     @DisplayName("상품의 내용으로 검색 성공")
     void testSearchProductByContentSuccess() throws Exception {
-        //given
-        String content = "content";
-        SearchProductRequestDto requestDto = new SearchProductRequestDto();
-        requestDto.setQuery(content);
-        requestDto.setOffset(0);
-        requestDto.setSize(1);
-
-        Mockito.when(searchProductService.searchProductsByProductContent(content, 0, 1))
+        Mockito.when(searchProductService.searchProductsByProductContent(CONTENT, 0, 1))
                 .thenReturn(dummy);
 
         //when
-        ResultActions resultActions = mockMvc.perform(get("/search/product/content")
-                .contentType(MediaType.APPLICATION_JSON)
+        ResultActions resultActions = mockMvc.perform(get("/search/products")
                 .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestDto)));
+                .param("content", CONTENT)
+                .param("offset", ZERO)
+                .param("size", ONE));
         //then
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id", equalTo(-1)))
@@ -356,91 +306,65 @@ class SearchProductControllerTest {
                 .andExpect(jsonPath("$[0].tags[0].id", equalTo(1)))
                 .andExpect(jsonPath("$[0].tags[0].name", equalTo(dto.getTags().get(0).getName())));
 
-        verify(searchProductService, atLeastOnce()).searchProductsByProductContent(content, 0, 1);
+        verify(searchProductService, atLeastOnce()).searchProductsByProductContent(CONTENT, 0, 1);
     }
 
     @Test
-    @DisplayName("상품의 ISBN으로 검색 시 페이지 위치가 0보다 작을 경우 BadRequest")
-    void testSearchProductByISBNOffsetLessThanZeroThrBadRequest() throws Exception {
-        //given
-        String ISBN = "isbn";
-        SearchProductRequestDto requestDto = new SearchProductRequestDto();
-        requestDto.setQuery(ISBN);
-        requestDto.setOffset(-1);
-        requestDto.setSize(1);
-
+    @DisplayName("상품의 ISBN으로 검색 시 페이지 위치가 0보다 작을 경우 ConstraintViolationException")
+    void testSearchProductByISBNOffsetLessThanZeroConstraintViolationException() throws Exception {
         //when
-        ResultActions resultActions = mockMvc.perform(get("/search/product/isbn")
-                .contentType(MediaType.APPLICATION_JSON)
+        ResultActions resultActions = mockMvc.perform(get("/search/products")
                 .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestDto)));
+                .param("isbn", ISBN)
+                .param("offset", MIN)
+                .param("size", ONE));
         //then
-        resultActions.andExpect(status().isBadRequest())
-                .andDo(print());
-
+        resultActions.andExpect(status().is5xxServerError()).andDo(print());
         verify(searchProductService, never()).searchProductsByProductISBN(ISBN, -1, 1);
     }
 
     @Test
-    @DisplayName("상품의 ISBN으로 검색 시 요청갯수가 1보다 작을 경우 BadRequest")
-    void testSearchProductByISBNSizeLessThanOneThrBadRequest() throws Exception {
-        //given
-        String ISBN = "isbn";
-        SearchProductRequestDto requestDto = new SearchProductRequestDto();
-        requestDto.setQuery(ISBN);
-        requestDto.setOffset(0);
-        requestDto.setSize(0);
+    @DisplayName("상품의 ISBN으로 검색 시 요청갯수가 1보다 작을 경우 ConstraintViolationException")
+    void testSearchProductByISBNSizeLessThanOneThrConstraintViolationException() throws Exception {
         //when
-        ResultActions resultActions = mockMvc.perform(get("/search/product/isbn")
-                .contentType(MediaType.APPLICATION_JSON)
+        ResultActions resultActions = mockMvc.perform(get("/search/products")
                 .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestDto)));
+                .param("isbn", ISBN)
+                .param("offset", ZERO)
+                .param("size", MIN));
         //then
-        resultActions.andExpect(status().isBadRequest())
-                .andDo(print());
-
-        verify(searchProductService, never()).searchProductsByProductISBN(ISBN, -1, 1);
+        resultActions.andExpect(status().is5xxServerError()).andDo(print());
+        verify(searchProductService, never()).searchProductsByProductISBN(ISBN, 0, 0);
     }
 
     @Test
-    @DisplayName("상품의 ISBN으로 검색 시 요청갯수가 20보다 클 경우 BadRequest")
-    void testSearchProductByISBNSizeMoreThanTwentyThrBadRequest() throws Exception {
-        //given
-        String ISBN = "isbn";
-        SearchProductRequestDto requestDto = new SearchProductRequestDto();
-        requestDto.setQuery(ISBN);
-        requestDto.setOffset(0);
-        requestDto.setSize(21);
+    @DisplayName("상품의 ISBN으로 검색 시 요청갯수가 20보다 클 경우 ConstraintViolationException")
+    void testSearchProductByISBNSizeMoreThanTwentyThrConstraintViolationException()
+            throws Exception {
         //when
-        ResultActions resultActions = mockMvc.perform(get("/search/product/isbn")
-                .contentType(MediaType.APPLICATION_JSON)
+        ResultActions resultActions = mockMvc.perform(get("/search/products")
                 .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestDto)));
+                .param("isbn", ISBN)
+                .param("offset", ZERO)
+                .param("size", TWOONE));
         //then
-        resultActions.andExpect(status().isBadRequest())
-                .andDo(print());
-
-        verify(searchProductService, never()).searchProductsByProductISBN(ISBN, -1, 1);
+        resultActions.andExpect(status().is5xxServerError()).andDo(print());
+        verify(searchProductService, never()).searchProductsByProductISBN(ISBN, 0, 21);
     }
 
     @Test
     @DisplayName("상품의 isbn으로 검색 성공")
     void testSearchProductByISBNSuccess() throws Exception {
         //given
-        String ISBN = "isbn";
-        SearchProductRequestDto requestDto = new SearchProductRequestDto();
-        requestDto.setQuery(ISBN);
-        requestDto.setOffset(0);
-        requestDto.setSize(1);
-
         Mockito.when(searchProductService.searchProductsByProductISBN(ISBN, 0, 1))
                 .thenReturn(dummy);
 
         //when
-        ResultActions resultActions = mockMvc.perform(get("/search/product/isbn")
-                .contentType(MediaType.APPLICATION_JSON)
+        ResultActions resultActions = mockMvc.perform(get("/search/products")
                 .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestDto)));
+                .param("isbn", ISBN)
+                .param("offset", ZERO)
+                .param("size", ONE));
         //then
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id", equalTo(-1)))
@@ -492,87 +416,63 @@ class SearchProductControllerTest {
     }
 
     @Test
-    @DisplayName("작가 이름으로 검색 시 페이지 위치가 0보다 작을 경우 BadRequest")
-    void testSearchProductByAuthorOffsetLessThanZeroThrBadRequest() throws Exception {
-        //given
-        String Author = "author";
-        SearchProductRequestDto requestDto = new SearchProductRequestDto();
-        requestDto.setQuery(Author);
-        requestDto.setOffset(-1);
-        requestDto.setSize(1);
-
+    @DisplayName("작가 이름으로 검색 시 페이지 위치가 0보다 작을 경우 ConstraintViolationException")
+    void testSearchProductByAuthorOffsetLessThanZeroThrConstraintViolationException()
+            throws Exception {
         //when
-        ResultActions resultActions = mockMvc.perform(get("/search/product/author")
-                .contentType(MediaType.APPLICATION_JSON)
+        ResultActions resultActions = mockMvc.perform(get("/search/products")
                 .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestDto)));
+                .param("author", AUTHOR)
+                .param("offset", MIN)
+                .param("size", ONE));
         //then
-        resultActions.andExpect(status().isBadRequest())
-                .andDo(print());
-
-        verify(searchProductService, never()).searchProductsByProductAuthor(Author, -1, 1);
+        resultActions.andExpect(status().is5xxServerError()).andDo(print());
+        verify(searchProductService, never()).searchProductsByProductAuthor(AUTHOR, -1, 1);
     }
 
     @Test
-    @DisplayName("작가 이름으로 검색 시 요청갯수가 1보다 작을 경우 BadRequest")
-    void testSearchProductByAuthorSizeLessThanOneThrBadRequest() throws Exception {
-        //given
-        String author = "author";
-        SearchProductRequestDto requestDto = new SearchProductRequestDto();
-        requestDto.setQuery(author);
-        requestDto.setOffset(0);
-        requestDto.setSize(0);
+    @DisplayName("작가 이름으로 검색 시 요청갯수가 1보다 작을 경우 ConstraintViolationException")
+    void testSearchProductByAuthorSizeLessThanOneThrConstraintViolationException()
+            throws Exception {
         //when
-        ResultActions resultActions = mockMvc.perform(get("/search/product/author")
-                .contentType(MediaType.APPLICATION_JSON)
+        ResultActions resultActions = mockMvc.perform(get("/search/products")
                 .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestDto)));
+                .param("author", AUTHOR)
+                .param("offset", ZERO)
+                .param("size", ZERO));
         //then
-        resultActions.andExpect(status().isBadRequest())
-                .andDo(print());
-
-        verify(searchProductService, never()).searchProductsByProductAuthor(author, -1, 1);
+        resultActions.andExpect(status().is5xxServerError()).andDo(print());
+        verify(searchProductService, never()).searchProductsByProductAuthor(AUTHOR, 0, 0);
     }
 
     @Test
-    @DisplayName("작가 이름으로 검색 시 요청갯수가 20보다 클 경우 BadRequest")
-    void testSearchProductByAuthorSizeMoreThanTwentyThrBadRequest() throws Exception {
-        //given
-        String author = "author";
-        SearchProductRequestDto requestDto = new SearchProductRequestDto();
-        requestDto.setQuery(author);
-        requestDto.setOffset(0);
-        requestDto.setSize(21);
+    @DisplayName("작가 이름으로 검색 시 요청갯수가 20보다 클 경우 ConstraintViolationException")
+    void testSearchProductByAuthorSizeMoreThanTwentyThrConstraintViolationException()
+            throws Exception {
         //when
-        ResultActions resultActions = mockMvc.perform(get("/search/product/author")
-                .contentType(MediaType.APPLICATION_JSON)
+        ResultActions resultActions = mockMvc.perform(get("/search/products")
                 .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestDto)));
+                .param("author", AUTHOR)
+                .param("offset", ONE)
+                .param("size", TWOONE));
         //then
-        resultActions.andExpect(status().isBadRequest())
-                .andDo(print());
-
-        verify(searchProductService, never()).searchProductsByProductAuthor(author, -1, 1);
+        resultActions.andExpect(status().is5xxServerError()).andDo(print());
+        verify(searchProductService, never()).searchProductsByProductAuthor(AUTHOR, 0, 21);
     }
 
     @Test
     @DisplayName("작가의 이름으로 검색 성공")
     void testSearchProductByAuthorSuccess() throws Exception {
         //given
-        String author = "author";
-        SearchProductRequestDto requestDto = new SearchProductRequestDto();
-        requestDto.setQuery(author);
-        requestDto.setOffset(0);
-        requestDto.setSize(1);
-
-        Mockito.when(searchProductService.searchProductsByProductAuthor(author, 0, 1))
+        Mockito.when(searchProductService.searchProductsByProductAuthor(AUTHOR, 0, 1))
                 .thenReturn(dummy);
 
         //when
-        ResultActions resultActions = mockMvc.perform(get("/search/product/author")
-                .contentType(MediaType.APPLICATION_JSON)
+        ResultActions resultActions = mockMvc.perform(get("/search/products")
                 .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestDto)));
+                .param("author", AUTHOR)
+                .param("offset", ZERO)
+                .param("size", ONE));
         //then
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id", equalTo(-1)))
@@ -620,91 +520,73 @@ class SearchProductControllerTest {
                 .andExpect(jsonPath("$[0].tags[0].id", equalTo(1)))
                 .andExpect(jsonPath("$[0].tags[0].name", equalTo(dto.getTags().get(0).getName())));
 
-        verify(searchProductService, atLeastOnce()).searchProductsByProductAuthor(author, 0, 1);
+        verify(searchProductService, atLeastOnce()).searchProductsByProductAuthor(AUTHOR, 0, 1);
     }
 
     @Test
-    @DisplayName("출판사 이름으로 검색 시 페이지 위치가 0보다 작을 경우 BadRequest")
-    void testSearchProductByPublisherOffsetLessThanZeroThrBadRequest() throws Exception {
-        //given
-        String publisher = "publisher";
-        SearchProductRequestDto requestDto = new SearchProductRequestDto();
-        requestDto.setQuery(publisher);
-        requestDto.setOffset(-1);
-        requestDto.setSize(1);
-
+    @DisplayName("출판사 이름으로 검색 시 페이지 위치가 0보다 작을 경우 ConstraintViolationException")
+    void testSearchProductByPublisherOffsetLessThanZeroThrConstraintViolationException()
+            throws Exception {
         //when
-        ResultActions resultActions = mockMvc.perform(get("/search/product/publisher")
-                .contentType(MediaType.APPLICATION_JSON)
+        ResultActions resultActions = mockMvc.perform(get("/search/products")
                 .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestDto)));
-        //then
-        resultActions.andExpect(status().isBadRequest())
-                .andDo(print());
+                .param("publisher", PUBLISHER)
+                .param("offset", MIN)
+                .param("size", ONE));
 
-        verify(searchProductService, never()).searchProductsByPublisher(publisher, -1, 1);
+        //then
+        resultActions.andExpect(status().is5xxServerError())
+                .andDo(print());
+        verify(searchProductService, never()).searchProductsByPublisher(PUBLISHER, -1, 1);
     }
 
     @Test
-    @DisplayName("출판사 이름으로 검색 시 요청갯수가 1보다 작을 경우 BadRequest")
-    void testSearchProductByPublisherSizeLessThanOneThrBadRequest() throws Exception {
-        //given
-        String publisher = "publisher";
-        SearchProductRequestDto requestDto = new SearchProductRequestDto();
-        requestDto.setQuery(publisher);
-        requestDto.setOffset(0);
-        requestDto.setSize(0);
+    @DisplayName("출판사 이름으로 검색 시 요청갯수가 1보다 작을 경우 ConstraintViolationException")
+    void testSearchProductByPublisherSizeLessThanOneThrConstraintViolationException()
+            throws Exception {
         //when
-        ResultActions resultActions = mockMvc.perform(get("/search/product/publisher")
-                .contentType(MediaType.APPLICATION_JSON)
+        ResultActions resultActions = mockMvc.perform(get("/search/products")
                 .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestDto)));
-        //then
-        resultActions.andExpect(status().isBadRequest())
-                .andDo(print());
+                .param("publisher", PUBLISHER)
+                .param("offset", MIN)
+                .param("size", ONE));
 
-        verify(searchProductService, never()).searchProductsByPublisher(publisher, -1, 1);
+        //then
+        resultActions.andExpect(status().is5xxServerError())
+                .andDo(print());
+        verify(searchProductService, never()).searchProductsByPublisher(PUBLISHER, -1, 1);
     }
 
     @Test
-    @DisplayName("출판사 이름으로 검색 시 요청갯수가 20보다 클 경우 BadRequest")
-    void testSearchProductByPublisherSizeMoreThanTwentyThrBadRequest() throws Exception {
-        //given
-        String publisher = "publisher";
-        SearchProductRequestDto requestDto = new SearchProductRequestDto();
-        requestDto.setQuery(publisher);
-        requestDto.setOffset(0);
-        requestDto.setSize(21);
+    @DisplayName("출판사 이름으로 검색 시 요청갯수가 20보다 클 경우 ConstraintViolationException")
+    void testSearchProductByPublisherSizeMoreThanTwentyThrConstraintViolationException()
+            throws Exception {
         //when
-        ResultActions resultActions = mockMvc.perform(get("/search/product/publisher")
-                .contentType(MediaType.APPLICATION_JSON)
+        ResultActions resultActions = mockMvc.perform(get("/search/products")
                 .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestDto)));
+                .param("publisher", PUBLISHER)
+                .param("offset", MIN)
+                .param("size", TWOONE));
         //then
-        resultActions.andExpect(status().isBadRequest())
+        resultActions.andExpect(status().is5xxServerError())
                 .andDo(print());
 
-        verify(searchProductService, never()).searchProductsByPublisher(publisher, -1, 1);
+        verify(searchProductService, never()).searchProductsByPublisher(PUBLISHER, 0, 21);
     }
 
     @Test
     @DisplayName("출판사 이름으로 검색 성공")
     void testSearchProductByPublisherSuccess() throws Exception {
-        //given
-        String publisher = "publisher";
-        SearchProductRequestDto requestDto = new SearchProductRequestDto();
-        requestDto.setQuery(publisher);
-        requestDto.setOffset(0);
-        requestDto.setSize(1);
-
-        Mockito.when(searchProductService.searchProductsByPublisher(publisher, 0, 1))
+        //when
+        Mockito.when(searchProductService.searchProductsByPublisher(PUBLISHER, 0, 1))
                 .thenReturn(dummy);
 
         //when
-        ResultActions resultActions = mockMvc.perform(get("/search/product/publisher")
-                .contentType(MediaType.APPLICATION_JSON)
+        ResultActions resultActions = mockMvc.perform(get("/search/products")
                 .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestDto)));
+                .param("publisher", PUBLISHER)
+                .param("offset", ZERO)
+                .param("size", ONE));
         //then
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id", equalTo(-1)))
@@ -752,91 +634,71 @@ class SearchProductControllerTest {
                 .andExpect(jsonPath("$[0].tags[0].id", equalTo(1)))
                 .andExpect(jsonPath("$[0].tags[0].name", equalTo(dto.getTags().get(0).getName())));
 
-        verify(searchProductService, atLeastOnce()).searchProductsByPublisher(publisher, 0, 1);
+        verify(searchProductService, atLeastOnce()).searchProductsByPublisher(PUBLISHER, 0, 1);
     }
 
     @Test
-    @DisplayName("태그로 검색 시 페이지 위치가 0보다 작을 경우 BadRequest")
-    void testSearchProductByTagOffsetLessThanZeroThrBadRequest() throws Exception {
-        //given
-        String tag = "tag";
-        SearchProductRequestDto requestDto = new SearchProductRequestDto();
-        requestDto.setQuery(tag);
-        requestDto.setOffset(-1);
-        requestDto.setSize(1);
-
+    @DisplayName("태그로 검색 시 페이지 위치가 0보다 작을 경우 ConstraintViolationException")
+    void testSearchProductByTagOffsetLessThanZeroConstraintViolationException() throws Exception {
         //when
-        ResultActions resultActions = mockMvc.perform(get("/search/product/tag")
-                .contentType(MediaType.APPLICATION_JSON)
+        ResultActions resultActions = mockMvc.perform(get("/search/products")
                 .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestDto)));
+                .param("tag", TAG)
+                .param("offset", MIN)
+                .param("size", ONE));
         //then
-        resultActions.andExpect(status().isBadRequest())
+        resultActions.andExpect(status().is5xxServerError())
                 .andDo(print());
 
-        verify(searchProductService, never()).searchProductsByTag(tag, -1, 1);
+        verify(searchProductService, never()).searchProductsByTag(TAG, -1, 1);
     }
 
     @Test
-    @DisplayName("태그으로 검색 시 요청갯수가 1보다 작을 경우 BadRequest")
-    void testSearchProductByTagSizeLessThanOneThrBadRequest() throws Exception {
-        //given
-        String tag = "tag";
-        SearchProductRequestDto requestDto = new SearchProductRequestDto();
-        requestDto.setQuery(tag);
-        requestDto.setOffset(0);
-        requestDto.setSize(0);
+    @DisplayName("태그으로 검색 시 요청갯수가 1보다 작을 경우 ConstraintViolationException")
+    void testSearchProductByTagSizeLessThanOneThrConstraintViolationException() throws Exception {
         //when
-        ResultActions resultActions = mockMvc.perform(get("/search/product/tag")
-                .contentType(MediaType.APPLICATION_JSON)
+        ResultActions resultActions = mockMvc.perform(get("/search/products")
                 .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestDto)));
+                .param("tag", TAG)
+                .param("offset", ZERO)
+                .param("size", ZERO));
         //then
-        resultActions.andExpect(status().isBadRequest())
+        resultActions.andExpect(status().is5xxServerError())
                 .andDo(print());
 
-        verify(searchProductService, never()).searchProductsByTag(tag, -1, 1);
+        verify(searchProductService, never()).searchProductsByTag(TAG, 0, 0);
     }
 
     @Test
-    @DisplayName("태그로 검색 시 요청갯수가 20보다 클 경우 BadRequest")
-    void testSearchProductByTagSizeMoreThanTwentyThrBadRequest() throws Exception {
-        //given
-        String tag = "tag";
-        SearchProductRequestDto requestDto = new SearchProductRequestDto();
-        requestDto.setQuery(tag);
-        requestDto.setOffset(0);
-        requestDto.setSize(21);
+    @DisplayName("태그로 검색 시 요청갯수가 20보다 클 경우 ConstraintViolationException")
+    void testSearchProductByTagSizeMoreThanTwentyThrConstraintViolationException()
+            throws Exception {
         //when
-        ResultActions resultActions = mockMvc.perform(get("/search/product/tag")
-                .contentType(MediaType.APPLICATION_JSON)
+        ResultActions resultActions = mockMvc.perform(get("/search/products")
                 .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestDto)));
+                .param("tag", TAG)
+                .param("offset", ZERO)
+                .param("size", TWOONE));
         //then
-        resultActions.andExpect(status().isBadRequest())
+        resultActions.andExpect(status().is5xxServerError())
                 .andDo(print());
 
-        verify(searchProductService, never()).searchProductsByTag(tag, -1, 1);
+        verify(searchProductService, never()).searchProductsByTag(TAG, 0, 21);
     }
 
     @Test
     @DisplayName("태그로 검색 성공")
     void testSearchProductByTagSuccess() throws Exception {
         //given
-        String tag = "tag";
-        SearchProductRequestDto requestDto = new SearchProductRequestDto();
-        requestDto.setQuery(tag);
-        requestDto.setOffset(0);
-        requestDto.setSize(1);
-
-        Mockito.when(searchProductService.searchProductsByTag(tag, 0, 1))
+        Mockito.when(searchProductService.searchProductsByTag(TAG, 0, 1))
                 .thenReturn(dummy);
 
         //when
-        ResultActions resultActions = mockMvc.perform(get("/search/product/tag")
-                .contentType(MediaType.APPLICATION_JSON)
+        ResultActions resultActions = mockMvc.perform(get("/search/products")
                 .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestDto)));
+                .param("tag", TAG)
+                .param("offset", ZERO)
+                .param("size", ONE));
         //then
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id", equalTo(-1)))
@@ -884,91 +746,72 @@ class SearchProductControllerTest {
                 .andExpect(jsonPath("$[0].tags[0].id", equalTo(1)))
                 .andExpect(jsonPath("$[0].tags[0].name", equalTo(dto.getTags().get(0).getName())));
 
-        verify(searchProductService, atLeastOnce()).searchProductsByTag(tag, 0, 1);
+        verify(searchProductService, atLeastOnce()).searchProductsByTag(TAG, 0, 1);
     }
 
     @Test
-    @DisplayName("카테고리 id로 검색 시 페이지 위치가 0보다 작을 경우 BadRequest")
-    void testSearchProductByCategoryIdOffsetLessThanZeroThrBadRequest() throws Exception {
-        //given
-        String categoryId = "1";
-
+    @DisplayName("카테고리 id로 검색 시 페이지 위치가 0보다 작을 경우 ConstraintViolationException")
+    void testSearchProductByCategoryIdOffsetLessThanZeroThrConstraintViolationException()
+            throws Exception {
         //when
-        ResultActions resultActions = mockMvc.perform(get("/search/product/category/id/".concat(
-                categoryId))
+        ResultActions resultActions = mockMvc.perform(get("/search/products")
                 .accept(MediaType.APPLICATION_JSON)
-                .param("offset", "-1")
-                .param("size", "1"));
+                .param("categoryid", CATEGORY_ID)
+                .param("offset", MIN)
+                .param("size", ONE));
         //then
-        resultActions.andExpect(status().is5xxServerError())
-                .andDo(print());
+        resultActions.andExpect(status().is5xxServerError()).andDo(print());
 
-        verify(searchProductService, never()).searchProductsByCategoryId(
-                Long.parseLong(categoryId),
-                -1,
-                1
-        );
+        verify(searchProductService, never()).searchProductsByCategoryId(1L, -1, 1);
     }
 
     @Test
-    @DisplayName("카테고리 id로 검색 시 요청갯수가 1보다 작을 경우 BadRequest")
-    void testSearchProductByCategoryIdSizeLessThanOneThrBadRequest() throws Exception {
-        //given
-        String categoryId = "1";
+    @DisplayName("카테고리 id로 검색 시 요청갯수가 1보다 작을 경우 ConstraintViolationException")
+    void testSearchProductByCategoryIdSizeLessThanOneThrConstraintViolationException()
+            throws Exception {
         //when
-        ResultActions resultActions = mockMvc.perform(get("/search/product/category/id/".concat(
-                categoryId))
+        ResultActions resultActions = mockMvc.perform(get("/search/products")
                 .accept(MediaType.APPLICATION_JSON)
-                .param("offset", "0")
-                .param("size", "0"));
+                .param("categoryid", CATEGORY_ID)
+                .param("offset", ZERO)
+                .param("size", ZERO));
         //then
-        resultActions.andExpect(status().is5xxServerError())
-                .andDo(print());
+        resultActions.andExpect(status().is5xxServerError()).andDo(print());
 
-        verify(searchProductService, never()).searchProductsByCategoryId(
-                Long.parseLong(categoryId),
-                0,
-                0
-        );
+        verify(searchProductService, never()).searchProductsByCategoryId(1L, 0, 0);
     }
 
     @Test
-    @DisplayName("카테고리 id로 검색 시 요청갯수가 20보다 클 경우 BadRequest")
-    void testSearchProductByCategoryIdSizeMoreThanTwentyThrBadRequest() throws Exception {
-        //given
-        String categoryId = "1";
+    @DisplayName("카테고리 id로 검색 시 요청갯수가 20보다 클 경우 ConstraintViolationException")
+    void testSearchProductByCategoryIdSizeMoreThanTwentyThrConstraintViolationException()
+            throws Exception {
         //when
-        ResultActions resultActions = mockMvc.perform(get("/search/product/category/id/".concat(
-                categoryId))
+        ResultActions resultActions = mockMvc.perform(get("/search/products")
                 .accept(MediaType.APPLICATION_JSON)
-                .param("offset", "0")
-                .param("size", "0"));
+                .param("categoryid", CATEGORY_ID)
+                .param("offset", ZERO)
+                .param("size", TWOONE));
         //then
-        resultActions.andExpect(status().is5xxServerError())
-                .andDo(print());
+        resultActions.andExpect(status().is5xxServerError()).andDo(print());
 
-        verify(searchProductService, never()).searchProductsByCategoryId(
-                Long.parseLong(categoryId),
-                -1,
-                1
-        );
+        verify(searchProductService, never()).searchProductsByCategoryId(1L, 0, 21);
     }
 
     @Test
     @DisplayName("카테고리 id로 검색 성공")
     void testSearchProductByCategoryIdSuccess() throws Exception {
         //given
-        Long categoryId = dto.getCategories().get(0).getId();
-        Mockito.when(searchProductService.searchProductsByCategoryId(categoryId, 0, 1))
+        Mockito.when(searchProductService.searchProductsByCategoryId(dto.getCategories()
+                        .get(0)
+                        .getId(), 0, 1))
                 .thenReturn(dummy);
 
         //when
-        ResultActions resultActions = mockMvc.perform(get(
-                "/search/product/category/id/" + categoryId)
-                .contentType(MediaType.APPLICATION_JSON)
+        ResultActions resultActions = mockMvc.perform(get("/search/products")
                 .accept(MediaType.APPLICATION_JSON)
-                .param("offset", "0")
-                .param("size", "1"));
+                .param("categoryid", CATEGORY_ID)
+                .param("offset", ZERO)
+                .param("size", ONE));
         //then
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id", equalTo(-1)))
@@ -1016,91 +859,76 @@ class SearchProductControllerTest {
                 .andExpect(jsonPath("$[0].tags[0].id", equalTo(1)))
                 .andExpect(jsonPath("$[0].tags[0].name", equalTo(dto.getTags().get(0).getName())));
 
-        verify(searchProductService, atLeastOnce()).searchProductsByCategoryId(categoryId, 0, 1);
+        verify(searchProductService, atLeastOnce()).searchProductsByCategoryId(dto.getCategories()
+                .get(0)
+                .getId(), 0, 1);
     }
 
     @Test
-    @DisplayName("카테고리 이름로 검색 시 페이지 위치가 0보다 작을 경우 BadRequest")
-    void testSearchProductByCategoryNameOffsetLessThanZeroThrBadRequest() throws Exception {
-        //given
-        String categoryName = dto.getCategories().get(0).getName();
-        SearchProductRequestDto requestDto = new SearchProductRequestDto();
-        requestDto.setQuery(categoryName);
-        requestDto.setOffset(-1);
-        requestDto.setSize(1);
-
+    @DisplayName("카테고리 이름로 검색 시 페이지 위치가 0보다 작을 경우 ConstraintViolationException")
+    void testSearchProductByCategoryNameOffsetLessThanZeroThrConstraintViolationException()
+            throws Exception {
         //when
-        ResultActions resultActions = mockMvc.perform(get("/search/product/category/name")
-                .contentType(MediaType.APPLICATION_JSON)
+        ResultActions resultActions = mockMvc.perform(get("/search/products")
                 .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestDto)));
+                .param("categoryname", CATEGORY_NAME)
+                .param("offset", MIN)
+                .param("size", ONE));
         //then
-        resultActions.andExpect(status().isBadRequest())
+        resultActions.andExpect(status().is5xxServerError())
                 .andDo(print());
 
-        verify(searchProductService, never()).searchProductsByCategoryName(categoryName, -1, 1);
+        verify(searchProductService, never()).searchProductsByCategoryName(CATEGORY_NAME, -1, 1);
     }
 
     @Test
-    @DisplayName("카테고리 이름으로 검색 시 요청갯수가 1보다 작을 경우 BadRequest")
-    void testSearchProductByCategoryNameSizeLessThanOneThrBadRequest() throws Exception {
-        //given
-        String categoryName = dto.getCategories().get(0).getName();
-        SearchProductRequestDto requestDto = new SearchProductRequestDto();
-        requestDto.setQuery(categoryName);
-        requestDto.setOffset(0);
-        requestDto.setSize(0);
+    @DisplayName("카테고리 이름으로 검색 시 요청갯수가 1보다 작을 경우 ConstraintViolationException")
+    void testSearchProductByCategoryNameSizeLessThanOneThrConstraintViolationException()
+            throws Exception {
         //when
-        ResultActions resultActions = mockMvc.perform(get("/search/product/category/name")
-                .contentType(MediaType.APPLICATION_JSON)
+        ResultActions resultActions = mockMvc.perform(get("/search/products")
                 .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestDto)));
+                .param("categoryname", CATEGORY_NAME)
+                .param("offset", ZERO)
+                .param("size", ZERO));
         //then
-        resultActions.andExpect(status().isBadRequest())
+        resultActions.andExpect(status().is5xxServerError())
                 .andDo(print());
 
-        verify(searchProductService, never()).searchProductsByCategoryName(categoryName, -1, 1);
+        verify(searchProductService, never()).searchProductsByCategoryName(CATEGORY_NAME, 0, 0);
     }
 
     @Test
-    @DisplayName("카테고리 이름으로 검색 시 요청갯수가 20보다 클 경우 BadRequest")
-    void testSearchProductByCategoryNameSizeMoreThanTwentyThrBadRequest() throws Exception {
-        //given
-        String categoryName = dto.getCategories().get(0).getName();
-        SearchProductRequestDto requestDto = new SearchProductRequestDto();
-        requestDto.setQuery(categoryName);
-        requestDto.setOffset(0);
-        requestDto.setSize(21);
+    @DisplayName("카테고리 이름으로 검색 시 요청갯수가 20보다 클 경우 ConstraintViolationException")
+    void testSearchProductByCategoryNameSizeMoreThanTwentyThrConstraintViolationException()
+            throws Exception {
         //when
-        ResultActions resultActions = mockMvc.perform(get("/search/product/category/name")
-                .contentType(MediaType.APPLICATION_JSON)
+        ResultActions resultActions = mockMvc.perform(get("/search/products")
                 .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestDto)));
+                .param("categoryname", CATEGORY_NAME)
+                .param("offset", ZERO)
+                .param("size", TWOONE));
         //then
-        resultActions.andExpect(status().isBadRequest())
+        resultActions.andExpect(status().is5xxServerError())
                 .andDo(print());
 
-        verify(searchProductService, never()).searchProductsByCategoryName(categoryName, -1, 1);
+        verify(searchProductService, never()).searchProductsByCategoryName(CATEGORY_NAME, 0, 21);
     }
 
     @Test
     @DisplayName("카테고리 이름으로 검색 성공")
     void testSearchProductByCategoryNameSuccess() throws Exception {
         //given
-        String categoryName = dto.getCategories().get(0).getName();
-        SearchProductRequestDto requestDto = new SearchProductRequestDto();
-        requestDto.setQuery(categoryName);
-        requestDto.setOffset(0);
-        requestDto.setSize(1);
-
-        Mockito.when(searchProductService.searchProductsByCategoryName(categoryName, 0, 1))
+        Mockito.when(searchProductService.searchProductsByCategoryName(CATEGORY_NAME, 0, 1))
                 .thenReturn(dummy);
 
         //when
-        ResultActions resultActions = mockMvc.perform(get("/search/product/category/name")
-                .contentType(MediaType.APPLICATION_JSON)
+        ResultActions resultActions = mockMvc.perform(get("/search/products")
                 .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestDto)));
+                .param("categoryname", CATEGORY_NAME)
+                .param("offset", ZERO)
+                .param("size", ONE));
+
         //then
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id", equalTo(-1)))
@@ -1149,7 +977,7 @@ class SearchProductControllerTest {
                 .andExpect(jsonPath("$[0].tags[0].name", equalTo(dto.getTags().get(0).getName())));
 
         verify(searchProductService, atLeastOnce()).searchProductsByCategoryName(
-                categoryName,
+                CATEGORY_NAME,
                 0,
                 1
         );

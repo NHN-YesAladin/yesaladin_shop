@@ -27,7 +27,7 @@ import shop.yesaladin.shop.product.service.inter.SearchProductService;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/search/product")
+@RequestMapping("/search/products")
 public class SearchProductController {
 
     private final SearchProductService searchProductService;
@@ -35,85 +35,114 @@ public class SearchProductController {
     /**
      * 상품의 제목으로 검색하는 컨트롤라 메서드
      *
-     * @param requestDto 요청한 상품의 제목, 페이징 위치, 갯수
+     * @param title 검색할 상품의 title
+     * @param offset 검색할 페이지의 위치
+     * @param size 데이터 갯수
      * @return 요청된 조건에 대한 상품 리스트
      * @author : 김선홍
      * @since : 1.0
      */
-    @GetMapping("/title")
-    public List<SearchedProductResponseDto> searchProductByTitle(@Valid @RequestBody SearchProductRequestDto requestDto) {
-        return searchProductService.searchProductsByProductTitle(
-                requestDto.getQuery(), requestDto.getOffset(), requestDto.getSize());
+    @GetMapping(params = "title")
+    public List<SearchedProductResponseDto> searchProductByTitle(
+            @RequestParam String title,
+            @RequestParam(name = "offset") @Min(value = 0) Integer offset,
+            @RequestParam(name = "size") @Min(value = 1) @Max(value = 20) Integer size
+
+    ) {
+        return searchProductService.searchProductsByProductTitle(title, offset, size);
     }
 
     /**
      * 상품의 내용으로 검색하는 컨트롤러 메서드
      *
-     * @param requestDto 요청한 상품의 내용, 페이징 위치, 갯수
+     * @param content 검색할 상품의 내용
+     * @param offset 검색할 페이지의 위치
+     * @param size 데이터 갯수
      * @return 요청된 조건에 대한 상품 리스트
      * @author : 김선홍
      * @since : 1.0
      */
-    @GetMapping("/content")
-    public List<SearchedProductResponseDto> searchProductByContent(@Valid @RequestBody SearchProductRequestDto requestDto) {
-        return searchProductService.searchProductsByProductContent(
-                requestDto.getQuery(), requestDto.getOffset(), requestDto.getSize());
+    @GetMapping(params = "content")
+    public List<SearchedProductResponseDto> searchProductByContent(
+            @RequestParam String content,
+            @RequestParam(name = "offset") @Min(value = 0) Integer offset,
+            @RequestParam(name = "size") @Min(value = 1) @Max(value = 20) Integer size
+    ) {
+        return searchProductService.searchProductsByProductContent(content, offset, size);
     }
 
     /**
      * 상품의 ISBN으로 검색하는 컨트롤러 메서드
      *
-     * @param requestDto 요청한 상품의 ISBN, 페이징 위치, 갯수
+     * @param isbn 검색할 상품의 isbn
+     * @param offset 검색할 페이지의 위치
+     * @param size 데이터 갯수
      * @return 요청된 조건에 대한 상품 리스트
      * @author : 김선홍
      * @since : 1.0
      */
-    @GetMapping("/isbn")
-    public List<SearchedProductResponseDto> searchProductByISBN(@Valid @RequestBody SearchProductRequestDto requestDto) {
+    @GetMapping(params = "isbn")
+    public List<SearchedProductResponseDto> searchProductByISBN(
+            @RequestParam String isbn,
+            @RequestParam(name = "offset") @Min(value = 0) Integer offset,
+            @RequestParam(name = "size") @Min(value = 1) @Max(value = 20) Integer size
+    ) {
         return searchProductService.searchProductsByProductISBN(
-                requestDto.getQuery(), requestDto.getOffset(), requestDto.getSize());
+                isbn, offset, size);
     }
 
     /**
      * 상품의 작가 이름으로 검색하는 컨트롤러 메서드
      *
-     * @param requestDto 요청한 상품의 작가 이름, 페이징 위치, 갯수
+     * @param author 검색할 상품의 저자명
+     * @param offset 검색할 페이지의 위치
+     * @param size 데이터 갯수
      * @return 요청된 조건에 대한 상품 리스트
      * @author : 김선홍
      * @since : 1.0
      */
-    @GetMapping("/author")
-    public List<SearchedProductResponseDto> searchProductByAuthor(@Valid @RequestBody SearchProductRequestDto requestDto) {
-        return searchProductService.searchProductsByProductAuthor(
-                requestDto.getQuery(), requestDto.getOffset(), requestDto.getSize());
+    @GetMapping(params = "author")
+    public List<SearchedProductResponseDto> searchProductByAuthor(
+            @RequestParam String author,
+            @RequestParam(name = "offset") @Min(value = 0) Integer offset,
+            @RequestParam(name = "size") @Min(value = 1) @Max(value = 20) Integer size) {
+        return searchProductService.searchProductsByProductAuthor(author, offset, size);
     }
 
     /**
      * 상품의 출판사로 검색하는 컨트롤러 메서드
      *
-     * @param requestDto 요청한 상품의 출판사 이름, 페이징 위치, 갯수
+     * @param publisher 검색할 상품의 출판사
+     * @param offset 검색할 페이지의 위치
+     * @param size 데이터 갯수
      * @return 요청된 조건에 대한 상품 리스트
      * @author : 김선홍
      * @since : 1.0
      */
-    @GetMapping("/publisher")
-    public List<SearchedProductResponseDto> searchProductByPublisher(@Valid @RequestBody SearchProductRequestDto requestDto) {
-        return searchProductService.searchProductsByPublisher(
-                requestDto.getQuery(), requestDto.getOffset(), requestDto.getSize());
+    @GetMapping( params = "publisher")
+    public List<SearchedProductResponseDto> searchProductByPublisher(
+            @RequestParam String publisher,
+            @RequestParam(name = "offset") @Min(value = 0) Integer offset,
+            @RequestParam(name = "size") @Min(value = 1) @Max(value = 20) Integer size) {
+        return searchProductService.searchProductsByPublisher(publisher, offset, size);
     }
 
     /**
      * 상품의 태그로 검색하는 컨트롤러 메서드
      *
-     * @param requestDto 요청한 상품의 태그 이름, 페이징 위치, 갯수
+     * @param tag 검색할 상품의 태그
+     * @param offset 검색할 페이지의 위치
+     * @param size 데이터 갯수
      * @return 요청된 조건에 대한 상품 리스트
      * @author : 김선홍
      * @since : 1.0
      */
-    @GetMapping("/tag")
-    public List<SearchedProductResponseDto> searchProductByTag(@Valid @RequestBody SearchProductRequestDto requestDto) {
-        return searchProductService.searchProductsByTag(
-                requestDto.getQuery(), requestDto.getOffset(), requestDto.getSize());
+    @GetMapping(params = "tag")
+    public List<SearchedProductResponseDto> searchProductByTag(
+            @RequestParam String tag,
+            @RequestParam(name = "offset") @Min(value = 0) Integer offset,
+            @RequestParam(name = "size") @Min(value = 1) @Max(value = 20) Integer size) {
+        return searchProductService.searchProductsByTag(tag, offset, size);
     }
 
     /**
@@ -126,9 +155,9 @@ public class SearchProductController {
      * @author : 김선홍
      * @since : 1.0
      */
-    @GetMapping("/category/id/{id}")
+    @GetMapping(params = "categoryid")
     public List<SearchedProductResponseDto> searchProductByCategoryId(
-            @PathVariable Long id,
+            @RequestParam(name = "categoryid") Long id,
             @RequestParam(name = "offset") @Min(value = 0) Integer offset,
             @RequestParam(name = "size") @Min(value = 1) @Max(value = 20) Integer size
     ) {
@@ -138,17 +167,19 @@ public class SearchProductController {
     /**
      * 카테고리 이름으로 상품을 검색하는 컨트롤러 메서드
      *
-     * @param requestDto 요청한 상품의 카테고리 이름, 페이징 위치, 갯수
+     * @param name 검색할 카테고리의 id
+     * @param offset 검색할 페이지의 위치
+     * @param size 데이터 갯수
      * @return 요청된 조건에 대한 상품 리스트
      * @author : 김선홍
      * @since : 1.0
      */
-    @GetMapping("/category/name")
-    public List<SearchedProductResponseDto> searchProductByCategoryName(@Valid @RequestBody SearchProductRequestDto requestDto) {
-        return searchProductService.searchProductsByCategoryName(
-                requestDto.getQuery(),
-                requestDto.getOffset(),
-                requestDto.getSize()
-        );
+    @GetMapping(params = "categoryname")
+    public List<SearchedProductResponseDto> searchProductByCategoryName(
+            @RequestParam(name = "categoryname") String name,
+            @RequestParam(name = "offset") @Min(value = 0) Integer offset,
+            @RequestParam(name = "size") @Min(value = 1) @Max(value = 20) Integer size
+    ) {
+        return searchProductService.searchProductsByCategoryName(name, offset, size);
     }
 }
