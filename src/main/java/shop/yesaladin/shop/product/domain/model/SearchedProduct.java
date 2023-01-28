@@ -1,4 +1,4 @@
-package shop.yesaladin.shop.product.domain.model.search;
+package shop.yesaladin.shop.product.domain.model;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -12,7 +12,6 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.annotations.WriteTypeHint;
-import shop.yesaladin.shop.product.dto.SearchedProductResponseDto;
 
 /**
  * 엘라스틱 서치 상품 인덱스

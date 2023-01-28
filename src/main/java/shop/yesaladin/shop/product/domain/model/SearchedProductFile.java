@@ -1,4 +1,4 @@
-package shop.yesaladin.shop.product.domain.model.search;
+package shop.yesaladin.shop.product.domain.model;
 
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;

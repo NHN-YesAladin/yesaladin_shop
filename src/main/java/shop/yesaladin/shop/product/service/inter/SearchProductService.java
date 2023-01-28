@@ -1,6 +1,8 @@
 package shop.yesaladin.shop.product.service.inter;
 
 import java.util.List;
+import shop.yesaladin.shop.product.dto.SearchedProductDto;
+import shop.yesaladin.shop.product.dto.SearchedProductManagerResponseDto;
 import shop.yesaladin.shop.product.dto.SearchedProductResponseDto;
 
 /**
@@ -15,21 +17,25 @@ public interface SearchProductService {
      * 카테고리 id로 상품을 검색하는 메서드
      *
      * @param id 검색하고 싶은 카테고리 id
-     * @return 해당 카테고리 상품 리스트
+     * @param offset 검색하고 싶은 페이지 위치
+     * @param size 검색하고 싶은 상품 갯수
+     * @return 상품 리스트와 총 갯수
      * @author : 김선홍
      * @since : 1.0
      */
-    List<SearchedProductResponseDto> searchProductsByCategoryId(Long id, int offset, int size);
+    SearchedProductManagerResponseDto searchProductsByCategoryId(Long id, int offset, int size);
 
     /**
      * 카테고리 이름으로 상품을 검색하는 메서드
      *
      * @param name 검색하고 싶은 카테고리 이름
-     * @return 해당 카테고리 상품 리스트
+     * @param offset 검색하고 싶은 페이지 위치
+     * @param size 검색하고 싶은 상품 갯수
+     * @return 상품 리스트와 총 갯수
      * @author : 김선홍
      * @since : 1.0
      */
-    List<SearchedProductResponseDto> searchProductsByCategoryName(String name, int offset, int size);
+    SearchedProductManagerResponseDto searchProductsByCategoryName(String name, int offset, int size);
 
     /**
      * 상품 제목으로 상품을 검색하는 메서드
@@ -37,11 +43,11 @@ public interface SearchProductService {
      * @param title 검색하고 싶은 상품 제목
      * @param offset 검색하고 싶은 페이지 위치
      * @param size 검색하고 싶은 상품 갯수
-     * @return 해당 이름의 상품 리스트
+     * @return 상품 리스트와 총 갯수
      * @author : 김선홍
      * @since : 1.0
      */
-    List<SearchedProductResponseDto> searchProductsByProductTitle(
+    SearchedProductResponseDto searchProductsByProductTitle(
             String title, int offset, int size
     );
 
@@ -51,11 +57,11 @@ public interface SearchProductService {
      * @param content 검색하고 싶은 상품 내용
      * @param offset 검색하고 싶은 페이지 위치
      * @param size 검색하고 싶은 상품 갯수
-     * @return 해당 카테고리 상품 리스트
+     * @return 상품 리스트와 총 갯수
      * @author : 김선홍
      * @since : 1.0
      */
-    List<SearchedProductResponseDto> searchProductsByProductContent(
+    SearchedProductResponseDto searchProductsByProductContent(
             String content, int offset, int size
     );
 
@@ -65,11 +71,11 @@ public interface SearchProductService {
      * @param isbn 검색하고 싶은 카테고리 이름
      * @param offset 검색하고 싶은 페이지 위치
      * @param size 검색하고 싶은 상품 갯수
-     * @return 해당 카테고리 상품 리스트
+     * @return 상품 리스트와 총 갯수
      * @author : 김선홍
      * @since : 1.0
      */
-    List<SearchedProductResponseDto> searchProductsByProductISBN(
+    SearchedProductResponseDto searchProductsByProductISBN(
             String isbn, int offset, int size
     );
 
@@ -79,11 +85,11 @@ public interface SearchProductService {
      * @param author 검색하고 싶은 카테고리 이름
      * @param offset 검색하고 싶은 페이지 위치
      * @param size 검색하고 싶은 상품 갯수
-     * @return 해당 카테고리 상품 리스트
+     * @return 상품 리스트와 총 갯수
      * @author : 김선홍
      * @since : 1.0
      */
-    List<SearchedProductResponseDto> searchProductsByProductAuthor(
+    SearchedProductResponseDto searchProductsByProductAuthor(
             String author, int offset, int size
     );
 
@@ -93,11 +99,11 @@ public interface SearchProductService {
      * @param publisher 검색하고 싶은 카테고리 이름
      * @param offset 검색하고 싶은 페이지 위치
      * @param size 검색하고 싶은 상품 갯수
-     * @return 해당 카테고리 상품 리스트
+     * @return 상품 리스트와 총 갯수
      * @author : 김선홍
      * @since : 1.0
      */
-    List<SearchedProductResponseDto> searchProductsByPublisher(
+    SearchedProductResponseDto searchProductsByPublisher(
             String publisher, int offset, int size
     );
 
@@ -107,11 +113,11 @@ public interface SearchProductService {
      * @param tag 검색하고 싶은 태그 이름
      * @param offset 검색하고 싶은 페이지 위치
      * @param size 검색하고 싶은 상품 갯수
-     * @return 해당 태그의 상품 리스트
+     * @return 상품 리스트와 총 갯수
      * @author : 김선홍
      * @since : 1.0
      */
-    List<SearchedProductResponseDto> searchProductsByTag(String tag, int offset, int size);
+    SearchedProductResponseDto searchProductsByTag(String tag, int offset, int size);
 
 
 

@@ -8,9 +8,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.stereotype.Repository;
-import shop.yesaladin.shop.product.domain.model.search.SearchedProduct;
+import shop.yesaladin.shop.product.domain.model.SearchedProduct;
 import shop.yesaladin.shop.product.domain.repository.SearchProductRepository;
+import shop.yesaladin.shop.product.dto.SearchedProductDto;
+import shop.yesaladin.shop.product.dto.SearchedProductManagerDto;
+import shop.yesaladin.shop.product.dto.SearchedProductManagerResponseDto;
 import shop.yesaladin.shop.product.dto.SearchedProductResponseDto;
 
 /**
@@ -42,11 +46,11 @@ public class ElasticProductRepository implements SearchProductRepository {
      * @param id     검색할 카테고리 id
      * @param offset 검색하고 싶은 페이지 위치
      * @param size   검색하고 싶은 상품 갯수
-     * @return 검색된 상품 리스트
+     * @return 상품 리스트와 총 갯수
      * @
      */
     @Override
-    public List<SearchedProductResponseDto> searchProductsByCategoryId(
+    public SearchedProductManagerResponseDto searchProductsByCategoryId(
             Long id,
             int offset,
             int size
@@ -60,12 +64,12 @@ public class ElasticProductRepository implements SearchProductRepository {
      * @param name   검색하고 싶은 카테고리 이름
      * @param offset 검색하고 싶은 페이지 위치
      * @param size   검색하고 싶은 상품 갯수
-     * @return 해당 카테고리 상품 리스트
+     * @return 상품 리스트와 총 갯수
      * @author : 김선홍
      * @since : 1.0
      */
     @Override
-    public List<SearchedProductResponseDto> searchProductsByCategoryName(
+    public SearchedProductManagerResponseDto searchProductsByCategoryName(
             String name,
             int offset,
             int size
@@ -79,12 +83,12 @@ public class ElasticProductRepository implements SearchProductRepository {
      * @param title  검색하고 싶은 상품 이름
      * @param offset 검색하고 싶은 페이지 위치
      * @param size   검색하고 싶은 상품 갯수
-     * @return 해당 이름의 상품 리스트
+     * @return 상품 리스트와 총 갯수
      * @author : 김선홍
      * @since : 1.0
      */
     @Override
-    public List<SearchedProductResponseDto> searchProductsByProductTitle(
+    public SearchedProductResponseDto searchProductsByProductTitle(
             String title, int offset, int size
     ) {
         return searchProductByMultiQuery(title, offset, size, List.of(TITLE, TAG));
@@ -96,12 +100,12 @@ public class ElasticProductRepository implements SearchProductRepository {
      * @param content 검색하고 싶은 상품 내용
      * @param offset  검색하고 싶은 페이지 위치
      * @param size    검색하고 싶은 상품 갯수
-     * @return 해당 카테고리 상품 리스트
+     * @return 상품 리스트와 총 갯수
      * @author : 김선홍
      * @since : 1.0
      */
     @Override
-    public List<SearchedProductResponseDto> searchProductsByProductContent(
+    public SearchedProductResponseDto searchProductsByProductContent(
             String content, int offset, int size
     ) {
         return searchProductByMultiQuery(content, offset, size, List.of(CONTENT, TAG, DESCRIPTION));
@@ -113,12 +117,12 @@ public class ElasticProductRepository implements SearchProductRepository {
      * @param isbn   검색하고 싶은 카테고리 이름
      * @param offset 검색하고 싶은 페이지 위치
      * @param size   검색하고 싶은 상품 갯수
-     * @return 해당 isbn의 상품 리스트
+     * @return 상품 리스트와 총 갯수
      * @author : 김선홍
      * @since : 1.0
      */
     @Override
-    public List<SearchedProductResponseDto> searchProductsByProductISBN(
+    public SearchedProductResponseDto searchProductsByProductISBN(
             String isbn, int offset, int size
     ) {
         return searchProductByTermQuery(isbn, offset, size, ISBN);
@@ -130,12 +134,12 @@ public class ElasticProductRepository implements SearchProductRepository {
      * @param author 검색하고 싶은 카테고리 이름
      * @param offset 검색하고 싶은 페이지 위치
      * @param size   검색하고 싶은 상품 갯수
-     * @return 해당 작가의 상품 리스트
+     * @return 상품 리스트와 총 갯수
      * @author : 김선홍
      * @since : 1.0
      */
     @Override
-    public List<SearchedProductResponseDto> searchProductsByProductAuthor(
+    public SearchedProductResponseDto searchProductsByProductAuthor(
             String author,
             int offset,
             int size
@@ -149,12 +153,12 @@ public class ElasticProductRepository implements SearchProductRepository {
      * @param publisher 검색하고 싶은 출판사 이름
      * @param offset    검색하고 싶은 페이지 위치
      * @param size      검색하고 싶은 상품 갯수
-     * @return 해당 출판사의 상품 리스트
+     * @return 상품 리스트와 총 갯수
      * @author : 김선홍
      * @since : 1.0
      */
     @Override
-    public List<SearchedProductResponseDto> searchProductsByPublisher(
+    public SearchedProductResponseDto searchProductsByPublisher(
             String publisher, int offset, int size
     ) {
         return searchProductByTermQuery(publisher, offset, size, PUBLISHER_NAME);
@@ -166,12 +170,12 @@ public class ElasticProductRepository implements SearchProductRepository {
      * @param tag    검색하고 싶은 태그 이름
      * @param offset 검색하고 싶은 페이지 위치
      * @param size   검색하고 싶은 상품 갯수
-     * @return 해당 태그의 상품 리스트
+     * @return 상품 리스트와 총 갯수
      * @author : 김선홍
      * @since : 1.0
      */
     @Override
-    public List<SearchedProductResponseDto> searchProductsByTag(String tag, int offset, int size) {
+    public SearchedProductResponseDto searchProductsByTag(String tag, int offset, int size) {
         return searchProductByTermQuery(tag, offset, size, TAG);
     }
 
@@ -182,11 +186,11 @@ public class ElasticProductRepository implements SearchProductRepository {
      * @param offset 검색하고 싶은 페이지 위치
      * @param size   검색하고 싶은 상품 갯수
      * @param fields 검색할 필드들
-     * @return 검색된 상품들
+     * @return 상품 리스트와 총 갯수
      * @author : 김선홍
      * @since : 1.0
      */
-    public List<SearchedProductResponseDto> searchProductByMultiQuery(
+    public SearchedProductResponseDto searchProductByMultiQuery(
             String value,
             int offset,
             int size,
@@ -199,10 +203,15 @@ public class ElasticProductRepository implements SearchProductRepository {
                 .withPageable(PageRequest.of(offset, size))
                 .build();
 
-        return elasticsearchOperations.search(query, SearchedProduct.class).stream()
-                .map(searchedProductSearchHit -> SearchedProductResponseDto.fromIndex(
-                        searchedProductSearchHit.getContent()))
-                .collect(Collectors.toList());
+        SearchHits<SearchedProduct> result = elasticsearchOperations.search(query, SearchedProduct.class);
+
+        return SearchedProductResponseDto.builder()
+                .products(result.stream()
+                        .map(searchedProductSearchHit -> SearchedProductDto.fromIndex(
+                                searchedProductSearchHit.getContent()))
+                        .collect(Collectors.toList()))
+                .count(result.getTotalHits())
+                .build();
     }
 
     /**
@@ -212,11 +221,11 @@ public class ElasticProductRepository implements SearchProductRepository {
      * @param offset 검색하고 싶은 페이지 위치
      * @param size   검색하고 싶은 상품 갯수
      * @param field  검색할 필드
-     * @return 검색된 상품들
+     * @return 상품 리스트와 총 갯수
      * @author : 김선홍
      * @since : 1.0
      */
-    public List<SearchedProductResponseDto> searchProductByTermQuery(
+    public SearchedProductResponseDto searchProductByTermQuery(
             String value,
             int offset,
             int size,
@@ -231,10 +240,15 @@ public class ElasticProductRepository implements SearchProductRepository {
                 .withPageable(PageRequest.of(offset, size))
                 .build();
 
-        return elasticsearchOperations.search(query, SearchedProduct.class).stream()
-                .map(searchedProductSearchHit -> SearchedProductResponseDto.fromIndex(
-                        searchedProductSearchHit.getContent()))
-                .collect(Collectors.toList());
+        SearchHits<SearchedProduct> result = elasticsearchOperations.search(query, SearchedProduct.class);
+
+        return SearchedProductResponseDto.builder()
+                .products(result.stream()
+                        .map(searchedProductSearchHit -> SearchedProductDto.fromIndex(
+                                searchedProductSearchHit.getContent()))
+                        .collect(Collectors.toList()))
+                .count(result.getTotalHits())
+                .build();
     }
 
     /**
@@ -244,11 +258,11 @@ public class ElasticProductRepository implements SearchProductRepository {
      * @param offset 검색하고 싶은 페이지 위치
      * @param size   검색하고 싶은 상품 갯수
      * @param field  검색할 필드
-     * @return 검색된 상품들
+     * @return 상품 리스트와 총 갯수
      * @author : 김선홍
      * @since : 1.0
      */
-    public List<SearchedProductResponseDto> searchProductByCategory(
+    public SearchedProductManagerResponseDto searchProductByCategory(
             String field,
             String value,
             int offset,
@@ -260,12 +274,15 @@ public class ElasticProductRepository implements SearchProductRepository {
                         .getQuery())
                 .withPageable(PageRequest.of(offset, size))
                 .build();
+        SearchHits<SearchedProduct> result = elasticsearchOperations.search(query, SearchedProduct.class);
 
-
-        return elasticsearchOperations.search(query, SearchedProduct.class).stream()
-                .map(searchedProductSearchHit -> SearchedProductResponseDto.fromIndex(
-                        searchedProductSearchHit.getContent()))
-                .collect(Collectors.toList());
+        return SearchedProductManagerResponseDto.builder()
+                .products(result.stream()
+                        .map(searchedProductSearchHit -> SearchedProductManagerDto.fromIndex(
+                                searchedProductSearchHit.getContent()))
+                        .collect(Collectors.toList()))
+                .count(result.getTotalHits())
+                .build();
     }
 
     /**
