@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import shop.yesaladin.shop.member.dto.MemberGradeQueryResponseDto;
 import shop.yesaladin.shop.member.dto.MemberProfileExistResponseDto;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 
@@ -12,6 +13,7 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberService;
  * 회원 조회에 관련된 RestController 입니다.
  *
  * @author : 송학현
+ * @author 최예린
  * @since : 1.0
  */
 @RequiredArgsConstructor
@@ -71,5 +73,18 @@ public class QueryMemberController {
     @GetMapping("/checkPhone/{phone}")
     public MemberProfileExistResponseDto existsPhone(@PathVariable String phone) {
         return new MemberProfileExistResponseDto(queryMemberService.existsPhone(phone));
+    }
+
+    /**
+     * 회원의 등급을 조회합니다.
+     *
+     * @param loginId 회원의 아이디
+     * @return 회원의 등급
+     * @author 최예린
+     * @since 1.0
+     */
+    @GetMapping("/{loginId}/grade")
+    public MemberGradeQueryResponseDto getMemberGrade(@PathVariable String loginId) {
+        return queryMemberService.getMemberGrade(loginId);
     }
 }

@@ -1,14 +1,15 @@
 package shop.yesaladin.shop.member.controller;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.startsWith;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -18,6 +19,7 @@ import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.junit.platform.commons.util.ReflectionUtils;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -27,6 +29,9 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import shop.yesaladin.shop.member.domain.model.MemberGrade;
+import shop.yesaladin.shop.member.dto.MemberGradeQueryResponseDto;
+import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 
 @AutoConfigureRestDocs
@@ -116,7 +121,10 @@ class QueryMemberControllerTest {
         Mockito.when(queryMemberService.existsNickname(nickname)).thenReturn(true);
 
         //then
-        ResultActions resultActions = mockMvc.perform(get("/v1/members/checkNick/{nickname}", nickname))
+        ResultActions resultActions = mockMvc.perform(get(
+                        "/v1/members/checkNick/{nickname}",
+                        nickname
+                ))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.result", equalTo(true)));
@@ -227,6 +235,67 @@ class QueryMemberControllerTest {
                 ),
                 responseFields(fieldWithPath("result").type(JsonFieldType.BOOLEAN)
                         .description("phone 중복 여부"))
+        ));
+    }
+
+    @Test
+    void getMemberGrade_fail_memberNotFound() throws Exception {
+        //given
+        String loginId = "user@1";
+
+        Mockito.when(queryMemberService.getMemberGrade(loginId))
+                .thenThrow(new MemberNotFoundException("Member loginId : " + loginId));
+
+        //when
+        ResultActions result = mockMvc.perform(get("/v1/members/{loginId}/grade", loginId));
+
+        //then
+        result.andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message", startsWith("Member not found")));
+
+        //docs
+        result.andDo(document(
+                "get-member-grade-fail-member-not-found",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
+                responseFields(
+                        fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
+                )
+        ));
+    }
+
+    @Test
+    void getMemberGrade_success() throws Exception {
+        //given
+        String loginId = "user@1";
+        MemberGrade memberGrade = MemberGrade.WHITE;
+
+        MemberGradeQueryResponseDto response = ReflectionUtils.newInstance(
+                MemberGradeQueryResponseDto.class, memberGrade.name(), memberGrade.getName());
+
+        Mockito.when(queryMemberService.getMemberGrade(loginId)).thenReturn(response);
+
+        //when
+        ResultActions result = mockMvc.perform(get("/v1/members/{loginId}/grade", loginId));
+
+        //then
+        result.andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.gradeEn", equalTo(memberGrade.name())))
+                .andExpect(jsonPath("$.gradeKo", equalTo(memberGrade.getName())));
+
+        //docs
+        result.andDo(document(
+                "get-member-grade-success",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
+                responseFields(
+                        fieldWithPath("gradeEn").type(JsonFieldType.STRING).description("회원 등급 영어 이름"),
+                        fieldWithPath("gradeKo").type(JsonFieldType.STRING).description("회원 등급 한국어 이름")
+                )
         ));
     }
 }
