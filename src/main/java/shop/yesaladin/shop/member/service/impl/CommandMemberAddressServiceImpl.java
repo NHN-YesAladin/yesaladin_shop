@@ -10,6 +10,7 @@ import shop.yesaladin.shop.member.domain.repository.QueryMemberAddressRepository
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
 import shop.yesaladin.shop.member.dto.MemberAddressCommandResponseDto;
 import shop.yesaladin.shop.member.dto.MemberAddressCreateRequestDto;
+import shop.yesaladin.shop.member.exception.AlreadyRegisteredUpToLimit;
 import shop.yesaladin.shop.member.exception.MemberAddressNotFoundException;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.CommandMemberAddressService;
@@ -28,6 +29,9 @@ public class CommandMemberAddressServiceImpl implements CommandMemberAddressServ
     private final CommandMemberAddressRepository commandMemberAddressRepository;
     private final QueryMemberAddressRepository queryMemberAddressRepository;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
     public MemberAddressCommandResponseDto save(
@@ -38,11 +42,22 @@ public class CommandMemberAddressServiceImpl implements CommandMemberAddressServ
 
         MemberAddress newMemberAddress = request.toEntity(member);
 
+        checkMemberAddressCountLimitByloginId(loginId);
+
         MemberAddress savedMemberAddress = commandMemberAddressRepository.save(newMemberAddress);
 
         return MemberAddressCommandResponseDto.fromEntity(savedMemberAddress);
     }
 
+    private void checkMemberAddressCountLimitByloginId(String loginId) {
+        if(queryMemberAddressRepository.countByLoginId(loginId) == 10) {
+            throw new AlreadyRegisteredUpToLimit(loginId);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
     public MemberAddressCommandResponseDto markAsDefault(String loginId, long addressId) {
@@ -58,6 +73,9 @@ public class CommandMemberAddressServiceImpl implements CommandMemberAddressServ
         return MemberAddressCommandResponseDto.fromEntity(memberAddress);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
     public long delete(String loginId, long addressId) {

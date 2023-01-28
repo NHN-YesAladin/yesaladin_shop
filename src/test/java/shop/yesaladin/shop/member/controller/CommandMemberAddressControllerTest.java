@@ -43,6 +43,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.member.dto.MemberAddressCommandResponseDto;
 import shop.yesaladin.shop.member.dto.MemberAddressCreateRequestDto;
+import shop.yesaladin.shop.member.exception.AlreadyRegisteredUpToLimit;
 import shop.yesaladin.shop.member.exception.AlreadyDeletedAddressException;
 import shop.yesaladin.shop.member.exception.MemberAddressNotFoundException;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
@@ -173,6 +174,50 @@ class CommandMemberAddressControllerTest {
         ));
     }
 
+    @Test
+    @DisplayName("회원 배송지 생성 실패-최대 배송지 등록 개수 초과")
+    void createMemberAddress_failByAddressRegistrationRestriction() throws Exception {
+        //given
+        String loginId = "user@1";
+
+        Map<String, Object> request = Map.of("address", address, "isDefault", false);
+
+        Mockito.when(commandMemberAddressService.save(eq(loginId), any())).thenThrow(
+                new AlreadyRegisteredUpToLimit(loginId));
+
+        //when
+        ResultActions result = mockMvc.perform(post("/v1/members/{loginId}/addresses", loginId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
+        //then
+        result.andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message", startsWith("Already Registered Up To Limit")));
+
+        ArgumentCaptor<MemberAddressCreateRequestDto> captor = ArgumentCaptor.forClass(
+                MemberAddressCreateRequestDto.class);
+        verify(commandMemberAddressService, times(1)).save(anyString(), captor.capture());
+
+        assertThat(captor.getValue().getAddress()).isEqualTo(address);
+        assertThat(captor.getValue().getIsDefault()).isEqualTo(isDefault);
+
+        //docs
+        result.andDo(document(
+                "create-member-address-fail-registered-up-to-limit",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
+                requestFields(
+                        fieldWithPath("address").type(JsonFieldType.STRING).description("등록할 주소"),
+                        fieldWithPath("isDefault").type(JsonFieldType.BOOLEAN)
+                                .description("대표 주소 여부")
+                ),
+                responseFields(
+                        fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
+                )
+        ));
+    }
+    
     @Test
     @DisplayName("회원 배송지 등록 성공")
     void createMemberAddress() throws Exception {

@@ -21,6 +21,7 @@ import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
 import shop.yesaladin.shop.member.dto.MemberAddressCreateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberAddressCommandResponseDto;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
+import shop.yesaladin.shop.member.exception.AlreadyRegisteredUpToLimit;
 import shop.yesaladin.shop.member.exception.AlreadyDeletedAddressException;
 import shop.yesaladin.shop.member.exception.MemberAddressNotFoundException;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
@@ -72,6 +73,26 @@ class CommandMemberAddressServiceImplTest {
     }
 
     @Test
+    void save_failedByAddressRegistrationRestrictionException() {
+        //given
+        String loginId = "user@1";
+        MemberAddressCreateRequestDto request = ReflectionUtils.newInstance(
+                MemberAddressCreateRequestDto.class,
+                address,
+                isDefault
+        );
+
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
+                .thenReturn(Optional.of(member));
+        Mockito.when(queryMemberAddressRepository.countByLoginId(loginId))
+                .thenReturn(10L);
+
+        //when, then
+        assertThatThrownBy(() -> commandMemberAddressService.save(loginId, request)).isInstanceOf(
+                AlreadyRegisteredUpToLimit.class);
+    }
+
+    @Test
     void save() {
         String loginId = member.getLoginId();
 
@@ -84,6 +105,8 @@ class CommandMemberAddressServiceImplTest {
 
         Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
                 .thenReturn(Optional.of(member));
+        Mockito.when(queryMemberAddressRepository.countByLoginId(loginId))
+                .thenReturn(1L);
         Mockito.when(commandMemberAddressRepository.save(any())).thenReturn(memberAddress);
 
         MemberAddressCommandResponseDto actual = commandMemberAddressService.save(loginId, request);
