@@ -4,10 +4,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -26,11 +23,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import shop.yesaladin.shop.product.domain.model.SearchedProduct.SearchedAuthor;
-import shop.yesaladin.shop.product.domain.model.SearchedProduct.SearchedCategories;
-import shop.yesaladin.shop.product.domain.model.SearchedProduct.SearchedFile;
-import shop.yesaladin.shop.product.domain.model.SearchedProduct.SearchedPublisher;
-import shop.yesaladin.shop.product.domain.model.SearchedProduct.SearchedTags;
+import shop.yesaladin.shop.product.domain.model.search.SearchedProductAuthor;
+import shop.yesaladin.shop.product.domain.model.search.SearchedProductCategory;
+import shop.yesaladin.shop.product.domain.model.search.SearchedProductFile;
+import shop.yesaladin.shop.product.domain.model.search.SearchedProductPublisher;
+import shop.yesaladin.shop.product.domain.model.search.SearchedProductTag;
 import shop.yesaladin.shop.product.dto.SearchedProductResponseDto;
 import shop.yesaladin.shop.product.service.inter.SearchProductService;
 
@@ -69,14 +66,13 @@ class SearchProductControllerTest {
                 .title("title")
                 .discountRate(10)
                 .sellingPrice(1000L)
-                .authors(List.of(new SearchedAuthor(1L, "author")))
+                .authors(List.of(new SearchedProductAuthor(1L, "author")))
                 .isForcedOutOfStack(false)
-                .thumbnailFileUrl(new SearchedFile(1L, "깃 허브.jpg", LocalDate.now()))
+                .thumbnailFileUrl(new SearchedProductFile(1L, "깃 허브.jpg", LocalDate.now()))
                 .publishedDate(LocalDate.now().toString())
-                .publisher(new SearchedPublisher(1L, "publisher"))
-                .categories(List.of(new SearchedCategories(1L, null, "국내소설", true, false)))
-                .authors(List.of(new SearchedAuthor(1L, "name")))
-                .tags(List.of(new SearchedTags(1L, "tag1")))
+                .publisher(new SearchedProductPublisher(1L, "publisher"))
+                .categories(List.of(new SearchedProductCategory(1L, null, "국내소설", true, false)))
+                .tags(List.of(new SearchedProductTag(1L, "tag1")))
                 .build();
 
         dummy = List.of(dto);

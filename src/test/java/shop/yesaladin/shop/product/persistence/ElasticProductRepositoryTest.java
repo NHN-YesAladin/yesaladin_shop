@@ -33,7 +33,7 @@ class ElasticProductRepositoryTest {
     @Test
     @DisplayName("상품 내용으로 검색 테스트")
     void testSearchProductsByProductContent() {
-        List<SearchedProductResponseDto> result = searchProductRepository.searchProductsByProductContent("content", 0, 1);
+        List<SearchedProductResponseDto> result = searchProductRepository.searchProductsByProductContent("논오ㅠㄴ어=121asas", 0, 1);
         assertThat(result).isEmpty();
     }
 
@@ -47,14 +47,14 @@ class ElasticProductRepositoryTest {
     @Test
     @DisplayName("작가 이름으로 검색 테스트")
     void testSearchProductsByProductAuthor() {
-        List<SearchedProductResponseDto> result = searchProductRepository.searchProductsByProductAuthor("author", 0, 1);
+        List<SearchedProductResponseDto> result = searchProductRepository.searchProductsByProductAuthor("ㅓㅗ여!!1212", 0, 1);
         assertThat(result).isEmpty();
     }
 
     @Test
     @DisplayName("상품 이름으로 검색 테스트")
     void testSearchProductsByProductTitle() {
-        List<SearchedProductResponseDto> result = searchProductRepository.searchProductsByProductTitle("title", 0, 1);
+        List<SearchedProductResponseDto> result = searchProductRepository.searchProductsByProductTitle("!!!!@!@sdsdsdㅁㄴㅁㄴ", 0, 1);
         assertThat(result).isEmpty();
     }
 
@@ -68,7 +68,7 @@ class ElasticProductRepositoryTest {
     @Test
     @DisplayName("태그로 검색 테스트")
     void testSearchProductsByTag() {
-        List<SearchedProductResponseDto> result = searchProductRepository.searchProductsByTag("tag", 0, 1);
+        List<SearchedProductResponseDto> result = searchProductRepository.searchProductsByTag("12ghghsdg!!담ㅇ노ㅓ", 0, 1);
         assertThat(result).isEmpty();
     }
 }

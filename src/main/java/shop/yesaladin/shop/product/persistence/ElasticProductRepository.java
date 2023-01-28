@@ -1,15 +1,15 @@
 package shop.yesaladin.shop.product.persistence;
 
 
+import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.stereotype.Repository;
-import shop.yesaladin.shop.product.domain.model.SearchedProduct;
+import shop.yesaladin.shop.product.domain.model.search.SearchedProduct;
 import shop.yesaladin.shop.product.domain.repository.SearchProductRepository;
 import shop.yesaladin.shop.product.dto.SearchedProductResponseDto;
 
@@ -39,7 +39,7 @@ public class ElasticProductRepository implements SearchProductRepository {
     /**
      * 카테고리 id를 이용한 검색하는 메소드
      *
-     * @param id 검색할 카테고리 id
+     * @param id     검색할 카테고리 id
      * @param offset 검색하고 싶은 페이지 위치
      * @param size   검색하고 싶은 상품 갯수
      * @return 검색된 상품 리스트
@@ -57,7 +57,7 @@ public class ElasticProductRepository implements SearchProductRepository {
     /**
      * 카테고리 이름으로 상품을 검색하는 메서드
      *
-     * @param name 검색하고 싶은 카테고리 이름
+     * @param name   검색하고 싶은 카테고리 이름
      * @param offset 검색하고 싶은 페이지 위치
      * @param size   검색하고 싶은 상품 갯수
      * @return 해당 카테고리 상품 리스트
@@ -178,9 +178,9 @@ public class ElasticProductRepository implements SearchProductRepository {
     /**
      * 멀티 필드와 형태소분석을 통해상품을 검색하는 메서드
      *
-     * @param value 멀티 필드에 검색하고 싶은 값
+     * @param value  멀티 필드에 검색하고 싶은 값
      * @param offset 검색하고 싶은 페이지 위치
-     * @param size 검색하고 싶은 상품 갯수
+     * @param size   검색하고 싶은 상품 갯수
      * @param fields 검색할 필드들
      * @return 검색된 상품들
      * @author : 김선홍
@@ -192,29 +192,26 @@ public class ElasticProductRepository implements SearchProductRepository {
             int size,
             List<String> fields
     ) {
-        Query query = NativeQuery.builder()
+        NativeQuery query = NativeQuery.builder()
                 .withQuery(q -> q.multiMatch(v -> v.query(value).fields(fields)))
-                .withFilter(NativeQuery.builder()
-                        .withQuery(q -> q.term(t -> t.field(CATEGORIES_DISABLE).value(false)))
-                        .getQuery())
-                .withFilter(NativeQuery.builder()
-                        .withQuery(q -> q.term(t -> t.field(CATEGORIES_IS_SHOWN).value(true)))
-                        .getQuery())
+                .withFilter(getCategoryDisableFilter())
+                .withFilter(getCategoryIsShownFilter())
                 .withPageable(PageRequest.of(offset, size))
                 .build();
 
         return elasticsearchOperations.search(query, SearchedProduct.class).stream()
-                .map(searchedProductSearchHit -> searchedProductSearchHit.getContent().toDto())
+                .map(searchedProductSearchHit -> SearchedProductResponseDto.fromIndex(
+                        searchedProductSearchHit.getContent()))
                 .collect(Collectors.toList());
     }
 
     /**
      * 필터에서 TermQuery를 통해 상품을 검색하는 메서드
      *
-     * @param value 필드에 검색하고 싶은 값
+     * @param value  필드에 검색하고 싶은 값
      * @param offset 검색하고 싶은 페이지 위치
-     * @param size 검색하고 싶은 상품 갯수
-     * @param field 검색할 필드
+     * @param size   검색하고 싶은 상품 갯수
+     * @param field  검색할 필드
      * @return 검색된 상품들
      * @author : 김선홍
      * @since : 1.0
@@ -225,45 +222,75 @@ public class ElasticProductRepository implements SearchProductRepository {
             int size,
             String field
     ) {
-        Query query = NativeQuery.builder()
+        NativeQuery query = NativeQuery.builder()
                 .withFilter(NativeQuery.builder()
                         .withQuery(q -> q.term(t -> t.field(field).value(value)))
                         .getQuery())
-                .withFilter(NativeQuery.builder()
-                        .withQuery(q -> q.term(t -> t.field(CATEGORIES_DISABLE).value(false)))
-                        .getQuery())
-                .withFilter(NativeQuery.builder()
-                        .withQuery(q -> q.term(t -> t.field(CATEGORIES_IS_SHOWN).value(true)))
-                        .getQuery())
+                .withFilter(getCategoryDisableFilter())
+                .withFilter(getCategoryIsShownFilter())
                 .withPageable(PageRequest.of(offset, size))
                 .build();
 
         return elasticsearchOperations.search(query, SearchedProduct.class).stream()
-                .map(searchedProductSearchHit -> searchedProductSearchHit.getContent().toDto())
+                .map(searchedProductSearchHit -> SearchedProductResponseDto.fromIndex(
+                        searchedProductSearchHit.getContent()))
                 .collect(Collectors.toList());
     }
 
     /**
      * 카테고리를 기준으로 검색하는 메서드
      *
-     * @param value 필드에 검색하고 싶은 값
+     * @param value  필드에 검색하고 싶은 값
      * @param offset 검색하고 싶은 페이지 위치
-     * @param size 검색하고 싶은 상품 갯수
-     * @param field 검색할 필드
+     * @param size   검색하고 싶은 상품 갯수
+     * @param field  검색할 필드
      * @return 검색된 상품들
      * @author : 김선홍
      * @since : 1.0
      */
-    public List<SearchedProductResponseDto> searchProductByCategory(String field, String value, int offset, int size) {
-        Query query = NativeQuery.builder()
+    public List<SearchedProductResponseDto> searchProductByCategory(
+            String field,
+            String value,
+            int offset,
+            int size
+    ) {
+        NativeQuery query = NativeQuery.builder()
                 .withFilter(NativeQuery.builder()
                         .withQuery(q -> q.term(t -> t.field(field).value(value)))
                         .getQuery())
                 .withPageable(PageRequest.of(offset, size))
                 .build();
 
+
         return elasticsearchOperations.search(query, SearchedProduct.class).stream()
-                .map(searchedProductSearchHit -> searchedProductSearchHit.getContent().toDto())
+                .map(searchedProductSearchHit -> SearchedProductResponseDto.fromIndex(
+                        searchedProductSearchHit.getContent()))
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * 카테고리의 disable 상태를 확인하는 쿼리를 반환하는 메서드
+     *
+     * @return 카테고리의 disable 상태를 확인하는 쿼리
+     * @author : 김선홍
+     * @since : 1.0
+     */
+    private Query getCategoryDisableFilter() {
+        return NativeQuery.builder()
+                .withQuery(q -> q.term(t -> t.field(CATEGORIES_DISABLE).value(false)))
+                .getQuery();
+    }
+
+    /**
+     * 카테고리의 isShown 상태를 확인하는 쿼리를 반환하는 메서드
+     *
+     * @return 카테고리의 isShown 상태를 확인하는 쿼리
+     * @author : 김선홍
+     * @since : 1.0
+     */
+    private Query getCategoryIsShownFilter() {
+        return NativeQuery.builder()
+                .withQuery(q -> q.term(t -> t.field(CATEGORIES_IS_SHOWN).value(true)))
+                .getQuery();
     }
 }

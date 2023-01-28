@@ -4,16 +4,16 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import shop.yesaladin.shop.product.domain.model.SearchedProduct.SearchedAuthor;
-import shop.yesaladin.shop.product.domain.model.SearchedProduct.SearchedCategories;
-import shop.yesaladin.shop.product.domain.model.SearchedProduct.SearchedFile;
-import shop.yesaladin.shop.product.domain.model.SearchedProduct.SearchedPublisher;
-import shop.yesaladin.shop.product.domain.model.SearchedProduct.SearchedTags;
+import shop.yesaladin.shop.product.domain.model.search.SearchedProduct;
+import shop.yesaladin.shop.product.domain.model.search.SearchedProductAuthor;
+import shop.yesaladin.shop.product.domain.model.search.SearchedProductCategory;
+import shop.yesaladin.shop.product.domain.model.search.SearchedProductFile;
+import shop.yesaladin.shop.product.domain.model.search.SearchedProductPublisher;
+import shop.yesaladin.shop.product.domain.model.search.SearchedProductTag;
+
 
 @Getter
 @AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class SearchedProductResponseDto {
     private Long id;
@@ -21,10 +21,26 @@ public class SearchedProductResponseDto {
     private int discountRate;
     private long sellingPrice;
     private Boolean isForcedOutOfStack;
-    private SearchedFile thumbnailFileUrl;
-    private SearchedPublisher publisher;
+    private SearchedProductFile thumbnailFileUrl;
+    private SearchedProductPublisher publisher;
     private String publishedDate;
-    private List<SearchedCategories> categories;
-    private List<SearchedAuthor> authors;
-    private List<SearchedTags> tags;
+    private List<SearchedProductCategory> categories;
+    private List<SearchedProductAuthor> authors;
+    private List<SearchedProductTag> tags;
+
+    public static SearchedProductResponseDto fromIndex(SearchedProduct searchedProduct) {
+        return SearchedProductResponseDto.builder()
+                .id(searchedProduct.getId())
+                .title(searchedProduct.getTitle())
+                .authors(searchedProduct.getAuthors())
+                .sellingPrice(searchedProduct.getActualPrice() - searchedProduct.getActualPrice() *  (searchedProduct.getDiscountRate() / 100))
+                .discountRate(searchedProduct.getDiscountRate())
+                .publisher(searchedProduct.getPublisher())
+                .categories(searchedProduct.getCategories())
+                .publishedDate(searchedProduct.getPublishedDate().toString())
+                .thumbnailFileUrl(searchedProduct.getThumbnailFile())
+                .tags(searchedProduct.getTags())
+                .isForcedOutOfStack(searchedProduct.getIsForcedOutOfStack())
+                .build();
+    }
 }

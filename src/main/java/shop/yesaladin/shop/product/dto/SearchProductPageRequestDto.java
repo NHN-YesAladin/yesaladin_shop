@@ -2,12 +2,12 @@ package shop.yesaladin.shop.product.dto;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Setter
+
 @Getter
+@AllArgsConstructor
 public class SearchProductPageRequestDto {
     @Min(value = 0)
     int offset;
