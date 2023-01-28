@@ -151,12 +151,17 @@ public class CommandCategoryServiceImpl implements CommandCategoryService {
     /**
      * 카테고리 삭제를 위한 기능
      *
+     * soft delete를 위해 commandCategoryRepository.deleteById(id) 대신
+     * disabled 시킴
+     *
      * @param id 삭제하고자 하는 카테고리 id
      */
     @Transactional
     @Override
     public void delete(Long id) {
-        commandCategoryRepository.deleteById(id);
+        Category category = queryCategoryRepository.findById(id)
+                .orElseThrow(() -> new CategoryNotFoundException(id));
+        category.disableCategory(category.getName());
     }
 
     @Transactional
