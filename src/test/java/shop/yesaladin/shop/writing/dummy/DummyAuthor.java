@@ -11,4 +11,12 @@ public class DummyAuthor {
                 .member(member)
                 .build();
     }
+
+    public static Author dummy(Long id, String name, Member member) {
+        return Author.builder()
+                .id(id)
+                .name(name)
+                .member(member)
+                .build();
+    }
 }
