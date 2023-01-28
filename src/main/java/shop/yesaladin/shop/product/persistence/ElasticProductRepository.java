@@ -200,8 +200,10 @@ public class ElasticProductRepository implements SearchProductRepository {
     ) {
         NativeQuery query = NativeQuery.builder()
                 .withQuery(q -> q.multiMatch(v -> v.query(value).fields(fields)))
-                .withFilter(getCategoryDisableFilter())
-                .withFilter(getCategoryIsShownFilter())
+                .withFilter(QueryBuilders.bool(v -> v.must(
+                        getCategoryDisableFilter(),
+                        getCategoryIsShownFilter()
+                )))
                 .withPageable(PageRequest.of(offset, size))
                 .build();
 
