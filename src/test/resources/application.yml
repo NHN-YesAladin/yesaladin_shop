@@ -23,4 +23,8 @@ storage-token:
   container-name: yesaladinTest
   username: tidh1640@naver.com
   password: yesaladin
+  thumbnail-path: product/thumbnail
 
+logging:
+  level:
+    tracer: TRACE
