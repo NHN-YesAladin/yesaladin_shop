@@ -115,4 +115,24 @@ public class Product {
         }
         this.quantity = quantity;
     }
+
+    /**
+     * 상품의 판매여부를 바꿉니다.
+     *
+     * @author 이수정
+     * @since 1.0
+     */
+    public void changeIsSale() {
+        this.isSale = !this.isSale;
+    }
+
+    /**
+     * 상품의 강제품절여부를 바꿉니다.
+     *
+     * @author 이수정
+     * @since 1.0
+     */
+    public void changeIsForcedOutOfStock() {
+        this.isForcedOutOfStock = !this.isForcedOutOfStock;
+    }
 }

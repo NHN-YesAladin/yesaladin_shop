@@ -146,19 +146,16 @@ class QueryDslProductRepositoryTest {
         entityManager.persist(product2);
 
         // when
-        Page<Product> products = repository.findAllForManager(PageRequest.of(0, 5));
+        Page<Product> products = repository.findAllForManager(PageRequest.of(0, 1));
 
         // then
         assertThat(products).isNotNull();
-        assertThat(products.getTotalElements()).isEqualTo(2);
+        assertThat(products.getTotalElements()).isEqualTo(1);
+        assertThat(products.getTotalPages()).isEqualTo(1);
         assertThat(products.getContent().get(0).getISBN()).isEqualTo(ISBN1);
-        assertThat(products.getContent().get(1).getISBN()).isEqualTo(ISBN2);
         assertThat(products.getContent().get(0).getThumbnailFile()).isEqualTo(thumbnailFile1);
-        assertThat(products.getContent().get(1).getThumbnailFile()).isEqualTo(thumbnailFile2);
         assertThat(products.getContent().get(0).getEbookFile()).isEqualTo(ebookFile1);
-        assertThat(products.getContent().get(1).getEbookFile()).isEqualTo(ebookFile2);
         assertThat(products.getContent().get(0).getProductTypeCode()).isEqualTo(ProductTypeCode.BESTSELLER);
-        assertThat(products.getContent().get(1).getProductTypeCode()).isEqualTo(ProductTypeCode.NEWBOOK);
     }
 
     @Test

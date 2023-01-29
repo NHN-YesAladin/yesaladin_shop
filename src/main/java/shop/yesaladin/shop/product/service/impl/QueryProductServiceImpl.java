@@ -84,7 +84,11 @@ public class QueryProductServiceImpl implements QueryProductService {
                 product.isSubscriptionAvailable(),
                 product.getSubscribeProduct().getISSN(),
                 product.getContents(),
-                product.getDescription()
+                product.getDescription(),
+                product.getQuantity(),
+                product.isForcedOutOfStock(),
+                product.isSale(),
+                product.isDeleted()
         );
     }
 
@@ -147,7 +151,9 @@ public class QueryProductServiceImpl implements QueryProductService {
                     publish.getPublishedDate().toString(),
                     sellingPrice,
                     rate,
-                    product.isForcedOutOfStock() || product.getQuantity() <= 0,
+                    product.getQuantity(),
+                    product.isSale(),
+                    product.isForcedOutOfStock(),
                     product.isSale() && !product.isDeleted(),
                     product.isDeleted(),
                     product.getThumbnailFile().getUrl(),
