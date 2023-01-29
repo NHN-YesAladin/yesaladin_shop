@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.member.domain.model.Member;
-import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.writing.domain.model.Author;
 import shop.yesaladin.shop.writing.domain.repository.CommandAuthorRepository;
@@ -100,9 +99,6 @@ public class CommandAuthorServiceImpl implements CommandAuthorService {
      */
     private Member getMember(String loginId) {
         if (Objects.nonNull(loginId) && !loginId.isBlank()) {
-            if (!queryMemberService.existsLoginId(loginId)) {
-                throw new MemberNotFoundException(loginId);
-            }
             return queryMemberService.findMemberByLoginId(loginId).toEntity();
         }
         return null;

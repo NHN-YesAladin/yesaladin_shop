@@ -1,10 +1,8 @@
 package shop.yesaladin.shop.product.service.impl;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import shop.yesaladin.shop.product.domain.repository.SearchProductRepository;
-import shop.yesaladin.shop.product.dto.SearchedProductDto;
 import shop.yesaladin.shop.product.dto.SearchedProductManagerResponseDto;
 import shop.yesaladin.shop.product.dto.SearchedProductResponseDto;
 import shop.yesaladin.shop.product.service.inter.SearchProductService;

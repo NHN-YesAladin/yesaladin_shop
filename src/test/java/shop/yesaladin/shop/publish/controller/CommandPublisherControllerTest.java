@@ -1,4 +1,4 @@
-package shop.yesaladin.shop.writing.controller;
+package shop.yesaladin.shop.publish.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -12,10 +12,10 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import shop.yesaladin.shop.member.exception.MemberNotFoundException;
-import shop.yesaladin.shop.writing.dto.AuthorRequestDto;
-import shop.yesaladin.shop.writing.dto.AuthorResponseDto;
-import shop.yesaladin.shop.writing.service.inter.CommandAuthorService;
+import shop.yesaladin.shop.publish.dto.PublisherRequestDto;
+import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
+import shop.yesaladin.shop.publish.exception.PublisherAlreadyExistsException;
+import shop.yesaladin.shop.publish.service.inter.CommandPublisherService;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
@@ -32,28 +32,28 @@ import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentRequest;
 import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
 
 @AutoConfigureRestDocs
-@WebMvcTest(CommandAuthorController.class)
-class CommandAuthorControllerTest {
+@WebMvcTest(CommandPublisherController.class)
+class CommandPublisherControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
     @MockBean
-    private CommandAuthorService service;
+    private CommandPublisherService service;
 
     @Autowired
     private ObjectMapper objectMapper;
 
     @Test
-    @DisplayName("저자 등록 성공")
-    void registerAuthor_success() throws Exception {
+    @DisplayName("출판사 등록 성공")
+    void registerPublisher_success() throws Exception {
         // given
-        String name = "저자1";
-        AuthorRequestDto createDto = new AuthorRequestDto(name, null);
-        AuthorResponseDto responseDto = new AuthorResponseDto(1L, name, null);
+        String name = "출판사1";
+        PublisherRequestDto createDto = new PublisherRequestDto(name);
+        PublisherResponseDto responseDto = new PublisherResponseDto(1L, name);
         Mockito.when(service.create(any())).thenReturn(responseDto);
 
         // when
-        ResultActions result = mockMvc.perform(post("/v1/authors")
+        ResultActions result = mockMvc.perform(post("/v1/publishers")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(createDto)));
 
@@ -68,56 +68,54 @@ class CommandAuthorControllerTest {
 
         // docs
         result.andDo(document(
-                "register-author",
+                "register-publisher",
                 getDocumentRequest(),
                 getDocumentResponse(),
                 requestFields(
-                        fieldWithPath("name").type(JsonFieldType.STRING).description("저자명"),
-                        fieldWithPath("loginId").description("저자 로그인 아이디")
+                        fieldWithPath("name").type(JsonFieldType.STRING).description("출판사명")
                 ),
                 responseFields(
-                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("생성된 저자 아이디"),
-                        fieldWithPath("name").type(JsonFieldType.STRING).description("저자명"),
-                        fieldWithPath("member").description("저자 멤버 엔터티")
+                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("생성된 출판사 아이디"),
+                        fieldWithPath("name").type(JsonFieldType.STRING).description("출판사명")
                 )
         ));
     }
 
     @Test
-    @DisplayName("저자 등록 실패_존재하지 않는 멤버 로그인 아이디를 입력한 경우 예외 발생")
-    void registerAuthor_notExistsLoginId_throwMemberNotFoundException() throws Exception {
+    @DisplayName("출판사 등록 실패_이미 존재하는 출판사명을 입력한 경우 예외 발생")
+    void registerPublisher_throwPublisherAlreadyExistsException() throws Exception {
         // given
-        String name = "저자1";
-        AuthorRequestDto createDto = new AuthorRequestDto(name, "notExist");
+        String name = "출판사1";
+        PublisherRequestDto createDto = new PublisherRequestDto(name);
 
-        Mockito.when(service.create(any())).thenThrow(MemberNotFoundException.class);
+        Mockito.when(service.create(any())).thenThrow(PublisherAlreadyExistsException.class);
 
         // when
-        ResultActions result = mockMvc.perform(post("/v1/authors")
+        ResultActions result = mockMvc.perform(post("/v1/publishers")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(createDto)));
 
         // then
         result.andDo(print())
-                .andExpect(status().isNotFound());
+                .andExpect(status().isConflict());
 
         verify(service, times(1)).create(any());
     }
 
     @Test
-    @DisplayName("저자 수정 성공")
-    void modifyAuthor_success() throws Exception {
+    @DisplayName("출판사 수정 성공")
+    void modifyPublisher_success() throws Exception {
         // given
         Long id = 1L;
-        String name1 = "저자1";
-        String name2 = "저자2";
+        String name1 = "출판사1";
+        String name2 = "출판사2";
 
-        AuthorRequestDto modifyDto = new AuthorRequestDto(name1, null);
-        AuthorResponseDto responseDto = new AuthorResponseDto(id, name2, null);
+        PublisherRequestDto modifyDto = new PublisherRequestDto(name1);
+        PublisherResponseDto responseDto = new PublisherResponseDto(id, name2);
         Mockito.when(service.modify(anyLong(), any())).thenReturn(responseDto);
 
         // when
-        ResultActions result = mockMvc.perform(put("/v1/authors/{authorId}", id)
+        ResultActions result = mockMvc.perform(put("/v1/publishers/{publisherId}", id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(modifyDto)));
 
@@ -132,40 +130,38 @@ class CommandAuthorControllerTest {
 
         // docs
         result.andDo(document(
-                "modify-author",
+                "modify-publisher",
                 getDocumentRequest(),
                 getDocumentResponse(),
                 requestFields(
-                        fieldWithPath("name").type(JsonFieldType.STRING).description("저자명"),
-                        fieldWithPath("loginId").description("저자 로그인 아이디")
+                        fieldWithPath("name").type(JsonFieldType.STRING).description("출판사명")
                 ),
                 responseFields(
-                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("수정된 저자 아이디"),
-                        fieldWithPath("name").type(JsonFieldType.STRING).description("저자명"),
-                        fieldWithPath("member").description("저자")
+                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("수정된 출판사 아이디"),
+                        fieldWithPath("name").type(JsonFieldType.STRING).description("출판사명")
                 )
         ));
     }
 
     @Test
-    @DisplayName("저자 수정 실패_존재하지 않는 멤버 로그인 아이디를 입력한 경우 예외 발생")
-    void modifyAuthor_notExistsLoginId_throwMemberNotFoundException() throws Exception {
+    @DisplayName("출판사 등록 실패_이미 존재하는 출판사명을 입력한 경우 예외 발생")
+    void modifyPublisher_throwPublisherAlreadyExistsException() throws Exception {
         // given
         Long id = 1L;
-        String name = "저자1";
-        AuthorRequestDto modifyDto = new AuthorRequestDto(name, "notExist");
+        String name = "출판사1";
+        PublisherRequestDto modifyDto = new PublisherRequestDto(name);
 
-        Mockito.when(service.modify(anyLong(), any())).thenThrow(MemberNotFoundException.class);
+        Mockito.when(service.modify(any(), any())).thenThrow(PublisherAlreadyExistsException.class);
 
         // when
-        ResultActions result = mockMvc.perform(put("/v1/authors/{authorId}", id)
+        ResultActions result = mockMvc.perform(put("/v1/publishers/{publisherId}", id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(modifyDto)));
 
         // then
         result.andDo(print())
-                .andExpect(status().isNotFound());
+                .andExpect(status().isConflict());
 
-        verify(service, times(1)).modify(anyLong(), any());
+        verify(service, times(1)).modify(any(), any());
     }
 }

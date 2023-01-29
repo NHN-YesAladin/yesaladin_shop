@@ -105,7 +105,7 @@ public class CommandProductServiceImpl implements CommandProductService {
         // Product
         Product product = queryProductRepository.findByISBN(dto.getISBN()).orElse(null);
         if (!Objects.isNull(product)) {
-            throw new AlreadyProductExistsException(dto.getISBN());
+            throw new ProductAlreadyExistsException(dto.getISBN());
         }
         product = commandProductRepository.save(dto.toProductEntity(
                 subscribeProduct,
