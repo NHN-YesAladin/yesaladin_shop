@@ -1,5 +1,7 @@
 package shop.yesaladin.shop.writing.domain.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.writing.domain.model.Author;
 
 import java.util.List;
@@ -16,4 +18,6 @@ public interface QueryAuthorRepository {
     Optional<Author> findById(Long id);
 
     List<Author> findAll();
+
+    Page<Author> findAllForManager(Pageable pageable);
 }

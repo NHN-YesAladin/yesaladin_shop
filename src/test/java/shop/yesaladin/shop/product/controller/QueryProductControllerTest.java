@@ -90,7 +90,11 @@ class QueryProductControllerTest {
                         fieldWithPath("subscriptionAvailable").type(JsonFieldType.BOOLEAN).description("구독 가능여부"),
                         fieldWithPath("issn").type(JsonFieldType.STRING).description("ISSN"),
                         fieldWithPath("contents").type(JsonFieldType.STRING).description("목차"),
-                        fieldWithPath("description").type(JsonFieldType.STRING).description("설명")
+                        fieldWithPath("description").type(JsonFieldType.STRING).description("설명"),
+                        fieldWithPath("quantity").type(JsonFieldType.NUMBER).description("수량"),
+                        fieldWithPath("forcedOutOfStock").type(JsonFieldType.BOOLEAN).description("강제품절여부"),
+                        fieldWithPath("sale").type(JsonFieldType.BOOLEAN).description("판매여부"),
+                        fieldWithPath("deleted").type(JsonFieldType.BOOLEAN).description("삭제여부")
                 )
         ));
     }
@@ -147,7 +151,9 @@ class QueryProductControllerTest {
                         fieldWithPath("dataList.[].publishedDate").type(JsonFieldType.STRING).description("출간일"),
                         fieldWithPath("dataList.[].sellingPrice").type(JsonFieldType.NUMBER).description("판매가"),
                         fieldWithPath("dataList.[].discountRate").type(JsonFieldType.NUMBER).description("할인율"),
-                        fieldWithPath("dataList.[].isOutOfStock").type(JsonFieldType.BOOLEAN).description("품절여부"),
+                        fieldWithPath("dataList.[].quantity").type(JsonFieldType.NUMBER).description("수량"),
+                        fieldWithPath("dataList.[].isSale").type(JsonFieldType.BOOLEAN).description("판매여부"),
+                        fieldWithPath("dataList.[].isForcedOutOfStock").type(JsonFieldType.BOOLEAN).description("강제품절여부"),
                         fieldWithPath("dataList.[].isShown").type(JsonFieldType.BOOLEAN).description("노출여부"),
                         fieldWithPath("dataList.[].isDeleted").type(JsonFieldType.BOOLEAN).description("삭제여부"),
                         fieldWithPath("dataList.[].thumbnailFileUrl").type(JsonFieldType.STRING).description("썸네일 파일 URL"),
@@ -208,7 +214,9 @@ class QueryProductControllerTest {
                         fieldWithPath("dataList.[].publishedDate").type(JsonFieldType.STRING).description("출간일"),
                         fieldWithPath("dataList.[].sellingPrice").type(JsonFieldType.NUMBER).description("판매가"),
                         fieldWithPath("dataList.[].discountRate").type(JsonFieldType.NUMBER).description("할인율"),
-                        fieldWithPath("dataList.[].isOutOfStock").type(JsonFieldType.BOOLEAN).description("품절여부"),
+                        fieldWithPath("dataList.[].quantity").type(JsonFieldType.NUMBER).description("수량"),
+                        fieldWithPath("dataList.[].isSale").type(JsonFieldType.BOOLEAN).description("판매여부"),
+                        fieldWithPath("dataList.[].isForcedOutOfStock").type(JsonFieldType.BOOLEAN).description("강제품절여부"),
                         fieldWithPath("dataList.[].isShown").type(JsonFieldType.BOOLEAN).description("노출여부"),
                         fieldWithPath("dataList.[].isDeleted").type(JsonFieldType.BOOLEAN).description("삭제여부"),
                         fieldWithPath("dataList.[].thumbnailFileUrl").type(JsonFieldType.STRING).description("썸네일 파일 URL"),

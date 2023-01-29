@@ -10,4 +10,9 @@ public class DummyPublisher {
                 .build();
     }
 
+    public static Publisher dummy(String name) {
+        return Publisher.builder()
+                .name(name)
+                .build();
+    }
 }

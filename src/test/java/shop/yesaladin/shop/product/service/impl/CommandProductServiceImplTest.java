@@ -233,6 +233,55 @@ class CommandProductServiceImplTest {
         service.softDelete(ID);
 
         // then
+        assertThat(product).isNotNull();
+        assertThat(product.isDeleted()).isTrue();
+
+        verify(queryProductRepository, times(1)).findById(ID);
+        verify(commandProductRepository, times(1)).save(product);
+    }
+
+    @Test
+    @DisplayName("상품 판매여부 변경 성공")
+    void changeIsSale() {
+        // given
+        File thumbnailFile = DummyFile.dummy(URL + "/image1.png");
+        File ebookFile = DummyFile.dummy(URL + "/ebook1.pdf");
+        SubscribeProduct subscribeProduct = SubscribeProduct.builder().id(1L).ISSN("00000001").build();
+        TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
+
+        Product product = DummyProduct.dummy(ID, ISBN, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate);
+        Mockito.when(queryProductRepository.findById(anyLong())).thenReturn(Optional.ofNullable(product));
+
+        // when
+        service.changeIsSale(ID);
+
+        // then
+        assertThat(product).isNotNull();
+        assertThat(product.isSale()).isFalse();
+
+        verify(queryProductRepository, times(1)).findById(ID);
+        verify(commandProductRepository, times(1)).save(product);
+    }
+
+    @Test
+    @DisplayName("상품 강제품절여부 변경 성공")
+    void changeIsForcedOutOfStock() {
+        // given
+        File thumbnailFile = DummyFile.dummy(URL + "/image1.png");
+        File ebookFile = DummyFile.dummy(URL + "/ebook1.pdf");
+        SubscribeProduct subscribeProduct = SubscribeProduct.builder().id(1L).ISSN("00000001").build();
+        TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
+
+        Product product = DummyProduct.dummy(ID, ISBN, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate);
+        Mockito.when(queryProductRepository.findById(anyLong())).thenReturn(Optional.ofNullable(product));
+
+        // when
+        service.changeIsForcedOutOfStock(ID);
+
+        // then
+        assertThat(product).isNotNull();
+        assertThat(product.isForcedOutOfStock()).isTrue();
+
         verify(queryProductRepository, times(1)).findById(ID);
         verify(commandProductRepository, times(1)).save(product);
     }

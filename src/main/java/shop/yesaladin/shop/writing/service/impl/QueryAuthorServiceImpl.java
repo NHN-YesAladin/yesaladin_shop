@@ -1,6 +1,9 @@
 package shop.yesaladin.shop.writing.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.writing.domain.model.Author;
@@ -10,6 +13,7 @@ import shop.yesaladin.shop.writing.dto.AuthorsResponseDto;
 import shop.yesaladin.shop.writing.exception.AuthorNotFoundException;
 import shop.yesaladin.shop.writing.service.inter.QueryAuthorService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -48,5 +52,25 @@ public class QueryAuthorServiceImpl implements QueryAuthorService {
         return queryAuthorRepository.findAll().stream()
                 .map(author -> new AuthorsResponseDto(author.getId(), author.getName(), Objects.isNull(author.getMember()) ? null : author.getMember().getLoginId()))
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public Page<AuthorsResponseDto> findAllForManager(Pageable pageable) {
+        Page<Author> page = queryAuthorRepository.findAllForManager(pageable);
+
+        List<AuthorsResponseDto> authors = new ArrayList<>();
+        for (Author author : page.getContent()) {
+            authors.add(new AuthorsResponseDto(
+                    author.getId(),
+                    author.getName(),
+                    Objects.isNull(author.getMember()) ? null : author.getMember().getLoginId()
+            ));
+        }
+
+        return new PageImpl<>(authors, pageable, page.getTotalElements());
     }
 }

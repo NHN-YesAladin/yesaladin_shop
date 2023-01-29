@@ -1,5 +1,7 @@
 package shop.yesaladin.shop.publish.domain.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.publish.domain.model.Publisher;
 
 import java.util.List;
@@ -15,7 +17,9 @@ public interface QueryPublisherRepository {
 
     Optional<Publisher> findById(Long id);
 
-    Optional<Publisher> findByName(String name);
-
     List<Publisher> findAll();
+
+    Page<Publisher> findAllForManager(Pageable pageable);
+
+    boolean existsByName(String name);
 }

@@ -105,7 +105,7 @@ public class CommandProductServiceImpl implements CommandProductService {
         // Product
         Product product = queryProductRepository.findByISBN(dto.getISBN()).orElse(null);
         if (!Objects.isNull(product)) {
-            throw new AlreadyProductExistsException(dto.getISBN());
+            throw new ProductAlreadyExistsException(dto.getISBN());
         }
         product = commandProductRepository.save(dto.toProductEntity(
                 subscribeProduct,
@@ -247,6 +247,34 @@ public class CommandProductServiceImpl implements CommandProductService {
             throw new RequestedQuantityLargerThanSellQuantityException(requestedQuantity, sellQuantity);
         }
         product.changeQuantity(deductedQuantity);
+
+        commandProductRepository.save(product);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public void changeIsSale(long id) {
+        Product product = queryProductRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException(id));
+
+        product.changeIsSale();
+
+        commandProductRepository.save(product);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public void changeIsForcedOutOfStock(long id) {
+        Product product = queryProductRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException(id));
+
+        product.changeIsForcedOutOfStock();
 
         commandProductRepository.save(product);
     }

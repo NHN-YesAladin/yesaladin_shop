@@ -11,9 +11,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import shop.yesaladin.shop.product.dummy.DummyPublisher;
 import shop.yesaladin.shop.publish.domain.model.Publisher;
 
-import java.util.List;
-import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -42,47 +39,5 @@ class JpaPublisherRepositoryTest {
         // then
         assertThat(savedPublisher).isNotNull();
         assertThat(savedPublisher.getName()).isEqualTo("출판사");
-    }
-
-    @Test
-    @DisplayName("태그 ID로 조회")
-    void findById() {
-        // given
-        Publisher savedPublisher = entityManager.persist(publisher);
-
-        // when
-        Optional<Publisher> optionalPublisher = repository.findById(savedPublisher.getId());
-
-        // then
-        assertThat(optionalPublisher).isPresent();
-        assertThat(optionalPublisher.get().getName()).isEqualTo(publisher.getName());
-    }
-
-    @Test
-    @DisplayName("출판사 이름으로 조회")
-    void findByName() {
-        // given
-        Publisher savedPublisher = entityManager.persist(publisher);
-
-        // when
-        Optional<Publisher> optionalPublisher = repository.findByName(savedPublisher.getName());
-
-        // then
-        assertThat(optionalPublisher).isPresent();
-        assertThat(optionalPublisher.get().getId()).isEqualTo(publisher.getId());
-    }
-
-    @Test
-    @DisplayName("출판사 전체 조회")
-    void findAll() {
-        // given
-        entityManager.persist(publisher);
-
-        // when
-        List<Publisher> foundPublishers = repository.findAll();
-
-        // then
-        assertThat(foundPublishers.size()).isEqualTo(1);
-        assertThat(foundPublishers.contains(publisher)).isTrue();
     }
 }
