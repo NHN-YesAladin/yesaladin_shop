@@ -1,4 +1,4 @@
-package shop.yesaladin.shop.product.domain.model.search;
+package shop.yesaladin.shop.product.domain.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package shop.yesaladin.shop.product.domain.model.search;
+package shop.yesaladin.shop.product.domain.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,9 +7,10 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 
 @Getter
 @AllArgsConstructor
-public class SearchedProductSubscribProduct {
+public class SearchedProductTag {
+
         @Field(name = "id", type = FieldType.Long)
-        long id;
-        @Field(name = "ISSN", type = FieldType.Keyword)
-        String issn;
+        private Long id;
+        @Field(name = "name", type = FieldType.Keyword)
+        private String name;
 }
