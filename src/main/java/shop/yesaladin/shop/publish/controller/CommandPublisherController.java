@@ -43,7 +43,7 @@ public class CommandPublisherController {
     /**
      * [PUT /publishers/{publisherId}] 요청을 받아 출판사를 수정합니다.
      *
-     * @param modifyDto 요청받은 출판사 정보(저자 이름)
+     * @param modifyDto 요청받은 출판사 정보(출판사 이름)
      * @return ResponseEntity
      * @author 이수정
      * @since 1.0
