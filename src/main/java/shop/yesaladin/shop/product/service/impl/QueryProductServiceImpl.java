@@ -161,7 +161,7 @@ public class QueryProductServiceImpl implements QueryProductService {
             ));
         }
 
-        return new PageImpl<>(products, pageable, products.size());
+        return new PageImpl<>(products, pageable, page.getTotalElements());
     }
 
     /**

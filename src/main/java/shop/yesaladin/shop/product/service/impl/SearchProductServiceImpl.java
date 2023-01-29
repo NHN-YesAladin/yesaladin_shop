@@ -4,6 +4,8 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import shop.yesaladin.shop.product.domain.repository.SearchProductRepository;
+import shop.yesaladin.shop.product.dto.SearchedProductDto;
+import shop.yesaladin.shop.product.dto.SearchedProductManagerResponseDto;
 import shop.yesaladin.shop.product.dto.SearchedProductResponseDto;
 import shop.yesaladin.shop.product.service.inter.SearchProductService;
 
@@ -28,7 +30,7 @@ public class SearchProductServiceImpl implements SearchProductService {
      * @since : 1.0
      */
     @Override
-    public List<SearchedProductResponseDto> searchProductsByCategoryId(
+    public SearchedProductManagerResponseDto searchProductsByCategoryId(
             Long id, int offset, int size
     ) {
         return searchProductRepository.searchProductsByCategoryId(id, offset, size);
@@ -43,7 +45,7 @@ public class SearchProductServiceImpl implements SearchProductService {
      * @since : 1.0
      */
     @Override
-    public List<SearchedProductResponseDto> searchProductsByCategoryName(
+    public SearchedProductManagerResponseDto searchProductsByCategoryName(
             String name, int offset, int size
     ) {
         return searchProductRepository.searchProductsByCategoryName(name, offset, size);
@@ -60,7 +62,7 @@ public class SearchProductServiceImpl implements SearchProductService {
      * @since : 1.0
      */
     @Override
-    public List<SearchedProductResponseDto> searchProductsByProductTitle(
+    public SearchedProductResponseDto searchProductsByProductTitle(
             String title, int offset, int size
     ) {
         return searchProductRepository.searchProductsByProductTitle(title, offset, size);
@@ -77,7 +79,7 @@ public class SearchProductServiceImpl implements SearchProductService {
      * @since : 1.0
      */
     @Override
-    public List<SearchedProductResponseDto> searchProductsByProductContent(
+    public SearchedProductResponseDto searchProductsByProductContent(
             String content, int offset, int size
     ) {
         return searchProductRepository.searchProductsByProductContent(content, offset, size);
@@ -94,7 +96,7 @@ public class SearchProductServiceImpl implements SearchProductService {
      * @since : 1.0
      */
     @Override
-    public List<SearchedProductResponseDto> searchProductsByProductISBN(
+    public SearchedProductResponseDto searchProductsByProductISBN(
             String isbn, int offset, int size
     ) {
         return searchProductRepository.searchProductsByProductISBN(isbn, offset, size);
@@ -111,7 +113,7 @@ public class SearchProductServiceImpl implements SearchProductService {
      * @since : 1.0
      */
     @Override
-    public List<SearchedProductResponseDto> searchProductsByProductAuthor(
+    public SearchedProductResponseDto searchProductsByProductAuthor(
             String author, int offset, int size
     ) {
         return searchProductRepository.searchProductsByProductAuthor(author, offset, size);
@@ -128,7 +130,7 @@ public class SearchProductServiceImpl implements SearchProductService {
      * @since : 1.0
      */
     @Override
-    public List<SearchedProductResponseDto> searchProductsByPublisher(
+    public SearchedProductResponseDto searchProductsByPublisher(
             String publisher, int offset, int size
     ) {
         return searchProductRepository.searchProductsByPublisher(publisher, offset, size);
@@ -145,7 +147,7 @@ public class SearchProductServiceImpl implements SearchProductService {
      * @since : 1.0
      */
     @Override
-    public List<SearchedProductResponseDto> searchProductsByTag(String tag, int offset, int size) {
+    public SearchedProductResponseDto searchProductsByTag(String tag, int offset, int size) {
         return searchProductRepository.searchProductsByTag(tag, offset, size);
     }
 }

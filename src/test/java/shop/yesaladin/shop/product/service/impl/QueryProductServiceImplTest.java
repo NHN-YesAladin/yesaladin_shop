@@ -138,7 +138,7 @@ class QueryProductServiceImplTest {
         // when
         Page<ProductsResponseDto> response = service.findAll(PageRequest.of(0, 5), null);
 
-        // then
+        // then/
         assertThat(response.getTotalElements()).isEqualTo(5);
         assertThat(response.getContent().get(0).getId()).isEqualTo(5L);
         assertThat(response.getContent().get(4).getId()).isEqualTo(9L);

@@ -36,7 +36,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentRequest;
 import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
 
-
 @AutoConfigureRestDocs
 @WebMvcTest(CommandProductController.class)
 class CommandProductControllerTest {
