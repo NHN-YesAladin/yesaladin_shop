@@ -34,9 +34,9 @@ public class CommandPublisherServiceImpl implements CommandPublisherService {
         if (queryPublisherRepository.existsByName(publisher.getName())) {
             throw new PublisherAlreadyExistsException(publisher.getName());
         }
-        Publisher savedPublisher = commandPublisherRepository.save(publisher);
+        commandPublisherRepository.save(publisher);
 
-        return new PublisherResponseDto(savedPublisher.getId(), savedPublisher.getName());
+        return new PublisherResponseDto(publisher.getId(), publisher.getName());
     }
 
     /**
@@ -76,11 +76,11 @@ public class CommandPublisherServiceImpl implements CommandPublisherService {
             publisher.changeName(modifyName);
         }
 
-        Publisher savedPublisher = commandPublisherRepository.save(publisher);
+        commandPublisherRepository.save(publisher);
 
         return new PublisherResponseDto(
-                savedPublisher.getId(),
-                savedPublisher.getName()
+                publisher.getId(),
+                publisher.getName()
         );
     }
 }

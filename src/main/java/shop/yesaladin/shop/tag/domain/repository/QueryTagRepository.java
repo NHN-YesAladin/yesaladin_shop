@@ -1,5 +1,7 @@
 package shop.yesaladin.shop.tag.domain.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.tag.domain.model.Tag;
 
 import java.util.List;
@@ -15,7 +17,9 @@ public interface QueryTagRepository {
 
     Optional<Tag> findById(Long id);
 
-    Optional<Tag> findByName(String name);
-
     List<Tag> findAll();
+
+    boolean existsByName(String name);
+
+    Page<Tag> findAllForManager(Pageable pageable);
 }
