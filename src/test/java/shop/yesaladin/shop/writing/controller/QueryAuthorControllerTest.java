@@ -43,7 +43,7 @@ class QueryAuthorControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private QueryAuthorService queryAuthorService;
+    private QueryAuthorService service;
 
     @Test
     @DisplayName("저자 전체 조회 성공")
@@ -53,7 +53,7 @@ class QueryAuthorControllerTest {
                 new AuthorsResponseDto(1L, "저자1", "happyAuthor"),
                 new AuthorsResponseDto(2L, "저자2", "sadAuthor")
         );
-        Mockito.when(queryAuthorService.findAll()).thenReturn(authors);
+        Mockito.when(service.findAll()).thenReturn(authors);
 
         // when
         ResultActions result = mockMvc.perform(get("/v1/authors")
@@ -89,7 +89,7 @@ class QueryAuthorControllerTest {
         // given
         List<AuthorsResponseDto> authors = new ArrayList<>();
         for (long i = 1L; i <= 10L; i++) {
-            authors.add(new AuthorsResponseDto(i, "저자" + 1, null));
+            authors.add(new AuthorsResponseDto(i, "저자" + i, null));
         }
 
         Page<AuthorsResponseDto> page = new PageImpl<>(
@@ -97,21 +97,21 @@ class QueryAuthorControllerTest {
                 PageRequest.of(0, 5),
                 authors.size()
         );
-        Mockito.when(queryAuthorService.findAllForManager(any())).thenReturn(page);
+        Mockito.when(service.findAllForManager(any())).thenReturn(page);
 
         // when
         ResultActions result = mockMvc.perform(get("/v1/authors/manager")
                 .param("page", "0")
                 .param("size", "5")
                 .contentType(MediaType.APPLICATION_JSON));
-        Mockito.when(queryAuthorService.findAllForManager(PageRequest.of(0, 5))).thenReturn(page);
+        Mockito.when(service.findAllForManager(PageRequest.of(0, 5))).thenReturn(page);
 
         // then
         result.andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
 
-        verify(queryAuthorService, times(1)).findAllForManager(PageRequest.of(0, 5));
+        verify(service, times(1)).findAllForManager(PageRequest.of(0, 5));
 
         // docs
         result.andDo(document(
