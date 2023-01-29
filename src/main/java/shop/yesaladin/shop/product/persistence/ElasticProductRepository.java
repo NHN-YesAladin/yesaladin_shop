@@ -33,7 +33,7 @@ public class ElasticProductRepository implements SearchProductRepository {
     private static final String CATEGORIES_ID = "categories.id";
     private static final String CATEGORIES_NAME = "categories.name";
     private static final String TITLE = "title^2";
-    private static final String CONTENT = "content^3";
+    private static final String CONTENT = "contents^3";
     private static final String DESCRIPTION = "description^2";
     private static final String ISBN = "ISBN";
     private static final String AUTHORS_NAME = "authors.name";
