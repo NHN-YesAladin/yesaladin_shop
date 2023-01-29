@@ -28,7 +28,8 @@ import shop.yesaladin.shop.member.service.inter.CommandMemberService;
 /**
  * 회원에 관련된 RestController 입니다.
  *
- * @author : 송학현, 최예린
+ * @author : 송학현
+ * @author 최예린
  * @since : 1.0
  */
 @Slf4j

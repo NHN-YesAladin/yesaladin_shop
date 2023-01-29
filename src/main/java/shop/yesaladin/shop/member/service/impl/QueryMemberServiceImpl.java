@@ -12,6 +12,7 @@ import shop.yesaladin.shop.member.domain.repository.QueryMemberRoleRepository;
 import shop.yesaladin.shop.member.dto.MemberDto;
 import shop.yesaladin.shop.member.dto.MemberGradeQueryResponseDto;
 import shop.yesaladin.shop.member.dto.MemberLoginResponseDto;
+import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 
@@ -140,6 +141,16 @@ public class QueryMemberServiceImpl implements QueryMemberService {
     @Override
     public MemberGradeQueryResponseDto getMemberGrade(String loginId) {
         return MemberGradeQueryResponseDto.fromEntity(queryMemberRepository.findMemberByLoginId(
+                        loginId)
+                .orElseThrow(() -> new MemberNotFoundException("Member Loginid : " + loginId)));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public MemberQueryResponseDto getByLoginId(String loginId) {
+        return MemberQueryResponseDto.fromEntity(queryMemberRepository.findMemberByLoginId(
                         loginId)
                 .orElseThrow(() -> new MemberNotFoundException("Member Loginid : " + loginId)));
     }

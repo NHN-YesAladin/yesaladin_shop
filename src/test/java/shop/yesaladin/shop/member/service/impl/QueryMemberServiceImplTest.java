@@ -15,6 +15,7 @@ import shop.yesaladin.shop.member.domain.repository.QueryMemberRoleRepository;
 import shop.yesaladin.shop.member.dto.MemberDto;
 import shop.yesaladin.shop.member.dto.MemberGradeQueryResponseDto;
 import shop.yesaladin.shop.member.dto.MemberLoginResponseDto;
+import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 
@@ -292,5 +293,45 @@ class QueryMemberServiceImplTest {
         //then
         assertThat(result.getGradeEn()).isEqualTo(memberGrade.name());
         assertThat(result.getGradeKo()).isEqualTo(memberGrade.getName());
+    }
+
+    @Test
+    void getByLoginId_fail_memberNotFound() {
+        //given
+        String loginId = "user@1";
+
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
+                .thenThrow(MemberNotFoundException.class);
+
+        //when, then
+        assertThatThrownBy(() -> service.getByLoginId(loginId)).isInstanceOf(
+                MemberNotFoundException.class);
+    }
+
+    @Test
+    void getByLoginId_success() {
+        //given
+        String loginId = "user@1";
+        Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
+
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
+                .thenReturn(Optional.of(member));
+
+        //when
+        MemberQueryResponseDto result = service.getByLoginId(loginId);
+
+        //then
+        assertThat(result.getId()).isEqualTo(member.getId());
+        assertThat(result.getNickname()).isEqualTo(member.getNickname());
+        assertThat(result.getName()).isEqualTo(member.getName());
+        assertThat(result.getLoginId()).isEqualTo(member.getLoginId());
+        assertThat(result.getPassword()).isEqualTo(member.getPassword());
+        assertThat(result.getBirthYear()).isEqualTo(member.getBirthYear());
+        assertThat(result.getBirthMonth()).isEqualTo(member.getBirthMonth());
+        assertThat(result.getBirthDay()).isEqualTo(member.getBirthDay());
+        assertThat(result.getEmail()).isEqualTo(member.getEmail());
+        assertThat(result.getSignUpDate()).isEqualTo(member.getSignUpDate());
+        assertThat(result.getGrade()).isEqualTo(member.getMemberGrade().getName());
+        assertThat(result.getGender()).isEqualTo(member.getMemberGenderCode().getGender() == 1 ? "남" : "여");
     }
 }

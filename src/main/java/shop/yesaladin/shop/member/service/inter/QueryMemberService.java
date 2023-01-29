@@ -3,6 +3,7 @@ package shop.yesaladin.shop.member.service.inter;
 import shop.yesaladin.shop.member.dto.MemberDto;
 import shop.yesaladin.shop.member.dto.MemberGradeQueryResponseDto;
 import shop.yesaladin.shop.member.dto.MemberLoginResponseDto;
+import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
 
 
 /**
@@ -103,4 +104,14 @@ public interface QueryMemberService {
      * @since 1.0
      */
     MemberGradeQueryResponseDto getMemberGrade(String loginId);
+
+    /**
+     * 회원의 정보를 가져옵니다.
+     *
+     * @param loginId 회원의 아이디
+     * @return 회원 정보
+     * @author 최예린
+     * @since 1.0
+     */
+    MemberQueryResponseDto getByLoginId(String loginId);
 }
