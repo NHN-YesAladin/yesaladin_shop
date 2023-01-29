@@ -92,7 +92,11 @@ public class QueryDslProductRepository implements QueryProductRepository {
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        return new PageImpl<>(products, pageable, products.size());
+        Long totalCount = queryFactory.select(product.count())
+                .from(product)
+                .fetchFirst();
+
+        return new PageImpl<>(products, pageable, totalCount);
     }
 
     /**
@@ -125,7 +129,11 @@ public class QueryDslProductRepository implements QueryProductRepository {
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        return new PageImpl<>(products, pageable, products.size());
+        Long totalCount = queryFactory.select(product.count())
+                .from(product)
+                .fetchFirst();
+
+        return new PageImpl<>(products, pageable, totalCount);
     }
 
     /**
@@ -149,7 +157,11 @@ public class QueryDslProductRepository implements QueryProductRepository {
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        return new PageImpl<>(products, pageable, products.size());
+        Long totalCount = queryFactory.select(product.count())
+                .from(product)
+                .fetchFirst();
+
+        return new PageImpl<>(products, pageable, totalCount);
     }
 
     /**
@@ -182,7 +194,11 @@ public class QueryDslProductRepository implements QueryProductRepository {
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        return new PageImpl<>(products, pageable, products.size());
+        Long totalCount = queryFactory.select(product.count())
+                .from(product)
+                .fetchFirst();
+
+        return new PageImpl<>(products, pageable, totalCount);
     }
 }
 

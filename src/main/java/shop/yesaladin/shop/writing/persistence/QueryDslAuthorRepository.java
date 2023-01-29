@@ -75,8 +75,14 @@ public class QueryDslAuthorRepository implements QueryAuthorRepository {
 
         List<Author> authors = queryFactory.select(author)
                 .from(author)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
 
-        return new PageImpl<>(authors, pageable, authors.size());
+        Long totalCount = queryFactory.select(author.count())
+                .from(author)
+                .fetchFirst();
+
+        return new PageImpl<>(authors, pageable, totalCount);
     }
 }

@@ -71,6 +71,6 @@ public class QueryAuthorServiceImpl implements QueryAuthorService {
             ));
         }
 
-        return new PageImpl<>(authors, pageable, authors.size());
+        return new PageImpl<>(authors, pageable, page.getTotalElements());
     }
 }
