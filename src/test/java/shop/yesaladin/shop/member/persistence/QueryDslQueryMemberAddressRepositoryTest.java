@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
-import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
 
 @Transactional
 @SpringBootTest
@@ -59,7 +58,7 @@ class QueryDslQueryMemberAddressRepositoryTest {
     @Test
     void findByMember() {
         //when
-        List<MemberAddress> memberAddressList = queryMemberAddressRepository.findByMember(member);
+        List<MemberAddress> memberAddressList = queryMemberAddressRepository.findByLoginId(member);
 
         //then
         assertThat(memberAddressList).isEmpty();

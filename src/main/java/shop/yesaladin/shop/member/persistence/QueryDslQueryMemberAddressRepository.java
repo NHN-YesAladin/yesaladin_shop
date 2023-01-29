@@ -35,12 +35,13 @@ public class QueryDslQueryMemberAddressRepository implements QueryMemberAddressR
     }
 
     @Override
-    public List<MemberAddress> findByMember(Member member) {
+    public List<MemberAddress> findByLoginId(Member member) {
         QMemberAddress memberAddress = QMemberAddress.memberAddress;
 
         return queryFactory.select(memberAddress)
                 .from(memberAddress)
                 .where(memberAddress.member.eq(member).and(memberAddress.isDeleted.isFalse()))
+                .orderBy(memberAddress.isDefault.asc())
                 .fetch();
     }
 

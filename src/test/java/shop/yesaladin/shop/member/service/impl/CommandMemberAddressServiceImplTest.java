@@ -19,7 +19,7 @@ import shop.yesaladin.shop.member.domain.repository.CommandMemberAddressReposito
 import shop.yesaladin.shop.member.domain.repository.QueryMemberAddressRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
 import shop.yesaladin.shop.member.dto.MemberAddressCreateRequestDto;
-import shop.yesaladin.shop.member.dto.MemberAddressCommandResponseDto;
+import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
 import shop.yesaladin.shop.member.exception.AlreadyRegisteredUpToLimit;
 import shop.yesaladin.shop.member.exception.AlreadyDeletedAddressException;
@@ -109,7 +109,7 @@ class CommandMemberAddressServiceImplTest {
                 .thenReturn(1L);
         Mockito.when(commandMemberAddressRepository.save(any())).thenReturn(memberAddress);
 
-        MemberAddressCommandResponseDto actual = commandMemberAddressService.save(loginId, request);
+        MemberAddressResponseDto actual = commandMemberAddressService.save(loginId, request);
 
         assertThat(actual.getAddress()).isEqualTo(address);
         assertThat(actual.getIsDefault()).isEqualTo(isDefault);
@@ -156,7 +156,7 @@ class CommandMemberAddressServiceImplTest {
         )).thenReturn(
                 Optional.of(memberAddress));
 
-        MemberAddressCommandResponseDto result = commandMemberAddressService.markAsDefault(
+        MemberAddressResponseDto result = commandMemberAddressService.markAsDefault(
                 loginId,
                 addressId
         );

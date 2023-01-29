@@ -31,7 +31,7 @@ public interface QueryMemberAddressRepository {
      * @author 최예린
      * @since 1.0
      */
-    List<MemberAddress> findByMember(Member member);
+    List<MemberAddress> findByLoginId(Member member);
 
     /**
      * 배송지 id를 통해 배송지를 조회합니다.

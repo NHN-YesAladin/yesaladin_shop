@@ -8,7 +8,7 @@ import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.member.domain.repository.CommandMemberAddressRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberAddressRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
-import shop.yesaladin.shop.member.dto.MemberAddressCommandResponseDto;
+import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
 import shop.yesaladin.shop.member.dto.MemberAddressCreateRequestDto;
 import shop.yesaladin.shop.member.exception.AlreadyRegisteredUpToLimit;
 import shop.yesaladin.shop.member.exception.MemberAddressNotFoundException;
@@ -34,23 +34,25 @@ public class CommandMemberAddressServiceImpl implements CommandMemberAddressServ
      */
     @Override
     @Transactional
-    public MemberAddressCommandResponseDto save(
+    public MemberAddressResponseDto save(
             String loginId,
             MemberAddressCreateRequestDto request
     ) {
         Member member = tryGetMemberById(loginId);
+        checkMemberAddressCountLimitByLoginId(loginId);
 
         MemberAddress newMemberAddress = request.toEntity(member);
-
-        checkMemberAddressCountLimitByloginId(loginId);
+        if (newMemberAddress.isDefault()) {
+            commandMemberAddressRepository.updateIsDefaultToFalseByLoginId(loginId);
+        }
 
         MemberAddress savedMemberAddress = commandMemberAddressRepository.save(newMemberAddress);
 
-        return MemberAddressCommandResponseDto.fromEntity(savedMemberAddress);
+        return MemberAddressResponseDto.fromEntity(savedMemberAddress);
     }
 
-    private void checkMemberAddressCountLimitByloginId(String loginId) {
-        if(queryMemberAddressRepository.countByLoginId(loginId) == 10) {
+    private void checkMemberAddressCountLimitByLoginId(String loginId) {
+        if (queryMemberAddressRepository.countByLoginId(loginId) == 10) {
             throw new AlreadyRegisteredUpToLimit(loginId);
         }
     }
@@ -60,7 +62,7 @@ public class CommandMemberAddressServiceImpl implements CommandMemberAddressServ
      */
     @Override
     @Transactional
-    public MemberAddressCommandResponseDto markAsDefault(String loginId, long addressId) {
+    public MemberAddressResponseDto markAsDefault(String loginId, long addressId) {
         MemberAddress memberAddress = tryGetMemberAddressByMemberIdAndMemberAddressId(
                 loginId,
                 addressId
@@ -70,7 +72,7 @@ public class CommandMemberAddressServiceImpl implements CommandMemberAddressServ
 
         memberAddress.markAsDefault();
 
-        return MemberAddressCommandResponseDto.fromEntity(memberAddress);
+        return MemberAddressResponseDto.fromEntity(memberAddress);
     }
 
     /**

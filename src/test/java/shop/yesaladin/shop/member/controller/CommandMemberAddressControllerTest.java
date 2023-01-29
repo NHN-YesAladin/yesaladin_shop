@@ -41,7 +41,7 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import shop.yesaladin.shop.member.dto.MemberAddressCommandResponseDto;
+import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
 import shop.yesaladin.shop.member.dto.MemberAddressCreateRequestDto;
 import shop.yesaladin.shop.member.exception.AlreadyRegisteredUpToLimit;
 import shop.yesaladin.shop.member.exception.AlreadyDeletedAddressException;
@@ -227,8 +227,8 @@ class CommandMemberAddressControllerTest {
 
         Map<String, Object> request = Map.of("address", address, "isDefault", isDefault);
 
-        MemberAddressCommandResponseDto response = ReflectionUtils.newInstance(
-                MemberAddressCommandResponseDto.class,
+        MemberAddressResponseDto response = ReflectionUtils.newInstance(
+                MemberAddressResponseDto.class,
                 addressId,
                 address,
                 isDefault,
@@ -326,8 +326,8 @@ class CommandMemberAddressControllerTest {
         long addressId = 1L;
         String loginId = "user@1";
 
-        MemberAddressCommandResponseDto response = ReflectionUtils.newInstance(
-                MemberAddressCommandResponseDto.class,
+        MemberAddressResponseDto response = ReflectionUtils.newInstance(
+                MemberAddressResponseDto.class,
                 addressId,
                 address,
                 true,
