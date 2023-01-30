@@ -15,8 +15,8 @@ import javax.transaction.Transactional;
  * @author 이수정
  * @since 1.0
  */
-@Service
 @RequiredArgsConstructor
+@Service
 public class CommandFileServiceImpl implements CommandFileService {
 
     private final CommandFileRepository commandFileRepository;

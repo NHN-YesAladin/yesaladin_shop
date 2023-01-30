@@ -17,8 +17,8 @@ import java.net.URISyntaxException;
  * @author 이수정
  * @since 1.0
  */
-@CrossOrigin(origins = {"http://localhost:9090", "https://www.yesaladin.shop"})
 @RequiredArgsConstructor
+@CrossOrigin(origins = {"http://localhost:9090", "https://www.yesaladin.shop", "https://test.yesaladin.shop"})
 @RestController
 @RequestMapping("/v1/authors")
 public class CommandAuthorController {
@@ -55,3 +55,4 @@ public class CommandAuthorController {
         return ResponseEntity.ok().body(author);
     }
 }
+

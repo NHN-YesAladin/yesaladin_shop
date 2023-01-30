@@ -3,7 +3,6 @@ package shop.yesaladin.shop.publish.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 
@@ -14,7 +13,6 @@ import javax.validation.constraints.NotBlank;
  * @since 1.0
  */
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class PublisherRequestDto {

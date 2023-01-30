@@ -26,7 +26,6 @@ import java.util.UUID;
  * @author 이수정
  * @since 1.0
  */
-@Slf4j
 @RequiredArgsConstructor
 @Service
 public class FileStorageServiceImpl implements FileStorageService {

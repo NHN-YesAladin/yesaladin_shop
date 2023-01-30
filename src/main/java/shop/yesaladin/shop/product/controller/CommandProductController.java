@@ -1,7 +1,6 @@
 package shop.yesaladin.shop.product.controller;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import shop.yesaladin.shop.product.dto.ProductCreateDto;
@@ -19,9 +18,8 @@ import java.net.URISyntaxException;
  * @author 이수정
  * @since 1.0
  */
-@Slf4j
-@RestController
 @RequiredArgsConstructor
+@RestController
 @RequestMapping("/v1/products")
 public class CommandProductController {
 

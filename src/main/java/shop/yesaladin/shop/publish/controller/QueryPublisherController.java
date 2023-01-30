@@ -3,7 +3,6 @@ package shop.yesaladin.shop.publish.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,8 +19,8 @@ import java.util.List;
  * @author 이수정
  * @since 1.0
  */
-@RestController
 @RequiredArgsConstructor
+@RestController
 @RequestMapping("/v1/publishers")
 public class QueryPublisherController {
 
@@ -35,8 +34,8 @@ public class QueryPublisherController {
      * @since 1.0
      */
     @GetMapping
-    public ResponseEntity<List<PublisherResponseDto>> getPublishers() {
-        return ResponseEntity.ok().body(queryPublisherService.findAll());
+    public List<PublisherResponseDto> getPublishers() {
+        return queryPublisherService.findAll();
     }
 
     /**

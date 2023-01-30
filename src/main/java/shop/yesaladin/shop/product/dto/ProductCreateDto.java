@@ -3,7 +3,6 @@ package shop.yesaladin.shop.product.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.product.domain.model.*;
@@ -24,7 +23,6 @@ import java.util.Objects;
  * @since 1.0
  */
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductCreateDto {

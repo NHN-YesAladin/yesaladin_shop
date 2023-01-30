@@ -30,7 +30,7 @@ class JpaProductRepositoryTest {
     private EntityManager entityManager;
 
     @Autowired
-    private JpaProductRepository jpaProductRepository;
+    private JpaCommandProductRepository jpaProductRepository;
 
     private Product product;
     private SubscribeProduct subscribeProduct;

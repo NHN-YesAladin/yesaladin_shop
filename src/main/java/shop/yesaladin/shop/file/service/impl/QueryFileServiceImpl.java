@@ -15,8 +15,8 @@ import shop.yesaladin.shop.file.service.inter.QueryFileService;
  * @author 이수정
  * @since 1.0
  */
-@Service
 @RequiredArgsConstructor
+@Service
 public class QueryFileServiceImpl implements QueryFileService {
 
     private final QueryFileRepository queryFileRepository;

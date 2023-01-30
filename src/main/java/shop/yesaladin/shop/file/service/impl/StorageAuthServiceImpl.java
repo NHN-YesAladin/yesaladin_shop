@@ -19,7 +19,6 @@ import shop.yesaladin.shop.file.service.inter.StorageAuthService;
  * @author 이수정
  * @since 1.0
  */
-@Slf4j
 @RequiredArgsConstructor
 @Service
 public class StorageAuthServiceImpl implements StorageAuthService {
