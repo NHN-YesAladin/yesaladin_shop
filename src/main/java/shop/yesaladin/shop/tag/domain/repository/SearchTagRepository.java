@@ -1,6 +1,7 @@
 package shop.yesaladin.shop.tag.domain.repository;
 
 import java.util.List;
+import shop.yesaladin.shop.tag.dto.SearchedTagResponseDto;
 import shop.yesaladin.shop.tag.dto.TagsResponseDto;
 
 /**
@@ -19,5 +20,5 @@ public interface SearchTagRepository {
      * @author : 김선홍
      * @since : 1.0
      */
-    List<TagsResponseDto> searchTagByName(String name);
+    SearchedTagResponseDto searchTagByName(String name, int offset, int size);
 }

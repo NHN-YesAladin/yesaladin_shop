@@ -8,7 +8,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import shop.yesaladin.shop.tag.domain.repository.SearchTagRepository;
-import shop.yesaladin.shop.tag.dto.TagsResponseDto;
+import shop.yesaladin.shop.tag.dto.SearchTagRequestDto;
+import shop.yesaladin.shop.tag.dto.SearchedTagResponseDto;
+import shop.yesaladin.shop.tag.dto.SearchedTagResponseDto.SearchedTagDto;
 
 class SearchTagServiceImplTest {
 
@@ -27,16 +29,21 @@ class SearchTagServiceImplTest {
     @DisplayName("이름으로 검색 테스트")
     void testSearchTagByName() {
         //given
-        TagsResponseDto responseDto = new TagsResponseDto(ID, NAME);
-        Mockito.when(searchTagRepository.searchTagByName(NAME)).thenReturn(List.of(responseDto));
+        SearchedTagDto dummy = new SearchedTagDto(ID, NAME);
+        Mockito.when(searchTagRepository.searchTagByName(NAME, 0, 1))
+                .thenReturn(SearchedTagResponseDto.builder()
+                        .count(1L)
+                        .searchedTagDtoList(List.of(dummy))
+                        .build());
+        SearchTagRequestDto requestDto = new SearchTagRequestDto(NAME, 0, 1);
 
         //when
-        List<TagsResponseDto> results = service.searchTagByName(NAME);
+        SearchedTagResponseDto results = service.searchTagByName(requestDto);
 
         //then
-        assertThat(results).isNotEmpty();
-        assertThat(results).hasSize(1);
-        assertThat(results.get(0).getId()).isEqualTo(1);
-        assertThat(results.get(0).getName()).isEqualTo(NAME);
+        assertThat(results.getCount()).isEqualTo(1);
+        assertThat(results.getSearchedTagDtoList()).hasSize(1);
+        assertThat(results.getSearchedTagDtoList().get(0).getId()).isEqualTo(1);
+        assertThat(results.getSearchedTagDtoList().get(0).getName()).isEqualTo(NAME);
     }
 }
