@@ -32,7 +32,7 @@ class SearchAuthorServiceImplTest {
                 .thenReturn(
                         SearchedAuthorResponseDto.builder()
                                 .count(1L)
-                                .searchedAuthorDtoList(List.of(new SearchedAuthorDto(1L, "author")))
+                                .searchedAuthorDtoList(List.of(new SearchedAuthorDto(1L, "author", "loginId")))
                                 .build());
         SearchedAuthorResponseDto result = searchAuthorService.searchAuthorByName(new SearchAuthorRequestDto("name", 0, 1));
 
@@ -40,5 +40,6 @@ class SearchAuthorServiceImplTest {
         assertThat(result.getSearchedAuthorDtoList()).hasSize(1);
         assertThat(result.getSearchedAuthorDtoList().get(0).getId()).isEqualTo(1);
         assertThat(result.getSearchedAuthorDtoList().get(0).getName()).isEqualTo("author");
+        assertThat(result.getSearchedAuthorDtoList().get(0).getLoginId()).isEqualTo("loginId");
     }
 }

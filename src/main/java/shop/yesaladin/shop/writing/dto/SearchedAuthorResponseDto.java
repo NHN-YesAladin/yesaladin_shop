@@ -24,11 +24,13 @@ public class SearchedAuthorResponseDto {
 
         Long id;
         String name;
+        String loginId;
 
         public static SearchedAuthorDto fromIndex(SearchedAuthor searchedAuthor) {
             return SearchedAuthorDto.builder()
                     .id(searchedAuthor.getId())
                     .name(searchedAuthor.getName())
+                    .loginId(searchedAuthor.getLoginId())
                     .build();
         }
     }

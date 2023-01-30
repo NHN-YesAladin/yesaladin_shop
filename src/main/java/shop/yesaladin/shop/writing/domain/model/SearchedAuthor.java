@@ -15,6 +15,9 @@ public class SearchedAuthor {
     @Field
     Long id;
 
-    @Field
+    @Field(name = "name")
     String name;
+
+    @Field(name = "loginId")
+    String loginId;
 }

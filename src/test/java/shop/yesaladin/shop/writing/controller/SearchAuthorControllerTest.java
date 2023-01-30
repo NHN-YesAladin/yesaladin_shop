@@ -89,7 +89,7 @@ class SearchAuthorControllerTest {
         Mockito.when(service.searchAuthorByName(any()))
                 .thenReturn(new SearchedAuthorResponseDto(
                         1L,
-                        List.of(new SearchedAuthorDto(1L, "author"))
+                        List.of(new SearchedAuthorDto(1L, "author", "loginId"))
                 ));
 
         //when
@@ -103,6 +103,7 @@ class SearchAuthorControllerTest {
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("$.count", equalTo(1)))
                 .andExpect(jsonPath("$.searchedAuthorDtoList[0].id", equalTo(1)))
-                .andExpect(jsonPath("$.searchedAuthorDtoList[0].name", equalTo("author")));
+                .andExpect(jsonPath("$.searchedAuthorDtoList[0].name", equalTo("author")))
+                .andExpect(jsonPath("$.searchedAuthorDtoList[0].loginId", equalTo("loginId")));
     }
 }
