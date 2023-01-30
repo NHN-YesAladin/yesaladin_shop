@@ -20,6 +20,7 @@ import shop.yesaladin.shop.category.dto.CategoryRequestDto;
 import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 import shop.yesaladin.shop.category.dto.ResultCodeDto;
 import shop.yesaladin.shop.category.service.inter.CommandCategoryService;
+import shop.yesaladin.shop.common.dto.ResponseDto;
 
 /**
  * 카테고리 생성,수정,삭제를 api를 통하여 동작하기 위한 rest controller
@@ -47,6 +48,7 @@ public class CommandCategoryController {
      * @return ResponseEntity로 카테고리 생성 성공시 생성된 카테고리의 일부 데이터를 반환
      */
     @PostMapping
+    @ResponseStatus(HttpStatus.OK)
     public CategoryResponseDto createCategory(
             @Valid @RequestBody CategoryRequestDto categoryRequest
     ) {
@@ -72,10 +74,22 @@ public class CommandCategoryController {
         return ResponseEntity.ok(categoryResponseDto);
     }
 
+    /**
+     * 카테고리 순서 수정 요청을 처리하는 기능
+     *  최악의 경우 모든 카테고리를 수정해야하기 때문에 인자가 List 형식이다.
+     *
+     * @param requestList 수정을 요청하는 카테고리 리스트
+     * @return 결과를 출력해주는 String result를 가지는  객체
+     */
     @PutMapping("/order")
-    public ResultCodeDto modifyCategoriesOrder(@Valid @RequestBody List<CategoryModifyRequestDto> responseList) {
-        commandCategoryService.updateOrder(responseList);
-        return new ResultCodeDto("Success");
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseDto<ResultCodeDto> modifyCategoriesOrder(@Valid @RequestBody List<CategoryModifyRequestDto> requestList) {
+        commandCategoryService.updateOrder(requestList);
+        return ResponseDto.<ResultCodeDto>builder()
+                .status(HttpStatus.OK)
+                .success(true)
+                .data(new ResultCodeDto("Success"))
+                .build();
     }
 
     /**

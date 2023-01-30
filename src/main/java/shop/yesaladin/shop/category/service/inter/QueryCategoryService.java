@@ -3,7 +3,6 @@ package shop.yesaladin.shop.category.service.inter;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 
 /**
