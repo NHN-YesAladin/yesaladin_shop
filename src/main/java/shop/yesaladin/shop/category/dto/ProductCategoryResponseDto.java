@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import shop.yesaladin.shop.category.domain.model.Category;
-import shop.yesaladin.shop.category.domain.model.ProductCategory;
 import shop.yesaladin.shop.product.domain.model.Product;
 
 /**
@@ -24,7 +23,7 @@ import shop.yesaladin.shop.product.domain.model.Product;
 public class ProductCategoryResponseDto {
 
     private Long productId;
-    private String ISBN;
+    private String isbn;
     private String title;
 
     private CategoryResponseDto categoryResponseDto;
@@ -40,7 +39,7 @@ public class ProductCategoryResponseDto {
         return ProductCategoryResponseDto.builder()
                 .categoryResponseDto(CategoryResponseDto.fromEntity(category))
                 .productId(product.getId())
-                .ISBN(product.getISBN())
+                .isbn(product.getISBN())
                 .title(product.getTitle()).build();
     }
 }
