@@ -79,8 +79,7 @@ class QueryCategoryServiceTest {
 
         //then
         assertThat(categoryResponseDtoPage.getPageable()).isEqualTo(pageRequest);
-        assertThat(categoryResponseDtoPage.getContent().size()).isEqualTo(categoryPage.getContent()
-                .size());
+        assertThat(categoryResponseDtoPage.getContent()).hasSameSizeAs(categoryPage.getContent());
 
         verify(
                 queryCategoryRepository,

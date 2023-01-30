@@ -1,7 +1,7 @@
 package shop.yesaladin.shop.category.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,7 +23,6 @@ import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
 import shop.yesaladin.shop.product.dummy.DummyFile;
 import shop.yesaladin.shop.product.dummy.DummyProduct;
-import shop.yesaladin.shop.product.dummy.DummyPublisher;
 import shop.yesaladin.shop.product.dummy.DummySubscribeProduct;
 import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
 import shop.yesaladin.shop.publish.domain.model.Publisher;
@@ -104,18 +103,14 @@ class JpaProductCategoryRepositoryTest {
         entityManager.persist(productCategory);
 
         // when
-        repository.deleteByPk(new Pk(
+        Pk pk = new Pk(
                 productCategory.getCategory().getId(),
                 productCategory.getProduct().getId()
-        ));
+        );
+        repository.deleteByPk(pk);
 
         // then
-        assertThatThrownBy(() -> repository.findByPk(new Pk(
-                        productCategory.getCategory().getId(),
-                        productCategory.getProduct().getId()
-                ))
-                .orElseThrow(() -> new ProductCategoryNotFoundException(productCategory.getPk()))).isInstanceOf(
-                ProductCategoryNotFoundException.class);
+        assertThatCode(() -> repository.findByPk(pk)).doesNotThrowAnyException();
     }
 
     @Test
@@ -138,6 +133,6 @@ class JpaProductCategoryRepositoryTest {
         Page<ProductCategory> productCategoryPage = repository.findAll(pageRequest);
 
         // then
-        assertThat(productCategoryPage.getContent().size()).isEqualTo(size);
+        assertThat(productCategoryPage.getContent()).hasSize(size);
     }
 }
