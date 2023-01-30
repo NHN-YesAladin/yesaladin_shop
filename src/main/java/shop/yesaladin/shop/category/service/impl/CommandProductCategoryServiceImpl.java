@@ -9,6 +9,7 @@ import shop.yesaladin.shop.category.domain.repository.QueryCategoryRepository;
 import shop.yesaladin.shop.category.dto.ProductCategoryIdDto;
 import shop.yesaladin.shop.category.dto.ProductCategoryResponseDto;
 import shop.yesaladin.shop.category.service.inter.CommandProductCategoryService;
+import shop.yesaladin.shop.product.domain.model.Product;
 
 /**
  * @author 배수한
@@ -33,7 +34,9 @@ public class CommandProductCategoryServiceImpl implements CommandProductCategory
     }
 
     @Override
-    public void delete(Pk pk) {
-
+    public void deleteByProduct(Product product) {
+        commandProductCategoryRepository.deleteByProduct(product);
     }
+
+
 }

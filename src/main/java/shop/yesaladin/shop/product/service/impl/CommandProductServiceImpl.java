@@ -156,7 +156,7 @@ public class CommandProductServiceImpl implements CommandProductService {
             }
         }
 
-        // TODO: add Category
+        // Category
         List<Long> categoryIds = dto.getCategories();
         if (Objects.nonNull(categoryIds)) {
             List<Category> categories = dto.getCategories().stream().map(id -> {
@@ -242,7 +242,19 @@ public class CommandProductServiceImpl implements CommandProductService {
             ));
         }
 
-        // TODO: add Category
+        // Category
+        commandProductCategoryService.deleteByProduct(product);
+
+        List<Category> categories = dto.getCategories().stream().map(catId -> {
+            CategoryResponseDto response = queryCategoryService.findCategoryById(catId);
+            Category parentCategory = queryCategoryService.findCategoryById(response.getParentId())
+                    .toEntity(null);
+            return response.toEntity(parentCategory);
+        }).collect(Collectors.toList());
+
+        for (Category category : categories) {
+            commandProductCategoryService.register(ProductCategory.create(product, category));
+        }
 
         // Product
         product = dto.changeProduct(

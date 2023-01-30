@@ -86,7 +86,7 @@ public class ProductUpdateDto {
     private List<Long> tags;
 
     // 카테고리
-//    private List<String> categories;
+    private List<Long> categories;
 
     // 강제 품절
     private Boolean isForcedOutOfStock;

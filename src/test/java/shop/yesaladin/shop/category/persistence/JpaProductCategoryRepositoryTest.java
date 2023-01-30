@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -102,12 +103,12 @@ class JpaProductCategoryRepositoryTest {
     void deletedByPk() throws Exception {
         // given
         entityManager.persist(productCategory);
-
-        // when
         Pk pk = new Pk(
                 productCategory.getCategory().getId(),
                 productCategory.getProduct().getId()
         );
+
+        // when
         repository.deleteByPk(pk);
 
         // then
@@ -138,5 +139,25 @@ class JpaProductCategoryRepositoryTest {
 
         // then
         assertThat(productCategoryPage.getContent()).hasSize(size);
+    }
+
+    @Test
+    void deleteByProduct() throws Exception {
+        // given
+        entityManager.persist(productCategory);
+        Pk pk = new Pk(
+                productCategory.getCategory().getId(),
+                productCategory.getProduct().getId()
+        );
+
+        // when
+        repository.deleteByProduct(productCategory.getProduct());
+        entityManager.flush();
+        entityManager.clear();
+
+        // then
+        Optional<ProductCategory> byPk = repository.findByPk(pk);
+        assertThatCode(() -> byPk.orElseThrow(() -> new ProductCategoryNotFoundException(pk))).isInstanceOf(
+                ProductCategoryNotFoundException.class);
     }
 }

@@ -171,6 +171,8 @@ class CommandProductServiceImplTest {
         verify(commandPublishService, times(1)).register(any());
         verify(queryTagService, times(2)).findById(any());
         verify(commandProductTagService, times(2)).register(any());
+        verify(queryCategoryService, times(1)).findCategoryById(1L);
+        verify(queryCategoryService, times(1)).findCategoryById(2L);
         verify(queryCategoryService, times(2)).findCategoryById(100L);
         verify(commandProductCategoryService, times(2)).register(any());
     }
@@ -211,6 +213,13 @@ class CommandProductServiceImplTest {
         Mockito.when(queryTagService.findById(1L)).thenReturn(new TagResponseDto(1L, "아름다운"));
         Mockito.when(queryTagService.findById(2L)).thenReturn(new TagResponseDto(2L, "슬픈"));
 
+        Mockito.when(queryCategoryService.findCategoryById(1L))
+                .thenReturn(new CategoryResponseDto(1L, "영화", true, 1, 100L, "국내"));
+        Mockito.when(queryCategoryService.findCategoryById(2L))
+                .thenReturn(new CategoryResponseDto(2L, "소설", true, 1, 100L, "국내"));
+        Mockito.when(queryCategoryService.findCategoryById(100L))
+                .thenReturn(new CategoryResponseDto(100L, "국내", true, 1, null, null));
+
         Product updateProduct = DummyProduct.dummy(ID, ISBN, updateSubscribeProduct, updateThumbnailFile, updateEbookFile, totalDiscountRate);
         Mockito.when(commandProductRepository.save(any())).thenReturn(updateProduct);
 
@@ -235,6 +244,10 @@ class CommandProductServiceImplTest {
         verify(queryTagService, times(2)).findById(any());
         verify(commandProductTagService, times(2)).register(any());
         verify(commandProductRepository, times(1)).save(any());
+        verify(queryCategoryService, times(1)).findCategoryById(1L);
+        verify(queryCategoryService, times(1)).findCategoryById(2L);
+        verify(queryCategoryService, times(2)).findCategoryById(100L);
+        verify(commandProductCategoryService, times(2)).register(any());
     }
 
     @Test

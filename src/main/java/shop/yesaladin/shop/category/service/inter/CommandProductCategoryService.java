@@ -4,6 +4,7 @@ import shop.yesaladin.shop.category.domain.model.ProductCategory;
 import shop.yesaladin.shop.category.domain.model.ProductCategory.Pk;
 import shop.yesaladin.shop.category.dto.ProductCategoryIdDto;
 import shop.yesaladin.shop.category.dto.ProductCategoryResponseDto;
+import shop.yesaladin.shop.product.domain.model.Product;
 
 /**
  * @author 배수한
@@ -13,5 +14,5 @@ public interface CommandProductCategoryService {
 
     ProductCategoryResponseDto register(ProductCategory productCategory);
 
-    void delete(Pk pk);
+    void deleteByProduct(Product product);
 }
