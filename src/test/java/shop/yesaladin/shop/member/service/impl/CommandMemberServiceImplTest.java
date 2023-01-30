@@ -65,6 +65,7 @@ class CommandMemberServiceImplTest {
         String loginId = "loginId";
         String nickname = "nickname";
         String email = "test@test.com";
+        String phone = "01011112222";
         int roleId = 1;
         Role role = RoleDummy.dummyWithId();
 
@@ -78,6 +79,8 @@ class CommandMemberServiceImplTest {
         Mockito.when(queryMemberRepository.existsMemberByNickname(nickname))
                 .thenReturn(false);
         Mockito.when(queryMemberRepository.existsMemberByEmail(email))
+                .thenReturn(false);
+        Mockito.when(queryMemberRepository.existsMemberByPhone(phone))
                 .thenReturn(false);
 
         //when then
@@ -94,6 +97,7 @@ class CommandMemberServiceImplTest {
         String loginId = "loginId";
         String nickname = "nickname";
         String email = "test@test.com";
+        String phone = "01011112222";
         int roleId = 1;
         Role role = RoleDummy.dummyWithId();
 
@@ -108,6 +112,40 @@ class CommandMemberServiceImplTest {
                 .thenReturn(true);
         Mockito.when(queryMemberRepository.existsMemberByEmail(email))
                 .thenReturn(false);
+        Mockito.when(queryMemberRepository.existsMemberByPhone(phone))
+                .thenReturn(false);
+
+        //when then
+        assertThatThrownBy(() -> service.create(createDto))
+                .isInstanceOf(MemberProfileAlreadyExistException.class);
+
+        verify(commandMemberRoleRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("입력 받은 phone이 기존에 있는 경우 예외가 발생한다.")
+    void create_fail_whenPhoneDuplicated() throws Exception {
+        //given
+        String loginId = "loginId";
+        String nickname = "nickname";
+        String email = "test@test.com";
+        String phone = "01011112222";
+        int roleId = 1;
+        Role role = RoleDummy.dummyWithId();
+
+        MemberCreateRequestDto createDto = Mockito.mock(MemberCreateRequestDto.class);
+
+        Mockito.when(createDto.getPhone()).thenReturn(phone);
+
+        Mockito.when(queryRoleRepository.findById(roleId)).thenReturn(Optional.of(role));
+        Mockito.when(queryMemberRepository.existsMemberByLoginId(loginId))
+                .thenReturn(false);
+        Mockito.when(queryMemberRepository.existsMemberByNickname(nickname))
+                .thenReturn(false);
+        Mockito.when(queryMemberRepository.existsMemberByEmail(email))
+                .thenReturn(false);
+        Mockito.when(queryMemberRepository.existsMemberByPhone(phone))
+                .thenReturn(true);
 
         //when then
         assertThatThrownBy(() -> service.create(createDto))
@@ -123,6 +161,7 @@ class CommandMemberServiceImplTest {
         String loginId = "loginId";
         String nickname = "nickname";
         String email = "test@test.com";
+        String phone = "01011112222";
         int roleId = 1;
         Role role = RoleDummy.dummyWithId();
 
@@ -137,6 +176,8 @@ class CommandMemberServiceImplTest {
                 .thenReturn(false);
         Mockito.when(queryMemberRepository.existsMemberByEmail(email))
                 .thenReturn(true);
+        Mockito.when(queryMemberRepository.existsMemberByPhone(phone))
+                .thenReturn(false);
 
         //when then
         assertThatThrownBy(() -> service.create(createDto))
@@ -152,6 +193,7 @@ class CommandMemberServiceImplTest {
         String loginId = "loginId";
         String nickname = "nickname";
         String email = "test@test.com";
+
         int roleId = 1;
 
         MemberCreateRequestDto createDto = Mockito.mock(MemberCreateRequestDto.class);
