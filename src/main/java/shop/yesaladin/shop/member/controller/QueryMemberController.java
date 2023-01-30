@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import shop.yesaladin.shop.member.dto.MemberDto;
 import shop.yesaladin.shop.member.dto.MemberGradeQueryResponseDto;
 import shop.yesaladin.shop.member.dto.MemberProfileExistResponseDto;
 import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
@@ -14,9 +13,9 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 /**
  * 회원 조회에 관련된 RestController 입니다.
  *
- * @author : 송학현
+ * @author 송학현
  * @author 최예린
- * @since : 1.0
+ * @since 1.0
  */
 @RequiredArgsConstructor
 @RestController
@@ -30,8 +29,8 @@ public class QueryMemberController {
      *
      * @param loginId PathVariable로 넘어온 중복 체크 대상 loginId
      * @return loginId 중복 여부
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     @GetMapping("/checkId/{loginId}")
     public MemberProfileExistResponseDto existsLoginId(@PathVariable String loginId) {
@@ -43,8 +42,8 @@ public class QueryMemberController {
      *
      * @param nickname PathVariable로 넘어온 중복 체크 대상 nickname
      * @return nickname 중복 여부
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     @GetMapping("/checkNick/{nickname}")
     public MemberProfileExistResponseDto existsNickname(@PathVariable String nickname) {
@@ -56,8 +55,8 @@ public class QueryMemberController {
      *
      * @param email PathVariable로 넘어온 중복 체크 대상 email
      * @return email 중복 여부
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     @GetMapping("/checkEmail/{email}")
     public MemberProfileExistResponseDto existsEmail(@PathVariable String email) {
@@ -69,8 +68,8 @@ public class QueryMemberController {
      *
      * @param phone PathVariable로 넘어온 중복 체크 대상 phone
      * @return phone 중복 여부
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     @GetMapping("/checkPhone/{phone}")
     public MemberProfileExistResponseDto existsPhone(@PathVariable String phone) {

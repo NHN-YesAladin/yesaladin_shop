@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.member.service.impl;
 
-import java.time.LocalDate;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,8 +28,8 @@ import shop.yesaladin.shop.member.service.inter.CommandMemberService;
 /**
  * 회원 등록/수정/삭제용 서비스 구현체 입니다.
  *
- * @author : 송학현, 최예린
- * @since : 1.0
+ * @author 송학현, 최예린
+ * @since 1.0
  */
 @RequiredArgsConstructor
 @Service
@@ -42,12 +41,7 @@ public class CommandMemberServiceImpl implements CommandMemberService {
     private final CommandMemberRoleRepository commandMemberRoleRepository;
 
     /**
-     * 회원 등록을 위한 기능 입니다. 회원 등록시 ROLE_MEMBER 권한과 WHITE 회원 등급을 함께 등록합니다.
-     *
-     * @param createDto 회원 등록 요청 dto
-     * @return 등록된 회원 결과 dto
-     * @author : 송학현
-     * @since : 1.0
+     * {@inheritDoc}
      */
     @Transactional
     @Override
@@ -78,8 +72,8 @@ public class CommandMemberServiceImpl implements CommandMemberService {
      *
      * @param createDto 회원 등록 요청 dto
      * @throws MemberProfileAlreadyExistException loginId, nickname, email이 기존에 있다면 발생하는 예외입니다.
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     private void checkMemberProfileExist(MemberCreateRequestDto createDto) {
         if (queryMemberRepository.existsMemberByLoginId(createDto.getLoginId())) {

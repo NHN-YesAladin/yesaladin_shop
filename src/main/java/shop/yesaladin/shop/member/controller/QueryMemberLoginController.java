@@ -12,8 +12,8 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 /**
  * 회원의 login 처리를 위해 Auth 서버와 통신하는 API Controller 입니다.
  *
- * @author : 송학현
- * @since : 1.0
+ * @author 송학현
+ * @since 1.0
  */
 @RequiredArgsConstructor
 @RestController
@@ -27,8 +27,8 @@ public class QueryMemberLoginController {
      *
      * @param loginId 회원의 loginId
      * @return Auth 서버에서 필요한 회원의 정보와 권한 정보를 담은 DTO
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     @GetMapping("/login/{loginId}")
     public ResponseEntity<MemberLoginResponseDto> doLogin(@PathVariable String loginId) {

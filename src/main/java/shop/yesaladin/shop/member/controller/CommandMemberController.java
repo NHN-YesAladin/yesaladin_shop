@@ -28,9 +28,9 @@ import shop.yesaladin.shop.member.service.inter.CommandMemberService;
 /**
  * 회원에 관련된 RestController 입니다.
  *
- * @author : 송학현
+ * @author 송학현
  * @author 최예린
- * @since : 1.0
+ * @since 1.0
  */
 @Slf4j
 @RequiredArgsConstructor
@@ -45,8 +45,8 @@ public class CommandMemberController {
      *
      * @param createDto 회원 가입을 위한 요청 파라미터의 모음입니다.
      * @return ResponseEntity로 회원 등록 성공 이후 등록된 일부 데이터들을 반환합니다.
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     @PostMapping
     public ResponseEntity<MemberCreateResponseDto> signUpMember(@Valid @RequestBody MemberCreateRequestDto createDto)
@@ -110,8 +110,8 @@ public class CommandMemberController {
      *
      * @param loginId 회원 탈퇴 대상 loginId
      * @return 회원 탈퇴 결과
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     @DeleteMapping("/withdraw/{loginId}")
     @ResponseStatus(HttpStatus.OK)

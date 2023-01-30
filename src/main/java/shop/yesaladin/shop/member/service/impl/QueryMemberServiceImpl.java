@@ -19,9 +19,9 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 /**
  * 회원 조회용 서비스 구현체 입니다.
  *
- * @author : 송학현
+ * @author 송학현
  * @author 최예린
- * @since : 1.0
+ * @since 1.0
  */
 @Slf4j
 @RequiredArgsConstructor

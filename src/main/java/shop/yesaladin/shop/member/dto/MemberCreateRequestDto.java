@@ -15,8 +15,8 @@ import shop.yesaladin.shop.member.domain.model.MemberGrade;
 /**
  * 회원 등록을 위해 MemberController 에서 받는 요청 DTO 입니다.
  *
- * @author : 송학현
- * @since : 1.0
+ * @author 송학현
+ * @since 1.0
  */
 @Getter
 @NoArgsConstructor
@@ -61,8 +61,8 @@ public class MemberCreateRequestDto {
      * MemberCreateRequest DTO를 Member Entity로 변한하기 위한 메서드 입니다.
      *
      * @return RequestDto를 Entity로 변환된 결과 입니다.
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     public Member toEntity() {
         return Member.builder()
