@@ -150,8 +150,8 @@ class QueryDslProductRepositoryTest {
 
         // then
         assertThat(products).isNotNull();
-        assertThat(products.getTotalElements()).isEqualTo(1);
-        assertThat(products.getTotalPages()).isEqualTo(1);
+        assertThat(products.getTotalElements()).isEqualTo(2);
+        assertThat(products.getTotalPages()).isEqualTo(2);
         assertThat(products.getContent().get(0).getISBN()).isEqualTo(ISBN1);
         assertThat(products.getContent().get(0).getThumbnailFile()).isEqualTo(thumbnailFile1);
         assertThat(products.getContent().get(0).getEbookFile()).isEqualTo(ebookFile1);

@@ -3,7 +3,6 @@ package shop.yesaladin.shop.tag.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.tag.domain.model.ProductTag.Pk;
 import shop.yesaladin.shop.tag.domain.model.Tag;
@@ -15,7 +14,6 @@ import shop.yesaladin.shop.tag.domain.model.Tag;
  * @since 1.0
  */
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductTagResponseDto {

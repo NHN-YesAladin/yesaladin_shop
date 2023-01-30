@@ -22,8 +22,9 @@ import shop.yesaladin.shop.member.persistence.converter.MemberGradeCodeConverter
 /**
  * 회원의 엔티티 클래스 입니다.
  *
- * @author : 송학현, 최예린
- * @since : 1.0
+ * @author 송학현
+ * @author 최예린
+ * @since 1.0
  */
 @Getter
 @Builder
@@ -98,8 +99,8 @@ public class Member {
      *
      * @param compare 비교 대상 Member entity 입니다.
      * @return loginId 가 중복 인지에 대한 결과
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     public boolean isSameLoginId(Member compare) {
         return Objects.equals(this.loginId, compare.getLoginId());
@@ -110,8 +111,8 @@ public class Member {
      *
      * @param compare 비교 대상 Member entity 입니다.
      * @return nickname 이 중복 인지에 대한 결과
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     public boolean isSameNickname(Member compare) {
         return Objects.equals(this.nickname, compare.getNickname());
@@ -160,8 +161,8 @@ public class Member {
     /**
      * Member entity를 soft delete 하기 위한 기능 입니다.
      *
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     public void withdrawMember() {
         String deleteUniqueField = "" + this.id;

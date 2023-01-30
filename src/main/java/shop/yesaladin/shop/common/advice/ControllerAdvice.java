@@ -14,6 +14,8 @@ import shop.yesaladin.shop.common.exception.CustomJsonProcessingException;
 import shop.yesaladin.shop.common.exception.InvalidPeriodConditionException;
 import shop.yesaladin.shop.file.exception.FileNotFoundException;
 import shop.yesaladin.shop.member.exception.AlreadyBlockedMemberException;
+import shop.yesaladin.shop.member.exception.AlreadyDeletedAddressException;
+import shop.yesaladin.shop.member.exception.AlreadyRegisteredUpToLimit;
 import shop.yesaladin.shop.member.exception.AlreadyUnblockedMemberException;
 import shop.yesaladin.shop.member.exception.MemberAddressNotFoundException;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
@@ -22,14 +24,16 @@ import shop.yesaladin.shop.member.exception.MemberRoleNotFoundException;
 import shop.yesaladin.shop.point.exception.InvalidCodeParameterException;
 import shop.yesaladin.shop.point.exception.OverPointUseException;
 import shop.yesaladin.shop.product.exception.AlreadyDeletedProductException;
-import shop.yesaladin.shop.product.exception.AlreadyProductExistsException;
+import shop.yesaladin.shop.product.exception.ProductAlreadyExistsException;
 import shop.yesaladin.shop.product.exception.ProductNotFoundException;
 import shop.yesaladin.shop.product.exception.ProductSavingMethodCodeNotFoundException;
 import shop.yesaladin.shop.product.exception.ProductTypeCodeNotFoundException;
 import shop.yesaladin.shop.product.exception.SubscribeProductNotFoundException;
 import shop.yesaladin.shop.product.exception.TotalDiscountRateNotExistsException;
 import shop.yesaladin.shop.publish.exception.PublishNotFoundException;
+import shop.yesaladin.shop.publish.exception.PublisherAlreadyExistsException;
 import shop.yesaladin.shop.publish.exception.PublisherNotFoundException;
+import shop.yesaladin.shop.tag.exception.TagAlreadyExistsException;
 import shop.yesaladin.shop.tag.exception.TagNotFoundException;
 import shop.yesaladin.shop.writing.exception.AuthorNotFoundException;
 import shop.yesaladin.shop.writing.exception.WritingNotFoundException;
@@ -75,9 +79,10 @@ public class ControllerAdvice {
             InvalidCodeParameterException.class,
             InvalidPeriodConditionException.class,
             AlreadyDeletedProductException.class,
-            AlreadyProductExistsException.class,
             AlreadyBlockedMemberException.class,
-            AlreadyUnblockedMemberException.class
+            AlreadyUnblockedMemberException.class,
+            AlreadyDeletedAddressException.class,
+            AlreadyRegisteredUpToLimit.class
     })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorResponseDto> handleValidationException(Exception ex) {
@@ -86,7 +91,12 @@ public class ControllerAdvice {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
-    @ExceptionHandler(value = {MemberProfileAlreadyExistException.class})
+    @ExceptionHandler(value = {
+            MemberProfileAlreadyExistException.class,
+            ProductAlreadyExistsException.class,
+            PublisherAlreadyExistsException.class,
+            TagAlreadyExistsException.class
+    })
     @ResponseStatus(HttpStatus.CONFLICT)
     public ResponseEntity<ErrorResponseDto> handleAlreadyExistException(Exception ex) {
         log.error("[CONFLICT] handleAlreadyExistException", ex);

@@ -8,8 +8,8 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 @Getter
 @AllArgsConstructor
 public class SearchedProductSubscribProduct {
-        @Field(name = "id", type = FieldType.Long)
-        long id;
-        @Field(name = "ISSN", type = FieldType.Keyword)
-        String issn;
+    @Field(name = "id", type = FieldType.Long)
+    long id;
+    @Field(name = "ISSN", type = FieldType.Keyword)
+    String issn;
 }

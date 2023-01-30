@@ -15,8 +15,8 @@ import lombok.NoArgsConstructor;
 /**
  * 회원의 권한 엔티티 클래스 입니다.
  *
- * @author : 송학현
- * @since : 1.0
+ * @author 송학현
+ * @since 1.0
  */
 @Getter
 @Builder

@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberAddressRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
-import shop.yesaladin.shop.member.dto.MemberAddressQueryDto;
+import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberAddressService;
 
@@ -30,12 +30,12 @@ public class QueryMemberAddressServiceImpl implements QueryMemberAddressService 
      */
     @Override
     @Transactional(readOnly = true)
-    public List<MemberAddressQueryDto> findByLoginId(String loginId) {
+    public List<MemberAddressResponseDto> findByLoginId(String loginId) {
         Member member = tryGetMemberById(loginId);
 
-        return queryMemberAddressRepository.findByMember(member)
+        return queryMemberAddressRepository.findByLoginId(member)
                 .stream()
-                .map(MemberAddressQueryDto::fromEntity)
+                .map(MemberAddressResponseDto::fromEntity)
                 .collect(Collectors.toList());
     }
 

@@ -3,7 +3,6 @@ package shop.yesaladin.shop.publish.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.publish.domain.model.Publish;
 import shop.yesaladin.shop.publish.domain.model.Publish.Pk;
@@ -18,7 +17,6 @@ import java.time.LocalDate;
  * @since 1.0
  */
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class PublishResponseDto {

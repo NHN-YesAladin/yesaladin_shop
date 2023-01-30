@@ -29,7 +29,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
-import shop.yesaladin.shop.member.dto.MemberAddressQueryDto;
+import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberAddressService;
@@ -94,7 +94,7 @@ class QueryMemberAddressControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$[0].id", equalTo(1)))
                 .andExpect(jsonPath("$[0].address", equalTo(address)))
-                .andExpect(jsonPath("$[0].default", equalTo(isDefault)))
+                .andExpect(jsonPath("$[0].isDefault", equalTo(isDefault)))
                 .andExpect(jsonPath("$[0].loginId", equalTo(loginId)));
 
         //docs
@@ -107,19 +107,20 @@ class QueryMemberAddressControllerTest {
                         fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("등록된 배송지 Pk"),
                         fieldWithPath("[].address").type(JsonFieldType.STRING)
                                 .description("등록된 배송지 주소"),
-                        fieldWithPath("[].default").type(JsonFieldType.BOOLEAN)
+                        fieldWithPath("[].isDefault").type(JsonFieldType.BOOLEAN)
                                 .description("등록된 배송지의 대표주소 여부"),
-                        fieldWithPath("[].loginId").type(JsonFieldType.STRING).description("회원의 아이디")
+                        fieldWithPath("[].loginId").type(JsonFieldType.STRING)
+                                .description("회원의 아이디")
                 )
         ));
     }
 
-    List<MemberAddressQueryDto> getMemberAddressList(int cnt, String loginId) {
+    List<MemberAddressResponseDto> getMemberAddressList(int cnt, String loginId) {
         Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
 
-        List<MemberAddressQueryDto> memberAddressQueryList = new ArrayList<>();
+        List<MemberAddressResponseDto> memberAddressQueryList = new ArrayList<>();
         for (int i = 0; i < cnt; i++) {
-            memberAddressQueryList.add(MemberAddressQueryDto.fromEntity(MemberAddress.builder()
+            memberAddressQueryList.add(MemberAddressResponseDto.fromEntity(MemberAddress.builder()
                     .id((long) i + 1)
                     .address(address)
                     .isDefault(isDefault)

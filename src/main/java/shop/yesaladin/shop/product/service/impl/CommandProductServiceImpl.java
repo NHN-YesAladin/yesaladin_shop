@@ -39,8 +39,8 @@ import java.util.stream.Collectors;
  * @author 이수정
  * @since 1.0
  */
-@Service
 @RequiredArgsConstructor
+@Service
 public class CommandProductServiceImpl implements CommandProductService {
 
     private final int TOTAL_DISCOUNT_RATE_DEFAULT_ID = 1;
@@ -105,7 +105,7 @@ public class CommandProductServiceImpl implements CommandProductService {
         // Product
         Product product = queryProductRepository.findByISBN(dto.getISBN()).orElse(null);
         if (!Objects.isNull(product)) {
-            throw new AlreadyProductExistsException(dto.getISBN());
+            throw new ProductAlreadyExistsException(dto.getISBN());
         }
         product = commandProductRepository.save(dto.toProductEntity(
                 subscribeProduct,

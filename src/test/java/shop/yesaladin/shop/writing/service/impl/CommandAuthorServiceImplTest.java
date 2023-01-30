@@ -70,13 +70,12 @@ class CommandAuthorServiceImplTest {
     @DisplayName("저자 생성 후 등록 성공")
     void create_success() {
         // given
-        AuthorRequestDto createDto = new AuthorRequestDto(NAME, "loginID");
+        AuthorRequestDto createDto = new AuthorRequestDto(NAME, "loginId");
         Author author = DummyAuthor.dummy(NAME, null);
 
         Member member = DummyMember.member();
         MemberDto dto = MemberDto.fromEntity(member);
 
-        Mockito.when(queryMemberService.existsLoginId(anyString())).thenReturn(true);
         Mockito.when(queryMemberService.findMemberByLoginId(anyString())).thenReturn(dto);
         Mockito.when(commandAuthorRepository.save(any())).thenReturn(author);
 
@@ -87,7 +86,6 @@ class CommandAuthorServiceImplTest {
         assertThat(response.getName()).isEqualTo(NAME);
         assertThat(response.getMember()).isNull();
 
-        verify(queryMemberService, times(1)).existsLoginId(createDto.getLoginId());
         verify(queryMemberService, times(1)).findMemberByLoginId(createDto.getLoginId());
         verify(commandAuthorRepository, times(1)).save(any());
     }
@@ -96,12 +94,14 @@ class CommandAuthorServiceImplTest {
     @DisplayName("저자 생성 후 등록 실패_존재하지 않는 멤버 로그인 아이디를 입력한 경우 예외 발생")
     void create_notExistsLoginId_throwMemberNotFoundException() {
         // given
-        AuthorRequestDto createDto = new AuthorRequestDto(NAME, "loginID");
+        AuthorRequestDto createDto = new AuthorRequestDto(NAME, "loginId");
+
+        Mockito.when(queryMemberService.findMemberByLoginId(createDto.getLoginId())).thenThrow(MemberNotFoundException.class);
 
         // when then
         assertThatThrownBy(() -> service.create(createDto)).isInstanceOf(MemberNotFoundException.class);
 
-        verify(queryMemberService, times(1)).existsLoginId(createDto.getLoginId());
+        verify(queryMemberService, times(1)).findMemberByLoginId(createDto.getLoginId());
     }
 
     @Test
@@ -142,14 +142,15 @@ class CommandAuthorServiceImplTest {
     void modify_notExistsLoginId_throwMemberNotFoundException() {
         // given
         Long id = 1L;
-        AuthorRequestDto modifyDto = new AuthorRequestDto(NAME, "loginID");
+        AuthorRequestDto modifyDto = new AuthorRequestDto(NAME, "loginId");
         Author author = DummyAuthor.dummy(NAME, null);
 
         Mockito.when(queryAuthorRepository.findById(id)).thenReturn(Optional.ofNullable(author));
+        Mockito.when(queryMemberService.findMemberByLoginId(modifyDto.getLoginId())).thenThrow(MemberNotFoundException.class);
 
         // when then
         assertThatThrownBy(() -> service.modify(id, modifyDto)).isInstanceOf(MemberNotFoundException.class);
 
-        verify(queryMemberService, times(1)).existsLoginId(modifyDto.getLoginId());
+        verify(queryMemberService, times(1)).findMemberByLoginId(modifyDto.getLoginId());
     }
 }

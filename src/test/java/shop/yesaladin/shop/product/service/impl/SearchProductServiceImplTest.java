@@ -1,27 +1,22 @@
 package shop.yesaladin.shop.product.service.impl;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.verify;
-
-import java.time.LocalDate;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import shop.yesaladin.shop.product.domain.model.SearchedProductAuthor;
-import shop.yesaladin.shop.product.domain.model.SearchedProductCategory;
-import shop.yesaladin.shop.product.domain.model.SearchedProductFile;
-import shop.yesaladin.shop.product.domain.model.SearchedProductProductType;
-import shop.yesaladin.shop.product.domain.model.SearchedProductSubscribProduct;
-import shop.yesaladin.shop.product.domain.model.SearchedProductTag;
-import shop.yesaladin.shop.product.domain.model.SearchedProductTotalDiscountRate;
+import shop.yesaladin.shop.product.domain.model.*;
 import shop.yesaladin.shop.product.domain.repository.SearchProductRepository;
 import shop.yesaladin.shop.product.dto.SearchedProductDto;
 import shop.yesaladin.shop.product.dto.SearchedProductManagerDto;
 import shop.yesaladin.shop.product.dto.SearchedProductManagerResponseDto;
 import shop.yesaladin.shop.product.dto.SearchedProductResponseDto;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.verify;
 
 class SearchProductServiceImplTest {
 

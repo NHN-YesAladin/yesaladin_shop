@@ -1,7 +1,7 @@
 package shop.yesaladin.shop.member.service.inter;
 
 import java.util.List;
-import shop.yesaladin.shop.member.dto.MemberAddressQueryDto;
+import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
 
 /**
  * 회원배송지 조회 관련 service interface 입니다.
@@ -19,5 +19,5 @@ public interface QueryMemberAddressService {
      * @author 최예린
      * @since 1.0
      */
-    List<MemberAddressQueryDto> findByLoginId(String loginId);
+    List<MemberAddressResponseDto> findByLoginId(String loginId);
 }

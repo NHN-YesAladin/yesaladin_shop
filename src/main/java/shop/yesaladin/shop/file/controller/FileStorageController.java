@@ -16,9 +16,8 @@ import shop.yesaladin.shop.file.service.inter.FileStorageService;
  * @author 이수정
  * @since 1.0
  */
-@Slf4j
-@RestController
 @RequiredArgsConstructor
+@RestController
 @RequestMapping("/v1/files")
 public class FileStorageController {
 

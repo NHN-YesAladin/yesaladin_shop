@@ -25,4 +25,14 @@ public class Publisher {
     @Column(nullable = false, length = 50)
     private String name;
 
+    /**
+     * 출판사의 이름을 변경합니다.
+     *
+     * @param name 변경할 출판사의 이름
+     * @author 이수정
+     * @since 1.0
+     */
+    public void changeName(String name) {
+        this.name = name;
+    }
 }

@@ -16,7 +16,7 @@ import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTest
 class JpaAuthorRepositoryTest {
 
     @Autowired
-    private JpaAuthorRepository repository;
+    private JpaCommandAuthorRepository repository;
 
     @Test
     @DisplayName("저자 저장")

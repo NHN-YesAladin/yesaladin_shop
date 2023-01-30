@@ -79,7 +79,7 @@ class QueryDslCommandMemberAddressRepositoryTest {
         commandMemberAddressRepository.updateIsDefaultToFalseByLoginId(loginId);
 
         //then
-        List<MemberAddress> result = queryMemberAddressRepository.findByMember(member);
+        List<MemberAddress> result = queryMemberAddressRepository.findByLoginId(member);
         assertThat(result.stream().anyMatch(MemberAddress::isDefault)).isFalse();
     }
 }

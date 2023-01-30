@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.shop.member.dto.MemberAddressCreateRequestDto;
-import shop.yesaladin.shop.member.dto.MemberAddressCommandResponseDto;
+import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
 import shop.yesaladin.shop.member.service.inter.CommandMemberAddressService;
 
 /**
@@ -39,7 +39,7 @@ public class CommandMemberAddressController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public MemberAddressCommandResponseDto createMemberAddress(
+    public MemberAddressResponseDto createMemberAddress(
             @PathVariable String loginId,
             @Valid @RequestBody MemberAddressCreateRequestDto request
     ) {
@@ -57,7 +57,7 @@ public class CommandMemberAddressController {
      */
     @PutMapping("/{addressId}")
     @ResponseStatus(HttpStatus.OK)
-    public MemberAddressCommandResponseDto markAsDefaultAddress(
+    public MemberAddressResponseDto markAsDefaultAddress(
             @PathVariable String loginId,
             @PathVariable Long addressId
     ) {

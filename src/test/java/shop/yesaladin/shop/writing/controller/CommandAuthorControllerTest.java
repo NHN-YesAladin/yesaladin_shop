@@ -78,7 +78,7 @@ class CommandAuthorControllerTest {
                 responseFields(
                         fieldWithPath("id").type(JsonFieldType.NUMBER).description("생성된 저자 아이디"),
                         fieldWithPath("name").type(JsonFieldType.STRING).description("저자명"),
-                        fieldWithPath("member").description("저자")
+                        fieldWithPath("member").description("저자 멤버 엔터티")
                 )
         ));
     }
