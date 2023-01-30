@@ -1,6 +1,7 @@
 package shop.yesaladin.shop.member.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -85,8 +86,10 @@ public class QueryMemberController {
      * @author 최예린
      * @since 1.0
      */
-    @GetMapping("/{loginId}/grade")
-    public MemberGradeQueryResponseDto getMemberGrade(@PathVariable String loginId) {
+    @GetMapping("/grade")
+    @CrossOrigin(origins = {"http://localhost:9090",
+            "https://www.yesaladin.shop"})
+    public MemberGradeQueryResponseDto getMemberGrade(String loginId) {
         return queryMemberService.getMemberGrade(loginId);
     }
 
@@ -98,8 +101,8 @@ public class QueryMemberController {
      * @author 최예린
      * @since 1.0
      */
-    @GetMapping("{loginId}")
-    public MemberQueryResponseDto getMemberInfo(@PathVariable String loginId) {
+    @GetMapping
+    public MemberQueryResponseDto getMemberInfo(String loginId) {
         return queryMemberService.getByLoginId(loginId);
     }
 }

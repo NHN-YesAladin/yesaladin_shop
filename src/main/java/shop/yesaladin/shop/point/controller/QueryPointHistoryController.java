@@ -4,6 +4,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,8 +35,10 @@ public class QueryPointHistoryController {
      * @param loginId 회원의 아이디
      * @return 회원의 포인트
      */
-    @GetMapping("/{loginId}")
-    public PointResponseDto getMemberPoint(@PathVariable String loginId) {
+    @GetMapping
+    @CrossOrigin(origins = {"http://localhost:9090",
+            "https://www.yesaladin.shop"})
+    public PointResponseDto getMemberPoint(String loginId) {
         return queryPointHistoryService.getMemberPoint(loginId);
     }
 
@@ -49,9 +52,9 @@ public class QueryPointHistoryController {
      * @author 최예린
      * @since 1.0
      */
-    @GetMapping("/{loginId}/point-histories")
+    @GetMapping("/point-histories")
     public PaginatedResponseDto<PointHistoryResponseDto> getPointHistoriesByLoginId(
-            @PathVariable String loginId,
+            String loginId,
             @RequestParam("code") Optional<String> code,
             Pageable pageable
     ) {

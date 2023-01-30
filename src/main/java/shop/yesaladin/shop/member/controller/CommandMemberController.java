@@ -65,11 +65,11 @@ public class CommandMemberController {
      * @author 최예린
      * @since 1.0
      */
-    @PutMapping("/{loginId}")
+    @PutMapping
     @ResponseStatus(HttpStatus.OK)
     public MemberUpdateResponseDto updateMember(
             @Valid @RequestBody MemberUpdateRequestDto updateDto,
-            @PathVariable String loginId
+            String loginId
     ) {
         return commandMemberService.update(loginId, updateDto);
     }
@@ -82,10 +82,10 @@ public class CommandMemberController {
      * @author 최예린
      * @since 1.0
      */
-    @PutMapping("/{loginId}/block")
+    @PutMapping("/block")
     @ResponseStatus(HttpStatus.OK)
     public MemberBlockResponseDto blockMember(
-            @PathVariable String loginId,
+            String loginId,
             @Valid @RequestBody MemberBlockRequestDto request
     ) {
         return commandMemberService.block(loginId, request);
@@ -99,9 +99,9 @@ public class CommandMemberController {
      * @author 최예린
      * @since 1.0
      */
-    @PutMapping("/{loginId}/unblock")
+    @PutMapping("/unblock")
     @ResponseStatus(HttpStatus.OK)
-    public MemberUnblockResponseDto unblockMember(@PathVariable String loginId) {
+    public MemberUnblockResponseDto unblockMember(String loginId) {
         return commandMemberService.unblock(loginId);
     }
 
