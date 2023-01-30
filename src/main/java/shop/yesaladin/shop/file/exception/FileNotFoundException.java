@@ -11,8 +11,4 @@ public class FileNotFoundException extends RuntimeException {
     public FileNotFoundException(Long id) {
         super("File ID(" + id + ") is not found.");
     }
-
-    public FileNotFoundException(String url) {
-        super("File URL(" + url + ") is not found.");
-    }
 }
