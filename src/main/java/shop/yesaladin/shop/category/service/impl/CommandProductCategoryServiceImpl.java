@@ -7,6 +7,7 @@ import shop.yesaladin.shop.category.domain.model.ProductCategory.Pk;
 import shop.yesaladin.shop.category.domain.repository.CommandProductCategoryRepository;
 import shop.yesaladin.shop.category.domain.repository.QueryCategoryRepository;
 import shop.yesaladin.shop.category.dto.ProductCategoryIdDto;
+import shop.yesaladin.shop.category.dto.ProductCategoryResponseDto;
 import shop.yesaladin.shop.category.service.inter.CommandProductCategoryService;
 
 /**
@@ -19,13 +20,16 @@ import shop.yesaladin.shop.category.service.inter.CommandProductCategoryService;
 public class CommandProductCategoryServiceImpl implements CommandProductCategoryService {
 
     private final CommandProductCategoryRepository commandProductCategoryRepository;
-    private final QueryCategoryRepository queryCategoryRepository;
+
 
     @Override
-    public ProductCategoryIdDto register(ProductCategoryIdDto idDto) {
-//        queryCategoryRepository.findSimpleDtosByDepth()
-//        commandProductCategoryRepository.save()
-        return null;
+    public ProductCategoryResponseDto register(ProductCategory productCategory) {
+        ProductCategory foundProductCategory = commandProductCategoryRepository.save(
+                productCategory);
+        return ProductCategoryResponseDto.fromEntity(
+                foundProductCategory.getProduct(),
+                foundProductCategory.getCategory()
+        );
     }
 
     @Override

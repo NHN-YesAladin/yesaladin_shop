@@ -3,6 +3,7 @@ package shop.yesaladin.shop.category.persistence;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,7 +111,10 @@ class JpaProductCategoryRepositoryTest {
         repository.deleteByPk(pk);
 
         // then
-        assertThatCode(() -> repository.findByPk(pk)).doesNotThrowAnyException();
+        Optional<ProductCategory> byPk = repository.findByPk(pk);
+        assertThatCode(() -> byPk.orElseThrow(() -> new ProductCategoryNotFoundException(pk))).isInstanceOf(
+                ProductCategoryNotFoundException.class);
+
     }
 
     @Test

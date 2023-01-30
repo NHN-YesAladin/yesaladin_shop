@@ -1,6 +1,8 @@
 package shop.yesaladin.shop.category.persistence;
 
+import java.util.List;
 import org.springframework.data.repository.Repository;
+import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.model.ProductCategory;
 import shop.yesaladin.shop.category.domain.repository.CommandProductCategoryRepository;
 import shop.yesaladin.shop.category.domain.repository.QueryProductCategoryRepository;
@@ -14,5 +16,7 @@ import shop.yesaladin.shop.category.domain.repository.QueryProductCategoryReposi
 public interface JpaProductCategoryRepository extends
         Repository<ProductCategory, ProductCategory.Pk>, CommandProductCategoryRepository,
         QueryProductCategoryRepository {
+
+    List<Category> findAllByProductId(Long productId);
 
 }
