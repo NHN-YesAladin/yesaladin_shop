@@ -22,7 +22,10 @@ public class CommandProductCategoryServiceImpl implements CommandProductCategory
 
     private final CommandProductCategoryRepository commandProductCategoryRepository;
 
-
+    /**
+     * {@inheritDoc}
+     *
+     */
     @Override
     public ProductCategoryResponseDto register(ProductCategory productCategory) {
         ProductCategory foundProductCategory = commandProductCategoryRepository.save(
@@ -33,6 +36,10 @@ public class CommandProductCategoryServiceImpl implements CommandProductCategory
         );
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     */
     @Override
     public void deleteByProduct(Product product) {
         commandProductCategoryRepository.deleteByProduct(product);
