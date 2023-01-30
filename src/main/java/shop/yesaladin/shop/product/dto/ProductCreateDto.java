@@ -29,7 +29,7 @@ public class ProductCreateDto {
 
     @NotBlank
     @Length(max = 13)
-    private String ISBN;
+    private String isbn;
 
     // 상품 설명
     @NotBlank
@@ -59,7 +59,7 @@ public class ProductCreateDto {
 
     // 구독 상품 관련
     @Length(max = 9)
-    private String ISSN;
+    private String issn;
     private Boolean isSubscriptionAvailable;
 
     // 판매 여부
@@ -112,7 +112,7 @@ public class ProductCreateDto {
             TotalDiscountRate totalDiscountRate
     ) {
         return Product.builder()
-                .ISBN(ISBN)
+                .ISBN(isbn)
                 .title(title)
                 .contents(contents)
                 .description(description)
@@ -143,7 +143,7 @@ public class ProductCreateDto {
      * @since 1.0
      */
     public SubscribeProduct toSubscribeProductEntity() {
-        return SubscribeProduct.builder().ISSN(ISSN).build();
+        return SubscribeProduct.builder().ISSN(issn).build();
     }
 
     /**
