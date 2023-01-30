@@ -32,6 +32,9 @@ import shop.yesaladin.shop.category.service.inter.CommandCategoryService;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/v1/categories")
+@CrossOrigin(origins = {"http://localhost:8080", "http://localhost:9090",
+        "http://test.yesaladin.shop:9090",
+        "https://www.yesaladin.shop"})
 public class CommandCategoryController {
 
     private final CommandCategoryService commandCategoryService;
@@ -40,15 +43,14 @@ public class CommandCategoryController {
     /**
      * 카테고리를 생성하기위해 Post 요청을 처리하는 기능
      *
-     * @param categoryRequestDto 생성시 필요한 이름, 노출 여부, 상위 카테고리 id가 존재
+     * @param categoryRequest 생성시 필요한 이름, 노출 여부, 상위 카테고리 id가 존재
      * @return ResponseEntity로 카테고리 생성 성공시 생성된 카테고리의 일부 데이터를 반환
      */
     @PostMapping
     public CategoryResponseDto createCategory(
-            @Valid @RequestBody CategoryRequestDto categoryRequestDto
+            @Valid @RequestBody CategoryRequestDto categoryRequest
     ) {
-        CategoryResponseDto categoryResponseDto = commandCategoryService.create(categoryRequestDto);
-        return categoryResponseDto;
+        return commandCategoryService.create(categoryRequest);
     }
 
     /**
@@ -70,12 +72,8 @@ public class CommandCategoryController {
         return ResponseEntity.ok(categoryResponseDto);
     }
 
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:9090",
-            "http://test.yesaladin.shop:9090",
-            "https://www.yesaladin.shop"})
     @PutMapping("/order")
     public ResultCodeDto modifyCategoriesOrder(@Valid @RequestBody List<CategoryModifyRequestDto> responseList) {
-        System.out.println(responseList);
         commandCategoryService.updateOrder(responseList);
         return new ResultCodeDto("Success");
     }

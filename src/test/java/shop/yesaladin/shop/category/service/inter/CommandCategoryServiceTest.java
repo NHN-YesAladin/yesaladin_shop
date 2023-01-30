@@ -2,6 +2,7 @@ package shop.yesaladin.shop.category.service.inter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
@@ -9,17 +10,22 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import org.assertj.core.api.NotThrownAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.repository.CommandCategoryRepository;
 import shop.yesaladin.shop.category.domain.repository.QueryCategoryRepository;
+import shop.yesaladin.shop.category.dto.CategoryModifyRequestDto;
 import shop.yesaladin.shop.category.dto.CategoryOnlyIdDto;
 import shop.yesaladin.shop.category.dto.CategoryRequestDto;
 import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 import shop.yesaladin.shop.category.dummy.CategoryDummy;
+import shop.yesaladin.shop.category.exception.CategoryNotFoundException;
 import shop.yesaladin.shop.category.service.impl.CommandCategoryServiceImpl;
 
 class CommandCategoryServiceTest {
@@ -287,11 +293,168 @@ class CommandCategoryServiceTest {
     @Test
     void delete() {
         // given
-        long id = 1L;
-        doNothing().when(commandCategoryRepository).deleteById(id);
+        when(queryCategoryRepository.findById(parentCategory.getId())).thenReturn(Optional.of(
+                parentCategory));
 
         // then
-        assertThatCode(() -> commandCategoryService.delete(id)).doesNotThrowAnyException();
+        assertThatCode(() -> commandCategoryService.delete(parentCategory.getId())).doesNotThrowAnyException();
+
+        verify(queryCategoryRepository, times(1)).findById(parentCategory.getId());
+    }
+
+    @Test
+    void updateOrder_parentCategories() throws Exception {
+        // given
+        List<CategoryModifyRequestDto> requestList = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            CategoryModifyRequestDto request = CategoryModifyRequestDto.builder()
+                    .id((long) i)
+                    .name("name" + i)
+                    .order(i + 1)
+                    .isShown(true)
+                    .build();
+            requestList.add(request);
+        }
+
+        List<Category> categories = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            Category category = Category.builder()
+                    .id((long) i)
+                    .name("name" + i)
+                    .order(10 - i)
+                    .depth(Category.DEPTH_PARENT)
+                    .isShown(true)
+                    .build();
+            categories.add(category);
+        }
+
+        when(queryCategoryRepository.findCategories(null, Category.DEPTH_PARENT)).thenReturn(
+                categories);
+
+        // when
+        assertThatCode(() -> commandCategoryService.updateOrder(requestList)).doesNotThrowAnyException();
+
+        // then
+        verify(queryCategoryRepository, times(1)).findCategories(null, Category.DEPTH_PARENT);
+
+    }
+
+    @Test
+    void updateOrder_childCategories() throws Exception {
+        // given
+        List<CategoryModifyRequestDto> requestList = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            CategoryModifyRequestDto request = CategoryModifyRequestDto.builder()
+                    .id((long) i)
+                    .name("name" + i)
+                    .order(i + 1)
+                    .isShown(true)
+                    .parentId(parentCategory.getId())
+                    .parentName(parentCategory.getName())
+                    .build();
+            requestList.add(request);
+        }
+
+        for (int i = 0; i < 10; i++) {
+            Category category = Category.builder()
+                    .id((long) i)
+                    .name("name" + i)
+                    .order(10 - i)
+                    .depth(Category.DEPTH_PARENT)
+                    .isShown(true)
+                    .parent(parentCategory.getParent())
+                    .build();
+            parentCategory.getChildren().add(category);
+        }
+
+
+        when(queryCategoryRepository.findById(parentCategory.getId())).thenReturn(Optional.of(
+                parentCategory));
+
+        // when
+        assertThatCode(() -> commandCategoryService.updateOrder(requestList)).doesNotThrowAnyException();
+
+        // then
+        verify(queryCategoryRepository, times(1)).findById(parentCategory.getId());
+
+    }
+
+    @Test
+    void updateOrder_parentCategories_notFound_fail() throws Exception {
+        // given
+        List<CategoryModifyRequestDto> requestList = new ArrayList<>();
+        for (int i = 10; i < 20; i++) {
+            CategoryModifyRequestDto request = CategoryModifyRequestDto.builder()
+                    .id((long) i)
+                    .name("name" + i)
+                    .order(i + 1)
+                    .isShown(true)
+                    .build();
+            requestList.add(request);
+        }
+
+        List<Category> categories = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            Category category = Category.builder()
+                    .id((long) i)
+                    .name("name" + i)
+                    .order(10 - i)
+                    .depth(Category.DEPTH_PARENT)
+                    .isShown(true)
+                    .build();
+            categories.add(category);
+        }
+
+        when(queryCategoryRepository.findCategories(null, Category.DEPTH_PARENT)).thenReturn(
+                categories);
+
+        // when
+        assertThatCode(() -> commandCategoryService.updateOrder(requestList)).isInstanceOf(
+                CategoryNotFoundException.class);
+
+        // then
+        verify(queryCategoryRepository, times(1)).findCategories(null, Category.DEPTH_PARENT);
+
+    }
+
+    @Test
+    void updateOrder_childCategories_notFound_fail() throws Exception {
+        // given
+        List<CategoryModifyRequestDto> requestList = new ArrayList<>();
+        for (int i = 10; i < 20; i++) {
+            CategoryModifyRequestDto request = CategoryModifyRequestDto.builder()
+                    .id((long) i)
+                    .name("name" + i)
+                    .order(i + 1)
+                    .isShown(true)
+                    .parentId(parentCategory.getId())
+                    .parentName(parentCategory.getName())
+                    .build();
+            requestList.add(request);
+        }
+
+        for (int i = 0; i < 10; i++) {
+            Category category = Category.builder()
+                    .id((long) i)
+                    .name("name" + i)
+                    .order(10 - i)
+                    .depth(Category.DEPTH_PARENT)
+                    .isShown(true)
+                    .parent(parentCategory.getParent())
+                    .build();
+            parentCategory.getChildren().add(category);
+        }
+
+
+        when(queryCategoryRepository.findById(parentCategory.getId())).thenReturn(Optional.of(
+                parentCategory));
+
+        // when
+        assertThatCode(() -> commandCategoryService.updateOrder(requestList)).isInstanceOf(
+                CategoryNotFoundException.class);
+
+        // then
+        verify(queryCategoryRepository, times(1)).findById(parentCategory.getId());
 
     }
 }
