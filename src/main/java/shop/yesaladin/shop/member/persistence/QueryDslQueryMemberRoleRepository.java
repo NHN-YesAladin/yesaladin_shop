@@ -13,8 +13,8 @@ import shop.yesaladin.shop.member.domain.repository.QueryMemberRoleRepository;
 /**
  * 회원 등급 조회 관련 QueryDsl Repository 구현체 입니다.
  *
- * @author : 송학현
- * @since : 1.0
+ * @author 송학현
+ * @since 1.0
  */
 @RequiredArgsConstructor
 @Repository
