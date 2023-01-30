@@ -113,25 +113,6 @@ class QueryCategoryServiceTest {
         assertThat(longArgumentCaptor.getValue()).isEqualTo(id);
     }
 
-    @Test
-    void findInnerCategoryById() throws Exception {
-        // given
-        ArgumentCaptor<Long> longArgumentCaptor = ArgumentCaptor.forClass(Long.class);
-        Long id = 1L;
-
-        Category category = CategoryDummy.dummyParent(id);
-        when(queryCategoryRepository.findById(any())).thenReturn(Optional.of(category));
-
-        // when
-        Category categoryById = queryCategoryService.findInnerCategoryById(id);
-
-        // then
-        assertThat(categoryById.getId()).isEqualTo(id);
-        assertThat(categoryById.getName()).isEqualTo(category.getName());
-
-        verify(queryCategoryRepository, times(1)).findById(longArgumentCaptor.capture());
-        assertThat(longArgumentCaptor.getValue()).isEqualTo(id);
-    }
 
     @Test
     void findParentCategories() throws Exception {

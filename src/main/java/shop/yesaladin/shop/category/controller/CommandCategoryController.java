@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import shop.yesaladin.shop.category.dto.CategoryOrderRequestDto;
+import shop.yesaladin.shop.category.dto.CategoryModifyRequestDto;
 import shop.yesaladin.shop.category.dto.CategoryRequestDto;
 import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 import shop.yesaladin.shop.category.dto.ResultCodeDto;
@@ -74,7 +74,7 @@ public class CommandCategoryController {
             "http://test.yesaladin.shop:9090",
             "https://www.yesaladin.shop"})
     @PutMapping("/order")
-    public ResultCodeDto modifyCategoriesOrder(@Valid @RequestBody List<CategoryOrderRequestDto> responseList) {
+    public ResultCodeDto modifyCategoriesOrder(@Valid @RequestBody List<CategoryModifyRequestDto> responseList) {
         System.out.println(responseList);
         commandCategoryService.updateOrder(responseList);
         return new ResultCodeDto("Success");

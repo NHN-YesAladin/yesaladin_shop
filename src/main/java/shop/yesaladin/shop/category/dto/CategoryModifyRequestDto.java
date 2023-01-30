@@ -4,27 +4,24 @@ import java.util.Objects;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.model.Category.CategoryBuilder;
-import shop.yesaladin.shop.category.dto.CategoryResponseDto.CategoryResponseDtoBuilder;
 
 /**
- * 카테고리의 순서변경을 위해 사용하는 dto
+ * 카테고리의 정보 변경을 위해 사용하는 dto
  *
  * @author 배수한
  * @since 1.0
  */
 
 @ToString
-@Builder
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoryOrderRequestDto {
+public class CategoryModifyRequestDto {
 
     @NotNull
     private Long id;
@@ -38,7 +35,7 @@ public class CategoryOrderRequestDto {
     private String parentName;
 
     /**
-     * 카테고리 순서 변경을 위해 해당 dto 를 Category 로 변환
+     * 카테고리 정보 변경을 위해 해당 dto 를 Category 로 변환
      *
      * @param parent 2차 카테고리일 경우 사용, 1차 카테고리일 경우 null 입력
      * @return
