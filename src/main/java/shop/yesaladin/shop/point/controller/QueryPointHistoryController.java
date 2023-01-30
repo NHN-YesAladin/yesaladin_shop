@@ -89,7 +89,7 @@ public class QueryPointHistoryController {
      * @author 최예린
      * @since 1.0
      */
-    @GetMapping
+    @GetMapping("/manager")
     public PaginatedResponseDto<PointHistoryResponseDto> getPointHistories(
             @RequestParam("code") Optional<String> code,
             @RequestParam("loginId") Optional<String> loginId,

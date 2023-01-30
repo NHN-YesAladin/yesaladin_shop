@@ -41,10 +41,10 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
 import shop.yesaladin.shop.member.dto.MemberAddressCreateRequestDto;
-import shop.yesaladin.shop.member.exception.AlreadyRegisteredUpToLimit;
+import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
 import shop.yesaladin.shop.member.exception.AlreadyDeletedAddressException;
+import shop.yesaladin.shop.member.exception.AlreadyRegisteredUpToLimit;
 import shop.yesaladin.shop.member.exception.MemberAddressNotFoundException;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.CommandMemberAddressService;
@@ -83,11 +83,8 @@ class CommandMemberAddressControllerTest {
     @MethodSource(value = "createMemberAddressData")
     void createMemberAddress_failByValidationError_forParameterizedTest(Map<String, Object> request)
             throws Exception {
-        //given
-        String loginId = "user@1";
-
         //when
-        ResultActions result = mockMvc.perform(post("/v1/members/{loginId}/addresses", loginId)
+        ResultActions result = mockMvc.perform(post("/v1/members/addresses")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
         //then
@@ -100,12 +97,10 @@ class CommandMemberAddressControllerTest {
     @DisplayName("회원 배송지 생성 실패-파라미터 오류")
     void createMemberAddress_failByValidationError() throws Exception {
         //given
-        String loginId = "user@1";
-
         Map<String, Object> request = Map.of("address", "", "isDefault", false);
 
         //when
-        ResultActions result = mockMvc.perform(post("/v1/members/{loginId}/addresses", loginId)
+        ResultActions result = mockMvc.perform(post("/v1/members/addresses")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
         //then
@@ -118,7 +113,6 @@ class CommandMemberAddressControllerTest {
                 "create-member-address-fail-validation-error",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 requestFields(
                         fieldWithPath("address").type(JsonFieldType.STRING).description("등록할 주소"),
                         fieldWithPath("isDefault").type(JsonFieldType.BOOLEAN)
@@ -142,7 +136,7 @@ class CommandMemberAddressControllerTest {
                 new MemberNotFoundException("Member loginId: " + loginId));
 
         //when
-        ResultActions result = mockMvc.perform(post("/v1/members/{loginId}/addresses", loginId)
+        ResultActions result = mockMvc.perform(post("/v1/members/addresses")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
         //then
@@ -162,7 +156,6 @@ class CommandMemberAddressControllerTest {
                 "create-member-address-fail-not-found-member",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 requestFields(
                         fieldWithPath("address").type(JsonFieldType.STRING).description("등록할 주소"),
                         fieldWithPath("isDefault").type(JsonFieldType.BOOLEAN)
@@ -186,7 +179,7 @@ class CommandMemberAddressControllerTest {
                 new AlreadyRegisteredUpToLimit(loginId));
 
         //when
-        ResultActions result = mockMvc.perform(post("/v1/members/{loginId}/addresses", loginId)
+        ResultActions result = mockMvc.perform(post("/v1/members/addresses")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
         //then
@@ -206,7 +199,6 @@ class CommandMemberAddressControllerTest {
                 "create-member-address-fail-registered-up-to-limit",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 requestFields(
                         fieldWithPath("address").type(JsonFieldType.STRING).description("등록할 주소"),
                         fieldWithPath("isDefault").type(JsonFieldType.BOOLEAN)
@@ -217,7 +209,7 @@ class CommandMemberAddressControllerTest {
                 )
         ));
     }
-    
+
     @Test
     @DisplayName("회원 배송지 등록 성공")
     void createMemberAddress() throws Exception {
@@ -238,7 +230,7 @@ class CommandMemberAddressControllerTest {
         Mockito.when(commandMemberAddressService.save(eq(loginId), any())).thenReturn(response);
 
         //when
-        ResultActions result = mockMvc.perform(post("/v1/members/{loginId}/addresses", loginId)
+        ResultActions result = mockMvc.perform(post("/v1/members/addresses")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
@@ -265,7 +257,6 @@ class CommandMemberAddressControllerTest {
                 "create-member-address-success",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 requestFields(
                         fieldWithPath("address").type(JsonFieldType.STRING).description("등록할 주소"),
                         fieldWithPath("isDefault").type(JsonFieldType.BOOLEAN)
@@ -294,8 +285,8 @@ class CommandMemberAddressControllerTest {
 
         //when
         ResultActions result = mockMvc.perform(put(
-                "/v1/members/{loginId}/addresses/{addressId}",
-                loginId,
+                "/v1/members/addresses/{addressId}",
+
                 addressId
         ));
 
@@ -310,7 +301,6 @@ class CommandMemberAddressControllerTest {
                 getDocumentRequest(),
                 getDocumentResponse(),
                 pathParameters(
-                        parameterWithName("loginId").description("회원의 아이디"),
                         parameterWithName("addressId").description("배송지 Pk")
                 ),
                 responseFields(
@@ -338,8 +328,7 @@ class CommandMemberAddressControllerTest {
 
         //when
         ResultActions result = mockMvc.perform(put(
-                "/v1/members/{loginId}/addresses/{addressId}",
-                loginId,
+                "/v1/members/addresses/{addressId}",
                 addressId
         ));
 
@@ -357,7 +346,6 @@ class CommandMemberAddressControllerTest {
                 getDocumentRequest(),
                 getDocumentResponse(),
                 pathParameters(
-                        parameterWithName("loginId").description("회원의 아이디"),
                         parameterWithName("addressId").description("배송지 Pk")
                 ),
                 responseFields(
@@ -382,8 +370,7 @@ class CommandMemberAddressControllerTest {
                 .thenThrow(new MemberAddressNotFoundException(addressId));
         //when
         ResultActions result = mockMvc.perform(delete(
-                "/v1/members/{loginId}/addresses/{addressId}",
-                loginId,
+                "/v1/members/addresses/{addressId}",
                 addressId
         ));
 
@@ -398,7 +385,6 @@ class CommandMemberAddressControllerTest {
                 getDocumentRequest(),
                 getDocumentResponse(),
                 pathParameters(
-                        parameterWithName("loginId").description("회원의 아이디"),
                         parameterWithName("addressId").description("배송지 Pk")
                 ),
                 responseFields(
@@ -418,8 +404,7 @@ class CommandMemberAddressControllerTest {
                 .thenThrow(new AlreadyDeletedAddressException(addressId));
         //when
         ResultActions result = mockMvc.perform(delete(
-                "/v1/members/{loginId}/addresses/{addressId}",
-                loginId,
+                "/v1/members/addresses/{addressId}",
                 addressId
         ));
 
@@ -434,7 +419,6 @@ class CommandMemberAddressControllerTest {
                 getDocumentRequest(),
                 getDocumentResponse(),
                 pathParameters(
-                        parameterWithName("loginId").description("회원의 아이디"),
                         parameterWithName("addressId").description("배송지 Pk")
                 ),
                 responseFields(
@@ -448,12 +432,10 @@ class CommandMemberAddressControllerTest {
     void deleteMemberAddress() throws Exception {
         //given
         long addressId = 1L;
-        String loginId = "user@1";
 
         //when
         ResultActions result = mockMvc.perform(delete(
-                "/v1/members/{loginId}/addresses/{addressId}",
-                loginId,
+                "/v1/members/addresses/{addressId}",
                 addressId
         ));
         //then
@@ -465,7 +447,6 @@ class CommandMemberAddressControllerTest {
                 getDocumentRequest(),
                 getDocumentResponse(),
                 pathParameters(
-                        parameterWithName("loginId").description("회원의 아이디"),
                         parameterWithName("addressId").description("배송지 Pk")
                 )
         ));

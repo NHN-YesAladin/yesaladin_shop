@@ -68,7 +68,7 @@ class QueryPointHistoryControllerTest {
         String loginId = "user@1";
 
         //when, then
-        ResultActions result = mockMvc.perform(get("/v1/points/{loginId}/point-histories", loginId)
+        ResultActions result = mockMvc.perform(get("/v1/points/point-histories")
                         .param("code", "invalidCode"))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -79,7 +79,6 @@ class QueryPointHistoryControllerTest {
                 "get-point-histories-by-loginId-fail-invalid-code-parameter",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 requestParameters(
                         parameterWithName("code").description("포인트 사용/적립 구분"),
                         parameterWithName("page").description("페이지 번호")
@@ -100,13 +99,13 @@ class QueryPointHistoryControllerTest {
     void getPointHistoriesByLoginId_all() throws Exception {
         //given
         String loginId = "user@1";
-        Page<PointHistoryResponseDto> response = getPageableData(5, PointCode.USE, loginId);
+        Page<PointHistoryResponseDto> response = getPageableData(5, PointCode.USE);
 
         Mockito.when(pointHistoryService.getPointHistoriesWithLoginId(eq(loginId), any()))
                 .thenReturn(response);
 
         //when
-        ResultActions result = mockMvc.perform(get("/v1/points/{loginId}/point-histories", loginId)
+        ResultActions result = mockMvc.perform(get("/v1/points/point-histories")
                 .param("size", "5")
                 .param("page", "0"));
 
@@ -134,7 +133,6 @@ class QueryPointHistoryControllerTest {
                 "get-point-histories-by-loginId-all",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 requestParameters(
                         parameterWithName("page").description("페이지 번호")
                                 .optional()
@@ -174,9 +172,9 @@ class QueryPointHistoryControllerTest {
                 eq(loginId),
                 eq(pointCode),
                 any()
-        )).thenReturn(getPageableData(5, pointCode, loginId));
+        )).thenReturn(getPageableData(5, pointCode));
 
-        ResultActions result = mockMvc.perform(get("/v1/points/{loginId}/point-histories", loginId)
+        ResultActions result = mockMvc.perform(get("/v1/points/point-histories")
                 .param("code", "USE")
                 .param("page", "0")
                 .param("size", "5"));
@@ -206,7 +204,6 @@ class QueryPointHistoryControllerTest {
                 "get-point-histories-by-loginId-and-code",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 requestParameters(
                         parameterWithName("code").description("포인트 사용/적립 구분"),
                         parameterWithName("page").description("페이지 번호")
@@ -251,7 +248,7 @@ class QueryPointHistoryControllerTest {
                 .thenThrow(new MemberNotFoundException("Member loginId : " + loginId));
 
         //when
-        ResultActions result = mockMvc.perform(get("/v1/points/{loginId}", loginId));
+        ResultActions result = mockMvc.perform(get("/v1/points"));
 
         //then
         result.andExpect(status().isNotFound())
@@ -263,7 +260,6 @@ class QueryPointHistoryControllerTest {
                 "get-member-point-fail-member-not-found",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 responseFields(
                         fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
                 )
@@ -279,7 +275,7 @@ class QueryPointHistoryControllerTest {
         Mockito.when(pointHistoryService.getMemberPoint(loginId)).thenReturn(new PointResponseDto(1000L));
 
         //when
-        ResultActions result = mockMvc.perform(get("/v1/points/{loginId}", loginId));
+        ResultActions result = mockMvc.perform(get("/v1/points"));
 
         //then
         result.andExpect(status().isOk())
@@ -291,7 +287,6 @@ class QueryPointHistoryControllerTest {
                 "get-member-point-success",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 responseFields(
                         fieldWithPath("amount").type(JsonFieldType.NUMBER).description("회원의 포인트")
                 )
@@ -301,8 +296,7 @@ class QueryPointHistoryControllerTest {
 
     Page<PointHistoryResponseDto> getPageableData(
             int size,
-            PointCode pointCode,
-            String loginId
+            PointCode pointCode
     ) {
         List<PointHistoryResponseDto> content = new ArrayList<>();
         for (int i = 0; i < size; i++) {
@@ -312,7 +306,7 @@ class QueryPointHistoryControllerTest {
                             1000L,
                             LocalDateTime.now(),
                             pointCode,
-                            loginId
+                    ""
                     )
             );
         }
