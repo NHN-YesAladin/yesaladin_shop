@@ -74,6 +74,7 @@ public class QueryPointHistoryServiceImpl implements QueryPointHistoryService {
      * {@inheritDoc}
      */
     @Override
+    @Transactional(readOnly = true)
     public PointResponseDto getMemberPoint(String loginId) {
         if(Objects.isNull(queryMemberService.findMemberByLoginId(loginId))) {
             throw new MemberNotFoundException("Member loginId : " + loginId);

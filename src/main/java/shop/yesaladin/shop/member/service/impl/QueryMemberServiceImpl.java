@@ -148,6 +148,7 @@ public class QueryMemberServiceImpl implements QueryMemberService {
     /**
      * {@inheritDoc}
      */
+    @Transactional(readOnly = true)
     @Override
     public MemberQueryResponseDto getByLoginId(String loginId) {
         return MemberQueryResponseDto.fromEntity(queryMemberRepository.findMemberByLoginId(
