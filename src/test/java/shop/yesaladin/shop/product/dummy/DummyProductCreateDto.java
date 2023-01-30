@@ -1,25 +1,23 @@
 package shop.yesaladin.shop.product.dummy;
 
-import java.util.ArrayList;
-import java.util.List;
 import shop.yesaladin.shop.product.dto.ProductCreateDto;
+
+import java.util.List;
 
 public class DummyProductCreateDto {
 
     public static ProductCreateDto dummy(String ISBN) {
-        List<String> tags = new ArrayList<>() {
-        };
-        tags.add("아름다운");
-        tags.add("슬픈");
+        List<Long> authors = List.of(1L);
+
+        List<Long> tags = List.of(1L, 2L);
 
         return new ProductCreateDto(
                 ISBN,
                 "더미",
                 "목차",
                 "상품 더미 입니다.",
-                "테스트",
-                "",
-                "귈벗",
+                authors,
+                1L,
                 30000,
                 15,
                 true,

@@ -6,6 +6,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 import shop.yesaladin.shop.member.domain.model.querydsl.QMemberGradeHistory;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberGradeHistoryRepository;
@@ -24,6 +27,9 @@ public class QueryDslQueryMemberGradeHistoryRepository implements
 
     private final JPAQueryFactory queryFactory;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Optional<MemberGradeHistoryQueryResponseDto> findById(long id) {
         QMemberGradeHistory memberGradeHistory = QMemberGradeHistory.memberGradeHistory;
@@ -34,31 +40,44 @@ public class QueryDslQueryMemberGradeHistoryRepository implements
                         memberGradeHistory.updateDate,
                         memberGradeHistory.previousPaidAmount,
                         memberGradeHistory.memberGrade,
-                        memberGradeHistory.member
+                        memberGradeHistory.member.loginId
                 ))
                 .from(memberGradeHistory)
                 .where(memberGradeHistory.id.eq(id))
                 .fetchFirst());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public List<MemberGradeHistoryQueryResponseDto> findByMemberIdAndPeriod(
-            long memberId,
+    public Page<MemberGradeHistoryQueryResponseDto> findByLoginIdAndPeriod(
+            String loginId,
             LocalDate startDate,
-            LocalDate endDate
+            LocalDate endDate,
+            Pageable pageable
     ) {
         QMemberGradeHistory memberGradeHistory = QMemberGradeHistory.memberGradeHistory;
 
-        return queryFactory.select(Projections.constructor(
+        List<MemberGradeHistoryQueryResponseDto> content = queryFactory.select(Projections.constructor(
                         MemberGradeHistoryQueryResponseDto.class,
                         memberGradeHistory.id,
                         memberGradeHistory.updateDate,
                         memberGradeHistory.previousPaidAmount,
                         memberGradeHistory.memberGrade,
-                        memberGradeHistory.member
+                        memberGradeHistory.member.loginId
                 ))
                 .from(memberGradeHistory)
-                .where(memberGradeHistory.updateDate.between(startDate, endDate))
+                .where(memberGradeHistory.member.loginId.eq(loginId)
+                        .and(memberGradeHistory.updateDate.between(startDate, endDate)))
                 .fetch();
+
+        Long totalCount = queryFactory.select(memberGradeHistory.count())
+                .from(memberGradeHistory)
+                .where(memberGradeHistory.member.loginId.eq(loginId)
+                        .and(memberGradeHistory.updateDate.between(startDate, endDate)))
+                .fetchFirst();
+
+        return PageableExecutionUtils.getPage(content, pageable, () -> totalCount);
     }
 }

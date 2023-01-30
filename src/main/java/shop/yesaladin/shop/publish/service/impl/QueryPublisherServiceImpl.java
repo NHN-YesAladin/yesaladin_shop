@@ -1,40 +1,73 @@
 package shop.yesaladin.shop.publish.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.publish.domain.model.Publisher;
 import shop.yesaladin.shop.publish.domain.repository.QueryPublisherRepository;
 import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
+import shop.yesaladin.shop.publish.dto.PublishersResponseDto;
+import shop.yesaladin.shop.publish.exception.PublisherNotFoundException;
 import shop.yesaladin.shop.publish.service.inter.QueryPublisherService;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
- * 출판사 조회를 위한 Service 구현체입니다.
+ * 출판사 조회를 위한 Service 구현체 입니다.
  *
  * @author 이수정
  * @since 1.0
  */
-@Service
 @RequiredArgsConstructor
+@Service
 public class QueryPublisherServiceImpl implements QueryPublisherService {
 
     private final QueryPublisherRepository queryPublisherRepository;
 
     /**
-     * 출판사 이름으로 이미 저장되어있는 출판사인지 확인하고, 존재한다면 출판사 엔터티를 반환, 존재하지 않는다면 null을 반환합니다.
-     *
-     * @param name 찾고자하는 출판사 이름
-     * @return 찾은 출판사 엔터티 or null
-     * @author 이수정
-     * @since 1.0
+     * {@inheritDoc}
      */
+    @Transactional(readOnly = true)
     @Override
-    public PublisherResponseDto findByName(String name) {
-        Publisher publisher = queryPublisherRepository.findByName(name).orElse(null);
+    public PublisherResponseDto findById(Long id) {
+        Publisher publisher = queryPublisherRepository.findById(id)
+                .orElseThrow(() -> new PublisherNotFoundException(id));
 
-        if (publisher != null) {
-            return new PublisherResponseDto(publisher.getId(), publisher.getName());
-        } else {
-            return null;
+        return new PublisherResponseDto(publisher.getId(), publisher.getName());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public List<PublisherResponseDto> findAll() {
+        return queryPublisherRepository.findAll().stream()
+                .map(publisher -> new PublisherResponseDto(publisher.getId(), publisher.getName()))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public Page<PublishersResponseDto> findAllForManager(Pageable pageable) {
+        Page<Publisher> page = queryPublisherRepository.findAllForManager(pageable);
+
+        List<PublishersResponseDto> publishers = new ArrayList<>();
+        for (Publisher publisher : page.getContent()) {
+            publishers.add(new PublishersResponseDto(
+                    publisher.getId(),
+                    publisher.getName()
+            ));
         }
+
+        return new PageImpl<>(publishers, pageable, page.getTotalElements());
     }
 }

@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberAddressRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
-import shop.yesaladin.shop.member.dto.MemberAddressQueryDto;
+import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberAddressService;
 
@@ -25,19 +25,22 @@ public class QueryMemberAddressServiceImpl implements QueryMemberAddressService 
     private final QueryMemberRepository queryMemberRepository;
     private final QueryMemberAddressRepository queryMemberAddressRepository;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional(readOnly = true)
-    public List<MemberAddressQueryDto> findByMemberId(long memberId) {
-        Member member = tryGetMemberById(memberId);
+    public List<MemberAddressResponseDto> findByLoginId(String loginId) {
+        Member member = tryGetMemberById(loginId);
 
-        return queryMemberAddressRepository.findByMember(member)
+        return queryMemberAddressRepository.findByLoginId(member)
                 .stream()
-                .map(MemberAddressQueryDto::fromEntity)
+                .map(MemberAddressResponseDto::fromEntity)
                 .collect(Collectors.toList());
     }
 
-    private Member tryGetMemberById(long memberId) {
-        return queryMemberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException("Member Not Found: " + memberId));
+    private Member tryGetMemberById(String loginId) {
+        return queryMemberRepository.findMemberByLoginId(loginId)
+                .orElseThrow(() -> new MemberNotFoundException("Member loginId: " + loginId));
     }
 }

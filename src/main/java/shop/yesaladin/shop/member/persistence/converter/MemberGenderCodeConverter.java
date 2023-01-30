@@ -10,8 +10,8 @@ import shop.yesaladin.shop.member.domain.model.MemberGenderCode;
 /**
  * 회원의 성별 코드를 변환하기 위한 컨버터 클래스 입니다.
  *
- * @author : 송학현
- * @since : 1.0
+ * @author 송학현
+ * @since 1.0
  */
 @Converter(autoApply = true)
 public class MemberGenderCodeConverter implements AttributeConverter<MemberGenderCode, Integer> {

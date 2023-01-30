@@ -11,6 +11,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberGradeHistory;
@@ -30,30 +32,33 @@ class QueryDslQueryMemberGradeHistoryRepositoryTest {
     QueryMemberGradeHistoryRepository queryMemberGradeHistoryRepository;
 
     Member member;
+    String loginId = "user@1";
+    Pageable pageable = Pageable.ofSize(10);
+
 
     @BeforeEach
     void setUp() {
-        member = MemberDummy.dummy();
+        member = MemberDummy.dummyWithLoginId(loginId);
         entityManager.persist(member);
     }
 
     @Test
-    void findById() throws Exception {
+    void findById() {
         //given
         MemberGradeHistory memberGradeHistory = MemberGradeHistoryDummy.dummy(member);
         entityManager.persist(memberGradeHistory);
         Long id = memberGradeHistory.getId();
 
         //when
-        Optional<MemberGradeHistoryQueryResponseDto> actual = queryMemberGradeHistoryRepository.findById(id);
+        Optional<MemberGradeHistoryQueryResponseDto> actual = queryMemberGradeHistoryRepository.findById(
+                id);
 
         //then
         assertThat(actual).isPresent();
         assertThat(actual.get().getId()).isEqualTo(id);
         assertThat(actual.get().getMemberGrade().getName()).isEqualTo(
                 memberGradeHistory.getMemberGrade().getName());
-        assertThat(actual.get().getMember().getName()).isEqualTo(
-                memberGradeHistory.getMember().getName());
+        assertThat(actual.get().getLoginId()).isEqualTo(loginId);
         assertThat(actual.get().getPreviousPaidAmount()).isEqualTo(
                 memberGradeHistory.getPreviousPaidAmount());
         assertThat(actual.get().getUpdateDate()).isEqualTo(
@@ -64,24 +69,25 @@ class QueryDslQueryMemberGradeHistoryRepositoryTest {
     void findByMemberIdAndPeriod() {
         //given
         int expectedCnt = 10;
-        Long memberId = member.getId();
         LocalDate startDate = LocalDate.of(2022, 12, 1);
         LocalDate endDate = LocalDate.of(2023, 1, 1);
 
         addMemberGradeHistoryData(expectedCnt);
 
         //when
-        List<MemberGradeHistoryQueryResponseDto> actual = queryMemberGradeHistoryRepository.findByMemberIdAndPeriod(
-                memberId,
+        Page<MemberGradeHistoryQueryResponseDto> actual = queryMemberGradeHistoryRepository.findByLoginIdAndPeriod(
+                loginId,
                 startDate,
-                endDate
+                endDate,
+                pageable
         );
 
         //then
         assertThat(actual).hasSize(expectedCnt);
         assertThat(actual.stream()
                 .filter(x -> x.getUpdateDate().isAfter(startDate) &&
-                        x.getUpdateDate().isBefore(endDate))
+                        x.getUpdateDate().isBefore(endDate) &&
+                        x.getLoginId().equals(loginId))
                 .collect(Collectors.toList())).hasSize(expectedCnt);
 
     }

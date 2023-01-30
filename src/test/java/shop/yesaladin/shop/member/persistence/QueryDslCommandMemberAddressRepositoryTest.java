@@ -2,6 +2,7 @@ package shop.yesaladin.shop.member.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
+import shop.yesaladin.shop.member.domain.repository.QueryMemberAddressRepository;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
 
 @Transactional
@@ -22,6 +24,8 @@ class QueryDslCommandMemberAddressRepositoryTest {
 
     @Autowired
     QueryDslCommandMemberAddressRepository commandMemberAddressRepository;
+    @Autowired
+    QueryMemberAddressRepository queryMemberAddressRepository;
 
     String address = "Gwangju";
     boolean isDefault = false;
@@ -59,24 +63,23 @@ class QueryDslCommandMemberAddressRepositoryTest {
         entityManager.persist(memberAddress);
         Long id = memberAddress.getId();
 
+        assertThat(queryMemberAddressRepository.findById(id)).isPresent();
         //when
         commandMemberAddressRepository.deleteById(id);
-
         //then
-        //TODO 2 null이 아니다...
-//        MemberAddress actual = entityManager.find(MemberAddress.class, id);
-//        assertThat(actual).isNull();
+        assertThat(queryMemberAddressRepository.findById(id)).isEmpty();
     }
 
     @Test
     void updateIsDefaultToFalseByMemberId() {
         //given
-        Long memberId = member.getId();
+        String loginId = member.getLoginId();
 
         //when
-        commandMemberAddressRepository.updateIsDefaultToFalseByMemberId(memberId);
+        commandMemberAddressRepository.updateIsDefaultToFalseByLoginId(loginId);
 
         //then
-        // TODO 1 updateIsDefaultToFalseByMemberId 테스트 작성하기
+        List<MemberAddress> result = queryMemberAddressRepository.findByLoginId(member);
+        assertThat(result.stream().anyMatch(MemberAddress::isDefault)).isFalse();
     }
 }

@@ -3,11 +3,15 @@ package shop.yesaladin.shop.member.service.impl;
 import java.time.Clock;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberGradeHistoryRepository;
+import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
 import shop.yesaladin.shop.member.dto.MemberGradeHistoryQueryResponseDto;
+import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberGradeHistoryService;
 
 /**
@@ -21,19 +25,28 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberGradeHistoryService;
 public class QueryMemberGradeHistoryServiceImpl implements QueryMemberGradeHistoryService {
 
     private final QueryMemberGradeHistoryRepository queryMemberGradeHistoryRepository;
+    private final QueryMemberRepository queryMemberRepository;
     private final Clock clock;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional(readOnly = true)
-    public List<MemberGradeHistoryQueryResponseDto> findByMemberId(
-            long memberId,
-            PeriodQueryRequestDto request
+    public Page<MemberGradeHistoryQueryResponseDto> getByLoginId(
+            String loginId,
+            PeriodQueryRequestDto request,
+            Pageable pageable
     ) {
         request.validate(clock);
-        return queryMemberGradeHistoryRepository.findByMemberIdAndPeriod(
-                memberId,
+        if(!queryMemberRepository.existsMemberByLoginId(loginId)) {
+            throw new MemberNotFoundException("Member loginId:" + loginId);
+        }
+        return queryMemberGradeHistoryRepository.findByLoginIdAndPeriod(
+                loginId,
                 request.getStartDateOrDefaultValue(clock),
-                request.getEndDateOrDefaultValue(clock)
+                request.getEndDateOrDefaultValue(clock),
+                pageable
         );
     }
 }

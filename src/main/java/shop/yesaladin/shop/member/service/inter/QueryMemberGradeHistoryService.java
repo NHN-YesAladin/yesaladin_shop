@@ -1,7 +1,8 @@
 package shop.yesaladin.shop.member.service.inter;
 
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.member.dto.MemberGradeHistoryQueryResponseDto;
 
@@ -16,14 +17,16 @@ public interface QueryMemberGradeHistoryService {
     /**
      * 회원의 등급내역을 조회 하기 위한 메서드 입니다.
      *
-     * @param memberId 조회할 회원 id
+     * @param loginId 조회할 회원 id
      * @param request  조회할 기간
+     * @param pageable 페이지 번호와 사이즈
      * @return 회원의 등급 내역
      * @author 최예린
      * @since 1.0
      */
-    List<MemberGradeHistoryQueryResponseDto> findByMemberId(
-            long memberId,
-            PeriodQueryRequestDto request
+    Page<MemberGradeHistoryQueryResponseDto> getByLoginId(
+            String loginId,
+            PeriodQueryRequestDto request,
+            Pageable pageable
     );
 }

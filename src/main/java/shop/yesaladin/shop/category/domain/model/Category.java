@@ -18,6 +18,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import shop.yesaladin.shop.category.exception.AlreadyDeletedCategoryException;
 
 /**
  * 카테고리 엔티티
@@ -35,11 +36,11 @@ import lombok.ToString;
 @Entity
 public class Category {
 
-    public static int DEPTH_PARENT = 0;
-    public static int DEPTH_CHILD = 1;
-    public static int DEPTH_DISABLE = -1;
-    public static long TERM_OF_PARENT_ID = 10000L;
-    public static long TERM_OF_CHILD_ID = 100L;
+    public static final  int DEPTH_PARENT = 0;
+    public static final  int DEPTH_CHILD = 1;
+    public static final  int DEPTH_DISABLE = -1;
+    public static final  long TERM_OF_PARENT_ID = 10000L;
+    public static final  long TERM_OF_CHILD_ID = 100L;
 
     @Id
     private Long id;
@@ -102,21 +103,12 @@ public class Category {
      * @param nameBeforeChanging 변경감지로 인해 이름이 변경 되는 경우, 기존 엔티티의 이름을 저장하기 위하여 사용
      */
     public void disableCategory(String nameBeforeChanging) {
+        if (this.isDisable) {
+            throw new AlreadyDeletedCategoryException(this.id);
+        }
         this.isDisable = true;
         this.name = nameBeforeChanging;
     }
 
-    //TODO 연관관계 편의 메서드 필요성 검토
-    public void addChildren() {
-        this.parent.getChildren().add(this);
-    }
-
-    public void changeParent(Category parent) {
-        if (Objects.nonNull(this.parent)) {
-            this.parent.getChildren().remove(this);
-        }
-        this.parent = parent;
-        parent.getChildren().add(this);
-    }
 
 }

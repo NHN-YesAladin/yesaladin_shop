@@ -22,8 +22,9 @@ import shop.yesaladin.shop.member.persistence.converter.MemberGradeCodeConverter
 /**
  * 회원의 엔티티 클래스 입니다.
  *
- * @author : 송학현, 최예린
- * @since : 1.0
+ * @author 송학현
+ * @author 최예린
+ * @since 1.0
  */
 @Getter
 @Builder
@@ -76,6 +77,15 @@ public class Member {
     @Column(name = "is_blocked", nullable = false)
     private boolean isBlocked;
 
+    @Column(name = "blocked_reason")
+    private String blockedReason;
+
+    @Column(name = "blocked_date")
+    private LocalDate blockedDate;
+
+    @Column(name = "unblocked_date")
+    private LocalDate unblockedDate;
+
     @Column(name = "member_grade_id")
     @Convert(converter = MemberGradeCodeConverter.class)
     private MemberGrade memberGrade;
@@ -89,8 +99,8 @@ public class Member {
      *
      * @param compare 비교 대상 Member entity 입니다.
      * @return loginId 가 중복 인지에 대한 결과
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     public boolean isSameLoginId(Member compare) {
         return Objects.equals(this.loginId, compare.getLoginId());
@@ -101,8 +111,8 @@ public class Member {
      *
      * @param compare 비교 대상 Member entity 입니다.
      * @return nickname 이 중복 인지에 대한 결과
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     public boolean isSameNickname(Member compare) {
         return Objects.equals(this.nickname, compare.getNickname());
@@ -116,9 +126,10 @@ public class Member {
      */
     public void unblockMember() {
         if (!this.isBlocked) {
-            throw new AlreadyUnblockedMemberException(this.id);
+            throw new AlreadyUnblockedMemberException(this.loginId);
         }
         this.isBlocked = false;
+        this.unblockedDate = LocalDate.now();
     }
 
     /**
@@ -127,11 +138,13 @@ public class Member {
      * @author 최예린
      * @since 1.0
      */
-    public void blockMember() {
+    public void blockMember(String blockedReason) {
         if (this.isBlocked) {
-            throw new AlreadyBlockedMemberException(this.id);
+            throw new AlreadyBlockedMemberException(this.loginId);
         }
         this.isBlocked = true;
+        this.blockedReason = blockedReason;
+        this.blockedDate = LocalDate.now();
     }
 
     /**
@@ -143,5 +156,24 @@ public class Member {
      */
     public void changeNickname(String newNickname) {
         this.nickname = newNickname;
+    }
+
+    /**
+     * Member entity를 soft delete 하기 위한 기능 입니다.
+     *
+     * @author 송학현
+     * @since 1.0
+     */
+    public void withdrawMember() {
+        String deleteUniqueField = "" + this.id;
+        this.isWithdrawal = true;
+        this.withdrawalDate = LocalDate.now();
+        this.name = deleteUniqueField;
+        this.nickname = deleteUniqueField;
+        this.birthYear = 0;
+        this.birthMonth = 0;
+        this.birthDay = 0;
+        this.phone = deleteUniqueField;
+        this.password = "";
     }
 }

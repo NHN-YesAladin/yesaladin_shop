@@ -13,7 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
-import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
+import shop.yesaladin.shop.member.dummy.MemberDummy;
 
 @Transactional
 @SpringBootTest
@@ -26,25 +26,39 @@ class QueryDslQueryMemberAddressRepositoryTest {
     QueryDslQueryMemberAddressRepository queryMemberAddressRepository;
     private String address = "Gwang-ju buk-gu yongbong-dong";
     private boolean isDefault = false;
+    private boolean isDeleted = false;
+    private String loginId = "user@1";
     private Member member;
     private MemberAddress memberAddress;
 
     @BeforeEach
     void setUp() {
-        member = DummyMember.member();
+        member = MemberDummy.dummyWithLoginId(loginId);
         entityManager.persist(member);
 
         memberAddress = MemberAddress.builder()
                 .address(address)
                 .isDefault(isDefault)
+                .isDeleted(isDeleted)
                 .member(member)
                 .build();
     }
 
     @Test
+    void countByLoginId() {
+        //given
+        entityManager.persist(memberAddress);
+
+        //when
+        long result = queryMemberAddressRepository.countByLoginId(loginId);
+
+        //then
+        assertThat(result).isEqualTo(1);
+    }
+    @Test
     void findByMember() {
         //when
-        List<MemberAddress> memberAddressList = queryMemberAddressRepository.findByMember(member);
+        List<MemberAddress> memberAddressList = queryMemberAddressRepository.findByLoginId(member);
 
         //then
         assertThat(memberAddressList).isEmpty();
@@ -71,12 +85,12 @@ class QueryDslQueryMemberAddressRepositoryTest {
     void getByMemberIdAndMemberAddressId() {
         //given
         entityManager.persist(memberAddress);
-        Long memberId = member.getId();
-        Long addressId = memberAddress.getId();
+        String loginId = member.getLoginId();
+        long addressId = memberAddress.getId();
 
         //when
-        Optional<MemberAddress> result = queryMemberAddressRepository.getByMemberIdAndMemberAddressId(
-                memberId,
+        Optional<MemberAddress> result = queryMemberAddressRepository.getByLoginIdAndMemberAddressId(
+                loginId,
                 addressId
         );
 
@@ -84,6 +98,8 @@ class QueryDslQueryMemberAddressRepositoryTest {
         assertThat(result).isPresent();
         assertThat(result.get().getId()).isEqualTo(addressId);
         assertThat(result.get().getAddress()).isEqualTo(address);
+        assertThat(result.get().isDeleted()).isEqualTo(isDeleted);
+        assertThat(result.get().isDefault()).isEqualTo(isDefault);
         assertThat(result.get().getMember()).isEqualTo(member);
 
     }
@@ -92,12 +108,12 @@ class QueryDslQueryMemberAddressRepositoryTest {
     void existByMemberIdAndMemberAddressId() {
         //given
         entityManager.persist(memberAddress);
-        Long memberId = member.getId();
-        Long addressId = memberAddress.getId();
+        String loginId = member.getLoginId();
+        long addressId = memberAddress.getId();
 
         //when
-        boolean result = queryMemberAddressRepository.existByMemberIdAndMemberAddressId(
-                memberId,
+        boolean result = queryMemberAddressRepository.existByLoginIdAndMemberAddressId(
+                loginId,
                 addressId
         );
 

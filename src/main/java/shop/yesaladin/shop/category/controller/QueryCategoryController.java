@@ -26,7 +26,10 @@ import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/v1/categories")
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+// 테스트 상황에 카테고리 조회 필요시, Front 프로젝트의 port를 8080 혹은 9090으로 놓고 테스트
+@CrossOrigin(origins = {"http://localhost:8080", "http://localhost:9090",
+        "http://test.yesaladin.shop:9090",
+        "https://www.yesaladin.shop"})
 public class QueryCategoryController {
 
     private final QueryCategoryService queryCategoryService;
@@ -70,7 +73,7 @@ public class QueryCategoryController {
      *
      * @return 카테고리의 일부 데이터를 List화 하여 반환
      */
-    @GetMapping("/parents")
+    @GetMapping(params = "cate=parents")
     public List<CategoryResponseDto> getParentCategories() {
         return queryCategoryService.findParentCategories();
     }
@@ -81,7 +84,7 @@ public class QueryCategoryController {
      * @param parentId
      * @return
      */
-    @GetMapping("/{parentId}/children")
+    @GetMapping(value = "/{parentId}", params = "cate=children")
     public List<CategoryResponseDto> getChildCategoriesByParentId(@PathVariable Long parentId) {
         return queryCategoryService.findChildCategoriesByParentId(parentId);
     }

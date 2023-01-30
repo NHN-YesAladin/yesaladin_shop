@@ -1,7 +1,10 @@
 package shop.yesaladin.shop.payment.domain.model;
 
-import java.time.LocalDate;
+import com.fasterxml.jackson.databind.JsonNode;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -15,6 +18,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.payment.persistence.converter.PaymentCodeConverter;
 
@@ -36,14 +40,11 @@ public class Payment {
     @Column(length = 200)
     private String id;
 
-    @Column(name = "last_transaction_key", nullable = false, length = 64)
+    @Column(name = "last_transaction_key", length = 64)
     private String lastTransactionKey;
 
     @Column(name = "order_name", nullable = false, length = 100)
     private String orderName;
-
-    @Column(nullable = false, length = 50)
-    private String method;
 
     @Column(nullable = false, length = 3)
     private String currency;
@@ -63,14 +64,11 @@ public class Payment {
     @Column(nullable = false)
     private long vat;
 
-    @Column(nullable = false, length = 20)
-    private String status;
-
     @Column(name = "requested_datetime", nullable = false)
-    private LocalDate requestedDatetime;
+    private LocalDateTime requestedDatetime;
 
     @Column(name = "approved_datetime", nullable = false)
-    private LocalDate approvedDatetime;
+    private LocalDateTime approvedDatetime;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)
@@ -79,4 +77,84 @@ public class Payment {
     @Column(name = "payment_code_id")
     @Convert(converter = PaymentCodeConverter.class)
     private PaymentCode paymentCode;
+
+    @Column(name = "method_code_id")
+    @Convert(converter = PaymentCodeConverter.class)
+    private PaymentCode method;
+
+    @Column(name = "status_code_id")
+    @Convert(converter = PaymentCodeConverter.class)
+    private PaymentCode status;
+
+    @OneToOne(mappedBy = "payment", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST,
+            CascadeType.MERGE})
+    private PaymentCard paymentCard;
+
+    @OneToOne(mappedBy = "payment", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST,
+            CascadeType.MERGE})
+    private PaymentCancel paymentCancel;
+
+    public static Payment toEntity(JsonNode jsonNode, Order order) {
+        String paymentId = jsonNode.get("paymentKey").asText();
+
+        Payment payment = Payment.builder()
+                .id(paymentId)
+                .lastTransactionKey(jsonNode.get("lastTransactionKey").asText())
+                .orderName(jsonNode.get("orderName").asText())
+                .currency(jsonNode.get("currency").asText())
+                .totalAmount(jsonNode.get("totalAmount").asLong())
+                .balanceAmount(jsonNode.get("balanceAmount").asLong())
+                .suppliedAmount(jsonNode.get("suppliedAmount").asLong())
+                .taxFreeAmount(jsonNode.get("taxFreeAmount").asLong())
+                .vat(jsonNode.get("vat").asLong())
+                .requestedDatetime(ZonedDateTime.parse(jsonNode.get("requestedAt").asText())
+                        .withZoneSameInstant(
+                                ZoneId.of("Asia/Seoul"))
+                        .toLocalDateTime())
+                .approvedDatetime(ZonedDateTime.parse(jsonNode.get("approvedAt").asText())
+                        .withZoneSameInstant(ZoneId.of("Asia/Seoul"))
+                        .toLocalDateTime())
+                .order(order)
+                .paymentCode(PaymentCode.valueOf(jsonNode.get("type").asText()))
+                .method(PaymentCode.findByName(jsonNode.get("method").asText()))
+                .status(PaymentCode.valueOf(jsonNode.get("status").asText()))
+                .build();
+        PaymentCard paymentCard = PaymentCard.builder()
+                .id(paymentId)
+                .payment(payment)
+                .amount(jsonNode.get("card").get("amount").asLong())
+                .number(jsonNode.get("card").get("number").asText())
+                .installmentPlanMonths(jsonNode.get("card").get("installmentPlanMonths").asInt())
+                .approveNo(jsonNode.get("card").get("approveNo").asText())
+                .useCardPoint(jsonNode.get("card").get("useCardPoint").asBoolean())
+                .isInterestFree(jsonNode.get("card").get("isInterestFree").asBoolean())
+                .interestPayer(jsonNode.get("card").get("interestPayer").asText())
+                .cardCode(PaymentCode.findByName(jsonNode.get("card").get("cardType").asText()))
+                .ownerCode(PaymentCode.findByName(jsonNode.get("card").get("ownerType").asText()))
+                .acquireStatus(PaymentCode.valueOf(jsonNode.get("card")
+                        .get("acquireStatus")
+                        .asText()))
+                .issuerCode(PaymentCardAcquirerCode.findByName(jsonNode.get("card")
+                        .get("issuerCode")
+                        .asText()))
+                .acquirerCode(PaymentCardAcquirerCode.findByName(jsonNode.get("card")
+                        .get("acquirerCode")
+                        .asText()))
+                .build();
+        payment.setPaymentCard(paymentCard);
+        return payment;
+    }
+
+    public void setPaymentCard(PaymentCard paymentCard) {
+        this.paymentCard = paymentCard;
+    }
+
+    public void setPaymentCancel(PaymentCancel paymentCancel) {
+        this.paymentCancel = paymentCancel;
+    }
+
+    public void setStatus(PaymentCode status) {
+        this.status = status;
+    }
 }
+

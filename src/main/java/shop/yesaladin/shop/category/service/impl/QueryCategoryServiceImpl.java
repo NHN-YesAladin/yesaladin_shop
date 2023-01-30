@@ -30,10 +30,8 @@ public class QueryCategoryServiceImpl implements QueryCategoryService {
     private final QueryCategoryRepository queryCategoryRepository;
 
     /**
-     * 페이징된 카테고리 리스트 조회를 위한 기능
+     *  {@inheritDoc}
      *
-     * @param pageable 페이징 처리를 위한 객체
-     * @return 페이징 된 CategoryResponse Page 객체
      */
     @Transactional(readOnly = true)
     @Override
@@ -52,10 +50,8 @@ public class QueryCategoryServiceImpl implements QueryCategoryService {
     }
 
     /**
-     * 1차 카테고리를 조회 하기 위한 기능 queryCategoryRepository.findCategories(null,1차 카테고리의 깊이)를 사용하여 조회 (동적
-     * 쿼리)
+     *  {@inheritDoc}
      *
-     * @return CategoryResponse 카테고리의 일부 정보를 담고 있는 dto
      */
     @Transactional(readOnly = true)
     @Override
@@ -84,10 +80,8 @@ public class QueryCategoryServiceImpl implements QueryCategoryService {
     }
 
     /**
-     * 1차 카테고리 id에 해당하는 모든 2차 카테고리를 조회 하는 기능 (paging x)
+     *  {@inheritDoc}
      *
-     * @param parentId 2차 카테고리의 부모 카테고리의 id
-     * @return CategoryResponse 카테고리의 일부 정보를 담고 있는 dto
      */
     @Transactional(readOnly = true)
     @Override
@@ -97,10 +91,8 @@ public class QueryCategoryServiceImpl implements QueryCategoryService {
 
 
     /**
-     * 단일 카테고리 조회를 위한 기능
+     *  {@inheritDoc}
      *
-     * @param id 조회하고자 하는 카테고리 id
-     * @return CategoryResponse 카테고리의 일부 정보를 담고 있는 dto
      */
     @Transactional(readOnly = true)
     @Override
@@ -109,17 +101,7 @@ public class QueryCategoryServiceImpl implements QueryCategoryService {
         return CategoryResponseDto.fromEntity(category);
     }
 
-    /**
-     * 카테고리 id를 통해 부모 카테고리를 조회 하기위한 기능
-     *
-     * @param id 부모 카테고리의 id
-     * @return 조회된 부모 Category
-     */
-    @Transactional(readOnly = true)
-    @Override
-    public Category findInnerCategoryById(long id) {
-        return tryGetCategoryById(id);
-    }
+
 
     /**
      * 카테고리 조회

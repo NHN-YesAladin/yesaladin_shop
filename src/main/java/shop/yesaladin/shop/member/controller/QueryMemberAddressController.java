@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import shop.yesaladin.shop.member.dto.MemberAddressQueryDto;
+import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
 import shop.yesaladin.shop.member.service.inter.QueryMemberAddressService;
 
 /**
@@ -19,7 +19,7 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberAddressService;
  */
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/v1/members/{memberId}/addresses")
+@RequestMapping("/v1/members/{loginId}/addresses")
 public class QueryMemberAddressController {
 
     private final QueryMemberAddressService queryMemberAddressService;
@@ -27,14 +27,14 @@ public class QueryMemberAddressController {
     /**
      * 회원아이디를 통해 배송지를 조회합니다.
      *
-     * @param memberId 회원 id
+     * @param loginId 회원 아이디
      * @return 회원의 배송지 목록
      * @author 최예린
      * @since 1.0
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<MemberAddressQueryDto> getMemberAddressByMemberId(@PathVariable Long memberId) {
-        return queryMemberAddressService.findByMemberId(memberId);
+    public List<MemberAddressResponseDto> getMemberAddressByMemberId(@PathVariable String loginId) {
+        return queryMemberAddressService.findByLoginId(loginId);
     }
 }

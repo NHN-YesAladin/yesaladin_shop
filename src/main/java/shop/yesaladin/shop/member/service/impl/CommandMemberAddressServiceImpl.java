@@ -8,9 +8,9 @@ import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.member.domain.repository.CommandMemberAddressRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberAddressRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
+import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
 import shop.yesaladin.shop.member.dto.MemberAddressCreateRequestDto;
-import shop.yesaladin.shop.member.dto.MemberAddressCreateResponseDto;
-import shop.yesaladin.shop.member.dto.MemberAddressUpdateResponseDto;
+import shop.yesaladin.shop.member.exception.AlreadyRegisteredUpToLimit;
 import shop.yesaladin.shop.member.exception.MemberAddressNotFoundException;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.CommandMemberAddressService;
@@ -29,61 +29,81 @@ public class CommandMemberAddressServiceImpl implements CommandMemberAddressServ
     private final CommandMemberAddressRepository commandMemberAddressRepository;
     private final QueryMemberAddressRepository queryMemberAddressRepository;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
-    public MemberAddressCreateResponseDto save(
-            long memberId,
+    public MemberAddressResponseDto save(
+            String loginId,
             MemberAddressCreateRequestDto request
     ) {
-        Member member = tryGetMemberById(memberId);
+        Member member = tryGetMemberById(loginId);
+        checkMemberAddressCountLimitByLoginId(loginId);
 
         MemberAddress newMemberAddress = request.toEntity(member);
+        if (newMemberAddress.isDefault()) {
+            commandMemberAddressRepository.updateIsDefaultToFalseByLoginId(loginId);
+        }
 
         MemberAddress savedMemberAddress = commandMemberAddressRepository.save(newMemberAddress);
 
-        return MemberAddressCreateResponseDto.fromEntity(savedMemberAddress);
+        return MemberAddressResponseDto.fromEntity(savedMemberAddress);
     }
 
+    private void checkMemberAddressCountLimitByLoginId(String loginId) {
+        if (queryMemberAddressRepository.countByLoginId(loginId) == 10) {
+            throw new AlreadyRegisteredUpToLimit(loginId);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
-    public MemberAddressUpdateResponseDto markAsDefault(long memberId, long addressId) {
+    public MemberAddressResponseDto markAsDefault(String loginId, long addressId) {
         MemberAddress memberAddress = tryGetMemberAddressByMemberIdAndMemberAddressId(
-                memberId,
+                loginId,
                 addressId
         );
 
-        commandMemberAddressRepository.updateIsDefaultToFalseByMemberId(memberId);
+        commandMemberAddressRepository.updateIsDefaultToFalseByLoginId(loginId);
 
         memberAddress.markAsDefault();
 
-        return MemberAddressUpdateResponseDto.fromEntity(memberAddress);
+        return MemberAddressResponseDto.fromEntity(memberAddress);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
-    public long delete(long memberId, long addressId) {
-        if (!queryMemberAddressRepository.existByMemberIdAndMemberAddressId(memberId, addressId)) {
-            throw new MemberAddressNotFoundException(addressId);
-        }
+    public long delete(String loginId, long addressId) {
+        MemberAddress memberAddress = tryGetMemberAddressByMemberIdAndMemberAddressId(
+                loginId,
+                addressId
+        );
 
-        commandMemberAddressRepository.deleteById(addressId);
+        memberAddress.delete();
 
         return addressId;
     }
 
     private MemberAddress tryGetMemberAddressByMemberIdAndMemberAddressId(
-            long memberId,
+            String loginId,
             long addressId
     ) {
-        return queryMemberAddressRepository.getByMemberIdAndMemberAddressId(
-                memberId,
+        return queryMemberAddressRepository.getByLoginIdAndMemberAddressId(
+                loginId,
                 addressId
         ).orElseThrow(() -> new MemberAddressNotFoundException(addressId));
     }
 
 
-    private Member tryGetMemberById(long memberId) {
-        return queryMemberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException("Member Id: " + memberId));
+    private Member tryGetMemberById(String loginId) {
+        return queryMemberRepository.findMemberByLoginId(loginId)
+                .orElseThrow(() -> new MemberNotFoundException("Member Id: " + loginId));
     }
 }

@@ -24,12 +24,24 @@ public class QueryDslQueryMemberAddressRepository implements QueryMemberAddressR
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<MemberAddress> findByMember(Member member) {
+    public long countByLoginId(String loginId) {
+        QMemberAddress memberAddress = QMemberAddress.memberAddress;
+
+        return queryFactory.select(memberAddress.count())
+                .from(memberAddress)
+                .where(memberAddress.member.loginId.eq(loginId)
+                        .and(memberAddress.isDeleted.isFalse()))
+                .fetchFirst();
+    }
+
+    @Override
+    public List<MemberAddress> findByLoginId(Member member) {
         QMemberAddress memberAddress = QMemberAddress.memberAddress;
 
         return queryFactory.select(memberAddress)
                 .from(memberAddress)
-                .where(memberAddress.member.eq(member))
+                .where(memberAddress.member.eq(member).and(memberAddress.isDeleted.isFalse()))
+                .orderBy(memberAddress.isDefault.asc())
                 .fetch();
     }
 
@@ -44,27 +56,29 @@ public class QueryDslQueryMemberAddressRepository implements QueryMemberAddressR
     }
 
     @Override
-    public Optional<MemberAddress> getByMemberIdAndMemberAddressId(
-            long memberId,
+    public Optional<MemberAddress> getByLoginIdAndMemberAddressId(
+            String loginId,
             long memberAddressId
     ) {
         QMemberAddress memberAddress = QMemberAddress.memberAddress;
 
         return Optional.ofNullable(queryFactory.select(memberAddress)
                 .from(memberAddress)
-                .where(memberAddress.member.id.eq(memberId)
-                        .and(memberAddress.id.eq(memberAddressId)))
+                .where(memberAddress.member.loginId.eq(loginId)
+                        .and(memberAddress.id.eq(memberAddressId))
+                        .and(memberAddress.isDeleted.isFalse()))
                 .fetchFirst());
     }
 
     @Override
-    public boolean existByMemberIdAndMemberAddressId(long memberId, long memberAddressId) {
+    public boolean existByLoginIdAndMemberAddressId(String loginId, long memberAddressId) {
         QMemberAddress memberAddress = QMemberAddress.memberAddress;
 
         MemberAddress result = queryFactory.select(memberAddress)
                 .from(memberAddress)
-                .where(memberAddress.member.id.eq(memberId)
-                        .and(memberAddress.id.eq(memberAddressId)))
+                .where(memberAddress.member.loginId.eq(loginId)
+                        .and(memberAddress.id.eq(memberAddressId))
+                        .and(memberAddress.isDeleted.isFalse()))
                 .fetchFirst();
 
         return Objects.nonNull(result);

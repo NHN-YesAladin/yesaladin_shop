@@ -6,8 +6,8 @@ import shop.yesaladin.shop.member.domain.model.Member;
 /**
  * 회원 조회 관련 repository interface 입니다.
  *
- * @author : 송학현
- * @since : 1.0
+ * @author 송학현
+ * @since 1.0
  */
 public interface QueryMemberRepository {
 
@@ -16,8 +16,8 @@ public interface QueryMemberRepository {
      *
      * @param id primary key
      * @return 조회된 회원
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     Optional<Member> findById(Long id);
 
@@ -26,8 +26,8 @@ public interface QueryMemberRepository {
      *
      * @param nickname 회원의 nickname 입니다.
      * @return 조회된 회원
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     Optional<Member> findMemberByNickname(String nickname);
 
@@ -36,8 +36,8 @@ public interface QueryMemberRepository {
      *
      * @param loginId 회원의 loginId 입니다.
      * @return 조회된 회원
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     Optional<Member> findMemberByLoginId(String loginId);
 
@@ -46,8 +46,8 @@ public interface QueryMemberRepository {
      *
      * @param email 회원의 email 입니다.
      * @return 조회된 회원
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     Optional<Member> findMemberByEmail(String email);
 
@@ -56,8 +56,8 @@ public interface QueryMemberRepository {
      *
      * @param loginId 회원의 loginId 입니다.
      * @return 존재 유무
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     boolean existsMemberByLoginId(String loginId);
 
@@ -66,8 +66,8 @@ public interface QueryMemberRepository {
      *
      * @param nickname 회원의 nickname 입니다.
      * @return 존재 유무
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     boolean existsMemberByNickname(String nickname);
 
@@ -80,4 +80,14 @@ public interface QueryMemberRepository {
      * @since : 1.0
      */
     boolean existsMemberByEmail(String email);
+
+    /**
+     * 회원의 phone 을 통해 회원이 존재 하는지 유무를 판별합니다.
+     *
+     * @param phone 회원의 phone 입니다.
+     * @return 존재 유무
+     * @author 송학현
+     * @since 1.0
+     */
+    boolean existsMemberByPhone(String phone);
 }

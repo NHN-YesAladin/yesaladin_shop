@@ -20,13 +20,20 @@ import shop.yesaladin.shop.member.domain.repository.CommandMemberRepository;
 import shop.yesaladin.shop.member.domain.repository.CommandMemberRoleRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryRoleRepository;
+import shop.yesaladin.shop.member.dto.MemberBlockRequestDto;
 import shop.yesaladin.shop.member.dto.MemberBlockResponseDto;
 import shop.yesaladin.shop.member.dto.MemberCreateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberCreateResponseDto;
+import shop.yesaladin.shop.member.dto.MemberUnblockResponseDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateResponseDto;
+import shop.yesaladin.shop.member.dto.MemberWithdrawResponseDto;
+import shop.yesaladin.shop.member.dummy.MemberDummy;
 import shop.yesaladin.shop.member.dummy.MemberRoleDummy;
 import shop.yesaladin.shop.member.dummy.RoleDummy;
+import shop.yesaladin.shop.member.exception.AlreadyBlockedMemberException;
+import shop.yesaladin.shop.member.exception.AlreadyUnblockedMemberException;
+import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.exception.MemberProfileAlreadyExistException;
 
 class CommandMemberServiceImplTest {
@@ -67,7 +74,7 @@ class CommandMemberServiceImplTest {
 
         Mockito.when(queryRoleRepository.findById(roleId)).thenReturn(Optional.of(role));
         Mockito.when(queryMemberRepository.existsMemberByLoginId(loginId))
-                        .thenReturn(true);
+                .thenReturn(true);
         Mockito.when(queryMemberRepository.existsMemberByNickname(nickname))
                 .thenReturn(false);
         Mockito.when(queryMemberRepository.existsMemberByEmail(email))
@@ -166,8 +173,8 @@ class CommandMemberServiceImplTest {
 
         Mockito.when(queryRoleRepository.findById(roleId)).thenReturn(Optional.of(role));
         // memberRole 등록
-        Mockito.when(commandMemberRoleRepository.save(any())).thenReturn(MemberRoleDummy.dummy(member, role));
-
+        Mockito.when(commandMemberRoleRepository.save(any()))
+                .thenReturn(MemberRoleDummy.dummy(member, role));
 
         Mockito.when(createDto.toEntity()).thenReturn(member);
 
@@ -188,91 +195,258 @@ class CommandMemberServiceImplTest {
     }
 
     @Test
+    @DisplayName("회원 정보 수정 실패-존재하지않는 회원")
+    void update_fail_NotFoundMember() {
+        //given
+        String loginId = "loginId";
+        String nickname = "nickname";
+
+        MemberUpdateRequestDto request = ReflectionUtils.newInstance(
+                MemberUpdateRequestDto.class,
+                nickname
+        );
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
+                .thenThrow(new MemberNotFoundException("Member loginId " + loginId));
+
+        //when, then
+        assertThatThrownBy(() -> service.update(loginId, request)).isInstanceOf(
+                MemberNotFoundException.class);
+
+        verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
+        verify(queryMemberRepository, never()).findMemberByNickname(nickname);
+
+    }
+
+    @Test
+    @DisplayName("회원 정보 수정 실패-중복된 닉네임")
+    void update_fail_AlreadyExistNickname() {
+        //given
+        String loginId = "loginId";
+        String nickname = "nickname";
+
+        Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
+        MemberUpdateRequestDto request = ReflectionUtils.newInstance(
+                MemberUpdateRequestDto.class,
+                nickname
+        );
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
+                .thenReturn(Optional.of(member));
+        Mockito.when(queryMemberRepository.findMemberByNickname(nickname))
+                .thenThrow(MemberProfileAlreadyExistException.class);
+
+        //when, then
+        assertThatThrownBy(() -> service.update(loginId, request)).isInstanceOf(
+                MemberProfileAlreadyExistException.class);
+
+        verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
+        verify(queryMemberRepository, times(1)).findMemberByNickname(nickname);
+    }
+
+    @Test
     @DisplayName("회원 정보 수정 성공")
     void update() {
         //given
-        long id = 1;
-        String name = "name";
+        String loginId = "user@1";
         String nickname = "nickname";
+
+        Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
         MemberUpdateRequestDto request = ReflectionUtils.newInstance(
                 MemberUpdateRequestDto.class,
                 nickname
         );
 
-        Member member = Member.builder()
-                .id(id)
-                .name(name)
-                .nickname(nickname)
-                .build();
-        Mockito.when(queryMemberRepository.findById(id)).thenReturn(Optional.of(member));
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
+                .thenReturn(Optional.of(member));
         Mockito.when(queryMemberRepository.findMemberByNickname(nickname))
                 .thenReturn(Optional.empty());
 
         //when
-        MemberUpdateResponseDto actualMember = service.update(id, request);
+        MemberUpdateResponseDto actualMember = service.update(loginId, request);
 
         //then
-        assertThat(actualMember.getId()).isEqualTo(id);
+        assertThat(actualMember.getLoginId()).isEqualTo(loginId);
         assertThat(actualMember.getNickname()).isEqualTo(nickname);
-        assertThat(actualMember.getName()).isEqualTo(name);
 
-        verify(queryMemberRepository, times(1)).findById(id);
+        verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
         verify(queryMemberRepository, times(1)).findMemberByNickname(nickname);
     }
 
     @Test
-    void block() {
+    @DisplayName("회원 차단 실패-존재하지않는 회원")
+    void block_fail_NotFoundMember() {
         //given
-        long id = 1;
-        boolean blocked = false;
-        String name = "name";
         String loginId = "loginId";
 
-        Member member = Member.builder()
-                .id(id)
-                .name(name)
-                .loginId(loginId)
-                .isBlocked(blocked)
-                .build();
-        Mockito.when(queryMemberRepository.findById(id)).thenReturn(Optional.of(member));
+        String blockedReason = "You are bad guy";
+        MemberBlockRequestDto request = ReflectionUtils.newInstance(
+                MemberBlockRequestDto.class,
+                blockedReason
+        );
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
+                .thenThrow(new MemberNotFoundException("Member loginId " + loginId));
 
-        //when
-        MemberBlockResponseDto actualMember = service.block(id);
+        //when, then
+        assertThatThrownBy(() -> service.block(loginId, request)).isInstanceOf(MemberNotFoundException.class);
 
-        //then
-        assertThat(actualMember.getId()).isEqualTo(id);
-        assertThat(actualMember.getName()).isEqualTo(name);
-        assertThat(actualMember.getLoginId()).isEqualTo(loginId);
-        assertThat(actualMember.isBlocked()).isTrue();
-
-        verify(queryMemberRepository, times(1)).findById(id);
+        verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
     }
 
     @Test
+    @DisplayName("회원 차단 실패-이미 차단되어있는 경우")
+    void block_fail_AlreadyBlockedMember() {
+        //given
+        String loginId = "loginId";
+
+        String blockedReason = "You are bad guy";
+        MemberBlockRequestDto request = ReflectionUtils.newInstance(
+                MemberBlockRequestDto.class,
+                blockedReason
+        );
+
+        Member member = Member.builder()
+                .loginId(loginId)
+                .isBlocked(true).build();
+
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
+                .thenReturn(Optional.of(member));
+
+        //when, then
+        assertThatThrownBy(() -> service.block(loginId, request)).isInstanceOf(AlreadyBlockedMemberException.class);
+
+        verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
+    }
+
+    @Test
+    @DisplayName("회원 차단 성공")
+    void block() {
+        //given
+        String loginId = "loginId";
+
+        String blockedReason = "You are bad guy";
+        MemberBlockRequestDto request = ReflectionUtils.newInstance(
+                MemberBlockRequestDto.class,
+                blockedReason
+        );
+
+        Member member = Member.builder()
+                .loginId(loginId)
+                .isBlocked(false).build();
+
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
+                .thenReturn(Optional.of(member));
+
+        //when
+        MemberBlockResponseDto actualMember = service.block(loginId, request);
+
+        //then
+        assertThat(actualMember.getLoginId()).isEqualTo(loginId);
+        assertThat(actualMember.getIsBlocked()).isTrue();
+
+        verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
+    }
+
+    @Test
+    @DisplayName("회원 차단 해지 실패-존재하지않는 회원")
+    void unblock_fail_NotFoundMember() {
+        //given
+        String loginId = "loginId";
+
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
+                .thenThrow(new MemberNotFoundException("Member loginId " + loginId));
+
+        //when, then
+        assertThatThrownBy(() -> service.unblock(loginId)).isInstanceOf(MemberNotFoundException.class);
+
+        verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
+    }
+
+    @Test
+    @DisplayName("회원 차단 해지 실패-이미 차단되어있는 경우")
+    void unblock_fail_AlreadyBlockedMember() {
+        //given
+        String loginId = "loginId";
+
+        Member member = Member.builder()
+                .loginId(loginId)
+                .isBlocked(false).build();
+
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
+                .thenReturn(Optional.of(member));
+
+        //when, then
+        assertThatThrownBy(() -> service.unblock(loginId)).isInstanceOf(
+                AlreadyUnblockedMemberException.class);
+
+        verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
+    }
+
+    @Test
+    @DisplayName("회원 차단 해지 성공")
     void unblock() {
         //given
-        long id = 1;
-        boolean blocked = true;
-        String name = "name";
         String loginId = "loginId";
+
+        Member member = Member.builder()
+                .loginId(loginId)
+                .isBlocked(true).build();
+
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
+                .thenReturn(Optional.of(member));
+
+        //when
+        MemberUnblockResponseDto actualMember = service.unblock(loginId);
+
+        //then
+        assertThat(actualMember.getLoginId()).isEqualTo(loginId);
+        assertThat(actualMember.getIsBlocked()).isFalse();
+
+        verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 회원을 삭제 시 예외가 발생한다.")
+    void withdrawMember_fail_whenMemberNotExist() throws Exception {
+        //given
+        String loginId = "loginId";
+
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
+                .thenReturn(Optional.empty());
+
+        //when
+        assertThatThrownBy(() -> service.withDraw(loginId))
+                .isInstanceOf(MemberNotFoundException.class);
+
+        //then
+        verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
+    }
+
+    @Test
+    @DisplayName("회원 삭제(soft delete) 성공")
+    void withdrawMember() throws Exception {
+        //given
+        long id = 1L;
+        String name = "testName";
+        String loginId = "loginId";
+
+        String deletedField = "" + id;
 
         Member member = Member.builder()
                 .id(id)
                 .name(name)
                 .loginId(loginId)
-                .isBlocked(blocked)
                 .build();
-        Mockito.when(queryMemberRepository.findById(id)).thenReturn(Optional.of(member));
+
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
+                .thenReturn(Optional.of(member));
 
         //when
-        MemberBlockResponseDto actualMember = service.unblock(id);
+        MemberWithdrawResponseDto response = service.withDraw(loginId);
 
         //then
-        assertThat(actualMember.getId()).isEqualTo(id);
-        assertThat(actualMember.getName()).isEqualTo(name);
-        assertThat(actualMember.getLoginId()).isEqualTo(loginId);
-        assertThat(actualMember.isBlocked()).isFalse();
+        assertThat(response.getId()).isEqualTo(id);
+        assertThat(response.getName()).isEqualTo(deletedField);
+        assertThat(response.isWithdrawal()).isTrue();
 
-        verify(queryMemberRepository, times(1)).findById(id);
+        verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
     }
 }

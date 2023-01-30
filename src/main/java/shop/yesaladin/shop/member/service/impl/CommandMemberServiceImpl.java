@@ -12,11 +12,14 @@ import shop.yesaladin.shop.member.domain.repository.CommandMemberRepository;
 import shop.yesaladin.shop.member.domain.repository.CommandMemberRoleRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryRoleRepository;
+import shop.yesaladin.shop.member.dto.MemberBlockRequestDto;
 import shop.yesaladin.shop.member.dto.MemberBlockResponseDto;
 import shop.yesaladin.shop.member.dto.MemberCreateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberCreateResponseDto;
+import shop.yesaladin.shop.member.dto.MemberUnblockResponseDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateResponseDto;
+import shop.yesaladin.shop.member.dto.MemberWithdrawResponseDto;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.exception.MemberProfileAlreadyExistException;
 import shop.yesaladin.shop.member.exception.MemberRoleNotFoundException;
@@ -25,8 +28,8 @@ import shop.yesaladin.shop.member.service.inter.CommandMemberService;
 /**
  * 회원 등록/수정/삭제용 서비스 구현체 입니다.
  *
- * @author : 송학현, 최예린
- * @since : 1.0
+ * @author 송학현, 최예린
+ * @since 1.0
  */
 @RequiredArgsConstructor
 @Service
@@ -38,12 +41,7 @@ public class CommandMemberServiceImpl implements CommandMemberService {
     private final CommandMemberRoleRepository commandMemberRoleRepository;
 
     /**
-     * 회원 등록을 위한 기능 입니다. 회원 등록시 ROLE_MEMBER 권한과 WHITE 회원 등급을 함께 등록합니다.
-     *
-     * @param createDto 회원 등록 요청 dto
-     * @return 등록된 회원 결과 dto
-     * @author : 송학현
-     * @since : 1.0
+     * {@inheritDoc}
      */
     @Transactional
     @Override
@@ -74,8 +72,8 @@ public class CommandMemberServiceImpl implements CommandMemberService {
      *
      * @param createDto 회원 등록 요청 dto
      * @throws MemberProfileAlreadyExistException loginId, nickname, email이 기존에 있다면 발생하는 예외입니다.
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     private void checkMemberProfileExist(MemberCreateRequestDto createDto) {
         if (queryMemberRepository.existsMemberByLoginId(createDto.getLoginId())) {
@@ -100,18 +98,12 @@ public class CommandMemberServiceImpl implements CommandMemberService {
     }
 
     /**
-     * 회원 정보 수정을 위한 기능입니다.
-     *
-     * @param id        정보를 수정한 회원 id
-     * @param updateDto 수정한 회원 정보 dto
-     * @return 수정된 결과를 반환할 dto
-     * @author 최예린
-     * @since 1.0
+     * {@inheritDoc}
      */
     @Transactional
     @Override
-    public MemberUpdateResponseDto update(Long id, MemberUpdateRequestDto updateDto) {
-        Member member = tryGetMemberById(id);
+    public MemberUpdateResponseDto update(String loginId, MemberUpdateRequestDto updateDto) {
+        Member member = tryGetMemberById(loginId);
 
         checkUniqueData(
                 queryMemberRepository.findMemberByNickname(updateDto.getNickname()),
@@ -123,47 +115,53 @@ public class CommandMemberServiceImpl implements CommandMemberService {
     }
 
     /**
-     * 회원 차단을 위한 기능 입니다.
-     *
-     * @param id 차단할 회원 id
-     * @author 최예린
-     * @since 1.0
+     * {@inheritDoc}
      */
     @Transactional
     @Override
-    public MemberBlockResponseDto block(Long id) {
-        Member member = tryGetMemberById(id);
+    public MemberBlockResponseDto block(String loginId, MemberBlockRequestDto request) {
+        Member member = tryGetMemberById(loginId);
 
-        member.blockMember();
+        member.blockMember(request.getBlockedReason());
 
         return MemberBlockResponseDto.fromEntity(member);
     }
 
     /**
-     * 회원 차단해지를 위한 기능 입니다.
-     *
-     * @param id 차단해지할 회원 id
-     * @author 최예린
-     * @since 1.0
+     * {@inheritDoc}
      */
     @Transactional
     @Override
-    public MemberBlockResponseDto unblock(Long id) {
-        Member member = tryGetMemberById(id);
+    public MemberUnblockResponseDto unblock(String loginId) {
+        Member member = tryGetMemberById(loginId);
 
         member.unblockMember();
 
-        return MemberBlockResponseDto.fromEntity(member);
+        return MemberUnblockResponseDto.fromEntity(member);
     }
 
-    private Member tryGetMemberById(Long id) {
-        return queryMemberRepository.findById(id)
-                .orElseThrow(() -> new MemberNotFoundException("Member Id: " + id));
+    private Member tryGetMemberById(String loginId) {
+        return queryMemberRepository.findMemberByLoginId(loginId)
+                .orElseThrow(() -> new MemberNotFoundException("Member loginId: " + loginId));
     }
 
     private void checkUniqueData(Optional<Member> member, String target) {
         if (member.isPresent()) {
             throw new MemberProfileAlreadyExistException(target);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public MemberWithdrawResponseDto withDraw(String loginId) {
+        Member member = queryMemberRepository.findMemberByLoginId(loginId)
+                .orElseThrow(() -> new MemberNotFoundException("Member loginId: " + loginId));
+
+        member.withdrawMember();
+
+        return MemberWithdrawResponseDto.fromEntity(member);
     }
 }

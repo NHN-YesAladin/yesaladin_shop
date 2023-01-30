@@ -1,209 +1,351 @@
 package shop.yesaladin.shop.product.service.impl;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.file.dto.FileResponseDto;
 import shop.yesaladin.shop.file.service.inter.CommandFileService;
 import shop.yesaladin.shop.file.service.inter.QueryFileService;
-import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
-import shop.yesaladin.shop.product.domain.repository.CommandProductRepository;
-import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
+import shop.yesaladin.shop.product.domain.repository.*;
 import shop.yesaladin.shop.product.dto.ProductCreateDto;
-import shop.yesaladin.shop.product.dto.ProductResponseDto;
-import shop.yesaladin.shop.product.dto.SubscribeProductResponseDto;
-import shop.yesaladin.shop.product.dto.TotalDiscountRateResponseDto;
-import shop.yesaladin.shop.product.dummy.DummyProductCreateDto;
-import shop.yesaladin.shop.product.dummy.DummyPublisher;
-import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
+import shop.yesaladin.shop.product.dto.ProductOnlyIdDto;
+import shop.yesaladin.shop.product.dto.ProductUpdateDto;
+import shop.yesaladin.shop.product.dummy.*;
+import shop.yesaladin.shop.product.exception.NegativeOrZeroQuantityException;
+import shop.yesaladin.shop.product.exception.ProductNotFoundException;
+import shop.yesaladin.shop.product.exception.RequestedQuantityLargerThanSellQuantityException;
 import shop.yesaladin.shop.product.service.inter.CommandProductService;
-import shop.yesaladin.shop.product.service.inter.CommandSubscribeProductService;
-import shop.yesaladin.shop.product.service.inter.CommandTotalDiscountRateService;
-import shop.yesaladin.shop.product.service.inter.QuerySubscribeProductService;
-import shop.yesaladin.shop.product.service.inter.QueryTotalDiscountRateService;
-import shop.yesaladin.shop.publish.domain.model.Publisher;
 import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
 import shop.yesaladin.shop.publish.service.inter.CommandPublishService;
-import shop.yesaladin.shop.publish.service.inter.CommandPublisherService;
 import shop.yesaladin.shop.publish.service.inter.QueryPublisherService;
-import shop.yesaladin.shop.tag.domain.model.Tag;
 import shop.yesaladin.shop.tag.dto.TagResponseDto;
 import shop.yesaladin.shop.tag.service.inter.CommandProductTagService;
-import shop.yesaladin.shop.tag.service.inter.CommandTagService;
 import shop.yesaladin.shop.tag.service.inter.QueryTagService;
+import shop.yesaladin.shop.writing.dto.AuthorResponseDto;
 import shop.yesaladin.shop.writing.service.inter.CommandWritingService;
+import shop.yesaladin.shop.writing.service.inter.QueryAuthorService;
+
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 class CommandProductServiceImplTest {
 
-    private final String ISBN = "00001-...";
+    private final String URL = "https://api-storage.cloud.toast.com/v1/AUTH_/container/domain/type";
+    private final String ISBN = "0000000000001";
+    private final Long ID = 1L;
 
+    private CommandProductService service;
     // Product
-    private CommandProductService commandProductService;
     private CommandProductRepository commandProductRepository;
     private QueryProductRepository queryProductRepository;
+
+    // SubscribeProduct
+    private CommandSubscribeProductRepository commandSubscribeProductRepository;
+    private QuerySubscribeProductRepository querySubscribeProductRepository;
+
+    // TotalDiscountRate
+    private QueryTotalDiscountRateRepository queryTotalDiscountRateRepository;
 
     // File
     private CommandFileService commandFileService;
     private QueryFileService queryFileService;
 
-    // SubscribeProduct
-    private CommandSubscribeProductService commandSubscribeProductService;
-    private QuerySubscribeProductService querySubscribeProductService;
-
-    // TotalDiscountRate
-    private QueryTotalDiscountRateService queryTotalDiscountRateService;
-
     // Writing
     private CommandWritingService commandWritingService;
+    private QueryAuthorService queryAuthorService;
 
-    // Member
-    private QueryMemberService queryMemberService;
-
-    // Publisher
-    private CommandPublisherService commandPublisherService;
-    private QueryPublisherService queryPublisherService;
+    // Publish
     private CommandPublishService commandPublishService;
+    private QueryPublisherService queryPublisherService;
 
     // Tag
-    private CommandTagService commandTagService;
     private QueryTagService queryTagService;
     private CommandProductTagService commandProductTagService;
-
-    // TotalDiscountRate
-    private CommandTotalDiscountRateService commandTotalDiscountRateService;
 
     @BeforeEach
     void setUp() {
         commandProductRepository = mock(CommandProductRepository.class);
         queryProductRepository = mock(QueryProductRepository.class);
+        commandSubscribeProductRepository = mock(CommandSubscribeProductRepository.class);
+        querySubscribeProductRepository = mock(QuerySubscribeProductRepository.class);
+        queryTotalDiscountRateRepository = mock(QueryTotalDiscountRateRepository.class);
         commandFileService = mock(CommandFileService.class);
         queryFileService = mock(QueryFileService.class);
-        commandSubscribeProductService = mock(CommandSubscribeProductService.class);
-        querySubscribeProductService = mock(QuerySubscribeProductService.class);
-        queryTotalDiscountRateService = mock(QueryTotalDiscountRateService.class);
         commandWritingService = mock(CommandWritingService.class);
-        queryMemberService = mock(QueryMemberService.class);
-        commandPublisherService = mock(CommandPublisherService.class);
-        queryPublisherService = mock(QueryPublisherService.class);
+        queryAuthorService = mock(QueryAuthorService.class);
         commandPublishService = mock(CommandPublishService.class);
-        commandTagService = mock(CommandTagService.class);
+        queryPublisherService = mock(QueryPublisherService.class);
         queryTagService = mock(QueryTagService.class);
         commandProductTagService = mock(CommandProductTagService.class);
 
-        commandTotalDiscountRateService = mock(CommandTotalDiscountRateService.class);
-
-        commandProductService = new CommandProductServiceImpl(
+        service = new CommandProductServiceImpl(
                 commandProductRepository,
                 queryProductRepository,
+                commandSubscribeProductRepository,
+                querySubscribeProductRepository,
+                queryTotalDiscountRateRepository,
                 commandFileService,
                 queryFileService,
-                commandSubscribeProductService,
-                querySubscribeProductService,
-                queryTotalDiscountRateService,
                 commandWritingService,
-                queryMemberService,
-                commandPublisherService,
-                queryPublisherService,
+                queryAuthorService,
                 commandPublishService,
-                commandTagService,
+                queryPublisherService,
                 queryTagService,
                 commandProductTagService
         );
     }
 
     @Test
+    @DisplayName("상품 등록 성공")
     void create() {
         // given
-        ProductCreateDto productCreateDto = DummyProductCreateDto.dummy(ISBN);
-
-        SubscribeProduct subscribeProduct = productCreateDto.toSubscribeProductEntity();
-        File thumbnailFile = productCreateDto.toThumbnailFileEntity();
-        File ebookFile = productCreateDto.toEbookFileEntity();
+        File thumbnailFile = DummyFile.dummy(URL + "/image.png");
+        File ebookFile = DummyFile.dummy(URL + "/ebook.pdf");
+        SubscribeProduct subscribeProduct = DummySubscribeProduct.dummy();
         TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
 
-        commandSubscribeProductService.register(subscribeProduct);
-        commandFileService.register(thumbnailFile);
-        commandFileService.register(ebookFile);
-        commandTotalDiscountRateService.register(totalDiscountRate);
+        Mockito.when(commandFileService.register(any()))
+                .thenReturn(new FileResponseDto(1L, thumbnailFile.getUrl(), thumbnailFile.getUploadDateTime()));
+        Mockito.when(commandFileService.register(ebookFile))
+                .thenReturn(new FileResponseDto(2L, ebookFile.getUrl(), ebookFile.getUploadDateTime()));
 
-        Product product = productCreateDto.toProductEntity(
-                subscribeProduct,
-                thumbnailFile,
-                ebookFile,
-                totalDiscountRate
-        );
+        Mockito.when(commandSubscribeProductRepository.save(any())).thenReturn(subscribeProduct);
 
-        when(commandProductRepository.save(any())).thenReturn(product);
+        Mockito.when(queryTotalDiscountRateRepository.findById(anyInt())).thenReturn(Optional.ofNullable(totalDiscountRate));
 
-        SubscribeProductResponseDto subscribeProductResponseDto = new SubscribeProductResponseDto(
-                subscribeProduct.getId(),
-                subscribeProduct.getISSN()
-        );
-        when(commandSubscribeProductService.register(any())).thenReturn(subscribeProductResponseDto);
+        Product product = DummyProduct.dummy(ID, ISBN, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate);
+        Mockito.when(commandProductRepository.save(any())).thenReturn(product);
 
-        FileResponseDto thumbnailFileDto = new FileResponseDto(
-                thumbnailFile.getId(),
-                thumbnailFile.getName(),
-                thumbnailFile.getUploadDateTime()
-        );
-        when(queryFileService.findByName("UUID.png")).thenReturn(thumbnailFileDto);
+        Mockito.when(queryAuthorService.findById(anyLong())).thenReturn(new AuthorResponseDto(1L, "저자1", null));
 
-        FileResponseDto ebookFileDto = new FileResponseDto(
-                ebookFile.getId(),
-                ebookFile.getName(),
-                ebookFile.getUploadDateTime()
-        );
-        when(queryFileService.findByName("UUID.pdf")).thenReturn(ebookFileDto);
+        Mockito.when(queryPublisherService.findById(anyLong())).thenReturn(new PublisherResponseDto(1L, "출판사1"));
 
-        TotalDiscountRateResponseDto totalDiscountRateResponseDto = new TotalDiscountRateResponseDto(
-                totalDiscountRate.getId(),
-                totalDiscountRate.getDiscountRate()
-        );
-        when(queryTotalDiscountRateService.findById(anyInt())).thenReturn(
-                totalDiscountRateResponseDto);
+        Mockito.when(queryTagService.findById(1L)).thenReturn(new TagResponseDto(1L, "아름다운"));
+        Mockito.when(queryTagService.findById(2L)).thenReturn(new TagResponseDto(2L, "슬픈"));
 
-        Publisher publisher = DummyPublisher.dummy();
-        commandPublisherService.register(publisher);
-
-        PublisherResponseDto publisherResponseDto = new PublisherResponseDto(
-                publisher.getId(),
-                publisher.getName()
-        );
-        when(queryPublisherService.findByName(anyString())).thenReturn(publisherResponseDto);
-
-        Tag tag = Tag.builder().id(1L).name("아름다운").build();
-        commandTagService.register(tag);
-
-        TagResponseDto tagResponseDto = new TagResponseDto(tag.getId(), tag.getName());
-        when(queryTagService.findByName(anyString())).thenReturn(tagResponseDto);
+        ProductCreateDto dto = DummyProductCreateDto.dummy(ISBN);
 
         // when
-        ProductResponseDto productResponseDto = commandProductService.create(productCreateDto);
+        ProductOnlyIdDto productOnlyIdDto = service.create(dto);
 
         // then
-        assertThat(productResponseDto).isNotNull();
+        assertThat(productOnlyIdDto).isNotNull();
+        assertThat(productOnlyIdDto.getId()).isEqualTo(ID);
 
-        verify(queryFileService, times(2)).findByName(anyString());
-        verify(querySubscribeProductService, times(1)).findByISSN(anyString());
-        verify(queryTotalDiscountRateService, times(1)).findById(anyInt());
-        verify(queryProductRepository, times(1)).findByISBN(anyString());
-
+        verify(commandFileService, times(2)).register(any());
+        verify(querySubscribeProductRepository, times(1)).findByISSN(dto.getIssn());
+        verify(queryTotalDiscountRateRepository, times(1)).findById(1);
+        verify(queryProductRepository, times(1)).findByISBN(ISBN);
         verify(commandProductRepository, times(1)).save(any());
-
-        verify(commandWritingService, times(1)).create(anyString(), any(), any());
+        verify(queryAuthorService, times(1)).findById(dto.getAuthors().get(0));
+        verify(commandWritingService, times(1)).register(any());
+        verify(queryPublisherService, times(1)).findById(dto.getPublisherId());
         verify(commandPublishService, times(1)).register(any());
+        verify(queryTagService, times(2)).findById(any());
         verify(commandProductTagService, times(2)).register(any());
+    }
+
+    @Disabled
+    @Test
+    @DisplayName("상품 수정 성공")
+    void update() {
+        // given
+        File thumbnailFile = DummyFile.dummy(URL + "/image1.png");
+        File ebookFile = DummyFile.dummy(URL + "/ebook1.pdf");
+        SubscribeProduct subscribeProduct = SubscribeProduct.builder().id(1L).ISSN("00000001").build();
+        TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
+
+        Product product = DummyProduct.dummy(ID, ISBN, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate);
+        Mockito.when(queryProductRepository.findById(anyLong())).thenReturn(Optional.ofNullable(product));
+
+        File updateThumbnailFile = DummyFile.dummy(URL + "/image2.png");
+        File updateEbookFile = DummyFile.dummy(URL + "/ebook2.pdf");
+        SubscribeProduct updateSubscribeProduct = SubscribeProduct.builder().id(2L).ISSN("00000002").build();
+
+        Mockito.when(queryFileService.findById(any()))
+                .thenReturn(new FileResponseDto(thumbnailFile.getId(), thumbnailFile.getUrl(), thumbnailFile.getUploadDateTime()));
+        Mockito.when(commandFileService.register(any()))
+                .thenReturn(new FileResponseDto(1L, updateThumbnailFile.getUrl(), updateThumbnailFile.getUploadDateTime()));
+
+        Mockito.when(queryFileService.findById(2L))
+                .thenReturn(new FileResponseDto(ebookFile.getId(), ebookFile.getUrl(), ebookFile.getUploadDateTime()));
+        Mockito.when(commandFileService.register(updateEbookFile))
+                .thenReturn(new FileResponseDto(2L, updateEbookFile.getUrl(), updateEbookFile.getUploadDateTime()));
+
+        Mockito.when(querySubscribeProductRepository.findByISSN(any())).thenReturn(Optional.ofNullable(updateSubscribeProduct));
+
+        Mockito.when(queryAuthorService.findById(anyLong())).thenReturn(new AuthorResponseDto(2L, "저자2", null));
+
+        Mockito.when(queryPublisherService.findById(anyLong())).thenReturn(new PublisherResponseDto(2L, "출판사2"));
+
+        Mockito.when(queryTagService.findById(1L)).thenReturn(new TagResponseDto(1L, "아름다운"));
+        Mockito.when(queryTagService.findById(2L)).thenReturn(new TagResponseDto(2L, "슬픈"));
+
+        Product updateProduct = DummyProduct.dummy(ID, ISBN, updateSubscribeProduct, updateThumbnailFile, updateEbookFile, totalDiscountRate);
+        Mockito.when(commandProductRepository.save(any())).thenReturn(updateProduct);
+
+        // when
+        ProductUpdateDto dto = DummyProductUpdateDto.dummy("제목2");
+        ProductOnlyIdDto productOnlyIdDto = service.update(1L, dto);
+
+        // then
+        assertThat(productOnlyIdDto).isNotNull();
+        assertThat(productOnlyIdDto.getId()).isEqualTo(ID);
+
+        verify(queryProductRepository, times(1)).findById(ID);
+        verify(querySubscribeProductRepository, times(1)).findByISSN(dto.getISSN());
+        verify(commandFileService, times(2)).register(any());
+        verify(commandWritingService, times(1)).deleteByProduct(product);
+        verify(queryAuthorService, times(1)).findById(dto.getAuthors().get(0));
+        verify(commandWritingService, times(1)).register(any());
+        verify(commandPublishService, times(1)).deleteByProduct(product);
+        verify(queryPublisherService, times(1)).findById(dto.getPublisherId());
+        verify(commandPublishService, times(1)).register(any());
+        verify(commandProductTagService, times(1)).deleteByProduct(product);
+        verify(queryTagService, times(2)).findById(any());
+        verify(commandProductTagService, times(2)).register(any());
+        verify(commandProductRepository, times(1)).save(any());
+    }
+
+    @Test
+    @DisplayName("상품 SoftDelete 성공")
+    void softDelete() {
+        // given
+        File thumbnailFile = DummyFile.dummy(URL + "/image1.png");
+        File ebookFile = DummyFile.dummy(URL + "/ebook1.pdf");
+        SubscribeProduct subscribeProduct = SubscribeProduct.builder().id(1L).ISSN("00000001").build();
+        TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
+
+        Product product = DummyProduct.dummy(ID, ISBN, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate);
+        Mockito.when(queryProductRepository.findById(anyLong())).thenReturn(Optional.ofNullable(product));
+
+        // when
+        service.softDelete(ID);
+
+        // then
+        assertThat(product).isNotNull();
+        assertThat(product.isDeleted()).isTrue();
+
+        verify(queryProductRepository, times(1)).findById(ID);
+        verify(commandProductRepository, times(1)).save(product);
+    }
+
+    @Test
+    @DisplayName("상품 판매여부 변경 성공")
+    void changeIsSale() {
+        // given
+        File thumbnailFile = DummyFile.dummy(URL + "/image1.png");
+        File ebookFile = DummyFile.dummy(URL + "/ebook1.pdf");
+        SubscribeProduct subscribeProduct = SubscribeProduct.builder().id(1L).ISSN("00000001").build();
+        TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
+
+        Product product = DummyProduct.dummy(ID, ISBN, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate);
+        Mockito.when(queryProductRepository.findById(anyLong())).thenReturn(Optional.ofNullable(product));
+
+        // when
+        service.changeIsSale(ID);
+
+        // then
+        assertThat(product).isNotNull();
+        assertThat(product.isSale()).isFalse();
+
+        verify(queryProductRepository, times(1)).findById(ID);
+        verify(commandProductRepository, times(1)).save(product);
+    }
+
+    @Test
+    @DisplayName("상품 강제품절여부 변경 성공")
+    void changeIsForcedOutOfStock() {
+        // given
+        File thumbnailFile = DummyFile.dummy(URL + "/image1.png");
+        File ebookFile = DummyFile.dummy(URL + "/ebook1.pdf");
+        SubscribeProduct subscribeProduct = SubscribeProduct.builder().id(1L).ISSN("00000001").build();
+        TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
+
+        Product product = DummyProduct.dummy(ID, ISBN, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate);
+        Mockito.when(queryProductRepository.findById(anyLong())).thenReturn(Optional.ofNullable(product));
+
+        // when
+        service.changeIsForcedOutOfStock(ID);
+
+        // then
+        assertThat(product).isNotNull();
+        assertThat(product.isForcedOutOfStock()).isTrue();
+
+        verify(queryProductRepository, times(1)).findById(ID);
+        verify(commandProductRepository, times(1)).save(product);
+    }
+
+    @Test
+    @DisplayName("상품 재고수량 차감 성공")
+    void deductQuantity_success() {
+        // given
+        int quantity = 1000;
+
+        File thumbnailFile = DummyFile.dummy(URL + "/image.png");
+        File ebookFile = DummyFile.dummy(URL + "/ebook.pdf");
+        SubscribeProduct subscribeProduct = SubscribeProduct.builder().id(1L).ISSN("00000001").build();
+        TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
+
+        Product product = DummyProduct.dummy(ID, ISBN, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate);
+        Mockito.when(queryProductRepository.findById(anyLong())).thenReturn(Optional.ofNullable(product));
+
+        // when
+        service.deductQuantity(ID, quantity);
+
+        // then
+        assertThat(product).isNotNull();
+        assertThat(product.getQuantity()).isEqualTo(0);
+
+        verify(queryProductRepository, times(1)).findById(ID);
+        verify(commandProductRepository, times(1)).save(product);
+    }
+
+    @Test
+    @DisplayName("상품 재고수량 차감 실패_존재하지 않는 상품 조회 시 예외 발생")
+    void deductQuantity_notFoundProduct_throwProductNotFoundException() {
+        // given
+        int quantity = 1000;
+
+        // when then
+        assertThatThrownBy(() -> service.deductQuantity(ID, quantity)).isInstanceOf(ProductNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("상품 재고수량 차감 실패_구매하고자 하는 수량이 판매하는 수량보다 많은 경우 예외 발생")
+    void deductQuantity_throwRequestedQuantityLargerThanSellQuantityException() {
+        // given
+        int quantity = 1001;
+
+        File thumbnailFile = DummyFile.dummy(URL + "/image.png");
+        File ebookFile = DummyFile.dummy(URL + "/ebook.pdf");
+        SubscribeProduct subscribeProduct = SubscribeProduct.builder().id(1L).ISSN("00000001").build();
+        TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
+
+        Product product = DummyProduct.dummy(ID, ISBN, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate);
+        Mockito.when(queryProductRepository.findById(anyLong())).thenReturn(Optional.ofNullable(product));
+
+        // when
+        assertThatThrownBy(() -> service.deductQuantity(ID, quantity)).isInstanceOf(RequestedQuantityLargerThanSellQuantityException.class);
+    }
+
+    @Test
+    @DisplayName("상품 재고수량 차감 실패_구매하고자 하는 수량이 음수인 경우 예외 발생")
+    void deductQuantity_quantityIsNegative_throwNegativeOrZeroQuantityException() {
+        // given
+        int quantity = -1;
+
+        // when
+        assertThatThrownBy(() -> service.deductQuantity(ID, quantity)).isInstanceOf(NegativeOrZeroQuantityException.class);
     }
 }
