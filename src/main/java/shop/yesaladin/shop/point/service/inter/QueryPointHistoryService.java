@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.point.domain.model.PointCode;
 import shop.yesaladin.shop.point.dto.PointHistoryResponseDto;
+import shop.yesaladin.shop.point.dto.PointResponseDto;
 
 /**
  * 회원의 포인트 내역 조회를 위한 service 입니다.
@@ -60,4 +61,14 @@ public interface QueryPointHistoryService {
      * @since 1.0
      */
     Page<PointHistoryResponseDto> getPointHistories(Pageable pageable);
+
+    /**
+     * 회원의 포인트를 조회합니다.
+     *
+     * @param loginId 회원의 아이디
+     * @return 회원의 포인트
+     * @author 최예린
+     * @since 1.0
+     */
+    PointResponseDto getMemberPoint(String loginId);
 }

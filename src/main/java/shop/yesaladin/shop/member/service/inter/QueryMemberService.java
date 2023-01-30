@@ -1,13 +1,16 @@
 package shop.yesaladin.shop.member.service.inter;
 
 import shop.yesaladin.shop.member.dto.MemberDto;
+import shop.yesaladin.shop.member.dto.MemberGradeQueryResponseDto;
 import shop.yesaladin.shop.member.dto.MemberLoginResponseDto;
+import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
 
 
 /**
  * 회원 조회용 service interface
  *
- * @author : 송학현, 최예린
+ * @author : 송학현
+ * @author 최예린
  * @since : 1.0
  */
 public interface QueryMemberService {
@@ -91,4 +94,24 @@ public interface QueryMemberService {
      * @since : 1.0
      */
     boolean existsPhone(String phone);
+
+    /**
+     * 회원의 아이디로 회원의 등급을 반환합니다.
+     *
+     * @param loginId 회원의 아이디
+     * @return 회원의 등급
+     * @author 최예린
+     * @since 1.0
+     */
+    MemberGradeQueryResponseDto getMemberGrade(String loginId);
+
+    /**
+     * 회원의 정보를 가져옵니다.
+     *
+     * @param loginId 회원의 아이디
+     * @return 회원 정보
+     * @author 최예린
+     * @since 1.0
+     */
+    MemberQueryResponseDto getByLoginId(String loginId);
 }

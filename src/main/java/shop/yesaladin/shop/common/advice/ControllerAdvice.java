@@ -14,6 +14,8 @@ import shop.yesaladin.shop.common.exception.CustomJsonProcessingException;
 import shop.yesaladin.shop.common.exception.InvalidPeriodConditionException;
 import shop.yesaladin.shop.file.exception.FileNotFoundException;
 import shop.yesaladin.shop.member.exception.AlreadyBlockedMemberException;
+import shop.yesaladin.shop.member.exception.AlreadyDeletedAddressException;
+import shop.yesaladin.shop.member.exception.AlreadyRegisteredUpToLimit;
 import shop.yesaladin.shop.member.exception.AlreadyUnblockedMemberException;
 import shop.yesaladin.shop.member.exception.MemberAddressNotFoundException;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
@@ -77,7 +79,9 @@ public class ControllerAdvice {
             InvalidPeriodConditionException.class,
             AlreadyDeletedProductException.class,
             AlreadyBlockedMemberException.class,
-            AlreadyUnblockedMemberException.class
+            AlreadyUnblockedMemberException.class,
+            AlreadyDeletedAddressException.class,
+            AlreadyRegisteredUpToLimit.class
     })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorResponseDto> handleValidationException(Exception ex) {

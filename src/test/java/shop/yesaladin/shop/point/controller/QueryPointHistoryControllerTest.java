@@ -42,8 +42,10 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.point.domain.model.PointCode;
 import shop.yesaladin.shop.point.dto.PointHistoryResponseDto;
+import shop.yesaladin.shop.point.dto.PointResponseDto;
 import shop.yesaladin.shop.point.service.inter.QueryPointHistoryService;
 
 @AutoConfigureRestDocs
@@ -66,7 +68,7 @@ class QueryPointHistoryControllerTest {
         String loginId = "user@1";
 
         //when, then
-        ResultActions result = mockMvc.perform(get("/v1/points/{loginId}", loginId)
+        ResultActions result = mockMvc.perform(get("/v1/points/{loginId}/point-histories", loginId)
                         .param("code", "invalidCode"))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -77,6 +79,7 @@ class QueryPointHistoryControllerTest {
                 "get-point-histories-by-loginId-fail-invalid-code-parameter",
                 getDocumentRequest(),
                 getDocumentResponse(),
+                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 requestParameters(
                         parameterWithName("code").description("포인트 사용/적립 구분"),
                         parameterWithName("page").description("페이지 번호")
@@ -86,8 +89,6 @@ class QueryPointHistoryControllerTest {
                                 .optional()
                                 .attributes(defaultValue(0))
                 ),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
-                requestParameters(parameterWithName("code").description("포인트 사용/적립 구분 코드")),
                 responseFields(
                         fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
                 )
@@ -105,7 +106,7 @@ class QueryPointHistoryControllerTest {
                 .thenReturn(response);
 
         //when
-        ResultActions result = mockMvc.perform(get("/v1/points/{loginId}", loginId)
+        ResultActions result = mockMvc.perform(get("/v1/points/{loginId}/point-histories", loginId)
                 .param("size", "5")
                 .param("page", "0"));
 
@@ -175,7 +176,7 @@ class QueryPointHistoryControllerTest {
                 any()
         )).thenReturn(getPageableData(5, pointCode, loginId));
 
-        ResultActions result = mockMvc.perform(get("/v1/points/{loginId}", loginId)
+        ResultActions result = mockMvc.perform(get("/v1/points/{loginId}/point-histories", loginId)
                 .param("code", "USE")
                 .param("page", "0")
                 .param("size", "5"));
@@ -239,6 +240,64 @@ class QueryPointHistoryControllerTest {
     @Test
     void getPointHistories() {
     }
+
+    @Test
+    @DisplayName("회원의 포인트 조회 실패 - 존재하지 않는 회원")
+    void getMemberPoint_fail_memberNotFound() throws Exception {
+        //given
+        String loginId = "user@1";
+
+        Mockito.when(pointHistoryService.getMemberPoint(loginId))
+                .thenThrow(new MemberNotFoundException("Member loginId : " + loginId));
+
+        //when
+        ResultActions result = mockMvc.perform(get("/v1/points/{loginId}", loginId));
+
+        //then
+        result.andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message", startsWith("Member not found")));
+
+        //docs
+        result.andDo(document(
+                "get-member-point-fail-member-not-found",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
+                responseFields(
+                        fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
+                )
+        ));
+    }
+
+    @Test
+    @DisplayName("회원의 포인트 조회 성공")
+    void getMemberPoint_success() throws Exception {
+        //given
+        String loginId = "user@1";
+
+        Mockito.when(pointHistoryService.getMemberPoint(loginId)).thenReturn(new PointResponseDto(1000L));
+
+        //when
+        ResultActions result = mockMvc.perform(get("/v1/points/{loginId}", loginId));
+
+        //then
+        result.andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.amount", equalTo(1000)));
+
+        //docs
+        result.andDo(document(
+                "get-member-point-success",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
+                responseFields(
+                        fieldWithPath("amount").type(JsonFieldType.NUMBER).description("회원의 포인트")
+                )
+        ));
+    }
+
 
     Page<PointHistoryResponseDto> getPageableData(
             int size,

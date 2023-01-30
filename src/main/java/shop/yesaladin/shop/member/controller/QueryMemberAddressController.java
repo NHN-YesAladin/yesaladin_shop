@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import shop.yesaladin.shop.member.dto.MemberAddressQueryDto;
+import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
 import shop.yesaladin.shop.member.service.inter.QueryMemberAddressService;
 
 /**
@@ -34,7 +34,7 @@ public class QueryMemberAddressController {
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<MemberAddressQueryDto> getMemberAddressByMemberId(@PathVariable String loginId) {
+    public List<MemberAddressResponseDto> getMemberAddressByMemberId(@PathVariable String loginId) {
         return queryMemberAddressService.findByLoginId(loginId);
     }
 }

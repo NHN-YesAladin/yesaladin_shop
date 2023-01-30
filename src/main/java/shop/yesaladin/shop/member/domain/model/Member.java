@@ -22,7 +22,8 @@ import shop.yesaladin.shop.member.persistence.converter.MemberGradeCodeConverter
 /**
  * 회원의 엔티티 클래스 입니다.
  *
- * @author : 송학현, 최예린
+ * @author : 송학현
+ * @author 최예린
  * @since : 1.0
  */
 @Getter

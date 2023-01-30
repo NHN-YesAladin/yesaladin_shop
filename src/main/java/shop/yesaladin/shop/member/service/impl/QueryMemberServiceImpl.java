@@ -10,14 +10,17 @@ import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRoleRepository;
 import shop.yesaladin.shop.member.dto.MemberDto;
+import shop.yesaladin.shop.member.dto.MemberGradeQueryResponseDto;
 import shop.yesaladin.shop.member.dto.MemberLoginResponseDto;
+import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 
 /**
  * 회원 조회용 서비스 구현체 입니다.
  *
- * @author : 송학현, 최예린
+ * @author : 송학현
+ * @author 최예린
  * @since : 1.0
  */
 @Slf4j
@@ -129,5 +132,27 @@ public class QueryMemberServiceImpl implements QueryMemberService {
     @Override
     public boolean existsPhone(String phone) {
         return queryMemberRepository.existsMemberByPhone(phone);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public MemberGradeQueryResponseDto getMemberGrade(String loginId) {
+        return MemberGradeQueryResponseDto.fromEntity(queryMemberRepository.findMemberByLoginId(
+                        loginId)
+                .orElseThrow(() -> new MemberNotFoundException("Member Loginid : " + loginId)));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public MemberQueryResponseDto getByLoginId(String loginId) {
+        return MemberQueryResponseDto.fromEntity(queryMemberRepository.findMemberByLoginId(
+                        loginId)
+                .orElseThrow(() -> new MemberNotFoundException("Member Loginid : " + loginId)));
     }
 }
