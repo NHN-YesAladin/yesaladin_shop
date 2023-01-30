@@ -44,7 +44,7 @@ class CategoryTest {
         category.disableCategory(nameBeforeChanging);
 
         // then
-        assertThat(category.isDisable()).isEqualTo(true);
+        assertThat(category.isDisable()).isTrue();
         assertThat(category.getName()).isEqualTo(nameBeforeChanging);
         assertThat(category.getName()).isNotEqualTo(name);
     }

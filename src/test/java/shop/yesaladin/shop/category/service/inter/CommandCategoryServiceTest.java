@@ -3,22 +3,26 @@ package shop.yesaladin.shop.category.service.inter;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.repository.CommandCategoryRepository;
 import shop.yesaladin.shop.category.domain.repository.QueryCategoryRepository;
+import shop.yesaladin.shop.category.dto.CategoryModifyRequestDto;
 import shop.yesaladin.shop.category.dto.CategoryOnlyIdDto;
 import shop.yesaladin.shop.category.dto.CategoryRequestDto;
 import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 import shop.yesaladin.shop.category.dummy.CategoryDummy;
+import shop.yesaladin.shop.category.exception.CategoryNotFoundException;
 import shop.yesaladin.shop.category.service.impl.CommandCategoryServiceImpl;
 
 class CommandCategoryServiceTest {
@@ -29,19 +33,16 @@ class CommandCategoryServiceTest {
     Long childId = 10100L;
     private CommandCategoryRepository commandCategoryRepository;
     private QueryCategoryRepository queryCategoryRepository;
-    private QueryCategoryService queryCategoryService;
     private CommandCategoryService commandCategoryService;
 
     @BeforeEach
     void setUp() {
         commandCategoryRepository = mock(CommandCategoryRepository.class);
-        queryCategoryService = mock(QueryCategoryService.class);
         queryCategoryRepository = mock(QueryCategoryRepository.class);
 
         commandCategoryService = new CommandCategoryServiceImpl(
                 commandCategoryRepository,
-                queryCategoryRepository,
-                queryCategoryService
+                queryCategoryRepository
         );
 
         parentCategory = CategoryDummy.dummyParent(parentId);
@@ -106,6 +107,8 @@ class CommandCategoryServiceTest {
                 Category.DEPTH_CHILD,
                 childCategory.getParent().getId()
         )).thenReturn(idDto);
+        when(queryCategoryRepository.findById(parentCategory.getId())).thenReturn(
+                Optional.of(parentCategory));
 
         //when
         CategoryResponseDto categoryResponseDto = commandCategoryService.create(createDto);
@@ -122,6 +125,8 @@ class CommandCategoryServiceTest {
                 Category.DEPTH_CHILD,
                 childCategory.getParent().getId()
         );
+        verify(queryCategoryRepository, times(1)).findById(parentCategory.getId());
+
     }
 
     @Test
@@ -136,8 +141,8 @@ class CommandCategoryServiceTest {
                 null
         );
 
-        when(queryCategoryService.findInnerCategoryById(parentCategory.getId())).thenReturn(
-                parentCategory);
+        when(queryCategoryRepository.findById(parentCategory.getId())).thenReturn(
+                Optional.of(parentCategory));
 
         // when
         CategoryResponseDto responseDto = commandCategoryService.update(
@@ -150,7 +155,7 @@ class CommandCategoryServiceTest {
         assertThat(responseDto.getName()).isEqualTo(categoryRequestDto.getName());
         assertThat(parentCategory.getDepth()).isEqualTo(Category.DEPTH_PARENT);
 
-        verify(queryCategoryService, times(1)).findInnerCategoryById(parentCategory.getId());
+        verify(queryCategoryRepository, times(1)).findById(parentCategory.getId());
     }
 
 
@@ -166,8 +171,8 @@ class CommandCategoryServiceTest {
                 childCategory.getParent().getId()
         );
 
-        when(queryCategoryService.findInnerCategoryById(childCategory.getId())).thenReturn(
-                childCategory);
+        when(queryCategoryRepository.findById(childCategory.getId())).thenReturn(
+                Optional.of(childCategory));
 
         // when
         CategoryResponseDto responseDto = commandCategoryService.update(
@@ -180,7 +185,7 @@ class CommandCategoryServiceTest {
         assertThat(responseDto.getName()).isEqualTo(categoryRequestDto.getName());
         assertThat(childCategory.getDepth()).isEqualTo(Category.DEPTH_CHILD);
 
-        verify(queryCategoryService, times(1)).findInnerCategoryById(childCategory.getId());
+        verify(queryCategoryRepository, times(1)).findById(childCategory.getId());
     }
 
     @Test
@@ -202,8 +207,8 @@ class CommandCategoryServiceTest {
                 null
         );
 
-        when(queryCategoryService.findInnerCategoryById(childCategory.getId())).thenReturn(
-                childCategory);
+        when(queryCategoryRepository.findById(childCategory.getId())).thenReturn(
+                Optional.of(childCategory));
         when(commandCategoryRepository.save(any())).thenReturn(toEntity);
         when(queryCategoryRepository.getLatestIdByDepth(Category.DEPTH_PARENT)).thenReturn(idDto);
 
@@ -216,9 +221,9 @@ class CommandCategoryServiceTest {
         // then
         assertThat(responseDto.getId()).isEqualTo(addedParentId);
         assertThat(responseDto.getName()).isEqualTo(categoryRequestDto.getName());
-        assertThat(childCategory.isDisable()).isEqualTo(true);
+        assertThat(childCategory.isDisable()).isTrue();
 
-        verify(queryCategoryService, times(1)).findInnerCategoryById(childCategory.getId());
+        verify(queryCategoryRepository, times(1)).findById(childCategory.getId());
         verify(commandCategoryRepository, times(1)).save(any());
         verify(queryCategoryRepository, times(1)).getLatestIdByDepth(Category.DEPTH_PARENT);
     }
@@ -246,13 +251,16 @@ class CommandCategoryServiceTest {
                 otherParentCategory
         );
 
-        when(queryCategoryService.findInnerCategoryById(childCategory.getId())).thenReturn(
-                childCategory);
+        when(queryCategoryRepository.findById(childCategory.getId())).thenReturn(
+                Optional.of(childCategory));
+        when(queryCategoryRepository.findById(otherParentCategory.getId())).thenReturn(
+                Optional.of(otherParentCategory));
         when(commandCategoryRepository.save(any())).thenReturn(toEntity);
         when(queryCategoryRepository.getLatestChildIdByDepthAndParentId(
                 Category.DEPTH_CHILD,
                 categoryRequestDto.getParentId()
         )).thenReturn(idDto);
+
 
         // when
         CategoryResponseDto responseDto = commandCategoryService.update(
@@ -263,13 +271,12 @@ class CommandCategoryServiceTest {
         // then
         assertThat(responseDto.getId()).isEqualTo(addedChildId);
         assertThat(responseDto.getName()).isEqualTo(categoryRequestDto.getName());
-        assertThat(childCategory.isDisable()).isEqualTo(true);
+        assertThat(childCategory.isDisable()).isTrue();
 
-        verify(queryCategoryService, times(1)).findInnerCategoryById(childCategory.getId());
-        verify(
-                queryCategoryService,
-                times(1)
-        ).findInnerCategoryById(categoryRequestDto.getParentId());
+        verify(queryCategoryRepository, times(1)).findById(childCategory.getId());
+        verify(queryCategoryRepository, times(1)).findById(otherParentCategory.getId());
+
+
         verify(commandCategoryRepository, times(1)).save(any());
         verify(
                 queryCategoryRepository,
@@ -283,11 +290,168 @@ class CommandCategoryServiceTest {
     @Test
     void delete() {
         // given
-        long id = 1L;
-        doNothing().when(commandCategoryRepository).deleteById(id);
+        when(queryCategoryRepository.findById(parentCategory.getId())).thenReturn(Optional.of(
+                parentCategory));
 
         // then
-        assertThatCode(() -> commandCategoryService.delete(id)).doesNotThrowAnyException();
+        assertThatCode(() -> commandCategoryService.delete(parentCategory.getId())).doesNotThrowAnyException();
+
+        verify(queryCategoryRepository, times(1)).findById(parentCategory.getId());
+    }
+
+    @Test
+    void updateOrder_parentCategories() throws Exception {
+        // given
+        List<CategoryModifyRequestDto> requestList = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            CategoryModifyRequestDto request = CategoryModifyRequestDto.builder()
+                    .id((long) i)
+                    .name("name" + i)
+                    .order(i + 1)
+                    .isShown(true)
+                    .build();
+            requestList.add(request);
+        }
+
+        List<Category> categories = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            Category category = Category.builder()
+                    .id((long) i)
+                    .name("name" + i)
+                    .order(10 - i)
+                    .depth(Category.DEPTH_PARENT)
+                    .isShown(true)
+                    .build();
+            categories.add(category);
+        }
+
+        when(queryCategoryRepository.findCategories(null, Category.DEPTH_PARENT)).thenReturn(
+                categories);
+
+        // when
+        assertThatCode(() -> commandCategoryService.updateOrder(requestList)).doesNotThrowAnyException();
+
+        // then
+        verify(queryCategoryRepository, times(1)).findCategories(null, Category.DEPTH_PARENT);
+
+    }
+
+    @Test
+    void updateOrder_childCategories() throws Exception {
+        // given
+        List<CategoryModifyRequestDto> requestList = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            CategoryModifyRequestDto request = CategoryModifyRequestDto.builder()
+                    .id((long) i)
+                    .name("name" + i)
+                    .order(i + 1)
+                    .isShown(true)
+                    .parentId(parentCategory.getId())
+                    .parentName(parentCategory.getName())
+                    .build();
+            requestList.add(request);
+        }
+
+        for (int i = 0; i < 10; i++) {
+            Category category = Category.builder()
+                    .id((long) i)
+                    .name("name" + i)
+                    .order(10 - i)
+                    .depth(Category.DEPTH_PARENT)
+                    .isShown(true)
+                    .parent(parentCategory.getParent())
+                    .build();
+            parentCategory.getChildren().add(category);
+        }
+
+
+        when(queryCategoryRepository.findById(parentCategory.getId())).thenReturn(Optional.of(
+                parentCategory));
+
+        // when
+        assertThatCode(() -> commandCategoryService.updateOrder(requestList)).doesNotThrowAnyException();
+
+        // then
+        verify(queryCategoryRepository, times(1)).findById(parentCategory.getId());
+
+    }
+
+    @Test
+    void updateOrder_parentCategories_notFound_fail() throws Exception {
+        // given
+        List<CategoryModifyRequestDto> requestList = new ArrayList<>();
+        for (int i = 10; i < 20; i++) {
+            CategoryModifyRequestDto request = CategoryModifyRequestDto.builder()
+                    .id((long) i)
+                    .name("name" + i)
+                    .order(i + 1)
+                    .isShown(true)
+                    .build();
+            requestList.add(request);
+        }
+
+        List<Category> categories = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            Category category = Category.builder()
+                    .id((long) i)
+                    .name("name" + i)
+                    .order(10 - i)
+                    .depth(Category.DEPTH_PARENT)
+                    .isShown(true)
+                    .build();
+            categories.add(category);
+        }
+
+        when(queryCategoryRepository.findCategories(null, Category.DEPTH_PARENT)).thenReturn(
+                categories);
+
+        // when
+        assertThatCode(() -> commandCategoryService.updateOrder(requestList)).isInstanceOf(
+                CategoryNotFoundException.class);
+
+        // then
+        verify(queryCategoryRepository, times(1)).findCategories(null, Category.DEPTH_PARENT);
+
+    }
+
+    @Test
+    void updateOrder_childCategories_notFound_fail() throws Exception {
+        // given
+        List<CategoryModifyRequestDto> requestList = new ArrayList<>();
+        for (int i = 10; i < 20; i++) {
+            CategoryModifyRequestDto request = CategoryModifyRequestDto.builder()
+                    .id((long) i)
+                    .name("name" + i)
+                    .order(i + 1)
+                    .isShown(true)
+                    .parentId(parentCategory.getId())
+                    .parentName(parentCategory.getName())
+                    .build();
+            requestList.add(request);
+        }
+
+        for (int i = 0; i < 10; i++) {
+            Category category = Category.builder()
+                    .id((long) i)
+                    .name("name" + i)
+                    .order(10 - i)
+                    .depth(Category.DEPTH_PARENT)
+                    .isShown(true)
+                    .parent(parentCategory.getParent())
+                    .build();
+            parentCategory.getChildren().add(category);
+        }
+
+
+        when(queryCategoryRepository.findById(parentCategory.getId())).thenReturn(Optional.of(
+                parentCategory));
+
+        // when
+        assertThatCode(() -> commandCategoryService.updateOrder(requestList)).isInstanceOf(
+                CategoryNotFoundException.class);
+
+        // then
+        verify(queryCategoryRepository, times(1)).findById(parentCategory.getId());
 
     }
 }

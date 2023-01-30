@@ -3,7 +3,6 @@ package shop.yesaladin.shop.category.service.inter;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 
 /**
@@ -48,11 +47,4 @@ public interface QueryCategoryService {
      */
     CategoryResponseDto findCategoryById(long id);
 
-    /**
-     * 카테고리 id를 통해 카테고리를 조회 하기위한 기능 내부적으로 사용 - 부모 카테고리 조회, update시 영속성 속성 사용하여 성능 개선시 사용
-     *
-     * @param id 부모 카테고리의 id
-     * @return 조회된 부모 Category
-     */
-    Category findInnerCategoryById(long id);
 }

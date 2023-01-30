@@ -60,7 +60,7 @@ class QueryDslCategoryRepositoryTest {
         log.info("{}", page.getContent().size());
 
         //then
-        assertThat(page.getContent().size()).isEqualTo(size);
+        assertThat(page.getContent()).hasSize(size);
     }
 
     @Test
@@ -94,7 +94,7 @@ class QueryDslCategoryRepositoryTest {
         CategoryOnlyIdDto onlyId = queryCategoryRepository.getLatestIdByDepth(Category.DEPTH_PARENT);
 
         // then
-        assertThat(onlyId.getId()).isEqualTo(0L);
+        assertThat(onlyId.getId()).isZero();
     }
 
     @Test
@@ -142,7 +142,7 @@ class QueryDslCategoryRepositoryTest {
                 .getId(), null);
 
         // then
-        assertThat(categories.size()).isEqualTo(2);
+        assertThat(categories).hasSize(2);
     }
 
     @Test
@@ -159,7 +159,7 @@ class QueryDslCategoryRepositoryTest {
         );
 
         // then
-        assertThat(categories.size()).isEqualTo(2);
+        assertThat(categories).hasSize(2);
     }
 
     @Test
@@ -174,7 +174,7 @@ class QueryDslCategoryRepositoryTest {
         List<Category> categories = queryCategoryRepository.findCategories(null, null);
 
         // then
-        assertThat(categories.size()).isEqualTo(4);
+        assertThat(categories).hasSize(4);
     }
 
     @Test
@@ -192,7 +192,7 @@ class QueryDslCategoryRepositoryTest {
         );
 
         // then
-        assertThat(categories.size()).isEqualTo(0);
+        assertThat(categories).isEmpty();
     }
 
     @Test
@@ -210,7 +210,7 @@ class QueryDslCategoryRepositoryTest {
         );
 
         // then
-        assertThat(categories.size()).isEqualTo(2);
+        assertThat(categories).hasSize(2);
     }
 
 
@@ -239,7 +239,7 @@ class QueryDslCategoryRepositoryTest {
                 .orElseThrow(() -> new CategoryNotFoundException(id));
 
         // then
-        assertThat(category.getChildren().size() > 0).isTrue();
+        assertThat(category.getChildren()).isNotEmpty();
     }
 
     @Disabled("로컬 DB 테스트 용")
@@ -254,7 +254,7 @@ class QueryDslCategoryRepositoryTest {
         log.info("{}", page.getTotalPages());
 
         //then
-        assertThat(page.getContent().size()).isEqualTo(size);
+        assertThat(page.getContent()).hasSize(size);
     }
 
 }

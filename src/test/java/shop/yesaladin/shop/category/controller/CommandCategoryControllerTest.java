@@ -27,6 +27,8 @@ import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
 import static shop.yesaladin.shop.docs.DocumentFormatGenerator.defaultValue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,6 +42,7 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.category.domain.model.Category;
+import shop.yesaladin.shop.category.dto.CategoryModifyRequestDto;
 import shop.yesaladin.shop.category.dto.CategoryRequestDto;
 import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 import shop.yesaladin.shop.category.dummy.CategoryDummy;
@@ -448,6 +451,118 @@ class CommandCategoryControllerTest {
         perform.andDo(print()).andExpect(status().isBadRequest());
 
         verify(commandCategoryService, never()).update(any(), any());
+    }
+
+    @Test
+    @DisplayName("부모 카테고리 순서 변경 성공")
+    void modifyParnetCategoriesOrder() throws Exception {
+        // given
+        List<CategoryModifyRequestDto> requestList = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            CategoryModifyRequestDto request = CategoryModifyRequestDto.builder()
+                    .id((long) i)
+                    .name("name" + i)
+                    .order(i + 1)
+                    .isShown(true)
+                    .build();
+            requestList.add(request);
+        }
+        doNothing().when(commandCategoryService).updateOrder(requestList);
+
+        // when
+        ResultActions perform = mockMvc.perform(put(
+                "/v1/categories/order").contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestList)));
+
+        // then
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(header().stringValues(
+                        "Vary",
+                        "Origin",
+                        "Access-Control-Request-Method",
+                        "Access-Control-Request-Headers"
+                ))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(200)))
+                .andExpect(jsonPath("$.data.result", equalTo("Success")))
+                .andExpect(jsonPath("$.errorMessages", equalTo(null)));
+
+        documentModifyCategories(perform, "modify-parent-category-order");
+    }
+
+    private static void documentModifyCategories(ResultActions perform,String identifier) throws Exception {
+        perform.andDo(document(
+                identifier,
+                getDocumentRequest(),
+                getDocumentResponse(),
+                requestFields(
+                        fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("카테고리 아이디"),
+                        fieldWithPath("[].name").type(JsonFieldType.STRING).description("카테고리 이름"),
+                        fieldWithPath("[].isShown").type(JsonFieldType.BOOLEAN)
+                                .description("카테고리 노출 여부"),
+                        fieldWithPath("[].order").type(JsonFieldType.NUMBER)
+                                .optional()
+                                .description("카테고리 순서"),
+                        fieldWithPath("[].parentId").type(JsonFieldType.NUMBER).optional()
+                                .description("부모 카테고리(=1차 카테고리)의 아이디"),
+                        fieldWithPath("[].parentName").type(JsonFieldType.STRING).optional()
+                                .description("부모 카테고리(=1차 카테고리)의 이름")
+                ),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("HTTP status code"),
+                        fieldWithPath("data.result").type(JsonFieldType.STRING).description("수정 성공 메시지"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러메시지")
+                                .optional()
+                        )
+        ));
+    }
+
+    @Test
+    @DisplayName("자식 카테고리 순서 변경 성공")
+    void modifyChildCategoriesOrder() throws Exception {
+        // given
+        List<CategoryModifyRequestDto> requestList = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            CategoryModifyRequestDto request = CategoryModifyRequestDto.builder()
+                    .id((long) i)
+                    .name("name" + i)
+                    .order(i + 1)
+                    .isShown(true)
+                    .parentId(parentCategory.getId())
+                    .parentName(parentCategory.getName())
+                    .build();
+            requestList.add(request);
+        }
+        doNothing().when(commandCategoryService).updateOrder(requestList);
+
+        // when
+        ResultActions perform = mockMvc.perform(put(
+                "/v1/categories/order").contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestList)));
+
+        // then
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(header().stringValues(
+                        "Vary",
+                        "Origin",
+                        "Access-Control-Request-Method",
+                        "Access-Control-Request-Headers"
+                ))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(200)))
+                .andExpect(jsonPath("$.data.result", equalTo("Success")))
+                .andExpect(jsonPath("$.errorMessages", equalTo(null)));
+
+        documentModifyCategories(perform, "modify-child-category-order");
+
     }
 
     @Test
