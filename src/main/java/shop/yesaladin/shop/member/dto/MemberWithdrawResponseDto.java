@@ -7,6 +7,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.yesaladin.shop.member.domain.model.Member;
 
+/**
+ * 회원 탈퇴 결과를 반환 하는 DTO 입니다.
+ *
+ * @author 송학현
+ * @since 1.0
+ */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)

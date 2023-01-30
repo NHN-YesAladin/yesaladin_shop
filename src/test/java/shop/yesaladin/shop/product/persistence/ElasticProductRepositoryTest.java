@@ -1,7 +1,5 @@
 package shop.yesaladin.shop.product.persistence;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +7,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import shop.yesaladin.shop.product.domain.repository.SearchProductRepository;
 import shop.yesaladin.shop.product.dto.SearchedProductManagerResponseDto;
 import shop.yesaladin.shop.product.dto.SearchedProductResponseDto;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 class ElasticProductRepositoryTest {
@@ -43,7 +43,7 @@ class ElasticProductRepositoryTest {
     @Test
     @DisplayName("상품 isbn으로 검색 테스트")
     void testSearchProductsByISBN() {
-        SearchedProductResponseDto  result = searchProductRepository.searchProductsByProductISBN("isbn", 0, 1);
+        SearchedProductResponseDto result = searchProductRepository.searchProductsByProductISBN("isbn", 0, 1);
         assertThat(result.getProducts()).isEmpty();
         assertThat(result.getCount()).isZero();
     }
@@ -51,7 +51,7 @@ class ElasticProductRepositoryTest {
     @Test
     @DisplayName("작가 이름으로 검색 테스트")
     void testSearchProductsByProductAuthor() {
-        SearchedProductResponseDto  result = searchProductRepository.searchProductsByProductAuthor("ㅓㅗ여!!1212", 0, 1);
+        SearchedProductResponseDto result = searchProductRepository.searchProductsByProductAuthor("ㅓㅗ여!!1212", 0, 1);
         assertThat(result.getProducts()).isEmpty();
         assertThat(result.getCount()).isZero();
     }
@@ -59,7 +59,7 @@ class ElasticProductRepositoryTest {
     @Test
     @DisplayName("상품 이름으로 검색 테스트")
     void testSearchProductsByProductTitle() {
-        SearchedProductResponseDto  result = searchProductRepository.searchProductsByProductTitle("!!!!@!@sdsdsdㅁㄴㅁㄴ", 0, 1);
+        SearchedProductResponseDto result = searchProductRepository.searchProductsByProductTitle("!!!!@!@sdsdsdㅁㄴㅁㄴ", 0, 1);
         assertThat(result.getProducts()).isEmpty();
         assertThat(result.getCount()).isZero();
     }

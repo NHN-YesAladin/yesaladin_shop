@@ -6,9 +6,9 @@ package shop.yesaladin.shop.product.exception;
  * @author 이수정
  * @since 1.0
  */
-public class AlreadyProductExistsException extends RuntimeException {
+public class ProductAlreadyExistsException extends RuntimeException {
 
-    public AlreadyProductExistsException(String ISBN) {
+    public ProductAlreadyExistsException(String ISBN) {
         super("Product " + ISBN + "(ISBN) is already exists.");
     }
 }

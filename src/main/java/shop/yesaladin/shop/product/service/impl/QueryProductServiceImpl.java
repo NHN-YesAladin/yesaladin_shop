@@ -1,7 +1,6 @@
 package shop.yesaladin.shop.product.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -29,9 +28,8 @@ import java.util.stream.Collectors;
  * @author 이수정
  * @since 1.0
  */
-@Slf4j
-@Service
 @RequiredArgsConstructor
+@Service
 public class QueryProductServiceImpl implements QueryProductService {
 
     private final float PERCENT_DENOMINATOR_VALUE = 100;
@@ -161,7 +159,7 @@ public class QueryProductServiceImpl implements QueryProductService {
             ));
         }
 
-        return new PageImpl<>(products, pageable, products.size());
+        return new PageImpl<>(products, pageable, page.getTotalElements());
     }
 
     /**

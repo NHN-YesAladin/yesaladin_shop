@@ -5,8 +5,8 @@ import shop.yesaladin.shop.member.domain.model.Role;
 /**
  * 권한 등록 및 수정 관련 repository interface 입니다.
  *
- * @author : 송학현
- * @since : 1.0
+ * @author 송학현
+ * @since 1.0
  */
 public interface CommandRoleRepository {
 
@@ -15,8 +15,8 @@ public interface CommandRoleRepository {
      *
      * @param role
      * @return 등록된 권한
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     Role save(Role role);
 }

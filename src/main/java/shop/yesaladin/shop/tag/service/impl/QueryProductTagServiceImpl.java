@@ -17,8 +17,8 @@ import java.util.stream.Collectors;
  * @author 이수정
  * @since 1.0
  */
-@Service
 @RequiredArgsConstructor
+@Service
 public class QueryProductTagServiceImpl implements QueryProductTagService {
 
     private final QueryProductTagRepository queryProductTagRepository;

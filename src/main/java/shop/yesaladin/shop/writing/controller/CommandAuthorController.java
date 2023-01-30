@@ -1,7 +1,6 @@
 package shop.yesaladin.shop.writing.controller;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import shop.yesaladin.shop.writing.dto.AuthorRequestDto;
@@ -18,9 +17,8 @@ import java.net.URISyntaxException;
  * @author 이수정
  * @since 1.0
  */
-@Slf4j
-@CrossOrigin(origins = {"http://localhost:9090", "http://localhost:8080"})
 @RequiredArgsConstructor
+@CrossOrigin(origins = {"http://localhost:9090", "https://www.yesaladin.shop", "https://test.yesaladin.shop"})
 @RestController
 @RequestMapping("/v1/authors")
 public class CommandAuthorController {
@@ -57,3 +55,4 @@ public class CommandAuthorController {
         return ResponseEntity.ok().body(author);
     }
 }
+

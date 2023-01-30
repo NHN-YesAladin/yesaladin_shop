@@ -9,8 +9,6 @@ import shop.yesaladin.shop.file.service.inter.StorageAuthService;
 
 import static org.mockito.Mockito.mock;
 
-
-@RequiredArgsConstructor
 class StorageAuthServiceImplTest {
 
     private StorageAuthService service;
