@@ -1,12 +1,9 @@
 package shop.yesaladin.shop.member.controller;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.shop.member.dto.MemberBlockRequestDto;
 import shop.yesaladin.shop.member.dto.MemberBlockResponseDto;
 import shop.yesaladin.shop.member.dto.MemberCreateRequestDto;
@@ -49,11 +47,14 @@ public class CommandMemberController {
      * @since 1.0
      */
     @PostMapping
-    public ResponseEntity<MemberCreateResponseDto> signUpMember(@Valid @RequestBody MemberCreateRequestDto createDto)
-            throws URISyntaxException {
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseDto<MemberCreateResponseDto> signUpMember(@Valid @RequestBody MemberCreateRequestDto createDto) {
         MemberCreateResponseDto response = commandMemberService.create(createDto);
-
-        return ResponseEntity.created(new URI(response.getId().toString())).body(response);
+        return ResponseDto.<MemberCreateResponseDto>builder()
+                .status(HttpStatus.CREATED)
+                .success(true)
+                .data(response)
+                .build();
     }
 
     /**
@@ -115,8 +116,13 @@ public class CommandMemberController {
      */
     @DeleteMapping("/withdraw/{loginId}")
     @ResponseStatus(HttpStatus.OK)
-    public MemberWithdrawResponseDto deleteMember(@PathVariable String loginId) {
+    public ResponseDto<MemberWithdrawResponseDto> deleteMember(@PathVariable String loginId) {
         log.info("request={}",loginId);
-        return commandMemberService.withDraw(loginId);
+        MemberWithdrawResponseDto response = commandMemberService.withDraw(loginId);
+        return ResponseDto.<MemberWithdrawResponseDto>builder()
+                .status(HttpStatus.OK)
+                .success(true)
+                .data(response)
+                .build();
     }
 }

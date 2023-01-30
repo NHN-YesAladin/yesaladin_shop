@@ -1,11 +1,12 @@
 package shop.yesaladin.shop.member.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.shop.member.dto.MemberLoginResponseDto;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 
@@ -31,9 +32,13 @@ public class QueryMemberLoginController {
      * @since 1.0
      */
     @GetMapping("/login/{loginId}")
-    public ResponseEntity<MemberLoginResponseDto> doLogin(@PathVariable String loginId) {
+    public ResponseDto<MemberLoginResponseDto> doLogin(@PathVariable String loginId) {
         MemberLoginResponseDto response = queryMemberService.findMemberLoginInfoByLoginId(
                 loginId);
-        return ResponseEntity.ok(response);
+        return ResponseDto.<MemberLoginResponseDto>builder()
+                .status(HttpStatus.OK)
+                .success(true)
+                .data(response)
+                .build();
     }
 }

@@ -15,12 +15,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.shop.category.dto.CategoryModifyRequestDto;
 import shop.yesaladin.shop.category.dto.CategoryRequestDto;
 import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 import shop.yesaladin.shop.category.dto.ResultCodeDto;
 import shop.yesaladin.shop.category.service.inter.CommandCategoryService;
-import shop.yesaladin.shop.common.dto.ResponseDto;
 
 /**
  * 카테고리 생성,수정,삭제를 api를 통하여 동작하기 위한 rest controller
