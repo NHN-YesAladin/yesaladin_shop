@@ -10,7 +10,7 @@ import shop.yesaladin.shop.tag.domain.repository.CommandTagRepository;
  * @author 이수정
  * @since 1.0
  */
-public interface JpaTagRepository extends Repository<Tag, Long>,
+public interface JpaCommandTagRepository extends Repository<Tag, Long>,
         CommandTagRepository {
 
 }

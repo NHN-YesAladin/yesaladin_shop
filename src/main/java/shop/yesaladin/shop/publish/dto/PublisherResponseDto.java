@@ -3,7 +3,6 @@ package shop.yesaladin.shop.publish.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import shop.yesaladin.shop.publish.domain.model.Publisher;
 
 /**
@@ -13,7 +12,6 @@ import shop.yesaladin.shop.publish.domain.model.Publisher;
  * @since 1.0
  */
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class PublisherResponseDto {

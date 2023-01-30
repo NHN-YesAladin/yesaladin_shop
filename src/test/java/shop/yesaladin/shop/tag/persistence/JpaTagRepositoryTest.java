@@ -19,7 +19,7 @@ class JpaTagRepositoryTest {
     private TestEntityManager entityManager;
 
     @Autowired
-    private JpaTagRepository repository;
+    private JpaCommandTagRepository repository;
 
     @Test
     @DisplayName("태그 저장")

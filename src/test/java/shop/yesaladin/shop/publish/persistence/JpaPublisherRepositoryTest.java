@@ -21,7 +21,7 @@ class JpaPublisherRepositoryTest {
     private TestEntityManager entityManager;
 
     @Autowired
-    private JpaPublisherRepository repository;
+    private JpaCommandPublisherRepository repository;
 
     private Publisher publisher;
 
