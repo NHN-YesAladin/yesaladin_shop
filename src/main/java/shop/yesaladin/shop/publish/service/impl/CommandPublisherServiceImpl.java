@@ -18,8 +18,8 @@ import shop.yesaladin.shop.publish.service.inter.CommandPublisherService;
  * @author 이수정
  * @since 1.0
  */
-@Service
 @RequiredArgsConstructor
+@Service
 public class CommandPublisherServiceImpl implements CommandPublisherService {
 
     private final CommandPublisherRepository commandPublisherRepository;

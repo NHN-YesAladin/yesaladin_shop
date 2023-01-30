@@ -16,8 +16,8 @@ import shop.yesaladin.shop.tag.service.inter.CommandProductTagService;
  * @author 이수정
  * @since 1.0
  */
-@Service
 @RequiredArgsConstructor
+@Service
 public class CommandProductTagServiceImpl implements CommandProductTagService {
 
     private final CommandProductTagRepository commandProductTagRepository;

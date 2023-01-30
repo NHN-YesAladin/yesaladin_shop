@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
  * @author 이수정
  * @since 1.0
  */
-@Service
 @RequiredArgsConstructor
+@Service
 public class QueryTagServiceImpl implements QueryTagService {
 
     private final QueryTagRepository queryTagRepository;

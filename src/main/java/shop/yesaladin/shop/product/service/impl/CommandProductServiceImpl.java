@@ -39,8 +39,8 @@ import java.util.stream.Collectors;
  * @author 이수정
  * @since 1.0
  */
-@Service
 @RequiredArgsConstructor
+@Service
 public class CommandProductServiceImpl implements CommandProductService {
 
     private final int TOTAL_DISCOUNT_RATE_DEFAULT_ID = 1;

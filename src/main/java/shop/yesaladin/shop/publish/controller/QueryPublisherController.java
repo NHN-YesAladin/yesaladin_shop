@@ -19,8 +19,8 @@ import java.util.List;
  * @author 이수정
  * @since 1.0
  */
-@RestController
 @RequiredArgsConstructor
+@RestController
 @RequestMapping("/v1/publishers")
 public class QueryPublisherController {
 

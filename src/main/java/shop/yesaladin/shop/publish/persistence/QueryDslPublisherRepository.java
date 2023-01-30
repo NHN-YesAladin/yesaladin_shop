@@ -20,8 +20,8 @@ import java.util.Optional;
  * @author 이수정
  * @since 1.0
  */
-@Repository
 @RequiredArgsConstructor
+@Repository
 public class QueryDslPublisherRepository implements QueryPublisherRepository {
 
     private final JPAQueryFactory queryFactory;
