@@ -2,7 +2,6 @@ package shop.yesaladin.shop.product.persistence;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -24,9 +23,8 @@ import java.util.Optional;
  * @author 이수정
  * @since 1.0
  */
-@Slf4j
-@Repository
 @RequiredArgsConstructor
+@Repository
 public class QueryDslProductRepository implements QueryProductRepository {
 
     private final JPAQueryFactory queryFactory;
@@ -92,7 +90,11 @@ public class QueryDslProductRepository implements QueryProductRepository {
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        return new PageImpl<>(products, pageable, products.size());
+        Long totalCount = queryFactory.select(product.count())
+                .from(product)
+                .fetchFirst();
+
+        return new PageImpl<>(products, pageable, totalCount);
     }
 
     /**
@@ -125,7 +127,11 @@ public class QueryDslProductRepository implements QueryProductRepository {
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        return new PageImpl<>(products, pageable, products.size());
+        Long totalCount = queryFactory.select(product.count())
+                .from(product)
+                .fetchFirst();
+
+        return new PageImpl<>(products, pageable, totalCount);
     }
 
     /**
@@ -149,7 +155,11 @@ public class QueryDslProductRepository implements QueryProductRepository {
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        return new PageImpl<>(products, pageable, products.size());
+        Long totalCount = queryFactory.select(product.count())
+                .from(product)
+                .fetchFirst();
+
+        return new PageImpl<>(products, pageable, totalCount);
     }
 
     /**
@@ -182,7 +192,11 @@ public class QueryDslProductRepository implements QueryProductRepository {
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        return new PageImpl<>(products, pageable, products.size());
+        Long totalCount = queryFactory.select(product.count())
+                .from(product)
+                .fetchFirst();
+
+        return new PageImpl<>(products, pageable, totalCount);
     }
 }
 

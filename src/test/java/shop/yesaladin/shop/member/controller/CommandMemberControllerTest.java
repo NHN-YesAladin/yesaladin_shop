@@ -184,11 +184,11 @@ class CommandMemberControllerTest {
         //then
         perform.andDo(print()).andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.name", equalTo(member.getName())))
-                .andExpect(jsonPath("$.nickname", equalTo(member.getNickname())))
-                .andExpect(jsonPath("$.loginId", equalTo(member.getLoginId())))
-                .andExpect(jsonPath("$.role", equalTo(ROLE_MEMBER)))
-                .andExpect(jsonPath("$.memberGrade", equalTo(MemberGrade.WHITE.getName())));
+                .andExpect(jsonPath("$.data.name", equalTo(member.getName())))
+                .andExpect(jsonPath("$.data.nickname", equalTo(member.getNickname())))
+                .andExpect(jsonPath("$.data.loginId", equalTo(member.getLoginId())))
+                .andExpect(jsonPath("$.data.role", equalTo(ROLE_MEMBER)))
+                .andExpect(jsonPath("$.data.memberGrade", equalTo(MemberGrade.WHITE.getName())));
 
         verify(commandMemberService, times(1)).create(any());
 
@@ -216,14 +216,23 @@ class CommandMemberControllerTest {
                                 .description("회원의 성별")
                 ),
                 responseFields(
-                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("회원의 pk"),
-                        fieldWithPath("name").type(JsonFieldType.STRING).description("회원의 이름"),
-                        fieldWithPath("nickname").type(JsonFieldType.STRING).description("회원의 닉네임"),
-                        fieldWithPath("loginId").type(JsonFieldType.STRING).description("회원의 아이디"),
-                        fieldWithPath("memberGrade").type(JsonFieldType.STRING)
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("회원의 pk"),
+                        fieldWithPath("data.name").type(JsonFieldType.STRING).description("회원의 이름"),
+                        fieldWithPath("data.nickname").type(JsonFieldType.STRING)
+                                .description("회원의 닉네임"),
+                        fieldWithPath("data.loginId").type(JsonFieldType.STRING)
+                                .description("회원의 아이디"),
+                        fieldWithPath("data.memberGrade").type(JsonFieldType.STRING)
                                 .description("회원의 등급"),
-                        fieldWithPath("role").type(JsonFieldType.STRING)
-                                .description("회원의 권한")
+                        fieldWithPath("data.role").type(JsonFieldType.STRING)
+                                .description("회원의 권한"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("HTTP 상태 코드"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메시지")
+                                .optional()
                 )
         ));
     }
@@ -753,11 +762,11 @@ class CommandMemberControllerTest {
         //then
         perform.andDo(print()).andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id", equalTo(withdrawMember.getId().intValue())))
-                .andExpect(jsonPath("$.name", equalTo(withdrawMember.getName())))
-                .andExpect(jsonPath("$.withdrawal", equalTo(withdrawMember.isWithdrawal())))
+                .andExpect(jsonPath("$.data.id", equalTo(withdrawMember.getId().intValue())))
+                .andExpect(jsonPath("$.data.name", equalTo(withdrawMember.getName())))
+                .andExpect(jsonPath("$.data.withdrawal", equalTo(withdrawMember.isWithdrawal())))
                 .andExpect(jsonPath(
-                        "$.withdrawalDate",
+                        "$.data.withdrawalDate",
                         equalTo(withdrawMember.getWithdrawalDate().toString())
                 ));
 
@@ -770,12 +779,19 @@ class CommandMemberControllerTest {
                 getDocumentResponse(),
                 pathParameters(parameterWithName("loginId").description("탈퇴할 회원의 아이디")),
                 responseFields(
-                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("회원의 Pk"),
-                        fieldWithPath("name").type(JsonFieldType.STRING).description("회원의 이름"),
-                        fieldWithPath("withdrawal").type(JsonFieldType.BOOLEAN)
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("HTTP 상태 코드"),
+                        fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("회원의 Pk"),
+                        fieldWithPath("data.name").type(JsonFieldType.STRING).description("회원의 이름"),
+                        fieldWithPath("data.withdrawal").type(JsonFieldType.BOOLEAN)
                                 .description("회원의 탈퇴 여부"),
-                        fieldWithPath("withdrawalDate").type(JsonFieldType.STRING)
-                                .description("회원의 탈퇴일")
+                        fieldWithPath("data.withdrawalDate").type(JsonFieldType.STRING)
+                                .description("회원의 탈퇴일"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메시지")
+                                .optional()
                 )
         ));
     }

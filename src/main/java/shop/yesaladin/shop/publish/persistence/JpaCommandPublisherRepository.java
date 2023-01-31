@@ -3,7 +3,6 @@ package shop.yesaladin.shop.publish.persistence;
 import org.springframework.data.repository.Repository;
 import shop.yesaladin.shop.publish.domain.model.Publisher;
 import shop.yesaladin.shop.publish.domain.repository.CommandPublisherRepository;
-import shop.yesaladin.shop.publish.domain.repository.QueryPublisherRepository;
 
 /**
  * 출판사 Repository 구현체 입니다.
@@ -11,7 +10,7 @@ import shop.yesaladin.shop.publish.domain.repository.QueryPublisherRepository;
  * @author 이수정
  * @since 1.0
  */
-public interface JpaPublisherRepository extends Repository<Publisher, Long>,
-        CommandPublisherRepository, QueryPublisherRepository {
+public interface JpaCommandPublisherRepository extends Repository<Publisher, Long>,
+        CommandPublisherRepository {
 
 }

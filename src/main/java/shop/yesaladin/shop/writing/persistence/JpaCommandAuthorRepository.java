@@ -10,7 +10,7 @@ import shop.yesaladin.shop.writing.domain.repository.CommandAuthorRepository;
  * @author 이수정
  * @since 1.0
  */
-public interface JpaAuthorRepository extends Repository<Author, Long>,
+public interface JpaCommandAuthorRepository extends Repository<Author, Long>,
         CommandAuthorRepository {
 
 }

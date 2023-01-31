@@ -9,8 +9,8 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 @AllArgsConstructor
 public class SearchedProductProductType {
 
-        @Field(name = "id", type = FieldType.Integer)
-        private int id;
-        @Field(name = "name", type = FieldType.Keyword)
-        private String name;
+    @Field(name = "id", type = FieldType.Integer)
+    private int id;
+    @Field(name = "name", type = FieldType.Keyword)
+    private String name;
 }

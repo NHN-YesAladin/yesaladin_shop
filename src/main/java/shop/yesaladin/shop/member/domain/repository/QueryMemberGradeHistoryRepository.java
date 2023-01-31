@@ -9,8 +9,8 @@ import shop.yesaladin.shop.member.dto.MemberGradeHistoryQueryResponseDto;
 /**
  * 회원 등급 변경 이력 조회 관련 repository interface 입니다.
  *
- * @author : 송학현, 최예린
- * @since : 1.0
+ * @author 송학현, 최예린
+ * @since 1.0
  */
 public interface QueryMemberGradeHistoryRepository {
 
@@ -19,8 +19,8 @@ public interface QueryMemberGradeHistoryRepository {
      *
      * @param id primary key
      * @return 조회된 회원 등급 변경 이력
-     * @author : 송학현, 최예린
-     * @since : 1.0
+     * @author 송학현, 최예린
+     * @since 1.0
      */
     Optional<MemberGradeHistoryQueryResponseDto> findById(long id);
 

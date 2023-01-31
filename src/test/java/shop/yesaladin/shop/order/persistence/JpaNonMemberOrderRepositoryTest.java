@@ -31,10 +31,11 @@ class JpaNonMemberOrderRepositoryTest {
     private long usedPoint = 0;
     private int shippingFee = 0;
     private int wrappingFee = 0;
+    private long totalAmount = 10000L;
     private OrderCode orderCode = OrderCode.NON_MEMBER_ORDER;
     private String address = "Gwang-ju";
     private String name = "yerin";
-    private String phoneNumber = "010-1234-1234";
+    private String phoneNumber = "01012341234";
 
     private NonMemberOrder nonMemberOrder = createNonMemberOrder();
 
@@ -52,8 +53,9 @@ class JpaNonMemberOrderRepositoryTest {
         assertThat(savedOrder.getWrappingFee()).isEqualTo(wrappingFee);
         assertThat(savedOrder.getOrderCode()).isEqualTo(orderCode);
         assertThat(savedOrder.getAddress()).isEqualTo(address);
-        assertThat(savedOrder.getName()).isEqualTo(name);
+        assertThat(savedOrder.getNonMemberName()).isEqualTo(name);
         assertThat(savedOrder.getPhoneNumber()).isEqualTo(phoneNumber);
+        assertThat(savedOrder.getTotalAmount()).isEqualTo(totalAmount);
     }
 
     NonMemberOrder createNonMemberOrder() {
@@ -65,9 +67,11 @@ class JpaNonMemberOrderRepositoryTest {
                 .usedPoint(usedPoint)
                 .shippingFee(shippingFee)
                 .wrappingFee(wrappingFee)
+                .totalAmount(totalAmount)
                 .orderCode(orderCode)
                 .address(address)
-                .name(name)
+                .name("비회원 주문")
+                .nonMemberName(name)
                 .phoneNumber(phoneNumber)
                 .build();
     }

@@ -35,6 +35,7 @@ class JpaMemberOrderRepositoryTest {
     private long usedPoint = 0;
     private int shippingFee = 0;
     private int wrappingFee = 0;
+    private long totalAmount = 10000L;
     private OrderCode orderCode = OrderCode.NON_MEMBER_ORDER;
     private Member member;
     private MemberAddress memberAddress;
@@ -68,6 +69,7 @@ class JpaMemberOrderRepositoryTest {
         assertThat(savedOrder.getOrderCode()).isEqualTo(orderCode);
         assertThat(savedOrder.getMember()).isEqualTo(member);
         assertThat(savedOrder.getMemberAddress()).isEqualTo(memberAddress);
+        assertThat(savedOrder.getTotalAmount()).isEqualTo(totalAmount);
     }
 
     MemberOrder createMemberOrder() {
@@ -80,6 +82,7 @@ class JpaMemberOrderRepositoryTest {
                 .usedPoint(usedPoint)
                 .shippingFee(shippingFee)
                 .wrappingFee(wrappingFee)
+                .totalAmount(totalAmount)
                 .orderCode(orderCode)
                 .memberAddress(memberAddress)
                 .member(member)

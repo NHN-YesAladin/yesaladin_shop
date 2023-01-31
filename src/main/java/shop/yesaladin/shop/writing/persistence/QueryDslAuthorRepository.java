@@ -19,19 +19,14 @@ import java.util.Optional;
  * @author 이수정
  * @since 1.0
  */
-@Repository
 @RequiredArgsConstructor
+@Repository
 public class QueryDslAuthorRepository implements QueryAuthorRepository {
 
     private final JPAQueryFactory queryFactory;
 
     /**
-     * Id를 기준으로 저자를 조회합니다.
-     *
-     * @param id 저자의 Id (PK)
-     * @return 조회된 저자 엔터티
-     * @author 이수정
-     * @since 1.0
+     * {@inheritDoc}
      */
     @Override
     public Optional<Author> findById(Long id) {
@@ -46,11 +41,7 @@ public class QueryDslAuthorRepository implements QueryAuthorRepository {
     }
 
     /**
-     * 저자를 전체 조회합니다.
-     *
-     * @return 조회된 저자 엔터티 List
-     * @author 이수정
-     * @since 1.0
+     * {@inheritDoc}
      */
     @Override
     public List<Author> findAll() {
@@ -62,12 +53,7 @@ public class QueryDslAuthorRepository implements QueryAuthorRepository {
     }
 
     /**
-     * 저자를 Paging하여 관리자용 전체 조회합니다.
-     *
-     * @param pageable page, size 정보를 담은 Pagination을 위한 객체
-     * @return 조회된 저자 엔터티 Page
-     * @author 이수정
-     * @since 1.0
+     * {@inheritDoc}
      */
     @Override
     public Page<Author> findAllForManager(Pageable pageable) {
@@ -75,8 +61,14 @@ public class QueryDslAuthorRepository implements QueryAuthorRepository {
 
         List<Author> authors = queryFactory.select(author)
                 .from(author)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
 
-        return new PageImpl<>(authors, pageable, authors.size());
+        Long totalCount = queryFactory.select(author.count())
+                .from(author)
+                .fetchFirst();
+
+        return new PageImpl<>(authors, pageable, totalCount);
     }
 }

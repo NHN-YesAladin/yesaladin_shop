@@ -24,12 +24,24 @@ public class QueryDslQueryMemberAddressRepository implements QueryMemberAddressR
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<MemberAddress> findByMember(Member member) {
+    public long countByLoginId(String loginId) {
+        QMemberAddress memberAddress = QMemberAddress.memberAddress;
+
+        return queryFactory.select(memberAddress.count())
+                .from(memberAddress)
+                .where(memberAddress.member.loginId.eq(loginId)
+                        .and(memberAddress.isDeleted.isFalse()))
+                .fetchFirst();
+    }
+
+    @Override
+    public List<MemberAddress> findByLoginId(Member member) {
         QMemberAddress memberAddress = QMemberAddress.memberAddress;
 
         return queryFactory.select(memberAddress)
                 .from(memberAddress)
-                .where(memberAddress.member.eq(member))
+                .where(memberAddress.member.eq(member).and(memberAddress.isDeleted.isFalse()))
+                .orderBy(memberAddress.isDefault.asc())
                 .fetch();
     }
 
@@ -53,7 +65,8 @@ public class QueryDslQueryMemberAddressRepository implements QueryMemberAddressR
         return Optional.ofNullable(queryFactory.select(memberAddress)
                 .from(memberAddress)
                 .where(memberAddress.member.loginId.eq(loginId)
-                        .and(memberAddress.id.eq(memberAddressId)))
+                        .and(memberAddress.id.eq(memberAddressId))
+                        .and(memberAddress.isDeleted.isFalse()))
                 .fetchFirst());
     }
 
@@ -64,7 +77,8 @@ public class QueryDslQueryMemberAddressRepository implements QueryMemberAddressR
         MemberAddress result = queryFactory.select(memberAddress)
                 .from(memberAddress)
                 .where(memberAddress.member.loginId.eq(loginId)
-                        .and(memberAddress.id.eq(memberAddressId)))
+                        .and(memberAddress.id.eq(memberAddressId))
+                        .and(memberAddress.isDeleted.isFalse()))
                 .fetchFirst();
 
         return Objects.nonNull(result);

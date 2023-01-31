@@ -10,8 +10,8 @@ import shop.yesaladin.shop.member.domain.model.Role;
 /**
  * 회원 등록 이후 MemberController 에서 클라이언트 에게 반환하기 위한 결과 DTO 입니다.
  *
- * @author : 송학현
- * @since : 1.0
+ * @author 송학현
+ * @since 1.0
  */
 @Getter
 @NoArgsConstructor
@@ -32,8 +32,8 @@ public class MemberCreateResponseDto {
      * @return 결과로 반환된 엔티티의 일부 데이터를 사용하여 Response DTO로 반환합니다.
      *          회원 가입 시 회원의 등급은 WHITE 등급으로 고정되는 결과 입니다.
      *          이 Dto는 회원 가입 기능에만 사용되는 dto 입니다.
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     public static MemberCreateResponseDto fromEntity(Member member, Role role) {
         return new MemberCreateResponseDto(

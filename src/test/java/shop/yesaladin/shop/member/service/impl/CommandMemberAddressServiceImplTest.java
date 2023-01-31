@@ -19,8 +19,10 @@ import shop.yesaladin.shop.member.domain.repository.CommandMemberAddressReposito
 import shop.yesaladin.shop.member.domain.repository.QueryMemberAddressRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
 import shop.yesaladin.shop.member.dto.MemberAddressCreateRequestDto;
-import shop.yesaladin.shop.member.dto.MemberAddressCommandResponseDto;
+import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
+import shop.yesaladin.shop.member.exception.AlreadyRegisteredUpToLimit;
+import shop.yesaladin.shop.member.exception.AlreadyDeletedAddressException;
 import shop.yesaladin.shop.member.exception.MemberAddressNotFoundException;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.CommandMemberAddressService;
@@ -35,6 +37,9 @@ class CommandMemberAddressServiceImplTest {
 
     String address = "Gwang Ju";
     Boolean isDefault = false;
+    String loginId = "user@1";
+
+    Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
 
     @BeforeEach
     void setUp() {
@@ -68,8 +73,27 @@ class CommandMemberAddressServiceImplTest {
     }
 
     @Test
+    void save_failedByAddressRegistrationRestrictionException() {
+        //given
+        String loginId = "user@1";
+        MemberAddressCreateRequestDto request = ReflectionUtils.newInstance(
+                MemberAddressCreateRequestDto.class,
+                address,
+                isDefault
+        );
+
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
+                .thenReturn(Optional.of(member));
+        Mockito.when(queryMemberAddressRepository.countByLoginId(loginId))
+                .thenReturn(10L);
+
+        //when, then
+        assertThatThrownBy(() -> commandMemberAddressService.save(loginId, request)).isInstanceOf(
+                AlreadyRegisteredUpToLimit.class);
+    }
+
+    @Test
     void save() {
-        Member member = MemberDummy.dummyWithId(1L);
         String loginId = member.getLoginId();
 
         MemberAddressCreateRequestDto request = ReflectionUtils.newInstance(
@@ -77,13 +101,15 @@ class CommandMemberAddressServiceImplTest {
                 address,
                 isDefault
         );
-        MemberAddress memberAddress = getMemberAddress(member);
+        MemberAddress memberAddress = getMemberAddress(member, false);
 
         Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
                 .thenReturn(Optional.of(member));
+        Mockito.when(queryMemberAddressRepository.countByLoginId(loginId))
+                .thenReturn(1L);
         Mockito.when(commandMemberAddressRepository.save(any())).thenReturn(memberAddress);
 
-        MemberAddressCommandResponseDto actual = commandMemberAddressService.save(loginId, request);
+        MemberAddressResponseDto actual = commandMemberAddressService.save(loginId, request);
 
         assertThat(actual.getAddress()).isEqualTo(address);
         assertThat(actual.getIsDefault()).isEqualTo(isDefault);
@@ -104,7 +130,6 @@ class CommandMemberAddressServiceImplTest {
 
     @Test
     void markAsDefault_failedByMemberAddressNotFound() {
-        String loginId = "user@1";
         long addressId = 1L;
 
         Mockito.when(queryMemberAddressRepository.getByLoginIdAndMemberAddressId(
@@ -121,11 +146,9 @@ class CommandMemberAddressServiceImplTest {
 
     @Test
     void markAsDefault() {
-        Member member = MemberDummy.dummyWithId(1L);
-        String loginId = member.getLoginId();
         long addressId = 1L;
 
-        MemberAddress memberAddress = getMemberAddress(member);
+        MemberAddress memberAddress = getMemberAddress(member,false);
 
         Mockito.when(queryMemberAddressRepository.getByLoginIdAndMemberAddressId(
                 loginId,
@@ -133,7 +156,7 @@ class CommandMemberAddressServiceImplTest {
         )).thenReturn(
                 Optional.of(memberAddress));
 
-        MemberAddressCommandResponseDto result = commandMemberAddressService.markAsDefault(
+        MemberAddressResponseDto result = commandMemberAddressService.markAsDefault(
                 loginId,
                 addressId
         );
@@ -160,24 +183,40 @@ class CommandMemberAddressServiceImplTest {
     }
 
     @Test
-    void delete() {
-        String loginId = "user@1";
+    void delete_failedByAlreadyDeletedAddress() {
         long addressId = 1L;
 
-        Mockito.when(queryMemberAddressRepository.existByLoginIdAndMemberAddressId(
+        MemberAddress memberAddress = getMemberAddress(member, true);
+        Mockito.when(queryMemberAddressRepository.getByLoginIdAndMemberAddressId(
                 loginId,
                 addressId
-        )).thenReturn(true);
+        )).thenReturn(Optional.of(memberAddress));
+
+        assertThatThrownBy(() -> commandMemberAddressService.delete(
+                loginId,
+                addressId
+        )).isInstanceOf(AlreadyDeletedAddressException.class);
+    }
+    @Test
+    void delete_success() {
+        long addressId = 1L;
+
+        MemberAddress memberAddress = getMemberAddress(member, false);
+        Mockito.when(queryMemberAddressRepository.getByLoginIdAndMemberAddressId(
+                loginId,
+                addressId
+        )).thenReturn(Optional.of(memberAddress));
 
         long result = commandMemberAddressService.delete(loginId, addressId);
 
         assertThat(result).isEqualTo(addressId);
+        assertThat(memberAddress.isDeleted()).isTrue();
     }
-
-    private MemberAddress getMemberAddress(Member member) {
+    private MemberAddress getMemberAddress(Member member, boolean isDeleted) {
         return MemberAddress.builder()
                 .address(address)
                 .isDefault(isDefault)
+                .isDeleted(isDeleted)
                 .member(member)
                 .build();
     }

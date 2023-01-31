@@ -166,6 +166,38 @@ include::{snippets}/update-child-other-parent-category/http-response.adoc[]
 
 ---
 
+=== 카테고리 순서 변경
+
+==== curl
+====== 1차 카테고리 순서 변경 요청
+include::{snippets}/modify-parent-category-order/curl-request.adoc[]
+====== 2차 카테고리 순서 변경 요청
+include::{snippets}/modify-child-category-order/curl-request.adoc[]
+
+
+==== request
+===== Body
+include::{snippets}/modify-parent-category-order/request-fields.adoc[]
+
+===== Example
+====== 1차 카테고리 순서 변경 요청
+include::{snippets}/modify-parent-category-order/http-request.adoc[]
+====== 2차 카테고리 순서 변경 요청
+include::{snippets}/modify-child-category-order/http-request.adoc[]
+
+
+==== response
+===== Body
+include::{snippets}/modify-parent-category-order/response-fields.adoc[]
+
+===== Example
+====== 1차 카테고리 순서 변경 응답
+include::{snippets}/modify-parent-category-order/http-response.adoc[]
+====== 2차 카테고리 순서 변경 응답
+include::{snippets}/modify-child-category-order/http-response.adoc[]
+
+---
+
 === 카테고리 삭제
 
 ==== curl

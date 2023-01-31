@@ -7,8 +7,8 @@ import lombok.Getter;
 /**
  * Auth 서버에서 login을 위해 필요한 member 정보를 담은 클래스입니다.
  *
- * @author : 송학현
- * @since : 1.0
+ * @author 송학현
+ * @since 1.0
  */
 @Getter
 @AllArgsConstructor

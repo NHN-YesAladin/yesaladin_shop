@@ -10,6 +10,7 @@ public class DummyProductCreateDto {
         List<Long> authors = List.of(1L);
 
         List<Long> tags = List.of(1L, 2L);
+        List<Long> categories = List.of(1L, 2L);
 
         return new ProductCreateDto(
                 ISBN,
@@ -35,7 +36,8 @@ public class DummyProductCreateDto {
                 "2023-01-17T00:23:17",
                 "BESTSELLER",
                 "SELLING_PRICE",
-                tags
+                tags,
+                categories
         );
     }
 

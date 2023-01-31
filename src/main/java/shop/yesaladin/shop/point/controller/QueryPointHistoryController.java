@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.point.domain.model.PointCode;
 import shop.yesaladin.shop.point.dto.PointHistoryResponseDto;
+import shop.yesaladin.shop.point.dto.PointResponseDto;
 import shop.yesaladin.shop.point.service.inter.QueryPointHistoryService;
 
 /**
@@ -28,6 +29,17 @@ public class QueryPointHistoryController {
     private final QueryPointHistoryService queryPointHistoryService;
 
     /**
+     * 회원의 포인트를 조회합니다.
+     *
+     * @param loginId 회원의 아이디
+     * @return 회원의 포인트
+     */
+    @GetMapping("/{loginId}")
+    public PointResponseDto getMemberPoint(@PathVariable String loginId) {
+        return queryPointHistoryService.getMemberPoint(loginId);
+    }
+
+    /**
      * 회원의 포인트 내역을 조회합니다.
      *
      * @param loginId  회원의 아이디
@@ -37,7 +49,7 @@ public class QueryPointHistoryController {
      * @author 최예린
      * @since 1.0
      */
-    @GetMapping("/{loginId}")
+    @GetMapping("/{loginId}/point-histories")
     public PaginatedResponseDto<PointHistoryResponseDto> getPointHistoriesByLoginId(
             @PathVariable String loginId,
             @RequestParam("code") Optional<String> code,

@@ -10,7 +10,7 @@ import shop.yesaladin.shop.product.domain.repository.CommandProductRepository;
  * @author 이수정
  * @since 1.0
  */
-public interface JpaProductRepository extends Repository<Product, Long>,
+public interface JpaCommandProductRepository extends Repository<Product, Long>,
         CommandProductRepository {
 
 }
