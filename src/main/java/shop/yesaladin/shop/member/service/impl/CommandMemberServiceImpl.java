@@ -87,6 +87,10 @@ public class CommandMemberServiceImpl implements CommandMemberService {
         if (queryMemberRepository.existsMemberByEmail(createDto.getEmail())) {
             throw new MemberProfileAlreadyExistException(createDto.getEmail());
         }
+
+        if (queryMemberRepository.existsMemberByPhone(createDto.getPhone())) {
+            throw new MemberProfileAlreadyExistException(createDto.getPhone());
+        }
     }
 
     private MemberRole createMemberRole(Member savedMember, int roleId, Role roleMember) {
