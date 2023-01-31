@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
@@ -23,9 +24,12 @@ import shop.yesaladin.shop.order.domain.model.MemberOrder;
 import shop.yesaladin.shop.order.domain.model.NonMemberOrder;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
+import shop.yesaladin.shop.order.domain.model.OrderStatusChangeLog;
+import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
 import shop.yesaladin.shop.order.domain.model.Subscribe;
 import shop.yesaladin.shop.order.domain.model.SubscribeOrderList;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
+import shop.yesaladin.shop.order.dto.OrderSummaryResponseDto;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 
 @Transactional
@@ -115,6 +119,13 @@ class QueryDslOrderQueryRepositoryTest {
                     .build();
             memberOrderList.add(memberOrder);
             entityManager.persist(memberOrder);
+
+            OrderStatusChangeLog orderStatusChangeLog= OrderStatusChangeLog.create(
+                    memberOrder,
+                    LocalDateTime.now(),
+                    OrderStatusCode.ORDER
+            );
+            entityManager.persist(orderStatusChangeLog);
         }
         for (int i = 0; i < 10; i++) {
             SubscribeProduct subscribeProduct = SubscribeProduct.builder()
@@ -313,5 +324,20 @@ class QueryDslOrderQueryRepositoryTest {
                 .isEqualTo(subscribeList.get(0).getOrderNumber());
         Assertions.assertThat(actual.get())
                 .isInstanceOf(OrderCode.MEMBER_SUBSCRIBE.getOrderClass());
+    }
+
+    @Test
+    @DisplayName("특정 회원의 특정 기간 내 주문 수가 반환된다. - 전체 주문 조회용")
+    void findOrdersInPeriodByMemberId() throws Exception {
+        // when
+        Page<OrderSummaryResponseDto> actual = queryRepository.findOrdersInPeriodByMemberId(
+                LocalDate.of(2023, 1, 1),
+                LocalDate.of(2023, 1, 31),
+                memberList.get(0).getId(),
+                PageRequest.of(0, 5)
+        );
+
+        // then
+        Assertions.assertThat(actual.get()).hasSize(5);
     }
 }

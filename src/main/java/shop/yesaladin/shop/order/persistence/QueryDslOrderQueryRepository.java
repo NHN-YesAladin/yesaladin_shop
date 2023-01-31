@@ -19,6 +19,7 @@ import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
 import shop.yesaladin.shop.order.domain.model.querydsl.QMemberOrder;
 import shop.yesaladin.shop.order.domain.model.querydsl.QOrder;
+import shop.yesaladin.shop.order.domain.model.querydsl.QOrderStatusChangeLog;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryResponseDto;
@@ -196,15 +197,22 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
             long memberId,
             Pageable pageable
     ) {
-        QPayment payment = QPayment.payment;
         QMemberOrder memberOrder = QMemberOrder.memberOrder;
-        List<OrderSummaryDto> data = queryFactory.select(Projections.constructor(
-                        OrderSummaryDto.class,
+        QOrderStatusChangeLog orderStatusChangeLog = QOrderStatusChangeLog.orderStatusChangeLog;
+        List<OrderSummaryResponseDto> data = queryFactory.select(Projections.constructor(
+                        OrderSummaryResponseDto.class,
+                        memberOrder.id,
                         memberOrder.orderNumber,
                         memberOrder.orderDateTime,
-                        memberOrder.orderCode
+                        memberOrder.name,
+                        memberOrder.totalAmount,
+                        orderStatusChangeLog.orderStatusCode,
+                        memberOrder.member.id,
+                        memberOrder.member.name
                 ))
                 .from(memberOrder)
+                .leftJoin(orderStatusChangeLog)
+                .on(memberOrder.id.eq(orderStatusChangeLog.pk.orderId))
                 .where(memberOrder.member.id.eq(memberId).and(memberOrder.orderDateTime.between(
                         LocalDateTime.of(startDate, LocalTime.MIDNIGHT),
                         LocalDateTime.of(endDate, LocalTime.MIDNIGHT)
@@ -220,8 +228,7 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
                         LocalDateTime.of(endDate, LocalTime.MIDNIGHT)
                 )));
 
-//        return PageableExecutionUtils.getPage(data, pageable, countQuery::fetchFirst);
-        return null;
+        return PageableExecutionUtils.getPage(data, pageable, countQuery::fetchFirst);
     }
 
 

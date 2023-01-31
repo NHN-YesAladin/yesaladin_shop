@@ -45,6 +45,7 @@ public class PeriodQueryRequestDto {
             throw new InvalidPeriodConditionException(InvalidPeriodConditionType.FUTURE);
         }
 
+        // TODO 6개월 까지 늘려야하는 것은 아닌가?
         if (start.isBefore(LocalDate.of(2023, 1, 1))) {
             throw new InvalidPeriodConditionException(InvalidPeriodConditionType.TOO_PAST);
         }
