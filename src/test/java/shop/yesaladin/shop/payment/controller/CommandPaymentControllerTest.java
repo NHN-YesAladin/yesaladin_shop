@@ -11,6 +11,7 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -31,6 +32,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.member.domain.model.Member;
@@ -90,6 +92,7 @@ class CommandPaymentControllerTest {
         payment.setPaymentCard(paymentCard);
     }
 
+    @WithMockUser
     @Test
     @DisplayName("결제 승인 성공")
     void confirmPayment() throws Exception {
@@ -107,7 +110,9 @@ class CommandPaymentControllerTest {
         when(paymentService.confirmTossRequest(any())).thenReturn(responseDto);
 
         // when
-        ResultActions perform = mockMvc.perform(post("/v1/payments/confirm").contentType(MediaType.APPLICATION_JSON)
+        ResultActions perform = mockMvc.perform(post("/v1/payments/confirm")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(requestDto)));
 
         // then

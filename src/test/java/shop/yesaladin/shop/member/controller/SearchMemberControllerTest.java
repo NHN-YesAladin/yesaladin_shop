@@ -2,6 +2,7 @@ package shop.yesaladin.shop.member.controller;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -22,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.member.domain.model.MemberGenderCode;
@@ -63,6 +65,7 @@ class SearchMemberControllerTest {
                 .build();
     }
 
+    @WithMockUser
     @Test
     @DisplayName("saveMember 메서드의 Validation 에러")
     void saveMemberOfSearchMemberManagerRequestDtoFailByValidationError() throws Exception {
@@ -72,6 +75,7 @@ class SearchMemberControllerTest {
                 .build();
         //when
         ResultActions resultActions = mockMvc.perform(post("/v1/members/search")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invalidEmailDummy)));
         //then
@@ -79,6 +83,7 @@ class SearchMemberControllerTest {
                 .andDo(print());
     }
 
+    @WithMockUser
     @Test
     @DisplayName("회원 등록 성공")
     void saveMemberSuccess() throws Exception {
@@ -87,6 +92,7 @@ class SearchMemberControllerTest {
                 .thenReturn(requestDto);
         //when
         ResultActions resultActions = mockMvc.perform(post("/v1/members/search")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(requestDto)));
@@ -107,6 +113,7 @@ class SearchMemberControllerTest {
                 .andDo(print());
     }
 
+    @WithMockUser
     @Test
     @DisplayName("updateMember 메서드의 Validation 에러")
     void updateMemberOfSearchMemberManagerRequestDtoFailByValidationError() throws Exception {
@@ -116,6 +123,7 @@ class SearchMemberControllerTest {
                 .build();
         //when
         ResultActions resultActions = mockMvc.perform(put("/v1/members/search")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invalidEmailDummy)));
         //then
@@ -123,6 +131,7 @@ class SearchMemberControllerTest {
                 .andDo(print());
     }
 
+    @WithMockUser
     @Test
     @DisplayName("회원 정보 수정 성공")
     void updateMemberSuccess() throws Exception {
@@ -131,6 +140,7 @@ class SearchMemberControllerTest {
                 .thenReturn(requestDto);
         //when
         ResultActions resultActions = mockMvc.perform(put("/v1/members/search")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(requestDto)));
@@ -153,6 +163,7 @@ class SearchMemberControllerTest {
                 .andDo(print());
     }
 
+    @WithMockUser
     @Test
     @DisplayName(("회원 정보 삭제 성공"))
     void deleteMemberSuccess() throws Exception {
@@ -160,11 +171,12 @@ class SearchMemberControllerTest {
         ResultActions resultActions = mockMvc.perform(delete(
                 "/v1/members/search/{loginid}",
                 "loginId"
-        ));
+        ).with(csrf()));
         //then
         resultActions.andExpect(status().isNoContent());
     }
 
+    @WithMockUser
     @Test
     @DisplayName("로그인 아이디로 검색")
     void testSearchByLoginId() throws Exception {
@@ -183,6 +195,7 @@ class SearchMemberControllerTest {
                 .andDo(print());
     }
 
+    @WithMockUser
     @Test
     @DisplayName("닉네임으로 검색")
     void testSearchByNickname() throws Exception {
@@ -201,6 +214,7 @@ class SearchMemberControllerTest {
                 .andDo(print());
     }
 
+    @WithMockUser
     @Test
     @DisplayName("닉네임으로 검색")
     void testSearchByPhone() throws Exception {
@@ -219,6 +233,7 @@ class SearchMemberControllerTest {
                 .andDo(print());
     }
 
+    @WithMockUser
     @Test
     @DisplayName("이름으로 검색")
     void testSearchByName() throws Exception {
@@ -237,6 +252,7 @@ class SearchMemberControllerTest {
                 .andDo(print());
     }
 
+    @WithMockUser
     @Test
     @DisplayName("회원가입날로 검색")
     void testSearchBySignUpDate() throws Exception {
