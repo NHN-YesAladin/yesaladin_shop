@@ -168,8 +168,7 @@ class CommandPointControllerTest {
                 pointReasonCode
         );
 
-        Mockito.when(commandPointHistoryService.use(any())).thenThrow(
-                new OverPointUseException(loginId, amount));
+        Mockito.when(commandPointHistoryService.use(any())).thenThrow(OverPointUseException.class);
 
         //when
         ResultActions result = mockMvc.perform(post("/v1/points")

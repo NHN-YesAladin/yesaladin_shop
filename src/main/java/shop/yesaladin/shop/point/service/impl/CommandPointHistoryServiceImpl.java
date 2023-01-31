@@ -45,7 +45,7 @@ public class CommandPointHistoryServiceImpl implements CommandPointHistoryServic
         long amount = queryPointHistoryRepository.getMemberPointByLoginId(request.getLoginId());
 
         if (request.getAmount() > amount) {
-            throw new OverPointUseException(request.getLoginId(), amount);
+            throw new OverPointUseException();
         }
     }
 
