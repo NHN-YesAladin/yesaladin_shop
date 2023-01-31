@@ -4,15 +4,16 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.point.domain.model.PointCode;
 import shop.yesaladin.shop.point.dto.PointHistoryResponseDto;
-import shop.yesaladin.shop.point.dto.PointResponseDto;
 import shop.yesaladin.shop.point.service.inter.QueryPointHistoryService;
 
 /**
@@ -33,10 +34,16 @@ public class QueryPointHistoryController {
      *
      * @param loginId 회원의 아이디
      * @return 회원의 포인트
+     * @author 최예린
+     * @since 1.0
      */
     @GetMapping("/{loginId}")
-    public PointResponseDto getMemberPoint(@PathVariable String loginId) {
-        return queryPointHistoryService.getMemberPoint(loginId);
+    public ResponseDto<Long> getMemberPoint(@PathVariable String loginId) {
+        return ResponseDto.<Long>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(queryPointHistoryService.getMemberPoint(loginId))
+                .build();
     }
 
     /**
@@ -49,8 +56,8 @@ public class QueryPointHistoryController {
      * @author 최예린
      * @since 1.0
      */
-    @GetMapping("/{loginId}/point-histories")
-    public PaginatedResponseDto<PointHistoryResponseDto> getPointHistoriesByLoginId(
+    @GetMapping("/{loginId}/histories")
+    public ResponseDto<PaginatedResponseDto<PointHistoryResponseDto>> getPointHistoriesByLoginId(
             @PathVariable String loginId,
             @RequestParam("code") Optional<String> code,
             Pageable pageable
@@ -68,11 +75,15 @@ public class QueryPointHistoryController {
             response = queryPointHistoryService.getPointHistoriesWithLoginId(loginId, pageable);
         }
 
-        return PaginatedResponseDto.<PointHistoryResponseDto>builder()
-                .totalPage(response.getTotalPages())
-                .currentPage(response.getNumber())
-                .totalDataCount(response.getTotalElements())
-                .dataList(response.getContent())
+        return ResponseDto.<PaginatedResponseDto<PointHistoryResponseDto>>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(PaginatedResponseDto.<PointHistoryResponseDto>builder()
+                        .totalPage(response.getTotalPages())
+                        .currentPage(response.getNumber())
+                        .totalDataCount(response.getTotalElements())
+                        .dataList(response.getContent())
+                        .build())
                 .build();
     }
 

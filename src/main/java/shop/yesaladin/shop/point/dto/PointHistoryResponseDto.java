@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import shop.yesaladin.shop.point.domain.model.PointCode;
 import shop.yesaladin.shop.point.domain.model.PointHistory;
+import shop.yesaladin.shop.point.domain.model.PointReasonCode;
 
 /**
  * 포인트내역 등록 후 반환을 위한 dto 클래스 입니다.
@@ -20,7 +21,7 @@ public class PointHistoryResponseDto {
     private Long amount;
     private LocalDateTime createDateTime;
     private PointCode pointCode;
-    private String loginId;
+    private PointReasonCode pointReasonCode;
 
     /**
      * 엔티티 클래스를 dto 클래스로 변환시켜줍니다.
@@ -36,7 +37,7 @@ public class PointHistoryResponseDto {
                 pointHistory.getAmount(),
                 pointHistory.getCreateDateTime(),
                 pointHistory.getPointCode(),
-                pointHistory.getMember().getLoginId()
+                pointHistory.getPointReasonCode()
         );
     }
 }
