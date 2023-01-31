@@ -34,6 +34,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.point.domain.model.PointCode;
+import shop.yesaladin.shop.point.domain.model.PointReasonCode;
 import shop.yesaladin.shop.point.dto.PointHistoryRequestDto;
 import shop.yesaladin.shop.point.dto.PointHistoryResponseDto;
 import shop.yesaladin.shop.point.exception.OverPointUseException;
@@ -58,10 +59,13 @@ class CommandPointControllerTest {
         //given
         String loginId = "user@1";
         Long amount = 1000L;
+        PointReasonCode pointReasonCode = PointReasonCode.USE_ORDER;
+
         PointHistoryRequestDto request = ReflectionUtils.newInstance(
                 PointHistoryRequestDto.class,
                 loginId,
-                amount
+                amount,
+                pointReasonCode
         );
 
         Mockito.when(commandPointHistoryService.use(any()))
@@ -86,7 +90,8 @@ class CommandPointControllerTest {
                 requestParameters(parameterWithName("code").description("포인트 사용/적립 구분")),
                 requestFields(
                         fieldWithPath("loginId").type(JsonFieldType.STRING).description("회원의 아이디"),
-                        fieldWithPath("amount").type(JsonFieldType.NUMBER).description("사용한 포인트 양")
+                        fieldWithPath("amount").type(JsonFieldType.NUMBER).description("사용한 포인트 양"),
+                        fieldWithPath("pointReasonCode").type(JsonFieldType.STRING).description("포인트 사용 사유")
                 ),
                 responseFields(
                         fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
@@ -100,10 +105,13 @@ class CommandPointControllerTest {
         //given
         String loginId = "user@1";
         Long amount = 1000L;
+        PointReasonCode pointReasonCode = PointReasonCode.USE_ORDER;
+
         PointHistoryRequestDto request = ReflectionUtils.newInstance(
                 PointHistoryRequestDto.class,
                 loginId,
-                amount
+                amount,
+                pointReasonCode
         );
 
         Mockito.when(commandPointHistoryService.use(any())).thenThrow(
@@ -126,6 +134,7 @@ class CommandPointControllerTest {
                 .use(captor.capture());
         Assertions.assertThat(captor.getValue().getAmount()).isEqualTo(amount);
         Assertions.assertThat(captor.getValue().getLoginId()).isEqualTo(loginId);
+        Assertions.assertThat(captor.getValue().getPointReasonCode()).isEqualTo(pointReasonCode);
 
         //docs
         result.andDo(document(
@@ -135,7 +144,8 @@ class CommandPointControllerTest {
                 requestParameters(parameterWithName("code").description("포인트 사용/적립 구분")),
                 requestFields(
                         fieldWithPath("loginId").type(JsonFieldType.STRING).description("회원의 아이디"),
-                        fieldWithPath("amount").type(JsonFieldType.NUMBER).description("사용한 포인트 양")
+                        fieldWithPath("amount").type(JsonFieldType.NUMBER).description("사용한 포인트 양"),
+                        fieldWithPath("pointReasonCode").type(JsonFieldType.STRING).description("포인트 사용 사유")
                 ),
                 responseFields(
                         fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
@@ -149,11 +159,13 @@ class CommandPointControllerTest {
         //given
         String loginId = "user@1";
         Long amount = 100000L;
+        PointReasonCode pointReasonCode = PointReasonCode.USE_ORDER;
 
         PointHistoryRequestDto request = ReflectionUtils.newInstance(
                 PointHistoryRequestDto.class,
                 loginId,
-                amount
+                amount,
+                pointReasonCode
         );
 
         Mockito.when(commandPointHistoryService.use(any())).thenThrow(
@@ -176,6 +188,7 @@ class CommandPointControllerTest {
                 .use(captor.capture());
         Assertions.assertThat(captor.getValue().getAmount()).isEqualTo(amount);
         Assertions.assertThat(captor.getValue().getLoginId()).isEqualTo(loginId);
+        Assertions.assertThat(captor.getValue().getPointReasonCode()).isEqualTo(pointReasonCode);
 
         //docs
         result.andDo(document(
@@ -185,7 +198,8 @@ class CommandPointControllerTest {
                 requestParameters(parameterWithName("code").description("포인트 사용/적립 구분")),
                 requestFields(
                         fieldWithPath("loginId").type(JsonFieldType.STRING).description("회원의 아이디"),
-                        fieldWithPath("amount").type(JsonFieldType.NUMBER).description("사용한 포인트 양")
+                        fieldWithPath("amount").type(JsonFieldType.NUMBER).description("사용한 포인트 양"),
+                        fieldWithPath("pointReasonCode").type(JsonFieldType.STRING).description("포인트 사용 사유")
                 ),
                 responseFields(
                         fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
@@ -199,11 +213,13 @@ class CommandPointControllerTest {
         //given
         String loginId = "user@1";
         Long amount = 1000L;
+        PointReasonCode pointReasonCode = PointReasonCode.USE_ORDER;
 
         PointHistoryRequestDto request = ReflectionUtils.newInstance(
                 PointHistoryRequestDto.class,
                 loginId,
-                amount
+                amount,
+                pointReasonCode
         );
         long pointHistoryId = 1;
         long curAmount = 1000;
@@ -228,6 +244,7 @@ class CommandPointControllerTest {
         result.andExpect(jsonPath("$.amount", equalTo((int) curAmount)));
         result.andExpect(jsonPath("$.pointCode", equalTo("USE")));
         result.andExpect(jsonPath("$.loginId", equalTo(loginId)));
+        result.andExpect(jsonPath("$.pointReasonCode", equalTo(pointReasonCode.name())));
 
         ArgumentCaptor<PointHistoryRequestDto> captor = ArgumentCaptor.forClass(
                 PointHistoryRequestDto.class);
@@ -235,6 +252,7 @@ class CommandPointControllerTest {
                 .use(captor.capture());
         Assertions.assertThat(captor.getValue().getAmount()).isEqualTo(amount);
         Assertions.assertThat(captor.getValue().getLoginId()).isEqualTo(loginId);
+        Assertions.assertThat(captor.getValue().getPointReasonCode()).isEqualTo(pointReasonCode);
 
         //docs
         result.andDo(document(
@@ -244,7 +262,8 @@ class CommandPointControllerTest {
                 requestParameters(parameterWithName("code").description("포인트 사용/적립 구분")),
                 requestFields(
                         fieldWithPath("loginId").type(JsonFieldType.STRING).description("회원의 아이디"),
-                        fieldWithPath("amount").type(JsonFieldType.NUMBER).description("사용한 포인트 양")
+                        fieldWithPath("amount").type(JsonFieldType.NUMBER).description("사용한 포인트 양"),
+                        fieldWithPath("pointReasonCode").type(JsonFieldType.STRING).description("포인트 사용 사유")
                 ),
                 responseFields(
                         fieldWithPath("id").type(JsonFieldType.NUMBER).description("포인트 등록 내역 pk"),
@@ -264,10 +283,13 @@ class CommandPointControllerTest {
         //given
         String loginId = "user@1";
         Long amount = 1000L;
+        PointReasonCode pointReasonCode = PointReasonCode.SAVE_ORDER;
+
         PointHistoryRequestDto request = ReflectionUtils.newInstance(
                 PointHistoryRequestDto.class,
                 loginId,
-                amount
+                amount,
+                pointReasonCode
         );
 
         Mockito.when(commandPointHistoryService.save(any())).thenThrow(
@@ -290,6 +312,7 @@ class CommandPointControllerTest {
                 .save(captor.capture());
         Assertions.assertThat(captor.getValue().getAmount()).isEqualTo(amount);
         Assertions.assertThat(captor.getValue().getLoginId()).isEqualTo(loginId);
+        Assertions.assertThat(captor.getValue().getPointReasonCode()).isEqualTo(pointReasonCode);
 
         //docs
         result.andDo(document(
@@ -299,7 +322,8 @@ class CommandPointControllerTest {
                 requestParameters(parameterWithName("code").description("포인트 사용/적립 구분")),
                 requestFields(
                         fieldWithPath("loginId").type(JsonFieldType.STRING).description("회원의 아이디"),
-                        fieldWithPath("amount").type(JsonFieldType.NUMBER).description("적립한 포인트 양")
+                        fieldWithPath("amount").type(JsonFieldType.NUMBER).description("적립한 포인트 양"),
+                        fieldWithPath("pointReasonCode").type(JsonFieldType.STRING).description("포인트 적립 사유")
                 ),
                 responseFields(
                         fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
@@ -314,10 +338,13 @@ class CommandPointControllerTest {
         //given
         String loginId = "user@1";
         Long amount = 1000L;
+        PointReasonCode pointReasonCode = PointReasonCode.SAVE_ORDER;
+
         PointHistoryRequestDto request = ReflectionUtils.newInstance(
                 PointHistoryRequestDto.class,
                 loginId,
-                amount
+                amount,
+                pointReasonCode
         );
         long pointHistoryId = 1;
         long curAmount = 1000;
@@ -344,6 +371,7 @@ class CommandPointControllerTest {
         result.andExpect(jsonPath("$.amount", equalTo((int) curAmount)));
         result.andExpect(jsonPath("$.pointCode", equalTo("SAVE")));
         result.andExpect(jsonPath("$.loginId", equalTo(loginId)));
+        result.andExpect(jsonPath("$.pointReasonCode", equalTo(pointReasonCode.name())));
 
         ArgumentCaptor<PointHistoryRequestDto> captor = ArgumentCaptor.forClass(
                 PointHistoryRequestDto.class);
@@ -351,6 +379,7 @@ class CommandPointControllerTest {
                 .save(captor.capture());
         Assertions.assertThat(captor.getValue().getAmount()).isEqualTo(amount);
         Assertions.assertThat(captor.getValue().getLoginId()).isEqualTo(loginId);
+        Assertions.assertThat(captor.getValue().getPointReasonCode()).isEqualTo(pointReasonCode);
 
         //docs
         result.andDo(document(
@@ -360,7 +389,8 @@ class CommandPointControllerTest {
                 requestParameters(parameterWithName("code").description("포인트 사용/적립 구분")),
                 requestFields(
                         fieldWithPath("loginId").type(JsonFieldType.STRING).description("회원의 아이디"),
-                        fieldWithPath("amount").type(JsonFieldType.NUMBER).description("적립한 포인트 양")
+                        fieldWithPath("amount").type(JsonFieldType.NUMBER).description("적립한 포인트 양"),
+                        fieldWithPath("pointReasonCode").type(JsonFieldType.STRING).description("포인트 적립 사유")
                 ),
                 responseFields(
                         fieldWithPath("id").type(JsonFieldType.NUMBER).description("포인트 등록 내역 pk"),

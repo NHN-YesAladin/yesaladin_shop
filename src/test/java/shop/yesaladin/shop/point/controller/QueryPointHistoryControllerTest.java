@@ -275,8 +275,9 @@ class QueryPointHistoryControllerTest {
     void getMemberPoint_success() throws Exception {
         //given
         String loginId = "user@1";
+        long amount = 1000;
 
-        Mockito.when(pointHistoryService.getMemberPoint(loginId)).thenReturn(new PointResponseDto(1000L));
+        Mockito.when(pointHistoryService.getMemberPoint(loginId)).thenReturn(amount);
 
         //when
         ResultActions result = mockMvc.perform(get("/v1/points/{loginId}", loginId));

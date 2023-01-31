@@ -20,6 +20,7 @@ import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
 import shop.yesaladin.shop.point.domain.model.PointCode;
 import shop.yesaladin.shop.point.domain.model.PointHistory;
+import shop.yesaladin.shop.point.domain.model.PointReasonCode;
 import shop.yesaladin.shop.point.domain.repository.QueryPointHistoryRepository;
 import shop.yesaladin.shop.point.dto.PointHistoryResponseDto;
 
@@ -40,6 +41,7 @@ class QuerydslQueryPointHistoryRepositoryTest {
     long amount = 1000;
     LocalDateTime createDateTime = LocalDateTime.now();
     PointCode pointCode = PointCode.USE;
+    PointReasonCode pointReasonCode = PointReasonCode.USE_ORDER;
 
     @BeforeEach
     void setUp() {
@@ -50,7 +52,7 @@ class QuerydslQueryPointHistoryRepositoryTest {
     @Test
     void findById() {
         //given
-        PointHistory pointHistory = createPointHistory(member, pointCode);
+        PointHistory pointHistory = createPointHistory(member, pointCode, pointReasonCode);
         entityManager.persist(pointHistory);
 
         Long id = pointHistory.getId();
@@ -180,9 +182,10 @@ class QuerydslQueryPointHistoryRepositoryTest {
         assertThat(result.getTotalElements()).isEqualTo(10);
     }
 
-    PointHistory createPointHistory(Member member, PointCode pointCode) {
+    PointHistory createPointHistory(Member member, PointCode pointCode, PointReasonCode pointReasonCode) {
         return PointHistory.builder()
                 .amount(amount)
+                .pointReasonCode(pointReasonCode)
                 .pointCode(pointCode)
                 .member(member)
                 .createDateTime(createDateTime)
@@ -190,12 +193,12 @@ class QuerydslQueryPointHistoryRepositoryTest {
     }
 
     void setPointHistory(int save, int use) {
-        entityManager.persist(createPointHistory(member, PointCode.SUM));
+        entityManager.persist(createPointHistory(member, PointCode.SUM, PointReasonCode.SUM));
         for (int i = 0; i < save; i++) {
-            entityManager.persist(createPointHistory(member, PointCode.SAVE));
+            entityManager.persist(createPointHistory(member, PointCode.SAVE, PointReasonCode.SAVE_COUPON));
         }
         for (int i = 0; i < use; i++) {
-            entityManager.persist(createPointHistory(member, PointCode.USE));
+            entityManager.persist(createPointHistory(member, PointCode.USE, PointReasonCode.USE_PRESENT));
         }
     }
 
