@@ -38,6 +38,7 @@ class JpaSubscribeRepositoryTest {
     private long usedPoint = 0;
     private int shippingFee = 0;
     private int wrappingFee = 0;
+    private long totalAmount = 10000L;
     private OrderCode orderCode = OrderCode.NON_MEMBER_ORDER;
     private String address = "Gwang-ju";
     private String name = "yerin";
@@ -74,6 +75,7 @@ class JpaSubscribeRepositoryTest {
         assertThat(savedSubscribe.getMemberAddress()).isEqualTo(memberAddress);
         assertThat(savedSubscribe.getMember()).isEqualTo(member);
         assertThat(savedSubscribe.getSubscribeProduct()).isEqualTo(subscribeProduct);
+        assertThat(savedSubscribe.getTotalAmount()).isEqualTo(totalAmount);
 
     }
 
@@ -87,6 +89,7 @@ class JpaSubscribeRepositoryTest {
                 .usedPoint(usedPoint)
                 .shippingFee(shippingFee)
                 .wrappingFee(wrappingFee)
+                .totalAmount(totalAmount)
                 .orderCode(orderCode)
                 .memberAddress(memberAddress)
                 .member(member)
