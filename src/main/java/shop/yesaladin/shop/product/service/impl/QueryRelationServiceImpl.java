@@ -9,16 +9,10 @@ import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.Relation;
 import shop.yesaladin.shop.product.domain.repository.QueryRelationRepository;
-import shop.yesaladin.shop.product.dto.RelationResponseDto;
 import shop.yesaladin.shop.product.dto.RelationsResponseDto;
-import shop.yesaladin.shop.product.persistence.QueryDslRelationRepository;
-import shop.yesaladin.shop.product.service.inter.QueryProductService;
 import shop.yesaladin.shop.product.service.inter.QueryRelationService;
-import shop.yesaladin.shop.publish.domain.model.Publisher;
 import shop.yesaladin.shop.publish.dto.PublishResponseDto;
-import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
 import shop.yesaladin.shop.publish.service.inter.QueryPublishService;
-import shop.yesaladin.shop.writing.domain.model.Author;
 import shop.yesaladin.shop.writing.service.inter.QueryWritingService;
 
 import java.util.ArrayList;
@@ -69,6 +63,7 @@ public class QueryRelationServiceImpl implements QueryRelationService {
 
             relations.add(new RelationsResponseDto(
                     product.getId(),
+                    product.getThumbnailFile().getUrl(),
                     product.getTitle(),
                     authors,
                     publisher.getPublisher().getName(),

@@ -15,8 +15,6 @@ import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
 import shop.yesaladin.shop.product.dummy.*;
 
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest

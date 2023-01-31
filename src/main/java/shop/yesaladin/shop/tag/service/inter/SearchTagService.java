@@ -1,9 +1,7 @@
 package shop.yesaladin.shop.tag.service.inter;
 
-import java.util.List;
 import shop.yesaladin.shop.tag.dto.SearchTagRequestDto;
 import shop.yesaladin.shop.tag.dto.SearchedTagResponseDto;
-import shop.yesaladin.shop.tag.dto.TagsResponseDto;
 
 /**
  * 엘라스틱서치 태그 검색 서비스 인터페이스

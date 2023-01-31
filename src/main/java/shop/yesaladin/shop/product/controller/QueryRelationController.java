@@ -6,7 +6,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
-import shop.yesaladin.shop.product.dto.RelationResponseDto;
 import shop.yesaladin.shop.product.dto.RelationsResponseDto;
 import shop.yesaladin.shop.product.service.inter.QueryRelationService;
 
@@ -28,7 +27,7 @@ public class QueryRelationController {
      * [GET /products/{productId}/relations] 요청을 받아 연관관계를 관리자용 Paging 전체 조회합니다.
      *
      * @param productId 연관관계를 조회할 product의 Id
-     * @param pageable 페이징 처리를 위한 객체
+     * @param pageable  페이징 처리를 위한 객체
      * @return 조회한 연관관계의 페이징된 정보까지 담은 dto
      * @author 이수정
      * @since 1.0

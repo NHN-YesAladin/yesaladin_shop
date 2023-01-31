@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
-import shop.yesaladin.shop.product.domain.repository.QueryRelationRepository;
 import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
 import shop.yesaladin.shop.product.dto.ProductsResponseDto;
 import shop.yesaladin.shop.product.exception.ProductNotFoundException;

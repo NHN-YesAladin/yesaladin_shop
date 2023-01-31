@@ -12,7 +12,6 @@ import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
 import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
-import shop.yesaladin.shop.product.domain.repository.QueryRelationRepository;
 import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
 import shop.yesaladin.shop.product.dto.ProductsResponseDto;
 import shop.yesaladin.shop.product.dummy.DummyFile;

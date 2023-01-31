@@ -16,7 +16,7 @@ public interface QueryRelationService {
      * 상품을 기준으로 상품 연관관계를 조회하여 조회된 상품 연관관계 Dto를 반환합니다.
      *
      * @param productId 연관관계를 조회할 product의 Id
-     * @param pageable 페이징 처리를 위한 객체
+     * @param pageable  페이징 처리를 위한 객체
      * @return 조회된 상품 연관관계 dto
      * @author 이수정
      * @since 1.0

@@ -18,6 +18,7 @@ import java.util.List;
 public class RelationsResponseDto {
 
     private Long id;
+    private String thumbnailFileUrl;
 
     private String title;
     private List<String> authors;

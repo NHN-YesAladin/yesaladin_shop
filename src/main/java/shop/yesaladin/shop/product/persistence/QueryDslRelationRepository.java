@@ -11,12 +11,8 @@ import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.Relation;
 import shop.yesaladin.shop.product.domain.model.querydsl.QRelation;
 import shop.yesaladin.shop.product.domain.repository.QueryRelationRepository;
-import shop.yesaladin.shop.publish.domain.model.Publisher;
-import shop.yesaladin.shop.publish.domain.model.querydsl.QPublisher;
-import shop.yesaladin.shop.publish.domain.repository.QueryPublisherRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * 상품 연관관계 조회를 위한 Repository QueryDsl 구현체 입니다.

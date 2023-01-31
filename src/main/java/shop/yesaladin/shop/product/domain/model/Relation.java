@@ -36,7 +36,7 @@ public class Relation {
      * 상품 연관관계 엔터티를 생성하여 반환합니다.
      *
      * @param productMain 연관관계를 생성할 메인 상품
-     * @param productSub 연관관계를 생성할 서브 상품
+     * @param productSub  연관관계를 생성할 서브 상품
      * @return 생성된 연관관계 엔터티
      * @author 이수정
      * @since 1.0
