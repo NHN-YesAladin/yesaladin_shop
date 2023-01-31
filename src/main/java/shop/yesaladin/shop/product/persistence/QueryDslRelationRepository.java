@@ -70,7 +70,7 @@ public class QueryDslRelationRepository implements QueryRelationRepository {
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        JPAQuery<Long> countQuery = queryFactory.select(relation.count()).from(relation);
+        JPAQuery<Long> countQuery = queryFactory.select(relation.count()).where(relation.productMain.id.eq(productId)).from(relation);
 
         return PageableExecutionUtils.getPage(relations, pageable, countQuery::fetchFirst);
     }

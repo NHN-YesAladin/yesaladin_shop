@@ -41,7 +41,6 @@ public class QueryProductServiceImpl implements QueryProductService {
     private final QueryWritingService queryWritingService;
     private final QueryPublishService queryPublishService;
     private final QueryProductTagService queryProductTagService;
-    private final QueryRelationRepository queryRelationRepository;
 
     /**
      * {@inheritDoc}
@@ -143,11 +142,6 @@ public class QueryProductServiceImpl implements QueryProductService {
 
             List<String> tags = findTagsByProduct(product);
 
-            List<Long> relations = queryRelationRepository.findByProductMain(product)
-                    .stream()
-                    .map(relation -> relation.getProductSub().getId())
-                    .collect(Collectors.toList());
-
             products.add(new ProductsResponseDto(
                     product.getId(),
                     product.getTitle(),
@@ -163,7 +157,7 @@ public class QueryProductServiceImpl implements QueryProductService {
                     product.isDeleted(),
                     product.getThumbnailFile().getUrl(),
                     tags,
-                    product.getEbookFile().getUrl()
+                    product.getEbookFile() != null ? product.getEbookFile().getUrl() : null
             ));
         }
 

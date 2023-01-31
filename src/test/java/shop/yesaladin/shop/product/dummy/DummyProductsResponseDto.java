@@ -25,7 +25,8 @@ public class DummyProductsResponseDto {
                 true,
                 false,
                 "URL",
-                tags
+                tags,
+                null
         );
     }
 
@@ -48,7 +49,8 @@ public class DummyProductsResponseDto {
                 true,
                 true,
                 "URL",
-                tags
+                tags,
+                null
         );
     }
 }
