@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.publish.domain.repository;
 
-import java.util.List;
 import shop.yesaladin.shop.publish.dto.SearchPublisherResponseDto;
 
 /**

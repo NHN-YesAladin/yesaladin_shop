@@ -10,7 +10,7 @@ import shop.yesaladin.shop.point.domain.model.PointHistory;
 import shop.yesaladin.shop.point.dto.PointHistoryResponseDto;
 
 /**
- * 포인트 내역 조회 관련 repository 클래스 입니다.
+ * 포인트 내역 조회 관련 repository 인터페이스 입니다.
  *
  * @author 최에린
  * @since 1.0

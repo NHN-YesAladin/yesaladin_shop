@@ -3,6 +3,7 @@ package shop.yesaladin.shop.category.controller;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -16,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.common.dto.ResponseDto;
@@ -39,12 +41,14 @@ class SearchCategoryControllerTest {
     private static final String OFFSET = "offset";
     private static final String SIZE = "size";
 
+    @WithMockUser
     @Test
     @DisplayName("페이지 위치가 미이너스 일 경우 ConstraintViolationException")
     void testSearchCategoryByNameOffsetLessThanZeroThrConstraintViolationException()
             throws Exception {
         //when
         ResultActions resultActions = mockMvc.perform(get("/v1/search/categories")
+                .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
                 .param(NAME, "name")
                 .param(OFFSET, MIN)
@@ -54,12 +58,14 @@ class SearchCategoryControllerTest {
                 .andDo(print());
     }
 
+    @WithMockUser
     @Test
     @DisplayName("데이터 갯수가 1보다 작을 경우 일 경우 ConstraintViolationException")
     void testSearchCategoryByNameSizeLessThanOneThrConstraintViolationException()
             throws Exception {
         //when
         ResultActions resultActions = mockMvc.perform(get("/v1/search/categories")
+                .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
                 .param(NAME, "name")
                 .param(OFFSET, ZERO)
@@ -69,12 +75,14 @@ class SearchCategoryControllerTest {
                 .andDo(print());
     }
 
+    @WithMockUser
     @Test
     @DisplayName("데이터 갯수가 20보다 클 경우 일 경우 ConstraintViolationException")
     void testSearchCategoryByNameSizeMoreThan20ThrConstraintViolationException()
             throws Exception {
         //when
         ResultActions resultActions = mockMvc.perform(get("/v1/search/categories")
+                .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
                 .param(NAME, "name")
                 .param(OFFSET, ZERO)
@@ -84,6 +92,7 @@ class SearchCategoryControllerTest {
                 .andDo(print());
     }
 
+    @WithMockUser
     @Test
     @DisplayName("카테고리 이름 검색 성공")
     void testSearchCategoryByNameSuccess() throws Exception {

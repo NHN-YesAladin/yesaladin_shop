@@ -30,6 +30,6 @@ public enum PointCode {
         return Arrays.stream(PointCode.values())
                 .filter(x -> x.name().equals(code.toUpperCase()))
                 .findFirst()
-                .orElseThrow(() -> new InvalidCodeParameterException(code));
+                .orElseThrow(InvalidCodeParameterException::new);
     }
 }

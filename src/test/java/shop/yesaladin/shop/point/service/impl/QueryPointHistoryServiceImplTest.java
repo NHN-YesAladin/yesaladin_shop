@@ -22,7 +22,6 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.point.domain.model.PointCode;
 import shop.yesaladin.shop.point.domain.repository.QueryPointHistoryRepository;
 import shop.yesaladin.shop.point.dto.PointHistoryResponseDto;
-import shop.yesaladin.shop.point.dto.PointResponseDto;
 import shop.yesaladin.shop.point.service.inter.QueryPointHistoryService;
 
 
@@ -167,7 +166,8 @@ class QueryPointHistoryServiceImplTest {
     void getMemberPoint_fail_memberNotFound() {
         String loginId = "user@1";
 
-        Mockito.when(queryMemberService.findMemberByLoginId(loginId)).thenReturn(null);
+        Mockito.when(queryMemberService.existsLoginId(loginId))
+                .thenThrow(MemberNotFoundException.class);
 
         assertThatThrownBy(() -> queryPointHistoryService.getMemberPoint(loginId)).isInstanceOf(
                 MemberNotFoundException.class);
@@ -178,11 +178,13 @@ class QueryPointHistoryServiceImplTest {
         String loginId = "user@1";
 
         Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
-        Mockito.when(queryMemberService.findMemberByLoginId(loginId)).thenReturn(MemberDto.fromEntity(member));
-        Mockito.when(queryPointHistoryRepository.getMemberPointByLoginId(loginId)).thenReturn(1000L);
+        Mockito.when(queryMemberService.findMemberByLoginId(loginId))
+                .thenReturn(MemberDto.fromEntity(member));
+        Mockito.when(queryPointHistoryRepository.getMemberPointByLoginId(loginId))
+                .thenReturn(1000L);
 
-        PointResponseDto result = queryPointHistoryService.getMemberPoint(loginId);
+        long result = queryPointHistoryService.getMemberPoint(loginId);
 
-        assertThat(result.getAmount()).isEqualTo(1000L);
+        assertThat(result).isEqualTo(1000L);
     }
 }

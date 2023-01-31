@@ -33,4 +33,5 @@ public class ProductsResponseDto {
 
     private String thumbnailFileUrl;
     private List<String> tags;
+    private String ebookFileUrl;
 }

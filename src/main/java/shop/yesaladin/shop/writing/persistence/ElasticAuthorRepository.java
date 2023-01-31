@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.writing.persistence;
 
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
@@ -12,6 +11,8 @@ import shop.yesaladin.shop.writing.domain.model.SearchedAuthor;
 import shop.yesaladin.shop.writing.domain.repository.SearchAuthorRepository;
 import shop.yesaladin.shop.writing.dto.SearchedAuthorResponseDto;
 import shop.yesaladin.shop.writing.dto.SearchedAuthorResponseDto.SearchedAuthorDto;
+
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Repository

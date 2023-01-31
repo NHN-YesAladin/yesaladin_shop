@@ -15,6 +15,7 @@ import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
 import shop.yesaladin.shop.point.domain.model.PointCode;
 import shop.yesaladin.shop.point.domain.model.PointHistory;
+import shop.yesaladin.shop.point.domain.model.PointReasonCode;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
@@ -29,6 +30,7 @@ class JpaPointHistoryRepositoryTest {
     long amount = 1000;
     LocalDateTime createDateTime = LocalDateTime.of(2023, 1, 1, 12, 0, 0);
     PointCode pointCode = PointCode.USE;
+    PointReasonCode pointReasonCode = PointReasonCode.USE_ORDER;
     Member member;
 
     @BeforeEach
@@ -55,6 +57,7 @@ class JpaPointHistoryRepositoryTest {
         return PointHistory.builder()
                 .amount(amount)
                 .createDateTime(createDateTime)
+                .pointReasonCode(pointReasonCode)
                 .pointCode(pointCode)
                 .member(member)
                 .build();

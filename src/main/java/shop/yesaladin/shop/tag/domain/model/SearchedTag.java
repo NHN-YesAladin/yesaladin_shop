@@ -10,7 +10,7 @@ import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.WriteTypeHint;
 
 /**
- *  상품 등록에서 태그를 엘라스틱 서치에서 검색하는 인덱 모델
+ * 상품 등록에서 태그를 엘라스틱 서치에서 검색하는 인덱 모델
  *
  * @author : 김선홍
  * @since : 1.0

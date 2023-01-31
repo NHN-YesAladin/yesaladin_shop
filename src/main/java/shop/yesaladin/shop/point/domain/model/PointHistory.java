@@ -18,6 +18,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.point.persistence.converter.PointCodeConverter;
+import shop.yesaladin.shop.point.persistence.converter.PointReasonCodeConverter;
 
 /**
  * 포인트 내역 엔티티 입니다.
@@ -46,6 +47,10 @@ public class PointHistory {
     @Column(name = "point_code_id", nullable = false)
     @Convert(converter = PointCodeConverter.class)
     private PointCode pointCode;
+
+    @Column(name = "point_reason_code_id", nullable = false)
+    @Convert(converter = PointReasonCodeConverter.class)
+    private PointReasonCode pointReasonCode;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
