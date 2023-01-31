@@ -79,8 +79,6 @@ public class ControllerAdvice {
     @ExceptionHandler({
             MethodArgumentNotValidException.class,
             HttpMessageNotReadableException.class,
-            OverPointUseException.class,
-            InvalidCodeParameterException.class,
             InvalidPeriodConditionException.class,
             AlreadyDeletedProductException.class,
             AlreadyBlockedMemberException.class,
