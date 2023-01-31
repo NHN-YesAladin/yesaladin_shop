@@ -261,6 +261,11 @@
             <version>1.1.1</version>
         </dependency>
         <dependency>
+            <groupId>com.github.NHN-YesAladin</groupId>
+            <artifactId>yesaladin_security_utils</artifactId>
+            <version>1.0.3</version>
+        </dependency>
+        <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.9.0</version>
