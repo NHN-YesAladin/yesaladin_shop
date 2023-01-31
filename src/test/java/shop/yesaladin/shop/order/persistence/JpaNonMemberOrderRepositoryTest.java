@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.annotation.Commit;
 import shop.yesaladin.shop.order.domain.model.NonMemberOrder;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
 
@@ -35,7 +36,7 @@ class JpaNonMemberOrderRepositoryTest {
     private OrderCode orderCode = OrderCode.NON_MEMBER_ORDER;
     private String address = "Gwang-ju";
     private String name = "yerin";
-    private String phoneNumber = "010-1234-1234";
+    private String phoneNumber = "01012341234";
 
     private NonMemberOrder nonMemberOrder = createNonMemberOrder();
 
@@ -53,7 +54,7 @@ class JpaNonMemberOrderRepositoryTest {
         assertThat(savedOrder.getWrappingFee()).isEqualTo(wrappingFee);
         assertThat(savedOrder.getOrderCode()).isEqualTo(orderCode);
         assertThat(savedOrder.getAddress()).isEqualTo(address);
-        assertThat(savedOrder.getName()).isEqualTo(name);
+        assertThat(savedOrder.getNonMemberName()).isEqualTo(name);
         assertThat(savedOrder.getPhoneNumber()).isEqualTo(phoneNumber);
         assertThat(savedOrder.getTotalAmount()).isEqualTo(totalAmount);
     }
@@ -70,7 +71,8 @@ class JpaNonMemberOrderRepositoryTest {
                 .totalAmount(totalAmount)
                 .orderCode(orderCode)
                 .address(address)
-                .name(name)
+                .name("비회원 주문")
+                .nonMemberName(name)
                 .phoneNumber(phoneNumber)
                 .build();
     }

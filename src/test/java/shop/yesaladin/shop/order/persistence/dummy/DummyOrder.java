@@ -29,8 +29,8 @@ public class DummyOrder {
                 .totalAmount(1000L)
                 .orderCode(OrderCode.NON_MEMBER_ORDER)
                 .address("GwangJu GwangYeokSi")
-                .name("non-member")
-                .phoneNumber("010-1234-1234")
+                .nonMemberName("non-member")
+                .phoneNumber("01012341234")
                 .build();
     }
 

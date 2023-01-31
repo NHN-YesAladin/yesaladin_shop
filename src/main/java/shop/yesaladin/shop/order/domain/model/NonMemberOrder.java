@@ -29,8 +29,8 @@ public class NonMemberOrder extends Order {
     @Column(nullable = false)
     private String address;
 
-    @Column(length = 20, nullable = false)
-    private String name;
+    @Column(name = "name", length = 20, nullable = false)
+    private String nonMemberName;
 
     @Column(name = "phone_number", length = 13, nullable = false)
     private String phoneNumber;
