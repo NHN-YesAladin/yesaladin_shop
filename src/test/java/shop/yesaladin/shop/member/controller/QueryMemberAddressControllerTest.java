@@ -59,7 +59,7 @@ class QueryMemberAddressControllerTest {
                 .thenThrow(new MemberNotFoundException("Member loginId: " + loginId));
 
         //when
-        ResultActions result = mockMvc.perform(get("/v1/members/{loginId}/addresses", loginId));
+        ResultActions result = mockMvc.perform(get("/v1/members/addresses"));
 
         //then
         result.andExpect(status().isNotFound())
@@ -71,7 +71,6 @@ class QueryMemberAddressControllerTest {
                 "get-member-address-fail-member-not-found",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 responseFields(
                         fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
                 )
@@ -87,7 +86,7 @@ class QueryMemberAddressControllerTest {
                 .thenReturn(getMemberAddressList(10, loginId));
 
         //when
-        ResultActions result = mockMvc.perform(get("/v1/members/{loginId}/addresses", loginId));
+        ResultActions result = mockMvc.perform(get("/v1/members/addresses"));
 
         //then
         result.andExpect(status().isOk())
@@ -102,7 +101,6 @@ class QueryMemberAddressControllerTest {
                 "get-member-address-success",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 responseFields(
                         fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("등록된 배송지 Pk"),
                         fieldWithPath("[].address").type(JsonFieldType.STRING)

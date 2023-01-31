@@ -72,7 +72,7 @@ class QueryPointHistoryControllerTest {
     @DisplayName("회원의 포인트내역 조회 실패 - 유효하지 않는 파라미터 값")
     void getPointHistoriesByLoginId_fail_InvalidCodeParameter() throws Exception {
         //when
-        ResultActions result = mockMvc.perform(get("/v1/points/{loginId}/histories", loginId)
+        ResultActions result = mockMvc.perform(get("/v1/points/histories")
                 .param("code", "invalidCode"));
 
         //then
@@ -89,7 +89,6 @@ class QueryPointHistoryControllerTest {
                 "get-point-histories-by-loginId-fail-invalid-code-parameter",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 requestParameters(
                         parameterWithName("code").description("포인트 사용/적립 구분"),
                         parameterWithName("page").description("페이지 번호")
@@ -122,7 +121,7 @@ class QueryPointHistoryControllerTest {
                 .thenReturn(response);
 
         //when
-        ResultActions result = mockMvc.perform(get("/v1/points/{loginId}/histories", loginId)
+        ResultActions result = mockMvc.perform(get("/v1/points/histories")
                 .param("size", "5")
                 .param("page", "0"));
 
@@ -152,7 +151,6 @@ class QueryPointHistoryControllerTest {
                 "get-point-histories-by-loginId-all",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 requestParameters(
                         parameterWithName("page").description("페이지 번호")
                                 .optional()
@@ -200,7 +198,7 @@ class QueryPointHistoryControllerTest {
                 any()
         )).thenReturn(response);
 
-        ResultActions result = mockMvc.perform(get("/v1/points/{loginId}/histories", loginId)
+        ResultActions result = mockMvc.perform(get("/v1/points/histories")
                 .param("code", "USE")
                 .param("page", "0")
                 .param("size", "5"));
@@ -232,7 +230,6 @@ class QueryPointHistoryControllerTest {
                 "get-point-histories-by-loginId-and-code",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 requestParameters(
                         parameterWithName("code").description("포인트 사용/적립 구분"),
                         parameterWithName("page").description("페이지 번호")
@@ -284,7 +281,7 @@ class QueryPointHistoryControllerTest {
                 .thenThrow(new MemberNotFoundException("Member loginId : " + loginId));
 
         //when
-        ResultActions result = mockMvc.perform(get("/v1/points/{loginId}", loginId));
+        ResultActions result = mockMvc.perform(get("/v1/points"));
 
         //then
         result.andExpect(status().isNotFound())
@@ -296,7 +293,6 @@ class QueryPointHistoryControllerTest {
                 "get-member-point-fail-member-not-found",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 responseFields(
                         fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
                 )
@@ -312,7 +308,7 @@ class QueryPointHistoryControllerTest {
         Mockito.when(pointHistoryService.getMemberPoint(loginId)).thenReturn(amount);
 
         //when
-        ResultActions result = mockMvc.perform(get("/v1/points/{loginId}", loginId));
+        ResultActions result = mockMvc.perform(get("/v1/points"));
 
         //then
         result.andExpect(status().isOk())
@@ -327,7 +323,6 @@ class QueryPointHistoryControllerTest {
                 "get-member-point-success",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 responseFields(
                         fieldWithPath("success").type(JsonFieldType.BOOLEAN)
                                 .description("동작 성공 여부"),

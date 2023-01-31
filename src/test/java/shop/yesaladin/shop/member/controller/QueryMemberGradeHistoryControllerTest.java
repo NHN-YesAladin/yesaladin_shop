@@ -83,7 +83,7 @@ class QueryMemberGradeHistoryControllerTest {
         Mockito.when(queryMemberGradeHistoryService.getByLoginId(eq(loginId), any(), any()))
                 .thenThrow(new InvalidPeriodConditionException(InvalidPeriodConditionType.TOO_PAST));
 
-        ResultActions result = mockMvc.perform(get("/v1/members/{loginId}/grade-histories", loginId)
+        ResultActions result = mockMvc.perform(get("/v1/members/grade-histories")
                 .param("page", page + "")
                 .param("size", size + "")
                 .content(objectMapper.writeValueAsString(request))
@@ -119,7 +119,6 @@ class QueryMemberGradeHistoryControllerTest {
                 "get-member-grade-fail-invalid-period-condition",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 requestParameters(
                         parameterWithName("page").description("페이지 번호")
                                 .optional()
@@ -158,7 +157,7 @@ class QueryMemberGradeHistoryControllerTest {
         Mockito.when(queryMemberGradeHistoryService.getByLoginId(eq(loginId), any(), any()))
                 .thenThrow(new MemberNotFoundException("Member loginId: " + loginId));
 
-        ResultActions result = mockMvc.perform(get("/v1/members/{loginId}/grade-histories", loginId)
+        ResultActions result = mockMvc.perform(get("/v1/members/grade-histories")
                         .param("page", page + "")
                         .param("size", size + "")
                 .content(objectMapper.writeValueAsString(request))
@@ -194,7 +193,6 @@ class QueryMemberGradeHistoryControllerTest {
                 "get-member-grade-fail-member-not-found",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 requestParameters(
                         parameterWithName("page").description("페이지 번호")
                                 .optional()
@@ -233,7 +231,7 @@ class QueryMemberGradeHistoryControllerTest {
         Mockito.when(queryMemberGradeHistoryService.getByLoginId(eq(loginId), any(), any()))
                 .thenReturn(response);
 
-        ResultActions result = mockMvc.perform(get("/v1/members/{loginId}/grade-histories", loginId)
+        ResultActions result = mockMvc.perform(get("/v1/members/grade-histories")
                         .param("page", page + "")
                         .param("size", size + "")
                 .content(objectMapper.writeValueAsString(request))
@@ -279,7 +277,6 @@ class QueryMemberGradeHistoryControllerTest {
                 "get-member-grade-success",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 requestParameters(
                         parameterWithName("page").description("페이지 번호")
                                 .optional()

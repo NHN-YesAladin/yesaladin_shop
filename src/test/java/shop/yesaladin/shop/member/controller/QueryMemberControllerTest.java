@@ -286,7 +286,7 @@ class QueryMemberControllerTest {
                 .thenThrow(new MemberNotFoundException("Member loginId : " + loginId));
 
         //when
-        ResultActions result = mockMvc.perform(get("/v1/members/{loginId}/grade", loginId));
+        ResultActions result = mockMvc.perform(get("/v1/members/grade"));
 
         //then
         result.andExpect(status().isNotFound())
@@ -298,7 +298,6 @@ class QueryMemberControllerTest {
                 "get-member-grade-fail-member-not-found",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 responseFields(
                         fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
                 )
@@ -317,7 +316,7 @@ class QueryMemberControllerTest {
         Mockito.when(queryMemberService.getMemberGrade(loginId)).thenReturn(response);
 
         //when
-        ResultActions result = mockMvc.perform(get("/v1/members/{loginId}/grade", loginId));
+        ResultActions result = mockMvc.perform(get("/v1/members/grade"));
 
         //then
         result.andExpect(status().isOk())
@@ -330,7 +329,6 @@ class QueryMemberControllerTest {
                 "get-member-grade-success",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 responseFields(
                         fieldWithPath("gradeEn").type(JsonFieldType.STRING)
                                 .description("회원 등급 영어 이름"),
@@ -349,7 +347,7 @@ class QueryMemberControllerTest {
                 .thenThrow(new MemberNotFoundException("Member loginId : " + loginId));
 
         //when
-        ResultActions result = mockMvc.perform(get("/v1/members/{loginId}", loginId));
+        ResultActions result = mockMvc.perform(get("/v1/members"));
 
         //then
         result.andExpect(status().isNotFound())
@@ -361,7 +359,6 @@ class QueryMemberControllerTest {
                 "get-member-info-fail-member-not-found",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 responseFields(
                         fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
                 )
@@ -379,7 +376,7 @@ class QueryMemberControllerTest {
         Mockito.when(queryMemberService.getByLoginId(loginId)).thenReturn(response);
 
         //when
-        ResultActions result = mockMvc.perform(get("/v1/members/{loginId}", loginId));
+        ResultActions result = mockMvc.perform(get("/v1/members"));
 
         //then
         result.andExpect(status().isOk())
@@ -404,7 +401,6 @@ class QueryMemberControllerTest {
                 "get-member-info-success",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 responseFields(
                         fieldWithPath("id").type(JsonFieldType.NUMBER)
                                 .description("회원의 PK"),

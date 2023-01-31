@@ -244,7 +244,7 @@ class CommandMemberControllerTest {
         String loginId = "user@1";
 
         //when
-        ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}", loginId));
+        ResultActions perform = mockMvc.perform(put("/v1/members"));
 
         //then
         perform.andDo(print()).andExpect(status().isBadRequest());
@@ -265,7 +265,7 @@ class CommandMemberControllerTest {
                 nickname
         );
         //when
-        ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}", loginId).contentType(
+        ResultActions perform = mockMvc.perform(put("/v1/members").contentType(
                         MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
@@ -289,7 +289,7 @@ class CommandMemberControllerTest {
                 nickname
         );
         //when
-        ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}", loginId)
+        ResultActions perform = mockMvc.perform(put("/v1/members")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
@@ -305,7 +305,6 @@ class CommandMemberControllerTest {
                 "update-member-fail-validation-failed",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 requestFields(
                         fieldWithPath("nickname").type(JsonFieldType.STRING).description("변경할 닉네임")
                 ),
@@ -332,7 +331,7 @@ class CommandMemberControllerTest {
                 .thenThrow(new MemberNotFoundException("Member loginId: " + loginId));
 
         //when
-        ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}", loginId)
+        ResultActions perform = mockMvc.perform(put("/v1/members")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
@@ -349,7 +348,6 @@ class CommandMemberControllerTest {
                 "update-member-fail-member-not-found",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 requestFields(
                         fieldWithPath("nickname").type(JsonFieldType.STRING).description("변경할 닉네임")
                 ),
@@ -375,7 +373,7 @@ class CommandMemberControllerTest {
         Mockito.when(commandMemberService.update(eq(loginId), any())).thenReturn(updateResponse);
 
         //when
-        ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}", loginId)
+        ResultActions perform = mockMvc.perform(put("/v1/members")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
@@ -390,7 +388,6 @@ class CommandMemberControllerTest {
                 "update-member-success",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 requestFields(
                         fieldWithPath("nickname").type(JsonFieldType.STRING)
                                 .description("회원의 수정할 닉네임")
@@ -418,7 +415,7 @@ class CommandMemberControllerTest {
                 blockedReason
         );
         //when
-        ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}/block", loginId)
+        ResultActions perform = mockMvc.perform(put("/v1/members/block")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
@@ -432,7 +429,6 @@ class CommandMemberControllerTest {
                 "block-member-fail-validation-error",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 requestFields(fieldWithPath("blockedReason").type(JsonFieldType.STRING)
                         .description("차단 사유")),
                 responseFields(
@@ -456,7 +452,7 @@ class CommandMemberControllerTest {
                 .thenThrow(new MemberNotFoundException("Member loginId: " + loginId));
 
         //when
-        ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}/block", loginId)
+        ResultActions perform = mockMvc.perform(put("/v1/members/block")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
@@ -474,7 +470,6 @@ class CommandMemberControllerTest {
                 "block-member-fail-member-not-found",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 requestFields(fieldWithPath("blockedReason").type(JsonFieldType.STRING)
                         .description("차단 사유")),
                 responseFields(
@@ -498,7 +493,7 @@ class CommandMemberControllerTest {
                 .thenThrow(new AlreadyBlockedMemberException(loginId));
 
         //when
-        ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}/block", loginId)
+        ResultActions perform = mockMvc.perform(put("/v1/members/block")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
@@ -516,7 +511,6 @@ class CommandMemberControllerTest {
                 "block-member-fail-already-blocked",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 requestFields(fieldWithPath("blockedReason").type(JsonFieldType.STRING)
                         .description("차단 사유")),
                 responseFields(
@@ -551,7 +545,7 @@ class CommandMemberControllerTest {
         Mockito.when(commandMemberService.block(eq(loginId), any())).thenReturn(response);
 
         //when
-        ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}/block", loginId)
+        ResultActions perform = mockMvc.perform(put("/v1/members/block")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
@@ -574,7 +568,6 @@ class CommandMemberControllerTest {
                 "block-member-success",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 requestFields(fieldWithPath("blockedReason").type(JsonFieldType.STRING)
                         .description("차단 사유")),
                 responseFields(
@@ -601,7 +594,7 @@ class CommandMemberControllerTest {
 
         //when
         ResultActions perform = mockMvc.perform(put(
-                "/v1/members/{loginId}/unblock",
+                "/v1/members/unblock",
                 loginId
         ).contentType(MediaType.APPLICATION_JSON));
 
@@ -617,7 +610,6 @@ class CommandMemberControllerTest {
                 "unblock-member-fail-member-not-found",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 responseFields(
                         fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
                 )
@@ -634,7 +626,7 @@ class CommandMemberControllerTest {
                 .thenThrow(new AlreadyUnblockedMemberException(loginId));
 
         //when
-        ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}/unblock", loginId));
+        ResultActions perform = mockMvc.perform(put("/v1/members/unblock"));
 
         //then
         perform.andDo(print()).andExpect(status().isBadRequest())
@@ -648,7 +640,6 @@ class CommandMemberControllerTest {
                 "unblock-member-fail-already-unblocked",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 responseFields(
                         fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
                 )
@@ -676,8 +667,7 @@ class CommandMemberControllerTest {
 
         //when
         ResultActions perform = mockMvc.perform(put(
-                "/v1/members/{loginId}/unblock",
-                loginId
+                "/v1/members/unblock"
         ).contentType(MediaType.APPLICATION_JSON));
 
         //then
@@ -696,7 +686,6 @@ class CommandMemberControllerTest {
                 "unblock-member-success",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 responseFields(
                         fieldWithPath("id").type(JsonFieldType.NUMBER).description("회원의 Pk"),
                         fieldWithPath("name").type(JsonFieldType.STRING).description("회원의 이름"),

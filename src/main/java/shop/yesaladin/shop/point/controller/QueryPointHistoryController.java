@@ -5,8 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,13 +32,15 @@ public class QueryPointHistoryController {
     /**
      * 회원의 포인트를 조회합니다.
      *
-     * @param loginId 회원의 아이디
      * @return 회원의 포인트
      * @author 최예린
      * @since 1.0
      */
-    @GetMapping("/{loginId}")
-    public ResponseDto<Long> getMemberPoint(@PathVariable String loginId) {
+    @GetMapping
+    @CrossOrigin(origins = {"http://localhost:9090",
+            "https://www.yesaladin.shop"})
+    public ResponseDto<Long> getMemberPoint() {
+        String loginId = "";
         return ResponseDto.<Long>builder()
                 .success(true)
                 .status(HttpStatus.OK)
@@ -49,19 +51,18 @@ public class QueryPointHistoryController {
     /**
      * 회원의 포인트 내역을 조회합니다.
      *
-     * @param loginId  회원의 아이디
      * @param code     사용/적립/전체 구분
      * @param pageable 페이지와 사이즈
      * @return 회원의 포인트 내역
      * @author 최예린
      * @since 1.0
      */
-    @GetMapping("/{loginId}/histories")
+    @GetMapping("/histories")
     public ResponseDto<PaginatedResponseDto<PointHistoryResponseDto>> getPointHistoriesByLoginId(
-            @PathVariable String loginId,
             @RequestParam("code") Optional<String> code,
             Pageable pageable
     ) {
+        String loginId = "";
         Page<PointHistoryResponseDto> response;
 
         if (code.isPresent()) {
@@ -97,7 +98,7 @@ public class QueryPointHistoryController {
      * @author 최예린
      * @since 1.0
      */
-    @GetMapping
+    @GetMapping("/manager")
     public PaginatedResponseDto<PointHistoryResponseDto> getPointHistories(
             @RequestParam("code") Optional<String> code,
             @RequestParam("loginId") Optional<String> loginId,

@@ -19,7 +19,7 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberAddressService;
  */
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/v1/members/{loginId}/addresses")
+@RequestMapping("/v1/members/addresses")
 public class QueryMemberAddressController {
 
     private final QueryMemberAddressService queryMemberAddressService;

@@ -23,7 +23,7 @@ import shop.yesaladin.shop.member.service.inter.CommandMemberAddressService;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/members/{loginId}/addresses")
+@RequestMapping("/v1/members/addresses")
 public class CommandMemberAddressController {
 
     private final CommandMemberAddressService commandMemberAddressService;
@@ -40,7 +40,7 @@ public class CommandMemberAddressController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public MemberAddressResponseDto createMemberAddress(
-            @PathVariable String loginId,
+            String loginId,
             @Valid @RequestBody MemberAddressCreateRequestDto request
     ) {
         return commandMemberAddressService.save(loginId, request);
@@ -58,7 +58,7 @@ public class CommandMemberAddressController {
     @PutMapping("/{addressId}")
     @ResponseStatus(HttpStatus.OK)
     public MemberAddressResponseDto markAsDefaultAddress(
-            @PathVariable String loginId,
+            String loginId,
             @PathVariable Long addressId
     ) {
         return commandMemberAddressService.markAsDefault(loginId, addressId);
@@ -74,7 +74,7 @@ public class CommandMemberAddressController {
      */
     @DeleteMapping("/{addressId}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteMemberAddress(@PathVariable String loginId, @PathVariable Long addressId) {
+    public void deleteMemberAddress(String loginId, @PathVariable Long addressId) {
         commandMemberAddressService.delete(loginId, addressId);
     }
 }

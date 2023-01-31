@@ -23,7 +23,7 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberGradeHistoryService;
  */
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/v1/members/{loginId}/grade-histories")
+@RequestMapping("/v1/members/grade-histories")
 public class QueryMemberGradeHistoryController {
 
     private final QueryMemberGradeHistoryService queryMemberGradeHistoryService;
@@ -41,7 +41,7 @@ public class QueryMemberGradeHistoryController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public PaginatedResponseDto<MemberGradeHistoryQueryResponseDto> getMemberGrades(
-            @PathVariable String loginId,
+            String loginId,
             @RequestBody PeriodQueryRequestDto request,
             Pageable pageable
     ) {
