@@ -3,10 +3,12 @@ package shop.yesaladin.shop.publish.controller;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.shop.publish.dto.SearchPublisherRequestDto;
 import shop.yesaladin.shop.publish.dto.SearchPublisherResponseDto;
 import shop.yesaladin.shop.publish.service.inter.SearchPublisherService;
@@ -33,9 +35,13 @@ public class SearchPublisherController {
      * @author : 김선홍
      */
     @GetMapping(params = "name")
-    public SearchPublisherResponseDto searchPublisherByName(@ModelAttribute @Valid
+    public ResponseDto<SearchPublisherResponseDto> searchPublisherByName(@ModelAttribute @Valid
             SearchPublisherRequestDto dto
     ) {
-        return searchPublisherService.searchPublisherByName(dto);
+        return ResponseDto.<SearchPublisherResponseDto>builder()
+                .status(HttpStatus.OK)
+                .success(true)
+                .data(searchPublisherService.searchPublisherByName(dto))
+                .build();
     }
 }

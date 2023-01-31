@@ -3,11 +3,15 @@ package shop.yesaladin.shop.writing.controller;
 
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import shop.yesaladin.common.dto.ResponseDto;
+import shop.yesaladin.shop.category.dto.SearchCategoryResponseDto;
+import shop.yesaladin.shop.tag.dto.SearchedTagResponseDto;
 import shop.yesaladin.shop.writing.dto.SearchAuthorRequestDto;
 import shop.yesaladin.shop.writing.dto.SearchedAuthorResponseDto;
 import shop.yesaladin.shop.writing.service.inter.SearchAuthorService;
@@ -34,8 +38,12 @@ public class SearchAuthorController {
      * @since : 1.0
      */
     @GetMapping(params = "name")
-    ResponseEntity<SearchedAuthorResponseDto> searchAuthorByName(@ModelAttribute @Valid SearchAuthorRequestDto searchAuthorRequestDto) {
-        return ResponseEntity.ok(service.searchAuthorByName(searchAuthorRequestDto));
+    ResponseDto<SearchedAuthorResponseDto> searchAuthorByName(@ModelAttribute @Valid SearchAuthorRequestDto searchAuthorRequestDto) {
+        return ResponseDto.<SearchedAuthorResponseDto>builder()
+                .status(HttpStatus.OK)
+                .success(true)
+                .data(service.searchAuthorByName(searchAuthorRequestDto))
+                .build();
     }
 
 }

@@ -1,16 +1,17 @@
 package shop.yesaladin.shop.category.controller;
 
-import java.util.List;
-import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import shop.yesaladin.shop.category.dto.CategoryResponseDto;
+import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.shop.category.dto.SearchCategoryRequestDto;
 import shop.yesaladin.shop.category.dto.SearchCategoryResponseDto;
 import shop.yesaladin.shop.category.service.inter.SearchCategoryService;
+
+import javax.validation.Valid;
 
 /**
  * 엘라스틱 서치 카테고리 검색 컨트롤러
@@ -33,7 +34,12 @@ public class SearchCategoryController {
      * @since : 1.0
      */
     @GetMapping(params = "name")
-    public SearchCategoryResponseDto searchCategoryByName(@ModelAttribute @Valid SearchCategoryRequestDto dto) {
-        return searchCategoryService.searchCategoryByName(dto);
+    public ResponseDto<SearchCategoryResponseDto> searchCategoryByName(@ModelAttribute @Valid SearchCategoryRequestDto dto) {
+        return ResponseDto.<SearchCategoryResponseDto>builder()
+                .status(HttpStatus.OK)
+                .success(true)
+                .data(searchCategoryService.searchCategoryByName(dto))
+                .build();
     }
 }
+

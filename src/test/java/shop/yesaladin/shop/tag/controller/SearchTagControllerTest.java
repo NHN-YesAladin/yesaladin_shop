@@ -17,9 +17,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import shop.yesaladin.common.dto.ResponseDto;
+import shop.yesaladin.shop.category.dto.SearchCategoryResponseDto;
 import shop.yesaladin.shop.tag.dto.SearchedTagResponseDto;
 import shop.yesaladin.shop.tag.dto.SearchedTagResponseDto.SearchedTagDto;
 import shop.yesaladin.shop.tag.service.inter.SearchTagService;
@@ -72,7 +75,11 @@ class SearchTagControllerTest {
         //given
 
         Mockito.when(searchTagService.searchTagByName(any()))
-                .thenReturn(dummyResponseDto);
+                .thenReturn(ResponseDto.<SearchedTagResponseDto>builder()
+                        .status(HttpStatus.OK)
+                        .success(true)
+                        .data(dummyResponseDto)
+                        .build().getData());
 
         //when
         ResultActions resultActions = mockMvc.perform(get("/v1/search/tags")
@@ -83,9 +90,9 @@ class SearchTagControllerTest {
 
         //then
         resultActions.andExpect(status().isOk())
-                .andExpect(jsonPath("$.count", equalTo(1)))
-                .andExpect(jsonPath("$.searchedTagDtoList[0].id", equalTo(1)))
-                .andExpect(jsonPath("$.searchedTagDtoList[0].name", equalTo(NAME)))
+                .andExpect(jsonPath("$.data.count", equalTo(1)))
+                .andExpect(jsonPath("$.data.searchedTagDtoList[0].id", equalTo(1)))
+                .andExpect(jsonPath("$.data.searchedTagDtoList[0].name", equalTo(NAME)))
                 .andDo(print());
     }
 }

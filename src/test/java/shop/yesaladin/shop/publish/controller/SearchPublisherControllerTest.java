@@ -14,9 +14,11 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.shop.publish.dto.SearchPublisherResponseDto;
 import shop.yesaladin.shop.publish.dto.SearchPublisherResponseDto.SearchedPublisherDto;
 import shop.yesaladin.shop.publish.service.inter.SearchPublisherService;
@@ -91,7 +93,12 @@ class SearchPublisherControllerTest {
                 List.of(new SearchedPublisherDto(1L, "publisher"))
         );
         Mockito.when(searchPublisherService.searchPublisherByName(any()))
-                .thenReturn(dummy);
+                .thenReturn(ResponseDto.<SearchPublisherResponseDto>builder()
+                        .status(HttpStatus.OK)
+                        .success(true)
+                        .data(dummy)
+                        .build()
+                        .getData());
         //when
         ResultActions resultActions = mockMvc.perform(get("/v1/search/publishers")
                 .accept(MediaType.APPLICATION_JSON)
@@ -100,8 +107,8 @@ class SearchPublisherControllerTest {
                 .param(SIZE, ONE));
         //then
         resultActions.andExpect(status().isOk())
-                .andExpect(jsonPath("$.count", equalTo(1)))
-                .andExpect(jsonPath("$.searchedPublisherDtoList[0].id", equalTo(1)))
-                .andExpect(jsonPath("$.searchedPublisherDtoList[0].name", equalTo("publisher")));
+                .andExpect(jsonPath("$.data.count", equalTo(1)))
+                .andExpect(jsonPath("$.data.searchedPublisherDtoList[0].id", equalTo(1)))
+                .andExpect(jsonPath("$.data.searchedPublisherDtoList[0].name", equalTo("publisher")));
     }
 }
