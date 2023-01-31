@@ -160,8 +160,8 @@ class QueryDslQueryMemberRepositoryTest {
         MemberOrderResponseDto response = queryMemberRepository.getMemberOrderData(loginId);
 
         //then
-        assertThat(response.getName()).isEqualTo(member.getName());
-        assertThat(response.getPhoneNumber()).isEqualTo(member.getPhone());
+        assertThat(response.getName()).isEqualTo(memberWithLoginId.getName());
+        assertThat(response.getPhoneNumber()).isEqualTo(memberWithLoginId.getPhone());
         assertThat(response.getAddress()).isEqualTo(defaultMemberAddress.getAddress());
         assertThat(response.getPoint()).isNull();
         assertThat(response.getOrderProducts()).isNull();

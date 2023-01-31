@@ -25,16 +25,13 @@ class QueryMemberServiceImplTest {
     private QueryMemberRepository queryMemberRepository;
     private QueryMemberRoleRepository queryMemberRoleRepository;
 
-    private CustomQueryMemberRepository customQueryMemberRepository;
     private Member expectedMember;
 
     @BeforeEach
     void setUp() {
-        customQueryMemberRepository = Mockito.mock(CustomQueryMemberRepository.class);
         queryMemberRepository = Mockito.mock(QueryMemberRepository.class);
         queryMemberRoleRepository = Mockito.mock(QueryMemberRoleRepository.class);
         service = new QueryMemberServiceImpl(
-                customQueryMemberRepository,
                 queryMemberRepository,
                 queryMemberRoleRepository
         );

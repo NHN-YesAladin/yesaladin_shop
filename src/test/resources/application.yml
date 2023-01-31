@@ -25,6 +25,11 @@ storage-token:
   password: yesaladin
   thumbnail-path: product/thumbnail
 
+yesaladin:
+  gateway:
+    base : http://localhost:8072
+    auth : http://localhost:8072/auth
+
 logging:
   level:
     tracer: TRACE

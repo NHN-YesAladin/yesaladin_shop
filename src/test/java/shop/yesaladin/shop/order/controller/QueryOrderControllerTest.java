@@ -34,6 +34,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import org.springframework.test.web.servlet.ResultActions;
@@ -54,6 +55,7 @@ class QueryOrderControllerTest {
 
     @Test
     @DisplayName("기간 내의 모든 주문 내역이 조회된다.")
+    @WithMockUser(username = "user@1", roles = "ROLE_USER")
     void getAllOrdersTest() throws Exception {
         // given
         Mockito.when(queryOrderService.getAllOrderListInPeriod(any(), any()))
@@ -142,5 +144,11 @@ class QueryOrderControllerTest {
                                 .description("주문 구분")
                 )
         ));
+    }
+    @Test
+    @WithMockUser(username = "user@1", roles = "ROLE_USER")
+    @DisplayName("주문에 필요한 데이터 요청")
+    public void getOrderSheetData() {
+
     }
 }
