@@ -11,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.product.dto.ProductCreateDto;
@@ -31,6 +32,7 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentRequest;
@@ -62,6 +64,7 @@ class CommandProductControllerTest {
         productOnlyIdDto = new ProductOnlyIdDto(ID);
     }
 
+    @WithMockUser
     @Test
     @DisplayName("상품 등록 성공")
     void registerProduct() throws Exception {
@@ -70,6 +73,7 @@ class CommandProductControllerTest {
 
         // when
         ResultActions result = mockMvc.perform(post("/v1/products")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(productCreateDto)));
 
@@ -119,6 +123,7 @@ class CommandProductControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("상품 수정 성공")
     void updateProduct() throws Exception {
@@ -127,6 +132,7 @@ class CommandProductControllerTest {
 
         // when
         ResultActions result = mockMvc.perform(put("/v1/products/{productId}", ID)
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(productUpdateDto)));
 
@@ -175,11 +181,12 @@ class CommandProductControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("상품 삭제 성공")
     void deleteProduct() throws Exception {
         // when
-        ResultActions result = mockMvc.perform(post("/v1/products/{productId}", ID));
+        ResultActions result = mockMvc.perform(post("/v1/products/{productId}", ID).with(csrf()));
 
         // then
         result.andDo(print()).andExpect(status().isOk());
@@ -195,11 +202,13 @@ class CommandProductControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("상품 판매여부 변경 성공")
     void changeProductIsSale() throws Exception {
         // when
-        ResultActions result = mockMvc.perform(post("/v1/products/{productId}/is-sale", ID));
+        ResultActions result = mockMvc.perform(post("/v1/products/{productId}/is-sale", ID).with(
+                csrf()));
 
         // then
         result.andDo(print()).andExpect(status().isOk());
@@ -215,11 +224,15 @@ class CommandProductControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("상품 강제품절여부 변경 성공")
     void changeProductIsForcedOutOfStock() throws Exception {
         // when
-        ResultActions result = mockMvc.perform(post("/v1/products/{productId}/is-forced-out-of-stock", ID));
+        ResultActions result = mockMvc.perform(post(
+                "/v1/products/{productId}/is-forced-out-of-stock",
+                ID
+        ).with(csrf()));
 
         // then
         result.andDo(print()).andExpect(status().isOk());

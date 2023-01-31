@@ -17,6 +17,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.requestF
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -39,6 +40,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.category.domain.model.Category;
@@ -68,6 +70,7 @@ class CommandCategoryControllerTest {
         childCategory = CategoryDummy.dummyChild(parentCategory);
     }
 
+    @WithMockUser
     @Test
     @DisplayName("1차 카테고리 생성 성공")
     void createCategory_parent() throws Exception {
@@ -87,7 +90,9 @@ class CommandCategoryControllerTest {
         when(commandCategoryService.create(any())).thenReturn(responseDto);
 
         // when
-        ResultActions perform = mockMvc.perform(post("/v1/categories").contentType(MediaType.APPLICATION_JSON)
+        ResultActions perform = mockMvc.perform(post("/v1/categories")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createDto)));
 
         // then
@@ -106,6 +111,7 @@ class CommandCategoryControllerTest {
         documentCreateCategory(perform,"create-parent-category");
     }
 
+    @WithMockUser
     @Test
     @DisplayName("2차 카테고리 생성 성공")
     void createCategory_child() throws Exception {
@@ -124,7 +130,9 @@ class CommandCategoryControllerTest {
         when(commandCategoryService.create(any())).thenReturn(responseDto);
 
         // when
-        ResultActions perform = mockMvc.perform(post("/v1/categories").contentType(MediaType.APPLICATION_JSON)
+        ResultActions perform = mockMvc.perform(post("/v1/categories")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createDto)));
 
         // then
@@ -176,7 +184,7 @@ class CommandCategoryControllerTest {
         ));
     }
 
-
+    @WithMockUser
     @Test
     @DisplayName("카테고리 생성 실패 - name이 null 인 경우")
     void createCategory_invalidatedData_fail() throws Exception {
@@ -184,7 +192,9 @@ class CommandCategoryControllerTest {
         CategoryRequestDto createDto = new CategoryRequestDto(null, true, null, null);
 
         //when
-        ResultActions perform = mockMvc.perform(post("/v1/categories").contentType(MediaType.APPLICATION_JSON)
+        ResultActions perform = mockMvc.perform(post("/v1/categories")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createDto)));
 
         // then
@@ -194,6 +204,7 @@ class CommandCategoryControllerTest {
 
     }
 
+    @WithMockUser
     @Test
     @DisplayName("1차 카테고리 수정 성공 - 부모 id 제외 다른 필드 변경")
     void updateCategory_parent_otherFieldChange() throws Exception {
@@ -220,7 +231,9 @@ class CommandCategoryControllerTest {
 
         // when
         ResultActions perform = mockMvc.perform(put(
-                "/v1/categories/{id}", toEntity.getId()).contentType(MediaType.APPLICATION_JSON)
+                "/v1/categories/{id}", toEntity.getId())
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(categoryRequestDto)));
 
         // then
@@ -243,6 +256,7 @@ class CommandCategoryControllerTest {
         documentModifyCategory(perform,"update-parent-fields-category");
     }
 
+    @WithMockUser
     @Test
     @DisplayName("2차 카테고리 수정 성공 - 부모 id 제외 다른 필드 변경")
     void updateCategory_child_otherFieldChange() throws Exception {
@@ -268,7 +282,9 @@ class CommandCategoryControllerTest {
 
         // when
         ResultActions perform = mockMvc.perform(put(
-                "/v1/categories/" + toEntity.getId()).contentType(MediaType.APPLICATION_JSON)
+                "/v1/categories/" + toEntity.getId())
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(categoryRequestDto)));
 
         // then
@@ -290,6 +306,7 @@ class CommandCategoryControllerTest {
 
     }
 
+    @WithMockUser
     @Test
     @DisplayName("2차 카테고리 수정 성공 - 부모 id가 null이 되어 1차 카테고리로 변환")
     void updateCategory_parentIdToNull() throws Exception {
@@ -317,7 +334,9 @@ class CommandCategoryControllerTest {
 
         // when
         ResultActions perform = mockMvc.perform(put(
-                "/v1/categories/{id}", id).contentType(MediaType.APPLICATION_JSON)
+                "/v1/categories/{id}", id)
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(categoryRequestDto)));
 
         // then
@@ -340,6 +359,7 @@ class CommandCategoryControllerTest {
         documentModifyCategory(perform,"update-child-to-parent-category");
     }
 
+    @WithMockUser
     @Test
     @DisplayName("2차 카테고리 수정 성공 - 다른 부모 id로 변경")
     void updateCategory_parentToOtherParent() throws Exception {
@@ -369,7 +389,9 @@ class CommandCategoryControllerTest {
 
         // when
         ResultActions perform = mockMvc.perform(put(
-                "/v1/categories/{id}", toEntity.getId()).contentType(MediaType.APPLICATION_JSON)
+                "/v1/categories/{id}", toEntity.getId())
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(categoryRequestDto)));
 
         // then
@@ -428,6 +450,7 @@ class CommandCategoryControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("카테고리 수정 실패 - name이 null 인 경우")
     void updateCategory_invalidatedData_fail() throws Exception {
@@ -444,7 +467,9 @@ class CommandCategoryControllerTest {
 
         // when
         ResultActions perform = mockMvc.perform(put(
-                "/v1/categories/" + toEntity.getId()).contentType(MediaType.APPLICATION_JSON)
+                "/v1/categories/" + toEntity.getId())
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(categoryRequestDto)));
 
         // then
@@ -453,6 +478,7 @@ class CommandCategoryControllerTest {
         verify(commandCategoryService, never()).update(any(), any());
     }
 
+    @WithMockUser
     @Test
     @DisplayName("부모 카테고리 순서 변경 성공")
     void modifyParnetCategoriesOrder() throws Exception {
@@ -471,7 +497,9 @@ class CommandCategoryControllerTest {
 
         // when
         ResultActions perform = mockMvc.perform(put(
-                "/v1/categories/order").contentType(MediaType.APPLICATION_JSON)
+                "/v1/categories/order")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(requestList)));
 
         // then
@@ -523,6 +551,7 @@ class CommandCategoryControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("자식 카테고리 순서 변경 성공")
     void modifyChildCategoriesOrder() throws Exception {
@@ -543,7 +572,9 @@ class CommandCategoryControllerTest {
 
         // when
         ResultActions perform = mockMvc.perform(put(
-                "/v1/categories/order").contentType(MediaType.APPLICATION_JSON)
+                "/v1/categories/order")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(requestList)));
 
         // then
@@ -565,6 +596,7 @@ class CommandCategoryControllerTest {
 
     }
 
+    @WithMockUser
     @Test
     @DisplayName("카테고리 삭제 성공")
     void deleteCategory() throws Exception {
@@ -574,7 +606,8 @@ class CommandCategoryControllerTest {
         doNothing().when(commandCategoryService).delete(parentCategory.getId());
         // when
         ResultActions perform = mockMvc.perform(delete(
-                "/v1/categories/{id}", parentCategory.getId()));
+                "/v1/categories/{id}", parentCategory.getId())
+                .with(csrf()));
 
         // then
         perform.andDo(print())

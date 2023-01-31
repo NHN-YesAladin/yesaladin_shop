@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.product.domain.model.*;
@@ -25,6 +26,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -112,12 +114,14 @@ class SearchProductControllerTest {
                 .build();
     }
 
+    @WithMockUser
     @Test
     @DisplayName("상품의 제목으로 검색 시 페이지 위치가 0보다 작을 경우 ConstraintViolationException")
     void testSearchProductByTitleOffsetLessThanZeroThrConstraintViolationException()
             throws Exception {
         //when
         ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+                .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
                 .param("title", TITLE)
                 .param("offset", MIN)
@@ -128,11 +132,13 @@ class SearchProductControllerTest {
         verify(searchProductService, never()).searchProductsByProductTitle(TITLE, -1, 1);
     }
 
+    @WithMockUser
     @Test
     @DisplayName("상품의 제목으로 검색 시 요청갯수가 1보다 작을 경우 ConstraintViolationException")
     void testSearchProductByTitleSizeLessThanOneThrConstraintViolationException() throws Exception {
         //when
         ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+                .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
                 .param("title", TITLE)
                 .param("offset", ZERO)
@@ -143,12 +149,14 @@ class SearchProductControllerTest {
         verify(searchProductService, never()).searchProductsByProductTitle(TITLE, 0, 0);
     }
 
+    @WithMockUser
     @Test
     @DisplayName("상품의 제목으로 검색 시 요청갯수가 20보다 클 경우 ConstraintViolationException")
     void testSearchProductByTitleSizeMoreThanTwentyThrConstraintViolationException()
             throws Exception {
         //when
         ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+                .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
                 .param("title", TITLE)
                 .param("offset", ZERO)
@@ -159,6 +167,7 @@ class SearchProductControllerTest {
         verify(searchProductService, never()).searchProductsByProductTitle(TITLE, 0, 21);
     }
 
+    @WithMockUser
     @Test
     @DisplayName("상품의 제목으로 검색 성공")
     void testSearchProductByTitleSuccess() throws Exception {
@@ -167,6 +176,7 @@ class SearchProductControllerTest {
 
         //when
         ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .param("title", TITLE)
@@ -196,12 +206,14 @@ class SearchProductControllerTest {
         verify(searchProductService, atLeastOnce()).searchProductsByProductTitle(TITLE, 0, 1);
     }
 
+    @WithMockUser
     @Test
     @DisplayName("상품의 내용으로 검색 시 페이지 위치가 0보다 작을 경우 ConstraintViolationException")
     void testSearchProductByContentOffsetLessThanZeroThrConstraintViolationException()
             throws Exception {
         //when
         ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+                .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
                 .param("content", CONTENT)
                 .param("offset", MIN)
@@ -211,12 +223,14 @@ class SearchProductControllerTest {
         verify(searchProductService, never()).searchProductsByProductContent(CONTENT, -1, 0);
     }
 
+    @WithMockUser
     @Test
     @DisplayName("상품의 내용으로 검색 시 요청갯수가 1보다 작을 경우 ConstraintViolationException")
     void testSearchProductByContentSizeLessThanOneThrConstraintViolationException()
             throws Exception {
         //when
         ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+                .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
                 .param("content", CONTENT)
                 .param("offset", ZERO)
@@ -227,12 +241,14 @@ class SearchProductControllerTest {
         verify(searchProductService, never()).searchProductsByProductContent(CONTENT, 0, 0);
     }
 
+    @WithMockUser
     @Test
     @DisplayName("상품의 내용으로 검색 시 요청갯수가 20보다 클 경우 ConstraintViolationException")
     void testSearchContentByTitleSizeMoreThanTwentyThrConstraintViolationException()
             throws Exception {
         //when
         ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+                .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
                 .param("content", CONTENT)
                 .param("offset", ZERO)
@@ -243,6 +259,7 @@ class SearchProductControllerTest {
         verify(searchProductService, never()).searchProductsByProductContent(CONTENT, 0, 21);
     }
 
+    @WithMockUser
     @Test
     @DisplayName("상품의 내용으로 검색 성공")
     void testSearchProductByContentSuccess() throws Exception {
@@ -252,6 +269,7 @@ class SearchProductControllerTest {
 
         //when
         ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+                .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
                 .param("content", CONTENT)
                 .param("offset", ZERO)
@@ -281,11 +299,13 @@ class SearchProductControllerTest {
         verify(searchProductService, atLeastOnce()).searchProductsByProductContent(CONTENT, 0, 1);
     }
 
+    @WithMockUser
     @Test
     @DisplayName("상품의 ISBN으로 검색 시 페이지 위치가 0보다 작을 경우 ConstraintViolationException")
     void testSearchProductByISBNOffsetLessThanZeroConstraintViolationException() throws Exception {
         //when
         ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+                .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
                 .param("isbn", ISBN)
                 .param("offset", MIN)
@@ -295,11 +315,13 @@ class SearchProductControllerTest {
         verify(searchProductService, never()).searchProductsByProductISBN(ISBN, -1, 1);
     }
 
+    @WithMockUser
     @Test
     @DisplayName("상품의 ISBN으로 검색 시 요청갯수가 1보다 작을 경우 ConstraintViolationException")
     void testSearchProductByISBNSizeLessThanOneThrConstraintViolationException() throws Exception {
         //when
         ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+                .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
                 .param("isbn", ISBN)
                 .param("offset", ZERO)
@@ -309,12 +331,14 @@ class SearchProductControllerTest {
         verify(searchProductService, never()).searchProductsByProductISBN(ISBN, 0, 0);
     }
 
+    @WithMockUser
     @Test
     @DisplayName("상품의 ISBN으로 검색 시 요청갯수가 20보다 클 경우 ConstraintViolationException")
     void testSearchProductByISBNSizeMoreThanTwentyThrConstraintViolationException()
             throws Exception {
         //when
         ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+                .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
                 .param("isbn", ISBN)
                 .param("offset", ZERO)
@@ -324,6 +348,7 @@ class SearchProductControllerTest {
         verify(searchProductService, never()).searchProductsByProductISBN(ISBN, 0, 21);
     }
 
+    @WithMockUser
     @Test
     @DisplayName("상품의 isbn으로 검색 성공")
     void testSearchProductByISBNSuccess() throws Exception {
@@ -333,6 +358,7 @@ class SearchProductControllerTest {
 
         //when
         ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+                .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
                 .param("isbn", ISBN)
                 .param("offset", ZERO)
@@ -362,12 +388,14 @@ class SearchProductControllerTest {
         verify(searchProductService, atLeastOnce()).searchProductsByProductISBN(ISBN, 0, 1);
     }
 
+    @WithMockUser
     @Test
     @DisplayName("작가 이름으로 검색 시 페이지 위치가 0보다 작을 경우 ConstraintViolationException")
     void testSearchProductByAuthorOffsetLessThanZeroThrConstraintViolationException()
             throws Exception {
         //when
         ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+                .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
                 .param("author", AUTHOR)
                 .param("offset", MIN)
@@ -377,12 +405,14 @@ class SearchProductControllerTest {
         verify(searchProductService, never()).searchProductsByProductAuthor(AUTHOR, -1, 1);
     }
 
+    @WithMockUser
     @Test
     @DisplayName("작가 이름으로 검색 시 요청갯수가 1보다 작을 경우 ConstraintViolationException")
     void testSearchProductByAuthorSizeLessThanOneThrConstraintViolationException()
             throws Exception {
         //when
         ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+                .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
                 .param("author", AUTHOR)
                 .param("offset", ZERO)
@@ -392,12 +422,14 @@ class SearchProductControllerTest {
         verify(searchProductService, never()).searchProductsByProductAuthor(AUTHOR, 0, 0);
     }
 
+    @WithMockUser
     @Test
     @DisplayName("작가 이름으로 검색 시 요청갯수가 20보다 클 경우 ConstraintViolationException")
     void testSearchProductByAuthorSizeMoreThanTwentyThrConstraintViolationException()
             throws Exception {
         //when
         ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+                .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
                 .param("author", AUTHOR)
                 .param("offset", ONE)
@@ -407,6 +439,7 @@ class SearchProductControllerTest {
         verify(searchProductService, never()).searchProductsByProductAuthor(AUTHOR, 0, 21);
     }
 
+    @WithMockUser
     @Test
     @DisplayName("작가의 이름으로 검색 성공")
     void testSearchProductByAuthorSuccess() throws Exception {
@@ -416,6 +449,7 @@ class SearchProductControllerTest {
 
         //when
         ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+                .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
                 .param("author", AUTHOR)
                 .param("offset", ZERO)
@@ -442,12 +476,14 @@ class SearchProductControllerTest {
                 .andDo(print());
     }
 
+    @WithMockUser
     @Test
     @DisplayName("출판사 이름으로 검색 시 페이지 위치가 0보다 작을 경우 ConstraintViolationException")
     void testSearchProductByPublisherOffsetLessThanZeroThrConstraintViolationException()
             throws Exception {
         //when
         ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+                .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
                 .param("publisher", PUBLISHER)
                 .param("offset", MIN)
@@ -459,12 +495,14 @@ class SearchProductControllerTest {
         verify(searchProductService, never()).searchProductsByPublisher(PUBLISHER, -1, 1);
     }
 
+    @WithMockUser
     @Test
     @DisplayName("출판사 이름으로 검색 시 요청갯수가 1보다 작을 경우 ConstraintViolationException")
     void testSearchProductByPublisherSizeLessThanOneThrConstraintViolationException()
             throws Exception {
         //when
         ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+                .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
                 .param("publisher", PUBLISHER)
                 .param("offset", MIN)
@@ -476,12 +514,14 @@ class SearchProductControllerTest {
         verify(searchProductService, never()).searchProductsByPublisher(PUBLISHER, -1, 1);
     }
 
+    @WithMockUser
     @Test
     @DisplayName("출판사 이름으로 검색 시 요청갯수가 20보다 클 경우 ConstraintViolationException")
     void testSearchProductByPublisherSizeMoreThanTwentyThrConstraintViolationException()
             throws Exception {
         //when
         ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+                .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
                 .param("publisher", PUBLISHER)
                 .param("offset", MIN)
@@ -493,6 +533,7 @@ class SearchProductControllerTest {
         verify(searchProductService, never()).searchProductsByPublisher(PUBLISHER, 0, 21);
     }
 
+    @WithMockUser
     @Test
     @DisplayName("출판사 이름으로 검색 성공")
     void testSearchProductByPublisherSuccess() throws Exception {
@@ -502,6 +543,7 @@ class SearchProductControllerTest {
 
         //when
         ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+                .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
                 .param("publisher", PUBLISHER)
                 .param("offset", ZERO)
@@ -530,11 +572,13 @@ class SearchProductControllerTest {
         verify(searchProductService, atLeastOnce()).searchProductsByPublisher(PUBLISHER, 0, 1);
     }
 
+    @WithMockUser
     @Test
     @DisplayName("태그로 검색 시 페이지 위치가 0보다 작을 경우 ConstraintViolationException")
     void testSearchProductByTagOffsetLessThanZeroConstraintViolationException() throws Exception {
         //when
         ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+                .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
                 .param("tag", TAG)
                 .param("offset", MIN)
@@ -546,11 +590,13 @@ class SearchProductControllerTest {
         verify(searchProductService, never()).searchProductsByTag(TAG, -1, 1);
     }
 
+    @WithMockUser
     @Test
     @DisplayName("태그으로 검색 시 요청갯수가 1보다 작을 경우 ConstraintViolationException")
     void testSearchProductByTagSizeLessThanOneThrConstraintViolationException() throws Exception {
         //when
         ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+                .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
                 .param("tag", TAG)
                 .param("offset", ZERO)
@@ -562,12 +608,14 @@ class SearchProductControllerTest {
         verify(searchProductService, never()).searchProductsByTag(TAG, 0, 0);
     }
 
+    @WithMockUser
     @Test
     @DisplayName("태그로 검색 시 요청갯수가 20보다 클 경우 ConstraintViolationException")
     void testSearchProductByTagSizeMoreThanTwentyThrConstraintViolationException()
             throws Exception {
         //when
         ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+                .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
                 .param("tag", TAG)
                 .param("offset", ZERO)
@@ -579,6 +627,7 @@ class SearchProductControllerTest {
         verify(searchProductService, never()).searchProductsByTag(TAG, 0, 21);
     }
 
+    @WithMockUser
     @Test
     @DisplayName("태그로 검색 성공")
     void testSearchProductByTagSuccess() throws Exception {
@@ -588,6 +637,7 @@ class SearchProductControllerTest {
 
         //when
         ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+                .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
                 .param("tag", TAG)
                 .param("offset", ZERO)
@@ -616,12 +666,14 @@ class SearchProductControllerTest {
         verify(searchProductService, atLeastOnce()).searchProductsByTag(TAG, 0, 1);
     }
 
+    @WithMockUser
     @Test
     @DisplayName("카테고리 id로 검색 시 페이지 위치가 0보다 작을 경우 ConstraintViolationException")
     void testSearchProductByCategoryIdOffsetLessThanZeroThrConstraintViolationException()
             throws Exception {
         //when
         ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+                .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
                 .param("categoryid", CATEGORY_ID)
                 .param("offset", MIN)
@@ -632,12 +684,14 @@ class SearchProductControllerTest {
         verify(searchProductService, never()).searchProductsByCategoryId(1L, -1, 1);
     }
 
+    @WithMockUser
     @Test
     @DisplayName("카테고리 id로 검색 시 요청갯수가 1보다 작을 경우 ConstraintViolationException")
     void testSearchProductByCategoryIdSizeLessThanOneThrConstraintViolationException()
             throws Exception {
         //when
         ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+                .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
                 .param("categoryid", CATEGORY_ID)
                 .param("offset", ZERO)
@@ -648,12 +702,14 @@ class SearchProductControllerTest {
         verify(searchProductService, never()).searchProductsByCategoryId(1L, 0, 0);
     }
 
+    @WithMockUser
     @Test
     @DisplayName("카테고리 id로 검색 시 요청갯수가 20보다 클 경우 ConstraintViolationException")
     void testSearchProductByCategoryIdSizeMoreThanTwentyThrConstraintViolationException()
             throws Exception {
         //when
         ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+                .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
                 .param("categoryid", CATEGORY_ID)
                 .param("offset", ZERO)
@@ -664,6 +720,7 @@ class SearchProductControllerTest {
         verify(searchProductService, never()).searchProductsByCategoryId(1L, 0, 21);
     }
 
+    @WithMockUser
     @Test
     @DisplayName("카테고리 id로 검색 성공")
     void testSearchProductByCategoryIdSuccess() throws Exception {
@@ -673,6 +730,7 @@ class SearchProductControllerTest {
 
         //when
         ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+                .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
                 .param("categoryid", CATEGORY_ID)
                 .param("offset", ZERO)
@@ -720,12 +778,14 @@ class SearchProductControllerTest {
                 .getId(), 0, 1);
     }
 
+    @WithMockUser
     @Test
     @DisplayName("카테고리 이름로 검색 시 페이지 위치가 0보다 작을 경우 ConstraintViolationException")
     void testSearchProductByCategoryNameOffsetLessThanZeroThrConstraintViolationException()
             throws Exception {
         //when
         ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+                .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
                 .param("categoryname", CATEGORY_NAME)
                 .param("offset", MIN)
@@ -737,12 +797,14 @@ class SearchProductControllerTest {
         verify(searchProductService, never()).searchProductsByCategoryName(CATEGORY_NAME, -1, 1);
     }
 
+    @WithMockUser
     @Test
     @DisplayName("카테고리 이름으로 검색 시 요청갯수가 1보다 작을 경우 ConstraintViolationException")
     void testSearchProductByCategoryNameSizeLessThanOneThrConstraintViolationException()
             throws Exception {
         //when
         ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+                .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
                 .param("categoryname", CATEGORY_NAME)
                 .param("offset", ZERO)
@@ -754,12 +816,14 @@ class SearchProductControllerTest {
         verify(searchProductService, never()).searchProductsByCategoryName(CATEGORY_NAME, 0, 0);
     }
 
+    @WithMockUser
     @Test
     @DisplayName("카테고리 이름으로 검색 시 요청갯수가 20보다 클 경우 ConstraintViolationException")
     void testSearchProductByCategoryNameSizeMoreThanTwentyThrConstraintViolationException()
             throws Exception {
         //when
         ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+                .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
                 .param("categoryname", CATEGORY_NAME)
                 .param("offset", ZERO)
@@ -771,6 +835,7 @@ class SearchProductControllerTest {
         verify(searchProductService, never()).searchProductsByCategoryName(CATEGORY_NAME, 0, 21);
     }
 
+    @WithMockUser
     @Test
     @DisplayName("카테고리 이름으로 검색 성공")
     void testSearchProductByCategoryNameSuccess() throws Exception {
@@ -780,6 +845,7 @@ class SearchProductControllerTest {
 
         //when
         ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+                .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
                 .param("categoryname", CATEGORY_NAME)
                 .param("offset", ZERO)

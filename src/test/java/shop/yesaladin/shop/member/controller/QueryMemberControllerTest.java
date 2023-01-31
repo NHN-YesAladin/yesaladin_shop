@@ -10,6 +10,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -27,6 +28,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.member.domain.model.Member;
@@ -50,6 +52,7 @@ class QueryMemberControllerTest {
     @MockBean
     QueryMemberService queryMemberService;
 
+    @WithMockUser
     @Test
     void existsLoginId_whenNotExist_return_false() throws Exception {
         //given
@@ -68,6 +71,7 @@ class QueryMemberControllerTest {
         verify(queryMemberService, times(1)).existsLoginId(loginId);
     }
 
+    @WithMockUser
     @Test
     void existsLoginId() throws Exception {
         //given
@@ -106,6 +110,7 @@ class QueryMemberControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     void existsNickname_whenNotExist_return_false() throws Exception {
         //given
@@ -124,6 +129,7 @@ class QueryMemberControllerTest {
         verify(queryMemberService, times(1)).existsNickname(nickname);
     }
 
+    @WithMockUser
     @Test
     void existsNickname() throws Exception {
         //given
@@ -165,6 +171,7 @@ class QueryMemberControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     void existsEmail_whenNotExist_return_false() throws Exception {
         //given
@@ -174,7 +181,8 @@ class QueryMemberControllerTest {
         Mockito.when(queryMemberService.existsEmail(email)).thenReturn(false);
 
         //then
-        mockMvc.perform(get("/v1/members/checkEmail/{email}", email))
+        mockMvc.perform(get("/v1/members/checkEmail/{email}", email)
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.data.result", equalTo(false)))
@@ -183,6 +191,7 @@ class QueryMemberControllerTest {
         verify(queryMemberService, times(1)).existsEmail(email);
     }
 
+    @WithMockUser
     @Test
     void existsEmail() throws Exception {
         //given
@@ -221,6 +230,7 @@ class QueryMemberControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     void existsPhone_whenNotExist_return_false() throws Exception {
         //given
@@ -239,6 +249,7 @@ class QueryMemberControllerTest {
         verify(queryMemberService, times(1)).existsPhone(phone);
     }
 
+    @WithMockUser
     @Test
     void existsPhone() throws Exception {
         //given
@@ -277,6 +288,7 @@ class QueryMemberControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     void getMemberGrade_fail_memberNotFound() throws Exception {
         //given
@@ -304,6 +316,7 @@ class QueryMemberControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     void getMemberGrade_success() throws Exception {
         //given
@@ -338,6 +351,7 @@ class QueryMemberControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     void getMemberInfo_fail_memberNotFound() throws Exception {
         //given
@@ -365,6 +379,7 @@ class QueryMemberControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     void getMemberInfo_success() throws Exception {
         //given

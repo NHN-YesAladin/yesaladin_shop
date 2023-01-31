@@ -33,3 +33,8 @@ yesaladin:
 logging:
   level:
     tracer: TRACE
+
+yesaladin:
+  gateway:
+    base: http://localhost:8072
+    auth: http://localhost:8072

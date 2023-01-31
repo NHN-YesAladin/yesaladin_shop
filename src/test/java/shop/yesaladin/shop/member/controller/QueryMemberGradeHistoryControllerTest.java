@@ -42,6 +42,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
@@ -67,6 +68,7 @@ class QueryMemberGradeHistoryControllerTest {
     long previousPaidAmount = 100000;
     MemberGrade memberGrade = MemberGrade.BRONZE;
 
+    @WithMockUser
     @Test
     @DisplayName("회원 등급내역 조회 실패 - 유효하지 않은 조회 기간")
     void getMemberGrades_fail_invalidPeriodCondition() throws Exception {
@@ -139,6 +141,7 @@ class QueryMemberGradeHistoryControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("회원 등급내역 조회 실패- 존재하지 않는 회원")
     void getMemberGrades_fail_memberNotFound() throws Exception {
@@ -213,6 +216,7 @@ class QueryMemberGradeHistoryControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("회원 등급내역 조회 성공")
     void getMemberGrades() throws Exception {

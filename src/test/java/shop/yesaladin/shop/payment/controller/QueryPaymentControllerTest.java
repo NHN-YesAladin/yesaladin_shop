@@ -13,6 +13,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -31,6 +32,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.member.domain.model.Member;
@@ -87,6 +89,7 @@ class QueryPaymentControllerTest {
         payment.setPaymentCard(paymentCard);
     }
 
+    @WithMockUser
     @Test
     void getPaymentByOrderId() throws Exception {
         // given
@@ -100,7 +103,9 @@ class QueryPaymentControllerTest {
         ResultActions perform = mockMvc.perform(get(
                 "/v1/payments/{orderId}",
                 memberOrder.getId()
-        ).queryParam("id", "order").contentType(MediaType.APPLICATION_JSON));
+        ).queryParam("id", "order")
+                        .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON));
 
         // then
         perform.andDo(print())
