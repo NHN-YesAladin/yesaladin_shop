@@ -93,7 +93,7 @@ class QueryDslOrderQueryRepositoryTest {
                     .wrappingFee(0)
                     .orderCode(OrderCode.NON_MEMBER_ORDER)
                     .address("address" + i)
-                    .name("nonMember" + i)
+                    .nonMemberName("nonMember" + i)
                     .phoneNumber("0101234567" + i)
                     .build();
             nonMemberOrderList.add(nonMemberOrder);

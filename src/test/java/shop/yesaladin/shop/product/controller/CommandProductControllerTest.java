@@ -166,9 +166,9 @@ class CommandProductControllerTest {
                         fieldWithPath("productTypeCode").type(JsonFieldType.STRING).description("상품 유형"),
                         fieldWithPath("productSavingMethodCode").type(JsonFieldType.STRING).description("상품 적립 방식"),
                         fieldWithPath("tags").type(JsonFieldType.ARRAY).description("태그"),
-                        fieldWithPath("isForcedOutOfStock").type(JsonFieldType.BOOLEAN).description("강제 품절 여부"),
-                        fieldWithPath("categories").type(JsonFieldType.ARRAY).description("카테고리")
-                        ),
+                        fieldWithPath("categories").type(JsonFieldType.ARRAY).description("카테고라"),
+                        fieldWithPath("isForcedOutOfStock").type(JsonFieldType.BOOLEAN).description("강제 품절 여부")
+                ),
                 responseFields(
                         fieldWithPath("id").type(JsonFieldType.NUMBER).description("수정된 상품 아이디")
                 )

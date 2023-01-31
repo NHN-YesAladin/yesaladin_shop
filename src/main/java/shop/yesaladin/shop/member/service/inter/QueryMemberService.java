@@ -21,7 +21,8 @@ public interface QueryMemberService {
      *
      * @param id member의 primary key
      * @return 회원 조회 결과
-     * @author 송학현, 최예린
+     * @author 송학현
+     * @author 최예린
      * @since 1.0
      */
     MemberDto findMemberById(long id);
@@ -31,7 +32,8 @@ public interface QueryMemberService {
      *
      * @param loginId member의 loginId
      * @return 회원 조회 결과
-     * @author 송학현, 최예린
+     * @author 송학현
+     * @author 최예린
      * @since 1.0
      */
     MemberDto findMemberByLoginId(String loginId);
@@ -41,7 +43,8 @@ public interface QueryMemberService {
      *
      * @param nickname member의 nickname
      * @return 회원 조회 결과
-     * @author 송학현, 최예린
+     * @author 송학현
+     * @author 최예린
      * @since 1.0
      */
     MemberDto findMemberByNickname(String nickname);

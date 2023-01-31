@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.point.service.impl;
 
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,7 +10,6 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.point.domain.model.PointCode;
 import shop.yesaladin.shop.point.domain.repository.QueryPointHistoryRepository;
 import shop.yesaladin.shop.point.dto.PointHistoryResponseDto;
-import shop.yesaladin.shop.point.dto.PointResponseDto;
 import shop.yesaladin.shop.point.service.inter.QueryPointHistoryService;
 
 /**
@@ -34,6 +32,8 @@ public class QueryPointHistoryServiceImpl implements QueryPointHistoryService {
             PointCode pointCode,
             Pageable pageable
     ) {
+        checkMemberExists(loginId);
+
         return queryPointHistoryRepository.getByLoginIdAndPointCode(loginId, pointCode, pageable);
     }
 
@@ -46,6 +46,8 @@ public class QueryPointHistoryServiceImpl implements QueryPointHistoryService {
             String loginId,
             Pageable pageable
     ) {
+        checkMemberExists(loginId);
+
         return queryPointHistoryRepository.getByLoginId(loginId, pageable);
     }
 
@@ -75,10 +77,15 @@ public class QueryPointHistoryServiceImpl implements QueryPointHistoryService {
      */
     @Override
     @Transactional(readOnly = true)
-    public PointResponseDto getMemberPoint(String loginId) {
-        if(Objects.isNull(queryMemberService.findMemberByLoginId(loginId))) {
+    public Long getMemberPoint(String loginId) {
+        checkMemberExists(loginId);
+
+        return queryPointHistoryRepository.getMemberPointByLoginId(loginId);
+    }
+
+    private void checkMemberExists(String loginId) {
+        if (queryMemberService.existsLoginId(loginId)) {
             throw new MemberNotFoundException("Member loginId : " + loginId);
         }
-        return new PointResponseDto(queryPointHistoryRepository.getMemberPointByLoginId(loginId));
     }
 }
