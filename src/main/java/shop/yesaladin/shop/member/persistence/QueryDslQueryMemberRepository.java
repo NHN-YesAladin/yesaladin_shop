@@ -27,7 +27,7 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
     public Optional<Member> findById(Long id) {
         QMember member = QMember.member;
         return Optional.ofNullable(queryFactory.selectFrom(member)
-                .where(member.id.eq(id).and(member.isWithdrawal.eq(false)))
+                .where(member.id.eq(id).and(member.isWithdrawal.isFalse()))
                 .fetchFirst());
     }
 
@@ -38,7 +38,7 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
     public Optional<Member> findMemberByNickname(String nickname) {
         QMember member = QMember.member;
         return Optional.ofNullable(queryFactory.selectFrom(member)
-                .where(member.nickname.eq(nickname).and(member.isWithdrawal.eq(false)))
+                .where(member.nickname.eq(nickname).and(member.isWithdrawal.isFalse()))
                 .fetchFirst());
     }
 
@@ -49,7 +49,7 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
     public Optional<Member> findMemberByLoginId(String loginId) {
         QMember member = QMember.member;
         return Optional.ofNullable(queryFactory.selectFrom(member)
-                .where(member.loginId.eq(loginId).and(member.isWithdrawal.eq(false)))
+                .where(member.loginId.eq(loginId).and(member.isWithdrawal.isFalse()))
                 .fetchFirst());
     }
 
@@ -60,7 +60,7 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
     public Optional<Member> findMemberByEmail(String email) {
         QMember member = QMember.member;
         return Optional.ofNullable(queryFactory.selectFrom(member)
-                .where(member.email.eq(email).and(member.isWithdrawal.eq(false)))
+                .where(member.email.eq(email).and(member.isWithdrawal.isFalse()))
                 .fetchFirst());
     }
 
@@ -71,7 +71,7 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
     public boolean existsMemberByLoginId(String loginId) {
         QMember member = QMember.member;
         return Optional.ofNullable(queryFactory.selectFrom(member)
-                .where(member.loginId.eq(loginId).and(member.isWithdrawal.eq(false)))
+                .where(member.loginId.eq(loginId).and(member.isWithdrawal.isFalse()))
                 .fetchFirst()).isPresent();
     }
 
@@ -82,7 +82,7 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
     public boolean existsMemberByNickname(String nickname) {
         QMember member = QMember.member;
         return Optional.ofNullable(queryFactory.selectFrom(member)
-                .where(member.nickname.eq(nickname).and(member.isWithdrawal.eq(false)))
+                .where(member.nickname.eq(nickname).and(member.isWithdrawal.isFalse()))
                 .fetchFirst()).isPresent();
     }
 
@@ -93,7 +93,7 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
     public boolean existsMemberByEmail(String email) {
         QMember member = QMember.member;
         return Optional.ofNullable(queryFactory.selectFrom(member)
-                .where(member.email.eq(email).and(member.isWithdrawal.eq(false)))
+                .where(member.email.eq(email).and(member.isWithdrawal.isFalse()))
                 .fetchFirst()).isPresent();
     }
 
@@ -104,7 +104,7 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
     public boolean existsMemberByPhone(String phone) {
         QMember member = QMember.member;
         return Optional.ofNullable(queryFactory.selectFrom(member)
-                .where(member.phone.eq(phone).and(member.isWithdrawal.eq(false)))
+                .where(member.phone.eq(phone).and(member.isWithdrawal.isFalse()))
                 .fetchFirst()).isPresent();
     }
 }
