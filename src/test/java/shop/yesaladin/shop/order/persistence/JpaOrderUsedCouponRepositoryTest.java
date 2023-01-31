@@ -17,9 +17,9 @@ import shop.yesaladin.shop.member.domain.model.MemberCoupon;
 import shop.yesaladin.shop.order.domain.model.MemberOrder;
 import shop.yesaladin.shop.order.domain.model.OrderUsedCoupon;
 import shop.yesaladin.shop.order.domain.model.OrderUsedCoupon.Pk;
-import shop.yesaladin.shop.order.persistence.dummy.DummyMemberCoupon;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMemberAddress;
+import shop.yesaladin.shop.order.persistence.dummy.DummyMemberCoupon;
 import shop.yesaladin.shop.order.persistence.dummy.DummyOrder;
 
 @DataJpaTest
