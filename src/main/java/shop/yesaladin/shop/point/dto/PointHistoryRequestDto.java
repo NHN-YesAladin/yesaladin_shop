@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.point.domain.model.PointCode;
 import shop.yesaladin.shop.point.domain.model.PointHistory;
+import shop.yesaladin.shop.point.domain.model.PointReasonCode;
 
 /**
  * 포인트내역 등록 후 요청을 위한 dto 클래스 입니다.
@@ -25,6 +26,8 @@ public class PointHistoryRequestDto {
     private String loginId;
     @NotNull
     private Long amount;
+    @NotNull
+    private PointReasonCode pointReasonCode;
 
     /**
      * dto 클래스를 엔티티 클래스로 변환시켜줍니다.
@@ -34,11 +37,15 @@ public class PointHistoryRequestDto {
      * @author 최예린
      * @since 1.0
      */
-    public PointHistory toEntity(PointCode pointCode, Member member) {
+    public PointHistory toEntity(
+            PointCode pointCode,
+            Member member
+    ) {
         return PointHistory.builder()
                 .amount(amount)
                 .createDateTime(LocalDateTime.now())
                 .pointCode(pointCode)
+                .pointReasonCode(pointReasonCode)
                 .member(member).build();
     }
 }

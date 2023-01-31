@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.file.service.impl;
 
-import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,8 +8,6 @@ import shop.yesaladin.shop.file.service.inter.StorageAuthService;
 
 import static org.mockito.Mockito.mock;
 
-
-@RequiredArgsConstructor
 class StorageAuthServiceImplTest {
 
     private StorageAuthService service;

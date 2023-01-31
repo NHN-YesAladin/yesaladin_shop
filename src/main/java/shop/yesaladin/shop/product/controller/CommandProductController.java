@@ -1,7 +1,6 @@
 package shop.yesaladin.shop.product.controller;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import shop.yesaladin.shop.product.dto.ProductCreateDto;
@@ -19,9 +18,8 @@ import java.net.URISyntaxException;
  * @author 이수정
  * @since 1.0
  */
-@Slf4j
-@RestController
 @RequiredArgsConstructor
+@RestController
 @RequestMapping("/v1/products")
 public class CommandProductController {
 
@@ -72,6 +70,34 @@ public class CommandProductController {
     @PostMapping("/{productId}")
     public ResponseEntity<Void> deleteProduct(@PathVariable("productId") long id) {
         commandProductService.softDelete(id);
+
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * [POST /products/{productId}/is-sale] 요청을 받아 상품의 판매여부를 변경합니다.
+     *
+     * @param id 판매여부를 변경할 상품의 Id
+     * @author 이수정
+     * @since 1.0
+     */
+    @PostMapping("/{productId}/is-sale")
+    public ResponseEntity<Void> changeProductIsSale(@PathVariable("productId") long id) {
+        commandProductService.changeIsSale(id);
+
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * [POST /products/{productId}/is-forced-out-of-stock] 요청을 받아 상품의 강제품절여부를 변경합니다.
+     *
+     * @param id 강제품절여부를 변경할 상품의 Id
+     * @author 이수정
+     * @since 1.0
+     */
+    @PostMapping("/{productId}/is-forced-out-of-stock")
+    public ResponseEntity<Void> changeProductIsForcedOutOfStock(@PathVariable("productId") long id) {
+        commandProductService.changeIsForcedOutOfStock(id);
 
         return ResponseEntity.ok().build();
     }

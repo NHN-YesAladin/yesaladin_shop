@@ -4,7 +4,6 @@ package shop.yesaladin.shop.product.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.List;
 
@@ -15,7 +14,6 @@ import java.util.List;
  * @since 1.0
  */
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductDetailResponseDto {
@@ -43,4 +41,10 @@ public class ProductDetailResponseDto {
     private String contents;
 
     private String description;
+
+    // 판매여부 관련
+    private long quantity;
+    private boolean isForcedOutOfStock;
+    private boolean isSale;
+    private boolean isDeleted;
 }

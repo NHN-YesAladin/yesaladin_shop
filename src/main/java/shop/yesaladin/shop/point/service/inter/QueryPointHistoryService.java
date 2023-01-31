@@ -60,4 +60,14 @@ public interface QueryPointHistoryService {
      * @since 1.0
      */
     Page<PointHistoryResponseDto> getPointHistories(Pageable pageable);
+
+    /**
+     * 회원의 포인트를 조회합니다.
+     *
+     * @param loginId 회원의 아이디
+     * @return 회원의 포인트
+     * @author 최예린
+     * @since 1.0
+     */
+    Long getMemberPoint(String loginId);
 }

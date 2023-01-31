@@ -25,6 +25,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.member.dto.MemberLoginResponseDto;
@@ -44,6 +45,7 @@ class QueryMemberLoginControllerTest {
     @MockBean
     QueryMemberService queryMemberService;
 
+    @WithMockUser
     @Test
     void doLogin_failed_whenMemberNotFound() throws Exception {
         //given
@@ -60,6 +62,7 @@ class QueryMemberLoginControllerTest {
         verify(queryMemberService, times(1)).findMemberLoginInfoByLoginId(loginId);
     }
 
+    @WithMockUser
     @Test
     void doLogin() throws Exception {
         //given
@@ -89,13 +92,13 @@ class QueryMemberLoginControllerTest {
         ResultActions resultActions = mockMvc.perform(get("/v1/members/login/{loginId}", loginId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id", equalTo(memberId.intValue())))
-                .andExpect(jsonPath("$.name", equalTo(memberName)))
-                .andExpect(jsonPath("$.nickname", equalTo(memberNickname)))
-                .andExpect(jsonPath("$.loginId", equalTo(loginId)))
-                .andExpect(jsonPath("$.email", equalTo(email)))
-                .andExpect(jsonPath("$.password", equalTo(password)))
-                .andExpect(jsonPath("$.roles", equalTo(roles)));
+                .andExpect(jsonPath("$.data.id", equalTo(memberId.intValue())))
+                .andExpect(jsonPath("$.data.name", equalTo(memberName)))
+                .andExpect(jsonPath("$.data.nickname", equalTo(memberNickname)))
+                .andExpect(jsonPath("$.data.loginId", equalTo(loginId)))
+                .andExpect(jsonPath("$.data.email", equalTo(email)))
+                .andExpect(jsonPath("$.data.password", equalTo(password)))
+                .andExpect(jsonPath("$.data.roles", equalTo(roles)));
 
         verify(queryMemberService, times(1)).findMemberLoginInfoByLoginId(loginId);
 
@@ -108,20 +111,27 @@ class QueryMemberLoginControllerTest {
                         parameterWithName("loginId").description("회원의 Login ID")
                 ),
                 responseFields(
-                        fieldWithPath("id").type(JsonFieldType.NUMBER)
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("data.id").type(JsonFieldType.NUMBER)
                                 .description("회원의 PK"),
-                        fieldWithPath("name").type(JsonFieldType.STRING)
+                        fieldWithPath("data.name").type(JsonFieldType.STRING)
                                 .description("회원의 이름"),
-                        fieldWithPath("nickname").type(JsonFieldType.STRING)
+                        fieldWithPath("data.nickname").type(JsonFieldType.STRING)
                                 .description("회원의 닉네임"),
-                        fieldWithPath("loginId").type(JsonFieldType.STRING)
+                        fieldWithPath("data.loginId").type(JsonFieldType.STRING)
                                 .description("회원의 loginId"),
-                        fieldWithPath("email").type(JsonFieldType.STRING)
+                        fieldWithPath("data.email").type(JsonFieldType.STRING)
                                 .description("회원의 email"),
-                        fieldWithPath("password").type(JsonFieldType.STRING)
+                        fieldWithPath("data.password").type(JsonFieldType.STRING)
                                 .description("회원의 password"),
-                        fieldWithPath("roles").type(JsonFieldType.ARRAY)
-                                .description("회원의 권한 리스트")
+                        fieldWithPath("data.roles").type(JsonFieldType.ARRAY)
+                                .description("회원의 권한 리스트"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("HTTP 상태 코드"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메시지")
+                                .optional()
                 )
         ));
     }

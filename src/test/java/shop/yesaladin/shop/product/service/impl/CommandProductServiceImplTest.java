@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import shop.yesaladin.shop.category.dto.CategoryResponseDto;
+import shop.yesaladin.shop.category.service.inter.CommandProductCategoryService;
+import shop.yesaladin.shop.category.service.inter.QueryCategoryService;
 import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.file.dto.FileResponseDto;
 import shop.yesaladin.shop.file.service.inter.CommandFileService;
@@ -72,6 +75,10 @@ class CommandProductServiceImplTest {
     private QueryTagService queryTagService;
     private CommandProductTagService commandProductTagService;
 
+    // Category
+    private QueryCategoryService queryCategoryService;
+    private CommandProductCategoryService commandProductCategoryService;
+
     @BeforeEach
     void setUp() {
         commandProductRepository = mock(CommandProductRepository.class);
@@ -87,6 +94,8 @@ class CommandProductServiceImplTest {
         queryPublisherService = mock(QueryPublisherService.class);
         queryTagService = mock(QueryTagService.class);
         commandProductTagService = mock(CommandProductTagService.class);
+        queryCategoryService = mock(QueryCategoryService.class);
+        commandProductCategoryService = mock(CommandProductCategoryService.class);
 
         service = new CommandProductServiceImpl(
                 commandProductRepository,
@@ -101,7 +110,9 @@ class CommandProductServiceImplTest {
                 commandPublishService,
                 queryPublisherService,
                 queryTagService,
-                commandProductTagService
+                commandProductTagService,
+                queryCategoryService,
+                commandProductCategoryService
         );
     }
 
@@ -133,6 +144,13 @@ class CommandProductServiceImplTest {
         Mockito.when(queryTagService.findById(1L)).thenReturn(new TagResponseDto(1L, "아름다운"));
         Mockito.when(queryTagService.findById(2L)).thenReturn(new TagResponseDto(2L, "슬픈"));
 
+        Mockito.when(queryCategoryService.findCategoryById(1L))
+                .thenReturn(new CategoryResponseDto(1L, "영화", true, 1, 100L, "국내"));
+        Mockito.when(queryCategoryService.findCategoryById(2L))
+                .thenReturn(new CategoryResponseDto(2L, "소설", true, 1, 100L, "국내"));
+        Mockito.when(queryCategoryService.findCategoryById(100L))
+                .thenReturn(new CategoryResponseDto(100L, "국내", true, 1, null, null));
+
         ProductCreateDto dto = DummyProductCreateDto.dummy(ISBN);
 
         // when
@@ -143,7 +161,7 @@ class CommandProductServiceImplTest {
         assertThat(productOnlyIdDto.getId()).isEqualTo(ID);
 
         verify(commandFileService, times(2)).register(any());
-        verify(querySubscribeProductRepository, times(1)).findByISSN(dto.getISSN());
+        verify(querySubscribeProductRepository, times(1)).findByISSN(dto.getIssn());
         verify(queryTotalDiscountRateRepository, times(1)).findById(1);
         verify(queryProductRepository, times(1)).findByISBN(ISBN);
         verify(commandProductRepository, times(1)).save(any());
@@ -153,6 +171,10 @@ class CommandProductServiceImplTest {
         verify(commandPublishService, times(1)).register(any());
         verify(queryTagService, times(2)).findById(any());
         verify(commandProductTagService, times(2)).register(any());
+        verify(queryCategoryService, times(1)).findCategoryById(1L);
+        verify(queryCategoryService, times(1)).findCategoryById(2L);
+        verify(queryCategoryService, times(2)).findCategoryById(100L);
+        verify(commandProductCategoryService, times(2)).register(any());
     }
 
     @Disabled
@@ -191,6 +213,13 @@ class CommandProductServiceImplTest {
         Mockito.when(queryTagService.findById(1L)).thenReturn(new TagResponseDto(1L, "아름다운"));
         Mockito.when(queryTagService.findById(2L)).thenReturn(new TagResponseDto(2L, "슬픈"));
 
+        Mockito.when(queryCategoryService.findCategoryById(1L))
+                .thenReturn(new CategoryResponseDto(1L, "영화", true, 1, 100L, "국내"));
+        Mockito.when(queryCategoryService.findCategoryById(2L))
+                .thenReturn(new CategoryResponseDto(2L, "소설", true, 1, 100L, "국내"));
+        Mockito.when(queryCategoryService.findCategoryById(100L))
+                .thenReturn(new CategoryResponseDto(100L, "국내", true, 1, null, null));
+
         Product updateProduct = DummyProduct.dummy(ID, ISBN, updateSubscribeProduct, updateThumbnailFile, updateEbookFile, totalDiscountRate);
         Mockito.when(commandProductRepository.save(any())).thenReturn(updateProduct);
 
@@ -215,6 +244,10 @@ class CommandProductServiceImplTest {
         verify(queryTagService, times(2)).findById(any());
         verify(commandProductTagService, times(2)).register(any());
         verify(commandProductRepository, times(1)).save(any());
+        verify(queryCategoryService, times(1)).findCategoryById(1L);
+        verify(queryCategoryService, times(1)).findCategoryById(2L);
+        verify(queryCategoryService, times(2)).findCategoryById(100L);
+        verify(commandProductCategoryService, times(2)).register(any());
     }
 
     @Test
@@ -233,6 +266,55 @@ class CommandProductServiceImplTest {
         service.softDelete(ID);
 
         // then
+        assertThat(product).isNotNull();
+        assertThat(product.isDeleted()).isTrue();
+
+        verify(queryProductRepository, times(1)).findById(ID);
+        verify(commandProductRepository, times(1)).save(product);
+    }
+
+    @Test
+    @DisplayName("상품 판매여부 변경 성공")
+    void changeIsSale() {
+        // given
+        File thumbnailFile = DummyFile.dummy(URL + "/image1.png");
+        File ebookFile = DummyFile.dummy(URL + "/ebook1.pdf");
+        SubscribeProduct subscribeProduct = SubscribeProduct.builder().id(1L).ISSN("00000001").build();
+        TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
+
+        Product product = DummyProduct.dummy(ID, ISBN, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate);
+        Mockito.when(queryProductRepository.findById(anyLong())).thenReturn(Optional.ofNullable(product));
+
+        // when
+        service.changeIsSale(ID);
+
+        // then
+        assertThat(product).isNotNull();
+        assertThat(product.isSale()).isFalse();
+
+        verify(queryProductRepository, times(1)).findById(ID);
+        verify(commandProductRepository, times(1)).save(product);
+    }
+
+    @Test
+    @DisplayName("상품 강제품절여부 변경 성공")
+    void changeIsForcedOutOfStock() {
+        // given
+        File thumbnailFile = DummyFile.dummy(URL + "/image1.png");
+        File ebookFile = DummyFile.dummy(URL + "/ebook1.pdf");
+        SubscribeProduct subscribeProduct = SubscribeProduct.builder().id(1L).ISSN("00000001").build();
+        TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
+
+        Product product = DummyProduct.dummy(ID, ISBN, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate);
+        Mockito.when(queryProductRepository.findById(anyLong())).thenReturn(Optional.ofNullable(product));
+
+        // when
+        service.changeIsForcedOutOfStock(ID);
+
+        // then
+        assertThat(product).isNotNull();
+        assertThat(product.isForcedOutOfStock()).isTrue();
+
         verify(queryProductRepository, times(1)).findById(ID);
         verify(commandProductRepository, times(1)).save(product);
     }

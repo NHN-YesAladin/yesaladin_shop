@@ -19,11 +19,14 @@ public class DummyProductsResponseDto {
                 "2023-01-23",
                 9000L,
                 10,
+                100,
+                true,
                 false,
                 true,
                 false,
                 "URL",
-                tags
+                tags,
+                null
         );
     }
 
@@ -40,11 +43,14 @@ public class DummyProductsResponseDto {
                 "2023-01-23",
                 9000L,
                 10,
+                100,
+                false,
                 false,
                 true,
                 true,
                 "URL",
-                tags
+                tags,
+                null
         );
     }
 }

@@ -19,7 +19,10 @@ import shop.yesaladin.shop.point.domain.repository.QueryPointHistoryRepository;
 import shop.yesaladin.shop.point.dto.PointHistoryResponseDto;
 
 /**
- * {@inheritDoc}
+ * 포인트 내역 조회 관련 repository 구현체 입니다.
+ *
+ * @author 최에린
+ * @since 1.0
  */
 @RequiredArgsConstructor
 @Repository
@@ -139,11 +142,11 @@ public class QuerydslQueryPointHistoryRepository implements QueryPointHistoryRep
                         pointHistory.amount,
                         pointHistory.createDateTime,
                         pointHistory.pointCode,
-                        pointHistory.member.loginId
+                        pointHistory.pointReasonCode
                 ))
                 .from(pointHistory)
-                .where(pointHistory.member.loginId.eq(loginId).and(pointHistory.pointCode.eq(
-                        pointCode)))
+                .where(pointHistory.member.loginId.eq(loginId)
+                        .and(pointHistory.pointCode.eq(pointCode)))
                 .orderBy(pointHistory.createDateTime.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -151,8 +154,8 @@ public class QuerydslQueryPointHistoryRepository implements QueryPointHistoryRep
 
         Long totalCount = queryFactory.select(pointHistory.count())
                 .from(pointHistory)
-                .where(pointHistory.member.loginId.eq(loginId).and(pointHistory.pointCode.eq(
-                        pointCode)))
+                .where(pointHistory.member.loginId.eq(loginId)
+                        .and(pointHistory.pointCode.eq(pointCode)))
                 .fetchFirst();
 
         return PageableExecutionUtils.getPage(content, pageable, () -> totalCount);
@@ -164,13 +167,14 @@ public class QuerydslQueryPointHistoryRepository implements QueryPointHistoryRep
     @Override
     public Page<PointHistoryResponseDto> getByLoginId(String loginId, Pageable pageable) {
         QPointHistory pointHistory = QPointHistory.pointHistory;
+
         List<PointHistoryResponseDto> content = queryFactory.select(Projections.constructor(
                         PointHistoryResponseDto.class,
                         pointHistory.id,
                         pointHistory.amount,
                         pointHistory.createDateTime,
                         pointHistory.pointCode,
-                        pointHistory.member.loginId
+                        pointHistory.pointReasonCode
                 ))
                 .from(pointHistory)
                 .where(pointHistory.member.loginId.eq(loginId)
@@ -202,7 +206,7 @@ public class QuerydslQueryPointHistoryRepository implements QueryPointHistoryRep
                         pointHistory.amount,
                         pointHistory.createDateTime,
                         pointHistory.pointCode,
-                        pointHistory.member.loginId
+                        pointHistory.pointReasonCode
                 ))
                 .from(pointHistory)
                 .where(pointHistory.pointCode.eq(pointCode))
@@ -231,7 +235,7 @@ public class QuerydslQueryPointHistoryRepository implements QueryPointHistoryRep
                         pointHistory.amount,
                         pointHistory.createDateTime,
                         pointHistory.pointCode,
-                        pointHistory.member.loginId
+                        pointHistory.pointReasonCode
                 ))
                 .from(pointHistory)
                 .where(pointHistory.pointCode.ne(PointCode.SUM))

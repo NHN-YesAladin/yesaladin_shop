@@ -62,6 +62,9 @@ public abstract class Order {
     @Column(name = "wrapping_fee", nullable = false)
     private int wrappingFee;
 
+    @Column(name = "total_amount", nullable = false)
+    private long totalAmount;
+
     @Column(name = "order_code_id")
     @Convert(converter = OrderCodeConverter.class)
     private OrderCode orderCode;

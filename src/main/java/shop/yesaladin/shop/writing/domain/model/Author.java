@@ -29,4 +29,26 @@ public class Author {
     @OneToOne
     @JoinColumn(name = "member_id")
     private Member member;
+
+    /**
+     * 저자의 멤버 엔터티를 변경합니다.
+     *
+     * @param member 변경할 멤버 엔터티
+     * @author 이수정
+     * @since 1.0
+     */
+    public void changeMember(Member member) {
+        this.member = member;
+    }
+
+    /**
+     * 저자의 이름을 변경합니다.
+     *
+     * @param name 변경할 저자의 이름
+     * @author 이수정
+     * @since 1.0
+     */
+    public void changeName(String name) {
+        this.name = name;
+    }
 }

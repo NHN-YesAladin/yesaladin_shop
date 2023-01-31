@@ -1,7 +1,6 @@
 package shop.yesaladin.shop.file.controller;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,9 +15,8 @@ import shop.yesaladin.shop.file.service.inter.FileStorageService;
  * @author 이수정
  * @since 1.0
  */
-@Slf4j
-@RestController
 @RequiredArgsConstructor
+@RestController
 @RequestMapping("/v1/files")
 public class FileStorageController {
 

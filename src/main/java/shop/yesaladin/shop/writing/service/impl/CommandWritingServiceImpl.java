@@ -18,8 +18,8 @@ import javax.transaction.Transactional;
  * @author 이수정
  * @since 1.0
  */
-@Service
 @RequiredArgsConstructor
+@Service
 public class CommandWritingServiceImpl implements CommandWritingService {
 
     private final CommandWritingRepository commandWritingRepository;

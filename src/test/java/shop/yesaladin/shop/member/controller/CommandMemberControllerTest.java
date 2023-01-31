@@ -18,6 +18,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.requestF
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -44,6 +45,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.member.domain.model.Member;
@@ -116,6 +118,7 @@ class CommandMemberControllerTest {
         updateResponse = MemberUpdateResponseDto.fromEntity(member);
     }
 
+    @WithMockUser
     @Test
     @DisplayName("회원 등록 요청 시 입력 데이터가 null거나 @Valid 검증 조건에 맞지 않은 경우 요청에 실패 한다.")
     void signUpMember_withInvalidInputData() throws Exception {
@@ -124,7 +127,9 @@ class CommandMemberControllerTest {
         Mockito.when(commandMemberService.create(any())).thenReturn(createResponse);
 
         //when
-        ResultActions perform = mockMvc.perform(post("/v1/members").contentType(MediaType.APPLICATION_JSON)
+        ResultActions perform = mockMvc.perform(post("/v1/members")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
         //then
@@ -133,6 +138,7 @@ class CommandMemberControllerTest {
         verify(commandMemberService, never()).create(any());
     }
 
+    @WithMockUser
     @Test
     @DisplayName("회원 등록 요청 시 nickname, loginId, password에 걸려있는 정규 표현식에 부합하지 않는 경우 요청에 실패 한다.")
     void signUpMember_withInvalidInputData_invalidRegex() throws Exception {
@@ -150,7 +156,9 @@ class CommandMemberControllerTest {
         Mockito.when(commandMemberService.create(any())).thenReturn(createResponse);
 
         //when
-        ResultActions perform = mockMvc.perform(post("/v1/members").contentType(MediaType.APPLICATION_JSON)
+        ResultActions perform = mockMvc.perform(post("/v1/members")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
         //then
@@ -159,6 +167,7 @@ class CommandMemberControllerTest {
         verify(commandMemberService, never()).create(any());
     }
 
+    @WithMockUser
     @Test
     @DisplayName("회원 가입 성공")
     void signUpMember() throws Exception {
@@ -178,17 +187,19 @@ class CommandMemberControllerTest {
         Mockito.when(commandMemberService.create(any())).thenReturn(createResponse);
 
         //when
-        ResultActions perform = mockMvc.perform(post("/v1/members").contentType(MediaType.APPLICATION_JSON)
+        ResultActions perform = mockMvc.perform(post("/v1/members")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
         //then
         perform.andDo(print()).andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.name", equalTo(member.getName())))
-                .andExpect(jsonPath("$.nickname", equalTo(member.getNickname())))
-                .andExpect(jsonPath("$.loginId", equalTo(member.getLoginId())))
-                .andExpect(jsonPath("$.role", equalTo(ROLE_MEMBER)))
-                .andExpect(jsonPath("$.memberGrade", equalTo(MemberGrade.WHITE.getName())));
+                .andExpect(jsonPath("$.data.name", equalTo(member.getName())))
+                .andExpect(jsonPath("$.data.nickname", equalTo(member.getNickname())))
+                .andExpect(jsonPath("$.data.loginId", equalTo(member.getLoginId())))
+                .andExpect(jsonPath("$.data.role", equalTo(ROLE_MEMBER)))
+                .andExpect(jsonPath("$.data.memberGrade", equalTo(MemberGrade.WHITE.getName())));
 
         verify(commandMemberService, times(1)).create(any());
 
@@ -216,18 +227,28 @@ class CommandMemberControllerTest {
                                 .description("회원의 성별")
                 ),
                 responseFields(
-                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("회원의 pk"),
-                        fieldWithPath("name").type(JsonFieldType.STRING).description("회원의 이름"),
-                        fieldWithPath("nickname").type(JsonFieldType.STRING).description("회원의 닉네임"),
-                        fieldWithPath("loginId").type(JsonFieldType.STRING).description("회원의 아이디"),
-                        fieldWithPath("memberGrade").type(JsonFieldType.STRING)
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("회원의 pk"),
+                        fieldWithPath("data.name").type(JsonFieldType.STRING).description("회원의 이름"),
+                        fieldWithPath("data.nickname").type(JsonFieldType.STRING)
+                                .description("회원의 닉네임"),
+                        fieldWithPath("data.loginId").type(JsonFieldType.STRING)
+                                .description("회원의 아이디"),
+                        fieldWithPath("data.memberGrade").type(JsonFieldType.STRING)
                                 .description("회원의 등급"),
-                        fieldWithPath("role").type(JsonFieldType.STRING)
-                                .description("회원의 권한")
+                        fieldWithPath("data.role").type(JsonFieldType.STRING)
+                                .description("회원의 권한"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("HTTP 상태 코드"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메시지")
+                                .optional()
                 )
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("회원 정보 수정 실패 - body 가 null 인 경우")
     void updateMember_withNull() throws Exception {
@@ -235,7 +256,8 @@ class CommandMemberControllerTest {
         String loginId = "user@1";
 
         //when
-        ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}", loginId));
+        ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}", loginId)
+                .with(csrf()));
 
         //then
         perform.andDo(print()).andExpect(status().isBadRequest());
@@ -243,6 +265,7 @@ class CommandMemberControllerTest {
         verify(commandMemberService, never()).update(any(), any());
     }
 
+    @WithMockUser
     @ParameterizedTest(name = "{1} : {0}")
     @MethodSource(value = "updateMemberRequestData")
     @DisplayName("회원정보수정 실패 - @Valid 검증 조건에 맞지 않은 경우")
@@ -256,8 +279,9 @@ class CommandMemberControllerTest {
                 nickname
         );
         //when
-        ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}", loginId).contentType(
-                        MediaType.APPLICATION_JSON)
+        ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}", loginId)
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
         //then
@@ -268,6 +292,7 @@ class CommandMemberControllerTest {
         verify(commandMemberService, never()).update(anyString(), any());
     }
 
+    @WithMockUser
     @Test
     @DisplayName("회원 정보 수정 실패-유효하지 않은 요청")
     void updateMember_withInvalidInputData() throws Exception {
@@ -281,6 +306,7 @@ class CommandMemberControllerTest {
         );
         //when
         ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}", loginId)
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
@@ -306,6 +332,7 @@ class CommandMemberControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("회원정보수정 실패 - 존재하지 않는 회원인 경우")
     void updateMember_withInvalidMemberId() throws Exception {
@@ -324,6 +351,7 @@ class CommandMemberControllerTest {
 
         //when
         ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}", loginId)
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
@@ -350,6 +378,7 @@ class CommandMemberControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("회원 정보 수정 성공")
     void updateMember() throws Exception {
@@ -367,6 +396,7 @@ class CommandMemberControllerTest {
 
         //when
         ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}", loginId)
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
@@ -397,6 +427,7 @@ class CommandMemberControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("회원 차단 실패 - 유효하지 않은 요청 번수")
     void blockMember_fail_validationError() throws Exception {
@@ -410,6 +441,7 @@ class CommandMemberControllerTest {
         );
         //when
         ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}/block", loginId)
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
@@ -432,6 +464,7 @@ class CommandMemberControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("회원 차단 실패 - 존재하지 않는 회원인 경우")
     void blockMember_withInvalidMemberId() throws Exception {
@@ -448,6 +481,7 @@ class CommandMemberControllerTest {
 
         //when
         ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}/block", loginId)
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
@@ -474,6 +508,7 @@ class CommandMemberControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("회원 차단 실패 - 이미 차단된 회원인 경우")
     void blockMember_fail_alreadyBlockedMember() throws Exception {
@@ -490,6 +525,7 @@ class CommandMemberControllerTest {
 
         //when
         ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}/block", loginId)
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
@@ -516,6 +552,7 @@ class CommandMemberControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("회원 차단 성공")
     void blockMember() throws Exception {
@@ -543,6 +580,7 @@ class CommandMemberControllerTest {
 
         //when
         ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}/block", loginId)
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
@@ -581,6 +619,7 @@ class CommandMemberControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("회원 차단해지 실패 - 존재하지 않는 회원인 경우")
     void unblockMember_withInvalidMemberId() throws Exception {
@@ -594,7 +633,7 @@ class CommandMemberControllerTest {
         ResultActions perform = mockMvc.perform(put(
                 "/v1/members/{loginId}/unblock",
                 loginId
-        ).contentType(MediaType.APPLICATION_JSON));
+        ).with(csrf()).contentType(MediaType.APPLICATION_JSON));
 
         //then
         perform.andDo(print()).andExpect(status().isNotFound())
@@ -615,6 +654,7 @@ class CommandMemberControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("회원 차단 해지 실패 - 이미 차단 해지된 회원인 경우")
     void unblockMember_fail_alreadyBlockedMember() throws Exception {
@@ -625,7 +665,8 @@ class CommandMemberControllerTest {
                 .thenThrow(new AlreadyUnblockedMemberException(loginId));
 
         //when
-        ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}/unblock", loginId));
+        ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}/unblock", loginId)
+                .with(csrf()));
 
         //then
         perform.andDo(print()).andExpect(status().isBadRequest())
@@ -646,6 +687,7 @@ class CommandMemberControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("회원 차단해지 성공")
     void unblockMember() throws Exception {
@@ -669,7 +711,7 @@ class CommandMemberControllerTest {
         ResultActions perform = mockMvc.perform(put(
                 "/v1/members/{loginId}/unblock",
                 loginId
-        ).contentType(MediaType.APPLICATION_JSON));
+        ).with(csrf()).contentType(MediaType.APPLICATION_JSON));
 
         //then
         perform.andDo(print()).andExpect(status().isOk())
@@ -700,6 +742,7 @@ class CommandMemberControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     void withdrawMember_fail_invalidMember() throws Exception {
         //given
@@ -713,6 +756,7 @@ class CommandMemberControllerTest {
                 "/v1/members/withdraw/{loginId}",
                 invalidLoginId
         )
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON));
 
         //then
@@ -730,6 +774,7 @@ class CommandMemberControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     void withdrawMember() throws Exception {
         String loginId = "loginId";
@@ -748,16 +793,17 @@ class CommandMemberControllerTest {
 
         //when
         ResultActions perform = mockMvc.perform(delete("/v1/members/withdraw/{loginId}", loginId)
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON));
 
         //then
         perform.andDo(print()).andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id", equalTo(withdrawMember.getId().intValue())))
-                .andExpect(jsonPath("$.name", equalTo(withdrawMember.getName())))
-                .andExpect(jsonPath("$.withdrawal", equalTo(withdrawMember.isWithdrawal())))
+                .andExpect(jsonPath("$.data.id", equalTo(withdrawMember.getId().intValue())))
+                .andExpect(jsonPath("$.data.name", equalTo(withdrawMember.getName())))
+                .andExpect(jsonPath("$.data.withdrawal", equalTo(withdrawMember.isWithdrawal())))
                 .andExpect(jsonPath(
-                        "$.withdrawalDate",
+                        "$.data.withdrawalDate",
                         equalTo(withdrawMember.getWithdrawalDate().toString())
                 ));
 
@@ -770,12 +816,19 @@ class CommandMemberControllerTest {
                 getDocumentResponse(),
                 pathParameters(parameterWithName("loginId").description("탈퇴할 회원의 아이디")),
                 responseFields(
-                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("회원의 Pk"),
-                        fieldWithPath("name").type(JsonFieldType.STRING).description("회원의 이름"),
-                        fieldWithPath("withdrawal").type(JsonFieldType.BOOLEAN)
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("HTTP 상태 코드"),
+                        fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("회원의 Pk"),
+                        fieldWithPath("data.name").type(JsonFieldType.STRING).description("회원의 이름"),
+                        fieldWithPath("data.withdrawal").type(JsonFieldType.BOOLEAN)
                                 .description("회원의 탈퇴 여부"),
-                        fieldWithPath("withdrawalDate").type(JsonFieldType.STRING)
-                                .description("회원의 탈퇴일")
+                        fieldWithPath("data.withdrawalDate").type(JsonFieldType.STRING)
+                                .description("회원의 탈퇴일"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메시지")
+                                .optional()
                 )
         ));
     }

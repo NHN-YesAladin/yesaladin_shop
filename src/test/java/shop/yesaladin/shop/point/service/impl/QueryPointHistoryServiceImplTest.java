@@ -1,6 +1,7 @@
 package shop.yesaladin.shop.point.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -13,6 +14,11 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import shop.yesaladin.shop.member.domain.model.Member;
+import shop.yesaladin.shop.member.dto.MemberDto;
+import shop.yesaladin.shop.member.dummy.MemberDummy;
+import shop.yesaladin.shop.member.exception.MemberNotFoundException;
+import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.point.domain.model.PointCode;
 import shop.yesaladin.shop.point.domain.repository.QueryPointHistoryRepository;
 import shop.yesaladin.shop.point.dto.PointHistoryResponseDto;
@@ -21,14 +27,19 @@ import shop.yesaladin.shop.point.service.inter.QueryPointHistoryService;
 
 class QueryPointHistoryServiceImplTest {
 
+    QueryMemberService queryMemberService;
     QueryPointHistoryService queryPointHistoryService;
     QueryPointHistoryRepository queryPointHistoryRepository;
 
     @BeforeEach
     void setUp() {
+        queryMemberService = Mockito.mock(QueryMemberService.class);
         queryPointHistoryRepository = Mockito.mock(QueryPointHistoryRepository.class);
 
-        queryPointHistoryService = new QueryPointHistoryServiceImpl(queryPointHistoryRepository);
+        queryPointHistoryService = new QueryPointHistoryServiceImpl(
+                queryPointHistoryRepository,
+                queryMemberService
+        );
     }
 
     @Test
@@ -149,5 +160,31 @@ class QueryPointHistoryServiceImplTest {
                 captor.capture()
         );
         assertThat(captor.getValue().getPageSize()).isEqualTo(5);
+    }
+
+    @Test
+    void getMemberPoint_fail_memberNotFound() {
+        String loginId = "user@1";
+
+        Mockito.when(queryMemberService.existsLoginId(loginId))
+                .thenThrow(MemberNotFoundException.class);
+
+        assertThatThrownBy(() -> queryPointHistoryService.getMemberPoint(loginId)).isInstanceOf(
+                MemberNotFoundException.class);
+    }
+
+    @Test
+    void getMemberPoint_success() {
+        String loginId = "user@1";
+
+        Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
+        Mockito.when(queryMemberService.findMemberByLoginId(loginId))
+                .thenReturn(MemberDto.fromEntity(member));
+        Mockito.when(queryPointHistoryRepository.getMemberPointByLoginId(loginId))
+                .thenReturn(1000L);
+
+        long result = queryPointHistoryService.getMemberPoint(loginId);
+
+        assertThat(result).isEqualTo(1000L);
     }
 }

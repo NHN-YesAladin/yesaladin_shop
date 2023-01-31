@@ -1,5 +1,7 @@
 package shop.yesaladin.shop.writing.service.inter;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.writing.dto.AuthorResponseDto;
 import shop.yesaladin.shop.writing.dto.AuthorsResponseDto;
 
@@ -31,4 +33,14 @@ public interface QueryAuthorService {
      * @since 1.0
      */
     List<AuthorsResponseDto> findAll();
+
+    /**
+     * 페이징된 관리자용 저자 리스트를 반환합니다.
+     *
+     * @param pageable 페이징 처리를 위한 객체
+     * @return 페이징 조회된 저자 dto를 담은 객체
+     * @author 이수정
+     * @since 1.0
+     */
+    Page<AuthorsResponseDto> findAllForManager(Pageable pageable);
 }

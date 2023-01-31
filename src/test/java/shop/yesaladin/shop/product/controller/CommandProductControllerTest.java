@@ -11,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.product.dto.ProductCreateDto;
@@ -31,11 +32,11 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentRequest;
 import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
-
 
 @AutoConfigureRestDocs
 @WebMvcTest(CommandProductController.class)
@@ -63,6 +64,7 @@ class CommandProductControllerTest {
         productOnlyIdDto = new ProductOnlyIdDto(ID);
     }
 
+    @WithMockUser
     @Test
     @DisplayName("상품 등록 성공")
     void registerProduct() throws Exception {
@@ -71,6 +73,7 @@ class CommandProductControllerTest {
 
         // when
         ResultActions result = mockMvc.perform(post("/v1/products")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(productCreateDto)));
 
@@ -111,7 +114,8 @@ class CommandProductControllerTest {
                         fieldWithPath("ebookFileUploadDateTime").type(JsonFieldType.STRING).description("E-Book 파일 업로드 시간"),
                         fieldWithPath("productTypeCode").type(JsonFieldType.STRING).description("상품 유형"),
                         fieldWithPath("productSavingMethodCode").type(JsonFieldType.STRING).description("상품 적립 방식"),
-                        fieldWithPath("tags").type(JsonFieldType.ARRAY).description("태그")
+                        fieldWithPath("tags").type(JsonFieldType.ARRAY).description("태그"),
+                        fieldWithPath("categories").type(JsonFieldType.ARRAY).description("카테고라")
                 ),
                 responseFields(
                         fieldWithPath("id").type(JsonFieldType.NUMBER).description("생성된 상품 아이디")
@@ -119,6 +123,7 @@ class CommandProductControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("상품 수정 성공")
     void updateProduct() throws Exception {
@@ -127,6 +132,7 @@ class CommandProductControllerTest {
 
         // when
         ResultActions result = mockMvc.perform(put("/v1/products/{productId}", ID)
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(productUpdateDto)));
 
@@ -166,6 +172,7 @@ class CommandProductControllerTest {
                         fieldWithPath("productTypeCode").type(JsonFieldType.STRING).description("상품 유형"),
                         fieldWithPath("productSavingMethodCode").type(JsonFieldType.STRING).description("상품 적립 방식"),
                         fieldWithPath("tags").type(JsonFieldType.ARRAY).description("태그"),
+                        fieldWithPath("categories").type(JsonFieldType.ARRAY).description("카테고라"),
                         fieldWithPath("isForcedOutOfStock").type(JsonFieldType.BOOLEAN).description("강제 품절 여부")
                 ),
                 responseFields(
@@ -174,14 +181,17 @@ class CommandProductControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("상품 삭제 성공")
     void deleteProduct() throws Exception {
         // when
-        ResultActions result = mockMvc.perform(post("/v1/products/{productId}", ID));
+        ResultActions result = mockMvc.perform(post("/v1/products/{productId}", ID).with(csrf()));
 
         // then
         result.andDo(print()).andExpect(status().isOk());
+
+        verify(service, times(1)).softDelete(ID);
 
         // docs
         result.andDo(document(
@@ -190,7 +200,51 @@ class CommandProductControllerTest {
                 getDocumentResponse(),
                 pathParameters(parameterWithName("productId").description("삭제할 상품의 아이디"))
         ));
+    }
 
-        verify(service, times(1)).softDelete(ID);
+    @WithMockUser
+    @Test
+    @DisplayName("상품 판매여부 변경 성공")
+    void changeProductIsSale() throws Exception {
+        // when
+        ResultActions result = mockMvc.perform(post("/v1/products/{productId}/is-sale", ID).with(
+                csrf()));
+
+        // then
+        result.andDo(print()).andExpect(status().isOk());
+
+        verify(service, times(1)).changeIsSale(ID);
+
+        // docs
+        result.andDo(document(
+                "change-product-is-sale",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                pathParameters(parameterWithName("productId").description("판매여부를 변경할 상품의 아이디"))
+        ));
+    }
+
+    @WithMockUser
+    @Test
+    @DisplayName("상품 강제품절여부 변경 성공")
+    void changeProductIsForcedOutOfStock() throws Exception {
+        // when
+        ResultActions result = mockMvc.perform(post(
+                "/v1/products/{productId}/is-forced-out-of-stock",
+                ID
+        ).with(csrf()));
+
+        // then
+        result.andDo(print()).andExpect(status().isOk());
+
+        verify(service, times(1)).changeIsForcedOutOfStock(ID);
+
+        // docs
+        result.andDo(document(
+                "change-product-is-forced-out-of-stock",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                pathParameters(parameterWithName("productId").description("강제품절여부를 변경할 상품의 아이디"))
+        ));
     }
 }

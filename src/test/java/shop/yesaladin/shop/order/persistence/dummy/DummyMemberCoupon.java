@@ -8,7 +8,7 @@ public class DummyMemberCoupon {
 
     public static MemberCoupon memberCoupon(Member member) {
 
-        return MemberCoupon.builder().member(member).couponCode("").build();
+        return MemberCoupon.builder().member(member).couponCode("").couponGroupCode("").build();
     }
 
 }

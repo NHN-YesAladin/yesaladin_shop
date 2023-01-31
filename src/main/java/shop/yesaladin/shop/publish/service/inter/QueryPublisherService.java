@@ -1,6 +1,9 @@
 package shop.yesaladin.shop.publish.service.inter;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
+import shop.yesaladin.shop.publish.dto.PublishersResponseDto;
 
 import java.util.List;
 
@@ -23,16 +26,6 @@ public interface QueryPublisherService {
     PublisherResponseDto findById(Long id);
 
     /**
-     * 출판사 이름으로 이미 저장되어있는 출판사인지 확인하고, 존재한다면 출판사 Dto를 반환, 존재하지 않는다면 null을 반환합니다.
-     *
-     * @param name 찾고자하는 출판사 이름
-     * @return 찾은 출판사 Dto or null
-     * @author 이수정
-     * @since 1.0
-     */
-    PublisherResponseDto findByName(String name);
-
-    /**
      * 출판사를 전체 조회하여 전체 조회한 Dto List를 반환합니다..
      *
      * @return 출판사 전체 조회한 List
@@ -40,4 +33,14 @@ public interface QueryPublisherService {
      * @since 1.0
      */
     List<PublisherResponseDto> findAll();
+
+    /**
+     * 페이징된 관리자용 출판사 리스트를 반환합니다.
+     *
+     * @param pageable 페이징 처리를 위한 객체
+     * @return 페이징 조회된 출판사 dto를 담은 객체
+     * @author 이수정
+     * @since 1.0
+     */
+    Page<PublishersResponseDto> findAllForManager(Pageable pageable);
 }

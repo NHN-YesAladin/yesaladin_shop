@@ -14,7 +14,7 @@ import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberAddressRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
-import shop.yesaladin.shop.member.dto.MemberAddressQueryDto;
+import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberAddressService;
@@ -62,10 +62,10 @@ class QueryMemberAddressServiceImplTest {
         Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
                 .thenReturn(Optional.of(member));
 
-        Mockito.when(queryMemberAddressRepository.findByMember(member))
+        Mockito.when(queryMemberAddressRepository.findByLoginId(member))
                 .thenReturn(getMemberAddressList(10, member));
         //when
-        List<MemberAddressQueryDto> result = queryMemberAddressService.findByLoginId(loginId);
+        List<MemberAddressResponseDto> result = queryMemberAddressService.findByLoginId(loginId);
 
         //then
         assertThat(result).hasSize(10);

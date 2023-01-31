@@ -9,25 +9,29 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import shop.yesaladin.shop.member.domain.model.Member;
+import shop.yesaladin.shop.member.domain.model.MemberGrade;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRoleRepository;
 import shop.yesaladin.shop.member.dto.MemberDto;
+import shop.yesaladin.shop.member.dto.MemberGradeQueryResponseDto;
 import shop.yesaladin.shop.member.dto.MemberLoginResponseDto;
+import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
+import shop.yesaladin.shop.member.dummy.MemberDummy;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 
 class QueryMemberServiceImplTest {
 
     private QueryMemberServiceImpl service;
-    private QueryMemberRepository repository;
+    private QueryMemberRepository queryMemberRepository;
     private QueryMemberRoleRepository queryMemberRoleRepository;
 
     private Member expectedMember;
 
     @BeforeEach
     void setUp() {
-        repository = Mockito.mock(QueryMemberRepository.class);
+        queryMemberRepository = Mockito.mock(QueryMemberRepository.class);
         queryMemberRoleRepository = Mockito.mock(QueryMemberRoleRepository.class);
-        service = new QueryMemberServiceImpl(repository, queryMemberRoleRepository);
+        service = new QueryMemberServiceImpl(queryMemberRepository, queryMemberRoleRepository);
 
         expectedMember = Mockito.mock(Member.class);
     }
@@ -37,7 +41,7 @@ class QueryMemberServiceImplTest {
         //given
         long id = 1L;
 
-        Mockito.when(repository.findById(id))
+        Mockito.when(queryMemberRepository.findById(id))
                 .thenReturn(Optional.empty());
 
         //when then
@@ -50,7 +54,7 @@ class QueryMemberServiceImplTest {
         //given
         long id = 1L;
 
-        Mockito.when(repository.findById(id))
+        Mockito.when(queryMemberRepository.findById(id))
                 .thenReturn(Optional.of(expectedMember));
         Mockito.when(expectedMember.getId()).thenReturn(id);
 
@@ -66,7 +70,7 @@ class QueryMemberServiceImplTest {
         //given
         String nickname = "Ramos";
 
-        Mockito.when(repository.findMemberByNickname(nickname))
+        Mockito.when(queryMemberRepository.findMemberByNickname(nickname))
                 .thenReturn(Optional.empty());
 
         //when then
@@ -79,7 +83,7 @@ class QueryMemberServiceImplTest {
         //given
         String nickname = "Ramos";
 
-        Mockito.when(repository.findMemberByNickname(nickname))
+        Mockito.when(queryMemberRepository.findMemberByNickname(nickname))
                 .thenReturn(Optional.of(expectedMember));
         Mockito.when(expectedMember.getNickname()).thenReturn(nickname);
 
@@ -95,7 +99,7 @@ class QueryMemberServiceImplTest {
         //given
         String loginId = "test1234";
 
-        Mockito.when(repository.findMemberByLoginId(loginId))
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
                 .thenReturn(Optional.empty());
 
         //when then
@@ -108,7 +112,7 @@ class QueryMemberServiceImplTest {
         //given
         String loginId = "test1234";
 
-        Mockito.when(repository.findMemberByLoginId(loginId))
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
                 .thenReturn(Optional.of(expectedMember));
         Mockito.when(expectedMember.getLoginId()).thenReturn(loginId);
 
@@ -124,7 +128,7 @@ class QueryMemberServiceImplTest {
         //given
         String loginId = "test1234";
 
-        Mockito.when(repository.findMemberByLoginId(loginId))
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
                 .thenReturn(Optional.empty());
 
         //when, then
@@ -138,7 +142,7 @@ class QueryMemberServiceImplTest {
         String loginId = "test1234";
         Long memberId = 1L;
 
-        Mockito.when(repository.findMemberByLoginId(loginId))
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
                 .thenReturn(Optional.of(expectedMember));
         Mockito.when(expectedMember.getLoginId()).thenReturn(loginId);
         Mockito.when(expectedMember.getId()).thenReturn(memberId);
@@ -173,7 +177,7 @@ class QueryMemberServiceImplTest {
         //given
         String loginId = "test1234";
 
-        Mockito.when(repository.existsMemberByLoginId(loginId)).thenReturn(true);
+        Mockito.when(queryMemberRepository.existsMemberByLoginId(loginId)).thenReturn(true);
 
         //when
         boolean result = service.existsLoginId(loginId);
@@ -199,7 +203,7 @@ class QueryMemberServiceImplTest {
         //given
         String nickname = "testNickname";
 
-        Mockito.when(repository.existsMemberByNickname(nickname)).thenReturn(true);
+        Mockito.when(queryMemberRepository.existsMemberByNickname(nickname)).thenReturn(true);
 
         //when
         boolean result = service.existsNickname(nickname);
@@ -225,7 +229,7 @@ class QueryMemberServiceImplTest {
         //given
         String email = "test@test.com";
 
-        Mockito.when(repository.existsMemberByEmail(email)).thenReturn(true);
+        Mockito.when(queryMemberRepository.existsMemberByEmail(email)).thenReturn(true);
 
         //when
         boolean result = service.existsEmail(email);
@@ -251,12 +255,83 @@ class QueryMemberServiceImplTest {
         //given
         String phone = "01011112222";
 
-        Mockito.when(repository.existsMemberByPhone(phone)).thenReturn(true);
+        Mockito.when(queryMemberRepository.existsMemberByPhone(phone)).thenReturn(true);
 
         //when
         boolean result = service.existsPhone(phone);
 
         //then
         assertThat(result).isTrue();
+    }
+
+    @Test
+    void getMemberGrade_fail_memberNotFound() {
+        //given
+        String loginId = "user@1";
+
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
+                .thenThrow(MemberNotFoundException.class);
+
+        //when, then
+        assertThatThrownBy(() -> service.getMemberGrade(loginId)).isInstanceOf(
+                MemberNotFoundException.class);
+    }
+
+    @Test
+    void getMemberGrade_success() {
+        //given
+        String loginId = "user@1";
+        Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
+        MemberGrade memberGrade = member.getMemberGrade();
+
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
+                .thenReturn(Optional.of(member));
+
+        //when
+        MemberGradeQueryResponseDto result = service.getMemberGrade(loginId);
+
+        //then
+        assertThat(result.getGradeEn()).isEqualTo(memberGrade.name());
+        assertThat(result.getGradeKo()).isEqualTo(memberGrade.getName());
+    }
+
+    @Test
+    void getByLoginId_fail_memberNotFound() {
+        //given
+        String loginId = "user@1";
+
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
+                .thenThrow(MemberNotFoundException.class);
+
+        //when, then
+        assertThatThrownBy(() -> service.getByLoginId(loginId)).isInstanceOf(
+                MemberNotFoundException.class);
+    }
+
+    @Test
+    void getByLoginId_success() {
+        //given
+        String loginId = "user@1";
+        Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
+
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
+                .thenReturn(Optional.of(member));
+
+        //when
+        MemberQueryResponseDto result = service.getByLoginId(loginId);
+
+        //then
+        assertThat(result.getId()).isEqualTo(member.getId());
+        assertThat(result.getNickname()).isEqualTo(member.getNickname());
+        assertThat(result.getName()).isEqualTo(member.getName());
+        assertThat(result.getLoginId()).isEqualTo(member.getLoginId());
+        assertThat(result.getPassword()).isEqualTo(member.getPassword());
+        assertThat(result.getBirthYear()).isEqualTo(member.getBirthYear());
+        assertThat(result.getBirthMonth()).isEqualTo(member.getBirthMonth());
+        assertThat(result.getBirthDay()).isEqualTo(member.getBirthDay());
+        assertThat(result.getEmail()).isEqualTo(member.getEmail());
+        assertThat(result.getSignUpDate()).isEqualTo(member.getSignUpDate());
+        assertThat(result.getGrade()).isEqualTo(member.getMemberGrade().getName());
+        assertThat(result.getGender()).isEqualTo(member.getMemberGenderCode().getGender() == 1 ? "남" : "여");
     }
 }

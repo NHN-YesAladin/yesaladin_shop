@@ -1,7 +1,6 @@
 package shop.yesaladin.shop.product.controller;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
@@ -16,9 +15,8 @@ import shop.yesaladin.shop.product.service.inter.QueryProductService;
  * @author 이수정
  * @since 1.0
  */
-@Slf4j
-@RestController
 @RequiredArgsConstructor
+@RestController
 @RequestMapping("/v1/products")
 public class QueryProductController {
 
@@ -58,7 +56,7 @@ public class QueryProductController {
     }
 
     /**
-     * [GET /products/manager] 요청을 받아 상품을 모든 사용자용 Paging 전체 조회합니다.
+     * [GET /products/manager] 요청을 받아 상품을 관리자용 Paging 전체 조회합니다.
      *
      * @param pageable 페이징 처리를 위한 객체
      * @return 조회한 상품의 페이징된 정보까지 담은 dto

@@ -9,20 +9,17 @@ import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentRequest;
 import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
 import static shop.yesaladin.shop.docs.DocumentFormatGenerator.defaultValue;
-import static shop.yesaladin.shop.docs.DocumentFormatGenerator.getDateFormat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
@@ -41,6 +38,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.category.domain.model.Category;
@@ -69,6 +67,7 @@ class QueryCategoryControllerTest {
         name = "국외도서";
     }
 
+    @WithMockUser
     @Test
     @DisplayName("id를 통한 카테고리 조회 성공")
     void getCategoryById() throws Exception {
@@ -81,7 +80,9 @@ class QueryCategoryControllerTest {
 
         // when
         ResultActions perform = mockMvc.perform(get(
-                "/v1/categories/{categoryId}", id).contentType(MediaType.APPLICATION_JSON));
+                "/v1/categories/{categoryId}", id)
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON));
 
         // then
         perform.andDo(print())
@@ -115,6 +116,7 @@ class QueryCategoryControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("id를 통한 카테고리 조회 실패 - 없는 카테고리")
     void getCategoryById_categoryNotFound_fail() throws Exception {
@@ -125,7 +127,9 @@ class QueryCategoryControllerTest {
 
         // when
         ResultActions perform = mockMvc.perform(get(
-                "/v1/categories/{categoryId}", id).contentType(MediaType.APPLICATION_JSON));
+                "/v1/categories/{categoryId}", id)
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON));
 
         // then
         perform.andDo(print()).andExpect(status().isNotFound());
@@ -146,6 +150,7 @@ class QueryCategoryControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("페이징을 통한 카테고리 조회 성공")
     void getCategoriesByParentId() throws Exception {
@@ -245,6 +250,7 @@ class QueryCategoryControllerTest {
 
     }
 
+    @WithMockUser
     @Test
     @DisplayName("모든 1차 카테고리 조회 성공")
     void getParentCategories() throws Exception {
@@ -265,6 +271,7 @@ class QueryCategoryControllerTest {
         // when
         ResultActions perform = mockMvc.perform(get(
                 "/v1/categories").queryParam("cate", "parents")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON));
 
         // then
@@ -282,7 +289,8 @@ class QueryCategoryControllerTest {
                 getDocumentResponse(),
                 requestParameters(
                         parameterWithName("cate").description("모든 1차 카테고리를 불러 올 때 사용")
-                                .attributes(defaultValue("parents"))
+                                .attributes(defaultValue("parents")),
+                        parameterWithName("_csrf").description("csrf")
                 ),
                 responseFields(
                         fieldWithPath("[].id").type(JsonFieldType.NUMBER)
@@ -303,6 +311,7 @@ class QueryCategoryControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("페이징 없는 2차 카테고리 조회 성공 ")
     void getChildCategoriesByParentId() throws Exception {
@@ -328,7 +337,9 @@ class QueryCategoryControllerTest {
         ResultActions perform = mockMvc.perform(get(
                 "/v1/categories/{parentId}",
                 parentId
-        ).queryParam("cate", "children").contentType(MediaType.APPLICATION_JSON));
+        ).queryParam("cate", "children")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON));
 
         // then
         perform.andDo(print())
@@ -352,7 +363,8 @@ class QueryCategoryControllerTest {
                 ),
                 requestParameters(
                         parameterWithName("cate").description("해당하는 아이디의 2차 카테고리를 모두 조회하는 경우 사용")
-                                .attributes(defaultValue("children"))
+                                .attributes(defaultValue("children")),
+                        parameterWithName("_csrf").description("csrf")
                 ),
                 responseFields(
                         fieldWithPath("[].id").type(JsonFieldType.NUMBER)

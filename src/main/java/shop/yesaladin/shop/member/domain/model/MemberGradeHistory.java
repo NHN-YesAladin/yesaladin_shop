@@ -21,8 +21,8 @@ import shop.yesaladin.shop.member.persistence.converter.MemberGradeCodeConverter
 /**
  * 회원 등급 변동 이력을 저장할 엔티티 클래스 입니다.
  *
- * @author : 송학현
- * @since : 1.0
+ * @author 송학현
+ * @since 1.0
  */
 @Getter
 @Builder

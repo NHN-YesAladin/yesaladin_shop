@@ -17,6 +17,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.requestF
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -27,6 +28,8 @@ import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
 import static shop.yesaladin.shop.docs.DocumentFormatGenerator.defaultValue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,9 +40,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.category.domain.model.Category;
+import shop.yesaladin.shop.category.dto.CategoryModifyRequestDto;
 import shop.yesaladin.shop.category.dto.CategoryRequestDto;
 import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 import shop.yesaladin.shop.category.dummy.CategoryDummy;
@@ -65,6 +70,7 @@ class CommandCategoryControllerTest {
         childCategory = CategoryDummy.dummyChild(parentCategory);
     }
 
+    @WithMockUser
     @Test
     @DisplayName("1차 카테고리 생성 성공")
     void createCategory_parent() throws Exception {
@@ -84,7 +90,9 @@ class CommandCategoryControllerTest {
         when(commandCategoryService.create(any())).thenReturn(responseDto);
 
         // when
-        ResultActions perform = mockMvc.perform(post("/v1/categories").contentType(MediaType.APPLICATION_JSON)
+        ResultActions perform = mockMvc.perform(post("/v1/categories")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createDto)));
 
         // then
@@ -103,6 +111,7 @@ class CommandCategoryControllerTest {
         documentCreateCategory(perform,"create-parent-category");
     }
 
+    @WithMockUser
     @Test
     @DisplayName("2차 카테고리 생성 성공")
     void createCategory_child() throws Exception {
@@ -121,7 +130,9 @@ class CommandCategoryControllerTest {
         when(commandCategoryService.create(any())).thenReturn(responseDto);
 
         // when
-        ResultActions perform = mockMvc.perform(post("/v1/categories").contentType(MediaType.APPLICATION_JSON)
+        ResultActions perform = mockMvc.perform(post("/v1/categories")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createDto)));
 
         // then
@@ -173,7 +184,7 @@ class CommandCategoryControllerTest {
         ));
     }
 
-
+    @WithMockUser
     @Test
     @DisplayName("카테고리 생성 실패 - name이 null 인 경우")
     void createCategory_invalidatedData_fail() throws Exception {
@@ -181,7 +192,9 @@ class CommandCategoryControllerTest {
         CategoryRequestDto createDto = new CategoryRequestDto(null, true, null, null);
 
         //when
-        ResultActions perform = mockMvc.perform(post("/v1/categories").contentType(MediaType.APPLICATION_JSON)
+        ResultActions perform = mockMvc.perform(post("/v1/categories")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createDto)));
 
         // then
@@ -191,6 +204,7 @@ class CommandCategoryControllerTest {
 
     }
 
+    @WithMockUser
     @Test
     @DisplayName("1차 카테고리 수정 성공 - 부모 id 제외 다른 필드 변경")
     void updateCategory_parent_otherFieldChange() throws Exception {
@@ -217,7 +231,9 @@ class CommandCategoryControllerTest {
 
         // when
         ResultActions perform = mockMvc.perform(put(
-                "/v1/categories/{id}", toEntity.getId()).contentType(MediaType.APPLICATION_JSON)
+                "/v1/categories/{id}", toEntity.getId())
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(categoryRequestDto)));
 
         // then
@@ -240,6 +256,7 @@ class CommandCategoryControllerTest {
         documentModifyCategory(perform,"update-parent-fields-category");
     }
 
+    @WithMockUser
     @Test
     @DisplayName("2차 카테고리 수정 성공 - 부모 id 제외 다른 필드 변경")
     void updateCategory_child_otherFieldChange() throws Exception {
@@ -265,7 +282,9 @@ class CommandCategoryControllerTest {
 
         // when
         ResultActions perform = mockMvc.perform(put(
-                "/v1/categories/" + toEntity.getId()).contentType(MediaType.APPLICATION_JSON)
+                "/v1/categories/" + toEntity.getId())
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(categoryRequestDto)));
 
         // then
@@ -287,6 +306,7 @@ class CommandCategoryControllerTest {
 
     }
 
+    @WithMockUser
     @Test
     @DisplayName("2차 카테고리 수정 성공 - 부모 id가 null이 되어 1차 카테고리로 변환")
     void updateCategory_parentIdToNull() throws Exception {
@@ -314,7 +334,9 @@ class CommandCategoryControllerTest {
 
         // when
         ResultActions perform = mockMvc.perform(put(
-                "/v1/categories/{id}", id).contentType(MediaType.APPLICATION_JSON)
+                "/v1/categories/{id}", id)
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(categoryRequestDto)));
 
         // then
@@ -337,6 +359,7 @@ class CommandCategoryControllerTest {
         documentModifyCategory(perform,"update-child-to-parent-category");
     }
 
+    @WithMockUser
     @Test
     @DisplayName("2차 카테고리 수정 성공 - 다른 부모 id로 변경")
     void updateCategory_parentToOtherParent() throws Exception {
@@ -366,7 +389,9 @@ class CommandCategoryControllerTest {
 
         // when
         ResultActions perform = mockMvc.perform(put(
-                "/v1/categories/{id}", toEntity.getId()).contentType(MediaType.APPLICATION_JSON)
+                "/v1/categories/{id}", toEntity.getId())
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(categoryRequestDto)));
 
         // then
@@ -425,6 +450,7 @@ class CommandCategoryControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("카테고리 수정 실패 - name이 null 인 경우")
     void updateCategory_invalidatedData_fail() throws Exception {
@@ -441,7 +467,9 @@ class CommandCategoryControllerTest {
 
         // when
         ResultActions perform = mockMvc.perform(put(
-                "/v1/categories/" + toEntity.getId()).contentType(MediaType.APPLICATION_JSON)
+                "/v1/categories/" + toEntity.getId())
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(categoryRequestDto)));
 
         // then
@@ -450,6 +478,125 @@ class CommandCategoryControllerTest {
         verify(commandCategoryService, never()).update(any(), any());
     }
 
+    @WithMockUser
+    @Test
+    @DisplayName("부모 카테고리 순서 변경 성공")
+    void modifyParnetCategoriesOrder() throws Exception {
+        // given
+        List<CategoryModifyRequestDto> requestList = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            CategoryModifyRequestDto request = CategoryModifyRequestDto.builder()
+                    .id((long) i)
+                    .name("name" + i)
+                    .order(i + 1)
+                    .isShown(true)
+                    .build();
+            requestList.add(request);
+        }
+        doNothing().when(commandCategoryService).updateOrder(requestList);
+
+        // when
+        ResultActions perform = mockMvc.perform(put(
+                "/v1/categories/order")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestList)));
+
+        // then
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(header().stringValues(
+                        "Vary",
+                        "Origin",
+                        "Access-Control-Request-Method",
+                        "Access-Control-Request-Headers"
+                ))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(200)))
+                .andExpect(jsonPath("$.data.result", equalTo("Success")))
+                .andExpect(jsonPath("$.errorMessages", equalTo(null)));
+
+        documentModifyCategories(perform, "modify-parent-category-order");
+    }
+
+    private static void documentModifyCategories(ResultActions perform,String identifier) throws Exception {
+        perform.andDo(document(
+                identifier,
+                getDocumentRequest(),
+                getDocumentResponse(),
+                requestFields(
+                        fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("카테고리 아이디"),
+                        fieldWithPath("[].name").type(JsonFieldType.STRING).description("카테고리 이름"),
+                        fieldWithPath("[].isShown").type(JsonFieldType.BOOLEAN)
+                                .description("카테고리 노출 여부"),
+                        fieldWithPath("[].order").type(JsonFieldType.NUMBER)
+                                .optional()
+                                .description("카테고리 순서"),
+                        fieldWithPath("[].parentId").type(JsonFieldType.NUMBER).optional()
+                                .description("부모 카테고리(=1차 카테고리)의 아이디"),
+                        fieldWithPath("[].parentName").type(JsonFieldType.STRING).optional()
+                                .description("부모 카테고리(=1차 카테고리)의 이름")
+                ),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("HTTP status code"),
+                        fieldWithPath("data.result").type(JsonFieldType.STRING).description("수정 성공 메시지"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러메시지")
+                                .optional()
+                        )
+        ));
+    }
+
+    @WithMockUser
+    @Test
+    @DisplayName("자식 카테고리 순서 변경 성공")
+    void modifyChildCategoriesOrder() throws Exception {
+        // given
+        List<CategoryModifyRequestDto> requestList = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            CategoryModifyRequestDto request = CategoryModifyRequestDto.builder()
+                    .id((long) i)
+                    .name("name" + i)
+                    .order(i + 1)
+                    .isShown(true)
+                    .parentId(parentCategory.getId())
+                    .parentName(parentCategory.getName())
+                    .build();
+            requestList.add(request);
+        }
+        doNothing().when(commandCategoryService).updateOrder(requestList);
+
+        // when
+        ResultActions perform = mockMvc.perform(put(
+                "/v1/categories/order")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestList)));
+
+        // then
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(header().stringValues(
+                        "Vary",
+                        "Origin",
+                        "Access-Control-Request-Method",
+                        "Access-Control-Request-Headers"
+                ))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(200)))
+                .andExpect(jsonPath("$.data.result", equalTo("Success")))
+                .andExpect(jsonPath("$.errorMessages", equalTo(null)));
+
+        documentModifyCategories(perform, "modify-child-category-order");
+
+    }
+
+    @WithMockUser
     @Test
     @DisplayName("카테고리 삭제 성공")
     void deleteCategory() throws Exception {
@@ -459,7 +606,8 @@ class CommandCategoryControllerTest {
         doNothing().when(commandCategoryService).delete(parentCategory.getId());
         // when
         ResultActions perform = mockMvc.perform(delete(
-                "/v1/categories/{id}", parentCategory.getId()));
+                "/v1/categories/{id}", parentCategory.getId())
+                .with(csrf()));
 
         // then
         perform.andDo(print())

@@ -26,7 +26,11 @@ public class DummyProductDetailResponseDto {
                 false,
                 "",
                 "목차",
-                "설명"
+                "설명",
+                10,
+                false,
+                true,
+                false
         );
     }
 

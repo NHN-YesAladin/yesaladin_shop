@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
@@ -32,6 +33,7 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -48,6 +50,7 @@ class QueryProductControllerTest {
     @MockBean
     private QueryProductService service;
 
+    @WithMockUser
     @Test
     @DisplayName("상품 상세 조회 성공")
     void findProductById() throws Exception {
@@ -58,6 +61,7 @@ class QueryProductControllerTest {
 
         // when
         ResultActions result = mockMvc.perform(get("/v1/products/{productId}", ID)
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON));
 
         // then
@@ -90,11 +94,15 @@ class QueryProductControllerTest {
                         fieldWithPath("subscriptionAvailable").type(JsonFieldType.BOOLEAN).description("구독 가능여부"),
                         fieldWithPath("issn").type(JsonFieldType.STRING).description("ISSN"),
                         fieldWithPath("contents").type(JsonFieldType.STRING).description("목차"),
-                        fieldWithPath("description").type(JsonFieldType.STRING).description("설명")
+                        fieldWithPath("description").type(JsonFieldType.STRING).description("설명"),
+                        fieldWithPath("quantity").type(JsonFieldType.NUMBER).description("수량"),
+                        fieldWithPath("forcedOutOfStock").type(JsonFieldType.BOOLEAN).description("강제품절여부"),
+                        fieldWithPath("sale").type(JsonFieldType.BOOLEAN).description("판매여부"),
+                        fieldWithPath("deleted").type(JsonFieldType.BOOLEAN).description("삭제여부")
                 )
         ));
     }
-
+    @WithMockUser
     @Test
     @DisplayName("관리자용 상품 페이징 조회 성공")
     void getProductsForManager() throws Exception {
@@ -116,6 +124,7 @@ class QueryProductControllerTest {
 
         // when
         ResultActions result = mockMvc.perform(get("/v1/products/manager")
+                .with(csrf())
                 .param("page", "0")
                 .param("size", "5")
                 .contentType(MediaType.APPLICATION_JSON));
@@ -134,7 +143,8 @@ class QueryProductControllerTest {
                 getDocumentResponse(),
                 requestParameters(
                         parameterWithName("size").description("페이지네이션 사이즈"),
-                        parameterWithName("page").description("페이지네이션 페이지 번호")
+                        parameterWithName("page").description("페이지네이션 페이지 번호"),
+                        parameterWithName("_csrf").description("csrf")
                 ),
                 responseFields(
                         fieldWithPath("totalPage").type(JsonFieldType.NUMBER).description("전체 페이지"),
@@ -147,15 +157,19 @@ class QueryProductControllerTest {
                         fieldWithPath("dataList.[].publishedDate").type(JsonFieldType.STRING).description("출간일"),
                         fieldWithPath("dataList.[].sellingPrice").type(JsonFieldType.NUMBER).description("판매가"),
                         fieldWithPath("dataList.[].discountRate").type(JsonFieldType.NUMBER).description("할인율"),
-                        fieldWithPath("dataList.[].isOutOfStock").type(JsonFieldType.BOOLEAN).description("품절여부"),
+                        fieldWithPath("dataList.[].quantity").type(JsonFieldType.NUMBER).description("수량"),
+                        fieldWithPath("dataList.[].isSale").type(JsonFieldType.BOOLEAN).description("판매여부"),
+                        fieldWithPath("dataList.[].isForcedOutOfStock").type(JsonFieldType.BOOLEAN).description("강제품절여부"),
                         fieldWithPath("dataList.[].isShown").type(JsonFieldType.BOOLEAN).description("노출여부"),
                         fieldWithPath("dataList.[].isDeleted").type(JsonFieldType.BOOLEAN).description("삭제여부"),
                         fieldWithPath("dataList.[].thumbnailFileUrl").type(JsonFieldType.STRING).description("썸네일 파일 URL"),
-                        fieldWithPath("dataList.[].tags").type(JsonFieldType.ARRAY).description("태그")
-                )
+                        fieldWithPath("dataList.[].tags").type(JsonFieldType.ARRAY).description("태그"),
+                        fieldWithPath("dataList.[].ebookFileUrl").description("E-book 파일 URL")
+                        )
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("모든 사용자용 상품 페이징 조회 성공")
     void getProducts() throws Exception {
@@ -177,6 +191,7 @@ class QueryProductControllerTest {
 
         // when
         ResultActions result = mockMvc.perform(get("/v1/products")
+                .with(csrf())
                 .param("page", "0")
                 .param("size", "5")
                 .contentType(MediaType.APPLICATION_JSON));
@@ -195,7 +210,8 @@ class QueryProductControllerTest {
                 getDocumentResponse(),
                 requestParameters(
                         parameterWithName("size").description("페이지네이션 사이즈"),
-                        parameterWithName("page").description("페이지네이션 페이지 번호")
+                        parameterWithName("page").description("페이지네이션 페이지 번호"),
+                        parameterWithName("_csrf").description("csrf")
                 ),
                 responseFields(
                         fieldWithPath("totalPage").type(JsonFieldType.NUMBER).description("전체 페이지"),
@@ -208,11 +224,15 @@ class QueryProductControllerTest {
                         fieldWithPath("dataList.[].publishedDate").type(JsonFieldType.STRING).description("출간일"),
                         fieldWithPath("dataList.[].sellingPrice").type(JsonFieldType.NUMBER).description("판매가"),
                         fieldWithPath("dataList.[].discountRate").type(JsonFieldType.NUMBER).description("할인율"),
-                        fieldWithPath("dataList.[].isOutOfStock").type(JsonFieldType.BOOLEAN).description("품절여부"),
+                        fieldWithPath("dataList.[].quantity").type(JsonFieldType.NUMBER).description("수량"),
+                        fieldWithPath("dataList.[].isSale").type(JsonFieldType.BOOLEAN).description("판매여부"),
+                        fieldWithPath("dataList.[].isForcedOutOfStock").type(JsonFieldType.BOOLEAN).description("강제품절여부"),
                         fieldWithPath("dataList.[].isShown").type(JsonFieldType.BOOLEAN).description("노출여부"),
                         fieldWithPath("dataList.[].isDeleted").type(JsonFieldType.BOOLEAN).description("삭제여부"),
                         fieldWithPath("dataList.[].thumbnailFileUrl").type(JsonFieldType.STRING).description("썸네일 파일 URL"),
-                        fieldWithPath("dataList.[].tags").type(JsonFieldType.ARRAY).description("태그")
+                        fieldWithPath("dataList.[].tags").type(JsonFieldType.ARRAY).description("태그"),
+                        fieldWithPath("dataList.[].ebookFileUrl").description("E-book 파일 URL")
+
                 )
         ));
     }

@@ -69,4 +69,24 @@ class ProductTest {
         assertThatThrownBy(() -> product.changeQuantity(-1))
                 .isInstanceOf(NegativeOrZeroQuantityException.class);
     }
+
+    @Test
+    @DisplayName("상품 판매여부 변경 성공")
+    void changeIsSale_success() {
+        // when
+        product.changeIsSale();
+
+        // then
+        assertThat(product.isSale()).isFalse();
+    }
+
+    @Test
+    @DisplayName("상품 강제품절여부 변경 성공")
+    void changeIsForcedOutOfStock_success() {
+        // when
+        product.changeIsForcedOutOfStock();
+
+        // then
+        assertThat(product.isForcedOutOfStock()).isTrue();
+    }
 }

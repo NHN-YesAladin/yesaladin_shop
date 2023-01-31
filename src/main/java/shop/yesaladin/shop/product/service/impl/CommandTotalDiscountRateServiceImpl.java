@@ -14,8 +14,8 @@ import shop.yesaladin.shop.product.service.inter.CommandTotalDiscountRateService
  * @author 이수정
  * @since 1.0
  */
-@Service
 @RequiredArgsConstructor
+@Service
 public class CommandTotalDiscountRateServiceImpl implements CommandTotalDiscountRateService {
 
     private final CommandTotalDiscountRateRepository commandTotalDiscountRateRepository;

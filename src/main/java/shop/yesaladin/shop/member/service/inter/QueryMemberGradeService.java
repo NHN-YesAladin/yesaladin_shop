@@ -5,8 +5,8 @@ import shop.yesaladin.shop.member.domain.model.MemberGrade;
 /**
  * 회원 등급 조회용 service interface
  *
- * @author : 송학현
- * @since : 1.0
+ * @author 송학현
+ * @since 1.0
  */
 public interface QueryMemberGradeService {
 
@@ -15,8 +15,8 @@ public interface QueryMemberGradeService {
      *
      * @param id 회원 등급의 primary key
      * @return 회원의 등급 조회 결과
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     MemberGrade findById(int id);
 }

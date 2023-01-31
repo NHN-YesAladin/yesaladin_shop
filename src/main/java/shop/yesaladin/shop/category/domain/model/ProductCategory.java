@@ -66,11 +66,22 @@ public class ProductCategory {
     @Getter
     @Embeddable
     public static class Pk implements Serializable {
-
         @Column(name = "category_id", nullable = false)
         private Long categoryId;
 
         @Column(name = "product_id", nullable = false)
         private Long productId;
+    }
+
+    /**
+     * 상품 카테고리를 편히 생성하기 위한 메서드
+     *
+     * @param product 카테고리와 연관 지을 상품
+     * @param category 상품과 연관 지을 카테고리
+     * @return 상품 카테고리 엔티티
+     */
+    public static ProductCategory create(Product product, Category category) {
+        Pk pk = new Pk(category.getId(), product.getId());
+        return new ProductCategory(pk, category, product);
     }
 }
