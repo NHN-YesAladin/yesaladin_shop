@@ -54,6 +54,7 @@ public class MemberDummy {
                 .email(email)
                 .phone(phone)
                 .signUpDate(LocalDate.now())
+                .isWithdrawal(false)
                 .isBlocked(false)
                 .memberGrade(MemberGrade.WHITE)
                 .memberGenderCode(MemberGenderCode.MALE)

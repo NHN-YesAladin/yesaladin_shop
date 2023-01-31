@@ -5,12 +5,13 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.order.domain.model.Order;
+import shop.yesaladin.shop.order.dto.MemberOrderRequestDto;
+import shop.yesaladin.shop.order.dto.MemberOrderResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 
 /**
  * 주문 조회 관련 repository 클래스입니다.
  *
- * @author 최예린
  * @author 김홍대
  * @author 배수한
  * @since 1.0
@@ -88,6 +89,8 @@ public interface QueryOrderRepository {
      *
      * @param orderNumber 주문번호
      * @return 조회된 주문 데이터
+     * @author 배수한
+     * @since 1.0
      */
     Optional<Order> findByOrderNumber(String orderNumber);
 }

@@ -1,9 +1,12 @@
 package shop.yesaladin.shop.order.service.impl;
 
+import static org.mockito.ArgumentMatchers.any;
+
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
@@ -27,17 +30,25 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.order.domain.model.MemberOrder;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
+import shop.yesaladin.shop.order.dto.MemberOrderRequestDto;
+import shop.yesaladin.shop.order.dto.MemberOrderResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 import shop.yesaladin.shop.order.exception.OrderNotFoundException;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMemberAddress;
 import shop.yesaladin.shop.order.persistence.dummy.DummyOrder;
+import shop.yesaladin.shop.point.dto.PointResponseDto;
+import shop.yesaladin.shop.point.service.inter.QueryPointHistoryService;
+import shop.yesaladin.shop.product.dto.OrderProductRequestDto;
+import shop.yesaladin.shop.product.service.inter.QueryProductService;
 
 class QueryOrderServiceImplTest {
 
     private QueryOrderServiceImpl service;
     private QueryOrderRepository repository;
     private QueryMemberService queryMemberService;
+    private QueryPointHistoryService queryPointHistoryService;
+    private QueryProductService queryProductService;
     private final Clock clock = Clock.fixed(
             Instant.parse("2023-01-10T00:00:00.000Z"),
             ZoneId.of("UTC")
@@ -45,9 +56,17 @@ class QueryOrderServiceImplTest {
 
     @BeforeEach
     void setUp() {
+        queryPointHistoryService = Mockito.mock(QueryPointHistoryService.class);
+        queryProductService = Mockito.mock(QueryProductService.class);
         repository = Mockito.mock(QueryOrderRepository.class);
         queryMemberService = Mockito.mock(QueryMemberService.class);
-        service = new QueryOrderServiceImpl(repository, queryMemberService, clock);
+        service = new QueryOrderServiceImpl(
+                repository,
+                queryMemberService,
+                queryPointHistoryService,
+                queryProductService,
+                clock
+        );
     }
 
     @Test
@@ -58,9 +77,9 @@ class QueryOrderServiceImplTest {
         Pageable pageable = PageRequest.of(0, 10);
         Page<OrderSummaryDto> expectedValue = PageableExecutionUtils.getPage(List.of((Mockito.mock(
                 OrderSummaryDto.class))), pageable, () -> 1);
-        Mockito.when(repository.getCountOfOrdersInPeriod(Mockito.any(), Mockito.any()))
+        Mockito.when(repository.getCountOfOrdersInPeriod(any(), any()))
                 .thenReturn(1L);
-        Mockito.when(repository.findAllOrdersInPeriod(Mockito.any(), Mockito.any(), Mockito.any()))
+        Mockito.when(repository.findAllOrdersInPeriod(any(), any(), any()))
                 .thenReturn(expectedValue);
         Mockito.when(queryDto.getEndDateOrDefaultValue(clock)).thenReturn(LocalDate.now(clock));
 
@@ -87,7 +106,7 @@ class QueryOrderServiceImplTest {
                 OrderSummaryDto.class))), pageable, () -> 1);
         long expectedMemberId = 1L;
 
-        Mockito.when(repository.getCountOfOrdersInPeriod(Mockito.any(), Mockito.any()))
+        Mockito.when(repository.getCountOfOrdersInPeriod(any(), any()))
                 .thenReturn(1L);
         Mockito.when(repository.findAllOrdersInPeriodByMemberId(queryDto.getStartDateOrDefaultValue(
                         clock), queryDto.getEndDateOrDefaultValue(clock), expectedMemberId, pageable))
@@ -189,7 +208,7 @@ class QueryOrderServiceImplTest {
         // given
         PeriodQueryRequestDto queryDto = Mockito.mock(PeriodQueryRequestDto.class);
         Mockito.when(queryDto.getEndDateOrDefaultValue(clock)).thenReturn(LocalDate.now(clock));
-        Mockito.when(repository.getCountOfOrdersInPeriod(Mockito.any(), Mockito.any()))
+        Mockito.when(repository.getCountOfOrdersInPeriod(any(), any()))
                 .thenReturn(1L);
         Pageable pageable = PageRequest.of(2, 10);
 
@@ -208,7 +227,7 @@ class QueryOrderServiceImplTest {
         Member member = DummyMember.member();
         MemberAddress memberAddress = DummyMemberAddress.address(member);
         MemberOrder memberOrder = DummyOrder.memberOrder(member, memberAddress);
-        Mockito.when(repository.findByOrderNumber(Mockito.any()))
+        Mockito.when(repository.findByOrderNumber(any()))
                 .thenReturn(Optional.of(memberOrder));
 
         // when
@@ -242,5 +261,38 @@ class QueryOrderServiceImplTest {
         Assertions.assertThat(stringArgumentCaptor.getValue())
                 .isEqualTo(wrongData);
 
+    }
+
+    @Test
+    @DisplayName("주문서에 필요한 데이터 조회한다.")
+    void getMemberOrderSheetData() {
+        //given
+        String loginId = "user@1";
+        String name = "test";
+        String phoneNumber = "01012341234";
+        String address = "address";
+        long amount = 1000;
+
+        List<OrderProductRequestDto> productRequest = new ArrayList<>();
+        PointResponseDto pointResponse = ReflectionUtils.newInstance(
+                PointResponseDto.class,
+                amount
+        );
+        MemberOrderRequestDto request = new MemberOrderRequestDto(productRequest);
+        MemberOrderResponseDto response = new MemberOrderResponseDto(name, phoneNumber, address);
+
+        Mockito.when(queryPointHistoryService.getMemberPoint(loginId)).thenReturn(pointResponse);
+        Mockito.when(queryProductService.getProductForOrder(any())).thenReturn(new ArrayList<>());
+        Mockito.when(queryMemberService.getMemberForOrder(loginId)).thenReturn(response);
+
+        //when
+        MemberOrderResponseDto result = service.getMemberOrderSheetData(request, loginId);
+
+        //then
+        Assertions.assertThat(result.getName()).isEqualTo(name);
+        Assertions.assertThat(result.getPhoneNumber()).isEqualTo(phoneNumber);
+        Assertions.assertThat(result.getAddress()).isEqualTo(address);
+        Assertions.assertThat(result.getPoint()).isEqualTo(amount);
+        Assertions.assertThat(result.getOrderProducts()).hasSize(0);
     }
 }

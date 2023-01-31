@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberGrade;
+import shop.yesaladin.shop.member.domain.repository.CustomQueryMemberRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRoleRepository;
 import shop.yesaladin.shop.member.dto.MemberDto;
@@ -25,13 +26,19 @@ class QueryMemberServiceImplTest {
     private QueryMemberRepository queryMemberRepository;
     private QueryMemberRoleRepository queryMemberRoleRepository;
 
+    private CustomQueryMemberRepository customQueryMemberRepository;
     private Member expectedMember;
 
     @BeforeEach
     void setUp() {
+        customQueryMemberRepository = Mockito.mock(CustomQueryMemberRepository.class);
         queryMemberRepository = Mockito.mock(QueryMemberRepository.class);
         queryMemberRoleRepository = Mockito.mock(QueryMemberRoleRepository.class);
-        service = new QueryMemberServiceImpl(queryMemberRepository, queryMemberRoleRepository);
+        service = new QueryMemberServiceImpl(
+                customQueryMemberRepository,
+                queryMemberRepository,
+                queryMemberRoleRepository
+        );
 
         expectedMember = Mockito.mock(Member.class);
     }
@@ -332,6 +339,7 @@ class QueryMemberServiceImplTest {
         assertThat(result.getEmail()).isEqualTo(member.getEmail());
         assertThat(result.getSignUpDate()).isEqualTo(member.getSignUpDate());
         assertThat(result.getGrade()).isEqualTo(member.getMemberGrade().getName());
-        assertThat(result.getGender()).isEqualTo(member.getMemberGenderCode().getGender() == 1 ? "남" : "여");
+        assertThat(result.getGender()).isEqualTo(
+                member.getMemberGenderCode().getGender() == 1 ? "남" : "여");
     }
 }

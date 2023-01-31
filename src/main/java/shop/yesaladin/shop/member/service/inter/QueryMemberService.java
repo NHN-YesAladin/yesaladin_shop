@@ -4,6 +4,7 @@ import shop.yesaladin.shop.member.dto.MemberDto;
 import shop.yesaladin.shop.member.dto.MemberGradeQueryResponseDto;
 import shop.yesaladin.shop.member.dto.MemberLoginResponseDto;
 import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
+import shop.yesaladin.shop.order.dto.MemberOrderResponseDto;
 
 
 /**
@@ -114,4 +115,14 @@ public interface QueryMemberService {
      * @since 1.0
      */
     MemberQueryResponseDto getByLoginId(String loginId);
+
+    /**
+     * 주문에 필요한 회원 데이터를 가져옵니다.
+     *
+     * @param loginId 회원의 아이디
+     * @return 주문에 필요한 회원 데이터
+     * @author 최예린
+     * @since 1.0
+     */
+    MemberOrderResponseDto getMemberForOrder(String loginId);
 }

@@ -1,8 +1,11 @@
 package shop.yesaladin.shop.product.persistence;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.platform.commons.util.ReflectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
@@ -13,6 +16,7 @@ import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.ProductTypeCode;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
+import shop.yesaladin.shop.product.dto.OrderProductRequestDto;
 import shop.yesaladin.shop.product.dummy.DummyFile;
 import shop.yesaladin.shop.product.dummy.DummyProduct;
 import shop.yesaladin.shop.product.dummy.DummySubscribeProduct;
@@ -187,5 +191,29 @@ class QueryDslProductRepositoryTest {
         // when
         assertThatThrownBy(() -> repository.findAllByTypeId(PageRequest.of(0, 5), 10))
                 .isInstanceOf(ProductTypeCodeNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("주문에 필요한 상품 데이터 조회")
+    void getProductForOrder() {
+//        //given
+//        List<OrderProductRequestDto> request = getOrderProductRequestData();
+//        Product product = DummyProduct.dummy()
+//        //when
+//
+//
+//        //then
+    }
+
+    private List<OrderProductRequestDto> getOrderProductRequestData() {
+        List<OrderProductRequestDto> request = new ArrayList<>();
+
+        for (int i = 0; i < 5; i++) {
+            request.add(ReflectionUtils.newInstance(OrderProductRequestDto.class,
+                    "103-341",
+                    2
+                    ));
+        }
+        return request;
     }
 }

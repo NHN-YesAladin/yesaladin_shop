@@ -1,5 +1,9 @@
 package shop.yesaladin.shop.product.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -8,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
+import shop.yesaladin.shop.product.dto.OrderProductRequestDto;
+import shop.yesaladin.shop.product.dto.OrderProductResponseDto;
 import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
 import shop.yesaladin.shop.product.dto.ProductsResponseDto;
 import shop.yesaladin.shop.product.exception.ProductNotFoundException;
@@ -17,15 +23,11 @@ import shop.yesaladin.shop.publish.service.inter.QueryPublishService;
 import shop.yesaladin.shop.tag.service.inter.QueryProductTagService;
 import shop.yesaladin.shop.writing.service.inter.QueryWritingService;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
 /**
  * 상품 조회를 위한 Service 구현체 입니다.
  *
  * @author 이수정
+ * @author 최예린
  * @since 1.0
  */
 @RequiredArgsConstructor
@@ -58,7 +60,8 @@ public class QueryProductServiceImpl implements QueryProductService {
 
         long pointPrice = 0;
         if (product.isGivenPoint()) {
-            pointPrice = Math.round((product.getActualPrice() * product.getGivenPointRate() / PERCENT_DENOMINATOR_VALUE) / ROUND_OFF_VALUE) * ROUND_OFF_VALUE;
+            pointPrice = Math.round((product.getActualPrice() * product.getGivenPointRate()
+                    / PERCENT_DENOMINATOR_VALUE) / ROUND_OFF_VALUE) * ROUND_OFF_VALUE;
         }
 
         List<String> authors = findAuthorsByProduct(product);
@@ -102,6 +105,19 @@ public class QueryProductServiceImpl implements QueryProductService {
         );
 
         return getProductResponses(pageable, page);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<OrderProductResponseDto> getProductForOrder(List<OrderProductRequestDto> products) {
+        List<OrderProductResponseDto> result = queryProductRepository.getProductForOrder(products);
+
+        result.forEach(x -> x.setQuantity(products));
+
+        return result;
     }
 
     /**
@@ -204,7 +220,9 @@ public class QueryProductServiceImpl implements QueryProductService {
      * @since 1.0
      */
     private long calcSellingPrice(Product product, int rate) {
-        return Math.round((product.getActualPrice() - product.getActualPrice() * rate / PERCENT_DENOMINATOR_VALUE) / ROUND_OFF_VALUE) * ROUND_OFF_VALUE;
+        return Math.round((product.getActualPrice()
+                - product.getActualPrice() * rate / PERCENT_DENOMINATOR_VALUE) / ROUND_OFF_VALUE)
+                * ROUND_OFF_VALUE;
     }
 
     /**

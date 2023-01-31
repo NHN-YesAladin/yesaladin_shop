@@ -1,6 +1,9 @@
 package shop.yesaladin.shop.product.persistence;
 
+import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -10,6 +13,8 @@ import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.ProductTypeCode;
 import shop.yesaladin.shop.product.domain.model.querydsl.QProduct;
 import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
+import shop.yesaladin.shop.product.dto.OrderProductRequestDto;
+import shop.yesaladin.shop.product.dto.OrderProductResponseDto;
 import shop.yesaladin.shop.product.exception.ProductTypeCodeNotFoundException;
 
 import java.util.Arrays;
@@ -21,6 +26,7 @@ import java.util.Optional;
  * 상품 조회를 위한 Repository QueryDsl 구현체 입니다.
  *
  * @author 이수정
+ * @author 최예
  * @since 1.0
  */
 @RequiredArgsConstructor
@@ -31,10 +37,7 @@ public class QueryDslProductRepository implements QueryProductRepository {
 
     /**
      * Id를 기준으로 상품을 조회합니다.
-     *
-     * @param id 상품의 Id (PK)
-     * @return 조회된 상품 엔터티
-     * @author 이수정
+     *린
      * @since 1.0
      */
     @Override
@@ -197,6 +200,34 @@ public class QueryDslProductRepository implements QueryProductRepository {
                 .fetchFirst();
 
         return new PageImpl<>(products, pageable, totalCount);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<OrderProductResponseDto> getProductForOrder(List<OrderProductRequestDto> request) {
+        QProduct product = QProduct.product;
+
+        NumberExpression<Long> expectedEarnedPoint = product.actualPrice.multiply(product.isGivenPoint.when(
+                        true)
+                .then(product.givenPointRate.divide(100))
+                .otherwise(product.totalDiscountRate.discountRate.divide(100)));
+
+        return queryFactory.select(Projections.constructor(
+                        OrderProductResponseDto.class,
+                        product.id,
+                        product.ISBN,
+                        product.title,
+                        product.actualPrice,
+                        product.discountRate,
+                        expectedEarnedPoint
+                ))
+                .where(product.ISBN.in(request
+                        .stream()
+                        .map(OrderProductRequestDto::getIsbn)
+                        .collect(Collectors.toList())))
+                .fetch();
     }
 }
 

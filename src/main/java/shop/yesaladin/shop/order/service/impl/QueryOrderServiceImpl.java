@@ -2,8 +2,8 @@ package shop.yesaladin.shop.order.service.impl;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,14 +14,20 @@ import shop.yesaladin.shop.common.exception.PageOffsetOutOfBoundsException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
+import shop.yesaladin.shop.order.dto.MemberOrderRequestDto;
+import shop.yesaladin.shop.order.dto.MemberOrderResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 import shop.yesaladin.shop.order.exception.OrderNotFoundException;
 import shop.yesaladin.shop.order.service.inter.QueryOrderService;
+import shop.yesaladin.shop.point.service.inter.QueryPointHistoryService;
+import shop.yesaladin.shop.product.dto.OrderProductResponseDto;
+import shop.yesaladin.shop.product.service.inter.QueryProductService;
 
 /**
  * 주문 데이터 조회 서비스의 구현체
  *
  * @author 김홍대
+ * @author 최예린
  * @since 1.0
  */
 @RequiredArgsConstructor
@@ -30,11 +36,13 @@ public class QueryOrderServiceImpl implements QueryOrderService {
 
     private final QueryOrderRepository queryOrderRepository;
     private final QueryMemberService queryMemberService;
+    private final QueryPointHistoryService queryPointHistoryService;
+    private final QueryProductService queryProductService;
+
     private final Clock clock;
 
     /**
      * {@inheritDoc}
-     *
      */
     @Override
     @Transactional(readOnly = true)
@@ -52,7 +60,6 @@ public class QueryOrderServiceImpl implements QueryOrderService {
 
     /**
      * {@inheritDoc}
-     *
      */
     @Override
     @Transactional(readOnly = true)
@@ -76,13 +83,32 @@ public class QueryOrderServiceImpl implements QueryOrderService {
 
     /**
      * {@inheritDoc}
-     *
      */
     @Override
     @Transactional(readOnly = true)
     public Order getOrderByNumber(String number) {
         return queryOrderRepository.findByOrderNumber(number)
                 .orElseThrow(() -> new OrderNotFoundException(number));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public MemberOrderResponseDto getMemberOrderSheetData(
+            MemberOrderRequestDto request,
+            String loginId
+    ) {
+        long point = queryPointHistoryService.getMemberPoint(loginId).getAmount();
+        List<OrderProductResponseDto> orderProducts = queryProductService.getProductForOrder(request.getProductList());
+
+        MemberOrderResponseDto response = queryMemberService.getMemberForOrder(loginId);
+
+        response.setPoint(point);
+        response.setOrderProducts(orderProducts);
+
+        return response;
     }
 
     private void checkRequestedOffsetInBounds(

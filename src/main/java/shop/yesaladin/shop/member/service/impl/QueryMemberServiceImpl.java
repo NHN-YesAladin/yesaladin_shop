@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.member.domain.model.Member;
+import shop.yesaladin.shop.member.domain.repository.CustomQueryMemberRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRoleRepository;
 import shop.yesaladin.shop.member.dto.MemberDto;
@@ -15,6 +16,7 @@ import shop.yesaladin.shop.member.dto.MemberLoginResponseDto;
 import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
+import shop.yesaladin.shop.order.dto.MemberOrderResponseDto;
 
 /**
  * 회원 조회용 서비스 구현체 입니다.
@@ -28,6 +30,7 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 @Service
 public class QueryMemberServiceImpl implements QueryMemberService {
 
+    private final CustomQueryMemberRepository customQueryMemberRepository;
     private final QueryMemberRepository queryMemberRepository;
     private final QueryMemberRoleRepository queryMemberRoleRepository;
 
@@ -154,5 +157,10 @@ public class QueryMemberServiceImpl implements QueryMemberService {
         return MemberQueryResponseDto.fromEntity(queryMemberRepository.findMemberByLoginId(
                         loginId)
                 .orElseThrow(() -> new MemberNotFoundException("Member Loginid : " + loginId)));
+    }
+
+    @Override
+    public MemberOrderResponseDto getMemberForOrder(String loginId) {
+        return customQueryMemberRepository.getMemberOrderData(loginId);
     }
 }
