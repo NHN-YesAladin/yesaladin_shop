@@ -32,8 +32,8 @@ public class CommandPointHistoryController {
     /**
      * 포인트를 사용/적립했을 때 포인트 내역에 등록합니다.
      *
-     * @param code 전체/사용/적립 구분
-     * @param request 사용/적립한 포인트 값
+     * @param code          전체/사용/적립 구분
+     * @param request       사용/적립한 포인트 값
      * @param bindingResult 유효성 검사
      * @return 등록된 포인트 내역
      * @author 최예린

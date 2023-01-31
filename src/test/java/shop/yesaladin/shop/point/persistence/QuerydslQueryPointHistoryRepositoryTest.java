@@ -182,7 +182,11 @@ class QuerydslQueryPointHistoryRepositoryTest {
         assertThat(result.getTotalElements()).isEqualTo(10);
     }
 
-    PointHistory createPointHistory(Member member, PointCode pointCode, PointReasonCode pointReasonCode) {
+    PointHistory createPointHistory(
+            Member member,
+            PointCode pointCode,
+            PointReasonCode pointReasonCode
+    ) {
         return PointHistory.builder()
                 .amount(amount)
                 .pointReasonCode(pointReasonCode)
@@ -195,10 +199,18 @@ class QuerydslQueryPointHistoryRepositoryTest {
     void setPointHistory(int save, int use) {
         entityManager.persist(createPointHistory(member, PointCode.SUM, PointReasonCode.SUM));
         for (int i = 0; i < save; i++) {
-            entityManager.persist(createPointHistory(member, PointCode.SAVE, PointReasonCode.SAVE_COUPON));
+            entityManager.persist(createPointHistory(
+                    member,
+                    PointCode.SAVE,
+                    PointReasonCode.SAVE_COUPON
+            ));
         }
         for (int i = 0; i < use; i++) {
-            entityManager.persist(createPointHistory(member, PointCode.USE, PointReasonCode.USE_PRESENT));
+            entityManager.persist(createPointHistory(
+                    member,
+                    PointCode.USE,
+                    PointReasonCode.USE_PRESENT
+            ));
         }
     }
 
