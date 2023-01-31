@@ -44,6 +44,21 @@ public class QueryRelationServiceImpl implements QueryRelationService {
     public Page<RelationsResponseDto> findAllForManager(Long productId, Pageable pageable) {
         Page<Relation> page = queryRelationRepository.findAllForManager(productId, pageable);
 
+        return getRelationsResponseDtos(pageable, page);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public Page<RelationsResponseDto> findAll(Long productId, Pageable pageable) {
+        Page<Relation> page = queryRelationRepository.findAll(productId, pageable);
+
+        return getRelationsResponseDtos(pageable, page);
+    }
+
+    private Page<RelationsResponseDto> getRelationsResponseDtos(Pageable pageable, Page<Relation> page) {
         List<RelationsResponseDto> relations = new ArrayList<>();
         for (Relation relation : page.getContent()) {
             Product product = relation.getProductSub();

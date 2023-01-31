@@ -13,7 +13,7 @@ import shop.yesaladin.shop.product.dto.RelationsResponseDto;
 public interface QueryRelationService {
 
     /**
-     * 상품을 기준으로 상품 연관관계를 조회하여 조회된 상품 연관관계 Dto를 반환합니다.
+     * 상품을 기준으로 상품 연관관계를 조회하여 조회된 관리자용 상품 연관관계 Dto를 반환합니다.
      *
      * @param productId 연관관계를 조회할 product의 Id
      * @param pageable  페이징 처리를 위한 객체
@@ -22,4 +22,15 @@ public interface QueryRelationService {
      * @since 1.0
      */
     Page<RelationsResponseDto> findAllForManager(Long productId, Pageable pageable);
+
+    /**
+     * 상품을 기준으로 상품 연관관계를 조회하여 조회된 모든 사용자용 상품 연관관계 Dto를 반환합니다.
+     *
+     * @param productId 연관관계를 조회할 product의 Id
+     * @param pageable  페이징 처리를 위한 객체
+     * @return 조회된 상품 연관관계 dto
+     * @author 이수정
+     * @since 1.0
+     */
+    Page<RelationsResponseDto> findAll(Long productId, Pageable pageable);
 }

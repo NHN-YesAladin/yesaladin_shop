@@ -71,4 +71,23 @@ public class QueryDslRelationRepository implements QueryRelationRepository {
         return PageableExecutionUtils.getPage(relations, pageable, countQuery::fetchFirst);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Page<Relation> findAll(Long productId, Pageable pageable) {
+        QRelation relation = QRelation.relation;
+
+        List<Relation> relations = queryFactory.select(relation)
+                .from(relation)
+                .where(relation.productMain.id.eq(productId).and(relation.productSub.isSale.isTrue()).and(relation.productSub.isDeleted.isFalse()))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        JPAQuery<Long> countQuery = queryFactory.select(relation.count()).where(relation.productMain.id.eq(productId)).from(relation);
+
+        return PageableExecutionUtils.getPage(relations, pageable, countQuery::fetchFirst);
+    }
+
 }

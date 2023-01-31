@@ -37,7 +37,7 @@ public interface QueryRelationRepository {
     boolean existsByPk(Pk pk);
 
     /**
-     * 대상 상품을 기준으로 상품의 연관관계를 페이징 조회합니다.
+     * 대상 상품을 기준으로 관리자용 상품의 연관관계를 페이징 조회합니다.
      *
      * @param productId 연관관계를 조회할 기준 상품
      * @param pageable  페이징 처리를 위한 객체
@@ -46,4 +46,15 @@ public interface QueryRelationRepository {
      * @since 1.0
      */
     Page<Relation> findAllForManager(Long productId, Pageable pageable);
+
+    /**
+     * 대상 상품을 기준으로 일반 사용자용 상품의 연관관계를 페이징 조회합니다.
+     *
+     * @param productId 연관관계를 조회할 기준 상품
+     * @param pageable  페이징 처리를 위한 객체
+     * @return 페이징 조회된 연관관계
+     * @author 이수정
+     * @since 1.0
+     */
+    Page<Relation> findAll(Long productId, Pageable pageable);
 }
