@@ -2,11 +2,15 @@ package shop.yesaladin.shop.point.controller;
 
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.shop.point.domain.model.PointCode;
 import shop.yesaladin.shop.point.dto.PointHistoryRequestDto;
 import shop.yesaladin.shop.point.dto.PointHistoryResponseDto;
@@ -28,21 +32,29 @@ public class CommandPointHistoryController {
     /**
      * 포인트를 사용/적립했을 때 포인트 내역에 등록합니다.
      *
+     * @param code 전체/사용/적립 구분
      * @param request 사용/적립한 포인트 값
+     * @param bindingResult 유효성 검사
      * @return 등록된 포인트 내역
      * @author 최예린
      * @since 1.0
      */
     @PostMapping(params = "code")
-    public PointHistoryResponseDto createPointHistory(
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseDto<PointHistoryResponseDto> createPointHistory(
             @RequestParam("code") String code,
-            @Valid @RequestBody PointHistoryRequestDto request
+            @Valid @RequestBody PointHistoryRequestDto request,
+            BindingResult bindingResult
     ) {
         PointCode pointCode = PointCode.findByCode(code);
 
-        if (pointCode.equals(PointCode.USE)) {
-            return pointCommandService.use(request);
-        }
-        return pointCommandService.save(request);
+        PointHistoryResponseDto response = (pointCode.equals(PointCode.USE)) ?
+                pointCommandService.use(request) : pointCommandService.save(request);
+
+        return ResponseDto.<PointHistoryResponseDto>builder()
+                .success(true)
+                .status(HttpStatus.CREATED)
+                .data(response)
+                .build();
     }
 }
