@@ -1,5 +1,13 @@
 package shop.yesaladin.shop.publish.controller;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -8,21 +16,13 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.shop.publish.dto.SearchPublisherResponseDto;
 import shop.yesaladin.shop.publish.dto.SearchPublisherResponseDto.SearchedPublisherDto;
 import shop.yesaladin.shop.publish.service.inter.SearchPublisherService;
-
-import java.util.List;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(SearchPublisherController.class)
 class SearchPublisherControllerTest {
@@ -40,6 +40,7 @@ class SearchPublisherControllerTest {
     private static final String OFFSET = "offset";
     private static final String SIZE = "size";
 
+    @WithMockUser
     @Test
     @DisplayName("페이지 위치가 미이너스 일 경우 ConstraintViolationException")
     void testSearchPublisherByNameOffsetLessThanZeroThrConstraintViolationException()
@@ -55,6 +56,7 @@ class SearchPublisherControllerTest {
                 .andDo(print());
     }
 
+    @WithMockUser
     @Test
     @DisplayName("데이터 갯수가 1보다 작을 경우 일 경우 ConstraintViolationException")
     void testSearchPublisherByNameSizeLessThanOneThrConstraintViolationException()
@@ -70,6 +72,7 @@ class SearchPublisherControllerTest {
                 .andDo(print());
     }
 
+    @WithMockUser
     @Test
     @DisplayName("데이터 갯수가 20보다 클 경우 일 경우 ConstraintViolationException")
     void testSearchPublisherByNameSizeMoreThan20ThrConstraintViolationException()
@@ -85,6 +88,7 @@ class SearchPublisherControllerTest {
                 .andDo(print());
     }
 
+    @WithMockUser
     @Test
     @DisplayName("출판사 이름 검색 성공")
     void testSearchPublisherNameSuccess() throws Exception {

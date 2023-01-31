@@ -1,5 +1,24 @@
 package shop.yesaladin.shop.writing.controller;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentRequest;
+import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,26 +29,13 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.writing.dto.AuthorRequestDto;
 import shop.yesaladin.shop.writing.dto.AuthorResponseDto;
 import shop.yesaladin.shop.writing.service.inter.CommandAuthorService;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentRequest;
-import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
 
 @AutoConfigureRestDocs
 @WebMvcTest(CommandAuthorController.class)
@@ -43,6 +49,7 @@ class CommandAuthorControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @WithMockUser
     @Test
     @DisplayName("저자 등록 성공")
     void registerAuthor_success() throws Exception {
@@ -54,6 +61,7 @@ class CommandAuthorControllerTest {
 
         // when
         ResultActions result = mockMvc.perform(post("/v1/authors")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(createDto)));
 
@@ -83,6 +91,7 @@ class CommandAuthorControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("저자 등록 실패_존재하지 않는 멤버 로그인 아이디를 입력한 경우 예외 발생")
     void registerAuthor_notExistsLoginId_throwMemberNotFoundException() throws Exception {
@@ -94,6 +103,7 @@ class CommandAuthorControllerTest {
 
         // when
         ResultActions result = mockMvc.perform(post("/v1/authors")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(createDto)));
 
@@ -104,6 +114,7 @@ class CommandAuthorControllerTest {
         verify(service, times(1)).create(any());
     }
 
+    @WithMockUser
     @Test
     @DisplayName("저자 수정 성공")
     void modifyAuthor_success() throws Exception {
@@ -118,6 +129,7 @@ class CommandAuthorControllerTest {
 
         // when
         ResultActions result = mockMvc.perform(put("/v1/authors/{authorId}", id)
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(modifyDto)));
 
@@ -147,6 +159,7 @@ class CommandAuthorControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("저자 수정 실패_존재하지 않는 멤버 로그인 아이디를 입력한 경우 예외 발생")
     void modifyAuthor_notExistsLoginId_throwMemberNotFoundException() throws Exception {
@@ -159,6 +172,7 @@ class CommandAuthorControllerTest {
 
         // when
         ResultActions result = mockMvc.perform(put("/v1/authors/{authorId}", id)
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(modifyDto)));
 

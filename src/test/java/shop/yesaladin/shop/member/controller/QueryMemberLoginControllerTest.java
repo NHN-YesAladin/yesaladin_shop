@@ -25,6 +25,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.member.dto.MemberLoginResponseDto;
@@ -44,6 +45,7 @@ class QueryMemberLoginControllerTest {
     @MockBean
     QueryMemberService queryMemberService;
 
+    @WithMockUser
     @Test
     void doLogin_failed_whenMemberNotFound() throws Exception {
         //given
@@ -60,6 +62,7 @@ class QueryMemberLoginControllerTest {
         verify(queryMemberService, times(1)).findMemberLoginInfoByLoginId(loginId);
     }
 
+    @WithMockUser
     @Test
     void doLogin() throws Exception {
         //given
