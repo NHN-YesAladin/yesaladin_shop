@@ -2,6 +2,11 @@ package shop.yesaladin.shop.product.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import shop.yesaladin.shop.category.domain.model.Category;
+import shop.yesaladin.shop.category.domain.model.ProductCategory;
+import shop.yesaladin.shop.category.dto.CategoryResponseDto;
+import shop.yesaladin.shop.category.service.inter.CommandProductCategoryService;
+import shop.yesaladin.shop.category.service.inter.QueryCategoryService;
 import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.file.dto.FileResponseDto;
 import shop.yesaladin.shop.file.service.inter.CommandFileService;
@@ -72,6 +77,9 @@ public class CommandProductServiceImpl implements CommandProductService {
     private final QueryTagService queryTagService;
     private final CommandProductTagService commandProductTagService;
 
+    // Category
+    private final QueryCategoryService queryCategoryService;
+    private final CommandProductCategoryService commandProductCategoryService;
 
     /**
      * {@inheritDoc}
@@ -92,14 +100,16 @@ public class CommandProductServiceImpl implements CommandProductService {
         // SubscribeProduct
         SubscribeProduct subscribeProduct = null;
         if (Objects.nonNull(dto.getIssn())) {
-            subscribeProduct = querySubscribeProductRepository.findByISSN(dto.getIssn()).orElse(null);
+            subscribeProduct = querySubscribeProductRepository.findByISSN(dto.getIssn())
+                    .orElse(null);
             if (Objects.isNull(subscribeProduct)) {
                 subscribeProduct = commandSubscribeProductRepository.save(dto.toSubscribeProductEntity());
             }
         }
 
         // TotalDiscountRate
-        TotalDiscountRate totalDiscountRate = queryTotalDiscountRateRepository.findById(TOTAL_DISCOUNT_RATE_DEFAULT_ID)
+        TotalDiscountRate totalDiscountRate = queryTotalDiscountRateRepository.findById(
+                        TOTAL_DISCOUNT_RATE_DEFAULT_ID)
                 .orElseThrow(TotalDiscountRateNotExistsException::new);
 
         // Product
@@ -125,7 +135,11 @@ public class CommandProductServiceImpl implements CommandProductService {
 
         // Publish
         PublisherResponseDto publisher = queryPublisherService.findById(dto.getPublisherId());
-        commandPublishService.register(Publish.create(product, publisher.toEntity(), dto.getPublishedDate()));
+        commandPublishService.register(Publish.create(
+                product,
+                publisher.toEntity(),
+                dto.getPublishedDate()
+        ));
 
         // Tag
         if (Objects.nonNull(dto.getTags())) {
@@ -141,7 +155,20 @@ public class CommandProductServiceImpl implements CommandProductService {
             }
         }
 
-        // TODO: add Category
+        // Category
+        List<Long> categoryIds = dto.getCategories();
+        if (Objects.nonNull(categoryIds)) {
+            List<Category> categories = dto.getCategories().stream().map(id -> {
+                CategoryResponseDto response = queryCategoryService.findCategoryById(id);
+                Category parentCategory = queryCategoryService.findCategoryById(response.getParentId())
+                        .toEntity(null);
+                return response.toEntity(parentCategory);
+            }).collect(Collectors.toList());
+
+            for (Category category : categories) {
+                commandProductCategoryService.register(ProductCategory.create(product, category));
+            }
+        }
 
         return new ProductOnlyIdDto(product.getId());
     }
@@ -158,20 +185,24 @@ public class CommandProductServiceImpl implements CommandProductService {
         // SubscribeProduct
         SubscribeProduct subscribeProduct = product.getSubscribeProduct();
         if (Objects.nonNull(dto.getISSN())) {
-            subscribeProduct = querySubscribeProductRepository.findByISSN(dto.getISSN()).orElse(null);
+            subscribeProduct = querySubscribeProductRepository.findByISSN(dto.getISSN())
+                    .orElse(null);
             if (Objects.isNull(subscribeProduct)) {
                 subscribeProduct = commandSubscribeProductRepository.save(dto.toSubscribeProductEntity());
             }
         }
 
         // ThumbnailFile
-        File thumbnailFile = queryFileService.findById(product.getThumbnailFile().getId()).toEntity();
-        thumbnailFile = commandFileService.register(dto.changeThumbnailFile(thumbnailFile)).toEntity();
+        File thumbnailFile = queryFileService.findById(product.getThumbnailFile().getId())
+                .toEntity();
+        thumbnailFile = commandFileService.register(dto.changeThumbnailFile(thumbnailFile))
+                .toEntity();
 
         // EbookFile
         File ebookFile = null;
         if (Objects.nonNull(product.getEbookFile())) {
-            File foundEbookFile = queryFileService.findById(product.getEbookFile().getId()).toEntity();
+            File foundEbookFile = queryFileService.findById(product.getEbookFile().getId())
+                    .toEntity();
             ebookFile = commandFileService.register(dto.changeEbookFile(foundEbookFile)).toEntity();
         }
 
@@ -186,13 +217,15 @@ public class CommandProductServiceImpl implements CommandProductService {
             commandWritingService.register(Writing.create(product, author));
         }
 
-
         // Publish
         commandPublishService.deleteByProduct(product);
 
         PublisherResponseDto publisher = queryPublisherService.findById(dto.getPublisherId());
-        commandPublishService.register(Publish.create(product, publisher.toEntity(), dto.getPublishedDate()));
-
+        commandPublishService.register(Publish.create(
+                product,
+                publisher.toEntity(),
+                dto.getPublishedDate()
+        ));
 
         // Tag
         commandProductTagService.deleteByProduct(product);
@@ -202,13 +235,34 @@ public class CommandProductServiceImpl implements CommandProductService {
                 .collect(Collectors.toList());
 
         for (Tag tag : tags) {
-            commandProductTagService.register(ProductTag.create(product, Tag.builder().id(tag.getId()).name(tag.getName()).build()));
+            commandProductTagService.register(ProductTag.create(
+                    product,
+                    Tag.builder().id(tag.getId()).name(tag.getName()).build()
+            ));
         }
 
-        // TODO: add Category
+        // Category
+        commandProductCategoryService.deleteByProduct(product);
+
+        List<Category> categories = dto.getCategories().stream().map(catId -> {
+            CategoryResponseDto response = queryCategoryService.findCategoryById(catId);
+            Category parentCategory = queryCategoryService.findCategoryById(response.getParentId())
+                    .toEntity(null);
+            return response.toEntity(parentCategory);
+        }).collect(Collectors.toList());
+
+        for (Category category : categories) {
+            commandProductCategoryService.register(ProductCategory.create(product, category));
+        }
 
         // Product
-        product = dto.changeProduct(product, subscribeProduct, thumbnailFile, ebookFile, product.getTotalDiscountRate());
+        product = dto.changeProduct(
+                product,
+                subscribeProduct,
+                thumbnailFile,
+                ebookFile,
+                product.getTotalDiscountRate()
+        );
         commandProductRepository.save(product);
 
         return new ProductOnlyIdDto(product.getId());
@@ -244,7 +298,10 @@ public class CommandProductServiceImpl implements CommandProductService {
         long sellQuantity = product.getQuantity();
         long deductedQuantity = sellQuantity - requestedQuantity;
         if (deductedQuantity < 0) {
-            throw new RequestedQuantityLargerThanSellQuantityException(requestedQuantity, sellQuantity);
+            throw new RequestedQuantityLargerThanSellQuantityException(
+                    requestedQuantity,
+                    sellQuantity
+            );
         }
         product.changeQuantity(deductedQuantity);
 

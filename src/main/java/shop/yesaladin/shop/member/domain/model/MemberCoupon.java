@@ -39,4 +39,7 @@ public class MemberCoupon {
 
     @Column(name = "coupon_code", nullable = false, unique = true, length = 36)
     private String couponCode;
+
+    @Column(name = "coupon_group_code", nullable = false, length = 36)
+    private String couponGroupCode;
 }

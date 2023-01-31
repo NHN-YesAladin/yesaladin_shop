@@ -2,6 +2,7 @@ package shop.yesaladin.shop.category.domain.repository;
 
 import shop.yesaladin.shop.category.domain.model.ProductCategory;
 import shop.yesaladin.shop.category.domain.model.ProductCategory.Pk;
+import shop.yesaladin.shop.product.domain.model.Product;
 
 /**
  * 상품카테고리 CUD용 레포지토리 인터페이스
@@ -25,5 +26,12 @@ public interface CommandProductCategoryRepository {
      * @param pk 상품 id, 카테고리 id
      */
     void deleteByPk(Pk pk);
+
+    /**
+     * 상품을 통한 상품 카테고리 삭제
+     *
+     * @param product 삭제하고자 하는 상품
+     */
+    void deleteByProduct(Product product);
 
 }
