@@ -52,12 +52,15 @@ public class QueryOrderController {
      * @author 최예린
      * @since 1.0
      */
-    @GetMapping("/sheet/data")
+    @GetMapping("/sheet")
     public ResponseDto<MemberOrderResponseDto> getOrderSheetData(
             @RequestBody MemberOrderRequestDto request,
             String loginId
     ) {
-        MemberOrderResponseDto response = queryOrderService.getMemberOrderSheetData(request, loginId);
+        MemberOrderResponseDto response;
+
+        response = queryOrderService.getMemberOrderSheetData(request, loginId);
+        response = queryOrderService.getNonMemberOrderSheetData(request);
 
         return ResponseDto.<MemberOrderResponseDto>builder()
                 .success(true)

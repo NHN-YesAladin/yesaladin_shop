@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.member.domain.model.Member;
-import shop.yesaladin.shop.member.domain.repository.CustomQueryMemberRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRoleRepository;
 import shop.yesaladin.shop.member.dto.MemberDto;
@@ -30,7 +29,6 @@ import shop.yesaladin.shop.order.dto.MemberOrderResponseDto;
 @Service
 public class QueryMemberServiceImpl implements QueryMemberService {
 
-    private final CustomQueryMemberRepository customQueryMemberRepository;
     private final QueryMemberRepository queryMemberRepository;
     private final QueryMemberRoleRepository queryMemberRoleRepository;
 
@@ -159,8 +157,12 @@ public class QueryMemberServiceImpl implements QueryMemberService {
                 .orElseThrow(() -> new MemberNotFoundException("Member Loginid : " + loginId)));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
+    @Transactional(readOnly = true)
     public MemberOrderResponseDto getMemberForOrder(String loginId) {
-        return customQueryMemberRepository.getMemberOrderData(loginId);
+        return queryMemberRepository.getMemberOrderData(loginId);
     }
 }

@@ -10,18 +10,16 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.product.domain.model.Product;
-import shop.yesaladin.shop.product.domain.model.RelatedProduct;
+import shop.yesaladin.shop.product.domain.model.Relation;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
 import shop.yesaladin.shop.product.dummy.*;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-class JpaRelatedProductRepositoryTest {
+class JpaRelationRepositoryTest {
 
     private final String ISBN1 = "0000000000001";
     private final String ISBN2 = "0000000000002";
@@ -31,9 +29,9 @@ class JpaRelatedProductRepositoryTest {
     private TestEntityManager entityManager;
 
     @Autowired
-    private JpaRelatedProductRepository repository;
+    private JpaCommandRelationRepository repository;
 
-    private RelatedProduct relatedProduct;
+    private Relation relatedProduct;
 
     private Product product1;
     private Product product2;
@@ -83,7 +81,7 @@ class JpaRelatedProductRepositoryTest {
     @DisplayName("연관상품 저장")
     void save() {
         // when
-        RelatedProduct savedRelatedProduct = repository.save(relatedProduct);
+        Relation savedRelatedProduct = repository.save(relatedProduct);
 
         // then
         assertThat(savedRelatedProduct).isNotNull();
@@ -91,18 +89,4 @@ class JpaRelatedProductRepositoryTest {
         assertThat(savedRelatedProduct.getProductSub().getISBN()).isEqualTo(ISBN2);
     }
 
-    @Test
-    @DisplayName("메인상품의 ID로 연관상품 조회")
-    void findByProductMain() {
-        // given
-        entityManager.persist(relatedProduct);
-
-        // when
-        List<RelatedProduct> relatedProducts = repository.findByProductMain(product1);
-
-        // then
-        assertThat(relatedProducts).isNotNull();
-        assertThat(relatedProducts.size()).isEqualTo(1);
-        assertThat(relatedProducts.get(0).getProductSub()).isEqualTo(product2);
-    }
 }

@@ -1,8 +1,6 @@
 package shop.yesaladin.shop.order.dto;
 
 import java.util.List;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import shop.yesaladin.shop.product.dto.OrderProductResponseDto;
 
@@ -14,6 +12,7 @@ import shop.yesaladin.shop.product.dto.OrderProductResponseDto;
  */
 @Getter
 public class MemberOrderResponseDto {
+
     private String name;
     private String phoneNumber;
     private Long point;
@@ -28,6 +27,10 @@ public class MemberOrderResponseDto {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.address = address;
+    }
+
+    public MemberOrderResponseDto(List<OrderProductResponseDto> orderProducts) {
+        this.orderProducts = orderProducts;
     }
 
     public void setPoint(Long point) {

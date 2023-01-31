@@ -61,7 +61,7 @@ public interface QueryOrderService {
     Order getOrderByNumber(String number);
 
     /**
-     * 회원 주문의 주문서에 필요한 데이터를 조회합니다.
+     * 회원주문의 주문서에 필요한 데이터를 조회합니다.
      *
      * @param request 주문 상품 목록
      * @param loginId 회원의 아이디
@@ -70,4 +70,13 @@ public interface QueryOrderService {
      * @since 1.0
      */
     MemberOrderResponseDto getMemberOrderSheetData(MemberOrderRequestDto request, String loginId);
+    /**
+     * 비회원주문의 주문서에 필요한 데이터를 조회합니다.
+     *
+     * @param request 주문 상품 목록
+     * @return 주문에 필요한 데이터
+     * @author 최예린
+     * @since 1.0
+     */
+    MemberOrderResponseDto getNonMemberOrderSheetData(MemberOrderRequestDto request);
 }

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.common.exception.PageOffsetOutOfBoundsException;
+import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
@@ -100,15 +101,39 @@ public class QueryOrderServiceImpl implements QueryOrderService {
             MemberOrderRequestDto request,
             String loginId
     ) {
-        long point = queryPointHistoryService.getMemberPoint(loginId).getAmount();
+        checkValidLoginId(loginId);
+
+        return getOrderSheetDataForMember(request, loginId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public MemberOrderResponseDto getNonMemberOrderSheetData(MemberOrderRequestDto request) {
+        return getOrderSheetDataForNonMember(request);
+    }
+
+    private MemberOrderResponseDto getOrderSheetDataForMember(
+            MemberOrderRequestDto request,
+            String loginId
+    ) {
+        MemberOrderResponseDto memberOrderSheetData = queryMemberService.getMemberForOrder(loginId);
+
+        long point = queryPointHistoryService.getMemberPoint(loginId);
         List<OrderProductResponseDto> orderProducts = queryProductService.getProductForOrder(request.getProductList());
 
-        MemberOrderResponseDto response = queryMemberService.getMemberForOrder(loginId);
+        memberOrderSheetData.setPoint(point);
+        memberOrderSheetData.setOrderProducts(orderProducts);
 
-        response.setPoint(point);
-        response.setOrderProducts(orderProducts);
+        return memberOrderSheetData;
+    }
 
-        return response;
+    private MemberOrderResponseDto getOrderSheetDataForNonMember(MemberOrderRequestDto request) {
+        List<OrderProductResponseDto> orderProducts = queryProductService.getProductForOrder(request.getProductList());
+
+        return new MemberOrderResponseDto(orderProducts);
     }
 
     private void checkRequestedOffsetInBounds(
@@ -128,6 +153,12 @@ public class QueryOrderServiceImpl implements QueryOrderService {
 
         if (countOfOrder <= pageable.getOffset()) {
             throw new PageOffsetOutOfBoundsException((int) pageable.getOffset(), countOfOrder);
+        }
+    }
+
+    private void checkValidLoginId(String loginId) {
+        if (!queryMemberService.existsLoginId(loginId)) {
+            throw new MemberNotFoundException("");
         }
     }
 

@@ -1,11 +1,11 @@
 package shop.yesaladin.shop.publish.persistence;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import shop.yesaladin.shop.publish.dto.SearchPublisherResponseDto;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 class ElasticPublisherRepositoryTest {
