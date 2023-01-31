@@ -3,7 +3,6 @@ package shop.yesaladin.shop.file.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -19,7 +18,6 @@ import shop.yesaladin.shop.file.service.inter.StorageAuthService;
  * @author 이수정
  * @since 1.0
  */
-@Slf4j
 @RequiredArgsConstructor
 @Service
 public class StorageAuthServiceImpl implements StorageAuthService {

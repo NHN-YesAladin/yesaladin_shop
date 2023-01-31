@@ -3,7 +3,6 @@ package shop.yesaladin.shop.writing.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.writing.domain.model.Author;
 import shop.yesaladin.shop.writing.domain.model.Writing;
@@ -15,7 +14,6 @@ import shop.yesaladin.shop.writing.domain.model.Writing;
  * @since 1.0
  */
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class WritingResponseDto {

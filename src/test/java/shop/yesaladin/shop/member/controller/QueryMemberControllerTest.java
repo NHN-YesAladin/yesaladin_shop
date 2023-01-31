@@ -62,7 +62,7 @@ class QueryMemberControllerTest {
         mockMvc.perform(get("/v1/members/checkId/{loginId}", loginId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.result", equalTo(false)))
+                .andExpect(jsonPath("$.data.result", equalTo(false)))
                 .andDo(print());
 
         verify(queryMemberService, times(1)).existsLoginId(loginId);
@@ -80,7 +80,7 @@ class QueryMemberControllerTest {
         ResultActions resultActions = mockMvc.perform(get("/v1/members/checkId/{loginId}", loginId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.result", equalTo(true)));
+                .andExpect(jsonPath("$.data.result", equalTo(true)));
 
         verify(queryMemberService, times(1)).existsLoginId(loginId);
 
@@ -92,8 +92,17 @@ class QueryMemberControllerTest {
                 pathParameters(
                         parameterWithName("loginId").description("중복 체크 대상 loginId")
                 ),
-                responseFields(fieldWithPath("result").type(JsonFieldType.BOOLEAN)
-                        .description("loginId 중복 여부"))
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("data.result").type(JsonFieldType.BOOLEAN)
+                                .description("loginId 중복 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("HTTP 상태 코드"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메시지")
+                                .optional()
+                )
         ));
     }
 
@@ -109,7 +118,7 @@ class QueryMemberControllerTest {
         mockMvc.perform(get("/v1/members/checkNick/{nickname}", nickname))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.result", equalTo(false)))
+                .andExpect(jsonPath("$.data.result", equalTo(false)))
                 .andDo(print());
 
         verify(queryMemberService, times(1)).existsNickname(nickname);
@@ -130,7 +139,7 @@ class QueryMemberControllerTest {
                 ))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.result", equalTo(true)));
+                .andExpect(jsonPath("$.data.result", equalTo(true)));
 
         verify(queryMemberService, times(1)).existsNickname(nickname);
 
@@ -142,8 +151,17 @@ class QueryMemberControllerTest {
                 pathParameters(
                         parameterWithName("nickname").description("중복 체크 대상 nickname")
                 ),
-                responseFields(fieldWithPath("result").type(JsonFieldType.BOOLEAN)
-                        .description("nickname 중복 여부"))
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("data.result").type(JsonFieldType.BOOLEAN)
+                                .description("nickname 중복 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("HTTP 상태 코드"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메시지")
+                                .optional()
+                )
         ));
     }
 
@@ -159,7 +177,7 @@ class QueryMemberControllerTest {
         mockMvc.perform(get("/v1/members/checkEmail/{email}", email))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.result", equalTo(false)))
+                .andExpect(jsonPath("$.data.result", equalTo(false)))
                 .andDo(print());
 
         verify(queryMemberService, times(1)).existsEmail(email);
@@ -177,7 +195,7 @@ class QueryMemberControllerTest {
         ResultActions resultActions = mockMvc.perform(get("/v1/members/checkEmail/{email}", email))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.result", equalTo(true)));
+                .andExpect(jsonPath("$.data.result", equalTo(true)));
 
         verify(queryMemberService, times(1)).existsEmail(email);
 
@@ -189,8 +207,17 @@ class QueryMemberControllerTest {
                 pathParameters(
                         parameterWithName("email").description("중복 체크 대상 email")
                 ),
-                responseFields(fieldWithPath("result").type(JsonFieldType.BOOLEAN)
-                        .description("email 중복 여부"))
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("data.result").type(JsonFieldType.BOOLEAN)
+                                .description("email 중복 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("HTTP 상태 코드"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메시지")
+                                .optional()
+                )
         ));
     }
 
@@ -206,7 +233,7 @@ class QueryMemberControllerTest {
         mockMvc.perform(get("/v1/members/checkPhone/{phone}", phone))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.result", equalTo(false)))
+                .andExpect(jsonPath("$.data.result", equalTo(false)))
                 .andDo(print());
 
         verify(queryMemberService, times(1)).existsPhone(phone);
@@ -224,7 +251,7 @@ class QueryMemberControllerTest {
         ResultActions resultActions = mockMvc.perform(get("/v1/members/checkPhone/{phone}", phone))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.result", equalTo(true)));
+                .andExpect(jsonPath("$.data.result", equalTo(true)));
 
         verify(queryMemberService, times(1)).existsPhone(phone);
 
@@ -236,8 +263,17 @@ class QueryMemberControllerTest {
                 pathParameters(
                         parameterWithName("phone").description("중복 체크 대상 phone")
                 ),
-                responseFields(fieldWithPath("result").type(JsonFieldType.BOOLEAN)
-                        .description("phone 중복 여부"))
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("data.result").type(JsonFieldType.BOOLEAN)
+                                .description("phone 중복 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("HTTP 상태 코드"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메시지")
+                                .optional()
+                )
         ));
     }
 
@@ -356,9 +392,9 @@ class QueryMemberControllerTest {
                 .andExpect(jsonPath("$.signUpDate", equalTo(member.getSignUpDate().toString())))
                 .andExpect(jsonPath("$.grade", equalTo(member.getMemberGrade().getName())))
                 .andExpect(jsonPath(
-                "$.gender",
-                equalTo(member.getMemberGenderCode().getGender() == 1 ? "남" : "여")
-        ));
+                        "$.gender",
+                        equalTo(member.getMemberGenderCode().getGender() == 1 ? "남" : "여")
+                ));
 
         //docs
         result.andDo(document(

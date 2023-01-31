@@ -12,8 +12,8 @@ import shop.yesaladin.shop.member.dto.MemberWithdrawResponseDto;
 /**
  * Create, Update, Delete 를 Controller Layer에서 사용하기 위한 service interface
  *
- * @author : 송학현, 최예린
- * @since : 1.0
+ * @author 송학현, 최예린
+ * @since 1.0
  */
 public interface CommandMemberService {
 
@@ -22,8 +22,8 @@ public interface CommandMemberService {
      *
      * @param createDto 회원 등록 요청 dto
      * @return 회원 등록 결과를 반환할 dto
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     MemberCreateResponseDto create(MemberCreateRequestDto createDto);
 
@@ -62,8 +62,8 @@ public interface CommandMemberService {
      *
      * @param loginId 회원의 loginId
      * @return 회원 탈퇴 결과를 담은 DTO
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     MemberWithdrawResponseDto withDraw(String loginId);
 }

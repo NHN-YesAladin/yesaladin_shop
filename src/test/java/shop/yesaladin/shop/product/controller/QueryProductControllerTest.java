@@ -157,8 +157,9 @@ class QueryProductControllerTest {
                         fieldWithPath("dataList.[].isShown").type(JsonFieldType.BOOLEAN).description("노출여부"),
                         fieldWithPath("dataList.[].isDeleted").type(JsonFieldType.BOOLEAN).description("삭제여부"),
                         fieldWithPath("dataList.[].thumbnailFileUrl").type(JsonFieldType.STRING).description("썸네일 파일 URL"),
-                        fieldWithPath("dataList.[].tags").type(JsonFieldType.ARRAY).description("태그")
-                )
+                        fieldWithPath("dataList.[].tags").type(JsonFieldType.ARRAY).description("태그"),
+                        fieldWithPath("dataList.[].ebookFileUrl").description("E-book 파일 URL")
+                        )
         ));
     }
 
@@ -220,7 +221,9 @@ class QueryProductControllerTest {
                         fieldWithPath("dataList.[].isShown").type(JsonFieldType.BOOLEAN).description("노출여부"),
                         fieldWithPath("dataList.[].isDeleted").type(JsonFieldType.BOOLEAN).description("삭제여부"),
                         fieldWithPath("dataList.[].thumbnailFileUrl").type(JsonFieldType.STRING).description("썸네일 파일 URL"),
-                        fieldWithPath("dataList.[].tags").type(JsonFieldType.ARRAY).description("태그")
+                        fieldWithPath("dataList.[].tags").type(JsonFieldType.ARRAY).description("태그"),
+                        fieldWithPath("dataList.[].ebookFileUrl").description("E-book 파일 URL")
+
                 )
         ));
     }

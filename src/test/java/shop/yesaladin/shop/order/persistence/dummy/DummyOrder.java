@@ -26,10 +26,11 @@ public class DummyOrder {
                 .usedPoint(0)
                 .shippingFee(0)
                 .wrappingFee(0)
+                .totalAmount(1000L)
                 .orderCode(OrderCode.NON_MEMBER_ORDER)
                 .address("GwangJu GwangYeokSi")
-                .name("non-member")
-                .phoneNumber("010-1234-1234")
+                .nonMemberName("non-member")
+                .phoneNumber("01012341234")
                 .build();
     }
 
@@ -43,6 +44,7 @@ public class DummyOrder {
                 .usedPoint(0)
                 .shippingFee(0)
                 .wrappingFee(0)
+                .totalAmount(10000L)
                 .orderCode(OrderCode.MEMBER_ORDER)
                 .memberAddress(memberAddress)
                 .member(member)
@@ -63,6 +65,7 @@ public class DummyOrder {
                 .usedPoint(0)
                 .shippingFee(0)
                 .wrappingFee(0)
+                .totalAmount(100L)
                 .orderCode(OrderCode.MEMBER_SUBSCRIBE)
                 .memberAddress(memberAddress)
                 .member(member)

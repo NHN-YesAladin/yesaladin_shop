@@ -9,8 +9,8 @@ import shop.yesaladin.shop.member.domain.model.MemberGrade;
 /**
  * 회원의 등급을 변환하기 위한 컨버터 클래스 입니다.
  *
- * @author : 송학현
- * @since : 1.0
+ * @author 송학현
+ * @since 1.0
  */
 @Converter(autoApply = true)
 public class MemberGradeCodeConverter implements AttributeConverter<MemberGrade, Integer> {
@@ -32,8 +32,8 @@ public class MemberGradeCodeConverter implements AttributeConverter<MemberGrade,
     /**
      * 회원 등급의 pk를 회원 등급으로 변환합니다.
      *
-     * @param id
-     * @return 회원등급
+     * @param id 회원 등급의 PK
+     * @return 회원 등급
      * @author 송학현
      * @since 1.0
      */

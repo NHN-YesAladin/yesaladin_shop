@@ -2,11 +2,13 @@ package shop.yesaladin.shop.member.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import shop.yesaladin.shop.member.dto.MemberDto;
+import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.shop.member.dto.MemberGradeQueryResponseDto;
 import shop.yesaladin.shop.member.dto.MemberProfileExistResponseDto;
 import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
@@ -15,9 +17,9 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 /**
  * 회원 조회에 관련된 RestController 입니다.
  *
- * @author : 송학현
+ * @author 송학현
  * @author 최예린
- * @since : 1.0
+ * @since 1.0
  */
 @RequiredArgsConstructor
 @RestController
@@ -31,12 +33,19 @@ public class QueryMemberController {
      *
      * @param loginId PathVariable로 넘어온 중복 체크 대상 loginId
      * @return loginId 중복 여부
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     @GetMapping("/checkId/{loginId}")
-    public MemberProfileExistResponseDto existsLoginId(@PathVariable String loginId) {
-        return new MemberProfileExistResponseDto(queryMemberService.existsLoginId(loginId));
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseDto<MemberProfileExistResponseDto> existsLoginId(@PathVariable String loginId) {
+        MemberProfileExistResponseDto response = new MemberProfileExistResponseDto(
+                queryMemberService.existsLoginId(loginId));
+        return ResponseDto.<MemberProfileExistResponseDto>builder()
+                .status(HttpStatus.OK)
+                .success(true)
+                .data(response)
+                .build();
     }
 
     /**
@@ -44,12 +53,19 @@ public class QueryMemberController {
      *
      * @param nickname PathVariable로 넘어온 중복 체크 대상 nickname
      * @return nickname 중복 여부
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     @GetMapping("/checkNick/{nickname}")
-    public MemberProfileExistResponseDto existsNickname(@PathVariable String nickname) {
-        return new MemberProfileExistResponseDto(queryMemberService.existsNickname(nickname));
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseDto<MemberProfileExistResponseDto> existsNickname(@PathVariable String nickname) {
+        MemberProfileExistResponseDto response = new MemberProfileExistResponseDto(
+                queryMemberService.existsNickname(nickname));
+        return ResponseDto.<MemberProfileExistResponseDto>builder()
+                .status(HttpStatus.OK)
+                .success(true)
+                .data(response)
+                .build();
     }
 
     /**
@@ -57,12 +73,19 @@ public class QueryMemberController {
      *
      * @param email PathVariable로 넘어온 중복 체크 대상 email
      * @return email 중복 여부
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     @GetMapping("/checkEmail/{email}")
-    public MemberProfileExistResponseDto existsEmail(@PathVariable String email) {
-        return new MemberProfileExistResponseDto(queryMemberService.existsEmail(email));
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseDto<MemberProfileExistResponseDto> existsEmail(@PathVariable String email) {
+        MemberProfileExistResponseDto response = new MemberProfileExistResponseDto(
+                queryMemberService.existsEmail(email));
+        return ResponseDto.<MemberProfileExistResponseDto>builder()
+                .status(HttpStatus.OK)
+                .success(true)
+                .data(response)
+                .build();
     }
 
     /**
@@ -70,12 +93,19 @@ public class QueryMemberController {
      *
      * @param phone PathVariable로 넘어온 중복 체크 대상 phone
      * @return phone 중복 여부
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     @GetMapping("/checkPhone/{phone}")
-    public MemberProfileExistResponseDto existsPhone(@PathVariable String phone) {
-        return new MemberProfileExistResponseDto(queryMemberService.existsPhone(phone));
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseDto<MemberProfileExistResponseDto> existsPhone(@PathVariable String phone) {
+        MemberProfileExistResponseDto response = new MemberProfileExistResponseDto(
+                queryMemberService.existsPhone(phone));
+        return ResponseDto.<MemberProfileExistResponseDto>builder()
+                .status(HttpStatus.OK)
+                .success(true)
+                .data(response)
+                .build();
     }
 
     /**

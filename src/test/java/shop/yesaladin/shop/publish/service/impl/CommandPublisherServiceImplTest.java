@@ -11,6 +11,7 @@ import shop.yesaladin.shop.publish.domain.repository.QueryPublisherRepository;
 import shop.yesaladin.shop.publish.dto.PublisherRequestDto;
 import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
 import shop.yesaladin.shop.publish.exception.PublisherAlreadyExistsException;
+import shop.yesaladin.shop.publish.exception.PublisherNotFoundException;
 import shop.yesaladin.shop.publish.service.inter.CommandPublisherService;
 
 import java.util.Optional;
@@ -32,6 +33,7 @@ class CommandPublisherServiceImplTest {
     void setUp() {
         commandPublisherRepository = mock(CommandPublisherRepository.class);
         queryPublisherRepository = mock(QueryPublisherRepository.class);
+
         service = new CommandPublisherServiceImpl(
                 commandPublisherRepository,
                 queryPublisherRepository
@@ -69,7 +71,7 @@ class CommandPublisherServiceImplTest {
     }
 
     @Test
-    @DisplayName("저자 생성 후 등록 성공")
+    @DisplayName("출판사 생성 후 등록 성공")
     void create_success() {
         // given
         PublisherRequestDto createDto = new PublisherRequestDto(NAME);
@@ -130,7 +132,7 @@ class CommandPublisherServiceImplTest {
     void modify_throwPublisherAlreadyExistsException() {
         // given
         Long id = 1L;
-        String modifiedName = "출판사2";
+        String modifiedName = "출판사";
 
         PublisherRequestDto modifyDto = new PublisherRequestDto(modifiedName);
         Publisher publisher = Publisher.builder().id(id).name(NAME).build();
@@ -139,8 +141,25 @@ class CommandPublisherServiceImplTest {
         Mockito.when(queryPublisherRepository.existsByName(anyString())).thenReturn(true);
 
         // when
-        assertThatThrownBy(() -> service.create(modifyDto)).isInstanceOf(PublisherAlreadyExistsException.class);
+        assertThatThrownBy(() -> service.modify(id, modifyDto)).isInstanceOf(PublisherAlreadyExistsException.class);
 
+        verify(queryPublisherRepository, times(1)).findById(anyLong());
         verify(queryPublisherRepository, times(1)).existsByName(anyString());
+    }
+
+    @Test
+    @DisplayName("출판사 수정 실패_ID에 해당하는 출판사를 찾지 못한 경우 예외 발생")
+    void modify_throwPublisherNotFoundException() {
+        // given
+        Long id = 1L;
+        String modifiedName = "출판사";
+        PublisherRequestDto modifyDto = new PublisherRequestDto(modifiedName);
+
+        Mockito.when(queryPublisherRepository.findById(id)).thenThrow(PublisherNotFoundException.class);
+
+        // when
+        assertThatThrownBy(() -> service.modify(id, modifyDto)).isInstanceOf(PublisherNotFoundException.class);
+
+        verify(queryPublisherRepository, times(1)).findById(anyLong());
     }
 }

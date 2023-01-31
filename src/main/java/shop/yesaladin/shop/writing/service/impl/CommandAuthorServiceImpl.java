@@ -21,8 +21,8 @@ import java.util.Objects;
  * @author 이수정
  * @since 1.0
  */
-@Service
 @RequiredArgsConstructor
+@Service
 public class CommandAuthorServiceImpl implements CommandAuthorService {
 
     private final CommandAuthorRepository commandAuthorRepository;

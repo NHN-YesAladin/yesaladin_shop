@@ -1,12 +1,9 @@
 package shop.yesaladin.shop.member.controller;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.shop.member.dto.MemberBlockRequestDto;
 import shop.yesaladin.shop.member.dto.MemberBlockResponseDto;
 import shop.yesaladin.shop.member.dto.MemberCreateRequestDto;
@@ -28,9 +26,9 @@ import shop.yesaladin.shop.member.service.inter.CommandMemberService;
 /**
  * 회원에 관련된 RestController 입니다.
  *
- * @author : 송학현
+ * @author 송학현
  * @author 최예린
- * @since : 1.0
+ * @since 1.0
  */
 @Slf4j
 @RequiredArgsConstructor
@@ -45,15 +43,18 @@ public class CommandMemberController {
      *
      * @param createDto 회원 가입을 위한 요청 파라미터의 모음입니다.
      * @return ResponseEntity로 회원 등록 성공 이후 등록된 일부 데이터들을 반환합니다.
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     @PostMapping
-    public ResponseEntity<MemberCreateResponseDto> signUpMember(@Valid @RequestBody MemberCreateRequestDto createDto)
-            throws URISyntaxException {
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseDto<MemberCreateResponseDto> signUpMember(@Valid @RequestBody MemberCreateRequestDto createDto) {
         MemberCreateResponseDto response = commandMemberService.create(createDto);
-
-        return ResponseEntity.created(new URI(response.getId().toString())).body(response);
+        return ResponseDto.<MemberCreateResponseDto>builder()
+                .status(HttpStatus.CREATED)
+                .success(true)
+                .data(response)
+                .build();
     }
 
     /**
@@ -110,13 +111,18 @@ public class CommandMemberController {
      *
      * @param loginId 회원 탈퇴 대상 loginId
      * @return 회원 탈퇴 결과
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     @DeleteMapping("/withdraw/{loginId}")
     @ResponseStatus(HttpStatus.OK)
-    public MemberWithdrawResponseDto deleteMember(@PathVariable String loginId) {
+    public ResponseDto<MemberWithdrawResponseDto> deleteMember(@PathVariable String loginId) {
         log.info("request={}",loginId);
-        return commandMemberService.withDraw(loginId);
+        MemberWithdrawResponseDto response = commandMemberService.withDraw(loginId);
+        return ResponseDto.<MemberWithdrawResponseDto>builder()
+                .status(HttpStatus.OK)
+                .success(true)
+                .data(response)
+                .build();
     }
 }

@@ -5,8 +5,8 @@ import shop.yesaladin.shop.member.domain.model.MemberGradeHistory;
 /**
  * 회원 등급 변경 이력 등록 및 수정 관련 repository interface 입니다.
  *
- * @author : 송학현
- * @since : 1.0
+ * @author 송학현
+ * @since 1.0
  */
 public interface CommandMemberGradeHistoryRepository {
 
@@ -15,8 +15,8 @@ public interface CommandMemberGradeHistoryRepository {
      *
      * @param memberGradeHistory 회원 등급 변경 이력 데이터
      * @return 등록된 회원 등급 변경 이력
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     MemberGradeHistory save(MemberGradeHistory memberGradeHistory);
 }

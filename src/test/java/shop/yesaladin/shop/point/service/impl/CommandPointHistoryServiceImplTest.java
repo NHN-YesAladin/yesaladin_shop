@@ -20,6 +20,7 @@ import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.point.domain.model.PointCode;
 import shop.yesaladin.shop.point.domain.model.PointHistory;
+import shop.yesaladin.shop.point.domain.model.PointReasonCode;
 import shop.yesaladin.shop.point.domain.repository.CommandPointHistoryRepository;
 import shop.yesaladin.shop.point.domain.repository.QueryPointHistoryRepository;
 import shop.yesaladin.shop.point.dto.PointHistoryRequestDto;
@@ -53,10 +54,13 @@ class CommandPointHistoryServiceImplTest {
         //given
         String loginId = "user@1";
         long amount = 1000;
+        PointReasonCode pointReasonCode = PointReasonCode.USE_ORDER;
+
         PointHistoryRequestDto request = ReflectionUtils.newInstance(
                 PointHistoryRequestDto.class,
                 loginId,
-                amount
+                amount,
+                pointReasonCode
         );
 
         Mockito.when(queryMemberService.findMemberByLoginId(loginId))
@@ -74,10 +78,13 @@ class CommandPointHistoryServiceImplTest {
         //given
         String loginId = "user@1";
         long amount = 1000;
+        PointReasonCode pointReasonCode = PointReasonCode.USE_ORDER;
+
         PointHistoryRequestDto request = ReflectionUtils.newInstance(
                 PointHistoryRequestDto.class,
                 loginId,
-                amount
+                amount,
+                pointReasonCode
         );
 
         Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
@@ -100,11 +107,13 @@ class CommandPointHistoryServiceImplTest {
         String loginId = "user@1";
         long amount = 1000;
         PointCode pointCode = PointCode.USE;
+        PointReasonCode pointReasonCode = PointReasonCode.USE_ORDER;
 
         PointHistoryRequestDto request = ReflectionUtils.newInstance(
                 PointHistoryRequestDto.class,
                 loginId,
-                amount
+                amount,
+                pointReasonCode
         );
 
         Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
@@ -112,6 +121,7 @@ class CommandPointHistoryServiceImplTest {
                 .id(1L)
                 .amount(amount)
                 .pointCode(pointCode)
+                .pointReasonCode(pointReasonCode)
                 .createDateTime(LocalDateTime.now())
                 .member(member).build();
 
@@ -126,8 +136,8 @@ class CommandPointHistoryServiceImplTest {
 
         //then
         assertThat(result.getAmount()).isEqualTo(amount);
-        assertThat(result.getLoginId()).isEqualTo(loginId);
         assertThat(result.getPointCode()).isEqualTo(pointCode);
+        assertThat(result.getPointReasonCode()).isEqualTo(pointReasonCode);
 
         ArgumentCaptor<PointHistory> captor = ArgumentCaptor.forClass(PointHistory.class);
         verify(queryMemberService, times(1)).findMemberByLoginId(loginId);
@@ -137,6 +147,7 @@ class CommandPointHistoryServiceImplTest {
         assertThat(captor.getValue().getAmount()).isEqualTo(amount);
         assertThat(captor.getValue().getMember().getId()).isEqualTo(member.getId());
         assertThat(captor.getValue().getPointCode()).isEqualTo(pointCode);
+        assertThat(captor.getValue().getPointReasonCode()).isEqualTo(pointReasonCode);
     }
 
     @Test
@@ -144,10 +155,13 @@ class CommandPointHistoryServiceImplTest {
         //given
         String loginId = "user@1";
         long amount = 1000;
+        PointReasonCode pointReasonCode = PointReasonCode.SAVE_ORDER;
+
         PointHistoryRequestDto request = ReflectionUtils.newInstance(
                 PointHistoryRequestDto.class,
                 loginId,
-                amount
+                amount,
+                pointReasonCode
         );
 
         Mockito.when(queryMemberService.findMemberByLoginId(loginId))
@@ -158,7 +172,6 @@ class CommandPointHistoryServiceImplTest {
                 MemberNotFoundException.class);
 
         verify(queryMemberService, times(1)).findMemberByLoginId(anyString());
-
     }
 
     @Test
@@ -167,11 +180,13 @@ class CommandPointHistoryServiceImplTest {
         String loginId = "user@1";
         long amount = 1000;
         PointCode pointCode = PointCode.SAVE;
+        PointReasonCode pointReasonCode = PointReasonCode.SAVE_ORDER;
 
         PointHistoryRequestDto request = ReflectionUtils.newInstance(
                 PointHistoryRequestDto.class,
                 loginId,
-                amount
+                amount,
+                pointReasonCode
         );
 
         Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
@@ -179,6 +194,7 @@ class CommandPointHistoryServiceImplTest {
                 .id(1L)
                 .amount(amount)
                 .pointCode(pointCode)
+                .pointReasonCode(pointReasonCode)
                 .createDateTime(LocalDateTime.now())
                 .member(member).build();
 
@@ -192,8 +208,8 @@ class CommandPointHistoryServiceImplTest {
 
         //then
         assertThat(result.getAmount()).isEqualTo(amount);
-        assertThat(result.getLoginId()).isEqualTo(loginId);
         assertThat(result.getPointCode()).isEqualTo(pointCode);
+        assertThat(result.getPointReasonCode()).isEqualTo(pointReasonCode);
 
         ArgumentCaptor<PointHistory> captor = ArgumentCaptor.forClass(PointHistory.class);
         verify(queryMemberService, times(1)).findMemberByLoginId(anyString());
@@ -202,5 +218,6 @@ class CommandPointHistoryServiceImplTest {
         assertThat(captor.getValue().getAmount()).isEqualTo(amount);
         assertThat(captor.getValue().getMember().getId()).isEqualTo(member.getId());
         assertThat(captor.getValue().getPointCode()).isEqualTo(pointCode);
+        assertThat(captor.getValue().getPointReasonCode()).isEqualTo(pointReasonCode);
     }
 }

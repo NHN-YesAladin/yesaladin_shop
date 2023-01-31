@@ -9,9 +9,9 @@ import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
 /**
  * 회원 조회용 service interface
  *
- * @author : 송학현
+ * @author 송학현
  * @author 최예린
- * @since : 1.0
+ * @since 1.0
  */
 public interface QueryMemberService {
 
@@ -20,8 +20,9 @@ public interface QueryMemberService {
      *
      * @param id member의 primary key
      * @return 회원 조회 결과
-     * @author : 송학현, 최예린
-     * @since : 1.0
+     * @author 송학현
+     * @author 최예린
+     * @since 1.0
      */
     MemberDto findMemberById(long id);
 
@@ -30,8 +31,9 @@ public interface QueryMemberService {
      *
      * @param loginId member의 loginId
      * @return 회원 조회 결과
-     * @author : 송학현, 최예린
-     * @since : 1.0
+     * @author 송학현
+     * @author 최예린
+     * @since 1.0
      */
     MemberDto findMemberByLoginId(String loginId);
 
@@ -40,8 +42,9 @@ public interface QueryMemberService {
      *
      * @param nickname member의 nickname
      * @return 회원 조회 결과
-     * @author : 송학현, 최예린
-     * @since : 1.0
+     * @author 송학현
+     * @author 최예린
+     * @since 1.0
      */
     MemberDto findMemberByNickname(String nickname);
 
@@ -50,8 +53,8 @@ public interface QueryMemberService {
      *
      * @param loginId member의 loginId
      * @return login 대상의 유저 정보와 권한 정보를 담은 DTO
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     MemberLoginResponseDto findMemberLoginInfoByLoginId(String loginId);
 
@@ -60,8 +63,8 @@ public interface QueryMemberService {
      *
      * @param loginId 중복 체크 대상 loginId
      * @return loginId의 존재 유무
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     boolean existsLoginId(String loginId);
 
@@ -70,8 +73,8 @@ public interface QueryMemberService {
      *
      * @param nickname 중복 체크 대상 nickname
      * @return nickname의 존재 유무
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     boolean existsNickname(String nickname);
 
@@ -80,8 +83,8 @@ public interface QueryMemberService {
      *
      * @param email 중복 체크 대상 email
      * @return email의 존재 유무
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     boolean existsEmail(String email);
 
@@ -90,8 +93,8 @@ public interface QueryMemberService {
      *
      * @param phone 중복 체크 대상 phone
      * @return phone의 존재 유무
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     boolean existsPhone(String phone);
 

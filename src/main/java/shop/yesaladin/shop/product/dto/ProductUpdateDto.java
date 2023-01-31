@@ -3,7 +3,6 @@ package shop.yesaladin.shop.product.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.product.domain.model.*;
@@ -23,7 +22,6 @@ import java.util.List;
  * @since 1.0
  */
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductUpdateDto {
@@ -88,7 +86,7 @@ public class ProductUpdateDto {
     private List<Long> tags;
 
     // 카테고리
-//    private List<String> categories;
+    private List<Long> categories;
 
     // 강제 품절
     private Boolean isForcedOutOfStock;

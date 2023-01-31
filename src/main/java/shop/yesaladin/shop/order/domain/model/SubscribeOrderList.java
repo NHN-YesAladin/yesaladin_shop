@@ -37,7 +37,7 @@ public class SubscribeOrderList {
     private boolean isTransported;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "subscribe_id", nullable = false)
+    @JoinColumn(name = "subscribe_order_id", nullable = false)
     private Subscribe subscribe;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.common.advice;
 
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,8 +9,10 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.shop.category.exception.CategoryNotFoundException;
 import shop.yesaladin.shop.common.dto.ErrorResponseDto;
+import shop.yesaladin.shop.common.exception.CommonException;
 import shop.yesaladin.shop.common.exception.CustomJsonProcessingException;
 import shop.yesaladin.shop.common.exception.InvalidPeriodConditionException;
 import shop.yesaladin.shop.file.exception.FileNotFoundException;
@@ -33,6 +36,7 @@ import shop.yesaladin.shop.product.exception.TotalDiscountRateNotExistsException
 import shop.yesaladin.shop.publish.exception.PublishNotFoundException;
 import shop.yesaladin.shop.publish.exception.PublisherAlreadyExistsException;
 import shop.yesaladin.shop.publish.exception.PublisherNotFoundException;
+import shop.yesaladin.shop.tag.exception.TagAlreadyExistsException;
 import shop.yesaladin.shop.tag.exception.TagNotFoundException;
 import shop.yesaladin.shop.writing.exception.AuthorNotFoundException;
 import shop.yesaladin.shop.writing.exception.WritingNotFoundException;
@@ -41,6 +45,7 @@ import shop.yesaladin.shop.writing.exception.WritingNotFoundException;
  * 공용으로 사용하는 예외 처리
  *
  * @author 배수한
+ * @author 최예린
  * @since 1.0
  */
 
@@ -74,8 +79,6 @@ public class ControllerAdvice {
     @ExceptionHandler({
             MethodArgumentNotValidException.class,
             HttpMessageNotReadableException.class,
-            OverPointUseException.class,
-            InvalidCodeParameterException.class,
             InvalidPeriodConditionException.class,
             AlreadyDeletedProductException.class,
             AlreadyBlockedMemberException.class,
@@ -93,7 +96,8 @@ public class ControllerAdvice {
     @ExceptionHandler(value = {
             MemberProfileAlreadyExistException.class,
             ProductAlreadyExistsException.class,
-            PublisherAlreadyExistsException.class
+            PublisherAlreadyExistsException.class,
+            TagAlreadyExistsException.class
     })
     @ResponseStatus(HttpStatus.CONFLICT)
     public ResponseEntity<ErrorResponseDto> handleAlreadyExistException(Exception ex) {
@@ -108,6 +112,29 @@ public class ControllerAdvice {
         log.error("[INTERNAL_SERVER_ERROR] handleJsonProcessingException", ex);
         ErrorResponseDto error = new ErrorResponseDto(ex.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+    }
+
+    /**
+     * 에러를 반환합니다.
+     *
+     * @param e 에러
+     * @return 에러
+     */
+    @ExceptionHandler(CommonException.class)
+    public ResponseEntity<ResponseDto<Object>> handleCommonException(CommonException e) {
+        log.error(
+                "[{}] handleCommonException : {}",
+                e.getErrorCode().getResponseStatus(),
+                e.getMessage()
+        );
+        ResponseDto<Object> response = ResponseDto.builder()
+                .success(false)
+                .status(e.getErrorCode().getResponseStatus())
+                .errorMessages(
+                        List.of(e.getMessage()))
+                .build();
+
+        return ResponseEntity.status(e.getErrorCode().getResponseStatus()).body(response);
     }
 
     @ExceptionHandler(Exception.class)
