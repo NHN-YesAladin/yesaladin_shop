@@ -26,8 +26,8 @@ public class ElasticCategoryRepository implements SearchCategoryRepository {
 
     private final ElasticsearchOperations elasticsearchOperations;
     private static final String NAME = "name";
-    private static final String CATEGORIES_DISABLE = "categories.disable";
-    private static final String CATEGORIES_IS_SHOWN = "categories.is_shown";
+    private static final String CATEGORIES_DISABLE = "disable";
+    private static final String CATEGORIES_IS_SHOWN = "is_shown";
 
     /**
      * {@inheritDoc}

@@ -26,10 +26,8 @@ public class SearchedCategory {
     @Id
     @Field(name = "id")
     Long id;
-    @Field(name = "parent.id")
-    Long parentId;
-    @Field(name = "parent.name")
-    String parentName;
+    @Field(name = "parent")
+    Parent parent;
     @Field(name = "name")
     String name;
     @Field(name = "is_shown")
@@ -39,9 +37,17 @@ public class SearchedCategory {
         return CategoryResponseDto.builder()
                 .id(id)
                 .name(name)
-                .parentId(parentId)
-                .parentName(parentName)
+                .parentId(parent.id)
+                .parentName(parent.name)
                 .isShown(isShown)
                 .build();
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public static class Parent {
+        private Long id;
+        private String name;
+        private Boolean is_shown;
     }
 }
