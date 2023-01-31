@@ -1,6 +1,8 @@
 package shop.yesaladin.shop.category.dto;
 
 import java.util.List;
+import java.util.Objects;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,11 +29,13 @@ public class SearchCategoryResponseDto {
         String parentName;
 
         public static SearchedCategoryDto fromIndex(SearchedCategory searchedCategory) {
-            return SearchedCategoryDto.builder()
+            SearchedCategoryDtoBuilder searchedCategoryDto = SearchedCategoryDto.builder()
                     .id(searchedCategory.getId())
-                    .name(searchedCategory.getName())
-                    .parentName(searchedCategory.getParentName())
-                    .build();
+                    .name(searchedCategory.getName());
+            if(Objects.isNull(searchedCategory.getParent())) {
+                return searchedCategoryDto.build();
+            }
+            return searchedCategoryDto.parentName(searchedCategory.getParent().getName()).build();
         }
     }
 }
