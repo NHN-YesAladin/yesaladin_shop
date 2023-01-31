@@ -8,6 +8,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.requestF
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentRequest;
@@ -34,6 +35,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import org.springframework.test.web.servlet.ResultActions;
@@ -52,6 +54,7 @@ class QueryOrderControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @WithMockUser
     @Test
     @DisplayName("기간 내의 모든 주문 내역이 조회된다.")
     void getAllOrdersTest() throws Exception {
@@ -74,7 +77,9 @@ class QueryOrderControllerTest {
         ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
 
         // when
-        ResultActions result = mockMvc.perform(get("/v1/orders").contentType(MediaType.APPLICATION_JSON)
+        ResultActions result = mockMvc.perform(get("/v1/orders")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
                 .param("size", "20")
                 .param("page", "1"));
@@ -113,7 +118,8 @@ class QueryOrderControllerTest {
                                 .attributes(defaultValue(10)),
                         parameterWithName("page").description("페이지네이션 페이지 번호")
                                 .optional()
-                                .attributes(defaultValue(0))
+                                .attributes(defaultValue(0)),
+                        parameterWithName("_csrf").description("csrf")
                 ),
                 requestFields(
                         fieldWithPath("startDate").type(JsonFieldType.STRING)

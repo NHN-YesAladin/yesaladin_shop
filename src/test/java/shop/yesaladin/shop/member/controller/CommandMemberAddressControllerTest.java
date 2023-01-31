@@ -17,6 +17,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.requestF
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -39,6 +40,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
@@ -80,6 +82,7 @@ class CommandMemberAddressControllerTest {
     }
 
 
+    @WithMockUser
     @ParameterizedTest
     @MethodSource(value = "createMemberAddressData")
     void createMemberAddress_failByValidationError_forParameterizedTest(Map<String, Object> request)
@@ -89,6 +92,7 @@ class CommandMemberAddressControllerTest {
 
         //when
         ResultActions result = mockMvc.perform(post("/v1/members/{loginId}/addresses", loginId)
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
         //then
@@ -97,6 +101,7 @@ class CommandMemberAddressControllerTest {
                 .andExpect(jsonPath("$.message", startsWith("Validation failed")));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("회원 배송지 생성 실패-파라미터 오류")
     void createMemberAddress_failByValidationError() throws Exception {
@@ -107,6 +112,7 @@ class CommandMemberAddressControllerTest {
 
         //when
         ResultActions result = mockMvc.perform(post("/v1/members/{loginId}/addresses", loginId)
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
         //then
@@ -131,6 +137,7 @@ class CommandMemberAddressControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("회원 배송지 생성 실패-존재하지 않는 회원")
     void createMemberAddress_failByNotFoundMember() throws Exception {
@@ -144,6 +151,7 @@ class CommandMemberAddressControllerTest {
 
         //when
         ResultActions result = mockMvc.perform(post("/v1/members/{loginId}/addresses", loginId)
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
         //then
@@ -175,6 +183,7 @@ class CommandMemberAddressControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("회원 배송지 생성 실패-최대 배송지 등록 개수 초과")
     void createMemberAddress_failByAddressRegistrationRestriction() throws Exception {
@@ -188,6 +197,7 @@ class CommandMemberAddressControllerTest {
 
         //when
         ResultActions result = mockMvc.perform(post("/v1/members/{loginId}/addresses", loginId)
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
         //then
@@ -218,7 +228,8 @@ class CommandMemberAddressControllerTest {
                 )
         ));
     }
-    
+
+    @WithMockUser
     @Test
     @DisplayName("회원 배송지 등록 성공")
     void createMemberAddress() throws Exception {
@@ -240,6 +251,7 @@ class CommandMemberAddressControllerTest {
 
         //when
         ResultActions result = mockMvc.perform(post("/v1/members/{loginId}/addresses", loginId)
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
@@ -283,6 +295,7 @@ class CommandMemberAddressControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("대표배송지 설정 실패-존재하지않는 배송지")
     void markAsDefaultAddress_fail_memberAddressNotFoundException() throws Exception {
@@ -298,7 +311,7 @@ class CommandMemberAddressControllerTest {
                 "/v1/members/{loginId}/addresses/{addressId}",
                 loginId,
                 addressId
-        ));
+        ).with(csrf()));
 
         //then
         result.andExpect(status().isNotFound())
@@ -320,6 +333,7 @@ class CommandMemberAddressControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("대표배송지 설정 성공")
     void markAsDefaultAddress_success() throws Exception {
@@ -342,7 +356,7 @@ class CommandMemberAddressControllerTest {
                 "/v1/members/{loginId}/addresses/{addressId}",
                 loginId,
                 addressId
-        ));
+        ).with(csrf()));
 
         //then
         result.andExpect(status().isOk())
@@ -372,6 +386,7 @@ class CommandMemberAddressControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("배송지 삭제 실패-존재하지않는 배송지")
     void deleteMemberAddress_fail_MemberAddressNotFound() throws Exception {
@@ -386,7 +401,7 @@ class CommandMemberAddressControllerTest {
                 "/v1/members/{loginId}/addresses/{addressId}",
                 loginId,
                 addressId
-        ));
+        ).with(csrf()));
 
         //then
         result.andExpect(status().isNotFound())
@@ -408,6 +423,7 @@ class CommandMemberAddressControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("배송지 삭제 실패-이미 삭제된 배송지")
     void deleteMemberAddress_fail_AlreadyDeletedAddress() throws Exception {
@@ -422,7 +438,7 @@ class CommandMemberAddressControllerTest {
                 "/v1/members/{loginId}/addresses/{addressId}",
                 loginId,
                 addressId
-        ));
+        ).with(csrf()));
 
         //then
         result.andExpect(status().isBadRequest())
@@ -444,6 +460,7 @@ class CommandMemberAddressControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("배송지 삭제 성공")
     void deleteMemberAddress() throws Exception {
@@ -456,7 +473,7 @@ class CommandMemberAddressControllerTest {
                 "/v1/members/{loginId}/addresses/{addressId}",
                 loginId,
                 addressId
-        ));
+        ).with(csrf()));
         //then
         result.andExpect(status().isOk());
 
