@@ -99,10 +99,10 @@ class CommandPointControllerTest {
                                 .description("포인트 사용 사유")
                 ),
                 responseFields(
-                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("성공유무"),
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("동작 성공 여부"),
                         fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
                         fieldWithPath("data").type(JsonFieldType.NUMBER)
-                                .description("반환값")
+                                .description("null")
                                 .optional(),
                         fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
                                 .description("에러 메세지")
@@ -218,10 +218,10 @@ class CommandPointControllerTest {
                                 .description("포인트 사용 사유")
                 ),
                 responseFields(
-                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("성공유무"),
-                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("HTTP 상태 코드"),
                         fieldWithPath("data").type(JsonFieldType.NUMBER)
-                                .description("데이")
+                                .description("null")
                                 .optional(),
                         fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
                                 .description("에러 메세지")
@@ -292,8 +292,8 @@ class CommandPointControllerTest {
                                 .description("포인트 사용 사유")
                 ),
                 responseFields(
-                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("성공유무"),
-                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("HTTP 상태 코드"),
                         fieldWithPath("data.id").type(JsonFieldType.NUMBER)
                                 .description("포인트 등록 내역 pk"),
                         fieldWithPath("data.amount").type(JsonFieldType.NUMBER)
@@ -430,8 +430,8 @@ class CommandPointControllerTest {
                                 .description("포인트 적립 사유")
                 ),
                 responseFields(
-                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("성공유무"),
-                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("HTTP 상태 코드"),
                         fieldWithPath("data.id").type(JsonFieldType.NUMBER)
                                 .description("포인트 등록 내역 pk"),
                         fieldWithPath("data.amount").type(JsonFieldType.NUMBER)

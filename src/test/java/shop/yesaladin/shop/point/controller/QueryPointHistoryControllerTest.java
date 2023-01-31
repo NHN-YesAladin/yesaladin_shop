@@ -100,10 +100,10 @@ class QueryPointHistoryControllerTest {
                                 .attributes(defaultValue(0))
                 ),
                 responseFields(
-                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("성공유무"),
-                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("HTTP 상태 코드"),
                         fieldWithPath("data").type(JsonFieldType.NUMBER)
-                                .description("반환값")
+                                .description("null")
                                 .optional(),
                         fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
                                 .description("에러 메세지")
@@ -160,8 +160,8 @@ class QueryPointHistoryControllerTest {
                                 .attributes(defaultValue(0))
                 ),
                 responseFields(
-                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("성공유무"),
-                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("HTTP 상태 코드"),
                         fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER)
                                 .description("전체 페이지"),
                         fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER)
@@ -239,8 +239,8 @@ class QueryPointHistoryControllerTest {
                                 .attributes(defaultValue(0))
                 ),
                 responseFields(
-                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("성공유무"),
-                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("HTTP 상태 코드"),
                         fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER)
                                 .description("전체 페이지"),
                         fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER)
@@ -323,8 +323,8 @@ class QueryPointHistoryControllerTest {
                 getDocumentResponse(),
                 pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 responseFields(
-                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("성공유무"),
-                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("HTTP 상태 코드"),
                         fieldWithPath("data").type(JsonFieldType.NUMBER)
                                 .description("회원의 포인트 값"),
                         fieldWithPath("errorMessages").type(JsonFieldType.STRING)
