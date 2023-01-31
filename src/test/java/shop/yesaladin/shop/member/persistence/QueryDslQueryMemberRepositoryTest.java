@@ -1,7 +1,6 @@
 package shop.yesaladin.shop.member.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Optional;
 import javax.persistence.EntityManager;
@@ -42,6 +41,7 @@ class QueryDslQueryMemberRepositoryTest {
         //then
         assertThat(optionalMember).isPresent();
         assertThat(optionalMember.get().getName()).isEqualTo(member.getName());
+        assertThat(optionalMember.get().isWithdrawal()).isFalse();
     }
 
     @Test
@@ -55,6 +55,7 @@ class QueryDslQueryMemberRepositoryTest {
         //then
         assertThat(optionalMember).isPresent();
         assertThat(optionalMember.get().getNickname()).isEqualTo(member.getNickname());
+        assertThat(optionalMember.get().isWithdrawal()).isFalse();
     }
 
     @Test
@@ -68,6 +69,7 @@ class QueryDslQueryMemberRepositoryTest {
         //then
         assertThat(optionalMember).isPresent();
         assertThat(optionalMember.get().getLoginId()).isEqualTo(member.getLoginId());
+        assertThat(optionalMember.get().isWithdrawal()).isFalse();
     }
 
     @Test
@@ -81,6 +83,7 @@ class QueryDslQueryMemberRepositoryTest {
         //then
         assertThat(optionalMember).isPresent();
         assertThat(optionalMember.get().getEmail()).isEqualTo(member.getEmail());
+        assertThat(optionalMember.get().isWithdrawal()).isFalse();
     }
 
     @Test
