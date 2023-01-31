@@ -10,6 +10,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.requestF
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -28,10 +29,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.point.domain.model.PointCode;
 import shop.yesaladin.shop.point.domain.model.PointReasonCode;
@@ -68,9 +71,6 @@ class CommandPointControllerTest {
                 pointReasonCode
         );
 
-        Mockito.when(commandPointHistoryService.use(any()))
-                .thenThrow(MemberNotFoundException.class);
-
         //when
         ResultActions result = mockMvc.perform(post("/v1/points")
                 .param("code", "asel")
@@ -78,9 +78,13 @@ class CommandPointControllerTest {
                 .content(objectMapper.writeValueAsString(request)));
 
         //then
+        ErrorCode code = ErrorCode.POINT_INVALID_PARAMETER;
         result.andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message", startsWith("Invalid Code Parameter:")));
+                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.status", equalTo(code.getResponseStatus().value())))
+                .andExpect(jsonPath("$.data", equalTo(null)))
+                .andExpect(jsonPath("$.errorMessages[0]", equalTo(code.getDisplayName())));
 
         //docs
         result.andDo(document(
@@ -91,10 +95,17 @@ class CommandPointControllerTest {
                 requestFields(
                         fieldWithPath("loginId").type(JsonFieldType.STRING).description("회원의 아이디"),
                         fieldWithPath("amount").type(JsonFieldType.NUMBER).description("사용한 포인트 양"),
-                        fieldWithPath("pointReasonCode").type(JsonFieldType.STRING).description("포인트 사용 사유")
+                        fieldWithPath("pointReasonCode").type(JsonFieldType.STRING)
+                                .description("포인트 사용 사유")
                 ),
                 responseFields(
-                        fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("성공유무"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data").type(JsonFieldType.NUMBER)
+                                .description("반환값")
+                                .optional(),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
                 )
         ));
     }
@@ -145,7 +156,8 @@ class CommandPointControllerTest {
                 requestFields(
                         fieldWithPath("loginId").type(JsonFieldType.STRING).description("회원의 아이디"),
                         fieldWithPath("amount").type(JsonFieldType.NUMBER).description("사용한 포인트 양"),
-                        fieldWithPath("pointReasonCode").type(JsonFieldType.STRING).description("포인트 사용 사유")
+                        fieldWithPath("pointReasonCode").type(JsonFieldType.STRING)
+                                .description("포인트 사용 사유")
                 ),
                 responseFields(
                         fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
@@ -168,7 +180,7 @@ class CommandPointControllerTest {
                 pointReasonCode
         );
 
-        Mockito.when(commandPointHistoryService.use(any())).thenThrow(OverPointUseException.class);
+        Mockito.when(commandPointHistoryService.use(any())).thenThrow(new OverPointUseException());
 
         //when
         ResultActions result = mockMvc.perform(post("/v1/points")
@@ -177,9 +189,13 @@ class CommandPointControllerTest {
                 .content(objectMapper.writeValueAsString(request)));
 
         //then
-        result.andExpect(status().isBadRequest())
+        ErrorCode code = ErrorCode.POINT_OVER_USE;
+        result.andDo(print()).andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message", startsWith("Over Point Use")));
+                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.status", equalTo(code.getResponseStatus().value())))
+                .andExpect(jsonPath("$.data", equalTo(null)))
+                .andExpect(jsonPath("$.errorMessages[0]", equalTo(code.getDisplayName())));
 
         ArgumentCaptor<PointHistoryRequestDto> captor = ArgumentCaptor.forClass(
                 PointHistoryRequestDto.class);
@@ -198,10 +214,17 @@ class CommandPointControllerTest {
                 requestFields(
                         fieldWithPath("loginId").type(JsonFieldType.STRING).description("회원의 아이디"),
                         fieldWithPath("amount").type(JsonFieldType.NUMBER).description("사용한 포인트 양"),
-                        fieldWithPath("pointReasonCode").type(JsonFieldType.STRING).description("포인트 사용 사유")
+                        fieldWithPath("pointReasonCode").type(JsonFieldType.STRING)
+                                .description("포인트 사용 사유")
                 ),
                 responseFields(
-                        fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("성공유무"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data").type(JsonFieldType.NUMBER)
+                                .description("데이")
+                                .optional(),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
                 )
         ));
     }
@@ -228,7 +251,7 @@ class CommandPointControllerTest {
                 curAmount,
                 LocalDateTime.now(),
                 PointCode.USE,
-                loginId
+                pointReasonCode
         );
         Mockito.when(commandPointHistoryService.use(any())).thenReturn(response);
         //when
@@ -238,12 +261,15 @@ class CommandPointControllerTest {
                 .content(objectMapper.writeValueAsString(request)));
 
         //then
-        result.andExpect(status().isOk());
-        result.andExpect(jsonPath("$.id", equalTo((int) pointHistoryId)));
-        result.andExpect(jsonPath("$.amount", equalTo((int) curAmount)));
-        result.andExpect(jsonPath("$.pointCode", equalTo("USE")));
-        result.andExpect(jsonPath("$.loginId", equalTo(loginId)));
-        result.andExpect(jsonPath("$.pointReasonCode", equalTo(pointReasonCode.name())));
+
+        result.andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.CREATED.value())))
+                .andExpect(jsonPath("$.data.id", equalTo((int) pointHistoryId)))
+                .andExpect(jsonPath("$.data.amount", equalTo((int) curAmount)))
+                .andExpect(jsonPath("$.data.pointCode", equalTo("USE")))
+                .andExpect(jsonPath("$.data.pointReasonCode", equalTo(pointReasonCode.name())));
 
         ArgumentCaptor<PointHistoryRequestDto> captor = ArgumentCaptor.forClass(
                 PointHistoryRequestDto.class);
@@ -262,16 +288,25 @@ class CommandPointControllerTest {
                 requestFields(
                         fieldWithPath("loginId").type(JsonFieldType.STRING).description("회원의 아이디"),
                         fieldWithPath("amount").type(JsonFieldType.NUMBER).description("사용한 포인트 양"),
-                        fieldWithPath("pointReasonCode").type(JsonFieldType.STRING).description("포인트 사용 사유")
+                        fieldWithPath("pointReasonCode").type(JsonFieldType.STRING)
+                                .description("포인트 사용 사유")
                 ),
                 responseFields(
-                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("포인트 등록 내역 pk"),
-                        fieldWithPath("amount").type(JsonFieldType.NUMBER).description("포인트 양"),
-                        fieldWithPath("createDateTime").type(JsonFieldType.STRING)
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("성공유무"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data.id").type(JsonFieldType.NUMBER)
+                                .description("포인트 등록 내역 pk"),
+                        fieldWithPath("data.amount").type(JsonFieldType.NUMBER)
+                                .description("포인트 양"),
+                        fieldWithPath("data.createDateTime").type(JsonFieldType.STRING)
                                 .description("포인트내역 등록 일시"),
-                        fieldWithPath("pointCode").type(JsonFieldType.STRING)
+                        fieldWithPath("data.pointCode").type(JsonFieldType.STRING)
                                 .description("포인트내역 등록 코드: 사용"),
-                        fieldWithPath("loginId").type(JsonFieldType.STRING).description("회원 아이디")
+                        fieldWithPath("data.pointReasonCode").type(JsonFieldType.STRING)
+                                .description("포인트 사유 코드"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.STRING)
+                                .description("에러 메세지")
+                                .optional()
                 )
         ));
     }
@@ -322,7 +357,8 @@ class CommandPointControllerTest {
                 requestFields(
                         fieldWithPath("loginId").type(JsonFieldType.STRING).description("회원의 아이디"),
                         fieldWithPath("amount").type(JsonFieldType.NUMBER).description("적립한 포인트 양"),
-                        fieldWithPath("pointReasonCode").type(JsonFieldType.STRING).description("포인트 적립 사유")
+                        fieldWithPath("pointReasonCode").type(JsonFieldType.STRING)
+                                .description("포인트 적립 사유")
                 ),
                 responseFields(
                         fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
@@ -353,7 +389,7 @@ class CommandPointControllerTest {
                 curAmount,
                 LocalDateTime.now(),
                 PointCode.SAVE,
-                loginId
+                PointReasonCode.SAVE_ORDER
         );
         Mockito.when(commandPointHistoryService.save(any())).thenReturn(response);
 
@@ -364,13 +400,14 @@ class CommandPointControllerTest {
                 .content(objectMapper.writeValueAsString(request)));
 
         //then
-        result.andExpect(status().isOk());
-        result.andExpect(content().contentType(MediaType.APPLICATION_JSON));
-        result.andExpect(jsonPath("$.id", equalTo((int) pointHistoryId)));
-        result.andExpect(jsonPath("$.amount", equalTo((int) curAmount)));
-        result.andExpect(jsonPath("$.pointCode", equalTo("SAVE")));
-        result.andExpect(jsonPath("$.loginId", equalTo(loginId)));
-        result.andExpect(jsonPath("$.pointReasonCode", equalTo(pointReasonCode.name())));
+        result.andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.CREATED.value())))
+                .andExpect(jsonPath("$.data.id", equalTo((int) pointHistoryId)))
+                .andExpect(jsonPath("$.data.amount", equalTo((int) curAmount)))
+                .andExpect(jsonPath("$.data.pointCode", equalTo("SAVE")))
+                .andExpect(jsonPath("$.data.pointReasonCode", equalTo(pointReasonCode.name())));
 
         ArgumentCaptor<PointHistoryRequestDto> captor = ArgumentCaptor.forClass(
                 PointHistoryRequestDto.class);
@@ -389,16 +426,25 @@ class CommandPointControllerTest {
                 requestFields(
                         fieldWithPath("loginId").type(JsonFieldType.STRING).description("회원의 아이디"),
                         fieldWithPath("amount").type(JsonFieldType.NUMBER).description("적립한 포인트 양"),
-                        fieldWithPath("pointReasonCode").type(JsonFieldType.STRING).description("포인트 적립 사유")
+                        fieldWithPath("pointReasonCode").type(JsonFieldType.STRING)
+                                .description("포인트 적립 사유")
                 ),
                 responseFields(
-                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("포인트 등록 내역 pk"),
-                        fieldWithPath("amount").type(JsonFieldType.NUMBER).description("포인트 양"),
-                        fieldWithPath("createDateTime").type(JsonFieldType.STRING)
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("성공유무"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data.id").type(JsonFieldType.NUMBER)
+                                .description("포인트 등록 내역 pk"),
+                        fieldWithPath("data.amount").type(JsonFieldType.NUMBER)
+                                .description("포인트 양"),
+                        fieldWithPath("data.createDateTime").type(JsonFieldType.STRING)
                                 .description("포인트내역 등록 일시"),
-                        fieldWithPath("pointCode").type(JsonFieldType.STRING)
+                        fieldWithPath("data.pointCode").type(JsonFieldType.STRING)
                                 .description("포인트내역 등록 코드: 적립"),
-                        fieldWithPath("loginId").type(JsonFieldType.STRING).description("회원 아이디")
+                        fieldWithPath("data.pointReasonCode").type(JsonFieldType.STRING)
+                                .description("포인트 사유 코드"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.STRING)
+                                .description("에러 메세지")
+                                .optional()
                 )
         ));
     }
