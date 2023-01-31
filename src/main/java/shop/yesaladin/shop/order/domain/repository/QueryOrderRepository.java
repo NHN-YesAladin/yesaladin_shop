@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
+import shop.yesaladin.shop.order.dto.OrderSummaryResponseDto;
 
 /**
  * 주문 조회 관련 repository 클래스입니다.
@@ -90,4 +91,21 @@ public interface QueryOrderRepository {
      * @return 조회된 주문 데이터
      */
     Optional<Order> findByOrderNumber(String orderNumber);
+
+    /**
+     * 특정 회원의 기간 내 모든 주문 데이터의 요약본을 페이지네이션하여 조회합니다.
+     *
+     * @param startDate 조회 기간 시작 일자
+     * @param endDate   조회 기간 마지막 일자
+     * @param memberId  주문 내역을 조회할 회원의 아이디
+     * @param pageable  페이지네이션 정보
+     * @return 페이지네이션 된 기간 내의 모든 주문 데이터의 요약
+     */
+    Page<OrderSummaryResponseDto> findOrdersInPeriodByMemberId(
+            LocalDate startDate,
+            LocalDate endDate,
+            long memberId,
+            Pageable pageable
+    );
+
 }

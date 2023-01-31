@@ -28,3 +28,8 @@ storage-token:
 logging:
   level:
     tracer: TRACE
+    org:
+      hibernate:
+        type:
+          descriptor:
+            sql: trace
