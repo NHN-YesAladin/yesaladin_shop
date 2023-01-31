@@ -10,6 +10,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.requestF
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -32,6 +33,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.common.code.ErrorCode;
@@ -56,6 +58,7 @@ class CommandPointControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @WithMockUser
     @Test
     @DisplayName("포인트 사용 실패 - 잘못된 파라미터를 요청한 경우")
     void createPointHistory_fail_InvalidCodeParameter() throws Exception {
@@ -73,6 +76,7 @@ class CommandPointControllerTest {
 
         //when
         ResultActions result = mockMvc.perform(post("/v1/points")
+                .with(csrf())
                 .param("code", "asel")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
@@ -91,7 +95,10 @@ class CommandPointControllerTest {
                 "create-point-history-fail-invalid-point-parameter",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                requestParameters(parameterWithName("code").description("포인트 사용/적립 구분")),
+                requestParameters(
+                        parameterWithName("code").description("포인트 사용/적립 구분"),
+                        parameterWithName("_csrf").description("csrf")
+                ),
                 requestFields(
                         fieldWithPath("loginId").type(JsonFieldType.STRING).description("회원의 아이디"),
                         fieldWithPath("amount").type(JsonFieldType.NUMBER).description("사용한 포인트 양"),
@@ -110,7 +117,7 @@ class CommandPointControllerTest {
                 )
         ));
     }
-
+    @WithMockUser
     @Test
     @DisplayName("포인트 사용 실패 - 존재하지 않는 회원 아이디인 경우")
     void createPointHistory_use_fail_NotFoundMember() throws Exception {
@@ -131,6 +138,7 @@ class CommandPointControllerTest {
 
         //when
         ResultActions result = mockMvc.perform(post("/v1/points")
+                .with(csrf())
                 .param("code", "use")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
@@ -153,7 +161,10 @@ class CommandPointControllerTest {
                 "create-point-history-use-fail-member-not-found",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                requestParameters(parameterWithName("code").description("포인트 사용/적립 구분")),
+                requestParameters(
+                        parameterWithName("code").description("포인트 사용/적립 구분"),
+                        parameterWithName("_csrf").description("csrf")
+                ),
                 requestFields(
                         fieldWithPath("loginId").type(JsonFieldType.STRING).description("회원의 아이디"),
                         fieldWithPath("amount").type(JsonFieldType.NUMBER).description("사용한 포인트 양"),
@@ -165,7 +176,7 @@ class CommandPointControllerTest {
                 )
         ));
     }
-
+    @WithMockUser
     @Test
     @DisplayName("포인트 사용 실패 - 회원이 소유한 포인트보다 많이 사용하고자한 경우")
     void createPointHistory_use_fail_OverPoint() throws Exception {
@@ -185,6 +196,7 @@ class CommandPointControllerTest {
 
         //when
         ResultActions result = mockMvc.perform(post("/v1/points")
+                .with(csrf())
                 .param("code", "use")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
@@ -211,7 +223,10 @@ class CommandPointControllerTest {
                 "create-point-history-use-fail-over-point",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                requestParameters(parameterWithName("code").description("포인트 사용/적립 구분")),
+                requestParameters(
+                        parameterWithName("code").description("포인트 사용/적립 구분"),
+                        parameterWithName("_csrf").description("csrf")
+                ),
                 requestFields(
                         fieldWithPath("loginId").type(JsonFieldType.STRING).description("회원의 아이디"),
                         fieldWithPath("amount").type(JsonFieldType.NUMBER).description("사용한 포인트 양"),
@@ -231,7 +246,7 @@ class CommandPointControllerTest {
                 )
         ));
     }
-
+    @WithMockUser
     @Test
     @DisplayName("포인트 사용 성공")
     void createPointHistory_use_success() throws Exception {
@@ -259,6 +274,7 @@ class CommandPointControllerTest {
         Mockito.when(commandPointHistoryService.use(any())).thenReturn(response);
         //when
         ResultActions result = mockMvc.perform(post("/v1/points")
+                .with(csrf())
                 .param("code", "use")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
@@ -287,7 +303,10 @@ class CommandPointControllerTest {
                 "create-point-history-use-success",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                requestParameters(parameterWithName("code").description("포인트 사용/적립 구분")),
+                requestParameters(
+                        parameterWithName("code").description("포인트 사용/적립 구분"),
+                        parameterWithName("_csrf").description("csrf")
+                ),
                 requestFields(
                         fieldWithPath("loginId").type(JsonFieldType.STRING).description("회원의 아이디"),
                         fieldWithPath("amount").type(JsonFieldType.NUMBER).description("사용한 포인트 양"),
@@ -315,7 +334,7 @@ class CommandPointControllerTest {
                 )
         ));
     }
-
+    @WithMockUser
     @Test
     @DisplayName("포인트 적립 실패 - 존재하지 않는 회원 아이디인 경우")
     void createPointHistory_save_fail_MemberNotFound() throws Exception {
@@ -336,6 +355,7 @@ class CommandPointControllerTest {
 
         //when
         ResultActions result = mockMvc.perform(post("/v1/points")
+                .with(csrf())
                 .param("code", "save")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
@@ -358,7 +378,10 @@ class CommandPointControllerTest {
                 "create-point-history-save-fail-member-not-found",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                requestParameters(parameterWithName("code").description("포인트 사용/적립 구분")),
+                requestParameters(
+                        parameterWithName("code").description("포인트 사용/적립 구분"),
+                        parameterWithName("_csrf").description("csrf")
+                ),
                 requestFields(
                         fieldWithPath("loginId").type(JsonFieldType.STRING).description("회원의 아이디"),
                         fieldWithPath("amount").type(JsonFieldType.NUMBER).description("적립한 포인트 양"),
@@ -371,7 +394,7 @@ class CommandPointControllerTest {
 
         ));
     }
-
+    @WithMockUser
     @Test
     @DisplayName("포인트 적립 성공")
     void createPointHistory_save_success() throws Exception {
@@ -400,6 +423,7 @@ class CommandPointControllerTest {
 
         //when
         ResultActions result = mockMvc.perform(post("/v1/points")
+                .with(csrf())
                 .param("code", "save")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
@@ -427,7 +451,10 @@ class CommandPointControllerTest {
                 "create-point-history-save-success",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                requestParameters(parameterWithName("code").description("포인트 사용/적립 구분")),
+                requestParameters(
+                        parameterWithName("code").description("포인트 사용/적립 구분"),
+                        parameterWithName("_csrf").description("csrf")
+                ),
                 requestFields(
                         fieldWithPath("loginId").type(JsonFieldType.STRING).description("회원의 아이디"),
                         fieldWithPath("amount").type(JsonFieldType.NUMBER).description("적립한 포인트 양"),
