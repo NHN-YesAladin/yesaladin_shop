@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
+import shop.yesaladin.shop.product.domain.repository.QueryRelationRepository;
 import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
 import shop.yesaladin.shop.product.dto.ProductsResponseDto;
 import shop.yesaladin.shop.product.exception.ProductNotFoundException;
@@ -40,6 +41,7 @@ public class QueryProductServiceImpl implements QueryProductService {
     private final QueryWritingService queryWritingService;
     private final QueryPublishService queryPublishService;
     private final QueryProductTagService queryProductTagService;
+    private final QueryRelationRepository queryRelationRepository;
 
     /**
      * {@inheritDoc}
@@ -141,6 +143,11 @@ public class QueryProductServiceImpl implements QueryProductService {
 
             List<String> tags = findTagsByProduct(product);
 
+            List<Long> relations = queryRelationRepository.findByProductMain(product)
+                    .stream()
+                    .map(relation -> relation.getProductSub().getId())
+                    .collect(Collectors.toList());
+
             products.add(new ProductsResponseDto(
                     product.getId(),
                     product.getTitle(),
@@ -155,7 +162,8 @@ public class QueryProductServiceImpl implements QueryProductService {
                     product.isSale() && !product.isDeleted(),
                     product.isDeleted(),
                     product.getThumbnailFile().getUrl(),
-                    tags
+                    tags,
+                    product.getEbookFile().getUrl()
             ));
         }
 

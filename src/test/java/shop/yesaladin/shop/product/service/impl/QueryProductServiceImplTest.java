@@ -12,6 +12,7 @@ import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
 import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
+import shop.yesaladin.shop.product.domain.repository.QueryRelationRepository;
 import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
 import shop.yesaladin.shop.product.dto.ProductsResponseDto;
 import shop.yesaladin.shop.product.dummy.DummyFile;
@@ -50,6 +51,7 @@ class QueryProductServiceImplTest {
     private QueryWritingService queryWritingService;
     private QueryPublishService queryPublishService;
     private QueryProductTagService queryProductTagService;
+    private QueryRelationRepository queryRelationRepository;
 
     private final Clock clock = Clock.fixed(
             Instant.parse("2023-01-10T00:00:00.000Z"),
@@ -62,12 +64,14 @@ class QueryProductServiceImplTest {
         queryWritingService = mock(QueryWritingService.class);
         queryPublishService = mock(QueryPublishService.class);
         queryProductTagService = mock(QueryProductTagService.class);
+        queryRelationRepository = mock(QueryRelationRepository.class);
 
         service = new QueryProductServiceImpl(
                 queryProductRepository,
                 queryWritingService,
                 queryPublishService,
-                queryProductTagService
+                queryProductTagService,
+                queryRelationRepository
         );
     }
 

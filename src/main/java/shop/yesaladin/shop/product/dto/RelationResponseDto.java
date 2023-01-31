@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 /**
- * 전체 조회 응답을 하기 위한 Dto 입니다.
+ * 상품 연관관계 데이터를 반환받는 Dto 입니다.
  *
  * @author 이수정
  * @since 1.0
@@ -15,23 +15,17 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductsResponseDto {
+public class RelationResponseDto {
+
     private long id;
 
+    private String thumbnailFileUrl;
     private String title;
     private List<String> authors;
     private String publisher;
-    private String publishedDate;
+
     private long sellingPrice;
     private int discountRate;
 
-    private long quantity;
-    private Boolean isSale;
-    private Boolean isForcedOutOfStock;
     private Boolean isShown;
-    private Boolean isDeleted;
-
-    private String thumbnailFileUrl;
-    private List<String> tags;
-    private String ebookFileUrl;
 }

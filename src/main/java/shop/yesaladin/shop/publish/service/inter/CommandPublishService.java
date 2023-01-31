@@ -22,5 +22,12 @@ public interface CommandPublishService {
      */
     PublishResponseDto register(Publish publish);
 
+    /**
+     * 상품을 기준으로 출판 관계로 삭제합니다.
+     *
+     * @param product 기준이 될 상품
+     * @author 이수정
+     * @since 1.0
+     */
     void deleteByProduct(Product product);
 }
