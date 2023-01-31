@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +32,8 @@ public class QueryOrderController {
 
     private final QueryOrderService queryOrderService;
 
+    private final String ROLE_USER = "ROLE_USER";
+
     @GetMapping
     public PaginatedResponseDto<OrderSummaryDto> getAllOrders(
             @RequestBody PeriodQueryRequestDto queryDto, Pageable pageable
@@ -55,18 +59,29 @@ public class QueryOrderController {
     @GetMapping("/sheet")
     public ResponseDto<MemberOrderResponseDto> getOrderSheetData(
             @RequestBody MemberOrderRequestDto request,
-            String loginId
+            Authentication authentication
     ) {
-        MemberOrderResponseDto response;
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-        response = queryOrderService.getMemberOrderSheetData(request, loginId);
-        response = queryOrderService.getNonMemberOrderSheetData(request);
+        MemberOrderResponseDto response;
+        if (checkUserAuthority(userDetails)) {
+            String loginId = userDetails.getUsername();
+            response = queryOrderService.getMemberOrderSheetData(request, loginId);
+        } else {
+            response = queryOrderService.getNonMemberOrderSheetData(request);
+        }
 
         return ResponseDto.<MemberOrderResponseDto>builder()
                 .success(true)
                 .status(HttpStatus.OK)
                 .data(response)
                 .build();
+    }
+
+    private boolean checkUserAuthority(UserDetails userDetails) {
+        return userDetails.getAuthorities()
+                .stream()
+                .anyMatch(x -> x.getAuthority().equals(ROLE_USER));
     }
 
 }
