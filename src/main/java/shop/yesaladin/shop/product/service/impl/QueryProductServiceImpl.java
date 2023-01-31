@@ -155,7 +155,8 @@ public class QueryProductServiceImpl implements QueryProductService {
                     product.isSale() && !product.isDeleted(),
                     product.isDeleted(),
                     product.getThumbnailFile().getUrl(),
-                    tags
+                    tags,
+                    product.getEbookFile() != null ? product.getEbookFile().getUrl() : null
             ));
         }
 

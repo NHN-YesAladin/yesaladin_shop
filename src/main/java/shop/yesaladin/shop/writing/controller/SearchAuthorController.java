@@ -1,20 +1,18 @@
 package shop.yesaladin.shop.writing.controller;
 
 
-import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.common.dto.ResponseDto;
-import shop.yesaladin.shop.category.dto.SearchCategoryResponseDto;
-import shop.yesaladin.shop.tag.dto.SearchedTagResponseDto;
 import shop.yesaladin.shop.writing.dto.SearchAuthorRequestDto;
 import shop.yesaladin.shop.writing.dto.SearchedAuthorResponseDto;
 import shop.yesaladin.shop.writing.service.inter.SearchAuthorService;
+
+import javax.validation.Valid;
 
 /**
  * 엘라스틱서치 저자 검색 컨트롤러

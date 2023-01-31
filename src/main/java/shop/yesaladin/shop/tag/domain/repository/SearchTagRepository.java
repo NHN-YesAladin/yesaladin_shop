@@ -1,8 +1,6 @@
 package shop.yesaladin.shop.tag.domain.repository;
 
-import java.util.List;
 import shop.yesaladin.shop.tag.dto.SearchedTagResponseDto;
-import shop.yesaladin.shop.tag.dto.TagsResponseDto;
 
 /**
  * 엘라스틱 서치 태그 검색 인터페이스

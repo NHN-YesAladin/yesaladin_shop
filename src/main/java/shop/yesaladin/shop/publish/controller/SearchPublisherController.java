@@ -1,7 +1,5 @@
 package shop.yesaladin.shop.publish.controller;
 
-import java.util.List;
-import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +10,8 @@ import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.shop.publish.dto.SearchPublisherRequestDto;
 import shop.yesaladin.shop.publish.dto.SearchPublisherResponseDto;
 import shop.yesaladin.shop.publish.service.inter.SearchPublisherService;
+
+import javax.validation.Valid;
 
 /**
  * 엘라스틱서치 출판사 검색 컨트롤러
@@ -31,12 +31,12 @@ public class SearchPublisherController {
      *
      * @param dto 출판사 이름, 페이지 위치, 상품 갯수
      * @return 검색된 출판사 리스트
-     * @since : 1.0
      * @author : 김선홍
+     * @since : 1.0
      */
     @GetMapping(params = "name")
     public ResponseDto<SearchPublisherResponseDto> searchPublisherByName(@ModelAttribute @Valid
-            SearchPublisherRequestDto dto
+                                                                         SearchPublisherRequestDto dto
     ) {
         return ResponseDto.<SearchPublisherResponseDto>builder()
                 .status(HttpStatus.OK)
