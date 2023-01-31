@@ -79,6 +79,7 @@ class CommandMemberAddressControllerTest {
         );
     }
 
+
     @ParameterizedTest
     @MethodSource(value = "createMemberAddressData")
     void createMemberAddress_failByValidationError_forParameterizedTest(Map<String, Object> request)
