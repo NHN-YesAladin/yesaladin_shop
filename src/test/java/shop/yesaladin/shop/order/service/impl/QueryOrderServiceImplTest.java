@@ -3,7 +3,9 @@ package shop.yesaladin.shop.order.service.impl;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
@@ -26,8 +28,10 @@ import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.order.domain.model.MemberOrder;
 import shop.yesaladin.shop.order.domain.model.Order;
+import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
+import shop.yesaladin.shop.order.dto.OrderSummaryResponseDto;
 import shop.yesaladin.shop.order.exception.OrderNotFoundException;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMemberAddress;
@@ -42,6 +46,8 @@ class QueryOrderServiceImplTest {
             Instant.parse("2023-01-10T00:00:00.000Z"),
             ZoneId.of("UTC")
     );
+
+    long expectedMemberId = 1L;
 
     @BeforeEach
     void setUp() {
@@ -112,6 +118,64 @@ class QueryOrderServiceImplTest {
     }
 
     @Test
+    @DisplayName("특정 회원의 기간 내에 생성된 모든 데이터 조회에 성공한다")
+    void getOrderListInPeriodByMemberIdSuccessTest() {
+        // given
+        LocalDate startDate = LocalDate.now(clock).minusDays(15);
+        LocalDate endDate = LocalDate.now(clock);
+        PeriodQueryRequestDto queryDto = ReflectionUtils.newInstance(
+                PeriodQueryRequestDto.class,
+                startDate,
+                endDate
+        );
+        Pageable pageable = PageRequest.of(0, 10);
+
+        List<OrderSummaryResponseDto> response = new ArrayList<>();
+        for (int i = 0; i < 20; i++) {
+            response.add(new OrderSummaryResponseDto(
+                    (long) i,
+                    "orderNumber" + i,
+                    LocalDateTime.now().minusDays(5),
+                    "name",
+                    (long)10000 * i,
+                    OrderStatusCode.ORDER,
+                    (long) i,
+                    "memberName"
+            ));
+
+        }
+
+        Page<OrderSummaryResponseDto> expectedValue = PageableExecutionUtils.getPage(response, pageable, () -> 1);
+
+
+        Mockito.when(repository.getCountOfOrdersInPeriodByMemberId(
+                startDate,
+                endDate,
+                expectedMemberId
+        )).thenReturn((long) response.size());
+        Mockito.when(repository.findOrdersInPeriodByMemberId(queryDto.getStartDateOrDefaultValue(
+                        clock), queryDto.getEndDateOrDefaultValue(clock), expectedMemberId, pageable))
+                .thenReturn(expectedValue);
+
+        // when
+        Page<OrderSummaryResponseDto> actual = service.getOrderListInPeriodByMemberId(
+                queryDto,
+                expectedMemberId,
+                pageable
+        );
+
+        // then
+        Assertions.assertThat(actual).isEqualTo(expectedValue);
+        Mockito.verify(repository, Mockito.times(1))
+                .findOrdersInPeriodByMemberId(
+                        queryDto.getStartDateOrDefaultValue(clock),
+                        queryDto.getEndDateOrDefaultValue(clock),
+                        expectedMemberId,
+                        pageable
+                );
+    }
+
+    @Test
     @DisplayName("미래의 데이터를 조회하려고 시도하면 예외가 발생한다")
     void getAllOrderListInPeriodFailCauseByFutureQueryConditionTest() {
         // given
@@ -153,7 +217,7 @@ class QueryOrderServiceImplTest {
         // given
         PeriodQueryRequestDto queryDto = ReflectionUtils.newInstance(
                 PeriodQueryRequestDto.class,
-                LocalDate.of(2022, 12, 31),
+                LocalDate.now(clock).minusYears(1).minusDays(1),
                 LocalDate.now(clock)
         );
 
@@ -241,6 +305,111 @@ class QueryOrderServiceImplTest {
                 .findByOrderNumber(stringArgumentCaptor.capture());
         Assertions.assertThat(stringArgumentCaptor.getValue())
                 .isEqualTo(wrongData);
+
+    }
+
+    @Test
+    @DisplayName("미래의 데이터를 조회하려고 시도하면 예외가 발생한다")
+    void getOrderListInPeriodFailCauseByFutureQueryConditionTest() {
+        // given
+        PeriodQueryRequestDto queryDto = ReflectionUtils.newInstance(
+                PeriodQueryRequestDto.class,
+                LocalDate.now(clock),
+                LocalDate.now(clock).plusDays(1)
+        );
+
+        Pageable pageable = PageRequest.of(1, 10);
+
+        // when
+        // then
+        Assertions.assertThatThrownBy(() -> service.getOrderListInPeriodByMemberId(queryDto,
+                        expectedMemberId,
+                        pageable))
+                .isInstanceOf(InvalidPeriodConditionException.class);
+    }
+
+    @Test
+    @DisplayName("너무 긴 기간의 데이터를 조회하려고 시도하면 예외가 발생한다")
+    void getOrderListInPeriodFailCauseByTooLongPeriodQueryConditionTest() {
+        // given
+        PeriodQueryRequestDto queryDto = ReflectionUtils.newInstance(
+                PeriodQueryRequestDto.class,
+                LocalDate.now(clock).minusMonths(13),
+                LocalDate.now(clock)
+        );
+
+        Pageable pageable = PageRequest.of(1, 10);
+
+        // when
+        // then
+        Assertions.assertThatThrownBy(() -> service.getOrderListInPeriodByMemberId(queryDto,
+                        expectedMemberId,
+                        pageable))
+                .isInstanceOf(InvalidPeriodConditionException.class);
+    }
+
+    @Test
+    @DisplayName("너무 과거의 데이터를 조회하려고 시도하면 예외가 발생한다")
+    void getOrderListInPeriodFailCauseByTooPastQueryConditionTest() {
+        // given
+        PeriodQueryRequestDto queryDto = ReflectionUtils.newInstance(
+                PeriodQueryRequestDto.class,
+                LocalDate.now(clock).minusYears(1).minusDays(1),
+                LocalDate.now(clock)
+        );
+
+        Pageable pageable = PageRequest.of(1, 10);
+
+        // when
+        // then
+        Assertions.assertThatThrownBy(() -> service.getOrderListInPeriodByMemberId(
+                        queryDto,
+                        expectedMemberId,
+                        pageable
+                ))
+                .isInstanceOf(InvalidPeriodConditionException.class);
+    }
+
+    @Test
+    @DisplayName("시작 날짜가 끝 날짜보다 뒤인 조건으로 데이터를 조회하려고 시도하면 예외가 발생한다")
+    void getOrderListInPeriodFailCauseByStartOverEndQueryConditionTest() {
+        // given
+        PeriodQueryRequestDto queryDto = ReflectionUtils.newInstance(
+                PeriodQueryRequestDto.class,
+                LocalDate.now(clock),
+                LocalDate.now(clock).minusDays(1)
+        );
+
+        Pageable pageable = PageRequest.of(1, 10);
+
+        // when
+        // then
+        Assertions.assertThatThrownBy(() -> service.getOrderListInPeriodByMemberId(
+                        queryDto,
+                        expectedMemberId,
+                        pageable
+                ))
+                .isInstanceOf(InvalidPeriodConditionException.class);
+    }
+
+    @Test
+    @DisplayName("존재하는 데이터 수보다 큰 오프셋으로 조회를 시도하면 예외가 발생한다")
+    void getOrderListInPeriodFailCauseByOffsetOutOfBounds() {
+        // given
+        PeriodQueryRequestDto queryDto = Mockito.mock(PeriodQueryRequestDto.class);
+        Mockito.when(queryDto.getEndDateOrDefaultValue(clock)).thenReturn(LocalDate.now(clock));
+        Mockito.when(repository.getCountOfOrdersInPeriod(Mockito.any(), Mockito.any()))
+                .thenReturn(1L);
+        Pageable pageable = PageRequest.of(2, 10);
+
+        // when
+        // then
+        Assertions.assertThatThrownBy(() -> service.getOrderListInPeriodByMemberId(
+                        queryDto,
+                        expectedMemberId,
+                        pageable
+                ))
+                .isInstanceOf(PageOffsetOutOfBoundsException.class);
 
     }
 }

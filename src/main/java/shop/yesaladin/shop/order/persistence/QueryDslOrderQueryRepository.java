@@ -211,8 +211,8 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
                         memberOrder.member.name
                 ))
                 .from(memberOrder)
-                .leftJoin(orderStatusChangeLog)
-                .on(memberOrder.id.eq(orderStatusChangeLog.pk.orderId))
+                .innerJoin(orderStatusChangeLog)
+                .on(memberOrder.id.eq(orderStatusChangeLog.order.id))
                 .where(memberOrder.member.id.eq(memberId).and(memberOrder.orderDateTime.between(
                         LocalDateTime.of(startDate, LocalTime.MIDNIGHT),
                         LocalDateTime.of(endDate, LocalTime.MIDNIGHT)

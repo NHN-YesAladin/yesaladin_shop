@@ -15,6 +15,7 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
+import shop.yesaladin.shop.order.dto.OrderSummaryResponseDto;
 import shop.yesaladin.shop.order.exception.OrderNotFoundException;
 import shop.yesaladin.shop.order.service.inter.QueryOrderService;
 
@@ -84,6 +85,28 @@ public class QueryOrderServiceImpl implements QueryOrderService {
         return queryOrderRepository.findByOrderNumber(number)
                 .orElseThrow(() -> new OrderNotFoundException(number));
     }
+
+    @Override
+    public Page<OrderSummaryResponseDto> getOrderListInPeriodByMemberId(
+            PeriodQueryRequestDto queryDto,
+            long memberId,
+            Pageable pageable
+    ) {
+        checkValidMemberId(memberId);
+        queryDto.validate(clock);
+
+        LocalDate startDate = queryDto.getStartDateOrDefaultValue(clock);
+        LocalDate endDate = queryDto.getEndDateOrDefaultValue(clock);
+
+        checkRequestedOffsetInBounds(startDate, endDate, memberId, pageable);
+        return queryOrderRepository.findOrdersInPeriodByMemberId(
+                startDate,
+                endDate,
+                memberId,
+                pageable
+        );
+    }
+
 
     private void checkRequestedOffsetInBounds(
             LocalDate startDate, LocalDate endDate, Long memberId, Pageable pageable
