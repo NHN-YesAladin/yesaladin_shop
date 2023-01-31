@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import shop.yesaladin.shop.category.domain.model.Category;
+import shop.yesaladin.shop.category.domain.model.Category.CategoryBuilder;
 
 /**
  * 카테고리의 일부 데이터를 front server로 전달하기 위한 dto
@@ -56,4 +57,15 @@ public class CategoryResponseDto {
                 .build();
     }
 
+    public Category toEntity(Category parent) {
+        CategoryBuilder categoryBuilder = Category.builder()
+                .id(this.id)
+                .name(this.name)
+                .isShown(this.isShown)
+                .order(this.order);
+        if (Objects.isNull(parent)) {
+            return categoryBuilder.build();
+        }
+        return categoryBuilder.parent(parent).build();
+    }
 }

@@ -92,7 +92,7 @@ public class ProductCreateDto {
     private List<Long> tags;
 
     // 카테고리
-//    private List<String> categories;
+    private List<Long> categories;
 
     /**
      * Dto를 바탕으로 Product entity 객체를 만들어 반환합니다.

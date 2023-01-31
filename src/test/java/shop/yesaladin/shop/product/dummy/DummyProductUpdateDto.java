@@ -10,6 +10,7 @@ public class DummyProductUpdateDto {
         List<Long> authors = List.of(1L);
 
         List<Long> tags = List.of(1L, 2L);
+        List<Long> categories = List.of(1L, 2L);
 
         return new ProductUpdateDto(
                 title,
@@ -35,8 +36,8 @@ public class DummyProductUpdateDto {
                 "BESTSELLER",
                 "SELLING_PRICE",
                 tags,
+                categories,
                 false
         );
     }
-
 }
