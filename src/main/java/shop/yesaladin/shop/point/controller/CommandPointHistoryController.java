@@ -48,13 +48,8 @@ public class CommandPointHistoryController {
     ) {
         PointCode pointCode = PointCode.findByCode(code);
 
-        PointHistoryResponseDto response;
-        if(pointCode.equals(PointCode.USE)) {
-            response = pointCommandService.use(request);
-        }
-        else response = pointCommandService.save(request);
-//        PointHistoryResponseDto response = (pointCode.equals(PointCode.USE)) ?
-//                pointCommandService.use(request) : pointCommandService.save(request);
+        PointHistoryResponseDto response = (pointCode.equals(PointCode.USE)) ?
+                pointCommandService.use(request) : pointCommandService.save(request);
 
         return ResponseDto.<PointHistoryResponseDto>builder()
                 .success(true)
