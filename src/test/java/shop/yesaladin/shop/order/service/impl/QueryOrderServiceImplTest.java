@@ -1,5 +1,7 @@
 package shop.yesaladin.shop.order.service.impl;
 
+import static org.mockito.ArgumentMatchers.any;
+
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -29,10 +31,12 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.order.domain.model.MemberOrder;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
+import shop.yesaladin.shop.order.domain.repository.QueryOrderProductRepository;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryResponseDto;
 import shop.yesaladin.shop.order.exception.OrderNotFoundException;
+import shop.yesaladin.shop.order.persistence.QueryDslOrderProductQueryRepository;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMemberAddress;
 import shop.yesaladin.shop.order.persistence.dummy.DummyOrder;
@@ -41,6 +45,7 @@ class QueryOrderServiceImplTest {
 
     private QueryOrderServiceImpl service;
     private QueryOrderRepository repository;
+    private QueryOrderProductRepository orderProductRepository;
     private QueryMemberService queryMemberService;
     private final Clock clock = Clock.fixed(
             Instant.parse("2023-01-10T00:00:00.000Z"),
@@ -52,8 +57,14 @@ class QueryOrderServiceImplTest {
     @BeforeEach
     void setUp() {
         repository = Mockito.mock(QueryOrderRepository.class);
+        orderProductRepository = Mockito.mock(QueryOrderProductRepository.class);
         queryMemberService = Mockito.mock(QueryMemberService.class);
-        service = new QueryOrderServiceImpl(repository, queryMemberService, clock);
+        service = new QueryOrderServiceImpl(
+                repository,
+                orderProductRepository,
+                queryMemberService,
+                clock
+        );
     }
 
     @Test
@@ -64,9 +75,9 @@ class QueryOrderServiceImplTest {
         Pageable pageable = PageRequest.of(0, 10);
         Page<OrderSummaryDto> expectedValue = PageableExecutionUtils.getPage(List.of((Mockito.mock(
                 OrderSummaryDto.class))), pageable, () -> 1);
-        Mockito.when(repository.getCountOfOrdersInPeriod(Mockito.any(), Mockito.any()))
+        Mockito.when(repository.getCountOfOrdersInPeriod(any(), any()))
                 .thenReturn(1L);
-        Mockito.when(repository.findAllOrdersInPeriod(Mockito.any(), Mockito.any(), Mockito.any()))
+        Mockito.when(repository.findAllOrdersInPeriod(any(), any(), any()))
                 .thenReturn(expectedValue);
         Mockito.when(queryDto.getEndDateOrDefaultValue(clock)).thenReturn(LocalDate.now(clock));
 
@@ -93,7 +104,7 @@ class QueryOrderServiceImplTest {
                 OrderSummaryDto.class))), pageable, () -> 1);
         long expectedMemberId = 1L;
 
-        Mockito.when(repository.getCountOfOrdersInPeriod(Mockito.any(), Mockito.any()))
+        Mockito.when(repository.getCountOfOrdersInPeriod(any(), any()))
                 .thenReturn(1L);
         Mockito.when(repository.findAllOrdersInPeriodByMemberId(queryDto.getStartDateOrDefaultValue(
                         clock), queryDto.getEndDateOrDefaultValue(clock), expectedMemberId, pageable))
@@ -157,6 +168,9 @@ class QueryOrderServiceImplTest {
                         clock), queryDto.getEndDateOrDefaultValue(clock), expectedMemberId, pageable))
                 .thenReturn(expectedValue);
 
+        long productSize = 10L;
+        Mockito.when(orderProductRepository.getCountOfOrderProductByOrderId(any())).thenReturn(productSize);
+
         // when
         Page<OrderSummaryResponseDto> actual = service.getOrderListInPeriodByMemberId(
                 queryDto,
@@ -166,6 +180,7 @@ class QueryOrderServiceImplTest {
 
         // then
         Assertions.assertThat(actual).isEqualTo(expectedValue);
+        Assertions.assertThat(actual.getContent().get(0).getOrderProductCount()).isEqualTo(productSize);
         Mockito.verify(repository, Mockito.times(1))
                 .findOrdersInPeriodByMemberId(
                         queryDto.getStartDateOrDefaultValue(clock),
@@ -173,6 +188,8 @@ class QueryOrderServiceImplTest {
                         expectedMemberId,
                         pageable
                 );
+        Mockito.verify(orderProductRepository, Mockito.times(actual.getContent().size()))
+                .getCountOfOrderProductByOrderId(any());
     }
 
     @Test
@@ -253,7 +270,7 @@ class QueryOrderServiceImplTest {
         // given
         PeriodQueryRequestDto queryDto = Mockito.mock(PeriodQueryRequestDto.class);
         Mockito.when(queryDto.getEndDateOrDefaultValue(clock)).thenReturn(LocalDate.now(clock));
-        Mockito.when(repository.getCountOfOrdersInPeriod(Mockito.any(), Mockito.any()))
+        Mockito.when(repository.getCountOfOrdersInPeriod(any(), any()))
                 .thenReturn(1L);
         Pageable pageable = PageRequest.of(2, 10);
 
@@ -272,7 +289,7 @@ class QueryOrderServiceImplTest {
         Member member = DummyMember.member();
         MemberAddress memberAddress = DummyMemberAddress.address(member);
         MemberOrder memberOrder = DummyOrder.memberOrder(member, memberAddress);
-        Mockito.when(repository.findByOrderNumber(Mockito.any()))
+        Mockito.when(repository.findByOrderNumber(any()))
                 .thenReturn(Optional.of(memberOrder));
 
         // when
@@ -398,7 +415,7 @@ class QueryOrderServiceImplTest {
         // given
         PeriodQueryRequestDto queryDto = Mockito.mock(PeriodQueryRequestDto.class);
         Mockito.when(queryDto.getEndDateOrDefaultValue(clock)).thenReturn(LocalDate.now(clock));
-        Mockito.when(repository.getCountOfOrdersInPeriod(Mockito.any(), Mockito.any()))
+        Mockito.when(repository.getCountOfOrdersInPeriod(any(), any()))
                 .thenReturn(1L);
         Pageable pageable = PageRequest.of(2, 10);
 

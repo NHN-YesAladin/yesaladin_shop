@@ -19,6 +19,7 @@ import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
 import shop.yesaladin.shop.order.domain.model.querydsl.QMemberOrder;
 import shop.yesaladin.shop.order.domain.model.querydsl.QOrder;
+import shop.yesaladin.shop.order.domain.model.querydsl.QOrderProduct;
 import shop.yesaladin.shop.order.domain.model.querydsl.QOrderStatusChangeLog;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;

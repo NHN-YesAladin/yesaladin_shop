@@ -26,5 +26,9 @@ public class OrderSummaryResponseDto {
     private final OrderStatusCode orderStatusCode;
     private final Long memberId;
     private final String MemberName;
+    private Long orderProductCount;
 
+    public void setOrderProductCount(Long orderProductCount) {
+        this.orderProductCount = orderProductCount;
+    }
 }

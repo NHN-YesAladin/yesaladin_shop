@@ -13,6 +13,7 @@ import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.common.exception.PageOffsetOutOfBoundsException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.order.domain.model.Order;
+import shop.yesaladin.shop.order.domain.repository.QueryOrderProductRepository;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryResponseDto;
@@ -30,6 +31,7 @@ import shop.yesaladin.shop.order.service.inter.QueryOrderService;
 public class QueryOrderServiceImpl implements QueryOrderService {
 
     private final QueryOrderRepository queryOrderRepository;
+    private final QueryOrderProductRepository queryOrderProductRepository;
     private final QueryMemberService queryMemberService;
     private final Clock clock;
 
@@ -99,12 +101,17 @@ public class QueryOrderServiceImpl implements QueryOrderService {
         LocalDate endDate = queryDto.getEndDateOrDefaultValue(clock);
 
         checkRequestedOffsetInBounds(startDate, endDate, memberId, pageable);
-        return queryOrderRepository.findOrdersInPeriodByMemberId(
+        Page<OrderSummaryResponseDto> orders = queryOrderRepository.findOrdersInPeriodByMemberId(
                 startDate,
                 endDate,
                 memberId,
                 pageable
         );
+        for (OrderSummaryResponseDto order : orders) {
+            order.setOrderProductCount(queryOrderProductRepository.getCountOfOrderProductByOrderId(
+                    order.getOrderId()));
+        }
+        return orders;
     }
 
 

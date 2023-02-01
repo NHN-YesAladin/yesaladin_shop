@@ -17,7 +17,7 @@ import shop.yesaladin.shop.common.exception.type.InvalidPeriodConditionType;
  * @since 1.0
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class PeriodQueryRequestDto {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
