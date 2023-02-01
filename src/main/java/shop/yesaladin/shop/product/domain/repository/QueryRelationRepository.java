@@ -17,16 +17,6 @@ import java.util.List;
 public interface QueryRelationRepository {
 
     /**
-     * 첫번째 대상 상품으로 연관관계를 조회합니다.
-     *
-     * @param product 조회할 대상 상품
-     * @return 조회된 연관관계 List
-     * @author 이수정
-     * @since 1.0
-     */
-    List<Relation> findByProductMain(Product product);
-
-    /**
      * 연관관계의 Pk로 존재여부를 확인합니다.
      *
      * @param pk 연관관계의 pk

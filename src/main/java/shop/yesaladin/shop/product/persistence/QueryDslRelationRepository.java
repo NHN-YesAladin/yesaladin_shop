@@ -30,19 +30,6 @@ public class QueryDslRelationRepository implements QueryRelationRepository {
      * {@inheritDoc}
      */
     @Override
-    public List<Relation> findByProductMain(Product product) {
-        QRelation relation = QRelation.relation;
-
-        return queryFactory.select(relation)
-                .from(relation)
-                .where(relation.productMain.eq(product))
-                .fetch();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public boolean existsByPk(Relation.Pk pk) {
         QRelation relation = QRelation.relation;
 
