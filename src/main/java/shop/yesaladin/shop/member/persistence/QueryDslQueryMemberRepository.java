@@ -1,6 +1,7 @@
 package shop.yesaladin.shop.member.persistence;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -62,6 +63,17 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
         return Optional.ofNullable(queryFactory.selectFrom(member)
                 .where(member.email.eq(email).and(member.isWithdrawal.isFalse()))
                 .fetchFirst());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Member> findMembersByBirthday(int month, int date) {
+        QMember member = QMember.member;
+        return queryFactory.selectFrom(member)
+                .where(member.birthMonth.eq(month), member.birthDay.eq(date))
+                .fetch();
     }
 
     /**
