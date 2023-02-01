@@ -25,6 +25,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.member.domain.model.Member;
@@ -50,6 +51,7 @@ class QueryMemberAddressControllerTest {
     String address = "Gwang Ju";
     Boolean isDefault = false;
 
+    @WithMockUser
     @Test
     void getMemberAddressByMemberId_fail_MemberNotFound() throws Exception {
         //given
@@ -78,6 +80,7 @@ class QueryMemberAddressControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     void getMemberAddressByMemberId() throws Exception {
         //given

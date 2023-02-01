@@ -1,10 +1,5 @@
 package shop.yesaladin.shop.writing.service.impl;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +8,12 @@ import shop.yesaladin.shop.writing.domain.repository.SearchAuthorRepository;
 import shop.yesaladin.shop.writing.dto.SearchAuthorRequestDto;
 import shop.yesaladin.shop.writing.dto.SearchedAuthorResponseDto;
 import shop.yesaladin.shop.writing.dto.SearchedAuthorResponseDto.SearchedAuthorDto;
+
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 
 class SearchAuthorServiceImplTest {
 

@@ -18,6 +18,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.requestF
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -44,6 +45,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.member.domain.model.Member;
@@ -116,6 +118,7 @@ class CommandMemberControllerTest {
         updateResponse = MemberUpdateResponseDto.fromEntity(member);
     }
 
+    @WithMockUser
     @Test
     @DisplayName("회원 등록 요청 시 입력 데이터가 null거나 @Valid 검증 조건에 맞지 않은 경우 요청에 실패 한다.")
     void signUpMember_withInvalidInputData() throws Exception {
@@ -124,7 +127,9 @@ class CommandMemberControllerTest {
         Mockito.when(commandMemberService.create(any())).thenReturn(createResponse);
 
         //when
-        ResultActions perform = mockMvc.perform(post("/v1/members").contentType(MediaType.APPLICATION_JSON)
+        ResultActions perform = mockMvc.perform(post("/v1/members")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
         //then
@@ -133,6 +138,7 @@ class CommandMemberControllerTest {
         verify(commandMemberService, never()).create(any());
     }
 
+    @WithMockUser
     @Test
     @DisplayName("회원 등록 요청 시 nickname, loginId, password에 걸려있는 정규 표현식에 부합하지 않는 경우 요청에 실패 한다.")
     void signUpMember_withInvalidInputData_invalidRegex() throws Exception {
@@ -150,7 +156,9 @@ class CommandMemberControllerTest {
         Mockito.when(commandMemberService.create(any())).thenReturn(createResponse);
 
         //when
-        ResultActions perform = mockMvc.perform(post("/v1/members").contentType(MediaType.APPLICATION_JSON)
+        ResultActions perform = mockMvc.perform(post("/v1/members")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
         //then
@@ -159,6 +167,7 @@ class CommandMemberControllerTest {
         verify(commandMemberService, never()).create(any());
     }
 
+    @WithMockUser
     @Test
     @DisplayName("회원 가입 성공")
     void signUpMember() throws Exception {
@@ -178,7 +187,9 @@ class CommandMemberControllerTest {
         Mockito.when(commandMemberService.create(any())).thenReturn(createResponse);
 
         //when
-        ResultActions perform = mockMvc.perform(post("/v1/members").contentType(MediaType.APPLICATION_JSON)
+        ResultActions perform = mockMvc.perform(post("/v1/members")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
         //then
@@ -237,6 +248,7 @@ class CommandMemberControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("회원 정보 수정 실패 - body 가 null 인 경우")
     void updateMember_withNull() throws Exception {
@@ -244,7 +256,8 @@ class CommandMemberControllerTest {
         String loginId = "user@1";
 
         //when
-        ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}", loginId));
+        ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}", loginId)
+                .with(csrf()));
 
         //then
         perform.andDo(print()).andExpect(status().isBadRequest());
@@ -252,6 +265,7 @@ class CommandMemberControllerTest {
         verify(commandMemberService, never()).update(any(), any());
     }
 
+    @WithMockUser
     @ParameterizedTest(name = "{1} : {0}")
     @MethodSource(value = "updateMemberRequestData")
     @DisplayName("회원정보수정 실패 - @Valid 검증 조건에 맞지 않은 경우")
@@ -265,8 +279,9 @@ class CommandMemberControllerTest {
                 nickname
         );
         //when
-        ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}", loginId).contentType(
-                        MediaType.APPLICATION_JSON)
+        ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}", loginId)
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
         //then
@@ -277,6 +292,7 @@ class CommandMemberControllerTest {
         verify(commandMemberService, never()).update(anyString(), any());
     }
 
+    @WithMockUser
     @Test
     @DisplayName("회원 정보 수정 실패-유효하지 않은 요청")
     void updateMember_withInvalidInputData() throws Exception {
@@ -290,6 +306,7 @@ class CommandMemberControllerTest {
         );
         //when
         ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}", loginId)
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
@@ -315,6 +332,7 @@ class CommandMemberControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("회원정보수정 실패 - 존재하지 않는 회원인 경우")
     void updateMember_withInvalidMemberId() throws Exception {
@@ -333,6 +351,7 @@ class CommandMemberControllerTest {
 
         //when
         ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}", loginId)
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
@@ -359,6 +378,7 @@ class CommandMemberControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("회원 정보 수정 성공")
     void updateMember() throws Exception {
@@ -376,6 +396,7 @@ class CommandMemberControllerTest {
 
         //when
         ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}", loginId)
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
@@ -406,6 +427,7 @@ class CommandMemberControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("회원 차단 실패 - 유효하지 않은 요청 번수")
     void blockMember_fail_validationError() throws Exception {
@@ -419,6 +441,7 @@ class CommandMemberControllerTest {
         );
         //when
         ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}/block", loginId)
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
@@ -441,6 +464,7 @@ class CommandMemberControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("회원 차단 실패 - 존재하지 않는 회원인 경우")
     void blockMember_withInvalidMemberId() throws Exception {
@@ -457,6 +481,7 @@ class CommandMemberControllerTest {
 
         //when
         ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}/block", loginId)
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
@@ -483,6 +508,7 @@ class CommandMemberControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("회원 차단 실패 - 이미 차단된 회원인 경우")
     void blockMember_fail_alreadyBlockedMember() throws Exception {
@@ -499,6 +525,7 @@ class CommandMemberControllerTest {
 
         //when
         ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}/block", loginId)
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
@@ -525,6 +552,7 @@ class CommandMemberControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("회원 차단 성공")
     void blockMember() throws Exception {
@@ -552,6 +580,7 @@ class CommandMemberControllerTest {
 
         //when
         ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}/block", loginId)
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
@@ -590,6 +619,7 @@ class CommandMemberControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("회원 차단해지 실패 - 존재하지 않는 회원인 경우")
     void unblockMember_withInvalidMemberId() throws Exception {
@@ -603,7 +633,7 @@ class CommandMemberControllerTest {
         ResultActions perform = mockMvc.perform(put(
                 "/v1/members/{loginId}/unblock",
                 loginId
-        ).contentType(MediaType.APPLICATION_JSON));
+        ).with(csrf()).contentType(MediaType.APPLICATION_JSON));
 
         //then
         perform.andDo(print()).andExpect(status().isNotFound())
@@ -624,6 +654,7 @@ class CommandMemberControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("회원 차단 해지 실패 - 이미 차단 해지된 회원인 경우")
     void unblockMember_fail_alreadyBlockedMember() throws Exception {
@@ -634,7 +665,8 @@ class CommandMemberControllerTest {
                 .thenThrow(new AlreadyUnblockedMemberException(loginId));
 
         //when
-        ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}/unblock", loginId));
+        ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}/unblock", loginId)
+                .with(csrf()));
 
         //then
         perform.andDo(print()).andExpect(status().isBadRequest())
@@ -655,6 +687,7 @@ class CommandMemberControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     @DisplayName("회원 차단해지 성공")
     void unblockMember() throws Exception {
@@ -678,7 +711,7 @@ class CommandMemberControllerTest {
         ResultActions perform = mockMvc.perform(put(
                 "/v1/members/{loginId}/unblock",
                 loginId
-        ).contentType(MediaType.APPLICATION_JSON));
+        ).with(csrf()).contentType(MediaType.APPLICATION_JSON));
 
         //then
         perform.andDo(print()).andExpect(status().isOk())
@@ -709,6 +742,7 @@ class CommandMemberControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     void withdrawMember_fail_invalidMember() throws Exception {
         //given
@@ -722,6 +756,7 @@ class CommandMemberControllerTest {
                 "/v1/members/withdraw/{loginId}",
                 invalidLoginId
         )
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON));
 
         //then
@@ -739,6 +774,7 @@ class CommandMemberControllerTest {
         ));
     }
 
+    @WithMockUser
     @Test
     void withdrawMember() throws Exception {
         String loginId = "loginId";
@@ -757,6 +793,7 @@ class CommandMemberControllerTest {
 
         //when
         ResultActions perform = mockMvc.perform(delete("/v1/members/withdraw/{loginId}", loginId)
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON));
 
         //then

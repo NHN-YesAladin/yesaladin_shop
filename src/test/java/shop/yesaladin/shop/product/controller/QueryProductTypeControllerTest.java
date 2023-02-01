@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.product.domain.model.ProductTypeCode;
@@ -24,6 +25,7 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentRequest;
@@ -44,7 +46,7 @@ class QueryProductTypeControllerTest {
             new ProductTypeResponseDto(2, ProductTypeCode.DISCOUNTS.toString())
     );
     ;
-
+    @WithMockUser
     @Test
     @DisplayName("상품 유형 전체 조회 성공")
     void getProductTypes() throws Exception {
@@ -53,6 +55,7 @@ class QueryProductTypeControllerTest {
 
         // when
         ResultActions result = mockMvc.perform(get("/v1/product-types")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON));
 
         // then

@@ -28,8 +28,8 @@ storage-token:
 logging:
   level:
     tracer: TRACE
-    org:
-      hibernate:
-        type:
-          descriptor:
-            sql: trace
+
+yesaladin:
+  gateway:
+    base: http://localhost:8072
+    auth: http://localhost:8072

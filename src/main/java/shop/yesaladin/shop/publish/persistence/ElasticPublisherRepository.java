@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.publish.persistence;
 
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
@@ -11,6 +10,8 @@ import shop.yesaladin.shop.publish.domain.model.SearchedPublisher;
 import shop.yesaladin.shop.publish.domain.repository.SearchPublisherRepository;
 import shop.yesaladin.shop.publish.dto.SearchPublisherResponseDto;
 import shop.yesaladin.shop.publish.dto.SearchPublisherResponseDto.SearchedPublisherDto;
+
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Repository

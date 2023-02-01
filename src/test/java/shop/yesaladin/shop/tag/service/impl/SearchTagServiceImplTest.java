@@ -1,8 +1,5 @@
 package shop.yesaladin.shop.tag.service.impl;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,6 +8,10 @@ import shop.yesaladin.shop.tag.domain.repository.SearchTagRepository;
 import shop.yesaladin.shop.tag.dto.SearchTagRequestDto;
 import shop.yesaladin.shop.tag.dto.SearchedTagResponseDto;
 import shop.yesaladin.shop.tag.dto.SearchedTagResponseDto.SearchedTagDto;
+
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class SearchTagServiceImplTest {
 

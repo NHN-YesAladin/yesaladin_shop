@@ -15,6 +15,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -41,6 +42,7 @@ import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.common.code.ErrorCode;
@@ -68,11 +70,13 @@ class QueryPointHistoryControllerTest {
     PointReasonCode pointReasonCode = PointReasonCode.USE_ORDER;
     Page<PointHistoryResponseDto> response = getPageableData(5, pointCode, pointReasonCode);
 
+    @WithMockUser
     @Test
     @DisplayName("회원의 포인트내역 조회 실패 - 유효하지 않는 파라미터 값")
     void getPointHistoriesByLoginId_fail_InvalidCodeParameter() throws Exception {
         //when
         ResultActions result = mockMvc.perform(get("/v1/points/{loginId}/histories", loginId)
+                .with(csrf())
                 .param("code", "invalidCode"));
 
         //then
@@ -89,7 +93,9 @@ class QueryPointHistoryControllerTest {
                 "get-point-histories-by-loginId-fail-invalid-code-parameter",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
+                pathParameters(
+                        parameterWithName("loginId").description("회원의 아이디")
+                ),
                 requestParameters(
                         parameterWithName("code").description("포인트 사용/적립 구분"),
                         parameterWithName("page").description("페이지 번호")
@@ -97,7 +103,8 @@ class QueryPointHistoryControllerTest {
                                 .attributes(defaultValue(10)),
                         parameterWithName("size").description("페이지 요소 개수")
                                 .optional()
-                                .attributes(defaultValue(0))
+                                .attributes(defaultValue(0)),
+                        parameterWithName("_csrf").description("csrf")
                 ),
                 responseFields(
                         fieldWithPath("success").type(JsonFieldType.BOOLEAN)
@@ -112,8 +119,9 @@ class QueryPointHistoryControllerTest {
 
                 )
         ));
-    }
 
+    }
+    @WithMockUser
     @Test
     @DisplayName("회원의 전체 포인트내역 조회-성공")
     void getPointHistoriesByLoginId_all() throws Exception {
@@ -123,6 +131,7 @@ class QueryPointHistoryControllerTest {
 
         //when
         ResultActions result = mockMvc.perform(get("/v1/points/{loginId}/histories", loginId)
+                .with(csrf())
                 .param("size", "5")
                 .param("page", "0"));
 
@@ -152,14 +161,17 @@ class QueryPointHistoryControllerTest {
                 "get-point-histories-by-loginId-all",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
+                pathParameters(
+                        parameterWithName("loginId").description("회원의 아이디")
+                ),
                 requestParameters(
                         parameterWithName("page").description("페이지 번호")
                                 .optional()
                                 .attributes(defaultValue(10)),
                         parameterWithName("size").description("페이지 요소 개수")
                                 .optional()
-                                .attributes(defaultValue(0))
+                                .attributes(defaultValue(0)),
+                        parameterWithName("_csrf").description("csrf")
                 ),
                 responseFields(
                         fieldWithPath("success").type(JsonFieldType.BOOLEAN)
@@ -189,7 +201,7 @@ class QueryPointHistoryControllerTest {
                 )
         ));
     }
-
+    @WithMockUser
     @Test
     @DisplayName("회원의 사용/적립 포인트내역 조회-성공")
     void getPointHistoriesByLoginId() throws Exception {
@@ -201,6 +213,7 @@ class QueryPointHistoryControllerTest {
         )).thenReturn(response);
 
         ResultActions result = mockMvc.perform(get("/v1/points/{loginId}/histories", loginId)
+                .with(csrf())
                 .param("code", "USE")
                 .param("page", "0")
                 .param("size", "5"));
@@ -232,7 +245,9 @@ class QueryPointHistoryControllerTest {
                 "get-point-histories-by-loginId-and-code",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
+                pathParameters(
+                        parameterWithName("loginId").description("회원의 아이디")
+                ),
                 requestParameters(
                         parameterWithName("code").description("포인트 사용/적립 구분"),
                         parameterWithName("page").description("페이지 번호")
@@ -240,7 +255,8 @@ class QueryPointHistoryControllerTest {
                                 .attributes(defaultValue(10)),
                         parameterWithName("size").description("페이지 요소 개수")
                                 .optional()
-                                .attributes(defaultValue(0))
+                                .attributes(defaultValue(0)),
+                        parameterWithName("_csrf").description("csrf")
                 ),
                 responseFields(
                         fieldWithPath("success").type(JsonFieldType.BOOLEAN)
@@ -269,13 +285,14 @@ class QueryPointHistoryControllerTest {
 
                 )
         ));
+
     }
 
 
     @Test
     void getPointHistories() {
     }
-
+    @WithMockUser
     @Test
     @DisplayName("회원의 포인트 조회 실패 - 존재하지 않는 회원")
     void getMemberPoint_fail_memberNotFound() throws Exception {
@@ -284,7 +301,7 @@ class QueryPointHistoryControllerTest {
                 .thenThrow(new MemberNotFoundException("Member loginId : " + loginId));
 
         //when
-        ResultActions result = mockMvc.perform(get("/v1/points/{loginId}", loginId));
+        ResultActions result = mockMvc.perform(get("/v1/points/{loginId}", loginId).with(csrf()));
 
         //then
         result.andExpect(status().isNotFound())
@@ -302,7 +319,7 @@ class QueryPointHistoryControllerTest {
                 )
         ));
     }
-
+    @WithMockUser
     @Test
     @DisplayName("회원의 포인트 조회 성공")
     void getMemberPoint_success() throws Exception {
@@ -312,7 +329,7 @@ class QueryPointHistoryControllerTest {
         Mockito.when(pointHistoryService.getMemberPoint(loginId)).thenReturn(amount);
 
         //when
-        ResultActions result = mockMvc.perform(get("/v1/points/{loginId}", loginId));
+        ResultActions result = mockMvc.perform(get("/v1/points/{loginId}", loginId).with(csrf()));
 
         //then
         result.andExpect(status().isOk())
