@@ -2,6 +2,8 @@ package shop.yesaladin.shop.member.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -84,6 +86,23 @@ class QueryDslQueryMemberRepositoryTest {
         assertThat(optionalMember).isPresent();
         assertThat(optionalMember.get().getEmail()).isEqualTo(member.getEmail());
         assertThat(optionalMember.get().isWithdrawal()).isFalse();
+    }
+
+    @Test
+    void findMembersByBirthday() {
+        //given
+        LocalDate now = LocalDate.now();
+        Member member1 = MemberDummy.dummyWithBirthday(now.getMonthValue(), now.getDayOfMonth());
+        entityManager.persist(member1);
+
+        //when
+        List<Member> members = queryMemberRepository.findMembersByBirthday(
+                now.getMonthValue(),
+                now.getDayOfMonth()
+        );
+
+        //then
+        assertThat(members).hasSize(1);
     }
 
     @Test

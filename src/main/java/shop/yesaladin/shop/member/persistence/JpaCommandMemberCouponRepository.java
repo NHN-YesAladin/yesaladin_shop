@@ -1,9 +1,8 @@
 package shop.yesaladin.shop.member.persistence;
 
-import org.springframework.data.repository.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import shop.yesaladin.shop.member.domain.model.MemberCoupon;
-import shop.yesaladin.shop.member.domain.repository.CommandMemberCouponRepository;
 
-public interface JpaCommandMemberCouponRepository extends Repository<MemberCoupon, Long>, CommandMemberCouponRepository {
+public interface JpaCommandMemberCouponRepository extends JpaRepository<MemberCoupon, Long> {
 
 }

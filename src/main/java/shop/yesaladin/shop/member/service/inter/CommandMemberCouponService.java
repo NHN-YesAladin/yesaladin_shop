@@ -5,5 +5,5 @@ import shop.yesaladin.shop.member.domain.model.MemberCoupon;
 
 public interface CommandMemberCouponService {
 
-    void createMemberCoupons(List<MemberCoupon> memberCouponList);
+    List<MemberCoupon> createMemberCoupons(List<MemberCoupon> memberCouponList);
 }
