@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.yesaladin.shop.common.exception.InvalidPeriodConditionException;
 import shop.yesaladin.shop.common.exception.type.InvalidPeriodConditionType;
@@ -16,8 +17,9 @@ import shop.yesaladin.shop.common.exception.type.InvalidPeriodConditionType;
  * @author 최예린
  * @since 1.0
  */
+@Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class PeriodQueryRequestDto {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
