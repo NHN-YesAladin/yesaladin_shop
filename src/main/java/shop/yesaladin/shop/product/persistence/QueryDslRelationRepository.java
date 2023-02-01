@@ -66,7 +66,9 @@ public class QueryDslRelationRepository implements QueryRelationRepository {
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        JPAQuery<Long> countQuery = queryFactory.select(relation.count()).where(relation.productMain.id.eq(productId)).from(relation);
+        JPAQuery<Long> countQuery = queryFactory.select(relation.count())
+                .where(relation.productMain.id.eq(productId))
+                .from(relation);
 
         return PageableExecutionUtils.getPage(relations, pageable, countQuery::fetchFirst);
     }
@@ -80,12 +82,18 @@ public class QueryDslRelationRepository implements QueryRelationRepository {
 
         List<Relation> relations = queryFactory.select(relation)
                 .from(relation)
-                .where(relation.productMain.id.eq(productId).and(relation.productSub.isSale.isTrue()).and(relation.productSub.isDeleted.isFalse()))
+                .where(relation.productMain.id.eq(productId)
+                        .and(relation.productSub.isSale.isTrue())
+                        .and(relation.productSub.isDeleted.isFalse()))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        JPAQuery<Long> countQuery = queryFactory.select(relation.count()).where(relation.productMain.id.eq(productId)).from(relation);
+        JPAQuery<Long> countQuery = queryFactory.select(relation.count())
+                .where(relation.productMain.id.eq(productId)
+                        .and(relation.productSub.isSale.isTrue())
+                        .and(relation.productSub.isDeleted.isFalse()))
+                .from(relation);
 
         return PageableExecutionUtils.getPage(relations, pageable, countQuery::fetchFirst);
     }
