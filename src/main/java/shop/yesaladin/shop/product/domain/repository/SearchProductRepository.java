@@ -139,7 +139,7 @@ public interface SearchProductRepository {
      * @author : 김선홍
      * @since : 1.0
      */
-    SearchedProductResponseDto searchProductByMultiQuery(
+    SearchedProductResponseDto searchResponseProductByMultiQuery(
             String value,
             int offset,
             int size,
@@ -157,7 +157,7 @@ public interface SearchProductRepository {
      * @author : 김선홍
      * @since : 1.0
      */
-    SearchedProductResponseDto searchProductByTermQuery(
+    SearchedProductResponseDto searchResponseProductByTermQuery(
             String value,
             int offset,
             int size,

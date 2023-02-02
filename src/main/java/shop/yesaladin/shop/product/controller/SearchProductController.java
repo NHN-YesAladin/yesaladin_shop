@@ -2,8 +2,10 @@ package shop.yesaladin.shop.product.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.shop.product.dto.SearchProductPageRequestDto;
 import shop.yesaladin.shop.product.dto.SearchedProductManagerResponseDto;
 import shop.yesaladin.shop.product.dto.SearchedProductResponseDto;
@@ -35,16 +37,18 @@ public class SearchProductController {
      * @since : 1.0
      */
     @GetMapping(params = "title")
-    public ResponseEntity<SearchedProductResponseDto> searchProductByTitle(
+    public ResponseDto<SearchedProductResponseDto> searchProductByTitle(
             @RequestParam String title,
             @ModelAttribute @Valid SearchProductPageRequestDto pageRequest
     ) {
-        log.info(title);
-        return ResponseEntity.ok(searchProductService.searchProductsByProductTitle(
-                title,
-                pageRequest.getOffset(),
-                pageRequest.getSize()
-        ));
+        return ResponseDto.<SearchedProductResponseDto>builder()
+                .success(true)
+                .data(searchProductService.searchProductsByProductTitle(title,
+                        pageRequest.getOffset(),
+                        pageRequest.getSize()
+                ))
+                .status(HttpStatus.OK)
+                .build();
     }
 
     /**
@@ -57,14 +61,18 @@ public class SearchProductController {
      * @since : 1.0
      */
     @GetMapping(params = "content")
-    public ResponseEntity<SearchedProductResponseDto> searchProductByContent(
+    public ResponseDto<SearchedProductResponseDto> searchProductByContent(
             @RequestParam String content,
             @ModelAttribute @Valid SearchProductPageRequestDto pageRequest
     ) {
-        return ResponseEntity.ok(searchProductService.searchProductsByProductContent(content,
-                pageRequest.getOffset(),
-                pageRequest.getSize()
-        ));
+        return ResponseDto.<SearchedProductResponseDto>builder()
+                .success(true)
+                .data(searchProductService.searchProductsByProductContent(content,
+                        pageRequest.getOffset(),
+                        pageRequest.getSize()
+                ))
+                .status(HttpStatus.OK)
+                .build();
     }
 
     /**
@@ -77,14 +85,18 @@ public class SearchProductController {
      * @since : 1.0
      */
     @GetMapping(params = "isbn")
-    public ResponseEntity<SearchedProductResponseDto> searchProductByISBN(
+    public ResponseDto<SearchedProductResponseDto> searchProductByISBN(
             @RequestParam String isbn,
             @ModelAttribute @Valid SearchProductPageRequestDto pageRequest
     ) {
-        return ResponseEntity.ok(searchProductService.searchProductsByProductISBN(isbn,
-                pageRequest.getOffset(),
-                pageRequest.getSize()
-        ));
+        return ResponseDto.<SearchedProductResponseDto>builder()
+                .success(true)
+                .data(searchProductService.searchProductsByProductISBN(isbn,
+                        pageRequest.getOffset(),
+                        pageRequest.getSize()
+                ))
+                .status(HttpStatus.OK)
+                .build();
     }
 
     /**
@@ -97,14 +109,18 @@ public class SearchProductController {
      * @since : 1.0
      */
     @GetMapping(params = "author")
-    public ResponseEntity<SearchedProductResponseDto> searchProductByAuthor(
+    public ResponseDto<SearchedProductResponseDto> searchProductByAuthor(
             @RequestParam String author,
             @ModelAttribute @Valid SearchProductPageRequestDto pageRequest
     ) {
-        return ResponseEntity.ok(searchProductService.searchProductsByProductAuthor(author,
-                pageRequest.getOffset(),
-                pageRequest.getSize()
-        ));
+        return ResponseDto.<SearchedProductResponseDto>builder()
+                .success(true)
+                .data(searchProductService.searchProductsByProductAuthor(author,
+                        pageRequest.getOffset(),
+                        pageRequest.getSize()
+                ))
+                .status(HttpStatus.OK)
+                .build();
     }
 
     /**
@@ -117,14 +133,18 @@ public class SearchProductController {
      * @since : 1.0
      */
     @GetMapping(params = "publisher")
-    public ResponseEntity<SearchedProductResponseDto> searchProductByPublisher(
+    public ResponseDto<SearchedProductResponseDto> searchProductByPublisher(
             @RequestParam String publisher,
             @ModelAttribute @Valid SearchProductPageRequestDto pageRequest
     ) {
-        return ResponseEntity.ok(searchProductService.searchProductsByPublisher(publisher,
-                pageRequest.getOffset(),
-                pageRequest.getSize()
-        ));
+        return ResponseDto.<SearchedProductResponseDto>builder()
+                .success(true)
+                .data(searchProductService.searchProductsByPublisher(publisher,
+                        pageRequest.getOffset(),
+                        pageRequest.getSize()
+                ))
+                .status(HttpStatus.OK)
+                .build();
     }
 
     /**
@@ -137,14 +157,18 @@ public class SearchProductController {
      * @since : 1.0
      */
     @GetMapping(params = "tag")
-    public ResponseEntity<SearchedProductResponseDto> searchProductByTag(
+    public ResponseDto<SearchedProductResponseDto> searchProductByTag(
             @RequestParam String tag,
             @ModelAttribute @Valid SearchProductPageRequestDto pageRequest
     ) {
-        return ResponseEntity.ok(searchProductService.searchProductsByTag(tag,
-                pageRequest.getOffset(),
-                pageRequest.getSize()
-        ));
+        return ResponseDto.<SearchedProductResponseDto>builder()
+                .success(true)
+                .data(searchProductService.searchProductsByTag(tag,
+                        pageRequest.getOffset(),
+                        pageRequest.getSize()
+                ))
+                .status(HttpStatus.OK)
+                .build();
     }
 
     /**
@@ -157,14 +181,18 @@ public class SearchProductController {
      * @since : 1.0
      */
     @GetMapping(params = "categoryid")
-    public ResponseEntity<SearchedProductManagerResponseDto> searchProductByCategoryId(
+    public ResponseDto<SearchedProductManagerResponseDto> searchProductByCategoryId(
             @RequestParam(name = "categoryid") Long id,
             @ModelAttribute @Valid SearchProductPageRequestDto pageRequest
     ) {
-        return ResponseEntity.ok(searchProductService.searchProductsByCategoryId(id,
-                pageRequest.getOffset(),
-                pageRequest.getSize()
-        ));
+        return ResponseDto.<SearchedProductManagerResponseDto>builder()
+                .success(true)
+                .data(searchProductService.searchProductsByCategoryId(id,
+                        pageRequest.getOffset(),
+                        pageRequest.getSize()
+                ))
+                .status(HttpStatus.OK)
+                .build();
     }
 
     /**
@@ -177,13 +205,17 @@ public class SearchProductController {
      * @since : 1.0
      */
     @GetMapping(params = "categoryname")
-    public ResponseEntity<SearchedProductManagerResponseDto> searchProductByCategoryName(
+    public ResponseDto<SearchedProductManagerResponseDto> searchProductByCategoryName(
             @RequestParam(name = "categoryname") String name,
             @ModelAttribute @Valid SearchProductPageRequestDto pageRequest
     ) {
-        return ResponseEntity.ok(searchProductService.searchProductsByCategoryName(name,
-                pageRequest.getOffset(),
-                pageRequest.getSize()
-        ));
+        return ResponseDto.<SearchedProductManagerResponseDto>builder()
+                .success(true)
+                .data(searchProductService.searchProductsByCategoryName(name,
+                        pageRequest.getOffset(),
+                        pageRequest.getSize()
+                ))
+                .status(HttpStatus.OK)
+                .build();
     }
 }
