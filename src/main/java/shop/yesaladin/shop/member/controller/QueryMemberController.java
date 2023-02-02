@@ -1,13 +1,16 @@
 package shop.yesaladin.shop.member.controller;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.common.dto.ResponseDto;
+import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.dto.MemberGradeQueryResponseDto;
 import shop.yesaladin.shop.member.dto.MemberProfileExistResponseDto;
 import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
@@ -131,5 +134,12 @@ public class QueryMemberController {
     @GetMapping("{loginId}")
     public MemberQueryResponseDto getMemberInfo(@PathVariable String loginId) {
         return queryMemberService.getByLoginId(loginId);
+    }
+
+    @GetMapping(params = {"type=birthday", "laterDays"})
+    public List<Member> getBirthdayMember(
+            @RequestParam(value = "laterDays", defaultValue = "0") int laterDays
+    ) {
+        return queryMemberService.findMembersByBirthday(laterDays);
     }
 }

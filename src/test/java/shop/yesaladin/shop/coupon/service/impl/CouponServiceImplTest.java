@@ -28,6 +28,7 @@ class CouponServiceImplTest {
     @Test
     void giveBirthdayCouponTest() {
         // TODO test
+        // TODO 여러 명 들어가는 지 테스트
 //        couponService.giveBirthdayCoupon(8);
     }
 

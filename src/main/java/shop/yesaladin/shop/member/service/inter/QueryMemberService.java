@@ -1,5 +1,7 @@
 package shop.yesaladin.shop.member.service.inter;
 
+import java.util.List;
+import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.dto.MemberDto;
 import shop.yesaladin.shop.member.dto.MemberGradeQueryResponseDto;
 import shop.yesaladin.shop.member.dto.MemberLoginResponseDto;
@@ -57,6 +59,9 @@ public interface QueryMemberService {
      * @since 1.0
      */
     MemberLoginResponseDto findMemberLoginInfoByLoginId(String loginId);
+
+    // TODO javadoc
+    List<Member> findMembersByBirthday(int laterDays);
 
     /**
      * 회원 가입 시 입력할 loginId를 사전에 중복 판별을 하기 위한 메서드 입니다.

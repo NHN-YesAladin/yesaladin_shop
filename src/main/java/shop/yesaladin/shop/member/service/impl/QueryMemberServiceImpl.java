@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.member.service.impl;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -48,8 +49,7 @@ public class QueryMemberServiceImpl implements QueryMemberService {
     @Transactional(readOnly = true)
     @Override
     public MemberDto findMemberByLoginId(String loginId) {
-        Member member = getMemberByLoginId(
-                loginId,
+        Member member = getMemberByLoginId(loginId,
                 queryMemberRepository.findMemberByLoginId(loginId),
                 "Member Login Id: "
         );
@@ -73,17 +73,14 @@ public class QueryMemberServiceImpl implements QueryMemberService {
     @Transactional(readOnly = true)
     @Override
     public MemberLoginResponseDto findMemberLoginInfoByLoginId(String loginId) {
-        Member member = getMemberByLoginId(
-                loginId,
+        Member member = getMemberByLoginId(loginId,
                 queryMemberRepository.findMemberByLoginId(loginId),
                 "Member Login Id: "
         );
 
-        List<String> roles = queryMemberRoleRepository.findMemberRolesByMemberId(
-                member.getId());
+        List<String> roles = queryMemberRoleRepository.findMemberRolesByMemberId(member.getId());
 
-        return new MemberLoginResponseDto(
-                member.getId(),
+        return new MemberLoginResponseDto(member.getId(),
                 member.getName(),
                 member.getNickname(),
                 member.getLoginId(),
@@ -93,9 +90,18 @@ public class QueryMemberServiceImpl implements QueryMemberService {
         );
     }
 
+    @Override
+    public List<Member> findMembersByBirthday(int laterDays) {
+        LocalDate birthday = LocalDate.now().plusDays(laterDays);
+        log.info("birthday : {}", birthday);
+
+        return queryMemberRepository.findMembersByBirthday(birthday.getMonthValue(),
+                birthday.getDayOfMonth()
+        );
+    }
+
     private Member getMemberByLoginId(String loginId, Optional<Member> memberByLoginId, String s) {
-        return memberByLoginId
-                .orElseThrow(() -> new MemberNotFoundException(s + loginId));
+        return memberByLoginId.orElseThrow(() -> new MemberNotFoundException(s + loginId));
     }
 
     /**
@@ -151,8 +157,7 @@ public class QueryMemberServiceImpl implements QueryMemberService {
     @Transactional(readOnly = true)
     @Override
     public MemberQueryResponseDto getByLoginId(String loginId) {
-        return MemberQueryResponseDto.fromEntity(queryMemberRepository.findMemberByLoginId(
-                        loginId)
+        return MemberQueryResponseDto.fromEntity(queryMemberRepository.findMemberByLoginId(loginId)
                 .orElseThrow(() -> new MemberNotFoundException("Member Loginid : " + loginId)));
     }
 }
