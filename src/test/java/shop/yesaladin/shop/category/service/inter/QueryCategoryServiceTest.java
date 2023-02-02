@@ -27,7 +27,6 @@ import shop.yesaladin.shop.category.dummy.CategoryDummy;
 import shop.yesaladin.shop.category.service.impl.QueryCategoryServiceImpl;
 
 
-@Slf4j
 class QueryCategoryServiceTest {
 
     private QueryCategoryRepository queryCategoryRepository;
@@ -74,11 +73,6 @@ class QueryCategoryServiceTest {
         Page<CategoryResponseDto> categoryResponseDtoPage = queryCategoryService.findCategoriesByParentId(
                 pageRequest,
                 parent.getId()
-        );
-        log.info("categoryPage.getTotalElements() : {}", categoryPage.getTotalElements());
-        log.info(
-                "categoryResponseDtoPage.getTotalElements() : {}",
-                categoryResponseDtoPage.getTotalElements()
         );
 
         //then

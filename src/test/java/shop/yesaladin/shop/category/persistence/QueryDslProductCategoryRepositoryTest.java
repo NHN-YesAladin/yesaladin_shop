@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -30,9 +31,14 @@ import shop.yesaladin.shop.publish.domain.model.Publisher;
 @Transactional
 @SpringBootTest
 class QueryDslProductCategoryRepositoryTest {
+    @Autowired
+    private EntityManager entityManager;
+    @Autowired
+    private QueryProductCategoryRepository repository;
 
     private final String ISBN = "000000000000";
     private final String url = "https://api-storage.cloud.toast.com/v1/AUTH_/container/domain/type";
+    private String name = "국내도서";
 
     private ProductCategory productCategory;
     private SubscribeProduct subscribeProduct;
@@ -40,11 +46,6 @@ class QueryDslProductCategoryRepositoryTest {
     private File thumbnailFile;
     private File ebookFile;
     private TotalDiscountRate totalDiscountRate;
-    @Autowired
-    private EntityManager entityManager;
-    @Autowired
-    private QueryProductCategoryRepository repository;
-    private String name = "국내도서";
     private Product product;
     private Category category;
     private Category parentCategory;
@@ -80,9 +81,8 @@ class QueryDslProductCategoryRepositoryTest {
     }
 
     @Test
+    @DisplayName("pk를 통해 상품 카테고리 조회")
     void findByPk() throws Exception {
-        // given
-
         // when
         ProductCategory foundProductCategory = repository.findByPk(new Pk(
                 productCategory.getCategory().getId(),
@@ -95,6 +95,7 @@ class QueryDslProductCategoryRepositoryTest {
     }
 
     @Test
+    @DisplayName("특정 상품을 통해 카테고리 조회")
     void findCategoriesByProduct() throws Exception {
         // given
         Category category2 = CategoryDummy.dummyChild(10200L, parentCategory);
@@ -107,5 +108,8 @@ class QueryDslProductCategoryRepositoryTest {
 
         // then
         assertThat(categories).hasSize(2);
+        assertThat(categories.get(1).getId()).isEqualTo(category2.getId());
+        assertThat(categories.get(1).getOrder()).isEqualTo(category2.getOrder());
+        assertThat(categories.get(1).getName()).isEqualTo(category2.getName());
     }
 }
