@@ -133,14 +133,18 @@ class CommandCategoryServiceTest {
         assertThat(categoryResponseDto.getOrder()).isEqualTo(order + 1);
 
         verify(commandCategoryRepository, times(1)).save(any());
-        verify(queryCategoryRepository,
+        verify(
+                queryCategoryRepository,
                 times(1)
-        ).getLatestChildIdByDepthAndParentId(Category.DEPTH_CHILD,
+        ).getLatestChildIdByDepthAndParentId(
+                Category.DEPTH_CHILD,
                 childCategory.getParent().getId()
         );
-        verify(queryCategoryRepository,
+        verify(
+                queryCategoryRepository,
                 times(1)
-        ).getLatestChildOrderByDepthAndParentId(Category.DEPTH_CHILD,
+        ).getLatestChildOrderByDepthAndParentId(
+                Category.DEPTH_CHILD,
                 childCategory.getParent().getId()
         );
         verify(queryCategoryRepository, times(1)).findById(parentCategory.getId());
@@ -309,14 +313,18 @@ class CommandCategoryServiceTest {
         verify(queryCategoryRepository, times(1)).findById(otherParentCategory.getId());
 
         verify(commandCategoryRepository, times(1)).save(any());
-        verify(queryCategoryRepository,
+        verify(
+                queryCategoryRepository,
                 times(1)
-        ).getLatestChildIdByDepthAndParentId(Category.DEPTH_CHILD,
+        ).getLatestChildIdByDepthAndParentId(
+                Category.DEPTH_CHILD,
                 categoryRequestDto.getParentId()
         );
-        verify(queryCategoryRepository,
+        verify(
+                queryCategoryRepository,
                 times(1)
-        ).getLatestChildOrderByDepthAndParentId(Category.DEPTH_CHILD,
+        ).getLatestChildOrderByDepthAndParentId(
+                Category.DEPTH_CHILD,
                 categoryRequestDto.getParentId()
         );
     }
