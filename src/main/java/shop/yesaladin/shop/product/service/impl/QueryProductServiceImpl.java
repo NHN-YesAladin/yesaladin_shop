@@ -2,7 +2,6 @@ package shop.yesaladin.shop.product.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -109,60 +108,6 @@ public class QueryProductServiceImpl implements QueryProductService {
         );
 
         return getProductResponses(pageable, page);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public List<ProductOrderResponseDto> getByIsbnList(List<ProductOrderRequestDto> products) {
-        List<String> isbnList = getIsbnList(products);
-        List<ProductOrderResponseDto> result = queryProductRepository.getByIsbnList(isbnList);
-
-        result.forEach(x -> x.setQuantity(products));
-
-        return result;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public SubscribeProduct findIssnByIsbn(String isbn) {
-        Product product = queryProductRepository.findByIsbn(isbn)
-                .orElseThrow(() -> new ClientException(
-                        ErrorCode.PRODUCT_NOT_FOUND,
-                        "Product not found with isbn : " + isbn
-                ));
-        if (!product.isSubscriptionAvailable()) {
-            throw new ClientException(
-                    ErrorCode.PRODUCT_NOT_SUBSCRIBE_PRODUCT,
-                    "Product with isbn(" + isbn + ") is not a subscribe product : "
-            );
-        }
-        return product.getSubscribeProduct();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public Map<String, Product> findByIsbnList(List<ProductOrderRequestDto> products) {
-        List<String> isbnList = getIsbnList(products);
-
-        return queryProductRepository.findByIsbnList(isbnList)
-                .stream()
-                .collect(Collectors.toMap(Product::getISBN, product -> product));
-    }
-
-    private static List<String> getIsbnList(List<ProductOrderRequestDto> products) {
-        return products
-                .stream()
-                .map(ProductOrderRequestDto::getIsbn)
-                .collect(Collectors.toList());
     }
 
     /**
@@ -297,5 +242,48 @@ public class QueryProductServiceImpl implements QueryProductService {
         return queryProductTagService.findByProduct(product).stream()
                 .map(tag -> tag.getTag().getName())
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProductOrderResponseDto> getByIsbnList(List<ProductOrderRequestDto> products) {
+        List<String> isbnList = getIsbnList(products);
+        List<ProductOrderResponseDto> result = queryProductRepository.getByIsbnList(isbnList);
+
+        result.forEach(x -> x.setQuantity(products));
+
+        return result;
+    }
+
+    private static List<String> getIsbnList(List<ProductOrderRequestDto> products) {
+        return products
+                .stream()
+                .map(ProductOrderRequestDto::getIsbn)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public SubscribeProduct findIssnByIsbn(ProductOrderRequestDto orderProduct) {
+        String isbn = orderProduct.getIsbn();
+        int quantity = orderProduct.getQuantity();
+        Product product = queryProductRepository.findOrderProductByIsbn(isbn, quantity)
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.PRODUCT_NOT_FOUND,
+                        "Product not found with isbn : " + isbn + "."
+                ));
+        if (!product.isSubscriptionAvailable()) {
+            throw new ClientException(
+                    ErrorCode.PRODUCT_NOT_SUBSCRIBE_PRODUCT,
+                    "Product with isbn(" + isbn + ") is not a subscribe product."
+            );
+        }
+        return product.getSubscribeProduct();
     }
 }

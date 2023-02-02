@@ -1,6 +1,7 @@
 package shop.yesaladin.shop.product.domain.repository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +30,17 @@ public interface QueryProductRepository {
     Page<Product> findAllByTypeId(Pageable pageable, Integer typeId);
 
     /**
+     * 주문 상품의 isbn 과 수량으로 구매 가능한 상품을 조회 합니다.
+     *
+     * @param isbn     상품의 isbn
+     * @param quantity 주문 수량
+     * @return 주문 가능한 주문 상품
+     * @author 최예린
+     * @since 1.0
+     */
+    Optional<Product> findOrderProductByIsbn(String isbn, int quantity);
+
+    /**
      * 주문 상품의 isbn을 통해 주문의 상품 상세정보를 반환합니다.
      *
      * @param isbnList 주문 상품의 Isbn 목록
@@ -46,5 +58,5 @@ public interface QueryProductRepository {
      * @author 최예린
      * @since 1.0
      */
-    List<Product> findByIsbnList(List<String> isbnList);
+    List<Product> findByIsbnList(List<String> isbnList, Map<String, Integer> quantities);
 }

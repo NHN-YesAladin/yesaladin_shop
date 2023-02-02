@@ -5,6 +5,7 @@ import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -200,6 +201,26 @@ public class QueryDslProductRepository implements QueryProductRepository {
         return new PageImpl<>(products, pageable, totalCount);
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Optional<Product> findOrderProductByIsbn(String isbn, int quantity) {
+        QProduct product = QProduct.product;
+
+        return Optional.ofNullable(
+                queryFactory.select(product)
+                        .from(product)
+                        .where(product.ISBN.eq(isbn)
+                                .and(product.isDeleted.isFalse())
+                                .and(product.isForcedOutOfStock.isFalse())
+                                .and(product.isSale.isTrue())
+                                .and(product.quantity.goe(quantity)))
+                        .fetchFirst()
+        );
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -225,12 +246,19 @@ public class QueryDslProductRepository implements QueryProductRepository {
                 .fetch();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public List<Product> findByIsbnList(List<String> isbnList) {
+    public List<Product> findByIsbnList(List<String> isbnList, Map<String, Integer> quantities) {
         QProduct product = QProduct.product;
 
         return queryFactory.select(product)
-                .where(product.ISBN.in(isbnList))
+                .where(product.ISBN.in(isbnList)
+                        .and(product.isDeleted.isFalse())
+                        .and(product.isForcedOutOfStock.isFalse())
+                        .and(product.isSale.isTrue())
+                        .and(product.quantity.goe(quantities.get(product.ISBN.toString()))))
                 .fetch();
     }
 }

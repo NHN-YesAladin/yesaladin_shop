@@ -32,6 +32,8 @@ import shop.yesaladin.shop.point.domain.model.PointReasonCode;
 import shop.yesaladin.shop.point.dto.PointHistoryRequestDto;
 import shop.yesaladin.shop.point.service.inter.CommandPointHistoryService;
 import shop.yesaladin.shop.product.domain.model.Product;
+import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
+import shop.yesaladin.shop.product.service.inter.CommandProductService;
 import shop.yesaladin.shop.product.service.inter.QueryProductService;
 
 /**
@@ -51,6 +53,7 @@ public class CommandOrderServiceImpl implements CommandOrderService {
     private final CommandOrderStatusChangeLogRepository commandOrderStatusChangeLogRepository;
     private final CommandOrderProductRepository commandOrderProductRepository;
     private final CommandPointHistoryService commandPointHistoryService;
+    private final CommandProductService commandProductService;
     private final QueryMemberAddressService queryMemberAddressService;
     private final QueryProductService queryProductService;
     private final QueryMemberService queryMemberService;
@@ -66,7 +69,7 @@ public class CommandOrderServiceImpl implements CommandOrderService {
             OrderNonMemberCreateRequestDto request
     ) {
         LocalDateTime orderDateTime = LocalDateTime.now(clock);
-        Map<String, Product> products = queryProductService.findByIsbnList(request.getOrderProducts());
+        Map<String, Product> products = commandProductService.orderProducts(request.getOrderProducts());
 
         Order savedOrder = createNonMemberOrder(request, products, orderDateTime);
 
@@ -86,7 +89,7 @@ public class CommandOrderServiceImpl implements CommandOrderService {
             String loginId
     ) {
         LocalDateTime orderDateTime = LocalDateTime.now(clock);
-        Map<String, Product> products = queryProductService.findByIsbnList(request.getOrderProducts());
+        Map<String, Product> products = commandProductService.orderProducts(request.getOrderProducts());
 
         Order savedOrder = createMemberOrder(request, orderDateTime, products, loginId);
 
@@ -107,9 +110,8 @@ public class CommandOrderServiceImpl implements CommandOrderService {
             String loginId
     ) {
         LocalDateTime orderDateTime = LocalDateTime.now(clock);
-        Map<String, Product> products = queryProductService.findByIsbnList(request.getOrderProducts());
 
-        Order savedOrder = creatSubscribe(request, orderDateTime, products, loginId);
+        Order savedOrder = creatSubscribe(request, orderDateTime, loginId);
 
         createUsePointHistory(request.getOrderPoint(), loginId);
         createOrderStatusChangeLog(orderDateTime, savedOrder);
@@ -138,7 +140,6 @@ public class CommandOrderServiceImpl implements CommandOrderService {
             Map<String, Product> products,
             String loginId
     ) {
-
         MemberOrder memberOrder = request.toEntity(
                 generateOrderName(List.copyOf(products.values())),
                 generateOrderNumber(orderDateTime),
@@ -153,19 +154,20 @@ public class CommandOrderServiceImpl implements CommandOrderService {
     private Order creatSubscribe(
             OrderSubscribeCreateRequestDto request,
             LocalDateTime orderDateTime,
-            Map<String, Product> products,
             String loginId
     ) {
-        String isbn = request.getOrderProducts().get(0).getIsbn();
+        SubscribeProduct subscribeProduct = queryProductService.findIssnByIsbn(request.getOrderProducts()
+                .get(0));
 
         Subscribe subscribe = request.toEntity(
-                generateOrderName(List.copyOf(products.values())),
+                // TODO 구독 상품의 주문 명 -> 구독 상품의 총칭 필요
+                subscribeProduct.getISSN(),
                 generateOrderNumber(orderDateTime),
                 orderDateTime,
                 queryMemberService.findByLoginId(loginId),
                 queryMemberAddressService.findById(request.getOrdererAddressId()),
                 generateNextRenewalDate(request.getExpectedDay(), orderDateTime),
-                queryProductService.findIssnByIsbn(isbn)
+                subscribeProduct
         );
         return subscribeCommandOrderRepository.save(subscribe);
     }

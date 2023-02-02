@@ -1,14 +1,12 @@
 package shop.yesaladin.shop.product.service.inter;
 
 import java.util.List;
-import java.util.Map;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
+import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
 import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
 import shop.yesaladin.shop.product.dto.ProductOrderResponseDto;
-import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
 import shop.yesaladin.shop.product.dto.ProductsResponseDto;
 
 /**
@@ -61,21 +59,12 @@ public interface QueryProductService {
     List<ProductOrderResponseDto> getByIsbnList(List<ProductOrderRequestDto> products);
 
     /**
-     * 주문에 사용될 주문 상품을 조회합니다.
+     * 주문에 사용될 구독 주문 상품을 조회합니다.
      *
-     * @param isbn 상품의 isbn
+     * @param orderProduct 구독 상품 + 수량
      * @return 상품
      * @author 최예린
      * @since 1.0
      */
-    SubscribeProduct findIssnByIsbn(String isbn);
-    /**
-     * 주문에 사용될 주문 상품들을 조회합니다.
-     *
-     * @param products 주문 상품 리스트
-     * @return 상품 리스트
-     * @author 최예린
-     * @since 1.0
-     */
-    Map<String, Product> findByIsbnList(List<ProductOrderRequestDto> products);
+    SubscribeProduct findIssnByIsbn(ProductOrderRequestDto orderProduct);
 }
