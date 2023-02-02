@@ -101,17 +101,12 @@ public class QueryOrderServiceImpl implements QueryOrderService {
         LocalDate endDate = queryDto.getEndDateOrDefaultValue(clock);
 
         checkRequestedOffsetInBounds(startDate, endDate, memberId, pageable);
-        Page<OrderSummaryResponseDto> orders = queryOrderRepository.findOrdersInPeriodByMemberId(
+        return queryOrderRepository.findOrdersInPeriodByMemberId(
                 startDate,
                 endDate,
                 memberId,
                 pageable
         );
-        for (OrderSummaryResponseDto order : orders) {
-            order.setOrderProductCount(queryOrderProductRepository.getCountOfOrderProductByOrderId(
-                    order.getOrderId()));
-        }
-        return orders;
     }
 
 

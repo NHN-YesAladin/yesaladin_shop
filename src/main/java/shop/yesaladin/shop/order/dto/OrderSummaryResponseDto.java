@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import shop.yesaladin.shop.order.domain.model.OrderCode;
 import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
 
 /**
@@ -25,10 +26,9 @@ public class OrderSummaryResponseDto {
     private final Long orderAmount;
     private final OrderStatusCode orderStatusCode;
     private final Long memberId;
-    private final String MemberName;
-    private Long orderProductCount;
+    private final String memberName;
+    private final Long orderProductCount;
+    private final Integer productTotalCount;
+    private final OrderCode orderCode;
 
-    public void setOrderProductCount(Long orderProductCount) {
-        this.orderProductCount = orderProductCount;
-    }
 }

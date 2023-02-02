@@ -2,6 +2,7 @@ package shop.yesaladin.shop.order.controller;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -33,8 +34,6 @@ import shop.yesaladin.shop.order.service.inter.QueryOrderService;
 public class QueryMemberOrderController {
 
     private final QueryOrderService queryOrderService;
-
-    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @GetMapping
     public PaginatedResponseDto<OrderSummaryResponseDto> getAllOrdersByMemberId(

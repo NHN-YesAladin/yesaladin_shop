@@ -30,6 +30,7 @@ import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.order.domain.model.MemberOrder;
 import shop.yesaladin.shop.order.domain.model.Order;
+import shop.yesaladin.shop.order.domain.model.OrderCode;
 import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderProductRepository;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
@@ -148,10 +149,13 @@ class QueryOrderServiceImplTest {
                     "orderNumber" + i,
                     LocalDateTime.now().minusDays(5),
                     "name",
-                    (long)10000 * i,
+                    (long) 10000 * i,
                     OrderStatusCode.ORDER,
                     (long) i,
-                    "memberName"
+                    "memberName",
+                    (long) i,
+                    i,
+                    OrderCode.MEMBER_ORDER
             ));
 
         }
@@ -168,8 +172,6 @@ class QueryOrderServiceImplTest {
                         clock), queryDto.getEndDateOrDefaultValue(clock), expectedMemberId, pageable))
                 .thenReturn(expectedValue);
 
-        long productSize = 10L;
-        Mockito.when(orderProductRepository.getCountOfOrderProductByOrderId(any())).thenReturn(productSize);
 
         // when
         Page<OrderSummaryResponseDto> actual = service.getOrderListInPeriodByMemberId(
@@ -180,7 +182,6 @@ class QueryOrderServiceImplTest {
 
         // then
         Assertions.assertThat(actual).isEqualTo(expectedValue);
-        Assertions.assertThat(actual.getContent().get(0).getOrderProductCount()).isEqualTo(productSize);
         Mockito.verify(repository, Mockito.times(1))
                 .findOrdersInPeriodByMemberId(
                         queryDto.getStartDateOrDefaultValue(clock),
@@ -188,8 +189,6 @@ class QueryOrderServiceImplTest {
                         expectedMemberId,
                         pageable
                 );
-        Mockito.verify(orderProductRepository, Mockito.times(actual.getContent().size()))
-                .getCountOfOrderProductByOrderId(any());
     }
 
     @Test

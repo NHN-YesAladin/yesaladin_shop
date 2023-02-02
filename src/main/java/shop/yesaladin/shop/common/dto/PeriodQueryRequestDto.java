@@ -8,22 +8,30 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 import shop.yesaladin.shop.common.exception.InvalidPeriodConditionException;
 import shop.yesaladin.shop.common.exception.type.InvalidPeriodConditionType;
 
 /**
  * 기간조회를 위한 요청 dto 클래스입니다.
  *
+ * @DateTimeFormat : @ModelAttribute를 사용해 query param으로 매칭 하기 위해 사용
+ * @JsonFormat : @RequestBody를 사용해 http body로 매칭 하기 위해 사용
+ *
  * @author 최예린
+ * @author 배수한
  * @since 1.0
  */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class PeriodQueryRequestDto {
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate startDate;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate endDate;
 

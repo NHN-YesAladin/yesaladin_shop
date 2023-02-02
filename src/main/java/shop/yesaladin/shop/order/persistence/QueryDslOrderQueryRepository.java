@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.order.persistence;
 
+import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -200,6 +201,8 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
     ) {
         QMemberOrder memberOrder = QMemberOrder.memberOrder;
         QOrderStatusChangeLog orderStatusChangeLog = QOrderStatusChangeLog.orderStatusChangeLog;
+        QOrderProduct orderProduct = QOrderProduct.orderProduct;
+
         List<OrderSummaryResponseDto> data = queryFactory.select(Projections.constructor(
                         OrderSummaryResponseDto.class,
                         memberOrder.id,
@@ -207,17 +210,23 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
                         memberOrder.orderDateTime,
                         memberOrder.name,
                         memberOrder.totalAmount,
-                        orderStatusChangeLog.orderStatusCode,
+                        ExpressionUtils.as(queryFactory.select(orderStatusChangeLog.orderStatusCode.max())
+                                .from(orderStatusChangeLog)
+                                .where(memberOrder.id.eq(memberOrder.id)), "orderStatusCode"),
                         memberOrder.member.id,
-                        memberOrder.member.name
+                        memberOrder.member.name,
+                        orderProduct.count(),
+                        orderProduct.quantity.sum(),
+                        memberOrder.orderCode
                 ))
                 .from(memberOrder)
-                .innerJoin(orderStatusChangeLog)
-                .on(memberOrder.id.eq(orderStatusChangeLog.order.id))
+                .leftJoin(orderProduct)
+                .on(memberOrder.id.eq(orderProduct.order.id))
                 .where(memberOrder.member.id.eq(memberId).and(memberOrder.orderDateTime.between(
                         LocalDateTime.of(startDate, LocalTime.MIDNIGHT),
                         LocalDateTime.of(endDate, LocalTime.MIDNIGHT)
                 )))
+                .groupBy(memberOrder.id)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

@@ -1,7 +1,6 @@
 package shop.yesaladin.shop.order.persistence;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,6 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.member.domain.model.Member;
@@ -56,7 +56,7 @@ class QueryDslOrderProductQueryRepositoryTest {
         subscribeList = new ArrayList<>();
         memberList = new ArrayList<>();
         memberAddressList = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
+        for (int i = 100; i < 103; i++) {
             Member member = Member.builder()
                     .nickname("test" + i)
                     .name("name" + i)
@@ -66,8 +66,8 @@ class QueryDslOrderProductQueryRepositoryTest {
                     .birthMonth(5)
                     .birthDay(i)
                     .email("admin+" + i + "@mongmeo.dev")
-                    .phone("0101234567" + i)
-                    .signUpDate(LocalDate.of(2023, 1, i + 1))
+                    .phone("0101234" + i)
+                    .signUpDate(LocalDate.now())
                     .withdrawalDate(null)
                     .isWithdrawal(false)
                     .isBlocked(false)
@@ -87,12 +87,12 @@ class QueryDslOrderProductQueryRepositoryTest {
             entityManager.persist(memberAddress);
             memberList.add(member);
         }
-        for (int i = 0; i < 3; i++) {
+        for (int i = 100; i < 103; i++) {
             NonMemberOrder nonMemberOrder = NonMemberOrder.builder()
                     .orderNumber("NM-" + i)
                     .name("non-member-order" + i)
-                    .orderDateTime(LocalDateTime.of(2023, 1, i + 1, 0, 0))
-                    .expectedTransportDate(LocalDate.of(2023, 1, i + 2))
+                    .orderDateTime(LocalDateTime.now())
+                    .expectedTransportDate(LocalDate.now())
                     .isHidden(false)
                     .usedPoint(0)
                     .shippingFee(0)
@@ -100,17 +100,17 @@ class QueryDslOrderProductQueryRepositoryTest {
                     .orderCode(OrderCode.NON_MEMBER_ORDER)
                     .address("address" + i)
                     .nonMemberName("nonMember" + i)
-                    .phoneNumber("0101234567" + i)
+                    .phoneNumber("0101234" + i)
                     .build();
             nonMemberOrderList.add(nonMemberOrder);
             entityManager.persist(nonMemberOrder);
         }
-        for (int i = 0; i < 3; i++) {
+        for (int i = 100; i < 103; i++) {
             MemberOrder memberOrder = MemberOrder.builder()
                     .orderNumber("M-" + i)
                     .name("member-order" + i)
-                    .orderDateTime(LocalDateTime.of(2023, 1, i + 1, 0, 0))
-                    .expectedTransportDate(LocalDate.of(2023, 1, i + 2))
+                    .orderDateTime(LocalDateTime.now())
+                    .expectedTransportDate(LocalDate.now())
                     .isHidden(false)
                     .usedPoint(0)
                     .shippingFee(0)
@@ -129,7 +129,7 @@ class QueryDslOrderProductQueryRepositoryTest {
             );
             entityManager.persist(orderStatusChangeLog);
         }
-        for (int i = 0; i < 3; i++) {
+        for (int i = 100; i < 103; i++) {
             SubscribeProduct subscribeProduct = SubscribeProduct.builder()
                     .ISSN("12345" + i)
                     .build();
@@ -137,11 +137,11 @@ class QueryDslOrderProductQueryRepositoryTest {
                     .member(memberList.get(i % 5))
                     .name("subscribe" + i)
                     .memberAddress(memberAddressList.get(i % 5))
-                    .nextRenewalDate(LocalDate.of(2023, i + 1, 1))
+                    .nextRenewalDate(LocalDate.now().plusMonths(1))
                     .subscribeProduct(subscribeProduct)
                     .orderNumber("S-" + i)
-                    .orderDateTime(LocalDateTime.of(2023, 1, i + 1, 0, 0))
-                    .expectedTransportDate(LocalDate.of(2023, 1, i + 2))
+                    .orderDateTime(LocalDateTime.now())
+                    .expectedTransportDate(LocalDate.now())
                     .isHidden(false)
                     .usedPoint(0)
                     .shippingFee(0)
@@ -177,7 +177,7 @@ class QueryDslOrderProductQueryRepositoryTest {
         entityManager.persist(subscribeProduct);
         entityManager.persist(thumbnailFile);
         entityManager.persist(ebookFile);
-        entityManager.persist(totalDiscountRate);
+//        entityManager.persist(totalDiscountRate);
 
         MemberOrder memberOrder = memberOrderList.get(0);
         for (int i = 0; i < size; i++) {
@@ -193,7 +193,7 @@ class QueryDslOrderProductQueryRepositoryTest {
             OrderProduct orderProduct = OrderProduct.builder()
                     .order(memberOrder)
                     .product(product)
-                    .isCancelled(false)
+                    .isCanceled(false)
                     .quantity(10)
                     .build();
             entityManager.persist(orderProduct);
