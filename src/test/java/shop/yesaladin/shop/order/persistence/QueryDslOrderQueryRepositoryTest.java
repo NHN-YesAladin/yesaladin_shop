@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
+import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.member.domain.model.MemberGenderCode;
@@ -23,10 +24,20 @@ import shop.yesaladin.shop.order.domain.model.MemberOrder;
 import shop.yesaladin.shop.order.domain.model.NonMemberOrder;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
+import shop.yesaladin.shop.order.domain.model.OrderProduct;
+import shop.yesaladin.shop.order.domain.model.OrderStatusChangeLog;
+import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
 import shop.yesaladin.shop.order.domain.model.Subscribe;
 import shop.yesaladin.shop.order.domain.model.SubscribeOrderList;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
+import shop.yesaladin.shop.order.dto.OrderSummaryResponseDto;
+import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
+import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
+import shop.yesaladin.shop.product.dummy.DummyFile;
+import shop.yesaladin.shop.product.dummy.DummyProduct;
+import shop.yesaladin.shop.product.dummy.DummySubscribeProduct;
+import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
 
 @Transactional
 @SpringBootTest
@@ -115,6 +126,20 @@ class QueryDslOrderQueryRepositoryTest {
                     .build();
             memberOrderList.add(memberOrder);
             entityManager.persist(memberOrder);
+
+            OrderStatusChangeLog orderStatusChangeLog = OrderStatusChangeLog.create(
+                    memberOrder,
+                    LocalDateTime.now(),
+                    OrderStatusCode.ORDER
+            );
+            entityManager.persist(orderStatusChangeLog);
+
+            OrderStatusChangeLog orderStatusChangeLogComplete = OrderStatusChangeLog.create(
+                    memberOrder,
+                    LocalDateTime.now(),
+                    OrderStatusCode.COMPLETE
+            );
+            entityManager.persist(orderStatusChangeLogComplete);
         }
         for (int i = 0; i < 10; i++) {
             SubscribeProduct subscribeProduct = SubscribeProduct.builder()
@@ -194,7 +219,8 @@ class QueryDslOrderQueryRepositoryTest {
     @DisplayName("특정 기간 내 주문 기록 조회에 성공한다.")
     void findAllOrdersInPeriod() {
         // when
-        Page<OrderSummaryDto> actual = queryRepository.findAllOrdersInPeriod(LocalDate.of(2023,
+        Page<OrderSummaryDto> actual = queryRepository.findAllOrdersInPeriod(LocalDate.of(
+                2023,
                 1,
                 1
         ), LocalDate.of(2023, 1, 2), PageRequest.of(0, 10));
@@ -207,7 +233,8 @@ class QueryDslOrderQueryRepositoryTest {
     @DisplayName("특정 기간 내 주문 기록이 페이지네이션 되어 조회된다.")
     void findAllOrdersInPeriodWithPagination() {
         // when
-        Page<OrderSummaryDto> actual = queryRepository.findAllOrdersInPeriod(LocalDate.of(2023,
+        Page<OrderSummaryDto> actual = queryRepository.findAllOrdersInPeriod(LocalDate.of(
+                2023,
                 1,
                 1
         ), LocalDate.of(2023, 1, 4), PageRequest.of(0, 10));
@@ -250,7 +277,8 @@ class QueryDslOrderQueryRepositoryTest {
     @DisplayName("특정 기간 내 주문 수가 반환된다.")
     void getCountOrdersInPeriod() {
         // when
-        long actual = queryRepository.getCountOfOrdersInPeriod(LocalDate.of(2023, 1, 1),
+        long actual = queryRepository.getCountOfOrdersInPeriod(
+                LocalDate.of(2023, 1, 1),
                 LocalDate.of(2023, 1, 4)
         );
 
@@ -262,7 +290,8 @@ class QueryDslOrderQueryRepositoryTest {
     @DisplayName("특정 회원의 특정 기간 내 주문 수가 반환된다.")
     void getCountOrdersInPeriodByMemberId() {
         // when
-        long actual = queryRepository.getCountOfOrdersInPeriodByMemberId(LocalDate.of(2023, 1, 1),
+        long actual = queryRepository.getCountOfOrdersInPeriodByMemberId(
+                LocalDate.of(2023, 1, 1),
                 LocalDate.of(2023, 1, 2),
                 memberList.get(0).getId()
         );
@@ -314,4 +343,56 @@ class QueryDslOrderQueryRepositoryTest {
         Assertions.assertThat(actual.get())
                 .isInstanceOf(OrderCode.MEMBER_SUBSCRIBE.getOrderClass());
     }
+
+    @Test
+    @DisplayName("특정 회원의 특정 기간 내 주문 수가 반환된다. - 전체 주문 조회용")
+    void findOrdersInPeriodByMemberId() throws Exception {
+        // given
+        String URL = "https://api-storage.cloud.toast.com/v1/AUTH_/container/domain/type";
+        String ISBN = "0000000000001";
+        int size = 100;
+
+        SubscribeProduct subscribeProduct = DummySubscribeProduct.dummy();
+        File thumbnailFile = DummyFile.dummy(URL + "/image.png");
+        File ebookFile = DummyFile.dummy(URL + "/ebook.pdf");
+        TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
+        entityManager.persist(subscribeProduct);
+        entityManager.persist(thumbnailFile);
+        entityManager.persist(ebookFile);
+        entityManager.persist(totalDiscountRate);
+
+        MemberOrder memberOrder = memberOrderList.get(0);
+        for (int i = 0; i < size; i++) {
+            Product product = DummyProduct.dummy(
+                    ISBN + i,
+                    subscribeProduct,
+                    thumbnailFile,
+                    ebookFile,
+                    totalDiscountRate
+            );
+            entityManager.persist(product);
+
+            OrderProduct orderProduct = OrderProduct.builder()
+                    .order(memberOrder)
+                    .product(product)
+                    .isCanceled(false)
+                    .quantity(10)
+                    .build();
+            entityManager.persist(orderProduct);
+        }
+
+        // when
+        int pageSize = 5;
+        Page<OrderSummaryResponseDto> actual = queryRepository.findOrdersInPeriodByMemberId(
+                LocalDate.of(2023, 1, 1),
+                LocalDate.of(2023, 1, 31),
+                memberList.get(0).getId(),
+                PageRequest.of(0, pageSize)
+        );
+
+        // then
+        Assertions.assertThat(actual.get()).hasSize(5);
+        Assertions.assertThat(actual.getContent()).hasSize(pageSize);
+    }
+
 }

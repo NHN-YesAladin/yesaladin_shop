@@ -1,7 +1,6 @@
 package shop.yesaladin.shop.order.domain.repository;
 
 import java.util.Optional;
-import shop.yesaladin.shop.order.domain.model.Subscribe;
 import shop.yesaladin.shop.order.domain.model.SubscribeOrderList;
 
 /**

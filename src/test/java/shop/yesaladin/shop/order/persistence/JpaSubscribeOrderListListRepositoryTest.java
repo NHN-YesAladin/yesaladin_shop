@@ -26,12 +26,11 @@ import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class JpaSubscribeOrderListListRepositoryTest {
 
+    private final boolean isTransported = false;
     @PersistenceContext
     private EntityManager entityManager;
     @Autowired
     private JpaSubscribeOrderListRepository subscribeOrderListRepository;
-
-    private final boolean isTransported = false;
     private Subscribe subscribe;
     private MemberOrder memberOrder;
 
