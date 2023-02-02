@@ -10,7 +10,6 @@ import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
 
 /**
@@ -21,7 +20,6 @@ import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
  */
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class OrderCreateRequestDto {
 
     @JsonFormat(pattern = "yyyy-MM-dd", shape = Shape.STRING)

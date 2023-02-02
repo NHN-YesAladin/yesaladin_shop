@@ -2,18 +2,17 @@ package shop.yesaladin.shop.order.dto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Range;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
 import shop.yesaladin.shop.order.domain.model.Subscribe;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
+import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
 
 /**
  * 정기구독 생성을 요청하는 dto 입니다.
@@ -22,16 +21,40 @@ import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
  * @since 1.0
  */
 @Getter
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class OrderSubscribeCreateRequestDto extends OrderMemberCreateRequestDto {
 
     @NotNull
     @Range(min = 1, max = 31)
-    private Integer expectedDay;
+    private final Integer expectedDay;
     @NotNull
     @Pattern(regexp = "^(6|12)$")
-    private Integer intervalMonth;
+    private final Integer intervalMonth;
+
+    public OrderSubscribeCreateRequestDto(
+            LocalDate expectedShippingDate,
+            List<ProductOrderRequestDto> orderProducts,
+            long productTotalAmount,
+            int shippingFee,
+            int wrappingFee,
+            Long ordererAddressId,
+            List<Long> orderCoupons,
+            long orderPoint,
+            Integer expectedDay,
+            Integer intervalMonth
+    ) {
+        super(
+                expectedShippingDate,
+                orderProducts,
+                productTotalAmount,
+                shippingFee,
+                wrappingFee,
+                ordererAddressId,
+                orderCoupons,
+                orderPoint
+        );
+        this.expectedDay = expectedDay;
+        this.intervalMonth = intervalMonth;
+    }
 
     /**
      * 요청 데이터를 회원 구독 주문 엔티티로 반환합니다.

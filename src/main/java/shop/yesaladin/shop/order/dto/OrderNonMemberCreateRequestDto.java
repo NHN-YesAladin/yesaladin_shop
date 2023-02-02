@@ -1,16 +1,18 @@
 package shop.yesaladin.shop.order.dto;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 import shop.yesaladin.shop.order.domain.model.NonMemberOrder;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
+import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
 
 /**
  * 주문 생성을 요청하는 dto 입니다.
@@ -19,20 +21,34 @@ import shop.yesaladin.shop.order.domain.model.OrderCode;
  * @since 1.0
  */
 @Getter
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class OrderNonMemberCreateRequestDto extends OrderCreateRequestDto {
 
     @NotBlank
     @Length(min = 1, max = 20)
-    private String ordererName;
+    private final String ordererName;
     @NotNull
     @Pattern(regexp = "^01([0|1])([0-9]{8})$")
-    private String ordererPhoneNumber;
+    private final String ordererPhoneNumber;
 
     @NotBlank
     @Length(min = 2, max = 255)
-    private String ordererAddress;
+    private final String ordererAddress;
+
+    public OrderNonMemberCreateRequestDto(
+            LocalDate expectedShippingDate,
+            @NotEmpty @NotNull List<ProductOrderRequestDto> orderProducts,
+            @Min(value = 0) long productTotalAmount,
+            @Min(value = 0) int shippingFee,
+            @Min(value = 0) int wrappingFee,
+            String ordererName,
+            String ordererPhoneNumber,
+            String ordererAddress
+    ) {
+        super(expectedShippingDate, orderProducts, productTotalAmount, shippingFee, wrappingFee);
+        this.ordererName = ordererName;
+        this.ordererPhoneNumber = ordererPhoneNumber;
+        this.ordererAddress = ordererAddress;
+    }
 
     /**
      * 요청 데이터를 비회원 주문 엔티티로 반환합니다.
