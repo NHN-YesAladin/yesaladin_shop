@@ -72,7 +72,7 @@ class SearchProductControllerTest {
                 .discountRate(10)
                 .sellingPrice(1000L)
                 .authors(List.of("author"))
-                .isForcedOutOfStack(false)
+                .isForcedOutOfStock(false)
                 .thumbnailFileUrl("깃 허브.jpg")
                 .publishedDate(LocalDate.now().toString())
                 .categories(List.of(new SearchedProductCategory(12L, null, "국내소설", true, false)))
@@ -201,7 +201,7 @@ class SearchProductControllerTest {
                 .andExpect(jsonPath("$.data.products[0].sellingPrice", equalTo(1000)))
                 .andExpect(jsonPath(
                         "$.data.products[0].isForcedOutOfStack",
-                        equalTo(dummySearchedProductDto.getIsForcedOutOfStack())
+                        equalTo(dummySearchedProductDto.getIsForcedOutOfStock())
                 ))
                 .andExpect(jsonPath(
                         "$.data.products[0].thumbnailFileUrl",
@@ -332,7 +332,7 @@ class SearchProductControllerTest {
                 .andExpect(jsonPath("$.data.products[0].sellingPrice", equalTo(1000)))
                 .andExpect(jsonPath(
                         "$.data.products[0].isForcedOutOfStack",
-                        equalTo(dummySearchedProductDto.getIsForcedOutOfStack())
+                        equalTo(dummySearchedProductDto.getIsForcedOutOfStock())
                 ))
                 .andExpect(jsonPath(
                         "$.data.products[0].thumbnailFileUrl",
@@ -459,7 +459,7 @@ class SearchProductControllerTest {
                 .andExpect(jsonPath("$.data.products[0].sellingPrice", equalTo(1000)))
                 .andExpect(jsonPath(
                         "$.data.products[0].isForcedOutOfStack",
-                        equalTo(dummySearchedProductDto.getIsForcedOutOfStack())
+                        equalTo(dummySearchedProductDto.getIsForcedOutOfStock())
                 ))
                 .andExpect(jsonPath(
                         "$.data.products[0].thumbnailFileUrl",
@@ -588,7 +588,7 @@ class SearchProductControllerTest {
                 .andExpect(jsonPath("$.data.products[0].sellingPrice", equalTo(1000)))
                 .andExpect(jsonPath(
                         "$.data.products[0].isForcedOutOfStack",
-                        equalTo(dummySearchedProductDto.getIsForcedOutOfStack())
+                        equalTo(dummySearchedProductDto.getIsForcedOutOfStock())
                 ))
                 .andExpect(jsonPath(
                         "$.data.products[0].thumbnailFileUrl",
@@ -721,7 +721,7 @@ class SearchProductControllerTest {
                 .andExpect(jsonPath("$.data.products[0].sellingPrice", equalTo(1000)))
                 .andExpect(jsonPath(
                         "$.data.products[0].isForcedOutOfStack",
-                        equalTo(dummySearchedProductDto.getIsForcedOutOfStack())
+                        equalTo(dummySearchedProductDto.getIsForcedOutOfStock())
                 ))
                 .andExpect(jsonPath(
                         "$.data.products[0].thumbnailFileUrl",
@@ -854,7 +854,7 @@ class SearchProductControllerTest {
                 .andExpect(jsonPath("$.data.products[0].sellingPrice", equalTo(1000)))
                 .andExpect(jsonPath(
                         "$.data.products[0].isForcedOutOfStack",
-                        equalTo(dummySearchedProductDto.getIsForcedOutOfStack())
+                        equalTo(dummySearchedProductDto.getIsForcedOutOfStock())
                 ))
                 .andExpect(jsonPath(
                         "$.data.products[0].thumbnailFileUrl",

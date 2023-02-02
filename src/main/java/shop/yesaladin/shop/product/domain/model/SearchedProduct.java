@@ -50,8 +50,8 @@ public class SearchedProduct {
     private boolean isSale;
     @Field(name = "quantity", type = FieldType.Long)
     private Long quantity;
-    @Field(name = "is_forced_out_of_stack", type = FieldType.Boolean)
-    private Boolean isForcedOutOfStack;
+    @Field(name = "is_forced_out_of_stock", type = FieldType.Boolean)
+    private Boolean isForcedOutOfStock;
     @Field(name = "preferential_show_ranking", type = FieldType.Long)
     private long preferentialShowRanking;
     @Field(name = "product_type", type = FieldType.Object)
