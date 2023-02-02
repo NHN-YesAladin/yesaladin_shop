@@ -76,7 +76,9 @@ public class QueryDslRelationRepository implements QueryRelationRepository {
                 .fetch();
 
         JPAQuery<Long> countQuery = queryFactory.select(relation.count())
-                .where(relation.productMain.id.eq(productId).and(relation.productSub.isSale.isTrue()).and(relation.productSub.isDeleted.isFalse()))
+                .where(relation.productMain.id.eq(productId)
+                        .and(relation.productSub.isSale.isTrue())
+                        .and(relation.productSub.isDeleted.isFalse()))
                 .from(relation);
 
         return PageableExecutionUtils.getPage(relations, pageable, countQuery::fetchFirst);
