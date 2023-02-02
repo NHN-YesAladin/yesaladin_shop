@@ -68,6 +68,8 @@ public class SearchedProduct {
     private LocalDate publishedDate;
     @Field(name = "saving_method", type = FieldType.Keyword)
     private String savingMethod;
+    @Field(name = "is_deleted", type = FieldType.Boolean)
+    private Boolean isDeleted;
     @Field(name = "categories", type = FieldType.Object)
     private List<SearchedProductCategory> categories;
     @Field(name = "authors", type = FieldType.Object)
