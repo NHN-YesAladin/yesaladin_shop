@@ -2,14 +2,13 @@ package shop.yesaladin.shop.category.dto;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
 public class SearchCategoryRequestDto {
-    @NotBlank
+
     String name;
 
     @Min(value = 0)
