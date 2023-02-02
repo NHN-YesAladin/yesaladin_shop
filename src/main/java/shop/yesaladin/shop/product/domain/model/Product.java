@@ -28,7 +28,7 @@ public class Product {
     private Long id;
 
     @Column(unique = true, nullable = false, length = 50)
-    private String ISBN;
+    private String isbn;
 
     @Column(nullable = false)
     private String title;

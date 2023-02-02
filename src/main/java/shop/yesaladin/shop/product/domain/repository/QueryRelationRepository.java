@@ -2,11 +2,8 @@ package shop.yesaladin.shop.product.domain.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.Relation;
 import shop.yesaladin.shop.product.domain.model.Relation.Pk;
-
-import java.util.List;
 
 /**
  * 상품 연관관계 조회 관련 Repository Interface 입니다.

@@ -16,7 +16,7 @@ public interface QueryProductRepository {
 
     Optional<Product> findById(Long id);
 
-    Optional<Product> findByISBN(String ISBN);
+    Optional<Product> findByISBN(String isbn);
 
     Page<Product> findAllForManager(Pageable pageable);
 

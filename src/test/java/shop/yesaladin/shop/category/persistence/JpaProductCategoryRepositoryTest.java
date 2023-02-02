@@ -33,7 +33,7 @@ import shop.yesaladin.shop.publish.domain.model.Publisher;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class JpaProductCategoryRepositoryTest {
 
-    private final String isbn = "000000000000";
+    private final String ISBN = "000000000000";
     private final String url = "https://api-storage.cloud.toast.com/v1/AUTH_/container/domain/type";
 
     ProductCategory productCategory;
@@ -60,7 +60,7 @@ class JpaProductCategoryRepositoryTest {
         entityManager.persist(ebookFile);
         entityManager.persist(totalDiscountRate);
 
-        Product product = DummyProduct.dummy(isbn + 9, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate);
+        Product product = DummyProduct.dummy(ISBN + 9, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate);
         Category category = CategoryDummy.dummyParent();
 
         entityManager.persist(product);
@@ -122,7 +122,7 @@ class JpaProductCategoryRepositoryTest {
         // given
         int size = 3;
         for (int i = 0; i < 5; i++) {
-            Product product = DummyProduct.dummy(isbn + i, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate);
+            Product product = DummyProduct.dummy(ISBN + i, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate);
             Category category = CategoryDummy.dummyParent((long) i);
 
             entityManager.persist(product);
