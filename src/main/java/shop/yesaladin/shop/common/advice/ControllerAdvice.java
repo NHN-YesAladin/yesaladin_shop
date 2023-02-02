@@ -10,10 +10,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import shop.yesaladin.common.dto.ResponseDto;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.category.exception.CategoryNotFoundException;
 import shop.yesaladin.shop.common.dto.ErrorResponseDto;
 import shop.yesaladin.shop.common.exception.CommonException;
 import shop.yesaladin.shop.common.exception.CustomJsonProcessingException;
+import shop.yesaladin.shop.common.exception.InvalidAuthorityException;
 import shop.yesaladin.shop.common.exception.InvalidPeriodConditionException;
 import shop.yesaladin.shop.file.exception.FileNotFoundException;
 import shop.yesaladin.shop.member.exception.AlreadyBlockedMemberException;
@@ -24,8 +26,6 @@ import shop.yesaladin.shop.member.exception.MemberAddressNotFoundException;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.exception.MemberProfileAlreadyExistException;
 import shop.yesaladin.shop.member.exception.MemberRoleNotFoundException;
-import shop.yesaladin.shop.point.exception.InvalidCodeParameterException;
-import shop.yesaladin.shop.point.exception.OverPointUseException;
 import shop.yesaladin.shop.product.exception.AlreadyDeletedProductException;
 import shop.yesaladin.shop.product.exception.ProductAlreadyExistsException;
 import shop.yesaladin.shop.product.exception.ProductNotFoundException;
@@ -93,6 +93,17 @@ public class ControllerAdvice {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
+    @ExceptionHandler(InvalidAuthorityException.class)
+    public ResponseEntity<ResponseDto<Object>> handleUnauthorizedException(Exception e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                ResponseDto.builder()
+                        .success(false)
+                        .status(HttpStatus.UNAUTHORIZED)
+                        .errorMessages(List.of("접근권한이 없습니다."))
+                        .build()
+        );
+    }
+
     @ExceptionHandler(value = {
             MemberProfileAlreadyExistException.class,
             ProductAlreadyExistsException.class,
@@ -135,6 +146,19 @@ public class ControllerAdvice {
                 .build();
 
         return ResponseEntity.status(e.getErrorCode().getResponseStatus()).body(response);
+    }
+
+    @ExceptionHandler(ClientException.class)
+    public ResponseEntity<ResponseDto<Object>> handleClientException(ClientException e) {
+        log.error("[{}] ClientException : {}", e.getResponseStatus(), e.getMessage());
+
+        ResponseDto<Object> response = ResponseDto.builder()
+                .success(false)
+                .status(e.getResponseStatus())
+                .errorMessages(
+                        List.of(e.getErrorCode().getDisplayName()))
+                .build();
+        return ResponseEntity.status(e.getResponseStatus()).body(response);
     }
 
     @ExceptionHandler(Exception.class)

@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.member.service.inter;
 
+import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.dto.MemberDto;
 import shop.yesaladin.shop.member.dto.MemberGradeQueryResponseDto;
 import shop.yesaladin.shop.member.dto.MemberLoginResponseDto;
@@ -26,6 +27,16 @@ public interface QueryMemberService {
      * @since 1.0
      */
     MemberDto findMemberById(long id);
+
+    /**
+     * loginId를 기준으로 회원을 조회합니다.
+     *
+     * @param loginId 회원의 아이디
+     * @return 회원 조회 결과
+     * @author 최예린
+     * @since 1.0
+     */
+    Member findByLoginId(String loginId);
 
     /**
      * 회원을 unique column인 loginId를 기준 으로 조회 하기 위한 메서드 입니다.

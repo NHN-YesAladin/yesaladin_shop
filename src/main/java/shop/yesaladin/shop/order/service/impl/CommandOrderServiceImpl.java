@@ -9,10 +9,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import shop.yesaladin.shop.common.utils.AuthorityUtils;
+import shop.yesaladin.common.code.ErrorCode;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.member.service.inter.QueryMemberAddressService;
@@ -30,7 +30,6 @@ import shop.yesaladin.shop.order.domain.repository.CommandOrderRepository;
 import shop.yesaladin.shop.order.domain.repository.CommandOrderStatusChangeLogRepository;
 import shop.yesaladin.shop.order.dto.OrderCreateRequestDto;
 import shop.yesaladin.shop.order.dto.OrderCreateResponseDto;
-import shop.yesaladin.shop.order.exception.BadRequestException;
 import shop.yesaladin.shop.order.service.inter.CommandOrderService;
 import shop.yesaladin.shop.point.domain.model.PointReasonCode;
 import shop.yesaladin.shop.point.dto.PointHistoryRequestDto;
@@ -62,80 +61,68 @@ public class CommandOrderServiceImpl implements CommandOrderService {
 
     private final Clock clock;
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public OrderCreateResponseDto createNonMemberOrders(
+            OrderCreateRequestDto request
+    ) {
+        checkValidationForNonMemberOrder(request);
+
+        LocalDateTime orderDateTime = LocalDateTime.now(clock);
+        Map<String, Product> products = queryProductService.findByIsbnList(request.getOrderProducts());
+
+        Order savedOrder = createNonMemberOrder(request, products, orderDateTime);
+
+        createOrderProduct(request, products, savedOrder);
+        createOrderStatusChangeLog(orderDateTime, savedOrder);
+
+        return OrderCreateResponseDto.fromEntity(savedOrder);
+    }
 
     /**
      * {@inheritDoc}
      */
     @Override
     @Transactional
-    public OrderCreateResponseDto createOrderWith(
+    public OrderCreateResponseDto createMemberOrders(
             OrderCode orderCode,
             OrderCreateRequestDto request,
-            UserDetails userDetails
+            String loginId
     ) {
+        checkValidationForMemberOrders(request);
+
         LocalDateTime orderDateTime = LocalDateTime.now(clock);
+        Map<String, Product> products = queryProductService.findByIsbnList(request.getOrderProducts());
 
-        Order savedOrder = (AuthorityUtils.isAuthorized(userDetails)) ?
-                createMemberOrders(orderCode, request, userDetails, orderDateTime)
-                : createNonMemberOrders(request, orderDateTime);
+        String name = generateOrderName(List.copyOf(products.values()));
+        String number = generateOrderNumber(orderDateTime);
+        Member member = queryMemberService.findByLoginId(loginId);
+        MemberAddress address = queryMemberAddressService.findById(request.getOrdererAddressId());
 
+        Order savedOrder = (orderCode.equals(OrderCode.MEMBER_SUBSCRIBE)) ?
+                creatSubscribe(request, orderDateTime, name, number, member, address) :
+                createMemberOrder(request, orderDateTime, products, name, number, member, address);
+
+        createUsePointHistory(request, loginId);
         createOrderStatusChangeLog(orderDateTime, savedOrder);
 
         return OrderCreateResponseDto.fromEntity(savedOrder);
     }
 
-    private Order createNonMemberOrders(
-            OrderCreateRequestDto request,
-            LocalDateTime orderDateTime
-    ) {
-        checkValidationForNonMemberOrder(request);
-
-        Map<String, Product> products = queryProductService.findByIsbnList(request.getOrderProducts());
-
-        String name = generateOrderName(List.copyOf(products.values()));
-        String number = generateOrderNumber(orderDateTime);
-
-        return createNonMemberOrder(request, orderDateTime, products, name, number);
-    }
-
-    private Order createMemberOrders(
-            OrderCode orderCode,
-            OrderCreateRequestDto request,
-            UserDetails userDetails,
-            LocalDateTime orderDateTime
-    ) {
-        checkValidationForMemberOrders(request);
-
-        String loginId = userDetails.getUsername();
-        Map<String, Product> products = queryProductService.findByIsbnList(request.getOrderProducts());
-
-        String name = generateOrderName(List.copyOf(products.values()));
-        String number = generateOrderNumber(orderDateTime);
-        Member member = queryMemberService.findMemberByLoginId(loginId).toEntity();
-        MemberAddress address = queryMemberAddressService.findById(request.getOrdererAddressId());
-
-        Order order = (orderCode.equals(OrderCode.MEMBER_SUBSCRIBE)) ?
-                creatSubscribe(request, orderDateTime, name, number, member, address) :
-                createMemberOrder(request, orderDateTime, products, name, number, member, address);
-
-        createUsePointHistory(request, loginId);
-
-        return order;
-    }
-
     private Order createNonMemberOrder(
             OrderCreateRequestDto request,
-            LocalDateTime orderDateTime,
             Map<String, Product> products,
-            String name,
-            String number
+            LocalDateTime orderDateTime
     ) {
+        String name = generateOrderName(List.copyOf(products.values()));
+        String number = generateOrderNumber(orderDateTime);
+
         NonMemberOrder nonMemberOrder = request.toEntity(name, number, orderDateTime);
-        Order savedOrder = nonMemberOrderCommandOrderRepository.save(nonMemberOrder);
 
-        createOrderProduct(request, products, nonMemberOrder);
-
-        return savedOrder;
+        return nonMemberOrderCommandOrderRepository.save(nonMemberOrder);
     }
 
     private Order createMemberOrder(
@@ -207,6 +194,10 @@ public class CommandOrderServiceImpl implements CommandOrderService {
     }
 
     private void createUsePointHistory(OrderCreateRequestDto request, String loginId) {
+        if (request.getOrderPoint() == 0) {
+            return;
+        }
+
         commandPointHistoryService.use(new PointHistoryRequestDto(
                 loginId,
                 request.getOrderPoint(),
@@ -236,20 +227,45 @@ public class CommandOrderServiceImpl implements CommandOrderService {
 
     private void checkValidationForNonMemberOrder(OrderCreateRequestDto request) {
         if (hasNonRequiredInfoForNonMemberOrder(request)) {
-            throw new BadRequestException();
+            throw new ClientException(
+                    ErrorCode.ORDER_BAD_REQUEST,
+                    "NonMember Order Request has unnecessary information."
+            );
+        }
+        if (hasEmptyOrderProductList(request)) {
+            throw new ClientException(
+                    ErrorCode.ORDER_BAD_REQUEST,
+                    "Empty Order Product in Order."
+            );
         }
     }
 
     private void checkValidationForMemberOrders(OrderCreateRequestDto request) {
         if (hasNonRequiredInfoForMemberOrders(request)) {
-            throw new BadRequestException();
+            throw new ClientException(
+                    ErrorCode.ORDER_BAD_REQUEST,
+                    "Member Order Request has unnecessary information."
+            );
+        }
+        if (hasEmptyOrderProductList(request)) {
+            throw new ClientException(
+                    ErrorCode.ORDER_BAD_REQUEST,
+                    "Empty Order Product in Order."
+            );
         }
     }
 
     private void checkValidationForMemberOrder(OrderCreateRequestDto request) {
         if (hasNonRequiredInfoForMemberOrder(request)) {
-            throw new BadRequestException();
+            throw new ClientException(
+                    ErrorCode.ORDER_BAD_REQUEST,
+                    "Subscribe Request has unnecessary information."
+            );
         }
+    }
+
+    private boolean hasEmptyOrderProductList(OrderCreateRequestDto request) {
+        return request.getOrderProducts().isEmpty();
     }
 
     private boolean hasNonRequiredInfoForNonMemberOrder(OrderCreateRequestDto request) {

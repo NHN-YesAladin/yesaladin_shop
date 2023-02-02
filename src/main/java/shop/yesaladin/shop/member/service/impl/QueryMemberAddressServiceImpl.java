@@ -4,6 +4,8 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import shop.yesaladin.common.code.ErrorCode;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberAddressRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
@@ -32,7 +34,10 @@ public class QueryMemberAddressServiceImpl implements QueryMemberAddressService 
     @Transactional(readOnly = true)
     public MemberAddress findById(long id) {
         return queryMemberAddressRepository.findById(id)
-                .orElseThrow(MemberAddressNotFoundException::new);
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.ADDRESS_NOT_FOUND,
+                        "MemberAddress not found with id : " + id
+                ));
     }
 
     /**

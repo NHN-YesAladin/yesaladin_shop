@@ -11,6 +11,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import shop.yesaladin.common.code.ErrorCode;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
@@ -19,7 +21,6 @@ import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
 import shop.yesaladin.shop.product.dto.ProductOrderResponseDto;
 import shop.yesaladin.shop.product.dto.ProductsResponseDto;
 import shop.yesaladin.shop.product.exception.ProductNotFoundException;
-import shop.yesaladin.shop.product.exception.SubscribeProductNotFoundException;
 import shop.yesaladin.shop.product.service.inter.QueryProductService;
 import shop.yesaladin.shop.publish.dto.PublishResponseDto;
 import shop.yesaladin.shop.publish.service.inter.QueryPublishService;
@@ -131,9 +132,15 @@ public class QueryProductServiceImpl implements QueryProductService {
     @Transactional(readOnly = true)
     public SubscribeProduct findIssnByIsbn(String isbn) {
         Product product = queryProductRepository.findByIsbn(isbn)
-                .orElseThrow(() -> new ProductNotFoundException(1L));
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.PRODUCT_NOT_FOUND,
+                        "Product not found with isbn : " + isbn
+                ));
         if (!product.isSubscriptionAvailable()) {
-            throw new SubscribeProductNotFoundException(1L);
+            throw new ClientException(
+                    ErrorCode.PRODUCT_NOT_SUBSCRIBE_PRODUCT,
+                    "Product with isbn(" + isbn + ") is not a subscribe product : "
+            );
         }
         return product.getSubscribeProduct();
     }

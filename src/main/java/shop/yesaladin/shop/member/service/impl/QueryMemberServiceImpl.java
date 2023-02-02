@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import shop.yesaladin.common.code.ErrorCode;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRoleRepository;
@@ -41,6 +43,19 @@ public class QueryMemberServiceImpl implements QueryMemberService {
         Member member = queryMemberRepository.findById(id)
                 .orElseThrow(() -> new MemberNotFoundException("Member Id: " + id));
         return MemberDto.fromEntity(member);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Member findByLoginId(String loginId) {
+        return queryMemberRepository.findMemberByLoginId(loginId)
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.MEMBER_NOT_FOUND,
+                        "Member not found with loginId : " + loginId
+                ));
     }
 
     /**

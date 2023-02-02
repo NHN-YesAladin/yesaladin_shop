@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.order.service.inter;
 
-import org.springframework.security.core.userdetails.UserDetails;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
 import shop.yesaladin.shop.order.dto.OrderCreateRequestDto;
 import shop.yesaladin.shop.order.dto.OrderCreateResponseDto;
@@ -14,18 +13,28 @@ import shop.yesaladin.shop.order.dto.OrderCreateResponseDto;
 public interface CommandOrderService {
 
     /**
-     * 주문을 생성합니다.
+     * 비회원 주문을 생성합니다.
      *
-     * @param orderCode   주문 코드
-     * @param request     주문 요청 데이터
-     * @param userDetails 인증정보
-     * @return 생성된 회원의 주문 정보
+     * @param request 주문 요청 데이터
+     * @return 생성된 비회원 주문
      * @author 최예린
      * @since 1.0
      */
-    OrderCreateResponseDto createOrderWith(
+    OrderCreateResponseDto createNonMemberOrders(OrderCreateRequestDto request);
+
+    /**
+     * 회원 주문을 생성합니다.
+     *
+     * @param orderCode 주문 코드
+     * @param request   주문 요청 데이터
+     * @param loginId   회원의 아이디
+     * @return 생성된 회원 주문
+     * @author 최예린
+     * @since 1.0
+     */
+    OrderCreateResponseDto createMemberOrders(
             OrderCode orderCode,
             OrderCreateRequestDto request,
-            UserDetails userDetails
+            String loginId
     );
 }
