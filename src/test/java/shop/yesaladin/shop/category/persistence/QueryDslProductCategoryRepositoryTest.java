@@ -31,13 +31,13 @@ import shop.yesaladin.shop.publish.domain.model.Publisher;
 @Transactional
 @SpringBootTest
 class QueryDslProductCategoryRepositoryTest {
+
+    private final String ISBN = "000000000000";
+    private final String url = "https://api-storage.cloud.toast.com/v1/AUTH_/container/domain/type";
     @Autowired
     private EntityManager entityManager;
     @Autowired
     private QueryProductCategoryRepository repository;
-
-    private final String ISBN = "000000000000";
-    private final String url = "https://api-storage.cloud.toast.com/v1/AUTH_/container/domain/type";
     private String name = "국내도서";
 
     private ProductCategory productCategory;
