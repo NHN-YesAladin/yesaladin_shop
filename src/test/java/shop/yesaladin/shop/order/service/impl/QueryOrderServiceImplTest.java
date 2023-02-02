@@ -85,7 +85,7 @@ class QueryOrderServiceImplTest {
 
     }
 
-    @Disabled
+    @Disabled("차후 수정")
     @Test
     @DisplayName("특정 회원의 기간 내에 생성된 모든 데이터 조회에 성공한다")
     void getAllOrderListInPeriodByMemberIdSuccessTest() {
