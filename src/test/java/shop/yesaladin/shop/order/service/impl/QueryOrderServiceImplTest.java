@@ -32,12 +32,10 @@ import shop.yesaladin.shop.order.domain.model.MemberOrder;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
 import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
-import shop.yesaladin.shop.order.domain.repository.QueryOrderProductRepository;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryResponseDto;
 import shop.yesaladin.shop.order.exception.OrderNotFoundException;
-import shop.yesaladin.shop.order.persistence.QueryDslOrderProductQueryRepository;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMemberAddress;
 import shop.yesaladin.shop.order.persistence.dummy.DummyOrder;
@@ -46,7 +44,6 @@ class QueryOrderServiceImplTest {
 
     private QueryOrderServiceImpl service;
     private QueryOrderRepository repository;
-    private QueryOrderProductRepository orderProductRepository;
     private QueryMemberService queryMemberService;
     private final Clock clock = Clock.fixed(
             Instant.parse("2023-01-10T00:00:00.000Z"),
@@ -58,11 +55,9 @@ class QueryOrderServiceImplTest {
     @BeforeEach
     void setUp() {
         repository = Mockito.mock(QueryOrderRepository.class);
-        orderProductRepository = Mockito.mock(QueryOrderProductRepository.class);
         queryMemberService = Mockito.mock(QueryMemberService.class);
         service = new QueryOrderServiceImpl(
                 repository,
-                orderProductRepository,
                 queryMemberService,
                 clock
         );
