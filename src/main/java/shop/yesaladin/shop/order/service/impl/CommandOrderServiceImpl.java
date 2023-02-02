@@ -6,21 +6,15 @@ import java.time.LocalDateTime;
 import java.time.chrono.ChronoLocalDate;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import shop.yesaladin.common.code.ErrorCode;
-import shop.yesaladin.common.exception.ClientException;
-import shop.yesaladin.shop.member.domain.model.Member;
-import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.member.service.inter.QueryMemberAddressService;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.order.domain.model.MemberOrder;
 import shop.yesaladin.shop.order.domain.model.NonMemberOrder;
 import shop.yesaladin.shop.order.domain.model.Order;
-import shop.yesaladin.shop.order.domain.model.OrderCode;
 import shop.yesaladin.shop.order.domain.model.OrderProduct;
 import shop.yesaladin.shop.order.domain.model.OrderStatusChangeLog;
 import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
@@ -30,12 +24,14 @@ import shop.yesaladin.shop.order.domain.repository.CommandOrderRepository;
 import shop.yesaladin.shop.order.domain.repository.CommandOrderStatusChangeLogRepository;
 import shop.yesaladin.shop.order.dto.OrderCreateRequestDto;
 import shop.yesaladin.shop.order.dto.OrderCreateResponseDto;
+import shop.yesaladin.shop.order.dto.OrderMemberCreateRequestDto;
+import shop.yesaladin.shop.order.dto.OrderNonMemberCreateRequestDto;
+import shop.yesaladin.shop.order.dto.OrderSubscribeCreateRequestDto;
 import shop.yesaladin.shop.order.service.inter.CommandOrderService;
 import shop.yesaladin.shop.point.domain.model.PointReasonCode;
 import shop.yesaladin.shop.point.dto.PointHistoryRequestDto;
 import shop.yesaladin.shop.point.service.inter.CommandPointHistoryService;
 import shop.yesaladin.shop.product.domain.model.Product;
-import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 import shop.yesaladin.shop.product.service.inter.QueryProductService;
 
 /**
@@ -67,10 +63,8 @@ public class CommandOrderServiceImpl implements CommandOrderService {
     @Override
     @Transactional
     public OrderCreateResponseDto createNonMemberOrders(
-            OrderCreateRequestDto request
+            OrderNonMemberCreateRequestDto request
     ) {
-        checkValidationForNonMemberOrder(request);
-
         LocalDateTime orderDateTime = LocalDateTime.now(clock);
         Map<String, Product> products = queryProductService.findByIsbnList(request.getOrderProducts());
 
@@ -88,92 +82,90 @@ public class CommandOrderServiceImpl implements CommandOrderService {
     @Override
     @Transactional
     public OrderCreateResponseDto createMemberOrders(
-            OrderCode orderCode,
-            OrderCreateRequestDto request,
+            OrderMemberCreateRequestDto request,
             String loginId
     ) {
-        checkValidationForMemberOrders(request);
-
         LocalDateTime orderDateTime = LocalDateTime.now(clock);
         Map<String, Product> products = queryProductService.findByIsbnList(request.getOrderProducts());
 
-        String name = generateOrderName(List.copyOf(products.values()));
-        String number = generateOrderNumber(orderDateTime);
-        Member member = queryMemberService.findByLoginId(loginId);
-        MemberAddress address = queryMemberAddressService.findById(request.getOrdererAddressId());
+        Order savedOrder = createMemberOrder(request, orderDateTime, products, loginId);
 
-        Order savedOrder = (orderCode.equals(OrderCode.MEMBER_SUBSCRIBE)) ?
-                creatSubscribe(request, orderDateTime, name, number, member, address) :
-                createMemberOrder(request, orderDateTime, products, name, number, member, address);
-
-        createUsePointHistory(request, loginId);
+        createOrderProduct(request, products, savedOrder);
+        createUsePointHistory(request.getOrderPoint(), loginId);
         createOrderStatusChangeLog(orderDateTime, savedOrder);
 
         return OrderCreateResponseDto.fromEntity(savedOrder);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public OrderCreateResponseDto createSubscribeOrders(
+            OrderSubscribeCreateRequestDto request,
+            String loginId
+    ) {
+        LocalDateTime orderDateTime = LocalDateTime.now(clock);
+        Map<String, Product> products = queryProductService.findByIsbnList(request.getOrderProducts());
+
+        Order savedOrder = creatSubscribe(request, orderDateTime, products, loginId);
+
+        createUsePointHistory(request.getOrderPoint(), loginId);
+        createOrderStatusChangeLog(orderDateTime, savedOrder);
+
+        return OrderCreateResponseDto.fromEntity(savedOrder);
+    }
+
+
     private Order createNonMemberOrder(
-            OrderCreateRequestDto request,
+            OrderNonMemberCreateRequestDto request,
             Map<String, Product> products,
             LocalDateTime orderDateTime
     ) {
-        String name = generateOrderName(List.copyOf(products.values()));
-        String number = generateOrderNumber(orderDateTime);
-
-        NonMemberOrder nonMemberOrder = request.toEntity(name, number, orderDateTime);
+        NonMemberOrder nonMemberOrder = request.toEntity(
+                generateOrderName(List.copyOf(products.values())),
+                generateOrderNumber(orderDateTime),
+                orderDateTime
+        );
 
         return nonMemberOrderCommandOrderRepository.save(nonMemberOrder);
     }
 
     private Order createMemberOrder(
-            OrderCreateRequestDto request,
+            OrderMemberCreateRequestDto request,
             LocalDateTime orderDateTime,
             Map<String, Product> products,
-            String name,
-            String orderNumber,
-            Member member,
-            MemberAddress memberAddress
+            String loginId
     ) {
-        checkValidationForMemberOrder(request);
 
         MemberOrder memberOrder = request.toEntity(
-                name,
-                orderNumber,
+                generateOrderName(List.copyOf(products.values())),
+                generateOrderNumber(orderDateTime),
                 orderDateTime,
-                member,
-                memberAddress
+                queryMemberService.findByLoginId(loginId),
+                queryMemberAddressService.findById(request.getOrdererAddressId())
         );
-        Order savedOrder = memberOrderCommandOrderRepository.save(memberOrder);
 
-        createOrderProduct(request, products, memberOrder);
-
-        return savedOrder;
+        return memberOrderCommandOrderRepository.save(memberOrder);
     }
 
     private Order creatSubscribe(
-            OrderCreateRequestDto request,
+            OrderSubscribeCreateRequestDto request,
             LocalDateTime orderDateTime,
-            String name,
-            String orderNumber,
-            Member member,
-            MemberAddress memberAddress
+            Map<String, Product> products,
+            String loginId
     ) {
-        LocalDate nextRenewalDate = orderDateTime.withDayOfMonth(request.getExpectedDay())
-                .toLocalDate();
-        if (nextRenewalDate.isAfter(ChronoLocalDate.from(orderDateTime))) {
-            nextRenewalDate = nextRenewalDate.plusMonths(1);
-        }
         String isbn = request.getOrderProducts().get(0).getIsbn();
-        SubscribeProduct subscribeProduct = queryProductService.findIssnByIsbn(isbn);
 
         Subscribe subscribe = request.toEntity(
-                name,
-                orderNumber,
+                generateOrderName(List.copyOf(products.values())),
+                generateOrderNumber(orderDateTime),
                 orderDateTime,
-                member,
-                memberAddress,
-                nextRenewalDate,
-                subscribeProduct
+                queryMemberService.findByLoginId(loginId),
+                queryMemberAddressService.findById(request.getOrdererAddressId()),
+                generateNextRenewalDate(request.getExpectedDay(), orderDateTime),
+                queryProductService.findIssnByIsbn(isbn)
         );
         return subscribeCommandOrderRepository.save(subscribe);
     }
@@ -193,16 +185,14 @@ public class CommandOrderServiceImpl implements CommandOrderService {
                 .forEach(commandOrderProductRepository::save);
     }
 
-    private void createUsePointHistory(OrderCreateRequestDto request, String loginId) {
-        if (request.getOrderPoint() == 0) {
-            return;
+    private void createUsePointHistory(long orderPoint, String loginId) {
+        if (orderPoint != 0) {
+            commandPointHistoryService.use(new PointHistoryRequestDto(
+                    loginId,
+                    orderPoint,
+                    PointReasonCode.USE_ORDER
+            ));
         }
-
-        commandPointHistoryService.use(new PointHistoryRequestDto(
-                loginId,
-                request.getOrderPoint(),
-                PointReasonCode.USE_ORDER
-        ));
     }
 
     private void createOrderStatusChangeLog(LocalDateTime orderDateTime, Order savedOrder) {
@@ -214,6 +204,18 @@ public class CommandOrderServiceImpl implements CommandOrderService {
         commandOrderStatusChangeLogRepository.save(orderStatusChangeLog);
     }
 
+    private LocalDate generateNextRenewalDate(
+            Integer expectedDay,
+            LocalDateTime orderDateTime
+    ) {
+        LocalDate nextRenewalDate = orderDateTime.withDayOfMonth(expectedDay)
+                .toLocalDate();
+        if (nextRenewalDate.isAfter(ChronoLocalDate.from(orderDateTime))) {
+            nextRenewalDate = nextRenewalDate.plusMonths(1);
+        }
+        return nextRenewalDate;
+    }
+
     private String generateOrderName(List<Product> products) {
         if (products.size() == 1) {
             return products.get(0).getTitle();
@@ -223,65 +225,5 @@ public class CommandOrderServiceImpl implements CommandOrderService {
 
     private String generateOrderNumber(LocalDateTime orderDateTime) {
         return orderDateTime.toLocalDate() + "-" + UUID.randomUUID().toString().substring(0, 8);
-    }
-
-    private void checkValidationForNonMemberOrder(OrderCreateRequestDto request) {
-        if (hasNonRequiredInfoForNonMemberOrder(request)) {
-            throw new ClientException(
-                    ErrorCode.ORDER_BAD_REQUEST,
-                    "NonMember Order Request has unnecessary information."
-            );
-        }
-        if (hasEmptyOrderProductList(request)) {
-            throw new ClientException(
-                    ErrorCode.ORDER_BAD_REQUEST,
-                    "Empty Order Product in Order."
-            );
-        }
-    }
-
-    private void checkValidationForMemberOrders(OrderCreateRequestDto request) {
-        if (hasNonRequiredInfoForMemberOrders(request)) {
-            throw new ClientException(
-                    ErrorCode.ORDER_BAD_REQUEST,
-                    "Member Order Request has unnecessary information."
-            );
-        }
-        if (hasEmptyOrderProductList(request)) {
-            throw new ClientException(
-                    ErrorCode.ORDER_BAD_REQUEST,
-                    "Empty Order Product in Order."
-            );
-        }
-    }
-
-    private void checkValidationForMemberOrder(OrderCreateRequestDto request) {
-        if (hasNonRequiredInfoForMemberOrder(request)) {
-            throw new ClientException(
-                    ErrorCode.ORDER_BAD_REQUEST,
-                    "Subscribe Request has unnecessary information."
-            );
-        }
-    }
-
-    private boolean hasEmptyOrderProductList(OrderCreateRequestDto request) {
-        return request.getOrderProducts().isEmpty();
-    }
-
-    private boolean hasNonRequiredInfoForNonMemberOrder(OrderCreateRequestDto request) {
-        return Objects.nonNull(request.getOrdererAddressId())
-                || Objects.nonNull(request.getOrderPoint())
-                || Objects.nonNull(request.getOrderCoupons())
-                || Objects.nonNull(request.getExpectedDay())
-                || Objects.nonNull(request.getIntervalMonth());
-    }
-
-    private boolean hasNonRequiredInfoForMemberOrders(OrderCreateRequestDto request) {
-        return Objects.isNull(request.getOrdererAddressId());
-    }
-
-    private boolean hasNonRequiredInfoForMemberOrder(OrderCreateRequestDto request) {
-        return Objects.nonNull(request.getExpectedDay())
-                || Objects.nonNull(request.getIntervalMonth());
     }
 }
