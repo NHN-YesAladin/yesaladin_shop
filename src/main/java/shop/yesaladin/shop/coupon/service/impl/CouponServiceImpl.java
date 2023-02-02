@@ -16,6 +16,12 @@ import shop.yesaladin.shop.coupon.dto.CouponIssueRequestDto;
 import shop.yesaladin.shop.coupon.dto.CouponIssueResponseDto;
 import shop.yesaladin.shop.coupon.service.inter.CouponService;
 
+/**
+ * 회원 쿠폰 요청 및 지급 관련 서비스 구현 클래스 입니다.
+ *
+ * @author
+ * @since
+ */
 @RequiredArgsConstructor
 @Service
 public class CouponServiceImpl implements CouponService {
