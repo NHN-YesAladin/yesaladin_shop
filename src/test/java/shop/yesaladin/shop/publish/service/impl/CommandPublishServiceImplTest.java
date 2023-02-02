@@ -74,7 +74,7 @@ class CommandPublishServiceImplTest {
 
         // then
         assertThat(response.getProduct()).isNotNull();
-        assertThat(response.getProduct().getISBN()).isEqualTo(ISBN);
+        assertThat(response.getProduct().getIsbn()).isEqualTo(ISBN);
         assertThat(response.getPublisher()).isNotNull();
         assertThat(response.getPublisher().getName()).isEqualTo(publisher.getName());
     }

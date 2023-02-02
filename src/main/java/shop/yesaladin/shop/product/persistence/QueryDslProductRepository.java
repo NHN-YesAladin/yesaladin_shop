@@ -52,19 +52,19 @@ public class QueryDslProductRepository implements QueryProductRepository {
     /**
      * ISSN(Unique)기준으로 상품을 조회합니다.
      *
-     * @param ISBN 상품의 ISBN (Unique)
+     * @param isbn 상품의 ISBN (Unique)
      * @return 조회된 상품 엔터티
      * @author 이수정
      * @since 1.0
      */
     @Override
-    public Optional<Product> findByISBN(String ISBN) {
+    public Optional<Product> findByISBN(String isbn) {
         QProduct product = QProduct.product;
 
         return Optional.ofNullable(
                 queryFactory.select(product)
                         .from(product)
-                        .where(product.ISBN.eq(ISBN))
+                        .where(product.isbn.eq(isbn))
                         .fetchFirst()
         );
     }
