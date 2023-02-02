@@ -225,6 +225,7 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
                         LocalDateTime.of(endDate, LocalTime.MIDNIGHT)
                 )))
                 .groupBy(memberOrder.id)
+                .orderBy(memberOrder.orderDateTime.asc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
