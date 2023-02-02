@@ -28,18 +28,16 @@ import shop.yesaladin.shop.category.service.inter.SearchCategoryService;
 @WebMvcTest(SearchCategoryController.class)
 class SearchCategoryControllerTest {
 
-    @Autowired
-    MockMvc mockMvc;
-
-    @MockBean
-    SearchCategoryService searchCategoryService;
-
     private static final String ZERO = "0";
     private static final String ONE = "1";
     private static final String MIN = "-1";
     private static final String NAME = "name";
     private static final String OFFSET = "offset";
     private static final String SIZE = "size";
+    @Autowired
+    MockMvc mockMvc;
+    @MockBean
+    SearchCategoryService searchCategoryService;
 
     @WithMockUser
     @Test
@@ -106,11 +104,12 @@ class SearchCategoryControllerTest {
                         "parentName"
                 ))).build();
 
-        Mockito.when(searchCategoryService.searchCategoryByName(any())).thenReturn(ResponseDto.<SearchCategoryResponseDto>builder()
-                .status(HttpStatus.OK)
-                .success(true)
-                .data(dummy)
-                .build().getData());
+        Mockito.when(searchCategoryService.searchCategoryByName(any()))
+                .thenReturn(ResponseDto.<SearchCategoryResponseDto>builder()
+                        .status(HttpStatus.OK)
+                        .success(true)
+                        .data(dummy)
+                        .build().getData());
 
         //when
         ResultActions resultActions = mockMvc.perform(get("/v1/search/categories")
@@ -124,6 +123,9 @@ class SearchCategoryControllerTest {
                 .andExpect(jsonPath("$.data.count", equalTo(1)))
                 .andExpect(jsonPath("$.data.searchedCategoryDtoList[0].id", equalTo(1)))
                 .andExpect(jsonPath("$.data.searchedCategoryDtoList[0].name", equalTo("name")))
-                .andExpect(jsonPath("$.data.searchedCategoryDtoList[0].parentName", equalTo("parentName")));
+                .andExpect(jsonPath(
+                        "$.data.searchedCategoryDtoList[0].parentName",
+                        equalTo("parentName")
+                ));
     }
 }

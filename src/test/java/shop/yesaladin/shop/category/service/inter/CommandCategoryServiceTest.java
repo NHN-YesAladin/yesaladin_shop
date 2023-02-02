@@ -261,7 +261,6 @@ class CommandCategoryServiceTest {
                 categoryRequestDto.getParentId()
         )).thenReturn(idDto);
 
-
         // when
         CategoryResponseDto responseDto = commandCategoryService.update(
                 childCategory.getId(),
@@ -275,7 +274,6 @@ class CommandCategoryServiceTest {
 
         verify(queryCategoryRepository, times(1)).findById(childCategory.getId());
         verify(queryCategoryRepository, times(1)).findById(otherParentCategory.getId());
-
 
         verify(commandCategoryRepository, times(1)).save(any());
         verify(
@@ -364,7 +362,6 @@ class CommandCategoryServiceTest {
             parentCategory.getChildren().add(category);
         }
 
-
         when(queryCategoryRepository.findById(parentCategory.getId())).thenReturn(Optional.of(
                 parentCategory));
 
@@ -441,7 +438,6 @@ class CommandCategoryServiceTest {
                     .build();
             parentCategory.getChildren().add(category);
         }
-
 
         when(queryCategoryRepository.findById(parentCategory.getId())).thenReturn(Optional.of(
                 parentCategory));

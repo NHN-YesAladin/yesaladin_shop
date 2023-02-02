@@ -39,7 +39,8 @@ class SearchCategoryServiceImplTest {
         Mockito.when(searchCategoryRepository.searchCategoryByName(any(), anyInt(), anyInt()))
                 .thenReturn(SearchCategoryResponseDto.builder()
                         .count(1L)
-                        .searchedCategoryDtoList(List.of(new SearchedCategoryDto(1L,
+                        .searchedCategoryDtoList(List.of(new SearchedCategoryDto(
+                                1L,
                                 "name",
                                 "parentName"
                         )))
