@@ -1,6 +1,8 @@
 package shop.yesaladin.shop.order.dto;
 
 import java.util.List;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
@@ -15,5 +17,7 @@ import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
 @AllArgsConstructor
 public class OrderSheetRequestDto {
 
+    @NotNull
+    @NotEmpty
     private List<ProductOrderRequestDto> productList;
 }

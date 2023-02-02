@@ -10,8 +10,6 @@ import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberAddressRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
 import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
-import shop.yesaladin.shop.member.exception.MemberAddressNotFoundException;
-import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberAddressService;
 
 /**
@@ -47,7 +45,10 @@ public class QueryMemberAddressServiceImpl implements QueryMemberAddressService 
     @Transactional(readOnly = true)
     public MemberAddressResponseDto getById(long id) {
         return queryMemberAddressRepository.getById(id)
-                .orElseThrow(MemberAddressNotFoundException::new);
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.ADDRESS_NOT_FOUND,
+                        "MemberAddress not found with id : " + id
+                ));
     }
 
     /**
@@ -56,14 +57,17 @@ public class QueryMemberAddressServiceImpl implements QueryMemberAddressService 
     @Override
     @Transactional(readOnly = true)
     public List<MemberAddressResponseDto> getByLoginId(String loginId) {
-        checkValidLoginId(loginId);
+        checkLoginIdIsExist(loginId);
 
         return queryMemberAddressRepository.getByLoginId(loginId);
     }
 
-    private void checkValidLoginId(String loginId) {
-        if (queryMemberRepository.existsMemberByLoginId(loginId)) {
-            throw new MemberNotFoundException("");
+    private void checkLoginIdIsExist(String loginId) {
+        if(!queryMemberRepository.existsMemberByLoginId(loginId)) {
+            throw new ClientException(
+                    ErrorCode.MEMBER_NOT_FOUND,
+                    "Member not found with loginId : " + loginId
+            );
         }
     }
 }

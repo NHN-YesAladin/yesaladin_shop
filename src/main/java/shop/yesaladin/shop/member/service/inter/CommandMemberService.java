@@ -31,12 +31,12 @@ public interface CommandMemberService {
      * 회원 정보 수정을 위한 기능입니다.
      *
      * @param loginId   정보를 수정한 회원 아이디
-     * @param updateDto 수정한 회원 정보 dto
+     * @param request 수정한 회원 정보 dto
      * @return 수정된 결과를 반환할 dto
      * @author 최예린
      * @since 1.0
      */
-    MemberUpdateResponseDto update(String loginId, MemberUpdateRequestDto updateDto);
+    MemberUpdateResponseDto update(String loginId, MemberUpdateRequestDto request);
 
     /**
      * 회원을 차단 하기 위한 기능입니다.

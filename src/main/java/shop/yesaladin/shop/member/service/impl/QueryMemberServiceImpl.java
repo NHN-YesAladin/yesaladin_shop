@@ -155,10 +155,13 @@ public class QueryMemberServiceImpl implements QueryMemberService {
      */
     @Transactional(readOnly = true)
     @Override
-    public MemberGradeQueryResponseDto getMemberGrade(String loginId) {
+    public MemberGradeQueryResponseDto getMemberGradeByLoginId(String loginId) {
         return MemberGradeQueryResponseDto.fromEntity(queryMemberRepository.findMemberByLoginId(
                         loginId)
-                .orElseThrow(() -> new MemberNotFoundException("Member Loginid : " + loginId)));
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.MEMBER_NOT_FOUND,
+                        "Member not found with loginId : " + loginId
+                )));
     }
 
     /**
@@ -169,7 +172,10 @@ public class QueryMemberServiceImpl implements QueryMemberService {
     public MemberQueryResponseDto getByLoginId(String loginId) {
         return MemberQueryResponseDto.fromEntity(queryMemberRepository.findMemberByLoginId(
                         loginId)
-                .orElseThrow(() -> new MemberNotFoundException("Member Loginid : " + loginId)));
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.MEMBER_NOT_FOUND,
+                        "Member not found with loginId : " + loginId
+                )));
     }
 
     /**
@@ -178,6 +184,10 @@ public class QueryMemberServiceImpl implements QueryMemberService {
     @Override
     @Transactional(readOnly = true)
     public OrderSheetResponseDto getMemberForOrder(String loginId) {
-        return queryMemberRepository.getMemberOrderData(loginId);
+        return queryMemberRepository.getMemberOrderData(loginId)
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.MEMBER_NOT_FOUND,
+                        "Member not found with loginId : " + loginId
+                ));
     }
 }

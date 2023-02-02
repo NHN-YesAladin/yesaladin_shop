@@ -1,6 +1,7 @@
 package shop.yesaladin.shop.point.dto;
 
 import java.time.LocalDateTime;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -24,8 +25,8 @@ public class PointHistoryRequestDto {
 
     @NotNull
     private String loginId;
-    @NotNull
-    private Long amount;
+    @Min(value = 0)
+    private long amount;
     @NotNull
     private PointReasonCode pointReasonCode;
 

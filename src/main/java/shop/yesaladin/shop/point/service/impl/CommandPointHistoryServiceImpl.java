@@ -36,7 +36,9 @@ public class CommandPointHistoryServiceImpl implements CommandPointHistoryServic
     @Transactional
     public PointHistoryResponseDto use(PointHistoryRequestDto request) {
         PointHistory pointHistory = createPointHistory(request, PointCode.USE);
+
         checkMemberHasEnoughPoint(request);
+
         PointHistory savedPointHistory = commandPointHistoryRepository.save(pointHistory);
 
         return PointHistoryResponseDto.fromEntity(savedPointHistory);
@@ -60,6 +62,7 @@ public class CommandPointHistoryServiceImpl implements CommandPointHistoryServic
     @Transactional
     public PointHistoryResponseDto save(PointHistoryRequestDto request) {
         PointHistory pointHistory = createPointHistory(request, PointCode.SAVE);
+
         PointHistory savedPointHistory = commandPointHistoryRepository.save(pointHistory);
 
         return PointHistoryResponseDto.fromEntity(savedPointHistory);

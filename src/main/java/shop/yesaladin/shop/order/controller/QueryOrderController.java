@@ -1,18 +1,23 @@
 package shop.yesaladin.shop.order.controller;
 
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.dto.ResponseDto;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
+import shop.yesaladin.shop.common.utils.AuthorityUtils;
 import shop.yesaladin.shop.order.dto.OrderSheetRequestDto;
 import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
@@ -27,12 +32,10 @@ import shop.yesaladin.shop.order.service.inter.QueryOrderService;
  */
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/v1/orders")
+@RequestMapping
 public class QueryOrderController {
 
     private final QueryOrderService queryOrderService;
-
-    private final String ROLE_USER = "ROLE_USER";
 
     /**
      * 회원의 주문을 조회합니다.
@@ -43,7 +46,7 @@ public class QueryOrderController {
      * @author 김홍대
      * @since 1.0
      */
-    @GetMapping
+    @GetMapping("/v1/orders")
     public PaginatedResponseDto<OrderSummaryDto> getAllOrders(
             @RequestBody PeriodQueryRequestDto queryDto, Pageable pageable
     ) {
@@ -60,25 +63,24 @@ public class QueryOrderController {
     /**
      * 회원 주문서에 필요한 데이터들을 반환합니다.
      *
-     * @param request 주문서 데이터 요청 dto
+     * @param request        주문서 데이터 요청 dto
+     * @param bindingResult  유효성 검사
+     * @param authentication 인증
      * @return 주문서에 필요한 데이터
      * @author 최예린
      * @since 1.0
      */
-    @GetMapping("/sheet")
+    @GetMapping("/v1/order-sheets")
     public ResponseDto<OrderSheetResponseDto> getOrderSheetData(
-            @RequestBody OrderSheetRequestDto request,
+            @Valid @RequestBody OrderSheetRequestDto request,
+            BindingResult bindingResult,
             Authentication authentication
     ) {
+        checkRequestValidation(bindingResult);
+
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-        OrderSheetResponseDto response;
-        if (checkUserAuthority(userDetails)) {
-            String loginId = userDetails.getUsername();
-            response = queryOrderService.getMemberOrderSheetData(request, loginId);
-        } else {
-            response = queryOrderService.getNonMemberOrderSheetData(request);
-        }
+        OrderSheetResponseDto response = getOrderSheetData(request, userDetails);
 
         return ResponseDto.<OrderSheetResponseDto>builder()
                 .success(true)
@@ -87,9 +89,23 @@ public class QueryOrderController {
                 .build();
     }
 
-    private boolean checkUserAuthority(UserDetails userDetails) {
-        return userDetails.getAuthorities()
-                .stream()
-                .anyMatch(x -> x.getAuthority().equals(ROLE_USER));
+    private OrderSheetResponseDto getOrderSheetData(
+            OrderSheetRequestDto request,
+            UserDetails userDetails
+    ) {
+        if (!AuthorityUtils.isAuthorized(userDetails)) {
+            return queryOrderService.getNonMemberOrderSheetData(request);
+        }
+        String loginId = userDetails.getUsername();
+        return queryOrderService.getMemberOrderSheetData(request, loginId);
+    }
+
+    private void checkRequestValidation(BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new ClientException(
+                    ErrorCode.ORDER_BAD_REQUEST,
+                    "Validation Error in order sheet request."
+            );
+        }
     }
 }

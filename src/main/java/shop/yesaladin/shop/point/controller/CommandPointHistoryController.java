@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.dto.ResponseDto;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.point.domain.model.PointCode;
 import shop.yesaladin.shop.point.dto.PointHistoryRequestDto;
 import shop.yesaladin.shop.point.dto.PointHistoryResponseDto;
@@ -39,13 +41,15 @@ public class CommandPointHistoryController {
      * @author 최예린
      * @since 1.0
      */
-    @PostMapping(params = "code")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<PointHistoryResponseDto> createPointHistory(
             @RequestParam("code") String code,
             @Valid @RequestBody PointHistoryRequestDto request,
             BindingResult bindingResult
     ) {
+        checkRequestValidation(bindingResult);
+
         PointCode pointCode = PointCode.findByCode(code);
 
         PointHistoryResponseDto response = (pointCode.equals(PointCode.USE)) ?
@@ -56,5 +60,14 @@ public class CommandPointHistoryController {
                 .status(HttpStatus.CREATED)
                 .data(response)
                 .build();
+    }
+
+    private void checkRequestValidation(BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new ClientException(
+                    ErrorCode.ORDER_BAD_REQUEST,
+                    "Validation Error in member block request."
+            );
+        }
     }
 }

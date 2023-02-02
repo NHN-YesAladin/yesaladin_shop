@@ -1,9 +1,10 @@
 package shop.yesaladin.shop.order.controller;
 
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,15 +29,20 @@ public class CommandOrderController {
     /**
      * 비회원 주문을 생성합니다.
      *
+     * @param bindingResult  유효성 검사
      * @param authentication 인증
      * @return 생성된 주문 정보
      */
     @PostMapping("/non-member")
     public ResponseDto<OrderCreateResponseDto> createNonMemberOrder(
-            @RequestBody OrderNonMemberCreateRequestDto request,
+            @Valid @RequestBody OrderNonMemberCreateRequestDto request,
+            BindingResult bindingResult,
             Authentication authentication
     ) {
-        checkUnAuthorizedUserDetails(authentication);
+        checkRequestValidation(bindingResult, "NonMemberOrder");
+
+        AuthorityUtils.checkAnonymousClient(authentication);
+
         OrderCreateResponseDto response = commandOrderService.createNonMemberOrders(request);
 
         return ResponseDto.<OrderCreateResponseDto>builder()
@@ -50,15 +56,20 @@ public class CommandOrderController {
     /**
      * 회원 주문을 생성합니다.
      *
+     * @param request        주문 생성 요청 데이터
+     * @param bindingResult  유효성 검사
      * @param authentication 인증
      * @return 생성된 주문 정보
      */
     @PostMapping("/member")
     public ResponseDto<OrderCreateResponseDto> createMemberOrder(
-            @RequestBody OrderMemberCreateRequestDto request,
+            @Valid @RequestBody OrderMemberCreateRequestDto request,
+            BindingResult bindingResult,
             Authentication authentication
     ) {
-        String loginId = getAuthorizedUserDetails(authentication);
+        checkRequestValidation(bindingResult, "MemberOrder");
+
+        String loginId = AuthorityUtils.getAuthorizedUserName(authentication);
 
         OrderCreateResponseDto response = commandOrderService.createMemberOrders(request, loginId);
 
@@ -72,15 +83,20 @@ public class CommandOrderController {
     /**
      * 정기구독 주문을 생성합니다.
      *
+     * @param request        주문 생성 요청 데이터
+     * @param bindingResult  유효성 검사
      * @param authentication 인증
      * @return 생성된 주문 정보
      */
     @PostMapping("/subscribe")
     public ResponseDto<OrderCreateResponseDto> createSubscribeOrder(
-            @RequestBody OrderSubscribeCreateRequestDto request,
+            @Valid @RequestBody OrderSubscribeCreateRequestDto request,
+            BindingResult bindingResult,
             Authentication authentication
     ) {
-        String loginId = getAuthorizedUserDetails(authentication);
+        checkRequestValidation(bindingResult, "SubscribeOrder");
+
+        String loginId = AuthorityUtils.getAuthorizedUserName(authentication);
 
         OrderCreateResponseDto response = commandOrderService.createSubscribeOrders(
                 request,
@@ -94,20 +110,12 @@ public class CommandOrderController {
                 .build();
     }
 
-    private void checkUnAuthorizedUserDetails(Authentication authentication) {
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-        if (!AuthorityUtils.isAnonymous(userDetails)) {
-            throw new ClientException(ErrorCode.UNAUTHORIZED, "");
+    private void checkRequestValidation(BindingResult bindingResult, String order) {
+        if(bindingResult.hasErrors()) {
+            throw new ClientException(
+                    ErrorCode.ORDER_BAD_REQUEST,
+                    "Validation Error in " + order + "."
+            );
         }
-    }
-
-    private static String getAuthorizedUserDetails(Authentication authentication) {
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-        if (!AuthorityUtils.isAuthorized(userDetails)) {
-            throw new ClientException(ErrorCode.ORDER_BAD_REQUEST, "");
-        }
-        return userDetails.getUsername();
     }
 }

@@ -118,7 +118,7 @@ public interface QueryMemberService {
      * @author 최예린
      * @since 1.0
      */
-    MemberGradeQueryResponseDto getMemberGrade(String loginId);
+    MemberGradeQueryResponseDto getMemberGradeByLoginId(String loginId);
 
     /**
      * 회원의 정보를 가져옵니다.

@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.member.persistence;
 
+import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.Optional;
@@ -116,21 +117,25 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
      * {@inheritDoc}
      */
     @Override
-    public OrderSheetResponseDto getMemberOrderData(String loginId) {
+    public Optional<OrderSheetResponseDto> getMemberOrderData(String loginId) {
         QMember member = QMember.member;
         QMemberAddress memberAddress = QMemberAddress.memberAddress;
 
-        return queryFactory.select(
+        Expression<String> memberDefaultAddress = queryFactory.select(memberAddress.address)
+                .from(memberAddress)
+                .where(memberAddress.member.loginId.eq(loginId)
+                        .and(memberAddress.isDefault.isTrue()
+                                .and(memberAddress.isDeleted.isFalse())));
+
+        return Optional.ofNullable(queryFactory.select(
                         Projections.constructor(
                                 OrderSheetResponseDto.class,
                                 member.name,
                                 member.phone,
-                                memberAddress.address.nullif("")
+                                memberDefaultAddress
                         ))
                 .from(member)
-                .leftJoin(memberAddress).fetchJoin()
-                .on(member.id.eq(memberAddress.member.id))
-                .where(member.loginId.eq(loginId).and(memberAddress.isDefault.isTrue()))
-                .fetchFirst();
+                .where(member.loginId.eq(loginId))
+                .fetchFirst());
     }
 }

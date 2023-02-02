@@ -101,5 +101,5 @@ public interface QueryMemberRepository {
      * @author 최예린
      * @since 1.0
      */
-    OrderSheetResponseDto getMemberOrderData(String loginId);
+    Optional<OrderSheetResponseDto> getMemberOrderData(String loginId);
 }
