@@ -9,12 +9,21 @@ import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
 import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
+import shop.yesaladin.shop.product.dto.ProductModifyDto;
 import shop.yesaladin.shop.product.dto.ProductsResponseDto;
 import shop.yesaladin.shop.product.exception.ProductNotFoundException;
 import shop.yesaladin.shop.product.service.inter.QueryProductService;
 import shop.yesaladin.shop.publish.dto.PublishResponseDto;
+import shop.yesaladin.shop.publish.dto.PublishersResponseDto;
 import shop.yesaladin.shop.publish.service.inter.QueryPublishService;
+import shop.yesaladin.shop.tag.domain.model.Tag;
+import shop.yesaladin.shop.tag.dto.ProductTagResponseDto;
+import shop.yesaladin.shop.tag.dto.TagResponseDto;
+import shop.yesaladin.shop.tag.dto.TagsResponseDto;
 import shop.yesaladin.shop.tag.service.inter.QueryProductTagService;
+import shop.yesaladin.shop.writing.domain.model.Author;
+import shop.yesaladin.shop.writing.dto.AuthorsResponseDto;
+import shop.yesaladin.shop.writing.dto.WritingResponseDto;
 import shop.yesaladin.shop.writing.service.inter.QueryWritingService;
 
 import java.util.ArrayList;
@@ -87,6 +96,65 @@ public class QueryProductServiceImpl implements QueryProductService {
                 product.isForcedOutOfStock(),
                 product.isSale(),
                 product.isDeleted()
+        );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public ProductModifyDto findProductByIdForForm(long id) {
+        Product product = queryProductRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException(id));
+
+        List<WritingResponseDto> writings = queryWritingService.findByProduct(product);
+        List<AuthorsResponseDto> authors = new ArrayList<>();
+        for (WritingResponseDto writing: writings) {
+            authors.add(new AuthorsResponseDto(
+                    writing.getProduct().getId(),
+                    writing.getAuthor().getName(),
+                    Objects.isNull(writing.getAuthor().getMember()) ? null : writing.getAuthor().getMember().getLoginId()
+            ));
+        }
+
+        PublishResponseDto publish = queryPublishService.findByProduct(product);
+
+        List<ProductTagResponseDto> productTags = queryProductTagService.findByProduct(product);
+        List<TagsResponseDto> tags = new ArrayList<>();
+        for (ProductTagResponseDto productTag: productTags) {
+            tags.add(new TagsResponseDto(
+                    productTag.getTag().getId(),
+                    productTag.getTag().getName()
+            ));
+        }
+
+//        카테고리 조회
+//        List<CategoryResponseDto>
+
+        return new ProductModifyDto(
+                product.getIsbn(),
+                product.getThumbnailFile().getUrl(),
+                product.getTitle(),
+                product.getContents(),
+                product.getDescription(),
+                Objects.isNull(product.getEbookFile()) ? null : product.getEbookFile().getUrl(),
+                authors,
+                new PublishersResponseDto(publish.getPublisher().getId(), publish.getPublisher().getName()),
+                publish.getPublishedDate().toString(),
+                product.getProductTypeCode().name(),
+                tags,
+                product.getActualPrice(),
+                product.isSeparatelyDiscount(),
+                product.getDiscountRate(),
+                product.isGivenPoint(),
+                product.getGivenPointRate(),
+                product.getProductSavingMethodCode().name(),
+                product.isSubscriptionAvailable(),
+                product.getSubscribeProduct().getISSN(),
+                product.getQuantity(),
+                product.getPreferentialShowRanking(),
+                null
         );
     }
 
