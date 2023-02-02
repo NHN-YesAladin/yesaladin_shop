@@ -42,7 +42,7 @@ class CommandProductCategoryServiceTest {
     File ebookFile;
     TotalDiscountRate totalDiscountRate;
 
-    private final String isbn = "000000000000";
+    private final String ISBN = "000000000000";
     private final String url = "https://api-storage.cloud.toast.com/v1/AUTH_/container/domain/type";
     @BeforeEach
     void setUp() {
@@ -55,7 +55,7 @@ class CommandProductCategoryServiceTest {
         ebookFile = DummyFile.dummy(url + "/ebook.pdf");
         totalDiscountRate = DummyTotalDiscountRate.dummy();
 
-        Product product = DummyProduct.dummy(isbn + 9, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate);
+        Product product = DummyProduct.dummy(ISBN + 9, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate);
         Category category = CategoryDummy.dummyParent();
 
         productCategory = ProductCategoryDummy.dummy(category, product);

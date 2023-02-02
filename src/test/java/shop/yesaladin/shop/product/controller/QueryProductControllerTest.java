@@ -102,6 +102,7 @@ class QueryProductControllerTest {
                 )
         ));
     }
+
     @WithMockUser
     @Test
     @DisplayName("관리자용 상품 페이징 조회 성공")
@@ -165,7 +166,7 @@ class QueryProductControllerTest {
                         fieldWithPath("dataList.[].thumbnailFileUrl").type(JsonFieldType.STRING).description("썸네일 파일 URL"),
                         fieldWithPath("dataList.[].tags").type(JsonFieldType.ARRAY).description("태그"),
                         fieldWithPath("dataList.[].ebookFileUrl").description("E-book 파일 URL")
-                        )
+                )
         ));
     }
 

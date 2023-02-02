@@ -9,14 +9,14 @@ import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
 public class DummyProduct {
 
     public static Product dummy(
-            String ISBN,
+            String isbn,
             SubscribeProduct subscribeProduct,
             File thumbnailFile,
             File ebookFile,
             TotalDiscountRate totalDiscountRate
     ) {
         return Product.builder()
-                .ISBN(ISBN)
+                .isbn(isbn)
                 .title("ex_title")
                 .contents("ex_contents")
                 .description("ex_description")
@@ -40,7 +40,7 @@ public class DummyProduct {
     }
 
     public static Product dummy(
-            String ISBN,
+            String isbn,
             SubscribeProduct subscribeProduct,
             File thumbnailFile,
             File ebookFile,
@@ -48,7 +48,7 @@ public class DummyProduct {
             ProductTypeCode productTypeCode
     ) {
         return Product.builder()
-                .ISBN(ISBN)
+                .isbn(isbn)
                 .title("ex_title")
                 .contents("ex_contents")
                 .description("ex_description")
@@ -73,7 +73,7 @@ public class DummyProduct {
 
     public static Product dummy(
             Long id,
-            String ISBN,
+            String isbn,
             SubscribeProduct subscribeProduct,
             File thumbnailFile,
             File ebookFile,
@@ -81,7 +81,7 @@ public class DummyProduct {
     ) {
         return Product.builder()
                 .id(id)
-                .ISBN(ISBN)
+                .isbn(isbn)
                 .title("ex_title")
                 .contents("ex_contents")
                 .description("ex_description")
@@ -101,6 +101,39 @@ public class DummyProduct {
                 .productTypeCode(ProductTypeCode.NONE)
                 .totalDiscountRate(totalDiscountRate)
                 .productSavingMethodCode(DummyProductSavingMethodCode.dummy())
+                .build();
+    }
+
+    public static Product dummy(
+            String isbn,
+            SubscribeProduct subscribeProduct,
+            File thumbnailFile,
+            File ebookFile,
+            TotalDiscountRate totalDiscountRate,
+            boolean isDeleted
+    ) {
+        return Product.builder()
+                .isbn(isbn)
+                .title("ex_title")
+                .contents("ex_contents")
+                .description("ex_description")
+                .actualPrice(10000L)
+                .discountRate(0)
+                .isSeparatelyDiscount(false)
+                .givenPointRate(2)
+                .isGivenPoint(true)
+                .isSubscriptionAvailable(false)
+                .isSale(true)
+                .isForcedOutOfStock(false)
+                .quantity(1000L)
+                .preferentialShowRanking(2)
+                .subscribeProduct(subscribeProduct)
+                .thumbnailFile(thumbnailFile)
+                .ebookFile(ebookFile)
+                .productTypeCode(ProductTypeCode.NONE)
+                .totalDiscountRate(totalDiscountRate)
+                .productSavingMethodCode(DummyProductSavingMethodCode.dummy())
+                .isDeleted(isDeleted)
                 .build();
     }
 

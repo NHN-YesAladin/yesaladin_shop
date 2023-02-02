@@ -7,7 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
-import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.Relation;
 import shop.yesaladin.shop.product.domain.model.querydsl.QRelation;
 import shop.yesaladin.shop.product.domain.repository.QueryRelationRepository;
@@ -25,19 +24,6 @@ import java.util.List;
 public class QueryDslRelationRepository implements QueryRelationRepository {
 
     private final JPAQueryFactory queryFactory;
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<Relation> findByProductMain(Product product) {
-        QRelation relation = QRelation.relation;
-
-        return queryFactory.select(relation)
-                .from(relation)
-                .where(relation.productMain.eq(product))
-                .fetch();
-    }
 
     /**
      * {@inheritDoc}
@@ -67,8 +53,8 @@ public class QueryDslRelationRepository implements QueryRelationRepository {
                 .fetch();
 
         JPAQuery<Long> countQuery = queryFactory.select(relation.count())
-                .where(relation.productMain.id.eq(productId))
-                .from(relation);
+                .from(relation)
+                .where(relation.productMain.id.eq(productId));
 
         return PageableExecutionUtils.getPage(relations, pageable, countQuery::fetchFirst);
     }

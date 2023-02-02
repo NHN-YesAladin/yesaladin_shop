@@ -72,7 +72,7 @@ class JpaWritingRepositoryTest {
 
         // then
         assertThat(savedWriting).isNotNull();
-        assertThat(savedWriting.getProduct().getISBN()).isEqualTo(ISBN);
+        assertThat(savedWriting.getProduct().getIsbn()).isEqualTo(ISBN);
         assertThat(savedWriting.getAuthor().getName()).isEqualTo(name);
     }
 
@@ -122,7 +122,7 @@ class JpaWritingRepositoryTest {
         assertThat(foundWritings.get(0).getAuthor().getName()).isEqualTo(name1);
         assertThat(foundWritings.get(1).getAuthor().getName()).isEqualTo(name2);
         assertThat(foundWritings.get(0).getProduct()).isEqualTo(product);
-        assertThat(foundWritings.get(0).getProduct().getISBN()).isEqualTo(ISBN);
+        assertThat(foundWritings.get(0).getProduct().getIsbn()).isEqualTo(ISBN);
         assertThat(foundWritings.get(0).getProduct()).isEqualTo(foundWritings.get(1).getProduct());
     }
 
