@@ -65,8 +65,10 @@ class QueryCategoryServiceTest {
                 list.size()
         );
 
-        when(queryCategoryRepository.findCategoriesByParentId(any(),
-                any())).thenReturn(categoryPage);
+        when(queryCategoryRepository.findCategoriesByParentId(
+                any(),
+                any()
+        )).thenReturn(categoryPage);
 
         //when
         Page<CategoryResponseDto> categoryResponseDtoPage = queryCategoryService.findCategoriesByParentId(
@@ -74,8 +76,10 @@ class QueryCategoryServiceTest {
                 parent.getId()
         );
         log.info("categoryPage.getTotalElements() : {}", categoryPage.getTotalElements());
-        log.info("categoryResponseDtoPage.getTotalElements() : {}",
-                categoryResponseDtoPage.getTotalElements());
+        log.info(
+                "categoryResponseDtoPage.getTotalElements() : {}",
+                categoryResponseDtoPage.getTotalElements()
+        );
 
         //then
         assertThat(categoryResponseDtoPage.getPageable()).isEqualTo(pageRequest);

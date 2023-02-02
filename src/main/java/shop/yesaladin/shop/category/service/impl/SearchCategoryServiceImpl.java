@@ -1,10 +1,8 @@
 package shop.yesaladin.shop.category.service.impl;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import shop.yesaladin.shop.category.domain.repository.SearchCategoryRepository;
-import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 import shop.yesaladin.shop.category.dto.SearchCategoryRequestDto;
 import shop.yesaladin.shop.category.dto.SearchCategoryResponseDto;
 import shop.yesaladin.shop.category.service.inter.SearchCategoryService;
