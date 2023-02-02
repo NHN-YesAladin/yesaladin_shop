@@ -15,13 +15,13 @@ import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
-import shop.yesaladin.shop.order.dto.MemberOrderRequestDto;
-import shop.yesaladin.shop.order.dto.MemberOrderResponseDto;
+import shop.yesaladin.shop.order.dto.OrderSheetRequestDto;
+import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 import shop.yesaladin.shop.order.exception.OrderNotFoundException;
 import shop.yesaladin.shop.order.service.inter.QueryOrderService;
 import shop.yesaladin.shop.point.service.inter.QueryPointHistoryService;
-import shop.yesaladin.shop.product.dto.OrderProductResponseDto;
+import shop.yesaladin.shop.product.dto.ProductOrderResponseDto;
 import shop.yesaladin.shop.product.service.inter.QueryProductService;
 
 /**
@@ -97,8 +97,8 @@ public class QueryOrderServiceImpl implements QueryOrderService {
      */
     @Override
     @Transactional(readOnly = true)
-    public MemberOrderResponseDto getMemberOrderSheetData(
-            MemberOrderRequestDto request,
+    public OrderSheetResponseDto getMemberOrderSheetData(
+            OrderSheetRequestDto request,
             String loginId
     ) {
         checkValidLoginId(loginId);
@@ -111,18 +111,18 @@ public class QueryOrderServiceImpl implements QueryOrderService {
      */
     @Override
     @Transactional(readOnly = true)
-    public MemberOrderResponseDto getNonMemberOrderSheetData(MemberOrderRequestDto request) {
+    public OrderSheetResponseDto getNonMemberOrderSheetData(OrderSheetRequestDto request) {
         return getOrderSheetDataForNonMember(request);
     }
 
-    private MemberOrderResponseDto getOrderSheetDataForMember(
-            MemberOrderRequestDto request,
+    private OrderSheetResponseDto getOrderSheetDataForMember(
+            OrderSheetRequestDto request,
             String loginId
     ) {
-        MemberOrderResponseDto memberOrderSheetData = queryMemberService.getMemberForOrder(loginId);
+        OrderSheetResponseDto memberOrderSheetData = queryMemberService.getMemberForOrder(loginId);
 
         long point = queryPointHistoryService.getMemberPoint(loginId);
-        List<OrderProductResponseDto> orderProducts = queryProductService.getProductForOrder(request.getProductList());
+        List<ProductOrderResponseDto> orderProducts = queryProductService.getByIsbnList(request.getProductList());
 
         memberOrderSheetData.setPoint(point);
         memberOrderSheetData.setOrderProducts(orderProducts);
@@ -130,10 +130,10 @@ public class QueryOrderServiceImpl implements QueryOrderService {
         return memberOrderSheetData;
     }
 
-    private MemberOrderResponseDto getOrderSheetDataForNonMember(MemberOrderRequestDto request) {
-        List<OrderProductResponseDto> orderProducts = queryProductService.getProductForOrder(request.getProductList());
+    private OrderSheetResponseDto getOrderSheetDataForNonMember(OrderSheetRequestDto request) {
+        List<ProductOrderResponseDto> orderProducts = queryProductService.getByIsbnList(request.getProductList());
 
-        return new MemberOrderResponseDto(orderProducts);
+        return new OrderSheetResponseDto(orderProducts);
     }
 
     private void checkRequestedOffsetInBounds(

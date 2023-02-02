@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
-import shop.yesaladin.shop.order.dto.MemberOrderRequestDto;
-import shop.yesaladin.shop.order.dto.MemberOrderResponseDto;
+import shop.yesaladin.shop.order.dto.OrderSheetRequestDto;
+import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 import shop.yesaladin.shop.order.service.inter.QueryOrderService;
 
@@ -34,6 +34,15 @@ public class QueryOrderController {
 
     private final String ROLE_USER = "ROLE_USER";
 
+    /**
+     * 회원의 주문을 조회합니다.
+     *
+     * @param queryDto 조회 기간
+     * @param pageable 페이지와 사이즈
+     * @return 회원의 주문 목록
+     * @author 김홍대
+     * @since 1.0
+     */
     @GetMapping
     public PaginatedResponseDto<OrderSummaryDto> getAllOrders(
             @RequestBody PeriodQueryRequestDto queryDto, Pageable pageable
@@ -57,13 +66,13 @@ public class QueryOrderController {
      * @since 1.0
      */
     @GetMapping("/sheet")
-    public ResponseDto<MemberOrderResponseDto> getOrderSheetData(
-            @RequestBody MemberOrderRequestDto request,
+    public ResponseDto<OrderSheetResponseDto> getOrderSheetData(
+            @RequestBody OrderSheetRequestDto request,
             Authentication authentication
     ) {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-        MemberOrderResponseDto response;
+        OrderSheetResponseDto response;
         if (checkUserAuthority(userDetails)) {
             String loginId = userDetails.getUsername();
             response = queryOrderService.getMemberOrderSheetData(request, loginId);
@@ -71,7 +80,7 @@ public class QueryOrderController {
             response = queryOrderService.getNonMemberOrderSheetData(request);
         }
 
-        return ResponseDto.<MemberOrderResponseDto>builder()
+        return ResponseDto.<OrderSheetResponseDto>builder()
                 .success(true)
                 .status(HttpStatus.OK)
                 .data(response)
@@ -83,5 +92,4 @@ public class QueryOrderController {
                 .stream()
                 .anyMatch(x -> x.getAuthority().equals(ROLE_USER));
     }
-
 }

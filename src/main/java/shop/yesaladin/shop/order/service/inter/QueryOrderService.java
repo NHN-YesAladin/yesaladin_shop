@@ -6,8 +6,8 @@ import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.common.exception.PageOffsetOutOfBoundsException;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.order.domain.model.Order;
-import shop.yesaladin.shop.order.dto.MemberOrderRequestDto;
-import shop.yesaladin.shop.order.dto.MemberOrderResponseDto;
+import shop.yesaladin.shop.order.dto.OrderSheetRequestDto;
+import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 
 /**
@@ -69,7 +69,7 @@ public interface QueryOrderService {
      * @author 최예린
      * @since 1.0
      */
-    MemberOrderResponseDto getMemberOrderSheetData(MemberOrderRequestDto request, String loginId);
+    OrderSheetResponseDto getMemberOrderSheetData(OrderSheetRequestDto request, String loginId);
     /**
      * 비회원주문의 주문서에 필요한 데이터를 조회합니다.
      *
@@ -78,5 +78,5 @@ public interface QueryOrderService {
      * @author 최예린
      * @since 1.0
      */
-    MemberOrderResponseDto getNonMemberOrderSheetData(MemberOrderRequestDto request);
+    OrderSheetResponseDto getNonMemberOrderSheetData(OrderSheetRequestDto request);
 }

@@ -3,7 +3,9 @@ package shop.yesaladin.shop.product.persistence;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import java.util.stream.Collectors;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -13,13 +15,8 @@ import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.ProductTypeCode;
 import shop.yesaladin.shop.product.domain.model.querydsl.QProduct;
 import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
-import shop.yesaladin.shop.product.dto.OrderProductRequestDto;
-import shop.yesaladin.shop.product.dto.OrderProductResponseDto;
+import shop.yesaladin.shop.product.dto.ProductOrderResponseDto;
 import shop.yesaladin.shop.product.exception.ProductTypeCodeNotFoundException;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 
 
 /**
@@ -36,8 +33,8 @@ public class QueryDslProductRepository implements QueryProductRepository {
     private final JPAQueryFactory queryFactory;
 
     /**
-     * Id를 기준으로 상품을 조회합니다.
-     *린
+     * Id를 기준으로 상품을 조회합니다. 린
+     *
      * @since 1.0
      */
     @Override
@@ -55,19 +52,19 @@ public class QueryDslProductRepository implements QueryProductRepository {
     /**
      * ISSN(Unique)기준으로 상품을 조회합니다.
      *
-     * @param ISBN 상품의 ISBN (Unique)
+     * @param isbn 상품의 ISBN (Unique)
      * @return 조회된 상품 엔터티
      * @author 이수정
      * @since 1.0
      */
     @Override
-    public Optional<Product> findByISBN(String ISBN) {
+    public Optional<Product> findByIsbn(String isbn) {
         QProduct product = QProduct.product;
 
         return Optional.ofNullable(
                 queryFactory.select(product)
                         .from(product)
-                        .where(product.ISBN.eq(ISBN))
+                        .where(product.ISBN.eq(isbn))
                         .fetchFirst()
         );
     }
@@ -189,7 +186,8 @@ public class QueryDslProductRepository implements QueryProductRepository {
         List<Product> products = queryFactory
                 .select(product)
                 .from(product)
-                .where(product.productTypeCode.eq(productTypeCode.get()).and(product.isDeleted.isFalse().and(product.isSale.isTrue())))
+                .where(product.productTypeCode.eq(productTypeCode.get())
+                        .and(product.isDeleted.isFalse().and(product.isSale.isTrue())))
                 .orderBy(product.preferentialShowRanking.asc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -206,7 +204,7 @@ public class QueryDslProductRepository implements QueryProductRepository {
      * {@inheritDoc}
      */
     @Override
-    public List<OrderProductResponseDto> getProductForOrder(List<OrderProductRequestDto> request) {
+    public List<ProductOrderResponseDto> getByIsbnList(List<String> isbnList) {
         QProduct product = QProduct.product;
 
         NumberExpression<Long> expectedEarnedPoint = product.actualPrice.multiply(product.isGivenPoint.when(
@@ -215,7 +213,7 @@ public class QueryDslProductRepository implements QueryProductRepository {
                 .otherwise(product.totalDiscountRate.discountRate.divide(100)));
 
         return queryFactory.select(Projections.constructor(
-                        OrderProductResponseDto.class,
+                        ProductOrderResponseDto.class,
                         product.id,
                         product.ISBN,
                         product.title,
@@ -223,10 +221,16 @@ public class QueryDslProductRepository implements QueryProductRepository {
                         product.discountRate,
                         expectedEarnedPoint
                 ))
-                .where(product.ISBN.in(request
-                        .stream()
-                        .map(OrderProductRequestDto::getIsbn)
-                        .collect(Collectors.toList())))
+                .where(product.ISBN.in(isbnList))
+                .fetch();
+    }
+
+    @Override
+    public List<Product> findByIsbnList(List<String> isbnList) {
+        QProduct product = QProduct.product;
+
+        return queryFactory.select(product)
+                .where(product.ISBN.in(isbnList))
                 .fetch();
     }
 }

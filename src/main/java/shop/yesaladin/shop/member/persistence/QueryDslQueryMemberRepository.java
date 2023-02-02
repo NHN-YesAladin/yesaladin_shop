@@ -9,7 +9,7 @@ import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.querydsl.QMember;
 import shop.yesaladin.shop.member.domain.model.querydsl.QMemberAddress;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
-import shop.yesaladin.shop.order.dto.MemberOrderResponseDto;
+import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
 
 /**
  * 회원 조회 관련 QueryDsl Repository 구현체 입니다.
@@ -116,13 +116,13 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
      * {@inheritDoc}
      */
     @Override
-    public MemberOrderResponseDto getMemberOrderData(String loginId) {
+    public OrderSheetResponseDto getMemberOrderData(String loginId) {
         QMember member = QMember.member;
         QMemberAddress memberAddress = QMemberAddress.memberAddress;
 
         return queryFactory.select(
                         Projections.constructor(
-                                MemberOrderResponseDto.class,
+                                OrderSheetResponseDto.class,
                                 member.name,
                                 member.phone,
                                 memberAddress.address.nullif("")

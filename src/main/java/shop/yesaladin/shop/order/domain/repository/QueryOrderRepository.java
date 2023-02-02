@@ -5,8 +5,6 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.order.domain.model.Order;
-import shop.yesaladin.shop.order.dto.MemberOrderRequestDto;
-import shop.yesaladin.shop.order.dto.MemberOrderResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 
 /**

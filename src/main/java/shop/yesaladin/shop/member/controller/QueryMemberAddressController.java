@@ -35,6 +35,6 @@ public class QueryMemberAddressController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<MemberAddressResponseDto> getMemberAddressByMemberId(@PathVariable String loginId) {
-        return queryMemberAddressService.findByLoginId(loginId);
+        return queryMemberAddressService.getByLoginId(loginId);
     }
 }

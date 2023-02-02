@@ -84,7 +84,7 @@ public class QueryPointHistoryServiceImpl implements QueryPointHistoryService {
     }
 
     private void checkMemberExists(String loginId) {
-        if (queryMemberService.existsLoginId(loginId)) {
+        if (!queryMemberService.existsLoginId(loginId)) {
             throw new MemberNotFoundException("Member loginId : " + loginId);
         }
     }

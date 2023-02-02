@@ -95,10 +95,10 @@ public class CommandMemberAddressServiceImpl implements CommandMemberAddressServ
             String loginId,
             long addressId
     ) {
-        return queryMemberAddressRepository.getByLoginIdAndMemberAddressId(
+        return queryMemberAddressRepository.findByLoginIdAndMemberAddressId(
                 loginId,
                 addressId
-        ).orElseThrow(() -> new MemberAddressNotFoundException(addressId));
+        ).orElseThrow(() -> new MemberAddressNotFoundException());
     }
 
 

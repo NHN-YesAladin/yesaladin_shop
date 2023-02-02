@@ -2,7 +2,7 @@ package shop.yesaladin.shop.member.domain.repository;
 
 import java.util.Optional;
 import shop.yesaladin.shop.member.domain.model.Member;
-import shop.yesaladin.shop.order.dto.MemberOrderResponseDto;
+import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
 
 /**
  * 회원 조회 관련 repository interface 입니다.
@@ -101,5 +101,5 @@ public interface QueryMemberRepository {
      * @author 최예린
      * @since 1.0
      */
-    MemberOrderResponseDto getMemberOrderData(String loginId);
+    OrderSheetResponseDto getMemberOrderData(String loginId);
 }

@@ -4,7 +4,7 @@ import shop.yesaladin.shop.member.dto.MemberDto;
 import shop.yesaladin.shop.member.dto.MemberGradeQueryResponseDto;
 import shop.yesaladin.shop.member.dto.MemberLoginResponseDto;
 import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
-import shop.yesaladin.shop.order.dto.MemberOrderResponseDto;
+import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
 
 
 /**
@@ -127,5 +127,5 @@ public interface QueryMemberService {
      * @author 최예린
      * @since 1.0
      */
-    MemberOrderResponseDto getMemberForOrder(String loginId);
+    OrderSheetResponseDto getMemberForOrder(String loginId);
 }

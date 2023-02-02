@@ -113,7 +113,7 @@ public class CommandProductServiceImpl implements CommandProductService {
                 .orElseThrow(TotalDiscountRateNotExistsException::new);
 
         // Product
-        Product product = queryProductRepository.findByISBN(dto.getIsbn()).orElse(null);
+        Product product = queryProductRepository.findByIsbn(dto.getIsbn()).orElse(null);
         if (!Objects.isNull(product)) {
             throw new ProductAlreadyExistsException(dto.getIsbn());
         }

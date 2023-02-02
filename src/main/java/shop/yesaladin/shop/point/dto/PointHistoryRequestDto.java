@@ -19,7 +19,7 @@ import shop.yesaladin.shop.point.domain.model.PointReasonCode;
  */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class PointHistoryRequestDto {
 
     @NotNull

@@ -17,7 +17,8 @@ import shop.yesaladin.shop.member.domain.model.MemberAddress;
 /**
  * 회원 주문 엔티티입니다.
  *
- * @author 최예린, 송학현
+ * @author 최예린
+ * @author 송학현
  * @since 1.0
  */
 

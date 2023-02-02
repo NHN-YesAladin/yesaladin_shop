@@ -15,7 +15,7 @@ import shop.yesaladin.shop.member.dto.MemberLoginResponseDto;
 import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
-import shop.yesaladin.shop.order.dto.MemberOrderResponseDto;
+import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
 
 /**
  * 회원 조회용 서비스 구현체 입니다.
@@ -162,7 +162,7 @@ public class QueryMemberServiceImpl implements QueryMemberService {
      */
     @Override
     @Transactional(readOnly = true)
-    public MemberOrderResponseDto getMemberForOrder(String loginId) {
+    public OrderSheetResponseDto getMemberForOrder(String loginId) {
         return queryMemberRepository.getMemberOrderData(loginId);
     }
 }

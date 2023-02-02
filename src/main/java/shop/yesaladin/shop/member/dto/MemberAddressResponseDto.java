@@ -21,14 +21,12 @@ public class MemberAddressResponseDto {
     private String address;
 
     private Boolean isDefault;
-    private String loginId;
 
     public static MemberAddressResponseDto fromEntity(MemberAddress memberAddress) {
         return new MemberAddressResponseDto(
                 memberAddress.getId(),
                 memberAddress.getAddress(),
-                memberAddress.isDefault(),
-                memberAddress.getMember().getLoginId()
+                memberAddress.isDefault()
         );
     }
 }

@@ -11,7 +11,7 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public class OrderProductRequestDto {
+public class ProductOrderRequestDto {
 
     private String isbn;
     private int quantity;

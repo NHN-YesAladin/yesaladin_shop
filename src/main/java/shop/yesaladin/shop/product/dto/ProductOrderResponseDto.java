@@ -13,7 +13,7 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public class OrderProductResponseDto {
+public class ProductOrderResponseDto {
 
     private Long productId;
     private String isbn;
@@ -23,7 +23,7 @@ public class OrderProductResponseDto {
     private int expectedPoint;
     private int quantity;
 
-    public OrderProductResponseDto(
+    public ProductOrderResponseDto(
             Long productId,
             String isbn,
             String title,
@@ -39,10 +39,10 @@ public class OrderProductResponseDto {
         this.expectedPoint = expectedPoint;
     }
 
-    public void setQuantity(List<OrderProductRequestDto> request) {
+    public void setQuantity(List<ProductOrderRequestDto> request) {
         this.quantity = request.stream()
                 .filter(x -> Objects.equals(this.isbn, x.getIsbn()))
-                .map(OrderProductRequestDto::getQuantity)
+                .map(ProductOrderRequestDto::getQuantity)
                 .findFirst()
                 .orElse(0);
     }

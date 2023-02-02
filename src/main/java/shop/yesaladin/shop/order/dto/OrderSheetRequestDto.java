@@ -3,7 +3,7 @@ package shop.yesaladin.shop.order.dto;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import shop.yesaladin.shop.product.dto.OrderProductRequestDto;
+import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
 
 /**
  * 회원 주문서에 필요한 데이터를 요청하는 dto 클래스입니다.
@@ -13,7 +13,7 @@ import shop.yesaladin.shop.product.dto.OrderProductRequestDto;
  */
 @Getter
 @AllArgsConstructor
-public class MemberOrderRequestDto {
+public class OrderSheetRequestDto {
 
-    private List<OrderProductRequestDto> productList;
+    private List<ProductOrderRequestDto> productList;
 }
