@@ -49,6 +49,7 @@ import shop.yesaladin.shop.order.service.inter.QueryOrderService;
 @AutoConfigureRestDocs
 @WebMvcTest(QueryMemberOrderController.class)
 class QueryMemberOrderControllerTest {
+
     @Autowired
     private MockMvc mockMvc;
     @MockBean
@@ -57,6 +58,7 @@ class QueryMemberOrderControllerTest {
     @BeforeEach
     void setUp() {
     }
+
     @WithMockUser
     @Test
     @DisplayName("회원 주문에 대해 기간별로 주문을 조회함")
@@ -107,7 +109,6 @@ class QueryMemberOrderControllerTest {
                 .andExpect(jsonPath("$.currentPage", equalTo(page)))
                 .andExpect(jsonPath("$.dataList.[0].orderId", equalTo(i)))
                 .andExpect(jsonPath("$.dataList.[0].orderProductCount", equalTo(i)));
-
 
         Mockito.verify(queryOrderService, Mockito.times(1))
                 .getOrderListInPeriodByMemberId(

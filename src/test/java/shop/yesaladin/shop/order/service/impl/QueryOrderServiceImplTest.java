@@ -42,15 +42,14 @@ import shop.yesaladin.shop.order.persistence.dummy.DummyOrder;
 
 class QueryOrderServiceImplTest {
 
-    private QueryOrderServiceImpl service;
-    private QueryOrderRepository repository;
-    private QueryMemberService queryMemberService;
     private final Clock clock = Clock.fixed(
             Instant.parse("2023-01-10T00:00:00.000Z"),
             ZoneId.of("UTC")
     );
-
     long expectedMemberId = 1L;
+    private QueryOrderServiceImpl service;
+    private QueryOrderRepository repository;
+    private QueryMemberService queryMemberService;
 
     @BeforeEach
     void setUp() {
@@ -155,8 +154,11 @@ class QueryOrderServiceImplTest {
 
         }
 
-        Page<OrderSummaryResponseDto> expectedValue = PageableExecutionUtils.getPage(response, pageable, () -> 1);
-
+        Page<OrderSummaryResponseDto> expectedValue = PageableExecutionUtils.getPage(
+                response,
+                pageable,
+                () -> 1
+        );
 
         Mockito.when(repository.getCountOfOrdersInPeriodByMemberId(
                 startDate,
@@ -166,7 +168,6 @@ class QueryOrderServiceImplTest {
         Mockito.when(repository.findOrdersInPeriodByMemberId(queryDto.getStartDateOrDefaultValue(
                         clock), queryDto.getEndDateOrDefaultValue(clock), expectedMemberId, pageable))
                 .thenReturn(expectedValue);
-
 
         // when
         Page<OrderSummaryResponseDto> actual = service.getOrderListInPeriodByMemberId(
@@ -333,9 +334,11 @@ class QueryOrderServiceImplTest {
 
         // when
         // then
-        Assertions.assertThatThrownBy(() -> service.getOrderListInPeriodByMemberId(queryDto,
+        Assertions.assertThatThrownBy(() -> service.getOrderListInPeriodByMemberId(
+                        queryDto,
                         expectedMemberId,
-                        pageable))
+                        pageable
+                ))
                 .isInstanceOf(InvalidPeriodConditionException.class);
     }
 
@@ -353,9 +356,11 @@ class QueryOrderServiceImplTest {
 
         // when
         // then
-        Assertions.assertThatThrownBy(() -> service.getOrderListInPeriodByMemberId(queryDto,
+        Assertions.assertThatThrownBy(() -> service.getOrderListInPeriodByMemberId(
+                        queryDto,
                         expectedMemberId,
-                        pageable))
+                        pageable
+                ))
                 .isInstanceOf(InvalidPeriodConditionException.class);
     }
 

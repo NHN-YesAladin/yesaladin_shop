@@ -127,14 +127,14 @@ class QueryDslOrderQueryRepositoryTest {
             memberOrderList.add(memberOrder);
             entityManager.persist(memberOrder);
 
-            OrderStatusChangeLog orderStatusChangeLog= OrderStatusChangeLog.create(
+            OrderStatusChangeLog orderStatusChangeLog = OrderStatusChangeLog.create(
                     memberOrder,
                     LocalDateTime.now(),
                     OrderStatusCode.ORDER
             );
             entityManager.persist(orderStatusChangeLog);
 
-            OrderStatusChangeLog orderStatusChangeLogComplete= OrderStatusChangeLog.create(
+            OrderStatusChangeLog orderStatusChangeLogComplete = OrderStatusChangeLog.create(
                     memberOrder,
                     LocalDateTime.now(),
                     OrderStatusCode.COMPLETE
@@ -219,7 +219,8 @@ class QueryDslOrderQueryRepositoryTest {
     @DisplayName("특정 기간 내 주문 기록 조회에 성공한다.")
     void findAllOrdersInPeriod() {
         // when
-        Page<OrderSummaryDto> actual = queryRepository.findAllOrdersInPeriod(LocalDate.of(2023,
+        Page<OrderSummaryDto> actual = queryRepository.findAllOrdersInPeriod(LocalDate.of(
+                2023,
                 1,
                 1
         ), LocalDate.of(2023, 1, 2), PageRequest.of(0, 10));
@@ -232,7 +233,8 @@ class QueryDslOrderQueryRepositoryTest {
     @DisplayName("특정 기간 내 주문 기록이 페이지네이션 되어 조회된다.")
     void findAllOrdersInPeriodWithPagination() {
         // when
-        Page<OrderSummaryDto> actual = queryRepository.findAllOrdersInPeriod(LocalDate.of(2023,
+        Page<OrderSummaryDto> actual = queryRepository.findAllOrdersInPeriod(LocalDate.of(
+                2023,
                 1,
                 1
         ), LocalDate.of(2023, 1, 4), PageRequest.of(0, 10));
@@ -275,7 +277,8 @@ class QueryDslOrderQueryRepositoryTest {
     @DisplayName("특정 기간 내 주문 수가 반환된다.")
     void getCountOrdersInPeriod() {
         // when
-        long actual = queryRepository.getCountOfOrdersInPeriod(LocalDate.of(2023, 1, 1),
+        long actual = queryRepository.getCountOfOrdersInPeriod(
+                LocalDate.of(2023, 1, 1),
                 LocalDate.of(2023, 1, 4)
         );
 
@@ -287,7 +290,8 @@ class QueryDslOrderQueryRepositoryTest {
     @DisplayName("특정 회원의 특정 기간 내 주문 수가 반환된다.")
     void getCountOrdersInPeriodByMemberId() {
         // when
-        long actual = queryRepository.getCountOfOrdersInPeriodByMemberId(LocalDate.of(2023, 1, 1),
+        long actual = queryRepository.getCountOfOrdersInPeriodByMemberId(
+                LocalDate.of(2023, 1, 1),
                 LocalDate.of(2023, 1, 2),
                 memberList.get(0).getId()
         );
