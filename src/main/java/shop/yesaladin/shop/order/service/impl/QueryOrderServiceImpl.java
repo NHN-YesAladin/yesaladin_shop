@@ -122,7 +122,7 @@ public class QueryOrderServiceImpl implements QueryOrderService {
             );
         }
 
-        if (countOfOrder <= pageable.getOffset()) {
+        if (countOfOrder < pageable.getOffset()) {
             throw new PageOffsetOutOfBoundsException((int) pageable.getOffset(), countOfOrder);
         }
     }
