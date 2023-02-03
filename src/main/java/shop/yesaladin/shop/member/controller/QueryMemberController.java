@@ -1,14 +1,18 @@
 package shop.yesaladin.shop.member.controller;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.shop.member.dto.MemberGradeQueryResponseDto;
+import shop.yesaladin.shop.member.dto.MemberIdDto;
 import shop.yesaladin.shop.member.dto.MemberProfileExistResponseDto;
 import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
@@ -20,6 +24,7 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberService;
  * @author 최예린
  * @since 1.0
  */
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/v1/members")
@@ -131,5 +136,26 @@ public class QueryMemberController {
     @GetMapping("{loginId}")
     public MemberQueryResponseDto getMemberInfo(@PathVariable String loginId) {
         return queryMemberService.getByLoginId(loginId);
+    }
+
+    /**
+     * n 일 후가 생일인 회원을 조회합니다.
+     *
+     * @param laterDays 오늘 날짜를 기준으로 생일을 계산할 일수
+     * @return n 일 후가 생일인 회원 목록
+     * @author 서민지
+     * @since 1.0
+     */
+    @GetMapping(params = {"type=birthday", "laterDays"})
+    public ResponseDto<List<MemberIdDto>> getBirthdayMember(
+            @RequestParam(value = "laterDays", defaultValue = "0") int laterDays
+    ) {
+        List<MemberIdDto> data = queryMemberService.findMemberIdsByBirthday(laterDays);
+
+        return ResponseDto.<List<MemberIdDto>>builder()
+                .success(true)
+                .data(data)
+                .status(HttpStatus.OK)
+                .build();
     }
 }
