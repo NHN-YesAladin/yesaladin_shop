@@ -243,7 +243,7 @@ public class QueryMemberController {
                         signUpDate,
                         pageable.getPageNumber(),
                         pageable.getPageSize()
-                ))
+                )).build();
      }
      
     /**
