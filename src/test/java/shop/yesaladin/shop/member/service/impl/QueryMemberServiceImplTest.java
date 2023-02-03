@@ -254,7 +254,7 @@ class QueryMemberServiceImplTest {
     }
 
     @Test
-    void findMemberManageByName_failed_whenMemberNotFound() {
+    void findMemberManagesByName_failed_whenMemberNotFound() {
         //given
         String name = "name";
         int offset = 0;
@@ -269,7 +269,7 @@ class QueryMemberServiceImplTest {
     }
 
     @Test
-    void findMemberManageByName() {
+    void findMemberManagesByName() {
         //given
         String name = "name";
         int offset = 0;
@@ -288,7 +288,7 @@ class QueryMemberServiceImplTest {
     }
 
     @Test
-    void findMemberManageBySignUpDate_failed_whenMemberNotFound() {
+    void findMemberManagesBySignUpDate_failed_whenMemberNotFound() {
         //given
         LocalDate signUpDate = LocalDate.of(2011, 2, 2);
         int offset = 0;
@@ -306,7 +306,7 @@ class QueryMemberServiceImplTest {
     }
 
     @Test
-    void findMemberManageBySignUpDate() {
+    void findMemberManagesBySignUpDate() {
         //given
         LocalDate signUpDate = LocalDate.of(2011, 2, 2);
         int offset = 0;

@@ -102,7 +102,7 @@ class QueryDslQueryMemberRepositoryTest {
     }
 
     @Test
-    void findMemberByName() {
+    void findMembersByName() {
         //given
         entityManager.persist(member);
 
@@ -120,7 +120,7 @@ class QueryDslQueryMemberRepositoryTest {
     }
 
     @Test
-    void findMemberBySignUpDate() {
+    void findMembersBySignUpDate() {
         //given
         entityManager.persist(member);
 

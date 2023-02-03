@@ -609,14 +609,14 @@ class QueryMemberControllerTest {
 
     @WithMockUser
     @Test
-    void manageMemberInfoByName_fail_MemberNotFound() throws Exception {
+    void manageMemberInfosByName_fail_MemberNotFound() throws Exception {
         //given
-        String name = "name";
-        Mockito.when(queryMemberService.findMemberManageByPhone(name))
-                .thenThrow(new MemberNotFoundException("Member Name: " + name));
+        String phone = "phone";
+        Mockito.when(queryMemberService.findMemberManageByPhone(phone))
+                .thenThrow(new MemberNotFoundException("Member Name: " + phone));
 
         //when
-        ResultActions resultActions = mockMvc.perform(get("/v1/member/manage").param("name", name));
+        ResultActions resultActions = mockMvc.perform(get("/v1/member/manage").param("name", phone));
 
         //then
         resultActions.andExpect(status().isNotFound());
@@ -624,7 +624,7 @@ class QueryMemberControllerTest {
 
     @WithMockUser
     @Test
-    void manageMemberInfoByName() throws Exception {
+    void manageMemberInfosByName() throws Exception {
         //given
         String loginId = "loginId";
         Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
@@ -696,13 +696,24 @@ class QueryMemberControllerTest {
 
     @WithMockUser
     @Test
-    void manageMemberInfoBySignUpDatefail_MemberNotFound() {
+    void manageMemberInfosBySignUp_MemberNotFound() throws Exception {
+        //given
+        String loginId = "loginId";
+        Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
+        Mockito.when(queryMemberService.findMemberManagesBySignUpDate(member.getSignUpDate(), 0, 10))
+                .thenThrow(new MemberNotFoundException("Member SignUpDate: " + member.getSignUpDate()));
 
+        //when
+        ResultActions resultActions = mockMvc.perform(get("/v1/member/manage").param("signupdate",
+                member.getSignUpDate().format(DateTimeFormatter.ISO_DATE)));
+
+        //then
+        resultActions.andExpect(status().isNotFound());
     }
 
     @WithMockUser
     @Test
-    void manageMemberInfoBySignUpDate() throws Exception {
+    void manageMemberInfosBySignUpDate() throws Exception {
         //given
         String loginId = "loginId";
         Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
