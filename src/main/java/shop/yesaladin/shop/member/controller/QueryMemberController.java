@@ -2,6 +2,7 @@ package shop.yesaladin.shop.member.controller;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.common.dto.ResponseDto;
-import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.dto.MemberGradeQueryResponseDto;
 import shop.yesaladin.shop.member.dto.MemberProfileExistResponseDto;
 import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
@@ -23,6 +23,7 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberService;
  * @author 최예린
  * @since 1.0
  */
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/v1/members")
@@ -145,12 +146,12 @@ public class QueryMemberController {
      * @since 1.0
      */
     @GetMapping(params = {"type=birthday", "laterDays"})
-    public ResponseDto<List<Member>> getBirthdayMember(
+    public ResponseDto<List<Long>> getBirthdayMember(
             @RequestParam(value = "laterDays", defaultValue = "0") int laterDays
     ) {
-        List<Member> data = queryMemberService.findMembersByBirthday(laterDays);
+        List<Long> data = queryMemberService.findMemberIdsByBirthday(laterDays);
 
-        return ResponseDto.<List<Member>>builder()
+        return ResponseDto.<List<Long>>builder()
                 .success(true)
                 .data(data)
                 .status(HttpStatus.OK)

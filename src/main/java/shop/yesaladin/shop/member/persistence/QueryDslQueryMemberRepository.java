@@ -69,9 +69,10 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
      * {@inheritDoc}
      */
     @Override
-    public List<Member> findMembersByBirthday(int month, int date) {
+    public List<Long> findMemberIdsByBirthday(int month, int date) {
         QMember member = QMember.member;
-        return queryFactory.selectFrom(member)
+        return queryFactory.select(member.id)
+                .from(member)
                 .where(member.birthMonth.eq(month), member.birthDay.eq(date))
                 .fetch();
     }

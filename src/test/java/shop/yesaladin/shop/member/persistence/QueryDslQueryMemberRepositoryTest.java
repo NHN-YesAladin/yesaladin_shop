@@ -96,7 +96,7 @@ class QueryDslQueryMemberRepositoryTest {
         entityManager.persist(member1);
 
         //when
-        List<Member> members = queryMemberRepository.findMembersByBirthday(
+        List<Long> members = queryMemberRepository.findMemberIdsByBirthday(
                 now.getMonthValue(),
                 now.getDayOfMonth()
         );

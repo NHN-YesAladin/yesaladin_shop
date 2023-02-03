@@ -90,12 +90,13 @@ public class QueryMemberServiceImpl implements QueryMemberService {
         );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public List<Member> findMembersByBirthday(int laterDays) {
+    public List<Long> findMemberIdsByBirthday(int laterDays) {
         LocalDate birthday = LocalDate.now().plusDays(laterDays);
-        log.info("birthday : {}", birthday);
-
-        return queryMemberRepository.findMembersByBirthday(birthday.getMonthValue(),
+        return queryMemberRepository.findMemberIdsByBirthday(birthday.getMonthValue(),
                 birthday.getDayOfMonth()
         );
     }

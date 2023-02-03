@@ -61,7 +61,7 @@ public interface QueryMemberRepository {
      * @author 서민지
      * @since 1.0
      */
-    List<Member> findMembersByBirthday(int month, int date);
+    List<Long> findMemberIdsByBirthday(int month, int date);
 
     /**
      * 회원의 loginId 을 통해 회원이 존재 하는지 유무를 판별합니다.
