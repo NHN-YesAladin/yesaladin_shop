@@ -3,8 +3,7 @@ package shop.yesaladin.shop.order.dto;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import lombok.Getter;
 import org.hibernate.validator.constraints.Range;
 import shop.yesaladin.shop.member.domain.model.Member;
@@ -23,16 +22,13 @@ import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
 @Getter
 public class OrderSubscribeCreateRequestDto extends OrderMemberCreateRequestDto {
 
-    @NotNull
     @Range(min = 1, max = 31)
-    private final Integer expectedDay;
-    @NotNull
-    @Pattern(regexp = "^(6|12)$")
-    private final Integer intervalMonth;
+    private final int expectedDay;
+    private final int intervalMonth;
 
     public OrderSubscribeCreateRequestDto(
             LocalDate expectedShippingDate,
-            List<ProductOrderRequestDto> orderProducts,
+            @Size(min = 1, max = 1, message = "구독 상품은 단건 주문만 가능합니다.") List<ProductOrderRequestDto> orderProducts,
             long productTotalAmount,
             int shippingFee,
             int wrappingFee,
