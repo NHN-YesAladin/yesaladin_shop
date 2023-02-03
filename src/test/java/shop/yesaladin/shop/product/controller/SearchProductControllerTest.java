@@ -200,7 +200,7 @@ class SearchProductControllerTest {
                 ))
                 .andExpect(jsonPath("$.data.products[0].sellingPrice", equalTo(1000)))
                 .andExpect(jsonPath(
-                        "$.data.products[0].isForcedOutOfStack",
+                        "$.data.products[0].isForcedOutOfStock",
                         equalTo(dummySearchedProductDto.getIsForcedOutOfStock())
                 ))
                 .andExpect(jsonPath(
@@ -331,7 +331,7 @@ class SearchProductControllerTest {
                 ))
                 .andExpect(jsonPath("$.data.products[0].sellingPrice", equalTo(1000)))
                 .andExpect(jsonPath(
-                        "$.data.products[0].isForcedOutOfStack",
+                        "$.data.products[0].isForcedOutOfStock",
                         equalTo(dummySearchedProductDto.getIsForcedOutOfStock())
                 ))
                 .andExpect(jsonPath(
@@ -458,7 +458,7 @@ class SearchProductControllerTest {
                 ))
                 .andExpect(jsonPath("$.data.products[0].sellingPrice", equalTo(1000)))
                 .andExpect(jsonPath(
-                        "$.data.products[0].isForcedOutOfStack",
+                        "$.data.products[0].isForcedOutOfStock",
                         equalTo(dummySearchedProductDto.getIsForcedOutOfStock())
                 ))
                 .andExpect(jsonPath(
@@ -587,7 +587,7 @@ class SearchProductControllerTest {
                 ))
                 .andExpect(jsonPath("$.data.products[0].sellingPrice", equalTo(1000)))
                 .andExpect(jsonPath(
-                        "$.data.products[0].isForcedOutOfStack",
+                        "$.data.products[0].isForcedOutOfStock",
                         equalTo(dummySearchedProductDto.getIsForcedOutOfStock())
                 ))
                 .andExpect(jsonPath(
@@ -720,7 +720,7 @@ class SearchProductControllerTest {
                 ))
                 .andExpect(jsonPath("$.data.products[0].sellingPrice", equalTo(1000)))
                 .andExpect(jsonPath(
-                        "$.data.products[0].isForcedOutOfStack",
+                        "$.data.products[0].isForcedOutOfStock",
                         equalTo(dummySearchedProductDto.getIsForcedOutOfStock())
                 ))
                 .andExpect(jsonPath(
@@ -853,7 +853,7 @@ class SearchProductControllerTest {
                 ))
                 .andExpect(jsonPath("$.data.products[0].sellingPrice", equalTo(1000)))
                 .andExpect(jsonPath(
-                        "$.data.products[0].isForcedOutOfStack",
+                        "$.data.products[0].isForcedOutOfStock",
                         equalTo(dummySearchedProductDto.getIsForcedOutOfStock())
                 ))
                 .andExpect(jsonPath(

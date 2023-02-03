@@ -2,6 +2,8 @@ package shop.yesaladin.shop.member.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -12,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.member.domain.model.Member;
+import shop.yesaladin.shop.member.dto.MemberIdDto;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
 
 @Transactional
@@ -135,6 +138,23 @@ class QueryDslQueryMemberRepositoryTest {
         assertThat(memberList.getTotalElements()).isEqualTo(1);
         assertThat(memberList.getContent().get(0).getSignUpDate()).isEqualTo(member.getSignUpDate());
         assertThat(memberList.getContent().get(0).isWithdrawal()).isFalse();
+    }
+    
+    @Test
+    void findMembersByBirthday() {
+        //given
+        LocalDate now = LocalDate.now();
+        Member dummyMember = MemberDummy.dummyWithBirthday(now.getMonthValue(), now.getDayOfMonth());
+        entityManager.persist(dummyMember);
+
+        //when
+        List<MemberIdDto> members = queryMemberRepository.findMemberIdsByBirthday(
+                now.getMonthValue(),
+                now.getDayOfMonth()
+        );
+
+        //then
+        assertThat(members).hasSize(1);
     }
 
     @Test

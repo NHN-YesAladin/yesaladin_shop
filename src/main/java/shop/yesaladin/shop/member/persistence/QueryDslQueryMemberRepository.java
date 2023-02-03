@@ -3,6 +3,8 @@ package shop.yesaladin.shop.member.persistence;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDate;
+import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Repository;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.querydsl.QMember;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
+import shop.yesaladin.shop.member.dto.MemberIdDto;
 
 /**
  * 회원 조회 관련 QueryDsl Repository 구현체 입니다.
@@ -123,6 +126,17 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
                 PageRequest.of(Math.toIntExact(offset), Math.toIntExact(limit)),
                 countQuery::fetchOne
         );
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public List<MemberIdDto> findMemberIdsByBirthday(int month, int date) {
+        QMember member = QMember.member;
+        return queryFactory.select(Projections.constructor(MemberIdDto.class, member.id))
+                .from(member)
+                .where(member.birthMonth.eq(month), member.birthDay.eq(date))
+                .fetch();
     }
 
     /**

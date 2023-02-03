@@ -2,7 +2,6 @@ package shop.yesaladin.shop.category.dto;
 
 import java.util.List;
 import java.util.Objects;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
