@@ -110,6 +110,7 @@ public class CommandMemberController {
             Authentication authentication
     ) {
         checkRequestValidation(bindingResult);
+
         checkAuthorityOfManager(authentication);
 
         MemberBlockResponseDto response = commandMemberService.block(loginId, request);
@@ -150,8 +151,8 @@ public class CommandMemberController {
     private void checkRequestValidation(BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new ClientException(
-                    ErrorCode.ORDER_BAD_REQUEST,
-                    "Validation Error in member block request."
+                    ErrorCode.BAD_REQUEST,
+                    "Validation Error in member request."
             );
         }
     }
