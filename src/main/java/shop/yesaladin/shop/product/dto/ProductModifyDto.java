@@ -4,14 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.web.multipart.MultipartFile;
-import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.dto.CategoryResponseDto;
-import shop.yesaladin.shop.publish.domain.model.Publisher;
 import shop.yesaladin.shop.publish.dto.PublishersResponseDto;
-import shop.yesaladin.shop.tag.domain.model.Tag;
 import shop.yesaladin.shop.tag.dto.TagsResponseDto;
-import shop.yesaladin.shop.writing.domain.model.Author;
 import shop.yesaladin.shop.writing.dto.AuthorsResponseDto;
 
 import java.util.List;

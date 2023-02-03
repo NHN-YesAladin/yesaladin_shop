@@ -294,10 +294,10 @@ public class ElasticProductRepository implements SearchProductRepository {
      * categories.disable: false
      * products.is_deleted: false
      *
-     * @param field 필드 이름
-     * @param value 밸류 이름
+     * @param field  필드 이름
+     * @param value  밸류 이름
      * @param offset 페이지 위치
-     * @param size 데이터 갯수
+     * @param size   데이터 갯수
      * @return 해당 쿼리
      */
     private NativeQuery getDefaultSearchProductTermQuery(String field, String value, int offset, int size) {

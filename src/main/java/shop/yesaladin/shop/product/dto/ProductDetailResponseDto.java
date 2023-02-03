@@ -4,6 +4,7 @@ package shop.yesaladin.shop.product.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 
 import java.util.List;
 
@@ -47,4 +48,6 @@ public class ProductDetailResponseDto {
     private Boolean isForcedOutOfStock;
     private Boolean isSale;
     private Boolean isDeleted;
+
+    private List<CategoryResponseDto> categories;
 }

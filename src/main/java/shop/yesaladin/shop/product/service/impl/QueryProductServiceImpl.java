@@ -6,6 +6,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import shop.yesaladin.shop.category.dto.CategoryResponseDto;
+import shop.yesaladin.shop.category.service.inter.QueryProductCategoryService;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
 import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
@@ -16,12 +18,9 @@ import shop.yesaladin.shop.product.service.inter.QueryProductService;
 import shop.yesaladin.shop.publish.dto.PublishResponseDto;
 import shop.yesaladin.shop.publish.dto.PublishersResponseDto;
 import shop.yesaladin.shop.publish.service.inter.QueryPublishService;
-import shop.yesaladin.shop.tag.domain.model.Tag;
 import shop.yesaladin.shop.tag.dto.ProductTagResponseDto;
-import shop.yesaladin.shop.tag.dto.TagResponseDto;
 import shop.yesaladin.shop.tag.dto.TagsResponseDto;
 import shop.yesaladin.shop.tag.service.inter.QueryProductTagService;
-import shop.yesaladin.shop.writing.domain.model.Author;
 import shop.yesaladin.shop.writing.dto.AuthorsResponseDto;
 import shop.yesaladin.shop.writing.dto.WritingResponseDto;
 import shop.yesaladin.shop.writing.service.inter.QueryWritingService;
@@ -49,6 +48,7 @@ public class QueryProductServiceImpl implements QueryProductService {
     private final QueryWritingService queryWritingService;
     private final QueryPublishService queryPublishService;
     private final QueryProductTagService queryProductTagService;
+    private final QueryProductCategoryService queryProductCategoryService;
 
     /**
      * {@inheritDoc}
@@ -74,6 +74,8 @@ public class QueryProductServiceImpl implements QueryProductService {
 
         PublishResponseDto publish = queryPublishService.findByProduct(product);
 
+        List<CategoryResponseDto> categories = queryProductCategoryService.findCategoriesByProduct(product);
+
         return new ProductDetailResponseDto(
                 product.getId(),
                 Objects.isNull(product.getEbookFile()) ? null : product.getEbookFile().getUrl(),
@@ -95,7 +97,8 @@ public class QueryProductServiceImpl implements QueryProductService {
                 product.getQuantity(),
                 product.isForcedOutOfStock(),
                 product.isSale(),
-                product.isDeleted()
+                product.isDeleted(),
+                categories
         );
     }
 
@@ -110,9 +113,9 @@ public class QueryProductServiceImpl implements QueryProductService {
 
         List<WritingResponseDto> writings = queryWritingService.findByProduct(product);
         List<AuthorsResponseDto> authors = new ArrayList<>();
-        for (WritingResponseDto writing: writings) {
+        for (WritingResponseDto writing : writings) {
             authors.add(new AuthorsResponseDto(
-                    writing.getProduct().getId(),
+                    writing.getAuthor().getId(),
                     writing.getAuthor().getName(),
                     Objects.isNull(writing.getAuthor().getMember()) ? null : writing.getAuthor().getMember().getLoginId()
             ));
@@ -122,15 +125,14 @@ public class QueryProductServiceImpl implements QueryProductService {
 
         List<ProductTagResponseDto> productTags = queryProductTagService.findByProduct(product);
         List<TagsResponseDto> tags = new ArrayList<>();
-        for (ProductTagResponseDto productTag: productTags) {
+        for (ProductTagResponseDto productTag : productTags) {
             tags.add(new TagsResponseDto(
                     productTag.getTag().getId(),
                     productTag.getTag().getName()
             ));
         }
 
-//        카테고리 조회
-//        List<CategoryResponseDto>
+        List<CategoryResponseDto> categories = queryProductCategoryService.findCategoriesByProduct(product);
 
         return new ProductModifyDto(
                 product.getIsbn(),
@@ -154,7 +156,7 @@ public class QueryProductServiceImpl implements QueryProductService {
                 product.getSubscribeProduct().getISSN(),
                 product.getQuantity(),
                 product.getPreferentialShowRanking(),
-                null
+                categories
         );
     }
 

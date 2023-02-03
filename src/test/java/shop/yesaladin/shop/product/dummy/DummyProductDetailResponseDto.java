@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.product.dummy;
 
+import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
 
 import java.util.List;
@@ -8,6 +9,16 @@ public class DummyProductDetailResponseDto {
 
     public static ProductDetailResponseDto dummy() {
         List<String> authors = List.of("저자1");
+
+        List<CategoryResponseDto> categories = List.of(
+                CategoryResponseDto.builder()
+                        .id(1L)
+                        .name("어린이")
+                        .isShown(true)
+                        .order(1)
+                        .parentId(2L)
+                        .parentName("국내도서").build()
+        );
 
         return new ProductDetailResponseDto(
                 1L,
@@ -30,7 +41,8 @@ public class DummyProductDetailResponseDto {
                 10,
                 false,
                 true,
-                false
+                false,
+                categories
         );
     }
 

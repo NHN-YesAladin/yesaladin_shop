@@ -1,6 +1,7 @@
 package shop.yesaladin.shop.product.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.model.ProductCategory;
@@ -44,6 +45,7 @@ import java.util.stream.Collectors;
  * @author 이수정
  * @since 1.0
  */
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class CommandProductServiceImpl implements CommandProductService {
@@ -193,17 +195,15 @@ public class CommandProductServiceImpl implements CommandProductService {
         }
 
         // ThumbnailFile
-        File thumbnailFile = queryFileService.findById(product.getThumbnailFile().getId())
-                .toEntity();
-        thumbnailFile = commandFileService.register(dto.changeThumbnailFile(thumbnailFile))
-                .toEntity();
+        File thumbnailFile = product.getThumbnailFile();
+        if (Objects.nonNull(dto.getThumbnailFileUrl())) {
+            thumbnailFile = commandFileService.register(dto.changeThumbnailFile(thumbnailFile)).toEntity();
+        }
 
         // EbookFile
-        File ebookFile = null;
-        if (Objects.nonNull(product.getEbookFile())) {
-            File foundEbookFile = queryFileService.findById(product.getEbookFile().getId())
-                    .toEntity();
-            ebookFile = commandFileService.register(dto.changeEbookFile(foundEbookFile)).toEntity();
+        File ebookFile = product.getEbookFile();
+        if (Objects.nonNull(dto.getEbookFileUrl())) {
+            ebookFile = commandFileService.register(dto.changeEbookFile(ebookFile)).toEntity();
         }
 
         // Writing
