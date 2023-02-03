@@ -1,5 +1,8 @@
 package shop.yesaladin.shop.payment.controller;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -7,6 +10,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import shop.yesaladin.shop.payment.domain.model.Payment;
+import shop.yesaladin.shop.payment.domain.model.PaymentCardAcquirerCode;
+import shop.yesaladin.shop.payment.domain.model.PaymentCode;
 import shop.yesaladin.shop.payment.dto.PaymentCompleteSimpleResponseDto;
 import shop.yesaladin.shop.payment.dto.PaymentRequestDto;
 import shop.yesaladin.shop.payment.service.inter.CommandPaymentService;
@@ -34,6 +40,23 @@ public class CommandPaymentController {
      */
     @PostMapping("/confirm")
     public PaymentCompleteSimpleResponseDto confirmPayment(@Valid @RequestBody PaymentRequestDto requestDto) {
-        return paymentService.confirmTossRequest(requestDto);
+        // TODO PaymentRequestDto에 orderResponse 추가하고 orderResponse가 null 아닌 경우에 동작시키기
+        return PaymentCompleteSimpleResponseDto.builder()
+                .paymentId("dummy paymentId")
+                .method(PaymentCode.CARD)
+                .currency(Payment.CURRENCY_KRW)
+                .totalAmount(10000000L)
+                .approvedDateTime(LocalDateTime.now())
+                .orderNumber("10101010010101010")
+                .orderName("dummy orderName")
+                .cardCode(PaymentCode.CREDIT)
+                .cardOwnerCode(PaymentCode.INDIVIDUAL)
+                .cardNumber("1111-xxxx-xxxx-1111")
+                .cardInstallmentPlanMonths(0)
+                .cardApproveNumber("010023289475832")
+                .cardAcquirerCode(PaymentCardAcquirerCode.BC)
+                .build();
+
+//        return paymentService.confirmTossRequest(requestDto);
     }
 }
