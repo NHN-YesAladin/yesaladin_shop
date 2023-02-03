@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -74,7 +75,7 @@ public class QueryOrderController {
      */
     @GetMapping("/v1/order-sheets")
     public ResponseDto<OrderSheetResponseDto> getOrderSheetData(
-            @Valid @RequestBody OrderSheetRequestDto request,
+            @ModelAttribute OrderSheetRequestDto request,
             BindingResult bindingResult,
             Authentication authentication
     ) {

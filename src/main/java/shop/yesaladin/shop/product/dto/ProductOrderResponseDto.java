@@ -39,6 +39,13 @@ public class ProductOrderResponseDto {
         this.expectedPoint = expectedPoint;
     }
 
+    /**
+     * 주문상품의 수량을 저장합니다.
+     *
+     * @param request 상품 정보
+     * @author 최예린
+     * @since 1.0
+     */
     public void setQuantity(List<ProductOrderRequestDto> request) {
         this.quantity = request.stream()
                 .filter(x -> Objects.equals(this.isbn, x.getIsbn()))

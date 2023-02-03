@@ -24,7 +24,7 @@ import shop.yesaladin.shop.product.exception.ProductTypeCodeNotFoundException;
  * 상품 조회를 위한 Repository QueryDsl 구현체 입니다.
  *
  * @author 이수정
- * @author 최예
+ * @author 최예린
  * @since 1.0
  */
 @RequiredArgsConstructor
@@ -34,7 +34,7 @@ public class QueryDslProductRepository implements QueryProductRepository {
     private final JPAQueryFactory queryFactory;
 
     /**
-     * Id를 기준으로 상품을 조회합니다. 린
+     * Id를 기준으로 상품을 조회합니다.
      *
      * @since 1.0
      */

@@ -20,6 +20,12 @@ import shop.yesaladin.shop.order.dto.OrderNonMemberCreateRequestDto;
 import shop.yesaladin.shop.order.dto.OrderSubscribeCreateRequestDto;
 import shop.yesaladin.shop.order.service.inter.CommandOrderService;
 
+/**
+ * 주문을 생성관련 rest controller 입니다.
+ *
+ * @author 최예린
+ * @since 1.0
+ */
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/v1/orders")
@@ -28,7 +34,7 @@ public class CommandOrderController {
     private final CommandOrderService commandOrderService;
 
     /**
-     * 비회원 주문을 음
+     * 비회원 주문을 생성합니다.
      *
      * @param bindingResult  유효성 검사
      * @param authentication 인증

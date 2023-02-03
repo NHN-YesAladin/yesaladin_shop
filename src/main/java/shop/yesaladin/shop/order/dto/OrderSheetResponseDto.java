@@ -33,10 +33,24 @@ public class OrderSheetResponseDto {
         this.orderProducts = orderProducts;
     }
 
+    /**
+     * 주문서에 포인트 데이터를 저장합니다.
+     *
+     * @param point 회원의 소지한 포인트
+     * @author 최예린
+     * @since 1.0
+     */
     public void setPoint(Long point) {
         this.point = point;
     }
 
+    /**
+     * 주문서에 주문상품 정보를 담습니다.
+     *
+     * @param orderProducts 주문상품 정보
+     * @author 최예린
+     * @since 1.0
+     */
     public void setOrderProducts(List<ProductOrderResponseDto> orderProducts) {
         this.orderProducts = orderProducts;
     }

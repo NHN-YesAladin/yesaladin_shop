@@ -349,8 +349,6 @@ public class CommandProductServiceImpl implements CommandProductService {
 
     /**
      * {@inheritDoc}
-     *
-     * @return
      */
     @Transactional
     @Override
