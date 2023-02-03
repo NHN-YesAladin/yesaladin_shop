@@ -2,7 +2,6 @@ package shop.yesaladin.shop.member.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.List;
 import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -108,7 +107,7 @@ class QueryDslQueryMemberRepositoryTest {
         entityManager.persist(member);
 
         //when
-        Page<Member> memberList = queryMemberRepository.findMemberByName(
+        Page<Member> memberList = queryMemberRepository.findMembersByName(
                 member.getName(),
                 0,
                 10
@@ -126,7 +125,7 @@ class QueryDslQueryMemberRepositoryTest {
         entityManager.persist(member);
 
         //when
-        Page<Member> memberList = queryMemberRepository.findMemberBySignUpDate(
+        Page<Member> memberList = queryMemberRepository.findMembersBySignUpDate(
                 member.getSignUpDate(),
                 0,
                 10

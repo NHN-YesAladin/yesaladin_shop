@@ -100,7 +100,7 @@ public interface QueryMemberService {
      * @author 김선홍
      * @since 1.0
      */
-    MemberManagerListResponseDto findMemberManageByName(String name, int offset, int limit);
+    MemberManagerListResponseDto findMemberManagesByName(String name, int offset, int limit);
 
     /**
      * 관리자의 회원 관리 요창에 대해 회원을 column 인 signUpDate 를 기준으로 조회하는 메서드 이다.
@@ -110,7 +110,7 @@ public interface QueryMemberService {
      * @author 김선홍
      * @since 1.0
      */
-    MemberManagerListResponseDto findMemberManageBySignUpDate(LocalDate signUpDate, int offset, int limit);
+    MemberManagerListResponseDto findMemberManagesBySignUpDate(LocalDate signUpDate, int offset, int limit);
 
     /**
      * 회원 가입 시 입력할 loginId를 사전에 중복 판별을 하기 위한 메서드 입니다.

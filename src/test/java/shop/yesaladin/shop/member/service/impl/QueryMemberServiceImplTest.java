@@ -8,9 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberGrade;
@@ -20,7 +18,6 @@ import shop.yesaladin.shop.member.dto.MemberDto;
 import shop.yesaladin.shop.member.dto.MemberGradeQueryResponseDto;
 import shop.yesaladin.shop.member.dto.MemberLoginResponseDto;
 import shop.yesaladin.shop.member.dto.MemberManagerListResponseDto;
-import shop.yesaladin.shop.member.dto.MemberManagerResponseDto;
 import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
@@ -263,11 +260,11 @@ class QueryMemberServiceImplTest {
         int offset = 0;
         int size = 1;
 
-        Mockito.when(queryMemberRepository.findMemberByName(name, offset, size))
+        Mockito.when(queryMemberRepository.findMembersByName(name, offset, size))
                 .thenReturn(new PageImpl<>(List.of()));
 
         //when then
-        assertThatThrownBy(() -> service.findMemberManageByName(name, offset, size)).isInstanceOf(
+        assertThatThrownBy(() -> service.findMemberManagesByName(name, offset, size)).isInstanceOf(
                 MemberNotFoundException.class);
     }
 
@@ -278,12 +275,12 @@ class QueryMemberServiceImplTest {
         int offset = 0;
         int size = 1;
 
-        Mockito.when(queryMemberRepository.findMemberByName(name, offset, size))
+        Mockito.when(queryMemberRepository.findMembersByName(name, offset, size))
                 .thenReturn(new PageImpl<>(List.of(expectedMember)));
         Mockito.when(expectedMember.getName()).thenReturn(name);
 
         //when
-        MemberManagerListResponseDto result = service.findMemberManageByName(name, offset, size);
+        MemberManagerListResponseDto result = service.findMemberManagesByName(name, offset, size);
 
         //then
         assertThat(result.getCount()).isEqualTo(1);
@@ -297,11 +294,11 @@ class QueryMemberServiceImplTest {
         int offset = 0;
         int size = 1;
 
-        Mockito.when(queryMemberRepository.findMemberBySignUpDate(signUpDate, offset, size))
+        Mockito.when(queryMemberRepository.findMembersBySignUpDate(signUpDate, offset, size))
                 .thenReturn(new PageImpl<>(List.of()));
 
         //when then
-        assertThatThrownBy(() -> service.findMemberManageBySignUpDate(
+        assertThatThrownBy(() -> service.findMemberManagesBySignUpDate(
                 signUpDate,
                 offset,
                 size
@@ -315,12 +312,12 @@ class QueryMemberServiceImplTest {
         int offset = 0;
         int size = 1;
 
-        Mockito.when(queryMemberRepository.findMemberBySignUpDate(signUpDate, offset, size))
+        Mockito.when(queryMemberRepository.findMembersBySignUpDate(signUpDate, offset, size))
                 .thenReturn(new PageImpl<>(List.of(expectedMember)));
         Mockito.when(expectedMember.getSignUpDate()).thenReturn(signUpDate);
 
         //when
-        MemberManagerListResponseDto result = service.findMemberManageBySignUpDate(
+        MemberManagerListResponseDto result = service.findMemberManagesBySignUpDate(
                 signUpDate,
                 offset,
                 size

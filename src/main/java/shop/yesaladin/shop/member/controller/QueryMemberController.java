@@ -141,6 +141,14 @@ public class QueryMemberController {
         return queryMemberService.getByLoginId(loginId);
     }
 
+    /**
+     * 관리자가 회원의 loginId 를 이용해 회원의 정보를 조회
+     *
+     * @param loginId 조회할 회원의 loginId
+     * @return 조회된 회원의 정보
+     * @author 김선홍
+     * @since 1.0
+     */
     @GetMapping(value = "/manage", params = "loginid")
     public ResponseDto<MemberManagerResponseDto> manageMemberInfoByLoginId(@RequestParam(name = "loginid") String loginId) {
         return ResponseDto.<MemberManagerResponseDto>builder()
@@ -150,6 +158,14 @@ public class QueryMemberController {
                 .build();
     }
 
+    /**
+     * 관리자가 회원의 nickname 을 이용해 회원의 정보를 조회
+     *
+     * @param nickname 조회할 회원의 nickname
+     * @return 조회된 회원의 정보
+     * @author 김선홍
+     * @since 1.0
+     */
     @GetMapping(value = "/manage", params = "nickname")
     public ResponseDto<MemberManagerResponseDto> manageMemberInfoByNickname(@RequestParam String nickname) {
         return ResponseDto.<MemberManagerResponseDto>builder()
@@ -159,6 +175,14 @@ public class QueryMemberController {
                 .build();
     }
 
+    /**
+     * 관리자가 회원의 phone 를 이용해 회원의 정보를 조회
+     *
+     * @param phone 조회할 회원의 phone
+     * @return 조회된 회원의 정보
+     * @author 김선홍
+     * @since 1.0
+     */
     @GetMapping(value = "/manage", params = "phone")
     public ResponseDto<MemberManagerResponseDto> manageMemberInfoByPhone(@RequestParam String phone) {
         return ResponseDto.<MemberManagerResponseDto>builder()
@@ -168,15 +192,24 @@ public class QueryMemberController {
                 .build();
     }
 
+    /**
+     * 관리자가 회원의 name 을 이용해 회원의 정보를 조회
+     *
+     * @param name 조회할 회원의 name
+     * @param pageable 페이지 위치 및 데이터 갯수
+     * @return 조회된 회원들의 정보
+     * @author 김선홍
+     * @since 1.0
+     */
     @GetMapping(value = "/manage", params = "name")
-    public ResponseDto<MemberManagerListResponseDto> manageMemberInfoByName(
+    public ResponseDto<MemberManagerListResponseDto> manageMembersInfoByName(
             @RequestParam String name,
             @PageableDefault Pageable pageable
     ) {
         return ResponseDto.<MemberManagerListResponseDto>builder()
                 .success(true)
                 .status(HttpStatus.OK)
-                .data(queryMemberService.findMemberManageByName(
+                .data(queryMemberService.findMemberManagesByName(
                         name,
                         pageable.getPageNumber(),
                         pageable.getPageSize()
@@ -184,15 +217,24 @@ public class QueryMemberController {
                 .build();
     }
 
+    /**
+     * 관리자가 회원의  signUpDate 을 이용해 회원의 정보를 조회
+     *
+     * @param signUpDate 조회할 회원의 signUpDate
+     * @param pageable 페이지 위치 및 데이터 갯수
+     * @return 조회된 회원들의 정보
+     * @author 김선홍
+     * @since 1.0
+     */
     @GetMapping(value = "/manage", params = "signupdate")
-    public ResponseDto<MemberManagerListResponseDto> manageMemberInfoBySignUpDate(
+    public ResponseDto<MemberManagerListResponseDto> manageMembersInfoBySignUpDate(
             @RequestParam(name = "signupdate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate signUpDate,
             @PageableDefault Pageable pageable
     ) {
         return ResponseDto.<MemberManagerListResponseDto>builder()
                 .success(true)
                 .status(HttpStatus.OK)
-                .data(queryMemberService.findMemberManageBySignUpDate(
+                .data(queryMemberService.findMemberManagesBySignUpDate(
                         signUpDate,
                         pageable.getPageNumber(),
                         pageable.getPageSize()

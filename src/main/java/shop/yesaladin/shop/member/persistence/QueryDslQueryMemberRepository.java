@@ -82,8 +82,11 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
                 .fetchFirst());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public Page<Member> findMemberByName(String name, int offset, int limit) {
+    public Page<Member> findMembersByName(String name, int offset, int limit) {
         QMember member = QMember.member;
         List<Member> memberList = queryFactory.selectFrom(member)
                 .where(member.name.eq(name))
@@ -103,7 +106,7 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
      * {@inheritDoc}
      */
     @Override
-    public Page<Member> findMemberBySignUpDate(LocalDate signUpDate, int offset, int limit) {
+    public Page<Member> findMembersBySignUpDate(LocalDate signUpDate, int offset, int limit) {
         QMember member = QMember.member;
         List<Member> memberList = queryFactory.selectFrom(member)
                 .where(member.signUpDate.eq(signUpDate))

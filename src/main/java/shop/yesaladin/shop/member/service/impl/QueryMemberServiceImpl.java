@@ -140,15 +140,15 @@ public class QueryMemberServiceImpl implements QueryMemberService {
      */
     @Transactional(readOnly = true)
     @Override
-    public MemberManagerListResponseDto findMemberManageByName(
+    public MemberManagerListResponseDto findMemberManagesByName(
             String name,
             int offset,
             int limit
     ) {
-        Page<Member> result = queryMemberRepository.findMemberByName(name, offset, limit);
+        Page<Member> result = queryMemberRepository.findMembersByName(name, offset, limit);
         return MemberManagerListResponseDto.builder()
                 .count(result.getTotalElements())
-                .memberManagerResponseDtoList(Optional.of(queryMemberRepository.findMemberByName(
+                .memberManagerResponseDtoList(Optional.of(queryMemberRepository.findMembersByName(
                                 name,
                                 offset,
                                 limit
@@ -166,19 +166,19 @@ public class QueryMemberServiceImpl implements QueryMemberService {
      */
     @Transactional(readOnly = true)
     @Override
-    public MemberManagerListResponseDto findMemberManageBySignUpDate(
+    public MemberManagerListResponseDto findMemberManagesBySignUpDate(
             LocalDate signUpDate,
             int offset,
             int limit
     ) {
-        Page<Member> result = queryMemberRepository.findMemberBySignUpDate(
+        Page<Member> result = queryMemberRepository.findMembersBySignUpDate(
                 signUpDate,
                 offset,
                 limit
         );
         return MemberManagerListResponseDto.builder()
                 .count(result.getTotalElements())
-                .memberManagerResponseDtoList(Optional.of(queryMemberRepository.findMemberBySignUpDate(
+                .memberManagerResponseDtoList(Optional.of(queryMemberRepository.findMembersBySignUpDate(
                                 signUpDate,
                                 offset,
                                 limit

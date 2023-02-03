@@ -28,7 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -630,7 +629,7 @@ class QueryMemberControllerTest {
         String loginId = "loginId";
         Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
         MemberManagerResponseDto responseDto = MemberManagerResponseDto.fromEntity(member);
-        Mockito.when(queryMemberService.findMemberManageByName(member.getName(), 0, 10))
+        Mockito.when(queryMemberService.findMemberManagesByName(member.getName(), 0, 10))
                 .thenReturn(MemberManagerListResponseDto.builder()
                         .count(1L)
                         .memberManagerResponseDtoList(List.of(responseDto))
@@ -708,7 +707,7 @@ class QueryMemberControllerTest {
         String loginId = "loginId";
         Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
         MemberManagerResponseDto responseDto = MemberManagerResponseDto.fromEntity(member);
-        Mockito.when(queryMemberService.findMemberManageBySignUpDate(member.getSignUpDate(), 0, 10))
+        Mockito.when(queryMemberService.findMemberManagesBySignUpDate(member.getSignUpDate(), 0, 10))
                 .thenReturn(MemberManagerListResponseDto.builder()
                         .count(1L)
                         .memberManagerResponseDtoList(List.of(responseDto))
