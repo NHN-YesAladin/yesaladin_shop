@@ -14,9 +14,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class CouponProperties {
 
-    @Value("${coupon.topic.user-download}")
-    private String userDownloadCouponTopic;
+    @Value("${coupon.topic.user-download-request}")
+    private String userDownloadCouponRequestTopic;
 
-    @Value("${coupon.topic.auto-issuance}")
-    private String autoIssuanceCouponTopic;
+    @Value("${coupon.topic.auto-issuance-request}")
+    private String autoIssuanceCouponRequestTopic;
 }
