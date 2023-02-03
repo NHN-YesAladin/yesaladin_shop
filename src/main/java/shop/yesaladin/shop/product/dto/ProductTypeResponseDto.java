@@ -17,4 +17,5 @@ public class ProductTypeResponseDto {
 
     private int id;
     private String type;
+    private String koName;
 }

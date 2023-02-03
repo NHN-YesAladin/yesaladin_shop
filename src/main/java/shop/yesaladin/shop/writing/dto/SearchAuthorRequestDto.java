@@ -1,9 +1,10 @@
 package shop.yesaladin.shop.writing.dto;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
 @Getter
 @AllArgsConstructor

@@ -3,6 +3,7 @@ package shop.yesaladin.shop.product.service.inter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
+import shop.yesaladin.shop.product.dto.ProductModifyDto;
 import shop.yesaladin.shop.product.dto.ProductsResponseDto;
 
 /**
@@ -22,6 +23,16 @@ public interface QueryProductService {
      * @since 1.0
      */
     ProductDetailResponseDto findById(long id);
+
+    /**
+     * 아이디가 id인 상품을 찾아 수정 View에 넣을 정보를 반환합니다.
+     *
+     * @param id 찾고자하는 상품의 id
+     * @return 찾은 상품 엔터티
+     * @author 이수정
+     * @since 1.0
+     */
+    ProductModifyDto findProductByIdForForm(long id);
 
     /**
      * 페이징된 모든사용자용 상품 리스트를 반환합니다.
