@@ -49,6 +49,22 @@ public class CommandPaymentServiceImpl implements CommandPaymentService {
         // 이미 입력되어있지 않은 주문이라면 결제 승인 처리를 할 필요가 없으므로 예외처리
         Order order = queryOrderService.getOrderByNumber(requestDto.getOrderId());
 
+        JsonNode responseFromToss = getResponseFromToss(requestDto);
+        log.info("{}", responseFromToss);
+
+        //database에 저장
+        Payment payment = commandPaymentRepository.save(Payment.toEntity(responseFromToss, order));
+
+        return PaymentCompleteSimpleResponseDto.fromEntity(payment);
+    }
+
+    /**
+     * 토스에 restTemplate을 통해 결제 승인 통신을 하기 위한 메서드
+     *
+     * @param requestDto 결제 정보가 담겨있는 dto
+     * @return 토스에서 전송한 정보들이 JsonNode 타입으로 저장되어있음
+     */
+    private JsonNode getResponseFromToss(PaymentRequestDto requestDto) {
         UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(
                 "https://api.tosspayments.com/v1/payments/confirm").build();
 
@@ -74,12 +90,7 @@ public class CommandPaymentServiceImpl implements CommandPaymentService {
         if (Objects.isNull(responseFromToss)) {
             throw new PaymentFailException("Body is empty");
         }
-        log.info("{}", responseFromToss);
-
-        //database에 저장
-        Payment payment = commandPaymentRepository.save(Payment.toEntity(responseFromToss, order));
-
-        return PaymentCompleteSimpleResponseDto.fromEntity(payment);
+        return responseFromToss;
     }
 
 }
