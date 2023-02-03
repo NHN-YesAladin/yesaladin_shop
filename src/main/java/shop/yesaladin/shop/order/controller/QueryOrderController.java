@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,6 +22,7 @@ import shop.yesaladin.shop.common.utils.AuthorityUtils;
 import shop.yesaladin.shop.order.dto.OrderSheetRequestDto;
 import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
+import shop.yesaladin.shop.order.dto.OrderSummaryResponseDto;
 import shop.yesaladin.shop.order.service.inter.QueryOrderService;
 
 /**
@@ -107,5 +109,24 @@ public class QueryOrderController {
                     "Validation Error in order sheet request."
             );
         }
+    }
+
+    @GetMapping("/{memberId}")
+    public PaginatedResponseDto<OrderSummaryResponseDto> getAllOrdersByMemberId(
+            @PathVariable Long memberId,
+            @RequestBody PeriodQueryRequestDto queryDto,
+            Pageable pageable
+    ) {
+        Page<OrderSummaryResponseDto> data = queryOrderService.getOrderListInPeriodByMemberId(
+                queryDto,
+                memberId,
+                pageable
+        );
+        return PaginatedResponseDto.<OrderSummaryResponseDto>builder()
+                .currentPage(data.getNumber())
+                .totalPage(data.getTotalPages())
+                .totalDataCount(data.getTotalElements())
+                .dataList(data.getContent())
+                .build();
     }
 }

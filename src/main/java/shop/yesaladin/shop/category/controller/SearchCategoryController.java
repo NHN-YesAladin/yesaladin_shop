@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.category.controller;
 
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,8 +11,6 @@ import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.shop.category.dto.SearchCategoryRequestDto;
 import shop.yesaladin.shop.category.dto.SearchCategoryResponseDto;
 import shop.yesaladin.shop.category.service.inter.SearchCategoryService;
-
-import javax.validation.Valid;
 
 /**
  * 엘라스틱 서치 카테고리 검색 컨트롤러

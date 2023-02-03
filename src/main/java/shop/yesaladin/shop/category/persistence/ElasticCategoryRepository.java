@@ -2,7 +2,6 @@ package shop.yesaladin.shop.category.persistence;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
-import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -12,10 +11,8 @@ import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.stereotype.Repository;
 import shop.yesaladin.shop.category.domain.model.SearchedCategory;
 import shop.yesaladin.shop.category.domain.repository.SearchCategoryRepository;
-import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 import shop.yesaladin.shop.category.dto.SearchCategoryResponseDto;
 import shop.yesaladin.shop.category.dto.SearchCategoryResponseDto.SearchedCategoryDto;
-import shop.yesaladin.shop.tag.domain.model.SearchedTag;
 
 /**
  * 엘라스틱에서 카테고리 검색 구현체

@@ -18,6 +18,7 @@ import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
 import shop.yesaladin.shop.order.dto.OrderSheetRequestDto;
 import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
+import shop.yesaladin.shop.order.dto.OrderSummaryResponseDto;
 import shop.yesaladin.shop.order.exception.OrderNotFoundException;
 import shop.yesaladin.shop.order.service.inter.QueryOrderService;
 import shop.yesaladin.shop.point.service.inter.QueryPointHistoryService;
@@ -136,6 +137,28 @@ public class QueryOrderServiceImpl implements QueryOrderService {
         return new OrderSheetResponseDto(orderProducts);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Page<OrderSummaryResponseDto> getOrderListInPeriodByMemberId(
+            PeriodQueryRequestDto queryDto,
+            long memberId,
+            Pageable pageable
+    ) {
+        checkValidMemberId(memberId);
+        queryDto.validate(clock);
+
+        LocalDate startDate = queryDto.getStartDateOrDefaultValue(clock);
+        LocalDate endDate = queryDto.getEndDateOrDefaultValue(clock);
+
+        checkRequestedOffsetInBounds(startDate, endDate, memberId, pageable);
+        return queryOrderRepository.findOrdersInPeriodByMemberId(
+                startDate,
+                endDate,
+                memberId,
+                pageable
+        );
+    }
+
     private void checkRequestedOffsetInBounds(
             LocalDate startDate, LocalDate endDate, Long memberId, Pageable pageable
     ) {
@@ -151,7 +174,7 @@ public class QueryOrderServiceImpl implements QueryOrderService {
             );
         }
 
-        if (countOfOrder <= pageable.getOffset()) {
+        if (countOfOrder < pageable.getOffset()) {
             throw new PageOffsetOutOfBoundsException((int) pageable.getOffset(), countOfOrder);
         }
     }

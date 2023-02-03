@@ -52,6 +52,8 @@ public class CommandCategoryServiceImpl implements CommandCategoryService {
     private CategoryResponseDto saveCategoryByAddingId(CategoryRequestDto createRequest) {
         CategoryOnlyIdDto onlyParentId = queryCategoryRepository.getLatestIdByDepth(Category.DEPTH_PARENT);
 
+        createRequest.setOrder(
+                queryCategoryRepository.getLatestOrderByDepth(Category.DEPTH_PARENT) + 1);
         Category category = commandCategoryRepository.save(createRequest.toEntity(
                 onlyParentId.getId() + Category.TERM_OF_PARENT_ID, Category.DEPTH_PARENT, null));
         return CategoryResponseDto.fromEntity(category);
@@ -72,6 +74,10 @@ public class CommandCategoryServiceImpl implements CommandCategoryService {
         Category parentCategory = queryCategoryRepository.findById(parentId)
                 .orElseThrow(() -> new CategoryNotFoundException(parentId));
 
+        createRequest.setOrder(queryCategoryRepository.getLatestChildOrderByDepthAndParentId(
+                Category.DEPTH_CHILD,
+                parentId
+        ) + 1);
         Category category = commandCategoryRepository.save(createRequest.toEntity(
                 onlyChildId.getId() + Category.TERM_OF_CHILD_ID,
                 Category.DEPTH_CHILD,

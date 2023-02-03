@@ -41,6 +41,7 @@ public class ElasticProductRepository implements SearchProductRepository {
     private static final String TAG = "tags.name";
     private static final String CATEGORIES_DISABLE = "categories.disable";
     private static final String CATEGORIES_IS_SHOWN = "categories.is_shown";
+    private static final String IS_DELETE = "is_deleted";
 
     /**
      * 카테고리 id를 이용한 검색하는 메소드
@@ -93,7 +94,7 @@ public class ElasticProductRepository implements SearchProductRepository {
     public SearchedProductResponseDto searchProductsByProductTitle(
             String title, int offset, int size
     ) {
-        return searchProductByMultiQuery(title, offset, size, List.of(TITLE, TAG));
+        return searchResponseProductByMultiQuery(title, offset, size, List.of(TITLE, TAG));
     }
 
     /**
@@ -110,7 +111,7 @@ public class ElasticProductRepository implements SearchProductRepository {
     public SearchedProductResponseDto searchProductsByProductContent(
             String content, int offset, int size
     ) {
-        return searchProductByMultiQuery(content, offset, size, List.of(CONTENT, TAG, DESCRIPTION));
+        return searchResponseProductByMultiQuery(content, offset, size, List.of(CONTENT, TAG, DESCRIPTION));
     }
 
     /**
@@ -127,7 +128,7 @@ public class ElasticProductRepository implements SearchProductRepository {
     public SearchedProductResponseDto searchProductsByProductISBN(
             String isbn, int offset, int size
     ) {
-        return searchProductByTermQuery(isbn, offset, size, ISBN);
+        return searchResponseProductByTermQuery(isbn, offset, size, ISBN);
     }
 
     /**
@@ -146,7 +147,7 @@ public class ElasticProductRepository implements SearchProductRepository {
             int offset,
             int size
     ) {
-        return searchProductByTermQuery(author, offset, size, AUTHORS_NAME);
+        return searchResponseProductByTermQuery(author, offset, size, AUTHORS_NAME);
     }
 
     /**
@@ -163,7 +164,7 @@ public class ElasticProductRepository implements SearchProductRepository {
     public SearchedProductResponseDto searchProductsByPublisher(
             String publisher, int offset, int size
     ) {
-        return searchProductByTermQuery(publisher, offset, size, PUBLISHER_NAME);
+        return searchResponseProductByTermQuery(publisher, offset, size, PUBLISHER_NAME);
     }
 
     /**
@@ -178,7 +179,7 @@ public class ElasticProductRepository implements SearchProductRepository {
      */
     @Override
     public SearchedProductResponseDto searchProductsByTag(String tag, int offset, int size) {
-        return searchProductByTermQuery(tag, offset, size, TAG);
+        return searchResponseProductByTermQuery(tag, offset, size, TAG);
     }
 
     /**
@@ -192,7 +193,7 @@ public class ElasticProductRepository implements SearchProductRepository {
      * @author : 김선홍
      * @since : 1.0
      */
-    public SearchedProductResponseDto searchProductByMultiQuery(
+    public SearchedProductResponseDto searchResponseProductByMultiQuery(
             String value,
             int offset,
             int size,
@@ -201,8 +202,9 @@ public class ElasticProductRepository implements SearchProductRepository {
         NativeQuery query = NativeQuery.builder()
                 .withQuery(q -> q.multiMatch(v -> v.query(value).fields(fields)))
                 .withFilter(QueryBuilders.bool(v -> v.must(
-                        getCategoryDisableFilter(),
-                        getCategoryIsShownFilter()
+                        getTermQueryByBoolean(CATEGORIES_IS_SHOWN, true),
+                        getTermQueryByBoolean(CATEGORIES_DISABLE, false),
+                        getTermQueryByBoolean(IS_DELETE, false)
                 )))
                 .withPageable(PageRequest.of(offset, size))
                 .build();
@@ -232,20 +234,13 @@ public class ElasticProductRepository implements SearchProductRepository {
      * @author : 김선홍
      * @since : 1.0
      */
-    public SearchedProductResponseDto searchProductByTermQuery(
+    public SearchedProductResponseDto searchResponseProductByTermQuery(
             String value,
             int offset,
             int size,
             String field
     ) {
-        NativeQuery query = NativeQuery.builder()
-                .withFilter(QueryBuilders.bool(v -> v.must(
-                        getTermQuery(field, value),
-                        getCategoryDisableFilter(),
-                        getCategoryIsShownFilter()
-                )))
-                .withPageable(PageRequest.of(offset, size))
-                .build();
+        NativeQuery query = getDefaultSearchProductTermQuery(field, value, offset, size);
 
         SearchHits<SearchedProduct> result = elasticsearchOperations.search(
                 query,
@@ -278,10 +273,7 @@ public class ElasticProductRepository implements SearchProductRepository {
             int offset,
             int size
     ) {
-        NativeQuery query = NativeQuery.builder()
-                .withFilter(getTermQuery(field, value))
-                .withPageable(PageRequest.of(offset, size))
-                .build();
+        NativeQuery query = getDefaultSearchProductTermQuery(field, value, offset, size);
         SearchHits<SearchedProduct> result = elasticsearchOperations.search(
                 query,
                 SearchedProduct.class
@@ -297,41 +289,52 @@ public class ElasticProductRepository implements SearchProductRepository {
     }
 
     /**
-     * 카테고리의 disable 상태를 확인하는 쿼리를 반환하는 메서드
+     * Term 쿼리를 이용한 상품 검색 아래와 같은 기본 조건을 가지고 있다.
+     * categories.is_shown: true
+     * categories.disable: false
+     * products.is_deleted: false
      *
-     * @return 카테고리의 disable 상태를 확인하는 쿼리
-     * @author : 김선홍
-     * @since : 1.0
+     * @param field 필드 이름
+     * @param value 밸류 이름
+     * @param offset 페이지 위치
+     * @param size 데이터 갯수
+     * @return 해당 쿼리
      */
-    private Query getCategoryDisableFilter() {
+    private NativeQuery getDefaultSearchProductTermQuery(String field, String value, int offset, int size) {
         return NativeQuery.builder()
-                .withQuery(q -> q.term(t -> t.field(CATEGORIES_DISABLE).value(false)))
+                .withFilter(QueryBuilders.bool(v -> v.must(
+                        getTermQueryByString(field, value),
+                        getTermQueryByBoolean(CATEGORIES_IS_SHOWN, true),
+                        getTermQueryByBoolean(CATEGORIES_DISABLE, false),
+                        getTermQueryByBoolean(IS_DELETE, false)
+                )))
+                .withPageable(PageRequest.of(offset, size))
+                .build();
+    }
+
+    /**
+     * 밸류가 boolean 인 Term 쿼리를 반환하는 메서드
+     *
+     * @param field 필드 이름
+     * @param value boolean 밸류 값
+     * @return Term 쿼리
+     */
+    private Query getTermQueryByBoolean(String field, boolean value) {
+        return NativeQuery.builder()
+                .withQuery(q -> q.term(t -> t.field(field).value(value)))
                 .getQuery();
     }
 
     /**
-     * 카테고리의 isShown 상태를 확인하는 쿼리를 반환하는 메서드
-     *
-     * @return 카테고리의 isShown 상태를 확인하는 쿼리
-     * @author : 김선홍
-     * @since : 1.0
-     */
-    private Query getCategoryIsShownFilter() {
-        return NativeQuery.builder()
-                .withQuery(q -> q.term(t -> t.field(CATEGORIES_IS_SHOWN).value(true)))
-                .getQuery();
-    }
-
-    /**
-     * Term 쿼리를 얻는 메서드
+     * 밸류가 String 인 Term 쿼리를 반환하는 메서드
      *
      * @param field 필드
-     * @param value 밸류
+     * @param value 문자열 밸류
      * @return 쿼리
      * @author : 김선홍
      * @since : 1.0
      */
-    private Query getTermQuery(String field, String value) {
+    private Query getTermQueryByString(String field, String value) {
         return NativeQuery.builder()
                 .withQuery(q -> q.term(t -> t.field(field).value(value)))
                 .getQuery();

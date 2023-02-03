@@ -62,7 +62,7 @@ public class QueryProductServiceImpl implements QueryProductService {
         long sellingPrice = calcSellingPrice(product, rate);
 
         long pointPrice = 0;
-        if (product.isGivenPoint()) {
+        if (product.isGivenPoint() && product.getGivenPointRate() != 0) {
             pointPrice = Math.round((product.getActualPrice() * product.getGivenPointRate()
                     / PERCENT_DENOMINATOR_VALUE) / ROUND_OFF_VALUE) * ROUND_OFF_VALUE;
         }
@@ -84,7 +84,7 @@ public class QueryProductServiceImpl implements QueryProductService {
                 pointPrice,
                 product.getGivenPointRate(),
                 publish.getPublishedDate().toString(),
-                product.getISBN(),
+                product.getIsbn(),
                 product.isSubscriptionAvailable(),
                 product.getSubscribeProduct().getISSN(),
                 product.getContents(),
@@ -211,6 +211,9 @@ public class QueryProductServiceImpl implements QueryProductService {
      * @since 1.0
      */
     private long calcSellingPrice(Product product, int rate) {
+        if (rate == 0) {
+            return product.getActualPrice();
+        }
         return Math.round((product.getActualPrice()
                 - product.getActualPrice() * rate / PERCENT_DENOMINATOR_VALUE) / ROUND_OFF_VALUE)
                 * ROUND_OFF_VALUE;

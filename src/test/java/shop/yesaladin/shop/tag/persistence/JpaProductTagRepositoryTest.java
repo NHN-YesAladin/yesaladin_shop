@@ -70,7 +70,7 @@ class JpaProductTagRepositoryTest {
 
         // then
         assertThat(savedProductTag).isNotNull();
-        assertThat(savedProductTag.getProduct().getISBN()).isEqualTo(ISBN);
+        assertThat(savedProductTag.getProduct().getIsbn()).isEqualTo(ISBN);
         assertThat(savedProductTag.getTag().getName()).isEqualTo(name);
     }
 
@@ -120,7 +120,7 @@ class JpaProductTagRepositoryTest {
         assertThat(foundProductTags.get(0).getTag().getName()).isEqualTo(name1);
         assertThat(foundProductTags.get(1).getTag().getName()).isEqualTo(name2);
         assertThat(foundProductTags.get(0).getProduct()).isEqualTo(product);
-        assertThat(foundProductTags.get(0).getProduct().getISBN()).isEqualTo(ISBN);
+        assertThat(foundProductTags.get(0).getProduct().getIsbn()).isEqualTo(ISBN);
         assertThat(foundProductTags.get(0).getProduct()).isEqualTo(foundProductTags.get(1).getProduct());
     }
 

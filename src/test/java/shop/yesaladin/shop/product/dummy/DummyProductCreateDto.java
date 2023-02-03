@@ -6,14 +6,14 @@ import java.util.List;
 
 public class DummyProductCreateDto {
 
-    public static ProductCreateDto dummy(String ISBN) {
+    public static ProductCreateDto dummy(String isbn) {
         List<Long> authors = List.of(1L);
 
         List<Long> tags = List.of(1L, 2L);
         List<Long> categories = List.of(1L, 2L);
 
         return new ProductCreateDto(
-                ISBN,
+                isbn,
                 "더미",
                 "목차",
                 "상품 더미 입니다.",

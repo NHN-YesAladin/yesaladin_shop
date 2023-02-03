@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.common.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

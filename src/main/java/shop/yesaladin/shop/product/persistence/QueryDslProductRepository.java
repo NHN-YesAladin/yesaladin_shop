@@ -130,6 +130,7 @@ public class QueryDslProductRepository implements QueryProductRepository {
 
         Long totalCount = queryFactory.select(product.count())
                 .from(product)
+                .where(product.productTypeCode.eq(productTypeCode.get()))
                 .fetchFirst();
 
         return new PageImpl<>(products, pageable, totalCount);
@@ -158,6 +159,7 @@ public class QueryDslProductRepository implements QueryProductRepository {
 
         Long totalCount = queryFactory.select(product.count())
                 .from(product)
+                .where(product.isDeleted.isFalse().and(product.isSale.isTrue()))
                 .fetchFirst();
 
         return new PageImpl<>(products, pageable, totalCount);
@@ -196,6 +198,8 @@ public class QueryDslProductRepository implements QueryProductRepository {
 
         Long totalCount = queryFactory.select(product.count())
                 .from(product)
+                .where(product.productTypeCode.eq(productTypeCode.get())
+                        .and(product.isDeleted.isFalse().and(product.isSale.isTrue())))
                 .fetchFirst();
 
         return new PageImpl<>(products, pageable, totalCount);

@@ -232,7 +232,7 @@ class CommandProductServiceImplTest {
         assertThat(productOnlyIdDto.getId()).isEqualTo(ID);
 
         verify(queryProductRepository, times(1)).findById(ID);
-        verify(querySubscribeProductRepository, times(1)).findByISSN(dto.getISSN());
+        verify(querySubscribeProductRepository, times(1)).findByISSN(dto.getIssn());
         verify(commandFileService, times(2)).register(any());
         verify(commandWritingService, times(1)).deleteByProduct(product);
         verify(queryAuthorService, times(1)).findById(dto.getAuthors().get(0));

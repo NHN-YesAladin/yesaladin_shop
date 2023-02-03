@@ -66,6 +66,6 @@ class QueryPublishServiceImplTest {
         // then
         assertThat(response).isNotNull();
         assertThat(response.getPublisher().getName()).isEqualTo("출판사");
-        assertThat(response.getProduct().getISBN()).isEqualTo(ISBN);
+        assertThat(response.getProduct().getIsbn()).isEqualTo(ISBN);
     }
 }
