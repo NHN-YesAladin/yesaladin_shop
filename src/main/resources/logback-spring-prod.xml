@@ -19,15 +19,15 @@
 
         <appender name="logNCrashHttp"
                 class="com.toast.java.logncrash.logback.LogNCrashHttpAppender">
+            <param name="logSource" value="${profile}"/>
             <param name="appKey" value="${logncrash_app_key}"/>
             <param name="version" value="1.0.0"/>
-            <param name="category" value="yesaladin-shop"/>
+            <param name="category" value="${application_name}"/>
             <param name="errorCodeType" value="action"/>
         </appender>
     </appender>
 
     <root level="INFO">
-        <appender-ref ref="logstash"/>
         <appender-ref ref="logncrash"/>
         <appender-ref ref="CONSOLE"/>
     </root>
