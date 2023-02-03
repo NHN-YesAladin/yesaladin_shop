@@ -244,6 +244,9 @@ public class QueryMemberController {
                         pageable.getPageNumber(),
                         pageable.getPageSize()
                 ))
+     }
+     
+    /**
      * n 일 후가 생일인 회원을 조회합니다.
      *
      * @param laterDays 오늘 날짜를 기준으로 생일을 계산할 일수
