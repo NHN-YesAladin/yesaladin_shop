@@ -59,6 +59,10 @@ class CommandCategoryServiceTest {
                 null,
                 null
         );
+
+        int order = 1;
+        createDto.setOrder(order + 1);
+
         CategoryOnlyIdDto idDto = new CategoryOnlyIdDto(
                 parentCategory.getId() + Category.TERM_OF_PARENT_ID);
         Category toEntity = createDto.toEntity(
@@ -69,6 +73,7 @@ class CommandCategoryServiceTest {
 
         when(commandCategoryRepository.save(any())).thenReturn(toEntity);
         when(queryCategoryRepository.getLatestIdByDepth(Category.DEPTH_PARENT)).thenReturn(idDto);
+        when(queryCategoryRepository.getLatestOrderByDepth(Category.DEPTH_PARENT)).thenReturn(order);
 
         //when
         CategoryResponseDto categoryResponseDto = commandCategoryService.create(createDto);
@@ -76,9 +81,11 @@ class CommandCategoryServiceTest {
         //then
         assertThat(categoryResponseDto.getName()).isEqualTo(toEntity.getName());
         assertThat(categoryResponseDto.getIsShown()).isEqualTo(toEntity.isShown());
+        assertThat(categoryResponseDto.getOrder()).isEqualTo(order + 1);
 
         verify(commandCategoryRepository, times(1)).save(any());
         verify(queryCategoryRepository, times(1)).getLatestIdByDepth(Category.DEPTH_PARENT);
+        verify(queryCategoryRepository, times(1)).getLatestOrderByDepth(Category.DEPTH_PARENT);
     }
 
     @Test
@@ -92,6 +99,9 @@ class CommandCategoryServiceTest {
                 childCategory.getOrder(),
                 childCategory.getParent().getId()
         );
+
+        int order = 1;
+        createDto.setOrder(order + 1);
 
         CategoryOnlyIdDto idDto = new CategoryOnlyIdDto(
                 childCategory.getId() + Category.TERM_OF_CHILD_ID);
@@ -107,6 +117,10 @@ class CommandCategoryServiceTest {
                 Category.DEPTH_CHILD,
                 childCategory.getParent().getId()
         )).thenReturn(idDto);
+        when(queryCategoryRepository.getLatestChildOrderByDepthAndParentId(
+                Category.DEPTH_CHILD,
+                childCategory.getParent().getId()
+        )).thenReturn(order);
         when(queryCategoryRepository.findById(parentCategory.getId())).thenReturn(
                 Optional.of(parentCategory));
 
@@ -116,12 +130,20 @@ class CommandCategoryServiceTest {
         //then
         assertThat(categoryResponseDto.getName()).isEqualTo(toEntity.getName());
         assertThat(categoryResponseDto.getIsShown()).isEqualTo(toEntity.isShown());
+        assertThat(categoryResponseDto.getOrder()).isEqualTo(order + 1);
 
         verify(commandCategoryRepository, times(1)).save(any());
         verify(
                 queryCategoryRepository,
                 times(1)
         ).getLatestChildIdByDepthAndParentId(
+                Category.DEPTH_CHILD,
+                childCategory.getParent().getId()
+        );
+        verify(
+                queryCategoryRepository,
+                times(1)
+        ).getLatestChildOrderByDepthAndParentId(
                 Category.DEPTH_CHILD,
                 childCategory.getParent().getId()
         );
@@ -199,6 +221,10 @@ class CommandCategoryServiceTest {
                 childCategory.getOrder(),
                 null
         );
+
+        int order = 1;
+        categoryRequestDto.setOrder(order + 1);
+
         CategoryOnlyIdDto idDto = new CategoryOnlyIdDto(parentCategory.getId());
         long addedParentId = parentCategory.getId() + Category.TERM_OF_PARENT_ID;
         Category toEntity = categoryRequestDto.toEntity(
@@ -211,6 +237,7 @@ class CommandCategoryServiceTest {
                 Optional.of(childCategory));
         when(commandCategoryRepository.save(any())).thenReturn(toEntity);
         when(queryCategoryRepository.getLatestIdByDepth(Category.DEPTH_PARENT)).thenReturn(idDto);
+        when(queryCategoryRepository.getLatestOrderByDepth(Category.DEPTH_PARENT)).thenReturn(order);
 
         // when
         CategoryResponseDto responseDto = commandCategoryService.update(
@@ -221,11 +248,13 @@ class CommandCategoryServiceTest {
         // then
         assertThat(responseDto.getId()).isEqualTo(addedParentId);
         assertThat(responseDto.getName()).isEqualTo(categoryRequestDto.getName());
+        assertThat(responseDto.getOrder()).isEqualTo(order + 1);
         assertThat(childCategory.isDisable()).isTrue();
 
         verify(queryCategoryRepository, times(1)).findById(childCategory.getId());
         verify(commandCategoryRepository, times(1)).save(any());
         verify(queryCategoryRepository, times(1)).getLatestIdByDepth(Category.DEPTH_PARENT);
+        verify(queryCategoryRepository, times(1)).getLatestOrderByDepth(Category.DEPTH_PARENT);
     }
 
 
@@ -242,6 +271,9 @@ class CommandCategoryServiceTest {
                 childCategory.getOrder(),
                 otherParentCategory.getId()
         );
+
+        int order = 1;
+        categoryRequestDto.setOrder(order + 1);
 
         long addedChildId = otherParentCategory.getId() + Category.TERM_OF_CHILD_ID;
         CategoryOnlyIdDto idDto = new CategoryOnlyIdDto(otherParentCategory.getId());
@@ -260,7 +292,10 @@ class CommandCategoryServiceTest {
                 Category.DEPTH_CHILD,
                 categoryRequestDto.getParentId()
         )).thenReturn(idDto);
-
+        when(queryCategoryRepository.getLatestChildOrderByDepthAndParentId(
+                Category.DEPTH_CHILD,
+                categoryRequestDto.getParentId()
+        )).thenReturn(order);
 
         // when
         CategoryResponseDto responseDto = commandCategoryService.update(
@@ -271,11 +306,11 @@ class CommandCategoryServiceTest {
         // then
         assertThat(responseDto.getId()).isEqualTo(addedChildId);
         assertThat(responseDto.getName()).isEqualTo(categoryRequestDto.getName());
+        assertThat(responseDto.getOrder()).isEqualTo(order + 1);
         assertThat(childCategory.isDisable()).isTrue();
 
         verify(queryCategoryRepository, times(1)).findById(childCategory.getId());
         verify(queryCategoryRepository, times(1)).findById(otherParentCategory.getId());
-
 
         verify(commandCategoryRepository, times(1)).save(any());
         verify(
@@ -285,9 +320,17 @@ class CommandCategoryServiceTest {
                 Category.DEPTH_CHILD,
                 categoryRequestDto.getParentId()
         );
+        verify(
+                queryCategoryRepository,
+                times(1)
+        ).getLatestChildOrderByDepthAndParentId(
+                Category.DEPTH_CHILD,
+                categoryRequestDto.getParentId()
+        );
     }
 
     @Test
+    @DisplayName("카테고리 삭제")
     void delete() {
         // given
         when(queryCategoryRepository.findById(parentCategory.getId())).thenReturn(Optional.of(
@@ -300,6 +343,7 @@ class CommandCategoryServiceTest {
     }
 
     @Test
+    @DisplayName("카테고리 순서 업데이트 - 부모 카테고리들")
     void updateOrder_parentCategories() throws Exception {
         // given
         List<CategoryModifyRequestDto> requestList = new ArrayList<>();
@@ -337,6 +381,7 @@ class CommandCategoryServiceTest {
     }
 
     @Test
+    @DisplayName("카테고리 순서 업데이트 - 자녀 카테고리들")
     void updateOrder_childCategories() throws Exception {
         // given
         List<CategoryModifyRequestDto> requestList = new ArrayList<>();
@@ -364,7 +409,6 @@ class CommandCategoryServiceTest {
             parentCategory.getChildren().add(category);
         }
 
-
         when(queryCategoryRepository.findById(parentCategory.getId())).thenReturn(Optional.of(
                 parentCategory));
 
@@ -377,6 +421,7 @@ class CommandCategoryServiceTest {
     }
 
     @Test
+    @DisplayName("카테고리 순서 업데이트 실패 - 없는 부모 카테고리")
     void updateOrder_parentCategories_notFound_fail() throws Exception {
         // given
         List<CategoryModifyRequestDto> requestList = new ArrayList<>();
@@ -415,6 +460,7 @@ class CommandCategoryServiceTest {
     }
 
     @Test
+    @DisplayName("카테고리 순서 업데이트 실패 - 없는 자녀 카테고리")
     void updateOrder_childCategories_notFound_fail() throws Exception {
         // given
         List<CategoryModifyRequestDto> requestList = new ArrayList<>();
@@ -441,7 +487,6 @@ class CommandCategoryServiceTest {
                     .build();
             parentCategory.getChildren().add(category);
         }
-
 
         when(queryCategoryRepository.findById(parentCategory.getId())).thenReturn(Optional.of(
                 parentCategory));

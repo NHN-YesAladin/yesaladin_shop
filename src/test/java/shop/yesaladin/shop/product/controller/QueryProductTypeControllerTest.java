@@ -46,6 +46,7 @@ class QueryProductTypeControllerTest {
             new ProductTypeResponseDto(2, ProductTypeCode.DISCOUNTS.toString())
     );
     ;
+
     @WithMockUser
     @Test
     @DisplayName("상품 유형 전체 조회 성공")

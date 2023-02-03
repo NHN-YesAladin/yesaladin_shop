@@ -64,6 +64,110 @@ class CommandCategoryControllerTest {
     @MockBean
     private CommandCategoryService commandCategoryService;
 
+    private static void documentCreateCategory(ResultActions perform, String identifier)
+            throws Exception {
+        perform.andDo(document(
+                identifier,
+                getDocumentRequest(),
+                getDocumentResponse(),
+                requestFields(
+                        fieldWithPath("name").type(JsonFieldType.STRING).description("카테고리 이름"),
+                        fieldWithPath("isShown").type(JsonFieldType.BOOLEAN)
+                                .description("카테고리 노출 여부")
+                                .attributes(defaultValue(true)),
+                        fieldWithPath("order").type(JsonFieldType.NUMBER)
+                                .description("카테고리 순서")
+                                .optional(),
+                        fieldWithPath("parentId").type(JsonFieldType.NUMBER)
+                                .description("부모 카테고리(=1차 카테고리)의 아이디")
+                                .optional()
+                ),
+                responseFields(
+                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("카테고리 아이디"),
+                        fieldWithPath("name").type(JsonFieldType.STRING).description("카테고리 이름"),
+                        fieldWithPath("isShown").type(JsonFieldType.BOOLEAN)
+                                .description("카테고리 노출 여부"),
+                        fieldWithPath("order").type(JsonFieldType.NUMBER)
+                                .optional()
+                                .description("카테고리 순서"),
+                        fieldWithPath("parentId").type(JsonFieldType.NUMBER).optional()
+                                .description("부모 카테고리(=1차 카테고리)의 아이디"),
+                        fieldWithPath("parentName").type(JsonFieldType.STRING).optional()
+                                .description("부모 카테고리(=1차 카테고리)의 이름")
+                )
+        ));
+    }
+
+    private static void documentModifyCategory(ResultActions perform, String identifier)
+            throws Exception {
+        perform.andDo(document(
+                identifier,
+                getDocumentRequest(),
+                getDocumentResponse(),
+                pathParameters(
+                        parameterWithName("id").description("수정할 카테고리 아이디")
+                ),
+                requestFields(
+                        fieldWithPath("name").type(JsonFieldType.STRING).description("카테고리 이름"),
+                        fieldWithPath("isShown").type(JsonFieldType.BOOLEAN)
+                                .description("카테고리 노출 여부")
+                                .attributes(defaultValue(true)),
+                        fieldWithPath("order").type(JsonFieldType.NUMBER)
+                                .description("카테고리 순서")
+                                .optional(),
+                        fieldWithPath("parentId").type(JsonFieldType.NUMBER)
+                                .description("부모 카테고리(=1차 카테고리)의 아이디")
+                                .optional()
+                ),
+                responseFields(
+                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("카테고리 아이디"),
+                        fieldWithPath("name").type(JsonFieldType.STRING).description("카테고리 이름"),
+                        fieldWithPath("isShown").type(JsonFieldType.BOOLEAN)
+                                .description("카테고리 노출 여부"),
+                        fieldWithPath("order").type(JsonFieldType.NUMBER)
+                                .optional()
+                                .description("카테고리 순서"),
+                        fieldWithPath("parentId").type(JsonFieldType.NUMBER).optional()
+                                .description("부모 카테고리(=1차 카테고리)의 아이디"),
+                        fieldWithPath("parentName").type(JsonFieldType.STRING).optional()
+                                .description("부모 카테고리(=1차 카테고리)의 이름")
+                )
+        ));
+    }
+
+    private static void documentModifyCategories(ResultActions perform, String identifier)
+            throws Exception {
+        perform.andDo(document(
+                identifier,
+                getDocumentRequest(),
+                getDocumentResponse(),
+                requestFields(
+                        fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("카테고리 아이디"),
+                        fieldWithPath("[].name").type(JsonFieldType.STRING).description("카테고리 이름"),
+                        fieldWithPath("[].isShown").type(JsonFieldType.BOOLEAN)
+                                .description("카테고리 노출 여부"),
+                        fieldWithPath("[].order").type(JsonFieldType.NUMBER)
+                                .optional()
+                                .description("카테고리 순서"),
+                        fieldWithPath("[].parentId").type(JsonFieldType.NUMBER).optional()
+                                .description("부모 카테고리(=1차 카테고리)의 아이디"),
+                        fieldWithPath("[].parentName").type(JsonFieldType.STRING).optional()
+                                .description("부모 카테고리(=1차 카테고리)의 이름")
+                ),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("HTTP status code"),
+                        fieldWithPath("data.result").type(JsonFieldType.STRING)
+                                .description("수정 성공 메시지"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러메시지")
+                                .optional()
+                )
+        ));
+    }
+
     @BeforeEach
     void setUp() {
         parentCategory = CategoryDummy.dummyParent(parentId);
@@ -108,7 +212,7 @@ class CommandCategoryControllerTest {
         assertThat(argumentCaptor.getValue().getOrder()).isEqualTo(createDto.getOrder());
         assertThat(argumentCaptor.getValue().getParentId()).isEqualTo(createDto.getParentId());
 
-        documentCreateCategory(perform,"create-parent-category");
+        documentCreateCategory(perform, "create-parent-category");
     }
 
     @WithMockUser
@@ -149,39 +253,6 @@ class CommandCategoryControllerTest {
         assertThat(argumentCaptor.getValue().getParentId()).isEqualTo(createDto.getParentId());
 
         documentCreateCategory(perform, "create-child-category");
-    }
-
-    private static void documentCreateCategory(ResultActions perform,String identifier) throws Exception {
-        perform.andDo(document(
-                identifier,
-                getDocumentRequest(),
-                getDocumentResponse(),
-                requestFields(
-                        fieldWithPath("name").type(JsonFieldType.STRING).description("카테고리 이름"),
-                        fieldWithPath("isShown").type(JsonFieldType.BOOLEAN)
-                                .description("카테고리 노출 여부")
-                                .attributes(defaultValue(true)),
-                        fieldWithPath("order").type(JsonFieldType.NUMBER)
-                                .description("카테고리 순서")
-                                .optional(),
-                        fieldWithPath("parentId").type(JsonFieldType.NUMBER)
-                                .description("부모 카테고리(=1차 카테고리)의 아이디")
-                                .optional()
-                ),
-                responseFields(
-                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("카테고리 아이디"),
-                        fieldWithPath("name").type(JsonFieldType.STRING).description("카테고리 이름"),
-                        fieldWithPath("isShown").type(JsonFieldType.BOOLEAN)
-                                .description("카테고리 노출 여부"),
-                        fieldWithPath("order").type(JsonFieldType.NUMBER)
-                                .optional()
-                                .description("카테고리 순서"),
-                        fieldWithPath("parentId").type(JsonFieldType.NUMBER).optional()
-                                .description("부모 카테고리(=1차 카테고리)의 아이디"),
-                        fieldWithPath("parentName").type(JsonFieldType.STRING).optional()
-                                .description("부모 카테고리(=1차 카테고리)의 이름")
-                )
-        ));
     }
 
     @WithMockUser
@@ -250,10 +321,12 @@ class CommandCategoryControllerTest {
         );
         assertThat(longArgumentCaptor.getValue()).isEqualTo(responseDto.getId());
         assertThat(dtoArgumentCaptor.getValue().getName()).isEqualTo(categoryRequestDto.getName());
-        assertThat(dtoArgumentCaptor.getValue().getParentId()).isEqualTo(categoryRequestDto.getParentId());
-        assertThat(dtoArgumentCaptor.getValue().getIsShown()).isEqualTo(categoryRequestDto.getIsShown());
+        assertThat(dtoArgumentCaptor.getValue()
+                .getParentId()).isEqualTo(categoryRequestDto.getParentId());
+        assertThat(dtoArgumentCaptor.getValue()
+                .getIsShown()).isEqualTo(categoryRequestDto.getIsShown());
 
-        documentModifyCategory(perform,"update-parent-fields-category");
+        documentModifyCategory(perform, "update-parent-fields-category");
     }
 
     @WithMockUser
@@ -301,8 +374,10 @@ class CommandCategoryControllerTest {
         );
         assertThat(longArgumentCaptor.getValue()).isEqualTo(responseDto.getId());
         assertThat(dtoArgumentCaptor.getValue().getName()).isEqualTo(categoryRequestDto.getName());
-        assertThat(dtoArgumentCaptor.getValue().getParentId()).isEqualTo(categoryRequestDto.getParentId());
-        assertThat(dtoArgumentCaptor.getValue().getIsShown()).isEqualTo(categoryRequestDto.getIsShown());
+        assertThat(dtoArgumentCaptor.getValue()
+                .getParentId()).isEqualTo(categoryRequestDto.getParentId());
+        assertThat(dtoArgumentCaptor.getValue()
+                .getIsShown()).isEqualTo(categoryRequestDto.getIsShown());
 
     }
 
@@ -353,10 +428,12 @@ class CommandCategoryControllerTest {
         );
         assertThat(longArgumentCaptor.getValue()).isEqualTo(id);
         assertThat(dtoArgumentCaptor.getValue().getName()).isEqualTo(categoryRequestDto.getName());
-        assertThat(dtoArgumentCaptor.getValue().getParentId()).isEqualTo(categoryRequestDto.getParentId());
-        assertThat(dtoArgumentCaptor.getValue().getIsShown()).isEqualTo(categoryRequestDto.getIsShown());
+        assertThat(dtoArgumentCaptor.getValue()
+                .getParentId()).isEqualTo(categoryRequestDto.getParentId());
+        assertThat(dtoArgumentCaptor.getValue()
+                .getIsShown()).isEqualTo(categoryRequestDto.getIsShown());
 
-        documentModifyCategory(perform,"update-child-to-parent-category");
+        documentModifyCategory(perform, "update-child-to-parent-category");
     }
 
     @WithMockUser
@@ -409,45 +486,10 @@ class CommandCategoryControllerTest {
         assertThat(longArgumentCaptor.getValue()).isEqualTo(responseDto.getId());
         assertThat(dtoArgumentCaptor.getValue().getName()).isEqualTo(categoryRequestDto.getName());
         assertThat(dtoArgumentCaptor.getValue().getParentId()).isEqualTo(otherParentId);
-        assertThat(dtoArgumentCaptor.getValue().getIsShown()).isEqualTo(categoryRequestDto.getIsShown());
+        assertThat(dtoArgumentCaptor.getValue()
+                .getIsShown()).isEqualTo(categoryRequestDto.getIsShown());
 
-        documentModifyCategory(perform,"update-child-other-parent-category");
-    }
-
-    private static void documentModifyCategory(ResultActions perform,String identifier) throws Exception {
-        perform.andDo(document(
-                identifier,
-                getDocumentRequest(),
-                getDocumentResponse(),
-                pathParameters(
-                        parameterWithName("id").description("수정할 카테고리 아이디")
-                ),
-                requestFields(
-                        fieldWithPath("name").type(JsonFieldType.STRING).description("카테고리 이름"),
-                        fieldWithPath("isShown").type(JsonFieldType.BOOLEAN)
-                                .description("카테고리 노출 여부")
-                                .attributes(defaultValue(true)),
-                        fieldWithPath("order").type(JsonFieldType.NUMBER)
-                                .description("카테고리 순서")
-                                .optional(),
-                        fieldWithPath("parentId").type(JsonFieldType.NUMBER)
-                                .description("부모 카테고리(=1차 카테고리)의 아이디")
-                                .optional()
-                ),
-                responseFields(
-                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("카테고리 아이디"),
-                        fieldWithPath("name").type(JsonFieldType.STRING).description("카테고리 이름"),
-                        fieldWithPath("isShown").type(JsonFieldType.BOOLEAN)
-                                .description("카테고리 노출 여부"),
-                        fieldWithPath("order").type(JsonFieldType.NUMBER)
-                                .optional()
-                                .description("카테고리 순서"),
-                        fieldWithPath("parentId").type(JsonFieldType.NUMBER).optional()
-                                .description("부모 카테고리(=1차 카테고리)의 아이디"),
-                        fieldWithPath("parentName").type(JsonFieldType.STRING).optional()
-                                .description("부모 카테고리(=1차 카테고리)의 이름")
-                )
-        ));
+        documentModifyCategory(perform, "update-child-other-parent-category");
     }
 
     @WithMockUser
@@ -518,37 +560,6 @@ class CommandCategoryControllerTest {
                 .andExpect(jsonPath("$.errorMessages", equalTo(null)));
 
         documentModifyCategories(perform, "modify-parent-category-order");
-    }
-
-    private static void documentModifyCategories(ResultActions perform,String identifier) throws Exception {
-        perform.andDo(document(
-                identifier,
-                getDocumentRequest(),
-                getDocumentResponse(),
-                requestFields(
-                        fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("카테고리 아이디"),
-                        fieldWithPath("[].name").type(JsonFieldType.STRING).description("카테고리 이름"),
-                        fieldWithPath("[].isShown").type(JsonFieldType.BOOLEAN)
-                                .description("카테고리 노출 여부"),
-                        fieldWithPath("[].order").type(JsonFieldType.NUMBER)
-                                .optional()
-                                .description("카테고리 순서"),
-                        fieldWithPath("[].parentId").type(JsonFieldType.NUMBER).optional()
-                                .description("부모 카테고리(=1차 카테고리)의 아이디"),
-                        fieldWithPath("[].parentName").type(JsonFieldType.STRING).optional()
-                                .description("부모 카테고리(=1차 카테고리)의 이름")
-                ),
-                responseFields(
-                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
-                                .description("동작 성공 여부"),
-                        fieldWithPath("status").type(JsonFieldType.NUMBER)
-                                .description("HTTP status code"),
-                        fieldWithPath("data.result").type(JsonFieldType.STRING).description("수정 성공 메시지"),
-                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
-                                .description("에러메시지")
-                                .optional()
-                        )
-        ));
     }
 
     @WithMockUser

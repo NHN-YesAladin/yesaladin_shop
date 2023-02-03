@@ -75,7 +75,7 @@ class JpaPublishRepositoryTest {
 
         // then
         assertThat(savedPublish).isNotNull();
-        assertThat(savedPublish.getProduct().getISBN()).isEqualTo(ISBN);
+        assertThat(savedPublish.getProduct().getIsbn()).isEqualTo(ISBN);
         assertThat(savedPublish.getPublisher()).isEqualTo(publisher);
     }
 
@@ -91,7 +91,7 @@ class JpaPublishRepositoryTest {
         assertThat(foundPublish).isPresent();
         assertThat(foundPublish.get().getPublisher()).isEqualTo(publisher);
         assertThat(foundPublish.get().getProduct()).isEqualTo(product);
-        assertThat(foundPublish.get().getProduct().getISBN()).isEqualTo(ISBN);
+        assertThat(foundPublish.get().getProduct().getIsbn()).isEqualTo(ISBN);
     }
 
     @Test

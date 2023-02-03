@@ -131,6 +131,60 @@ class QueryDslCategoryRepositoryTest {
     }
 
     @Test
+    void getLatestOrderByDepth() throws Exception {
+        // given
+        em.persist(parentCategory);
+
+        // when
+        int order = queryCategoryRepository.getLatestOrderByDepth(parentCategory.getDepth());
+
+        // then
+        assertThat(order).isEqualTo(parentCategory.getOrder());
+    }
+
+    @Test
+    void getLatestOrderByDepth_noPreviousData() throws Exception {
+        // when
+        int order = queryCategoryRepository.getLatestOrderByDepth(parentCategory.getDepth());
+
+        // then
+        assertThat(order).isZero();
+    }
+
+    @Test
+    void getLatestChildOrderByDepthAndParentId() throws Exception {
+        // given
+        em.persist(parentCategory);
+        em.persist(childCategory);
+
+        // when
+        int order = queryCategoryRepository.getLatestChildOrderByDepthAndParentId(
+                childCategory.getDepth(),
+                childCategory.getParent().getId()
+        );
+
+        // then
+        assertThat(order).isEqualTo(childCategory.getOrder());
+
+    }
+
+    @Test
+    void getLatestChildOrderByDepthAndParentId_noPreviousData() throws Exception {
+        // given
+        em.persist(parentCategory);
+
+        // when
+        int order = queryCategoryRepository.getLatestChildOrderByDepthAndParentId(
+                childCategory.getDepth(),
+                childCategory.getParent().getId()
+        );
+
+        // then
+        assertThat(order).isZero();
+
+    }
+
+    @Test
     void findCategories_parentId() throws Exception {
         // given
         em.persist(parentCategory);

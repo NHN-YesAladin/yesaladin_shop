@@ -10,8 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.model.ProductCategory;
 import shop.yesaladin.shop.category.domain.model.ProductCategory.Pk;
@@ -33,7 +31,7 @@ import shop.yesaladin.shop.publish.domain.model.Publisher;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class JpaProductCategoryRepositoryTest {
 
-    private final String isbn = "000000000000";
+    private final String ISBN = "000000000000";
     private final String url = "https://api-storage.cloud.toast.com/v1/AUTH_/container/domain/type";
 
     ProductCategory productCategory;
@@ -42,6 +40,8 @@ class JpaProductCategoryRepositoryTest {
     File thumbnailFile;
     File ebookFile;
     TotalDiscountRate totalDiscountRate;
+    Product product;
+    Category category;
     @Autowired
     private TestEntityManager entityManager;
     @Autowired
@@ -60,14 +60,20 @@ class JpaProductCategoryRepositoryTest {
         entityManager.persist(ebookFile);
         entityManager.persist(totalDiscountRate);
 
-        Product product = DummyProduct.dummy(isbn + 9, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate);
-        Category category = CategoryDummy.dummyParent();
+        product = DummyProduct.dummy(
+                ISBN + 9,
+                subscribeProduct,
+                thumbnailFile,
+                ebookFile,
+                totalDiscountRate
+        );
+        category = CategoryDummy.dummyParent();
 
         entityManager.persist(product);
         entityManager.persist(category);
 
         productCategory = ProductCategoryDummy.dummy(category, product);
-        
+
     }
 
     @Test
@@ -83,22 +89,6 @@ class JpaProductCategoryRepositoryTest {
     }
 
     @Test
-    void findByPk() throws Exception {
-        // given
-        entityManager.persist(productCategory);
-
-        // when
-        ProductCategory foundProductCategory = repository.findByPk(new Pk(
-                productCategory.getCategory().getId(),
-                productCategory.getProduct().getId()
-        )).orElseThrow(() -> new ProductCategoryNotFoundException(productCategory.getPk()));
-
-        // then
-        assertThat(foundProductCategory.getCategory()).isEqualTo(productCategory.getCategory());
-        assertThat(foundProductCategory.getProduct()).isEqualTo(productCategory.getProduct());
-    }
-
-    @Test
     void deletedByPk() throws Exception {
         // given
         entityManager.persist(productCategory);
@@ -111,33 +101,13 @@ class JpaProductCategoryRepositoryTest {
         repository.deleteByPk(pk);
 
         // then
-        Optional<ProductCategory> byPk = repository.findByPk(pk);
-        assertThatCode(() -> byPk.orElseThrow(() -> new ProductCategoryNotFoundException(pk))).isInstanceOf(
+        Optional<ProductCategory> found = Optional.ofNullable(entityManager.find(
+                ProductCategory.class,
+                pk
+        ));
+        assertThatCode(() -> found.orElseThrow(() -> new ProductCategoryNotFoundException(pk))).isInstanceOf(
                 ProductCategoryNotFoundException.class);
 
-    }
-
-    @Test
-    void findAll_pageable() throws Exception {
-        // given
-        int size = 3;
-        for (int i = 0; i < 5; i++) {
-            Product product = DummyProduct.dummy(isbn + i, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate);
-            Category category = CategoryDummy.dummyParent((long) i);
-
-            entityManager.persist(product);
-            entityManager.persist(category);
-
-            productCategory = ProductCategoryDummy.dummy(category, product);
-            entityManager.persist(productCategory);
-        }
-        PageRequest pageRequest = PageRequest.of(0, size);
-
-        // when
-        Page<ProductCategory> productCategoryPage = repository.findAll(pageRequest);
-
-        // then
-        assertThat(productCategoryPage.getContent()).hasSize(size);
     }
 
     @Test
@@ -155,8 +125,12 @@ class JpaProductCategoryRepositoryTest {
         entityManager.clear();
 
         // then
-        Optional<ProductCategory> byPk = repository.findByPk(pk);
-        assertThatCode(() -> byPk.orElseThrow(() -> new ProductCategoryNotFoundException(pk))).isInstanceOf(
+        Optional<ProductCategory> found = Optional.ofNullable(entityManager.find(
+                ProductCategory.class,
+                pk
+        ));
+        assertThatCode(() -> found.orElseThrow(() -> new ProductCategoryNotFoundException(pk))).isInstanceOf(
                 ProductCategoryNotFoundException.class);
     }
+
 }

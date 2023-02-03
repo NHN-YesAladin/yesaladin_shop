@@ -2,10 +2,8 @@ package shop.yesaladin.shop.category.service.inter;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -32,18 +30,17 @@ import shop.yesaladin.shop.publish.domain.model.Publisher;
  */
 class CommandProductCategoryServiceTest {
 
-    private CommandProductCategoryService service;
-    private CommandProductCategoryRepository repository;
-
+    private final String ISBN = "000000000000";
+    private final String url = "https://api-storage.cloud.toast.com/v1/AUTH_/container/domain/type";
     ProductCategory productCategory;
     SubscribeProduct subscribeProduct;
     Publisher publisher;
     File thumbnailFile;
     File ebookFile;
     TotalDiscountRate totalDiscountRate;
+    private CommandProductCategoryService service;
+    private CommandProductCategoryRepository repository;
 
-    private final String isbn = "000000000000";
-    private final String url = "https://api-storage.cloud.toast.com/v1/AUTH_/container/domain/type";
     @BeforeEach
     void setUp() {
         repository = Mockito.mock(CommandProductCategoryRepository.class);
@@ -55,7 +52,13 @@ class CommandProductCategoryServiceTest {
         ebookFile = DummyFile.dummy(url + "/ebook.pdf");
         totalDiscountRate = DummyTotalDiscountRate.dummy();
 
-        Product product = DummyProduct.dummy(isbn + 9, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate);
+        Product product = DummyProduct.dummy(
+                ISBN + 9,
+                subscribeProduct,
+                thumbnailFile,
+                ebookFile,
+                totalDiscountRate
+        );
         Category category = CategoryDummy.dummyParent();
 
         productCategory = ProductCategoryDummy.dummy(category, product);

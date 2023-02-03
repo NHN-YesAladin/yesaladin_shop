@@ -112,7 +112,7 @@ public class ProductCreateDto {
             TotalDiscountRate totalDiscountRate
     ) {
         return Product.builder()
-                .ISBN(isbn)
+                .isbn(isbn)
                 .title(title)
                 .contents(contents)
                 .description(description)

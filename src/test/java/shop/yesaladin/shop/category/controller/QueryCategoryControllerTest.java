@@ -46,6 +46,7 @@ import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 import shop.yesaladin.shop.category.dummy.CategoryDummy;
 import shop.yesaladin.shop.category.exception.CategoryNotFoundException;
 import shop.yesaladin.shop.category.service.inter.QueryCategoryService;
+
 @AutoConfigureRestDocs
 @WebMvcTest(QueryCategoryController.class)
 class QueryCategoryControllerTest {

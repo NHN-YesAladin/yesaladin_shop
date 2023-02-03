@@ -50,8 +50,8 @@ public class SearchedProduct {
     private boolean isSale;
     @Field(name = "quantity", type = FieldType.Long)
     private Long quantity;
-    @Field(name = "is_forced_out_of_stack", type = FieldType.Boolean)
-    private Boolean isForcedOutOfStack;
+    @Field(name = "is_forced_out_of_stock", type = FieldType.Boolean)
+    private Boolean isForcedOutOfStock;
     @Field(name = "preferential_show_ranking", type = FieldType.Long)
     private long preferentialShowRanking;
     @Field(name = "product_type", type = FieldType.Object)
@@ -68,6 +68,8 @@ public class SearchedProduct {
     private LocalDate publishedDate;
     @Field(name = "saving_method", type = FieldType.Keyword)
     private String savingMethod;
+    @Field(name = "is_deleted", type = FieldType.Boolean)
+    private Boolean isDeleted;
     @Field(name = "categories", type = FieldType.Object)
     private List<SearchedProductCategory> categories;
     @Field(name = "authors", type = FieldType.Object)

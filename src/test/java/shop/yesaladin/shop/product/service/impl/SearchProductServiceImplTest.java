@@ -43,7 +43,7 @@ class SearchProductServiceImplTest {
                 .discountRate(10)
                 .sellingPrice(1000L)
                 .authors(List.of("author"))
-                .isForcedOutOfStack(false)
+                .isForcedOutOfStock(false)
                 .thumbnailFileUrl("깃 허브.jpg")
                 .publishedDate(LocalDate.now().toString())
                 .categories(List.of(new SearchedProductCategory(12L, null, "국내소설", true, false)))
@@ -343,7 +343,7 @@ class SearchProductServiceImplTest {
                 .getPublishedDate()).isEqualTo(dummySearchedProductDto.getPublishedDate());
         assertThat(result.getProducts()
                 .get(0)
-                .getIsForcedOutOfStack()).isEqualTo(dummySearchedProductDto.getIsForcedOutOfStack());
+                .getIsForcedOutOfStock()).isEqualTo(dummySearchedProductDto.getIsForcedOutOfStock());
         assertThat(result.getProducts().get(0).getCategories()).hasSameSizeAs(
                 dummySearchedProductDto.getCategories());
         assertThat(result.getProducts()
@@ -430,7 +430,7 @@ class SearchProductServiceImplTest {
                 .getPublishedDate()).isEqualTo(dummySearchedProductDto.getPublishedDate());
         assertThat(result.getProducts()
                 .get(0)
-                .getIsForcedOutOfStack()).isEqualTo(dummySearchedProductDto.getIsForcedOutOfStack());
+                .getIsForcedOutOfStock()).isEqualTo(dummySearchedProductDto.getIsForcedOutOfStock());
         assertThat(result.getProducts().get(0).getCategories()).hasSameSizeAs(
                 dummySearchedProductDto.getCategories());
         assertThat(result.getProducts()
@@ -518,7 +518,7 @@ class SearchProductServiceImplTest {
                 .getPublishedDate()).isEqualTo(dummySearchedProductDto.getPublishedDate());
         assertThat(result.getProducts()
                 .get(0)
-                .getIsForcedOutOfStack()).isEqualTo(dummySearchedProductDto.getIsForcedOutOfStack());
+                .getIsForcedOutOfStock()).isEqualTo(dummySearchedProductDto.getIsForcedOutOfStock());
         assertThat(result.getProducts().get(0).getCategories()).hasSameSizeAs(
                 dummySearchedProductDto.getCategories());
         assertThat(result.getProducts()
@@ -605,7 +605,7 @@ class SearchProductServiceImplTest {
                 .getPublishedDate()).isEqualTo(dummySearchedProductDto.getPublishedDate());
         assertThat(result.getProducts()
                 .get(0)
-                .getIsForcedOutOfStack()).isEqualTo(dummySearchedProductDto.getIsForcedOutOfStack());
+                .getIsForcedOutOfStock()).isEqualTo(dummySearchedProductDto.getIsForcedOutOfStock());
         assertThat(result.getProducts().get(0).getCategories()).hasSameSizeAs(
                 dummySearchedProductDto.getCategories());
         assertThat(result.getProducts()
@@ -692,7 +692,7 @@ class SearchProductServiceImplTest {
                 .getPublishedDate()).isEqualTo(dummySearchedProductDto.getPublishedDate());
         assertThat(result.getProducts()
                 .get(0)
-                .getIsForcedOutOfStack()).isEqualTo(dummySearchedProductDto.getIsForcedOutOfStack());
+                .getIsForcedOutOfStock()).isEqualTo(dummySearchedProductDto.getIsForcedOutOfStock());
         assertThat(result.getProducts().get(0).getCategories()).hasSameSizeAs(
                 dummySearchedProductDto.getCategories());
         assertThat(result.getProducts()
@@ -779,7 +779,7 @@ class SearchProductServiceImplTest {
                 .getPublishedDate()).isEqualTo(dummySearchedProductDto.getPublishedDate());
         assertThat(result.getProducts()
                 .get(0)
-                .getIsForcedOutOfStack()).isEqualTo(dummySearchedProductDto.getIsForcedOutOfStack());
+                .getIsForcedOutOfStock()).isEqualTo(dummySearchedProductDto.getIsForcedOutOfStock());
         assertThat(result.getProducts().get(0).getCategories()).hasSameSizeAs(
                 dummySearchedProductDto.getCategories());
         assertThat(result.getProducts()
