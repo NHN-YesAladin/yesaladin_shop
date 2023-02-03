@@ -19,9 +19,9 @@ import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 public class SubscribeProductResponseDto {
 
     private long id;
-    private String ISSN;
+    private String issn;
 
     public SubscribeProduct toEntity() {
-        return SubscribeProduct.builder().id(id).ISSN(ISSN).build();
+        return SubscribeProduct.builder().id(id).ISSN(issn).build();
     }
 }

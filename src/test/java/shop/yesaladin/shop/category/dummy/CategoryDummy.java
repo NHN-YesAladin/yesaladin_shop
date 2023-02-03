@@ -10,7 +10,7 @@ public class CategoryDummy {
                 .id(10000L)
                 .name("국내도서")
                 .isShown(true)
-                .order(null)
+                .order(1)
                 .parent(null)
                 .build();
     }
@@ -20,7 +20,7 @@ public class CategoryDummy {
                 .id(id)
                 .name("국내도서")
                 .isShown(true)
-                .order(null)
+                .order(1)
                 .parent(null)
                 .build();
     }
@@ -30,7 +30,7 @@ public class CategoryDummy {
                 .id(10100L)
                 .name("소설")
                 .isShown(true)
-                .order(null)
+                .order(1)
                 .depth(1)
                 .parent(parent)
                 .build();
@@ -41,7 +41,7 @@ public class CategoryDummy {
                 .id(id)
                 .name("소설")
                 .isShown(true)
-                .order(null)
+                .order(1)
                 .depth(1)
                 .parent(parent)
                 .build();

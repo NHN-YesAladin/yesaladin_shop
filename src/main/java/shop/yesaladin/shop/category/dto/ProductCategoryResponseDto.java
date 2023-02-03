@@ -39,7 +39,7 @@ public class ProductCategoryResponseDto {
         return ProductCategoryResponseDto.builder()
                 .categoryResponseDto(CategoryResponseDto.fromEntity(category))
                 .productId(product.getId())
-                .isbn(product.getISBN())
+                .isbn(product.getIsbn())
                 .title(product.getTitle()).build();
     }
 }

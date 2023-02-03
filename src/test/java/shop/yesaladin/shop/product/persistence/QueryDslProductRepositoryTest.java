@@ -95,7 +95,7 @@ class QueryDslProductRepositoryTest {
 
         // then
         assertThat(optionalProduct).isPresent();
-        assertThat(optionalProduct.get().getISBN()).isEqualTo(ISBN1);
+        assertThat(optionalProduct.get().getIsbn()).isEqualTo(ISBN1);
         assertThat(optionalProduct.get().getThumbnailFile()).isEqualTo(thumbnailFile1);
         assertThat(optionalProduct.get().getEbookFile()).isEqualTo(ebookFile1);
         assertThat(optionalProduct.get().getProductTypeCode()).isEqualTo(ProductTypeCode.BESTSELLER);
@@ -112,7 +112,7 @@ class QueryDslProductRepositoryTest {
 
         // then
         assertThat(optionalProduct).isPresent();
-        assertThat(optionalProduct.get().getISBN()).isEqualTo(ISBN1);
+        assertThat(optionalProduct.get().getIsbn()).isEqualTo(ISBN1);
         assertThat(optionalProduct.get().getThumbnailFile()).isEqualTo(thumbnailFile1);
         assertThat(optionalProduct.get().getEbookFile()).isEqualTo(ebookFile1);
         assertThat(optionalProduct.get().getProductTypeCode()).isEqualTo(ProductTypeCode.BESTSELLER);
@@ -132,7 +132,7 @@ class QueryDslProductRepositoryTest {
         // then
         assertThat(products).isNotNull();
         assertThat(products.getTotalElements()).isEqualTo(1);
-        assertThat(products.getContent().get(0).getISBN()).isEqualTo(ISBN1);
+        assertThat(products.getContent().get(0).getIsbn()).isEqualTo(ISBN1);
         assertThat(products.getContent().get(0).getThumbnailFile()).isEqualTo(thumbnailFile1);
         assertThat(products.getContent().get(0).getEbookFile()).isEqualTo(ebookFile1);
         assertThat(products.getContent().get(0).getProductTypeCode()).isEqualTo(ProductTypeCode.BESTSELLER);
@@ -152,7 +152,7 @@ class QueryDslProductRepositoryTest {
         assertThat(products).isNotNull();
         assertThat(products.getTotalElements()).isEqualTo(2);
         assertThat(products.getTotalPages()).isEqualTo(2);
-        assertThat(products.getContent().get(0).getISBN()).isEqualTo(ISBN1);
+        assertThat(products.getContent().get(0).getIsbn()).isEqualTo(ISBN1);
         assertThat(products.getContent().get(0).getThumbnailFile()).isEqualTo(thumbnailFile1);
         assertThat(products.getContent().get(0).getEbookFile()).isEqualTo(ebookFile1);
         assertThat(products.getContent().get(0).getProductTypeCode()).isEqualTo(ProductTypeCode.BESTSELLER);
@@ -171,7 +171,7 @@ class QueryDslProductRepositoryTest {
         // then
         assertThat(products).isNotNull();
         assertThat(products.getTotalElements()).isEqualTo(1);
-        assertThat(products.getContent().get(0).getISBN()).isEqualTo(ISBN2);
+        assertThat(products.getContent().get(0).getIsbn()).isEqualTo(ISBN2);
         assertThat(products.getContent().get(0).getThumbnailFile()).isEqualTo(thumbnailFile2);
         assertThat(products.getContent().get(0).getEbookFile()).isEqualTo(ebookFile2);
         assertThat(products.getContent().get(0).getProductTypeCode()).isEqualTo(ProductTypeCode.NEWBOOK);

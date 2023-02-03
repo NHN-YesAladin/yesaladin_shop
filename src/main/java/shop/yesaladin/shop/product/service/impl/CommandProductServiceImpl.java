@@ -184,8 +184,8 @@ public class CommandProductServiceImpl implements CommandProductService {
 
         // SubscribeProduct
         SubscribeProduct subscribeProduct = product.getSubscribeProduct();
-        if (Objects.nonNull(dto.getISSN())) {
-            subscribeProduct = querySubscribeProductRepository.findByISSN(dto.getISSN())
+        if (Objects.nonNull(dto.getIssn())) {
+            subscribeProduct = querySubscribeProductRepository.findByISSN(dto.getIssn())
                     .orElse(null);
             if (Objects.isNull(subscribeProduct)) {
                 subscribeProduct = commandSubscribeProductRepository.save(dto.toSubscribeProductEntity());

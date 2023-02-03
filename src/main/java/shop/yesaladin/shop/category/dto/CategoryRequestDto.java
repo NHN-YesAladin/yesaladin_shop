@@ -47,4 +47,7 @@ public class CategoryRequestDto {
                 .build();
     }
 
+    public void setOrder(Integer order) {
+        this.order = order;
+    }
 }

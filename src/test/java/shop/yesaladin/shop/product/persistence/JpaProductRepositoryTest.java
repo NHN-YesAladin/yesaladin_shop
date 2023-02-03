@@ -67,7 +67,7 @@ class JpaProductRepositoryTest {
 
         // then
         assertThat(savedProduct).isNotNull();
-        assertThat(savedProduct.getISBN()).isEqualTo(ISBN);
+        assertThat(savedProduct.getIsbn()).isEqualTo(ISBN);
         assertThat(savedProduct.getTitle()).isEqualTo("ex_title");
         assertThat(savedProduct.getContents()).isEqualTo("ex_contents");
         assertThat(savedProduct.getDescription()).isEqualTo("ex_description");

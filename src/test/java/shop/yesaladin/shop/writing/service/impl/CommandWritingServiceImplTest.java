@@ -69,7 +69,7 @@ class CommandWritingServiceImplTest {
 
         // then
         assertThat(response.getProduct()).isNotNull();
-        assertThat(response.getProduct().getISBN()).isEqualTo(ISBN);
+        assertThat(response.getProduct().getIsbn()).isEqualTo(ISBN);
         assertThat(response.getAuthor()).isNotNull();
         assertThat(response.getAuthor().getName()).isEqualTo(NAME);
     }

@@ -8,7 +8,7 @@ package shop.yesaladin.shop.product.exception;
  */
 public class ProductAlreadyExistsException extends RuntimeException {
 
-    public ProductAlreadyExistsException(String ISBN) {
-        super("Product " + ISBN + "(ISBN) is already exists.");
+    public ProductAlreadyExistsException(String isbn) {
+        super("Product " + isbn + "(ISBN) is already exists.");
     }
 }

@@ -13,13 +13,16 @@ import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.Relation;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
-import shop.yesaladin.shop.product.dummy.*;
+import shop.yesaladin.shop.product.dummy.DummyFile;
+import shop.yesaladin.shop.product.dummy.DummyProduct;
+import shop.yesaladin.shop.product.dummy.DummySubscribeProduct;
+import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-class JpaRelationRepositoryTest {
+class JpaCommonRelationRepositoryTest {
 
     private final String ISBN1 = "0000000000001";
     private final String ISBN2 = "0000000000002";
@@ -31,7 +34,7 @@ class JpaRelationRepositoryTest {
     @Autowired
     private JpaCommandRelationRepository repository;
 
-    private Relation relatedProduct;
+    private Relation relation;
 
     private Product product1;
     private Product product2;
@@ -49,7 +52,6 @@ class JpaRelationRepositoryTest {
         entityManager.persist(thumbnailFile1);
         entityManager.persist(thumbnailFile2);
 
-
         SubscribeProduct subscribeProduct = DummySubscribeProduct.dummy();
         entityManager.persist(subscribeProduct);
 
@@ -65,7 +67,7 @@ class JpaRelationRepositoryTest {
         );
         product2 = DummyProduct.dummy(
                 ISBN2,
-                subscribeProduct,
+                null,
                 thumbnailFile2,
                 ebookFile2,
                 totalDiscountRate
@@ -74,19 +76,32 @@ class JpaRelationRepositoryTest {
         product1 = entityManager.persist(product1);
         product2 = entityManager.persist(product2);
 
-        relatedProduct = DummyRelatedProduct.dummy(product1, product2);
+        relation = Relation.create(product1, product2);
     }
 
     @Test
     @DisplayName("연관상품 저장")
     void save() {
         // when
-        Relation savedRelatedProduct = repository.save(relatedProduct);
+        Relation savedRelatedProduct = repository.save(relation);
 
         // then
         assertThat(savedRelatedProduct).isNotNull();
-        assertThat(savedRelatedProduct.getProductMain().getISBN()).isEqualTo(ISBN1);
-        assertThat(savedRelatedProduct.getProductSub().getISBN()).isEqualTo(ISBN2);
+        assertThat(savedRelatedProduct.getProductMain().getIsbn()).isEqualTo(ISBN1);
+        assertThat(savedRelatedProduct.getProductSub().getIsbn()).isEqualTo(ISBN2);
     }
 
+    @Test
+    @DisplayName("연관상품 PK로 삭제")
+    void deleteByPk() {
+        // given
+        entityManager.persist(relation);
+
+        // when
+        repository.deleteByPk(relation.getPk());
+
+        // then
+        Relation foundRelation = entityManager.find(Relation.class, relation.getPk());
+        assertThat(foundRelation).isNull();
+    }
 }

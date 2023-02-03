@@ -65,7 +65,7 @@ class CommandProductTagServiceImplTest {
 
         // then
         assertThat(response.getProduct()).isNotNull();
-        assertThat(response.getProduct().getISBN()).isEqualTo(ISBN);
+        assertThat(response.getProduct().getIsbn()).isEqualTo(ISBN);
         assertThat(response.getTag()).isNotNull();
         assertThat(response.getTag().getName()).isEqualTo(NAME);
     }

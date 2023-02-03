@@ -21,7 +21,7 @@ public class SearchedProductDto {
     private Long quantity;
     private int discountRate;
     private long sellingPrice;
-    private Boolean isForcedOutOfStack;
+    private Boolean isForcedOutOfStock;
     private String thumbnailFileUrl;
     private String publisher;
     private String publishedDate;
@@ -44,7 +44,7 @@ public class SearchedProductDto {
                 .thumbnailFileUrl(searchedProduct.getThumbnailFile().getName())
                 .tags(searchedProduct.getTags().stream().map(SearchedProductTag::getName).collect(
                         Collectors.toList()))
-                .isForcedOutOfStack(searchedProduct.getIsForcedOutOfStack())
+                .isForcedOutOfStock(searchedProduct.getIsForcedOutOfStock())
                 .build();
     }
 }

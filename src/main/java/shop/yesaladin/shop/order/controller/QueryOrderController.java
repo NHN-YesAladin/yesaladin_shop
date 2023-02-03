@@ -4,12 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
+import shop.yesaladin.shop.order.dto.OrderSummaryResponseDto;
 import shop.yesaladin.shop.order.service.inter.QueryOrderService;
 
 @RequiredArgsConstructor
@@ -33,4 +35,22 @@ public class QueryOrderController {
                 .build();
     }
 
+    @GetMapping("/{memberId}")
+    public PaginatedResponseDto<OrderSummaryResponseDto> getAllOrdersByMemberId(
+            @PathVariable Long memberId,
+            @RequestBody PeriodQueryRequestDto queryDto,
+            Pageable pageable
+    ) {
+        Page<OrderSummaryResponseDto> data = queryOrderService.getOrderListInPeriodByMemberId(
+                queryDto,
+                memberId,
+                pageable
+        );
+        return PaginatedResponseDto.<OrderSummaryResponseDto>builder()
+                .currentPage(data.getNumber())
+                .totalPage(data.getTotalPages())
+                .totalDataCount(data.getTotalElements())
+                .dataList(data.getContent())
+                .build();
+    }
 }

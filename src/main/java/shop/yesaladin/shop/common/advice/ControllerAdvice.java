@@ -26,13 +26,7 @@ import shop.yesaladin.shop.member.exception.MemberProfileAlreadyExistException;
 import shop.yesaladin.shop.member.exception.MemberRoleNotFoundException;
 import shop.yesaladin.shop.point.exception.InvalidCodeParameterException;
 import shop.yesaladin.shop.point.exception.OverPointUseException;
-import shop.yesaladin.shop.product.exception.AlreadyDeletedProductException;
-import shop.yesaladin.shop.product.exception.ProductAlreadyExistsException;
-import shop.yesaladin.shop.product.exception.ProductNotFoundException;
-import shop.yesaladin.shop.product.exception.ProductSavingMethodCodeNotFoundException;
-import shop.yesaladin.shop.product.exception.ProductTypeCodeNotFoundException;
-import shop.yesaladin.shop.product.exception.SubscribeProductNotFoundException;
-import shop.yesaladin.shop.product.exception.TotalDiscountRateNotExistsException;
+import shop.yesaladin.shop.product.exception.*;
 import shop.yesaladin.shop.publish.exception.PublishNotFoundException;
 import shop.yesaladin.shop.publish.exception.PublisherAlreadyExistsException;
 import shop.yesaladin.shop.publish.exception.PublisherNotFoundException;
@@ -68,7 +62,8 @@ public class ControllerAdvice {
             TagNotFoundException.class,
             AuthorNotFoundException.class,
             WritingNotFoundException.class,
-            FileNotFoundException.class
+            FileNotFoundException.class,
+            RelationNotFoundException.class
     })
     public ResponseEntity<ErrorResponseDto> handleNotFoundException(Exception ex) {
         log.error("[NOT_FOUND] handleNotFoundException", ex);
@@ -84,7 +79,8 @@ public class ControllerAdvice {
             AlreadyBlockedMemberException.class,
             AlreadyUnblockedMemberException.class,
             AlreadyDeletedAddressException.class,
-            AlreadyRegisteredUpToLimit.class
+            AlreadyRegisteredUpToLimit.class,
+            SelfRelateException.class
     })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorResponseDto> handleValidationException(Exception ex) {
@@ -97,7 +93,8 @@ public class ControllerAdvice {
             MemberProfileAlreadyExistException.class,
             ProductAlreadyExistsException.class,
             PublisherAlreadyExistsException.class,
-            TagAlreadyExistsException.class
+            TagAlreadyExistsException.class,
+            RelationAlreadyExistsException.class
     })
     @ResponseStatus(HttpStatus.CONFLICT)
     public ResponseEntity<ErrorResponseDto> handleAlreadyExistException(Exception ex) {

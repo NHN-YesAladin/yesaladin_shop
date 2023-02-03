@@ -37,8 +37,8 @@ public class OrderProduct {
     @Column(nullable = false)
     private int quantity;
 
-    @Column(name = "is_cancelled", nullable = false)
-    private boolean isCancelled;
+    @Column(name = "is_canceled", nullable = false)
+    private boolean isCanceled;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
