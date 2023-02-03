@@ -13,7 +13,7 @@ import shop.yesaladin.shop.member.domain.model.MemberAddress;
  * @since 1.0
  */
 @Getter
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MemberAddressResponseDto {
 

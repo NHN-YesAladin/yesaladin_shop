@@ -65,7 +65,7 @@ public class CommandPointHistoryController {
     private void checkRequestValidation(BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new ClientException(
-                    ErrorCode.ORDER_BAD_REQUEST,
+                    ErrorCode.BAD_REQUEST,
                     "Validation Error in member block request."
             );
         }

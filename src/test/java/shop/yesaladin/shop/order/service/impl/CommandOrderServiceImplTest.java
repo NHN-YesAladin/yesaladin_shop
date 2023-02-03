@@ -463,7 +463,7 @@ class CommandOrderServiceImplTest {
         Mockito.when(queryMemberService.findByLoginId(anyString())).thenReturn(member);
         Mockito.when(queryMemberAddressService.findById(anyLong())).thenReturn(memberAddress);
 
-        String isbn = subscribeProducts.get(0).getISBN();
+        String isbn = subscribeProducts.get(0).getIsbn();
         String errorMessage = "Product with isbn(" + isbn + ") is not a subscribe product";
         Mockito.when(queryProductService.findIssnByIsbn(any()))
                 .thenThrow(new ClientException(
@@ -491,7 +491,7 @@ class CommandOrderServiceImplTest {
         long addressId = memberAddress.getId();
         OrderSubscribeCreateRequestDto request = getSubscribeRequest();
 
-        String isbn = subscribeProducts.get(0).getISBN();
+        String isbn = subscribeProducts.get(0).getIsbn();
         String errorMessage = "Product with isbn(" + isbn + ") is not a subscribe product";
         Mockito.when(queryProductService.findIssnByIsbn(any()))
                 .thenThrow(new ClientException(
@@ -770,7 +770,7 @@ class CommandOrderServiceImplTest {
     }
 
     private Map<String, Product> getMapProducts(List<Product> products) {
-        return products.stream().collect(Collectors.toMap(Product::getISBN, product -> product));
+        return products.stream().collect(Collectors.toMap(Product::getIsbn, product -> product));
     }
 
     private List<OrderProduct> getNonMemberOrderProducts(

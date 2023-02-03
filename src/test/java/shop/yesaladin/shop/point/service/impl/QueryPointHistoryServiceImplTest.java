@@ -14,10 +14,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import shop.yesaladin.shop.member.domain.model.Member;
-import shop.yesaladin.shop.member.dto.MemberDto;
-import shop.yesaladin.shop.member.dummy.MemberDummy;
-import shop.yesaladin.shop.member.exception.MemberNotFoundException;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.point.domain.model.PointCode;
 import shop.yesaladin.shop.point.domain.repository.QueryPointHistoryRepository;
@@ -43,6 +40,25 @@ class QueryPointHistoryServiceImplTest {
     }
 
     @Test
+    void getPointHistoriesWithLoginIdAndCode_fail_memberNotFound() {
+        //given
+        String loginId = "user@1";
+        PointCode pointCode = PointCode.USE;
+        Pageable pageable = Pageable.ofSize(5);
+
+        Page<PointHistoryResponseDto> response = Page.empty(pageable);
+
+        Mockito.when(queryMemberService.existsLoginId(loginId)).thenReturn(false);
+
+        //when, then
+        assertThatThrownBy(() -> queryPointHistoryService.getPointHistoriesWithLoginIdAndCode(
+                loginId,
+                pointCode,
+                pageable
+        )).isInstanceOf(ClientException.class);
+    }
+
+    @Test
     void getPointHistoriesWithLoginIdAndCode() {
         //given
         String loginId = "user@1";
@@ -51,6 +67,7 @@ class QueryPointHistoryServiceImplTest {
 
         Page<PointHistoryResponseDto> response = Page.empty(pageable);
 
+        Mockito.when(queryMemberService.existsLoginId(loginId)).thenReturn(true);
         Mockito.when(queryPointHistoryRepository.getByLoginIdAndPointCode(
                         eq(loginId),
                         any(),
@@ -79,6 +96,21 @@ class QueryPointHistoryServiceImplTest {
     }
 
     @Test
+    void getPointHistoriesWithLoginId_fail_memberNotFound() {
+        //given
+        String loginId = "user@1";
+        Pageable pageable = Pageable.ofSize(5);
+
+        Mockito.when(queryMemberService.existsLoginId(loginId)).thenReturn(false);
+
+        //when, then
+        assertThatThrownBy(() -> queryPointHistoryService.getPointHistoriesWithLoginId(
+                loginId,
+                pageable
+        )).isInstanceOf(ClientException.class);
+    }
+
+    @Test
     void getPointHistoriesWithLoginId() {
         //given
         String loginId = "user@1";
@@ -86,6 +118,7 @@ class QueryPointHistoryServiceImplTest {
 
         Page<PointHistoryResponseDto> response = Page.empty(pageable);
 
+        Mockito.when(queryMemberService.existsLoginId(loginId)).thenReturn(true);
         Mockito.when(queryPointHistoryRepository.getByLoginId(eq(loginId), any()))
                 .thenReturn(response);
 
@@ -115,8 +148,7 @@ class QueryPointHistoryServiceImplTest {
 
         Page<PointHistoryResponseDto> response = Page.empty(pageable);
 
-        Mockito.when(queryPointHistoryRepository.getByPointCode(any(), any()))
-                .thenReturn(response);
+        Mockito.when(queryPointHistoryRepository.getByPointCode(any(), any())).thenReturn(response);
 
         //when
         Page<PointHistoryResponseDto> result = queryPointHistoryService.getPointHistoriesWithCode(
@@ -143,22 +175,17 @@ class QueryPointHistoryServiceImplTest {
 
         Page<PointHistoryResponseDto> response = Page.empty(pageable);
 
-        Mockito.when(queryPointHistoryRepository.getBy(any()))
-                .thenReturn(response);
+        Mockito.when(queryPointHistoryRepository.getBy(any())).thenReturn(response);
 
         //when
-        Page<PointHistoryResponseDto> result = queryPointHistoryService.getPointHistories(
-                pageable
-        );
+        Page<PointHistoryResponseDto> result = queryPointHistoryService.getPointHistories(pageable);
 
         //then
         assertThat(result.getContent()).isEmpty();
         assertThat(result.getPageable()).isEqualTo(pageable);
 
         ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
-        verify(queryPointHistoryRepository, times(1)).getBy(
-                captor.capture()
-        );
+        verify(queryPointHistoryRepository, times(1)).getBy(captor.capture());
         assertThat(captor.getValue().getPageSize()).isEqualTo(5);
     }
 
@@ -166,20 +193,18 @@ class QueryPointHistoryServiceImplTest {
     void getMemberPoint_fail_memberNotFound() {
         String loginId = "user@1";
 
-        Mockito.when(queryMemberService.existsLoginId(loginId))
-                .thenThrow(MemberNotFoundException.class);
+        Mockito.when(queryMemberService.existsLoginId(loginId)).thenReturn(false);
 
-        assertThatThrownBy(() -> queryPointHistoryService.getMemberPoint(loginId)).isInstanceOf(
-                MemberNotFoundException.class);
+        assertThatThrownBy(() -> queryPointHistoryService.getMemberPoint(loginId))
+                .isInstanceOf(ClientException.class);
     }
 
     @Test
     void getMemberPoint_success() {
         String loginId = "user@1";
 
-        Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
-        Mockito.when(queryMemberService.findMemberByLoginId(loginId))
-                .thenReturn(MemberDto.fromEntity(member));
+        Mockito.when(queryMemberService.existsLoginId(loginId)).thenReturn(true);
+
         Mockito.when(queryPointHistoryRepository.getMemberPointByLoginId(loginId))
                 .thenReturn(1000L);
 

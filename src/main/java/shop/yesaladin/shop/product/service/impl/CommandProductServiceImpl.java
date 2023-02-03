@@ -368,11 +368,11 @@ public class CommandProductServiceImpl implements CommandProductService {
                 quantities
         );
 
-        productList.forEach(product -> product.changeQuantity(quantities.get(product.getISBN())));
+        productList.forEach(product -> product.changeQuantity(quantities.get(product.getIsbn())));
 
         return productList
                 .stream()
-                .collect(Collectors.toMap(Product::getISBN, product -> product));
+                .collect(Collectors.toMap(Product::getIsbn, product -> product));
     }
 
     private List<Product> getAvailableProducts(

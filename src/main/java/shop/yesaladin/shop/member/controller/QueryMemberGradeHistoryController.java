@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.common.utils.AuthorityUtils;
@@ -41,7 +42,7 @@ public class QueryMemberGradeHistoryController {
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public PaginatedResponseDto<MemberGradeHistoryQueryResponseDto> getMemberGrades(
+    public ResponseDto<PaginatedResponseDto<MemberGradeHistoryQueryResponseDto>> getMemberGrades(
             @RequestBody PeriodQueryRequestDto request,
             Pageable pageable,
             Authentication authentication
@@ -54,11 +55,15 @@ public class QueryMemberGradeHistoryController {
                 pageable
         );
 
-        return PaginatedResponseDto.<MemberGradeHistoryQueryResponseDto>builder()
-                .totalPage(response.getTotalPages())
-                .currentPage(response.getNumber())
-                .totalDataCount(response.getTotalElements())
-                .dataList(response.getContent())
+        return ResponseDto.<PaginatedResponseDto<MemberGradeHistoryQueryResponseDto>>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(PaginatedResponseDto.<MemberGradeHistoryQueryResponseDto>builder()
+                        .totalPage(response.getTotalPages())
+                        .currentPage(response.getNumber())
+                        .totalDataCount(response.getTotalElements())
+                        .dataList(response.getContent())
+                        .build())
                 .build();
     }
 }

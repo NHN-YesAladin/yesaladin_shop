@@ -34,6 +34,7 @@ class QueryDslQueryMemberRepositoryTest {
     @BeforeEach
     void setUp() {
         member = MemberDummy.dummy();
+        entityManager.persist(member);
 
         memberWithLoginId = MemberDummy.dummyWithLoginId(loginId);
         defaultMemberAddress = MemberAddress.builder().member(memberWithLoginId)
@@ -52,9 +53,6 @@ class QueryDslQueryMemberRepositoryTest {
 
     @Test
     void findById() throws Exception {
-        //given
-        entityManager.persist(member);
-
         //when
         Optional<Member> optionalMember = queryMemberRepository.findById(member.getId());
 
@@ -66,9 +64,6 @@ class QueryDslQueryMemberRepositoryTest {
 
     @Test
     void findMemberByNickname() throws Exception {
-        //given
-        entityManager.persist(member);
-
         //when
         Optional<Member> optionalMember = queryMemberRepository.findMemberByNickname(member.getNickname());
 
@@ -80,9 +75,6 @@ class QueryDslQueryMemberRepositoryTest {
 
     @Test
     void findMemberByLoginId() throws Exception {
-        //given
-        entityManager.persist(member);
-
         //when
         Optional<Member> optionalMember = queryMemberRepository.findMemberByLoginId(member.getLoginId());
 
@@ -94,9 +86,6 @@ class QueryDslQueryMemberRepositoryTest {
 
     @Test
     void findMemberByEmail() throws Exception {
-        //given
-        entityManager.persist(member);
-
         //when
         Optional<Member> optionalMember = queryMemberRepository.findMemberByEmail(member.getEmail());
 
@@ -108,9 +97,6 @@ class QueryDslQueryMemberRepositoryTest {
 
     @Test
     void existsMemberByLoginId() throws Exception {
-        //given
-        entityManager.persist(member);
-
         //when
         boolean result = queryMemberRepository.existsMemberByLoginId(member.getLoginId());
 
@@ -120,9 +106,6 @@ class QueryDslQueryMemberRepositoryTest {
 
     @Test
     void existsMemberByNickname() throws Exception {
-        //given
-        entityManager.persist(member);
-
         //when
         boolean result = queryMemberRepository.existsMemberByNickname(member.getNickname());
 
@@ -132,9 +115,6 @@ class QueryDslQueryMemberRepositoryTest {
 
     @Test
     void existsMemberByEmail() throws Exception {
-        //given
-        entityManager.persist(member);
-
         //when
         boolean result = queryMemberRepository.existsMemberByEmail(member.getEmail());
 
@@ -144,9 +124,6 @@ class QueryDslQueryMemberRepositoryTest {
 
     @Test
     void existsMemberByPhone() throws Exception {
-        //given
-        entityManager.persist(member);
-
         //when
         boolean result = queryMemberRepository.existsMemberByPhone(member.getPhone());
 

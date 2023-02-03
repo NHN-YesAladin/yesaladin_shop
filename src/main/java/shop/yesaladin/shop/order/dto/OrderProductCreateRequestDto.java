@@ -20,7 +20,7 @@ import shop.yesaladin.shop.product.domain.model.Product;
 public class OrderProductCreateRequestDto {
 
     private int quantity;
-    private Boolean isCancelled;
+    private Boolean isCanceled;
     private Long productId;
     private Long orderId;
 
@@ -36,7 +36,7 @@ public class OrderProductCreateRequestDto {
     public OrderProduct toEntity(Product product, Order order) {
         return OrderProduct.builder()
                 .quantity(this.quantity)
-                .isCancelled(this.isCancelled)
+                .isCanceled(this.isCanceled)
                 .product(product)
                 .order(order)
                 .build();

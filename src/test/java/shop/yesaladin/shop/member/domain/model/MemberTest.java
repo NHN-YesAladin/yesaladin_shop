@@ -4,8 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.Test;
-import shop.yesaladin.shop.member.exception.AlreadyBlockedMemberException;
-import shop.yesaladin.shop.member.exception.AlreadyUnblockedMemberException;
+import shop.yesaladin.common.exception.ClientException;
 
 class MemberTest {
 
@@ -16,7 +15,7 @@ class MemberTest {
 
         //when, then
         assertThatThrownBy(blockedMember::unblockMember).isInstanceOf(
-                AlreadyUnblockedMemberException.class);
+                ClientException.class);
     }
 
     @Test
@@ -38,8 +37,8 @@ class MemberTest {
         Member unblockedMember = Member.builder().id(1L).isBlocked(true).build();
 
         //when, then
-        assertThatThrownBy(() -> unblockedMember.blockMember(blockedReason)).isInstanceOf(
-                AlreadyBlockedMemberException.class);
+        assertThatThrownBy(() -> unblockedMember.blockMember(blockedReason))
+                .isInstanceOf(ClientException.class);
 
     }
 

@@ -2,7 +2,6 @@ package shop.yesaladin.shop.member.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.startsWith;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -48,8 +47,6 @@ import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.member.dto.MemberAddressCreateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
-import shop.yesaladin.shop.member.exception.AlreadyDeletedAddressException;
-import shop.yesaladin.shop.member.exception.MemberAddressNotFoundException;
 import shop.yesaladin.shop.member.service.inter.CommandMemberAddressService;
 
 @AutoConfigureRestDocs
@@ -96,7 +93,12 @@ class CommandMemberAddressControllerTest {
         //then
         result.andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message", startsWith("Validation failed")));
+                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.BAD_REQUEST.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.BAD_REQUEST.getDisplayName())
+                ));
     }
 
     @WithMockUser(username = "user@1")
@@ -312,9 +314,13 @@ class CommandMemberAddressControllerTest {
                                 .description("동작 성공 여부"),
                         fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
                         fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("배송지 Pk"),
-                        fieldWithPath("data.address").type(JsonFieldType.STRING).description("배송지 주소"),
-                        fieldWithPath("data.isDefault").type(JsonFieldType.BOOLEAN).description("배송지의 대표주소 여부"),
-                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY).description("에러 메세지").optional()
+                        fieldWithPath("data.address").type(JsonFieldType.STRING)
+                                .description("배송지 주소"),
+                        fieldWithPath("data.isDefault").type(JsonFieldType.BOOLEAN)
+                                .description("배송지의 대표주소 여부"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
+                                .optional()
                 )
         ));
     }
@@ -403,10 +409,10 @@ class CommandMemberAddressControllerTest {
         result.andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.success", equalTo(true)))
-                .andExpect(jsonPath("$.status", equalTo(HttpStatus.CREATED.value())))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())))
                 .andExpect(jsonPath("$.data.id", equalTo((int) addressId)))
                 .andExpect(jsonPath("$.data.address", equalTo(address)))
-                .andExpect(jsonPath("$.data.isDefault", equalTo(isDefault)));
+                .andExpect(jsonPath("$.data.isDefault", equalTo(true)));
 
         //docs
         result.andDo(document(
@@ -417,12 +423,17 @@ class CommandMemberAddressControllerTest {
                         parameterWithName("addressId").description("배송지 Pk")
                 ),
                 responseFields(
-                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("등록된 배송지 Pk"),
-                        fieldWithPath("address").type(JsonFieldType.STRING)
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data.id").type(JsonFieldType.NUMBER)
+                                .description("등록된 배송지 Pk"),
+                        fieldWithPath("data.address").type(JsonFieldType.STRING)
                                 .description("등록된 배송지 주소"),
-                        fieldWithPath("isDefault").type(JsonFieldType.BOOLEAN)
+                        fieldWithPath("data.isDefault").type(JsonFieldType.BOOLEAN)
                                 .description("등록된 배송지의 대표주소 여부"),
-                        fieldWithPath("loginId").type(JsonFieldType.STRING).description("회원의 아이디")
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지").optional()
                 )
         ));
     }
@@ -492,10 +503,10 @@ class CommandMemberAddressControllerTest {
         ).with(csrf()));
 
         //then
-        result.andExpect(status().isBadRequest())
+        result.andExpect(status().isConflict())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.success", equalTo(false)))
-                .andExpect(jsonPath("$.status", equalTo(HttpStatus.BAD_REQUEST.value())))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.CONFLICT.value())))
                 .andExpect(jsonPath(
                         "$.errorMessages[0]",
                         equalTo(ErrorCode.ADDRESS_ALREADY_DELETED.getDisplayName())
@@ -537,8 +548,8 @@ class CommandMemberAddressControllerTest {
         //then
         result.andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.success", equalTo(false)))
-                .andExpect(jsonPath("$.status", equalTo(HttpStatus.BAD_REQUEST.value())));
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())));
 
         //docs
         result.andDo(document(

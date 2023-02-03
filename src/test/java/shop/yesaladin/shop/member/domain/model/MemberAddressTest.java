@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.Test;
-import shop.yesaladin.shop.member.exception.AlreadyDeletedAddressException;
+import shop.yesaladin.common.exception.ClientException;
 
 
 class MemberAddressTest {
@@ -25,7 +25,7 @@ class MemberAddressTest {
         //given
         MemberAddress memberAddress = MemberAddress.builder().isDeleted(true).build();
         //when,then
-        assertThatThrownBy(() -> memberAddress.delete()).isInstanceOf(AlreadyDeletedAddressException.class);
+        assertThatThrownBy(() -> memberAddress.delete()).isInstanceOf(ClientException.class);
     }
 
     @Test

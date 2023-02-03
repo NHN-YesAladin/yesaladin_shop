@@ -144,7 +144,7 @@ public class QueryMemberController {
     private static void checkValidTypeParameterForMemberGrade(String type) {
         if (!type.equals("grade")) {
             throw new ClientException(
-                    ErrorCode.BAD_REQUEST,
+                    ErrorCode.MEMBER_BAD_REQUEST,
                     "Invalid type parameter for Member about grade"
             );
         }
