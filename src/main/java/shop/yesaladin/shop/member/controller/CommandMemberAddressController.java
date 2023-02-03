@@ -4,6 +4,7 @@ import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.dto.ResponseDto;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.common.utils.AuthorityUtils;
 import shop.yesaladin.shop.member.dto.MemberAddressCreateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
@@ -41,10 +44,14 @@ public class CommandMemberAddressController {
      * @since 1.0
      */
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<MemberAddressResponseDto> createMemberAddress(
             @Valid @RequestBody MemberAddressCreateRequestDto request,
+            BindingResult bindingResult,
             Authentication authentication
     ) {
+        checkRequestValidation(bindingResult);
+
         String loginId = AuthorityUtils.getAuthorizedUserName(authentication);
 
         MemberAddressResponseDto response = commandMemberAddressService.save(loginId, request);
@@ -92,7 +99,6 @@ public class CommandMemberAddressController {
      * @since 1.0
      */
     @DeleteMapping("/{addressId}")
-    @ResponseStatus(HttpStatus.OK)
     public ResponseDto<Void> deleteMemberAddress(
             @PathVariable Long addressId,
             Authentication authentication
@@ -102,5 +108,15 @@ public class CommandMemberAddressController {
         commandMemberAddressService.delete(loginId, addressId);
 
         return ResponseDto.<Void>builder().success(true).status(HttpStatus.OK).build();
+    }
+
+    private void checkRequestValidation(BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new ClientException(
+                    ErrorCode.BAD_REQUEST,
+                    "Validation Error in member address create request." +
+                            bindingResult.getAllErrors()
+            );
+        }
     }
 }

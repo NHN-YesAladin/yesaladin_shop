@@ -6,8 +6,6 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -57,7 +55,7 @@ class QueryMemberAddressControllerTest {
         //given
         String loginId = "user@1";
 
-        Mockito.when(queryMemberAddressService.findByLoginId(loginId))
+        Mockito.when(queryMemberAddressService.getByLoginId(loginId))
                 .thenThrow(new MemberNotFoundException("Member loginId: " + loginId));
 
         //when
@@ -85,7 +83,7 @@ class QueryMemberAddressControllerTest {
         //given
         String loginId = "user@1";
 
-        Mockito.when(queryMemberAddressService.findByLoginId(loginId))
+        Mockito.when(queryMemberAddressService.getByLoginId(loginId))
                 .thenReturn(getMemberAddressList(10, loginId));
 
         //when

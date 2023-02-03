@@ -9,14 +9,14 @@ public class DummyMember {
 
     public static Member member() {
         return Member.builder()
-                .nickname("member")
-                .name("name")
-                .loginId("member1")
+                .nickname("익명의 오소리")
+                .name("김홍대")
+                .loginId("mongmeo")
                 .password("1234")
-                .birthYear(2023)
+                .birthYear(2000)
                 .birthMonth(1)
-                .birthDay(6)
-                .email("member@yesaladin.shop")
+                .birthDay(1)
+                .email("mongemo@yesaladin.shop")
                 .phone("01012345678")
                 .signUpDate(LocalDate.now())
                 .withdrawalDate(null)
@@ -27,4 +27,24 @@ public class DummyMember {
                 .build();
     }
 
+    public static Member memberWithId() {
+        return Member.builder()
+                .id(1L)
+                .nickname("익명의 오소리")
+                .name("김홍대")
+                .loginId("mongmeo")
+                .password("1234")
+                .birthYear(2000)
+                .birthMonth(1)
+                .birthDay(1)
+                .email("mongemo@yesaladin.shop")
+                .phone("01012345678")
+                .signUpDate(LocalDate.now())
+                .withdrawalDate(null)
+                .isWithdrawal(false)
+                .isBlocked(false)
+                .memberGrade(MemberGrade.WHITE)
+                .memberGenderCode(MemberGenderCode.MALE)
+                .build();
+    }
 }

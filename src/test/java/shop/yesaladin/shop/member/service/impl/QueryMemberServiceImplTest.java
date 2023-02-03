@@ -276,7 +276,7 @@ class QueryMemberServiceImplTest {
                 .thenThrow(MemberNotFoundException.class);
 
         //when, then
-        assertThatThrownBy(() -> service.getMemberGrade(loginId)).isInstanceOf(
+        assertThatThrownBy(() -> service.getMemberGradeByLoginId(loginId)).isInstanceOf(
                 MemberNotFoundException.class);
     }
 
@@ -291,7 +291,7 @@ class QueryMemberServiceImplTest {
                 .thenReturn(Optional.of(member));
 
         //when
-        MemberGradeQueryResponseDto result = service.getMemberGrade(loginId);
+        MemberGradeQueryResponseDto result = service.getMemberGradeByLoginId(loginId);
 
         //then
         assertThat(result.getGradeEn()).isEqualTo(memberGrade.name());

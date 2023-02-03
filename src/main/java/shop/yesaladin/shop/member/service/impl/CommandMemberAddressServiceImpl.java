@@ -37,9 +37,10 @@ public class CommandMemberAddressServiceImpl implements CommandMemberAddressServ
             String loginId,
             MemberAddressCreateRequestDto request
     ) {
+        Member member = tryGetMemberById(loginId);
+
         checkMemberAddressCountLimitByLoginId(loginId);
 
-        Member member = tryGetMemberById(loginId);
         MemberAddress newMemberAddress = request.toEntity(member);
 
         checkNewAddressSetAsDefault(loginId, newMemberAddress);

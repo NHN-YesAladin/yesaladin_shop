@@ -38,17 +38,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import shop.yesaladin.common.code.ErrorCode;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.member.dto.MemberAddressCreateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
 import shop.yesaladin.shop.member.exception.AlreadyDeletedAddressException;
-import shop.yesaladin.shop.member.exception.AlreadyRegisteredUpToLimit;
 import shop.yesaladin.shop.member.exception.MemberAddressNotFoundException;
-import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.CommandMemberAddressService;
 
 @AutoConfigureRestDocs
@@ -82,13 +83,13 @@ class CommandMemberAddressControllerTest {
     }
 
 
-    @WithMockUser
+    @WithMockUser(username = "user@1")
     @ParameterizedTest
     @MethodSource(value = "createMemberAddressData")
     void createMemberAddress_failByValidationError_forParameterizedTest(Map<String, Object> request)
             throws Exception {
         //when
-        ResultActions result = mockMvc.perform(post("/v1/members/addresses")
+        ResultActions result = mockMvc.perform(post("/v1/member-addresses")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
@@ -98,7 +99,7 @@ class CommandMemberAddressControllerTest {
                 .andExpect(jsonPath("$.message", startsWith("Validation failed")));
     }
 
-    @WithMockUser
+    @WithMockUser(username = "user@1")
     @Test
     @DisplayName("회원 배송지 생성 실패-파라미터 오류")
     void createMemberAddress_failByValidationError() throws Exception {
@@ -106,14 +107,19 @@ class CommandMemberAddressControllerTest {
         Map<String, Object> request = Map.of("address", "", "isDefault", false);
 
         //when
-        ResultActions result = mockMvc.perform(post("/v1/members/addresses")
+        ResultActions result = mockMvc.perform(post("/v1/member-addresses")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
         //then
         result.andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message", startsWith("Validation failed")));
+                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.BAD_REQUEST.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.BAD_REQUEST.getDisplayName())
+                ));
 
         //docs
         result.andDo(document(
@@ -126,12 +132,19 @@ class CommandMemberAddressControllerTest {
                                 .description("대표 주소 여부")
                 ),
                 responseFields(
-                        fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data").type(JsonFieldType.NUMBER)
+                                .description("null")
+                                .optional(),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
                 )
         ));
     }
 
-    @WithMockUser
+    @WithMockUser(username = "user@1")
     @Test
     @DisplayName("회원 배송지 생성 실패-존재하지 않는 회원")
     void createMemberAddress_failByNotFoundMember() throws Exception {
@@ -140,18 +153,23 @@ class CommandMemberAddressControllerTest {
 
         Map<String, Object> request = Map.of("address", address, "isDefault", false);
 
-        Mockito.when(commandMemberAddressService.save(eq(loginId), any())).thenThrow(
-                new MemberNotFoundException("Member loginId: " + loginId));
+        Mockito.when(commandMemberAddressService.save(eq(loginId), any()))
+                .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, ""));
 
         //when
-        ResultActions result = mockMvc.perform(post("/v1/members/addresses")
+        ResultActions result = mockMvc.perform(post("/v1/member-addresses")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
         //then
         result.andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message", startsWith("Member not found")));
+                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.NOT_FOUND.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.MEMBER_NOT_FOUND.getDisplayName())
+                ));
 
         ArgumentCaptor<MemberAddressCreateRequestDto> captor = ArgumentCaptor.forClass(
                 MemberAddressCreateRequestDto.class);
@@ -171,12 +189,19 @@ class CommandMemberAddressControllerTest {
                                 .description("대표 주소 여부")
                 ),
                 responseFields(
-                        fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data").type(JsonFieldType.NUMBER)
+                                .description("null")
+                                .optional(),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
                 )
         ));
     }
 
-    @WithMockUser
+    @WithMockUser(username = "user@1")
     @Test
     @DisplayName("회원 배송지 생성 실패-최대 배송지 등록 개수 초과")
     void createMemberAddress_failByAddressRegistrationRestriction() throws Exception {
@@ -185,18 +210,23 @@ class CommandMemberAddressControllerTest {
 
         Map<String, Object> request = Map.of("address", address, "isDefault", false);
 
-        Mockito.when(commandMemberAddressService.save(eq(loginId), any())).thenThrow(
-                new AlreadyRegisteredUpToLimit(loginId));
+        Mockito.when(commandMemberAddressService.save(eq(loginId), any()))
+                .thenThrow(new ClientException(ErrorCode.ADDRESS_REGISTERED_UP_TO_LIMIT, ""));
 
         //when
-        ResultActions result = mockMvc.perform(post("/v1/members/addresses")
+        ResultActions result = mockMvc.perform(post("/v1/member-addresses")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
         //then
         result.andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message", startsWith("Already Registered Up To Limit")));
+                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.BAD_REQUEST.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.ADDRESS_REGISTERED_UP_TO_LIMIT.getDisplayName())
+                ));
 
         ArgumentCaptor<MemberAddressCreateRequestDto> captor = ArgumentCaptor.forClass(
                 MemberAddressCreateRequestDto.class);
@@ -216,12 +246,19 @@ class CommandMemberAddressControllerTest {
                                 .description("대표 주소 여부")
                 ),
                 responseFields(
-                        fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data").type(JsonFieldType.NUMBER)
+                                .description("null")
+                                .optional(),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
                 )
         ));
     }
 
-    @WithMockUser
+    @WithMockUser(username = "user@1")
     @Test
     @DisplayName("회원 배송지 등록 성공")
     void createMemberAddress() throws Exception {
@@ -231,18 +268,12 @@ class CommandMemberAddressControllerTest {
 
         Map<String, Object> request = Map.of("address", address, "isDefault", isDefault);
 
-        MemberAddressResponseDto response = ReflectionUtils.newInstance(
-                MemberAddressResponseDto.class,
-                addressId,
-                address,
-                isDefault,
-                loginId
-        );
+        MemberAddressResponseDto response = getMemberAddressResponseDto(addressId);
 
         Mockito.when(commandMemberAddressService.save(eq(loginId), any())).thenReturn(response);
 
         //when
-        ResultActions result = mockMvc.perform(post("/v1/members/addresses")
+        ResultActions result = mockMvc.perform(post("/v1/member-addresses")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
@@ -250,10 +281,11 @@ class CommandMemberAddressControllerTest {
         //then
         result.andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id", equalTo((int) addressId)))
-                .andExpect(jsonPath("$.address", equalTo(address)))
-                .andExpect(jsonPath("$.isDefault", equalTo(isDefault)))
-                .andExpect(jsonPath("$.loginId", equalTo(loginId)));
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.CREATED.value())))
+                .andExpect(jsonPath("$.data.id", equalTo((int) addressId)))
+                .andExpect(jsonPath("$.data.address", equalTo(address)))
+                .andExpect(jsonPath("$.data.isDefault", equalTo(isDefault)));
 
         ArgumentCaptor<MemberAddressCreateRequestDto> captor = ArgumentCaptor.forClass(
                 MemberAddressCreateRequestDto.class);
@@ -276,17 +308,27 @@ class CommandMemberAddressControllerTest {
                                 .description("대표 주소 여부")
                 ),
                 responseFields(
-                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("등록된 배송지 Pk"),
-                        fieldWithPath("address").type(JsonFieldType.STRING)
-                                .description("등록된 배송지 주소"),
-                        fieldWithPath("isDefault").type(JsonFieldType.BOOLEAN)
-                                .description("등록된 배송지의 대표주소 여부"),
-                        fieldWithPath("loginId").type(JsonFieldType.STRING).description("회원의 아이디")
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("배송지 Pk"),
+                        fieldWithPath("data.address").type(JsonFieldType.STRING).description("배송지 주소"),
+                        fieldWithPath("data.isDefault").type(JsonFieldType.BOOLEAN).description("배송지의 대표주소 여부"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY).description("에러 메세지").optional()
                 )
         ));
     }
 
-    @WithMockUser
+    private MemberAddressResponseDto getMemberAddressResponseDto(long addressId) {
+        return ReflectionUtils.newInstance(
+                MemberAddressResponseDto.class,
+                addressId,
+                address,
+                isDefault
+        );
+    }
+
+    @WithMockUser(username = "user@1")
     @Test
     @DisplayName("대표배송지 설정 실패-존재하지않는 배송지")
     void markAsDefaultAddress_fail_memberAddressNotFoundException() throws Exception {
@@ -295,19 +337,23 @@ class CommandMemberAddressControllerTest {
         String loginId = "user@1";
 
         Mockito.when(commandMemberAddressService.markAsDefault(loginId, addressId))
-                .thenThrow(new MemberAddressNotFoundException(addressId));
+                .thenThrow(new ClientException(ErrorCode.ADDRESS_NOT_FOUND, ""));
 
         //when
         ResultActions result = mockMvc.perform(put(
-                "/v1/members/addresses/{addressId}",
-
+                "/v1/member-addresses/{addressId}",
                 addressId
         ).with(csrf()));
 
         //then
         result.andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message", startsWith("MemberAddress Not Found")));
+                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.NOT_FOUND.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.ADDRESS_NOT_FOUND.getDisplayName())
+                ));
 
         //docs
         result.andDo(document(
@@ -318,12 +364,19 @@ class CommandMemberAddressControllerTest {
                         parameterWithName("addressId").description("배송지 Pk")
                 ),
                 responseFields(
-                        fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data").type(JsonFieldType.NUMBER)
+                                .description("null")
+                                .optional(),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
                 )
         ));
     }
 
-    @WithMockUser
+    @WithMockUser(username = "user@1")
     @Test
     @DisplayName("대표배송지 설정 성공")
     void markAsDefaultAddress_success() throws Exception {
@@ -335,25 +388,25 @@ class CommandMemberAddressControllerTest {
                 MemberAddressResponseDto.class,
                 addressId,
                 address,
-                true,
-                loginId
+                true
         );
         Mockito.when(commandMemberAddressService.markAsDefault(loginId, addressId))
                 .thenReturn(response);
 
         //when
         ResultActions result = mockMvc.perform(put(
-                "/v1/members/addresses/{addressId}",
+                "/v1/member-addresses/{addressId}",
                 addressId
         ).with(csrf()));
 
         //then
         result.andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id", equalTo((int) addressId)))
-                .andExpect(jsonPath("$.address", equalTo(address)))
-                .andExpect(jsonPath("$.isDefault", equalTo(true)))
-                .andExpect(jsonPath("$.loginId", equalTo(loginId)));
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.CREATED.value())))
+                .andExpect(jsonPath("$.data.id", equalTo((int) addressId)))
+                .andExpect(jsonPath("$.data.address", equalTo(address)))
+                .andExpect(jsonPath("$.data.isDefault", equalTo(isDefault)));
 
         //docs
         result.andDo(document(
@@ -374,7 +427,7 @@ class CommandMemberAddressControllerTest {
         ));
     }
 
-    @WithMockUser
+    @WithMockUser(username = "user@1")
     @Test
     @DisplayName("배송지 삭제 실패-존재하지않는 배송지")
     void deleteMemberAddress_fail_MemberAddressNotFound() throws Exception {
@@ -383,17 +436,22 @@ class CommandMemberAddressControllerTest {
         String loginId = "user@1";
 
         Mockito.when(commandMemberAddressService.delete(loginId, addressId))
-                .thenThrow(new MemberAddressNotFoundException(addressId));
+                .thenThrow(new ClientException(ErrorCode.ADDRESS_NOT_FOUND, ""));
         //when
         ResultActions result = mockMvc.perform(delete(
-                "/v1/members/addresses/{addressId}",
+                "/v1/member-addresses/{addressId}",
                 addressId
         ).with(csrf()));
 
         //then
         result.andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message", startsWith("MemberAddress Not Found:")));
+                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.NOT_FOUND.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.ADDRESS_NOT_FOUND.getDisplayName())
+                ));
 
         //docs
         result.andDo(document(
@@ -403,13 +461,21 @@ class CommandMemberAddressControllerTest {
                 pathParameters(
                         parameterWithName("addressId").description("배송지 Pk")
                 ),
+
                 responseFields(
-                        fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data").type(JsonFieldType.NUMBER)
+                                .description("null")
+                                .optional(),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
                 )
         ));
     }
 
-    @WithMockUser
+    @WithMockUser(username = "user@1")
     @Test
     @DisplayName("배송지 삭제 실패-이미 삭제된 배송지")
     void deleteMemberAddress_fail_AlreadyDeletedAddress() throws Exception {
@@ -418,17 +484,22 @@ class CommandMemberAddressControllerTest {
         String loginId = "user@1";
 
         Mockito.when(commandMemberAddressService.delete(loginId, addressId))
-                .thenThrow(new AlreadyDeletedAddressException(addressId));
+                .thenThrow(new ClientException(ErrorCode.ADDRESS_ALREADY_DELETED, ""));
         //when
         ResultActions result = mockMvc.perform(delete(
-                "/v1/members/addresses/{addressId}",
+                "/v1/member-addresses/{addressId}",
                 addressId
         ).with(csrf()));
 
         //then
         result.andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message", startsWith("Already Deleted Address :")));
+                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.BAD_REQUEST.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.ADDRESS_ALREADY_DELETED.getDisplayName())
+                ));
 
         //docs
         result.andDo(document(
@@ -439,12 +510,19 @@ class CommandMemberAddressControllerTest {
                         parameterWithName("addressId").description("배송지 Pk")
                 ),
                 responseFields(
-                        fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data").type(JsonFieldType.NUMBER)
+                                .description("null")
+                                .optional(),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
                 )
         ));
     }
 
-    @WithMockUser
+    @WithMockUser(username = "user@1")
     @Test
     @DisplayName("배송지 삭제 성공")
     void deleteMemberAddress() throws Exception {
@@ -453,11 +531,14 @@ class CommandMemberAddressControllerTest {
 
         //when
         ResultActions result = mockMvc.perform(delete(
-                "/v1/members/addresses/{addressId}",
+                "/v1/member-addresses/{addressId}",
                 addressId
         ).with(csrf()));
         //then
-        result.andExpect(status().isOk());
+        result.andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.BAD_REQUEST.value())));
 
         //docs
         result.andDo(document(
@@ -466,6 +547,17 @@ class CommandMemberAddressControllerTest {
                 getDocumentResponse(),
                 pathParameters(
                         parameterWithName("addressId").description("배송지 Pk")
+                ),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data").type(JsonFieldType.OBJECT)
+                                .description("null")
+                                .optional(),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
+                                .optional()
                 )
         ));
     }

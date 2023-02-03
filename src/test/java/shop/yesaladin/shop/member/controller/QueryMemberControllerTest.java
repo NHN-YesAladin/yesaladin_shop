@@ -294,7 +294,7 @@ class QueryMemberControllerTest {
         //given
         String loginId = "user@1";
 
-        Mockito.when(queryMemberService.getMemberGrade(loginId))
+        Mockito.when(queryMemberService.getMemberGradeByLoginId(loginId))
                 .thenThrow(new MemberNotFoundException("Member loginId : " + loginId));
 
         //when
@@ -326,7 +326,7 @@ class QueryMemberControllerTest {
         MemberGradeQueryResponseDto response = ReflectionUtils.newInstance(
                 MemberGradeQueryResponseDto.class, memberGrade.name(), memberGrade.getName());
 
-        Mockito.when(queryMemberService.getMemberGrade(loginId)).thenReturn(response);
+        Mockito.when(queryMemberService.getMemberGradeByLoginId(loginId)).thenReturn(response);
 
         //when
         ResultActions result = mockMvc.perform(get("/v1/members/grade"));

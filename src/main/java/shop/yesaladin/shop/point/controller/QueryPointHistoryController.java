@@ -28,7 +28,6 @@ import shop.yesaladin.shop.point.service.inter.QueryPointHistoryService;
  */
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/v1/points")
 public class QueryPointHistoryController {
 
     private final QueryPointHistoryService queryPointHistoryService;
@@ -65,7 +64,7 @@ public class QueryPointHistoryController {
      * @author 최예린
      * @since 1.0
      */
-    @GetMapping(("/v1/point-histories"))
+    @GetMapping(path = "/v1/point-histories")
     public ResponseDto<PaginatedResponseDto<PointHistoryResponseDto>> getPointHistories(
             @RequestParam(required = false) String code,
             @PageableDefault Pageable pageable,

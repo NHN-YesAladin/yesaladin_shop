@@ -49,7 +49,7 @@ class QueryMemberAddressServiceImplTest {
                 .thenThrow(MemberNotFoundException.class);
 
         //when,then
-        assertThatThrownBy(() -> queryMemberAddressService.findByLoginId(loginId)).isInstanceOf(
+        assertThatThrownBy(() -> queryMemberAddressService.getByLoginId(loginId)).isInstanceOf(
                 MemberNotFoundException.class);
     }
 
@@ -62,27 +62,24 @@ class QueryMemberAddressServiceImplTest {
         Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
                 .thenReturn(Optional.of(member));
 
-        Mockito.when(queryMemberAddressRepository.findByLoginId(member))
+        Mockito.when(queryMemberAddressRepository.getByLoginId(loginId))
                 .thenReturn(getMemberAddressList(10, member));
         //when
-        List<MemberAddressResponseDto> result = queryMemberAddressService.findByLoginId(loginId);
+        List<MemberAddressResponseDto> result = queryMemberAddressService.getByLoginId(loginId);
 
         //then
         assertThat(result).hasSize(10);
-        assertThat(result.stream()
-                .filter(x -> !Objects.equals(x.getLoginId(), loginId))
-                .findFirst()).isEmpty();
     }
 
-    List<MemberAddress> getMemberAddressList(int cnt, Member member) {
-        List<MemberAddress> memberAddressList = new ArrayList<>();
+    List<MemberAddressResponseDto> getMemberAddressList(int cnt, Member member) {
+        List<MemberAddressResponseDto> memberAddressList = new ArrayList<>();
         for (int i = 0; i < cnt; i++) {
-            memberAddressList.add(MemberAddress.builder()
+            memberAddressList.add(MemberAddressResponseDto.fromEntity(MemberAddress.builder()
                     .id((long) i + 1)
                     .address(address)
                     .isDefault(isDefault)
                     .member(member)
-                    .build());
+                    .build()));
         }
         return memberAddressList;
     }

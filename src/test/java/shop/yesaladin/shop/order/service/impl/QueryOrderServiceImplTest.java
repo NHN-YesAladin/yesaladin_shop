@@ -30,16 +30,15 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.order.domain.model.MemberOrder;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
-import shop.yesaladin.shop.order.dto.MemberOrderRequestDto;
-import shop.yesaladin.shop.order.dto.MemberOrderResponseDto;
+import shop.yesaladin.shop.order.dto.OrderSheetRequestDto;
+import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 import shop.yesaladin.shop.order.exception.OrderNotFoundException;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMemberAddress;
 import shop.yesaladin.shop.order.persistence.dummy.DummyOrder;
-import shop.yesaladin.shop.point.dto.PointResponseDto;
 import shop.yesaladin.shop.point.service.inter.QueryPointHistoryService;
-import shop.yesaladin.shop.product.dto.OrderProductRequestDto;
+import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
 import shop.yesaladin.shop.product.service.inter.QueryProductService;
 
 class QueryOrderServiceImplTest {
@@ -274,16 +273,16 @@ class QueryOrderServiceImplTest {
         String address = "address";
         long amount = 1000;
 
-        List<OrderProductRequestDto> productRequest = new ArrayList<>();
-        MemberOrderRequestDto request = new MemberOrderRequestDto(productRequest);
-        MemberOrderResponseDto response = new MemberOrderResponseDto(name, phoneNumber, address);
+        List<ProductOrderRequestDto> productRequest = new ArrayList<>();
+        OrderSheetRequestDto request = new OrderSheetRequestDto(productRequest);
+        OrderSheetResponseDto response = new OrderSheetResponseDto(name, phoneNumber, address);
 
         Mockito.when(queryPointHistoryService.getMemberPoint(loginId)).thenReturn(amount);
-        Mockito.when(queryProductService.getProductForOrder(any())).thenReturn(new ArrayList<>());
+        Mockito.when(queryProductService.getByIsbnList(any())).thenReturn(new ArrayList<>());
         Mockito.when(queryMemberService.getMemberForOrder(loginId)).thenReturn(response);
 
         //when
-        MemberOrderResponseDto result = service.getMemberOrderSheetData(request, loginId);
+        OrderSheetResponseDto result = service.getMemberOrderSheetData(request, loginId);
 
         //then
         Assertions.assertThat(result.getName()).isEqualTo(name);

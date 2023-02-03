@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
-import shop.yesaladin.shop.order.dto.MemberOrderResponseDto;
+import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
 
 @Transactional
 @SpringBootTest
@@ -157,13 +157,14 @@ class QueryDslQueryMemberRepositoryTest {
     @Test
     void getMemberOrderData() {
         //when
-        MemberOrderResponseDto response = queryMemberRepository.getMemberOrderData(loginId);
+        Optional<OrderSheetResponseDto> response = queryMemberRepository.getMemberOrderData(loginId);
 
         //then
-        assertThat(response.getName()).isEqualTo(memberWithLoginId.getName());
-        assertThat(response.getPhoneNumber()).isEqualTo(memberWithLoginId.getPhone());
-        assertThat(response.getAddress()).isEqualTo(defaultMemberAddress.getAddress());
-        assertThat(response.getPoint()).isNull();
-        assertThat(response.getOrderProducts()).isNull();
+        assertThat(response).isPresent();
+        assertThat(response.get().getName()).isEqualTo(memberWithLoginId.getName());
+        assertThat(response.get().getPhoneNumber()).isEqualTo(memberWithLoginId.getPhone());
+        assertThat(response.get().getAddress()).isEqualTo(defaultMemberAddress.getAddress());
+        assertThat(response.get().getPoint()).isNull();
+        assertThat(response.get().getOrderProducts()).isNull();
     }
 }

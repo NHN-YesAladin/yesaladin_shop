@@ -122,7 +122,7 @@ public class QueryMemberController {
      * @author 최예린
      * @since 1.0
      */
-    @GetMapping
+    @GetMapping(params = "type")
     @CrossOrigin(origins = {"http://localhost:9090", "https://www.yesaladin.shop"})
     public ResponseDto<MemberGradeQueryResponseDto> getMemberGrade(
             @RequestParam String type,

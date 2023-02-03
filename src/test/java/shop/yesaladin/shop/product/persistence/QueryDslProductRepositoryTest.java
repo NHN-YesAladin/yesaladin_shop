@@ -16,7 +16,7 @@ import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.ProductTypeCode;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
-import shop.yesaladin.shop.product.dto.OrderProductRequestDto;
+import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
 import shop.yesaladin.shop.product.dummy.DummyFile;
 import shop.yesaladin.shop.product.dummy.DummyProduct;
 import shop.yesaladin.shop.product.dummy.DummySubscribeProduct;
@@ -112,7 +112,7 @@ class QueryDslProductRepositoryTest {
         entityManager.persist(product1);
 
         // when
-        Optional<Product> optionalProduct = repository.findByISBN(ISBN1);
+        Optional<Product> optionalProduct = repository.findByIsbn(ISBN1);
 
         // then
         assertThat(optionalProduct).isPresent();
@@ -205,11 +205,12 @@ class QueryDslProductRepositoryTest {
 //        //then
     }
 
-    private List<OrderProductRequestDto> getOrderProductRequestData() {
-        List<OrderProductRequestDto> request = new ArrayList<>();
+    private List<ProductOrderRequestDto> getOrderProductRequestData() {
+        List<ProductOrderRequestDto> request = new ArrayList<>();
 
         for (int i = 0; i < 5; i++) {
-            request.add(ReflectionUtils.newInstance(OrderProductRequestDto.class,
+            request.add(ReflectionUtils.newInstance(
+                    ProductOrderRequestDto.class,
                     "103-341",
                     2
                     ));

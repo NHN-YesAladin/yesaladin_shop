@@ -13,7 +13,6 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -37,8 +36,8 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
@@ -70,23 +69,74 @@ class QueryPointHistoryControllerTest {
     PointReasonCode pointReasonCode = PointReasonCode.USE_ORDER;
     Page<PointHistoryResponseDto> response = getPageableData(5, pointCode, pointReasonCode);
 
-    @WithMockUser
     @Test
-    @DisplayName("회원의 포인트내역 조회 실패 - 유효하지 않는 파라미터 값")
-    void getPointHistoriesByLoginId_fail_InvalidCodeParameter() throws Exception {
+    @DisplayName("회원의 포인트내역 조회 실패 - 유효하지 않는 권한")
+    @WithMockUser(username = "user@1", authorities = "ROLE_ANONYMOUS")
+    void getPointHistoriesByLoginId_fail_InvalidAuthority() throws Exception {
         //when
-        ResultActions result = mockMvc.perform(get("/v1/points/histories")
+        ResultActions result = mockMvc.perform(get("/v1/point-histories")
                 .with(csrf())
                 .param("code", "invalidCode"));
 
         //then
-        ErrorCode code = ErrorCode.POINT_INVALID_PARAMETER;
+        result.andExpect(status().isUnauthorized())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.UNAUTHORIZED.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.UNAUTHORIZED.getDisplayName())
+                ));
+
+        //docs
+        result.andDo(document(
+                "get-point-histories-by-loginId-fail-unathorized",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                requestParameters(
+                        parameterWithName("code").description("포인트 사용/적립 구분"),
+                        parameterWithName("page").description("페이지 번호")
+                                .optional()
+                                .attributes(defaultValue(10)),
+                        parameterWithName("size").description("페이지 요소 개수")
+                                .optional()
+                                .attributes(defaultValue(0)),
+                        parameterWithName("_csrf").description("csrf")
+                ),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("HTTP 상태 코드"),
+                        fieldWithPath("data").type(JsonFieldType.NUMBER)
+                                .description("null")
+                                .optional(),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
+                )
+        ));
+    }
+
+    @Test
+    @DisplayName("회원의 포인트내역 조회 실패 - 유효하지 않는 파라미터 값")
+    @WithMockUser(username = "user@1", authorities = "ROLE_USER")
+    void getPointHistoriesByLoginId_fail_InvalidCodeParameter() throws Exception {
+        //given
+
+        //when
+        ResultActions result = mockMvc.perform(get("/v1/point-histories")
+                .with(csrf())
+                .param("code", "invalidCode"));
+
+        //then
         result.andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.success", equalTo(false)))
-                .andExpect(jsonPath("$.status", equalTo(code.getResponseStatus().value())))
-                .andExpect(jsonPath("$.data", equalTo(null)))
-                .andExpect(jsonPath("$.errorMessages[0]", equalTo(code.getDisplayName())));
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.BAD_REQUEST.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.POINT_INVALID_PARAMETER.getDisplayName())
+                ));
 
         //docs
         result.andDo(document(
@@ -113,21 +163,20 @@ class QueryPointHistoryControllerTest {
                                 .optional(),
                         fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
                                 .description("에러 메세지")
-
                 )
         ));
-
     }
-    @WithMockUser
+
     @Test
     @DisplayName("회원의 전체 포인트내역 조회-성공")
+    @WithMockUser(username = "user@1", authorities = "ROLE_USER")
     void getPointHistoriesByLoginId_all() throws Exception {
         //given
         Mockito.when(pointHistoryService.getPointHistoriesWithLoginId(eq(loginId), any()))
                 .thenReturn(response);
 
         //when
-        ResultActions result = mockMvc.perform(get("/v1/points/histories")
+        ResultActions result = mockMvc.perform(get("/v1/point-histories")
                 .with(csrf())
                 .param("size", "5")
                 .param("page", "0"));
@@ -195,18 +244,19 @@ class QueryPointHistoryControllerTest {
                 )
         ));
     }
-    @WithMockUser
+
     @Test
     @DisplayName("회원의 사용/적립 포인트내역 조회-성공")
+    @WithMockUser(username = "user@1", authorities = "ROLE_USER")
     void getPointHistoriesByLoginId() throws Exception {
         //given
         Mockito.when(pointHistoryService.getPointHistoriesWithLoginIdAndCode(
                 eq(loginId),
-                eq(pointCode),
+                any(),
                 any()
         )).thenReturn(response);
 
-        ResultActions result = mockMvc.perform(get("/v1/points/histories")
+        ResultActions result = mockMvc.perform(get("/v1/point-histories")
                 .with(csrf())
                 .param("code", "USE")
                 .param("page", "0")
@@ -283,9 +333,10 @@ class QueryPointHistoryControllerTest {
     @Test
     void getPointHistories() {
     }
-    @WithMockUser
+
     @Test
-    @DisplayName("회원의 포인트 조회 실패 - 존재하지 않는 회원")
+    @DisplayName("회원의 포인트 조회 실패 - 탈퇴한 회원")
+    @WithMockUser(username = "user@1", authorities = "ROLE_ADMIN")
     void getMemberPoint_fail_memberNotFound() throws Exception {
         //given
         Mockito.when(pointHistoryService.getMemberPoint(loginId))
@@ -309,9 +360,10 @@ class QueryPointHistoryControllerTest {
                 )
         ));
     }
-    @WithMockUser
+
     @Test
     @DisplayName("회원의 포인트 조회 성공")
+    @WithMockUser(username = "user@1", authorities = "ROLE_ADMIN")
     void getMemberPoint_success() throws Exception {
         //given
         long amount = 1000;
@@ -367,6 +419,6 @@ class QueryPointHistoryControllerTest {
             );
         }
         Pageable pageable = Pageable.ofSize(size);
-        return PageableExecutionUtils.getPage(content, pageable, () -> size);
+        return new PageImpl<>(content, pageable, size);
     }
 }
