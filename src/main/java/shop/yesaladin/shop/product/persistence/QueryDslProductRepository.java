@@ -53,7 +53,7 @@ public class QueryDslProductRepository implements QueryProductRepository {
     /**
      * ISSN(Unique)기준으로 상품을 조회합니다.
      *
-     * @param isbn 상품의 ISBN (Unique)
+     * @param isbn 상품의 isbn (Unique)
      * @return 조회된 상품 엔터티
      * @author 이수정
      * @since 1.0
@@ -65,7 +65,7 @@ public class QueryDslProductRepository implements QueryProductRepository {
         return Optional.ofNullable(
                 queryFactory.select(product)
                         .from(product)
-                        .where(product.ISBN.eq(isbn))
+                        .where(product.isbn.eq(isbn))
                         .fetchFirst()
         );
     }
@@ -216,7 +216,7 @@ public class QueryDslProductRepository implements QueryProductRepository {
         return Optional.ofNullable(
                 queryFactory.select(product)
                         .from(product)
-                        .where(product.ISBN.eq(isbn)
+                        .where(product.isbn.eq(isbn)
                                 .and(product.isDeleted.isFalse())
                                 .and(product.isForcedOutOfStock.isFalse())
                                 .and(product.isSale.isTrue())
@@ -240,13 +240,13 @@ public class QueryDslProductRepository implements QueryProductRepository {
         return queryFactory.select(Projections.constructor(
                         ProductOrderResponseDto.class,
                         product.id,
-                        product.ISBN,
+                        product.isbn,
                         product.title,
                         product.actualPrice,
                         product.discountRate,
                         expectedEarnedPoint
                 ))
-                .where(product.ISBN.in(isbnList))
+                .where(product.isbn.in(isbnList))
                 .fetch();
     }
 
@@ -258,11 +258,11 @@ public class QueryDslProductRepository implements QueryProductRepository {
         QProduct product = QProduct.product;
 
         return queryFactory.select(product)
-                .where(product.ISBN.in(isbnList)
+                .where(product.isbn.in(isbnList)
                         .and(product.isDeleted.isFalse())
                         .and(product.isForcedOutOfStock.isFalse())
                         .and(product.isSale.isTrue())
-                        .and(product.quantity.goe(quantities.get(product.ISBN.toString()))))
+                        .and(product.quantity.goe(quantities.get(product.isbn.toString()))))
                 .fetch();
     }
 }

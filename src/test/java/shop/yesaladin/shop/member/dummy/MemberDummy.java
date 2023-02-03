@@ -114,18 +114,18 @@ public class MemberDummy {
     }
 
     public static Member dummyWithBirthday(int month, int date) {
-        String ramos = "Ramos";
+        String minji = "minji";
         String password = "password";
-        String email = "test@test.com";
+        String email = "testminji@test.com";
         int birthDay = date;
         int birthMonth = month;
         int birthYear = 1996;
-        String phone = "01012345678";
+        String phone = "01012312678";
 
         return Member.builder()
-                .nickname(ramos)
-                .name(ramos)
-                .loginId(ramos)
+                .nickname(minji)
+                .name(minji)
+                .loginId(minji)
                 .password(password)
                 .birthYear(birthYear)
                 .birthMonth(birthMonth)

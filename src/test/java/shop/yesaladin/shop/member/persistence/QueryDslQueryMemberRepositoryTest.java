@@ -101,9 +101,6 @@ class QueryDslQueryMemberRepositoryTest {
 
     @Test
     void findMemberByPhone() {
-        //given
-        entityManager.persist(member);
-
         //when
         Optional<Member> optionalMember = queryMemberRepository.findMemberByPhone(member.getPhone());
 
@@ -115,9 +112,6 @@ class QueryDslQueryMemberRepositoryTest {
 
     @Test
     void findMembersByName() {
-        //given
-        entityManager.persist(member);
-
         //when
         Page<Member> memberList = queryMemberRepository.findMembersByName(
                 member.getName(),
@@ -133,9 +127,6 @@ class QueryDslQueryMemberRepositoryTest {
 
     @Test
     void findMembersBySignUpDate() {
-        //given
-        entityManager.persist(member);
-
         //when
         Page<Member> memberList = queryMemberRepository.findMembersBySignUpDate(
                 member.getSignUpDate(),
@@ -144,7 +135,7 @@ class QueryDslQueryMemberRepositoryTest {
         );
 
         //then
-        assertThat(memberList.getTotalElements()).isEqualTo(1);
+        assertThat(memberList.getTotalElements()).isEqualTo(2);
         assertThat(memberList.getContent()
                 .get(0)
                 .getSignUpDate()).isEqualTo(member.getSignUpDate());
