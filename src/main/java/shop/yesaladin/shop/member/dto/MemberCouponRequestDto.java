@@ -18,10 +18,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class MemberCouponRequestDto {
 
-    @NotNull
+    @NotNull(message = "MemberId is required.")
     private Long memberId;
-    @NotEmpty
+    @NotEmpty(message = "CouponCodes cannot be empty.")
     private List<String> couponCodes;
-    @NotEmpty
+    @NotEmpty(message = "CouponGroupCodes cannot be empty.")
     private List<String> couponGroupCodes;
 }

@@ -1,6 +1,7 @@
 package shop.yesaladin.shop.member.controller;
 
 import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,7 +35,7 @@ public class CommandMemberCouponController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseDto<MemberCouponResponseDto> createMemberCoupon(@RequestBody List<MemberCouponRequestDto> requestDtoList) {
+    public ResponseDto<MemberCouponResponseDto> createMemberCoupon(@Valid @RequestBody List<MemberCouponRequestDto> requestDtoList) {
         MemberCouponResponseDto memberCoupons = commandMemberCouponService.createMemberCoupons(
                 requestDtoList);
 

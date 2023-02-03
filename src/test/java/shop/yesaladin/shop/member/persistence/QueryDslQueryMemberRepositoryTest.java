@@ -92,8 +92,8 @@ class QueryDslQueryMemberRepositoryTest {
     void findMembersByBirthday() {
         //given
         LocalDate now = LocalDate.now();
-        Member member1 = MemberDummy.dummyWithBirthday(now.getMonthValue(), now.getDayOfMonth());
-        entityManager.persist(member1);
+        Member dummyMember = MemberDummy.dummyWithBirthday(now.getMonthValue(), now.getDayOfMonth());
+        entityManager.persist(dummyMember);
 
         //when
         List<Long> members = queryMemberRepository.findMemberIdsByBirthday(
