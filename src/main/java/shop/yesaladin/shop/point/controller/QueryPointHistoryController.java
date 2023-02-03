@@ -1,17 +1,21 @@
 package shop.yesaladin.shop.point.controller;
 
+import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
+import shop.yesaladin.shop.common.utils.AuthorityUtils;
 import shop.yesaladin.shop.point.domain.model.PointCode;
 import shop.yesaladin.shop.point.dto.PointHistoryResponseDto;
 import shop.yesaladin.shop.point.service.inter.QueryPointHistoryService;
@@ -24,7 +28,6 @@ import shop.yesaladin.shop.point.service.inter.QueryPointHistoryService;
  */
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/v1/points")
 public class QueryPointHistoryController {
 
     private final QueryPointHistoryService queryPointHistoryService;
@@ -32,48 +35,48 @@ public class QueryPointHistoryController {
     /**
      * 회원의 포인트를 조회합니다.
      *
-     * @param loginId 회원의 아이디
+     * @param authentication 인증
      * @return 회원의 포인트
      * @author 최예린
      * @since 1.0
      */
-    @GetMapping("/{loginId}")
-    public ResponseDto<Long> getMemberPoint(@PathVariable String loginId) {
+    @GetMapping("/v1/points")
+    @CrossOrigin(origins = {"http://localhost:9090", "https://www.yesaladin.shop"})
+    public ResponseDto<Long> getMemberPoint(Authentication authentication) {
+        String loginId = AuthorityUtils.getAuthorizedUserName(authentication);
+
+        long memberPoint = queryPointHistoryService.getMemberPoint(loginId);
+
         return ResponseDto.<Long>builder()
                 .success(true)
                 .status(HttpStatus.OK)
-                .data(queryPointHistoryService.getMemberPoint(loginId))
+                .data(memberPoint)
                 .build();
     }
 
     /**
      * 회원의 포인트 내역을 조회합니다.
      *
-     * @param loginId  회원의 아이디
-     * @param code     사용/적립/전체 구분
-     * @param pageable 페이지와 사이즈
+     * @param code           사용/적립/전체 구분
+     * @param pageable       페이지와 사이즈
+     * @param authentication 인증
      * @return 회원의 포인트 내역
      * @author 최예린
      * @since 1.0
      */
-    @GetMapping("/{loginId}/histories")
-    public ResponseDto<PaginatedResponseDto<PointHistoryResponseDto>> getPointHistoriesByLoginId(
-            @PathVariable String loginId,
-            @RequestParam("code") Optional<String> code,
-            Pageable pageable
+    @GetMapping(path = "/v1/point-histories")
+    public ResponseDto<PaginatedResponseDto<PointHistoryResponseDto>> getPointHistories(
+            @RequestParam(required = false) String code,
+            @PageableDefault Pageable pageable,
+            Authentication authentication
     ) {
-        Page<PointHistoryResponseDto> response;
+        String loginId = AuthorityUtils.getAuthorizedUserName(authentication);
 
-        if (code.isPresent()) {
-            PointCode pointCode = PointCode.findByCode(code.get());
-            response = queryPointHistoryService.getPointHistoriesWithLoginIdAndCode(
-                    loginId,
-                    pointCode,
-                    pageable
-            );
-        } else {
-            response = queryPointHistoryService.getPointHistoriesWithLoginId(loginId, pageable);
-        }
+        Page<PointHistoryResponseDto> response = getPointHistoriesWith(
+                code,
+                pageable,
+                loginId
+        );
 
         return ResponseDto.<PaginatedResponseDto<PointHistoryResponseDto>>builder()
                 .success(true)
@@ -87,6 +90,21 @@ public class QueryPointHistoryController {
                 .build();
     }
 
+    private Page<PointHistoryResponseDto> getPointHistoriesWith(
+            String code,
+            Pageable pageable,
+            String loginId
+    ) {
+        if (!Objects.isNull(code)) {
+            return queryPointHistoryService.getPointHistoriesWithLoginIdAndCode(
+                    loginId,
+                    PointCode.findByCode(code),
+                    pageable
+            );
+        }
+        return queryPointHistoryService.getPointHistoriesWithLoginId(loginId, pageable);
+    }
+
     /**
      * 관리자용 포인트 내역을 조회합니다.
      *
@@ -97,14 +115,17 @@ public class QueryPointHistoryController {
      * @author 최예린
      * @since 1.0
      */
-    @GetMapping
-    public PaginatedResponseDto<PointHistoryResponseDto> getPointHistories(
+    @GetMapping("/manager")
+    public PaginatedResponseDto<PointHistoryResponseDto> getPointHistoriesForManager(
             @RequestParam("code") Optional<String> code,
             @RequestParam("loginId") Optional<String> loginId,
             Pageable pageable
     ) {
-
-        Page<PointHistoryResponseDto> response = getPointHistoryForManager(code, loginId, pageable);
+        Page<PointHistoryResponseDto> response = getPointHistoryListForManager(
+                code,
+                loginId,
+                pageable
+        );
 
         return PaginatedResponseDto.<PointHistoryResponseDto>builder()
                 .totalPage(response.getTotalPages())
@@ -115,7 +136,7 @@ public class QueryPointHistoryController {
 
     }
 
-    private Page<PointHistoryResponseDto> getPointHistoryForManager(
+    private Page<PointHistoryResponseDto> getPointHistoryListForManager(
             Optional<String> code,
             Optional<String> loginId,
             Pageable pageable

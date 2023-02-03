@@ -25,13 +25,13 @@ storage-token:
   password: yesaladin
   thumbnail-path: product/thumbnail
 
-logging:
-  level:
-    tracer: TRACE
-
 yesaladin:
   coupon:
     url: http://localhost:8085
   gateway:
-    base: http://localhost:8072
-    auth: http://localhost:8072
+    base : http://localhost:8072
+    auth : http://localhost:8072/auth
+
+logging:
+  level:
+    tracer: TRACE

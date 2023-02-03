@@ -4,6 +4,8 @@ import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,7 +14,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.dto.ResponseDto;
+import shop.yesaladin.common.exception.ClientException;
+import shop.yesaladin.shop.common.utils.AuthorityUtils;
 import shop.yesaladin.shop.member.dto.MemberBlockRequestDto;
 import shop.yesaladin.shop.member.dto.MemberBlockResponseDto;
 import shop.yesaladin.shop.member.dto.MemberCreateRequestDto;
@@ -60,50 +65,105 @@ public class CommandMemberController {
     /**
      * 회원 정보 수정을 위한 Post 요청을 처리하는 기능입니다.
      *
-     * @param updateDto 회원 정보 수정을 위한 요청 파라미터
-     * @param loginId   회원의 아이디
+     * @param updateDto      회원 정보 수정을 위한 요청 파라미터
+     * @param bindingResult  유효성 검사
+     * @param authentication 인증
      * @return 수정된 회원 정보를 담은 responseEntity
      * @author 최예린
      * @since 1.0
      */
-    @PutMapping("/{loginId}")
-    @ResponseStatus(HttpStatus.OK)
-    public MemberUpdateResponseDto updateMember(
+    @PutMapping
+    public ResponseDto<MemberUpdateResponseDto> updateMember(
             @Valid @RequestBody MemberUpdateRequestDto updateDto,
-            @PathVariable String loginId
+            BindingResult bindingResult,
+            Authentication authentication
     ) {
-        return commandMemberService.update(loginId, updateDto);
+        checkRequestValidation(bindingResult);
+
+        String loginId = AuthorityUtils.getAuthorizedUserName(authentication);
+
+        MemberUpdateResponseDto response = commandMemberService.update(loginId, updateDto);
+
+        return ResponseDto.<MemberUpdateResponseDto>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(response)
+                .build();
     }
 
     /**
      * 회원 차단을 위한 Put 요청을 처리하는 기능입니다.
      *
-     * @param loginId 차단할 회원 아이디
+     * @param loginId        차단할 회원의 아이디
+     * @param request        회원 차단 사유
+     * @param bindingResult  유효성 검사
+     * @param authentication 인증
      * @return 차단된 회원 정보
      * @author 최예린
      * @since 1.0
      */
-    @PutMapping("/{loginId}/block")
-    @ResponseStatus(HttpStatus.OK)
-    public MemberBlockResponseDto blockMember(
+    @PutMapping("{loginId}/block")
+    public ResponseDto<MemberBlockResponseDto> blockMember(
             @PathVariable String loginId,
-            @Valid @RequestBody MemberBlockRequestDto request
+            @Valid @RequestBody MemberBlockRequestDto request,
+            BindingResult bindingResult,
+            Authentication authentication
     ) {
-        return commandMemberService.block(loginId, request);
+        checkRequestValidation(bindingResult);
+
+        checkAuthorityOfManager(authentication);
+
+        MemberBlockResponseDto response = commandMemberService.block(loginId, request);
+
+        return ResponseDto.<MemberBlockResponseDto>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(response)
+                .build();
     }
 
     /**
      * 회원 차단 해지를 위한 Put 요청을 처리하는 기능입니다.
      *
-     * @param loginId 차단 해지할 회원 아이디
+     * @param loginId        차단 해지할 회원의 아이디
+     * @param authentication 인증
      * @return 차단 해지된 회원 정보
      * @author 최예린
      * @since 1.0
      */
     @PutMapping("/{loginId}/unblock")
     @ResponseStatus(HttpStatus.OK)
-    public MemberUnblockResponseDto unblockMember(@PathVariable String loginId) {
-        return commandMemberService.unblock(loginId);
+    public ResponseDto<MemberUnblockResponseDto> unblockMember(
+            @PathVariable String loginId,
+            Authentication authentication
+    ) {
+        checkAuthorityOfManager(authentication);
+
+        MemberUnblockResponseDto response = commandMemberService.unblock(loginId);
+
+        return ResponseDto.<MemberUnblockResponseDto>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(response)
+                .build();
+    }
+
+    private void checkRequestValidation(BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new ClientException(
+                    ErrorCode.BAD_REQUEST,
+                    "Validation Error in member request."
+            );
+        }
+    }
+
+    private static void checkAuthorityOfManager(Authentication authentication) {
+        if (!AuthorityUtils.isAdmin(authentication)) {
+            throw new ClientException(
+                    ErrorCode.UNAUTHORIZED,
+                    "Only Admin can block/unblock member."
+            );
+        }
     }
 
     /**
@@ -117,7 +177,7 @@ public class CommandMemberController {
     @DeleteMapping("/withdraw/{loginId}")
     @ResponseStatus(HttpStatus.OK)
     public ResponseDto<MemberWithdrawResponseDto> deleteMember(@PathVariable String loginId) {
-        log.info("request={}",loginId);
+        log.info("request={}", loginId);
         MemberWithdrawResponseDto response = commandMemberService.withDraw(loginId);
         return ResponseDto.<MemberWithdrawResponseDto>builder()
                 .status(HttpStatus.OK)

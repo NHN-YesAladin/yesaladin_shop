@@ -34,7 +34,10 @@ class QueryMemberServiceImplTest {
     void setUp() {
         queryMemberRepository = Mockito.mock(QueryMemberRepository.class);
         queryMemberRoleRepository = Mockito.mock(QueryMemberRoleRepository.class);
-        service = new QueryMemberServiceImpl(queryMemberRepository, queryMemberRoleRepository);
+        service = new QueryMemberServiceImpl(
+                queryMemberRepository,
+                queryMemberRoleRepository
+        );
 
         expectedMember = Mockito.mock(Member.class);
     }
@@ -441,7 +444,7 @@ class QueryMemberServiceImplTest {
                 .thenThrow(MemberNotFoundException.class);
 
         //when, then
-        assertThatThrownBy(() -> service.getMemberGrade(loginId)).isInstanceOf(
+        assertThatThrownBy(() -> service.getMemberGradeByLoginId(loginId)).isInstanceOf(
                 MemberNotFoundException.class);
     }
 
@@ -456,7 +459,7 @@ class QueryMemberServiceImplTest {
                 .thenReturn(Optional.of(member));
 
         //when
-        MemberGradeQueryResponseDto result = service.getMemberGrade(loginId);
+        MemberGradeQueryResponseDto result = service.getMemberGradeByLoginId(loginId);
 
         //then
         assertThat(result.getGradeEn()).isEqualTo(memberGrade.name());

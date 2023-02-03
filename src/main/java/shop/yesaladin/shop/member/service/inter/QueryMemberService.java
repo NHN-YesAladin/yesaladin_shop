@@ -2,6 +2,7 @@ package shop.yesaladin.shop.member.service.inter;
 
 import java.time.LocalDate;
 import java.util.List;
+import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.dto.MemberDto;
 import shop.yesaladin.shop.member.dto.MemberGradeQueryResponseDto;
 import shop.yesaladin.shop.member.dto.MemberIdDto;
@@ -9,6 +10,7 @@ import shop.yesaladin.shop.member.dto.MemberLoginResponseDto;
 import shop.yesaladin.shop.member.dto.MemberManagerListResponseDto;
 import shop.yesaladin.shop.member.dto.MemberManagerResponseDto;
 import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
+import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
 
 
 /**
@@ -32,6 +34,16 @@ public interface QueryMemberService {
      * @since 1.0
      */
     MemberDto findMemberById(long id);
+
+    /**
+     * loginId를 기준으로 회원을 조회합니다.
+     *
+     * @param loginId 회원의 아이디
+     * @return 회원 조회 결과
+     * @author 최예린
+     * @since 1.0
+     */
+    Member findByLoginId(String loginId);
 
     /**
      * 회원을 unique column인 loginId를 기준 으로 조회 하기 위한 메서드 입니다.
@@ -113,7 +125,11 @@ public interface QueryMemberService {
      * @author 김선홍
      * @since 1.0
      */
-    MemberManagerListResponseDto findMemberManagesBySignUpDate(LocalDate signUpDate, int offset, int limit);
+    MemberManagerListResponseDto findMemberManagesBySignUpDate(
+            LocalDate signUpDate,
+            int offset,
+            int limit
+    );
 
     /**
      * n 일 후가 생일인 회원의 목록을 조회합니다.
@@ -173,7 +189,7 @@ public interface QueryMemberService {
      * @author 최예린
      * @since 1.0
      */
-    MemberGradeQueryResponseDto getMemberGrade(String loginId);
+    MemberGradeQueryResponseDto getMemberGradeByLoginId(String loginId);
 
     /**
      * 회원의 정보를 가져옵니다.
@@ -184,4 +200,14 @@ public interface QueryMemberService {
      * @since 1.0
      */
     MemberQueryResponseDto getByLoginId(String loginId);
+
+    /**
+     * 주문에 필요한 회원 데이터를 가져옵니다.
+     *
+     * @param loginId 회원의 아이디
+     * @return 주문에 필요한 회원 데이터
+     * @author 최예린
+     * @since 1.0
+     */
+    OrderSheetResponseDto getMemberForOrder(String loginId);
 }

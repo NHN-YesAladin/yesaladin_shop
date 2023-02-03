@@ -2,6 +2,7 @@ package shop.yesaladin.shop.order.service.impl;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -10,18 +11,25 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.common.exception.PageOffsetOutOfBoundsException;
+import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
+import shop.yesaladin.shop.order.dto.OrderSheetRequestDto;
+import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryResponseDto;
 import shop.yesaladin.shop.order.exception.OrderNotFoundException;
 import shop.yesaladin.shop.order.service.inter.QueryOrderService;
+import shop.yesaladin.shop.point.service.inter.QueryPointHistoryService;
+import shop.yesaladin.shop.product.dto.ProductOrderResponseDto;
+import shop.yesaladin.shop.product.service.inter.QueryProductService;
 
 /**
  * 주문 데이터 조회 서비스의 구현체
  *
  * @author 김홍대
+ * @author 최예린
  * @since 1.0
  */
 @RequiredArgsConstructor
@@ -30,11 +38,13 @@ public class QueryOrderServiceImpl implements QueryOrderService {
 
     private final QueryOrderRepository queryOrderRepository;
     private final QueryMemberService queryMemberService;
+    private final QueryPointHistoryService queryPointHistoryService;
+    private final QueryProductService queryProductService;
+
     private final Clock clock;
 
     /**
      * {@inheritDoc}
-     *
      */
     @Override
     @Transactional(readOnly = true)
@@ -52,7 +62,6 @@ public class QueryOrderServiceImpl implements QueryOrderService {
 
     /**
      * {@inheritDoc}
-     *
      */
     @Override
     @Transactional(readOnly = true)
@@ -76,7 +85,6 @@ public class QueryOrderServiceImpl implements QueryOrderService {
 
     /**
      * {@inheritDoc}
-     *
      */
     @Override
     @Transactional(readOnly = true)
@@ -85,7 +93,52 @@ public class QueryOrderServiceImpl implements QueryOrderService {
                 .orElseThrow(() -> new OrderNotFoundException(number));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
+    @Transactional(readOnly = true)
+    public OrderSheetResponseDto getMemberOrderSheetData(
+            OrderSheetRequestDto request,
+            String loginId
+    ) {
+        checkValidLoginId(loginId);
+
+        return getOrderSheetDataForMember(request, loginId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public OrderSheetResponseDto getNonMemberOrderSheetData(OrderSheetRequestDto request) {
+        return getOrderSheetDataForNonMember(request);
+    }
+
+    private OrderSheetResponseDto getOrderSheetDataForMember(
+            OrderSheetRequestDto request,
+            String loginId
+    ) {
+        OrderSheetResponseDto memberOrderSheetData = queryMemberService.getMemberForOrder(loginId);
+
+        long point = queryPointHistoryService.getMemberPoint(loginId);
+        List<ProductOrderResponseDto> orderProducts = queryProductService.getByIsbnList(request.getProductList());
+
+        memberOrderSheetData.setPoint(point);
+        memberOrderSheetData.setOrderProducts(orderProducts);
+
+        return memberOrderSheetData;
+    }
+
+    private OrderSheetResponseDto getOrderSheetDataForNonMember(OrderSheetRequestDto request) {
+        List<ProductOrderResponseDto> orderProducts = queryProductService.getByIsbnList(request.getProductList());
+
+        return new OrderSheetResponseDto(orderProducts);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Page<OrderSummaryResponseDto> getOrderListInPeriodByMemberId(
             PeriodQueryRequestDto queryDto,
             long memberId,
@@ -106,7 +159,6 @@ public class QueryOrderServiceImpl implements QueryOrderService {
         );
     }
 
-
     private void checkRequestedOffsetInBounds(
             LocalDate startDate, LocalDate endDate, Long memberId, Pageable pageable
     ) {
@@ -124,6 +176,12 @@ public class QueryOrderServiceImpl implements QueryOrderService {
 
         if (countOfOrder < pageable.getOffset()) {
             throw new PageOffsetOutOfBoundsException((int) pageable.getOffset(), countOfOrder);
+        }
+    }
+
+    private void checkValidLoginId(String loginId) {
+        if (!queryMemberService.existsLoginId(loginId)) {
+            throw new MemberNotFoundException("");
         }
     }
 

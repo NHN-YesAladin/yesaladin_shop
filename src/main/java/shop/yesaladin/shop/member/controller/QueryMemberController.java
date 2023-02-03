@@ -9,13 +9,18 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.dto.ResponseDto;
+import shop.yesaladin.common.exception.ClientException;
+import shop.yesaladin.shop.common.utils.AuthorityUtils;
 import shop.yesaladin.shop.member.dto.MemberGradeQueryResponseDto;
 import shop.yesaladin.shop.member.dto.MemberManagerListResponseDto;
 import shop.yesaladin.shop.member.dto.MemberManagerResponseDto;
@@ -123,27 +128,59 @@ public class QueryMemberController {
     /**
      * 회원의 등급을 조회합니다.
      *
-     * @param loginId 회원의 아이디
+     * @param type           조회 정보 구분
+     * @param authentication 인증 정보
      * @return 회원의 등급
      * @author 최예린
      * @since 1.0
      */
-    @GetMapping("/{loginId}/grade")
-    public MemberGradeQueryResponseDto getMemberGrade(@PathVariable String loginId) {
-        return queryMemberService.getMemberGrade(loginId);
+    @GetMapping(params = "type")
+    @CrossOrigin(origins = {"http://localhost:9090", "https://www.yesaladin.shop"})
+    public ResponseDto<MemberGradeQueryResponseDto> getMemberGrade(
+            @RequestParam String type,
+            Authentication authentication
+    ) {
+        String loginId = AuthorityUtils.getAuthorizedUserName(authentication);
+
+        checkValidTypeParameterForMemberGrade(type);
+
+        MemberGradeQueryResponseDto response = queryMemberService.getMemberGradeByLoginId(loginId);
+
+        return ResponseDto.<MemberGradeQueryResponseDto>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(response)
+                .build();
+    }
+
+    private static void checkValidTypeParameterForMemberGrade(String type) {
+        if (!type.equals("grade")) {
+            throw new ClientException(
+                    ErrorCode.MEMBER_BAD_REQUEST,
+                    "Invalid type parameter for Member about grade"
+            );
+        }
     }
 
     /**
      * 회원의 정보를 조회합니다.
      *
-     * @param loginId 회원의 아이디
+     * @param authentication 인증 정보
      * @return 회원의 정보
      * @author 최예린
      * @since 1.0
      */
-    @GetMapping("{loginId}")
-    public MemberQueryResponseDto getMemberInfo(@PathVariable String loginId) {
-        return queryMemberService.getByLoginId(loginId);
+    @GetMapping
+    public ResponseDto<MemberQueryResponseDto> getMemberInfo(Authentication authentication) {
+        String loginId = AuthorityUtils.getAuthorizedUserName(authentication);
+
+        MemberQueryResponseDto response = queryMemberService.getByLoginId(loginId);
+
+        return ResponseDto.<MemberQueryResponseDto>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(response)
+                .build();
     }
 
     /**
