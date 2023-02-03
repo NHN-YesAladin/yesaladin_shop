@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 public class MemberCouponRequestDto {
 
     @NotNull
-    private MemberDto memberDto;
+    private Long memberId;
     @NotEmpty
     private List<String> couponCodes;
     @NotEmpty

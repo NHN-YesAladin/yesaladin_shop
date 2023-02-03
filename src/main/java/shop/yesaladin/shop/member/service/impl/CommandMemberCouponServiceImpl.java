@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.member.domain.model.MemberCoupon;
+import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
 import shop.yesaladin.shop.member.dto.MemberCouponRequestDto;
 import shop.yesaladin.shop.member.dto.MemberCouponResponseDto;
 import shop.yesaladin.shop.member.persistence.JpaCommandMemberCouponRepository;
@@ -23,6 +24,7 @@ import shop.yesaladin.shop.member.service.inter.CommandMemberCouponService;
 public class CommandMemberCouponServiceImpl implements CommandMemberCouponService {
 
     private final JpaCommandMemberCouponRepository memberCouponRepository;
+    private final QueryMemberRepository queryMemberRepository;
 
     /**
      * {@inheritDoc}
@@ -34,7 +36,8 @@ public class CommandMemberCouponServiceImpl implements CommandMemberCouponServic
         for (MemberCouponRequestDto requestDto : requestDtos) {
             for (int i = 0; i < requestDto.getCouponCodes().size(); i++) {
                 MemberCoupon memberCoupon = MemberCoupon.builder()
-                        .member(requestDto.getMemberDto().toEntity())
+                        .member(queryMemberRepository.findById(requestDto.getMemberId())
+                                .orElseThrow())
                         .couponCode(requestDto.getCouponCodes().get(i))
                         .couponGroupCode(requestDto.getCouponGroupCodes().get(i))
                         .build();
