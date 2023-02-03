@@ -12,6 +12,7 @@ import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRoleRepository;
 import shop.yesaladin.shop.member.dto.MemberDto;
 import shop.yesaladin.shop.member.dto.MemberGradeQueryResponseDto;
+import shop.yesaladin.shop.member.dto.MemberIdDto;
 import shop.yesaladin.shop.member.dto.MemberLoginResponseDto;
 import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
@@ -94,7 +95,7 @@ public class QueryMemberServiceImpl implements QueryMemberService {
      * {@inheritDoc}
      */
     @Override
-    public List<Long> findMemberIdsByBirthday(int laterDays) {
+    public List<MemberIdDto> findMemberIdsByBirthday(int laterDays) {
         LocalDate birthday = LocalDate.now().plusDays(laterDays);
         return queryMemberRepository.findMemberIdsByBirthday(birthday.getMonthValue(),
                 birthday.getDayOfMonth()

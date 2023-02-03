@@ -3,6 +3,7 @@ package shop.yesaladin.shop.member.service.inter;
 import java.util.List;
 import shop.yesaladin.shop.member.dto.MemberDto;
 import shop.yesaladin.shop.member.dto.MemberGradeQueryResponseDto;
+import shop.yesaladin.shop.member.dto.MemberIdDto;
 import shop.yesaladin.shop.member.dto.MemberLoginResponseDto;
 import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
 
@@ -65,7 +66,7 @@ public interface QueryMemberService {
      * @param laterDays 오늘 날짜를 기준으로 생일을 계산할 일수
      * @return 생일인 회원 리스트
      */
-    List<Long> findMemberIdsByBirthday(int laterDays);
+    List<MemberIdDto> findMemberIdsByBirthday(int laterDays);
 
     /**
      * 회원 가입 시 입력할 loginId를 사전에 중복 판별을 하기 위한 메서드 입니다.

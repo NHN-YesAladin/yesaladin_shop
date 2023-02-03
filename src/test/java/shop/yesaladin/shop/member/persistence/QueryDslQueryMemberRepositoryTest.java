@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.member.domain.model.Member;
+import shop.yesaladin.shop.member.dto.MemberIdDto;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
 
 @Transactional
@@ -96,7 +97,7 @@ class QueryDslQueryMemberRepositoryTest {
         entityManager.persist(dummyMember);
 
         //when
-        List<Long> members = queryMemberRepository.findMemberIdsByBirthday(
+        List<MemberIdDto> members = queryMemberRepository.findMemberIdsByBirthday(
                 now.getMonthValue(),
                 now.getDayOfMonth()
         );

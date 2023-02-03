@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.shop.member.dto.MemberGradeQueryResponseDto;
+import shop.yesaladin.shop.member.dto.MemberIdDto;
 import shop.yesaladin.shop.member.dto.MemberProfileExistResponseDto;
 import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
@@ -146,12 +147,12 @@ public class QueryMemberController {
      * @since 1.0
      */
     @GetMapping(params = {"type=birthday", "laterDays"})
-    public ResponseDto<List<Long>> getBirthdayMember(
+    public ResponseDto<List<MemberIdDto>> getBirthdayMember(
             @RequestParam(value = "laterDays", defaultValue = "0") int laterDays
     ) {
-        List<Long> data = queryMemberService.findMemberIdsByBirthday(laterDays);
+        List<MemberIdDto> data = queryMemberService.findMemberIdsByBirthday(laterDays);
 
-        return ResponseDto.<List<Long>>builder()
+        return ResponseDto.<List<MemberIdDto>>builder()
                 .success(true)
                 .data(data)
                 .status(HttpStatus.OK)
