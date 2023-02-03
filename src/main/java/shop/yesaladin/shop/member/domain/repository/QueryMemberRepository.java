@@ -1,7 +1,11 @@
 package shop.yesaladin.shop.member.domain.repository;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
 import shop.yesaladin.shop.member.domain.model.Member;
+import shop.yesaladin.shop.member.dto.MemberIdDto;
 import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
 
 /**
@@ -9,6 +13,7 @@ import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
  *
  * @author 송학현
  * @author 최예린
+ * @author 김선홍
  * @since 1.0
  */
 public interface QueryMemberRepository {
@@ -52,6 +57,47 @@ public interface QueryMemberRepository {
      * @since 1.0
      */
     Optional<Member> findMemberByEmail(String email);
+
+    /**
+     * 회원의 phone 를 통해 회원을 조회 합니다.
+     *
+     * @param phone 회원의 phone 입니다.
+     * @return 조회된 회원
+     * @author 김선홍
+     * @since 1.0
+     */
+    Optional<Member> findMemberByPhone(String phone);
+
+    /**
+     * 회원의 name 을 통해 회원을 조회합니다.
+     *
+     * @param name   회원의 name 입니다.
+     * @param offset 페이지 위치
+     * @param limit  데이터 갯수
+     * @return 조회된 회원
+     */
+    Page<Member> findMembersByName(String name, int offset, int limit);
+
+    /**
+     * 회원의 signUpDate 를 통해 회원을 조회합니다.
+     *
+     * @param signUpDate 회원의 signUpDate 입니다.
+     * @param offset     페이지 위치
+     * @param limit      데이터 갯수
+     * @return 조회된 회원
+     */
+    Page<Member> findMembersBySignUpDate(LocalDate signUpDate, int offset, int limit);
+
+    /**
+     * 회원의 birthMonth, birthDay 를 통해 회원을 조회 합니다.
+     *
+     * @param month 조회할 birthMonth
+     * @param date  조회할 birthDay
+     * @return 조회한 날짜가 생일인 회원 목록
+     * @author 서민지
+     * @since 1.0
+     */
+    List<MemberIdDto> findMemberIdsByBirthday(int month, int date);
 
     /**
      * 회원의 loginId 을 통해 회원이 존재 하는지 유무를 판별합니다.

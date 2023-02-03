@@ -113,4 +113,30 @@ public class MemberDummy {
                 .build();
     }
 
+    public static Member dummyWithBirthday(int month, int date) {
+        String ramos = "Ramos";
+        String password = "password";
+        String email = "test@test.com";
+        int birthDay = date;
+        int birthMonth = month;
+        int birthYear = 1996;
+        String phone = "01012345678";
+
+        return Member.builder()
+                .nickname(ramos)
+                .name(ramos)
+                .loginId(ramos)
+                .password(password)
+                .birthYear(birthYear)
+                .birthMonth(birthMonth)
+                .birthDay(birthDay)
+                .email(email)
+                .phone(phone)
+                .signUpDate(LocalDate.now())
+                .isBlocked(false)
+                .memberGrade(MemberGrade.WHITE)
+                .memberGenderCode(MemberGenderCode.MALE)
+                .build();
+    }
+
 }

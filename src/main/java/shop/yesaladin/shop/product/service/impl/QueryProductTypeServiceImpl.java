@@ -27,7 +27,7 @@ public class QueryProductTypeServiceImpl implements QueryProductTypeService {
     @Override
     public List<ProductTypeResponseDto> findAll() {
         return List.of(ProductTypeCode.values()).stream()
-                .map(type -> new ProductTypeResponseDto(type.getId(), type.name()))
+                .map(type -> new ProductTypeResponseDto(type.getId(), type.name(), type.getKoName()))
                 .collect(Collectors.toList());
     }
 }

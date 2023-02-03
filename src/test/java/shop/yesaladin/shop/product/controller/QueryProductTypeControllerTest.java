@@ -42,8 +42,8 @@ class QueryProductTypeControllerTest {
     private QueryProductTypeService service;
 
     private List<ProductTypeResponseDto> productTypes = List.of(
-            new ProductTypeResponseDto(1, ProductTypeCode.NONE.toString()),
-            new ProductTypeResponseDto(2, ProductTypeCode.DISCOUNTS.toString())
+            new ProductTypeResponseDto(1, ProductTypeCode.NONE.toString(), ProductTypeCode.NONE.getKoName()),
+            new ProductTypeResponseDto(2, ProductTypeCode.DISCOUNTS.toString(), ProductTypeCode.DISCOUNTS.getKoName())
     );
     ;
 
@@ -77,7 +77,8 @@ class QueryProductTypeControllerTest {
                 getDocumentResponse(),
                 responseFields(
                         fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("상품 유형 아이디"),
-                        fieldWithPath("[].type").type(JsonFieldType.STRING).description("상품 유형 이름")
+                        fieldWithPath("[].type").type(JsonFieldType.STRING).description("상품 유형 이름"),
+                        fieldWithPath("[].koName").type(JsonFieldType.STRING).description("상품 유형 한국 이름")
                 )
         ));
     }
