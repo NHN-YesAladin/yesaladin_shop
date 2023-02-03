@@ -1,14 +1,21 @@
 package shop.yesaladin.shop.member.controller;
 
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.shop.member.dto.MemberGradeQueryResponseDto;
+import shop.yesaladin.shop.member.dto.MemberManagerListResponseDto;
+import shop.yesaladin.shop.member.dto.MemberManagerResponseDto;
 import shop.yesaladin.shop.member.dto.MemberProfileExistResponseDto;
 import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
@@ -18,6 +25,7 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberService;
  *
  * @author 송학현
  * @author 최예린
+ * @author 김선홍
  * @since 1.0
  */
 @RequiredArgsConstructor
@@ -131,5 +139,64 @@ public class QueryMemberController {
     @GetMapping("{loginId}")
     public MemberQueryResponseDto getMemberInfo(@PathVariable String loginId) {
         return queryMemberService.getByLoginId(loginId);
+    }
+
+    @GetMapping(value = "/manage", params = "loginid")
+    public ResponseDto<MemberManagerResponseDto> manageMemberInfoByLoginId(@RequestParam(name = "loginid") String loginId) {
+        return ResponseDto.<MemberManagerResponseDto>builder()
+                .data(queryMemberService.findMemberManageByLoginId(loginId))
+                .status(HttpStatus.OK)
+                .success(true)
+                .build();
+    }
+
+    @GetMapping(value = "/manage", params = "nickname")
+    public ResponseDto<MemberManagerResponseDto> manageMemberInfoByNickname(@RequestParam String nickname) {
+        return ResponseDto.<MemberManagerResponseDto>builder()
+                .data(queryMemberService.findMemberManageByNickName(nickname))
+                .status(HttpStatus.OK)
+                .success(true)
+                .build();
+    }
+
+    @GetMapping(value = "/manage", params = "phone")
+    public ResponseDto<MemberManagerResponseDto> manageMemberInfoByPhone(@RequestParam String phone) {
+        return ResponseDto.<MemberManagerResponseDto>builder()
+                .data(queryMemberService.findMemberManageByPhone(phone))
+                .status(HttpStatus.OK)
+                .success(true)
+                .build();
+    }
+
+    @GetMapping(value = "/manage", params = "name")
+    public ResponseDto<MemberManagerListResponseDto> manageMemberInfoByName(
+            @RequestParam String name,
+            @PageableDefault Pageable pageable
+    ) {
+        return ResponseDto.<MemberManagerListResponseDto>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(queryMemberService.findMemberManageByName(
+                        name,
+                        pageable.getPageNumber(),
+                        pageable.getPageSize()
+                ))
+                .build();
+    }
+
+    @GetMapping(value = "/manage", params = "signupdate")
+    public ResponseDto<MemberManagerListResponseDto> manageMemberInfoBySignUpDate(
+            @RequestParam(name = "signupdate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate signUpDate,
+            @PageableDefault Pageable pageable
+    ) {
+        return ResponseDto.<MemberManagerListResponseDto>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(queryMemberService.findMemberManageBySignUpDate(
+                        signUpDate,
+                        pageable.getPageNumber(),
+                        pageable.getPageSize()
+                ))
+                .build();
     }
 }

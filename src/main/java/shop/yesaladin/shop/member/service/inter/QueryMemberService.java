@@ -1,8 +1,11 @@
 package shop.yesaladin.shop.member.service.inter;
 
+import java.time.LocalDate;
 import shop.yesaladin.shop.member.dto.MemberDto;
 import shop.yesaladin.shop.member.dto.MemberGradeQueryResponseDto;
 import shop.yesaladin.shop.member.dto.MemberLoginResponseDto;
+import shop.yesaladin.shop.member.dto.MemberManagerListResponseDto;
+import shop.yesaladin.shop.member.dto.MemberManagerResponseDto;
 import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
 
 
@@ -11,6 +14,7 @@ import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
  *
  * @author 송학현
  * @author 최예린
+ * @author 김선홍
  * @since 1.0
  */
 public interface QueryMemberService {
@@ -57,6 +61,56 @@ public interface QueryMemberService {
      * @since 1.0
      */
     MemberLoginResponseDto findMemberLoginInfoByLoginId(String loginId);
+
+    /**
+     * 관리자의 회원 관리 요창에 대해 회원을 unique column 인 LoginId 를 기준으로 조회하는 메서드 이다.
+     *
+     * @param loginId member의 loginId
+     * @return loginId 를 가지는 회원의 정보를 담은 DTO
+     * @author 김선홍
+     * @since 1.0
+     */
+    MemberManagerResponseDto findMemberManageByLoginId(String loginId);
+
+    /**
+     * 관리자의 회원 관리 요창에 대해 회원을 unique column 인 nickname 를 기준으로 조회하는 메서드 이다.
+     *
+     * @param nickname member의 nickname
+     * @return nickname 을 가지는 회원의 정보를 담은 DTO
+     * @author 김선홍
+     * @since 1.0
+     */
+    MemberManagerResponseDto findMemberManageByNickName(String nickname);
+
+    /**
+     * 관리자의 회원 관리 요창에 대해 회원을 unique column 인 phone 를 기준으로 조회하는 메서드 이다.
+     *
+     * @param phone member의 loginId
+     * @return phone 를 가지는 회원의 정보를 담은 DTO
+     * @author 김선홍
+     * @since 1.0
+     */
+    MemberManagerResponseDto findMemberManageByPhone(String phone);
+
+    /**
+     * 관리자의 회원 관리 요창에 대해 회원을 column 인 name 을 기준으로 조회하는 메서드 이다.
+     *
+     * @param name member의 name
+     * @return name 을 가지는 회원의 정보를 담은 DTO 리스트
+     * @author 김선홍
+     * @since 1.0
+     */
+    MemberManagerListResponseDto findMemberManageByName(String name, int offset, int limit);
+
+    /**
+     * 관리자의 회원 관리 요창에 대해 회원을 column 인 signUpDate 를 기준으로 조회하는 메서드 이다.
+     *
+     * @param signUpDate member의 signUpDate
+     * @return signUpDate 를 가지는 회원의 정보를 담은 DTO 리스트
+     * @author 김선홍
+     * @since 1.0
+     */
+    MemberManagerListResponseDto findMemberManageBySignUpDate(LocalDate signUpDate, int offset, int limit);
 
     /**
      * 회원 가입 시 입력할 loginId를 사전에 중복 판별을 하기 위한 메서드 입니다.

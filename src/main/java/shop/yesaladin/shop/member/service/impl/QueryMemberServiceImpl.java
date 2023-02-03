@@ -1,9 +1,12 @@
 package shop.yesaladin.shop.member.service.impl;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.member.domain.model.Member;
@@ -12,6 +15,8 @@ import shop.yesaladin.shop.member.domain.repository.QueryMemberRoleRepository;
 import shop.yesaladin.shop.member.dto.MemberDto;
 import shop.yesaladin.shop.member.dto.MemberGradeQueryResponseDto;
 import shop.yesaladin.shop.member.dto.MemberLoginResponseDto;
+import shop.yesaladin.shop.member.dto.MemberManagerListResponseDto;
+import shop.yesaladin.shop.member.dto.MemberManagerResponseDto;
 import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
@@ -21,6 +26,7 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberService;
  *
  * @author 송학현
  * @author 최예린
+ * @author 김선홍
  * @since 1.0
  */
 @Slf4j
@@ -91,6 +97,98 @@ public class QueryMemberServiceImpl implements QueryMemberService {
                 member.getPassword(),
                 roles
         );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public MemberManagerResponseDto findMemberManageByLoginId(String loginId) {
+        return MemberManagerResponseDto.fromEntity(queryMemberRepository.findMemberByLoginId(loginId)
+                .orElseThrow(() -> {
+                    throw new MemberNotFoundException("Member LoginId : " + loginId);
+                }));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public MemberManagerResponseDto findMemberManageByNickName(String nickname) {
+        return MemberManagerResponseDto.fromEntity(queryMemberRepository.findMemberByNickname(
+                nickname).orElseThrow(() -> {
+            throw new MemberNotFoundException("Member Nickname : " + nickname);
+        }));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public MemberManagerResponseDto findMemberManageByPhone(String phone) {
+        return MemberManagerResponseDto.fromEntity(queryMemberRepository.findMemberByPhone(
+                phone).orElseThrow(() -> {
+            throw new MemberNotFoundException("Member Phone : " + phone);
+        }));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public MemberManagerListResponseDto findMemberManageByName(
+            String name,
+            int offset,
+            int limit
+    ) {
+        Page<Member> result = queryMemberRepository.findMemberByName(name, offset, limit);
+        return MemberManagerListResponseDto.builder()
+                .count(result.getTotalElements())
+                .memberManagerResponseDtoList(Optional.of(queryMemberRepository.findMemberByName(
+                                name,
+                                offset,
+                                limit
+                        ).getContent())
+                        .filter(m -> !m.isEmpty())
+                        .orElseThrow(() -> new MemberNotFoundException(""))
+                        .stream()
+                        .map(MemberManagerResponseDto::fromEntity)
+                        .collect(Collectors.toList()))
+                .build();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public MemberManagerListResponseDto findMemberManageBySignUpDate(
+            LocalDate signUpDate,
+            int offset,
+            int limit
+    ) {
+        Page<Member> result = queryMemberRepository.findMemberBySignUpDate(
+                signUpDate,
+                offset,
+                limit
+        );
+        return MemberManagerListResponseDto.builder()
+                .count(result.getTotalElements())
+                .memberManagerResponseDtoList(Optional.of(queryMemberRepository.findMemberBySignUpDate(
+                                signUpDate,
+                                offset,
+                                limit
+                        ).getContent())
+                        .filter(m -> !m.isEmpty())
+                        .orElseThrow(() -> new MemberNotFoundException(""))
+                        .stream()
+                        .map(MemberManagerResponseDto::fromEntity)
+                        .collect(Collectors.toList()))
+                .build();
     }
 
     private Member getMemberByLoginId(String loginId, Optional<Member> memberByLoginId, String s) {
