@@ -137,7 +137,7 @@ public class QueryMemberController {
     }
 
     /**
-     * n 일 후 생일인 회원을 조회합니다.
+     * n 일 후가 생일인 회원을 조회합니다.
      *
      * @param laterDays 오늘 날짜를 기준으로 생일을 계산할 일수
      * @return n 일 후가 생일인 회원 목록
@@ -145,9 +145,15 @@ public class QueryMemberController {
      * @since 1.0
      */
     @GetMapping(params = {"type=birthday", "laterDays"})
-    public List<Member> getBirthdayMember(
+    public ResponseDto<List<Member>> getBirthdayMember(
             @RequestParam(value = "laterDays", defaultValue = "0") int laterDays
     ) {
-        return queryMemberService.findMembersByBirthday(laterDays);
+        List<Member> data = queryMemberService.findMembersByBirthday(laterDays);
+
+        return ResponseDto.<List<Member>>builder()
+                .success(true)
+                .data(data)
+                .status(HttpStatus.OK)
+                .build();
     }
 }

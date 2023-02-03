@@ -36,7 +36,7 @@ public class CommandMemberCouponServiceImpl implements CommandMemberCouponServic
                 MemberCoupon memberCoupon = MemberCoupon.builder()
                         .member(requestDto.getMemberDto().toEntity())
                         .couponCode(requestDto.getCouponCodes().get(i))
-                        .couponGroupCode(requestDto.getGroupCodes().get(i))
+                        .couponGroupCode(requestDto.getCouponGroupCodes().get(i))
                         .build();
                 memberCouponList.add(memberCoupon);
             }

@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.shop.member.dto.MemberCouponRequestDto;
@@ -32,6 +33,7 @@ public class CommandMemberCouponController {
      * @return 회원 쿠폰 등록 요청 처리 정보를 담은 ResponseDto
      */
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<MemberCouponResponseDto> createMemberCoupon(@RequestBody List<MemberCouponRequestDto> requestDtos) {
         MemberCouponResponseDto memberCoupons = commandMemberCouponService.createMemberCoupons(
                 requestDtos);

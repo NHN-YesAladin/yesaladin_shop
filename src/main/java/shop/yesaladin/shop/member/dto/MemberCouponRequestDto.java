@@ -1,6 +1,8 @@
 package shop.yesaladin.shop.member.dto;
 
 import java.util.List;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,7 +19,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class MemberCouponRequestDto {
 
+    @NotNull
     private MemberDto memberDto;
+    @NotEmpty
     private List<String> couponCodes;
-    private List<String> groupCodes;
+    @NotEmpty
+    private List<String> couponGroupCodes;
 }
