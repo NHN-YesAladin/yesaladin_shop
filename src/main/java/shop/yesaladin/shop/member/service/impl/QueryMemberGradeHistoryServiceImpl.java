@@ -1,17 +1,17 @@
 package shop.yesaladin.shop.member.service.impl;
 
 import java.time.Clock;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import shop.yesaladin.common.code.ErrorCode;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberGradeHistoryRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
 import shop.yesaladin.shop.member.dto.MemberGradeHistoryQueryResponseDto;
-import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberGradeHistoryService;
 
 /**
@@ -39,14 +39,23 @@ public class QueryMemberGradeHistoryServiceImpl implements QueryMemberGradeHisto
             Pageable pageable
     ) {
         request.validate(clock);
-        if(!queryMemberRepository.existsMemberByLoginId(loginId)) {
-            throw new MemberNotFoundException("Member loginId:" + loginId);
-        }
+
+        checkLoginIdIsExist(loginId);
+
         return queryMemberGradeHistoryRepository.findByLoginIdAndPeriod(
                 loginId,
                 request.getStartDateOrDefaultValue(clock),
                 request.getEndDateOrDefaultValue(clock),
                 pageable
         );
+    }
+
+    private void checkLoginIdIsExist(String loginId) {
+        if (!queryMemberRepository.existsMemberByLoginId(loginId)) {
+            throw new ClientException(
+                    ErrorCode.MEMBER_NOT_FOUND,
+                    "Member not found with loginId : " + loginId
+            );
+        }
     }
 }

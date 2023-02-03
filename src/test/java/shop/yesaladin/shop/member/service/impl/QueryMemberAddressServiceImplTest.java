@@ -5,18 +5,17 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberAddressRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
 import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
-import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberAddressService;
 
 class QueryMemberAddressServiceImplTest {
@@ -26,7 +25,7 @@ class QueryMemberAddressServiceImplTest {
     QueryMemberAddressRepository queryMemberAddressRepository;
 
 
-    String address = "Gwang Ju";
+    String address = "서울특별시 구로구 디지털로26길 72 (구로동, NHN KCP)";
     Boolean isDefault = false;
 
     @BeforeEach
@@ -41,48 +40,45 @@ class QueryMemberAddressServiceImplTest {
     }
 
     @Test
-    void findByLoginId_failedByMemberNotFound() {
+    void getByLoginId_failedByMemberNotFound() {
         //given
         String loginId = "user@1";
 
-        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
-                .thenThrow(MemberNotFoundException.class);
+        Mockito.when(queryMemberRepository.existsMemberByLoginId(loginId))
+                .thenReturn(false);
 
         //when,then
-        assertThatThrownBy(() -> queryMemberAddressService.findByLoginId(loginId)).isInstanceOf(
-                MemberNotFoundException.class);
+        assertThatThrownBy(() -> queryMemberAddressService.getByLoginId(loginId)).isInstanceOf(
+                ClientException.class);
     }
 
     @Test
-    void findByLoginId() {
+    void getByLoginId() {
         //given
         String loginId = "user@1";
         Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
 
-        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
-                .thenReturn(Optional.of(member));
+        Mockito.when(queryMemberRepository.existsMemberByLoginId(loginId))
+                .thenReturn(true);
 
-        Mockito.when(queryMemberAddressRepository.findByLoginId(member))
-                .thenReturn(getMemberAddressList(10, member));
+        Mockito.when(queryMemberAddressRepository.getByLoginId(loginId))
+                .thenReturn(getMemberAddressList(member));
         //when
-        List<MemberAddressResponseDto> result = queryMemberAddressService.findByLoginId(loginId);
+        List<MemberAddressResponseDto> result = queryMemberAddressService.getByLoginId(loginId);
 
         //then
         assertThat(result).hasSize(10);
-        assertThat(result.stream()
-                .filter(x -> !Objects.equals(x.getLoginId(), loginId))
-                .findFirst()).isEmpty();
     }
 
-    List<MemberAddress> getMemberAddressList(int cnt, Member member) {
-        List<MemberAddress> memberAddressList = new ArrayList<>();
-        for (int i = 0; i < cnt; i++) {
-            memberAddressList.add(MemberAddress.builder()
+    List<MemberAddressResponseDto> getMemberAddressList(Member member) {
+        List<MemberAddressResponseDto> memberAddressList = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            memberAddressList.add(MemberAddressResponseDto.fromEntity(MemberAddress.builder()
                     .id((long) i + 1)
                     .address(address)
                     .isDefault(isDefault)
                     .member(member)
-                    .build());
+                    .build()));
         }
         return memberAddressList;
     }

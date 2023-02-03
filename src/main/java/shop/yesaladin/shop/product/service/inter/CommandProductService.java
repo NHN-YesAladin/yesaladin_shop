@@ -1,13 +1,18 @@
 package shop.yesaladin.shop.product.service.inter;
 
+import java.util.List;
+import java.util.Map;
+import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.dto.ProductCreateDto;
 import shop.yesaladin.shop.product.dto.ProductOnlyIdDto;
+import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
 import shop.yesaladin.shop.product.dto.ProductUpdateDto;
 
 /**
  * 상품 등록/수정/삭제을 위한 Service Interface 입니다.
  *
  * @author 이수정
+ * @author 최예린
  * @since 1.0
  */
 public interface CommandProductService {
@@ -69,4 +74,14 @@ public interface CommandProductService {
      * @since 1.0
      */
     void changeIsForcedOutOfStock(long id);
+
+    /**
+     * 상품을 구매합니다.
+     *
+     * @param products 구매할 상품 리스트
+     * @return 구매한 상품 리스트
+     * @author 최예린
+     * @since 1.0
+     */
+    Map<String, Product> orderProducts(List<ProductOrderRequestDto> products);
 }

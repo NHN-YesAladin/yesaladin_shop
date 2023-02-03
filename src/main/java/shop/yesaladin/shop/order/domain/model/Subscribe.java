@@ -18,8 +18,9 @@ import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 /**
  * 구독 엔티티 입니다.
  *
- * @author : 최예린, 송학현
- * @since : 1.0
+ * @author 최예린
+ * @author 송학현
+ * @since 1.0
  */
 @Getter
 @SuperBuilder

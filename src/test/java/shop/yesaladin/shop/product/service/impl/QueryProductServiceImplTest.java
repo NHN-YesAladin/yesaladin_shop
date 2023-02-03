@@ -7,6 +7,7 @@ import org.mockito.Mockito;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import shop.yesaladin.shop.category.service.inter.QueryProductCategoryService;
 import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
@@ -50,6 +51,8 @@ class QueryProductServiceImplTest {
     private QueryWritingService queryWritingService;
     private QueryPublishService queryPublishService;
     private QueryProductTagService queryProductTagService;
+    private QueryProductCategoryService queryProductCategoryService;
+    ;
 
     private final Clock clock = Clock.fixed(
             Instant.parse("2023-01-10T00:00:00.000Z"),
@@ -62,12 +65,14 @@ class QueryProductServiceImplTest {
         queryWritingService = mock(QueryWritingService.class);
         queryPublishService = mock(QueryPublishService.class);
         queryProductTagService = mock(QueryProductTagService.class);
+        queryProductCategoryService = mock(QueryProductCategoryService.class);
 
         service = new QueryProductServiceImpl(
                 queryProductRepository,
                 queryWritingService,
                 queryPublishService,
-                queryProductTagService
+                queryProductTagService,
+                queryProductCategoryService
         );
     }
 

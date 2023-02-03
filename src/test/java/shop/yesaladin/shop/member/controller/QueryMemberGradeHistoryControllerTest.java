@@ -40,11 +40,14 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import shop.yesaladin.common.code.ErrorCode;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.common.exception.InvalidPeriodConditionException;
 import shop.yesaladin.shop.common.exception.type.InvalidPeriodConditionType;
@@ -68,7 +71,7 @@ class QueryMemberGradeHistoryControllerTest {
     long previousPaidAmount = 100000;
     MemberGrade memberGrade = MemberGrade.BRONZE;
 
-    @WithMockUser
+    @WithMockUser(username = "user@1")
     @Test
     @DisplayName("회원 등급내역 조회 실패 - 유효하지 않은 조회 기간")
     void getMemberGrades_fail_invalidPeriodCondition() throws Exception {
@@ -83,9 +86,9 @@ class QueryMemberGradeHistoryControllerTest {
                 LocalDate.of(2023, 1, 2)
         );
         Mockito.when(queryMemberGradeHistoryService.getByLoginId(eq(loginId), any(), any()))
-                .thenThrow(new InvalidPeriodConditionException(InvalidPeriodConditionType.TOO_PAST));
+                .thenThrow(new ClientException(ErrorCode.BAD_REQUEST,""));
 
-        ResultActions result = mockMvc.perform(get("/v1/members/{loginId}/grade-histories", loginId)
+        ResultActions result = mockMvc.perform(get("/v1/member-grades")
                 .param("page", page + "")
                 .param("size", size + "")
                 .content(objectMapper.writeValueAsString(request))
@@ -93,7 +96,12 @@ class QueryMemberGradeHistoryControllerTest {
 
         result.andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message", startsWith("Cannot query with")));
+                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.BAD_REQUEST.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.BAD_REQUEST.getDisplayName())
+                ));
 
         ArgumentCaptor<PeriodQueryRequestDto> captor = ArgumentCaptor.forClass(PeriodQueryRequestDto.class);
         ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
@@ -121,7 +129,6 @@ class QueryMemberGradeHistoryControllerTest {
                 "get-member-grade-fail-invalid-period-condition",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 requestParameters(
                         parameterWithName("page").description("페이지 번호")
                                 .optional()
@@ -137,12 +144,19 @@ class QueryMemberGradeHistoryControllerTest {
                                 .description("회원등급 내역 조회 끝일")
                 ),
                 responseFields(
-                        fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data").type(JsonFieldType.NUMBER)
+                                .description("null")
+                                .optional(),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
                 )
         ));
     }
 
-    @WithMockUser
+    @WithMockUser(username = "user@1")
     @Test
     @DisplayName("회원 등급내역 조회 실패- 존재하지 않는 회원")
     void getMemberGrades_fail_memberNotFound() throws Exception {
@@ -156,12 +170,11 @@ class QueryMemberGradeHistoryControllerTest {
                 "endDate",
                 LocalDate.of(2023, 1, 10)
         );
-        Page<MemberGradeHistoryQueryResponseDto> response = getMemberGradeHistoryQueryResponseData(
-                loginId, size);
-        Mockito.when(queryMemberGradeHistoryService.getByLoginId(eq(loginId), any(), any()))
-                .thenThrow(new MemberNotFoundException("Member loginId: " + loginId));
 
-        ResultActions result = mockMvc.perform(get("/v1/members/{loginId}/grade-histories", loginId)
+        Mockito.when(queryMemberGradeHistoryService.getByLoginId(eq(loginId), any(), any()))
+                .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND,""));
+
+        ResultActions result = mockMvc.perform(get("/v1/member-grades")
                         .param("page", page + "")
                         .param("size", size + "")
                 .content(objectMapper.writeValueAsString(request))
@@ -169,7 +182,12 @@ class QueryMemberGradeHistoryControllerTest {
 
         result.andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message", startsWith("Member not found")));
+                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.NOT_FOUND.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.MEMBER_NOT_FOUND.getDisplayName())
+                ));
 
         ArgumentCaptor<PeriodQueryRequestDto> captor = ArgumentCaptor.forClass(PeriodQueryRequestDto.class);
         ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
@@ -197,7 +215,6 @@ class QueryMemberGradeHistoryControllerTest {
                 "get-member-grade-fail-member-not-found",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 requestParameters(
                         parameterWithName("page").description("페이지 번호")
                                 .optional()
@@ -213,12 +230,19 @@ class QueryMemberGradeHistoryControllerTest {
                                 .description("회원등급 내역 조회 끝일")
                 ),
                 responseFields(
-                        fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data").type(JsonFieldType.NUMBER)
+                                .description("null")
+                                .optional(),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
                 )
         ));
     }
 
-    @WithMockUser
+    @WithMockUser(username = "user@1")
     @Test
     @DisplayName("회원 등급내역 조회 성공")
     void getMemberGrades() throws Exception {
@@ -237,7 +261,7 @@ class QueryMemberGradeHistoryControllerTest {
         Mockito.when(queryMemberGradeHistoryService.getByLoginId(eq(loginId), any(), any()))
                 .thenReturn(response);
 
-        ResultActions result = mockMvc.perform(get("/v1/members/{loginId}/grade-histories", loginId)
+        ResultActions result = mockMvc.perform(get("/v1/member-grades")
                         .param("page", page + "")
                         .param("size", size + "")
                 .content(objectMapper.writeValueAsString(request))
@@ -245,17 +269,19 @@ class QueryMemberGradeHistoryControllerTest {
 
         result.andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.dataList.[0].id", equalTo(0)))
-                .andExpect(jsonPath("$.dataList.[0].updateDate", equalTo(updateDate.toString())))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())))
+                .andExpect(jsonPath("$.data.dataList.[0].id", equalTo(0)))
+                .andExpect(jsonPath("$.data.dataList.[0].updateDate", equalTo(updateDate.toString())))
                 .andExpect(jsonPath(
-                        "$.dataList.[0].previousPaidAmount",
+                        "$.data.dataList.[0].previousPaidAmount",
                         equalTo((int) previousPaidAmount)
                 ))
-                .andExpect(jsonPath("$.dataList.[0].memberGrade", equalTo(memberGrade.name())))
-                .andExpect(jsonPath("$.dataList.[0].loginId", equalTo(loginId)))
-                .andExpect(jsonPath("$.totalPage", equalTo(1)))
-                .andExpect(jsonPath("$.currentPage", equalTo(0)))
-                .andExpect(jsonPath("$.totalDataCount", equalTo(10)));
+                .andExpect(jsonPath("$.data.dataList.[0].memberGrade", equalTo(memberGrade.name())))
+                .andExpect(jsonPath("$.data.dataList.[0].loginId", equalTo(loginId)))
+                .andExpect(jsonPath("$.data.totalPage", equalTo(1)))
+                .andExpect(jsonPath("$.data.currentPage", equalTo(0)))
+                .andExpect(jsonPath("$.data.totalDataCount", equalTo(10)));
 
         ArgumentCaptor<PeriodQueryRequestDto> captor = ArgumentCaptor.forClass(PeriodQueryRequestDto.class);
         ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
@@ -283,7 +309,6 @@ class QueryMemberGradeHistoryControllerTest {
                 "get-member-grade-success",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 requestParameters(
                         parameterWithName("page").description("페이지 번호")
                                 .optional()
@@ -299,22 +324,27 @@ class QueryMemberGradeHistoryControllerTest {
                                 .description("회원등급 내역 조회 끝일")
                 ),
                 responseFields(
-                        fieldWithPath("dataList.[].id").type(JsonFieldType.NUMBER)
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER)
                                 .description("회원등급 변경 내역 Pk"),
-                        fieldWithPath("dataList.[].updateDate").type(JsonFieldType.STRING)
+                        fieldWithPath("data.dataList.[].updateDate").type(JsonFieldType.STRING)
                                 .description("회원등급 변경 내역일"),
-                        fieldWithPath("dataList.[].previousPaidAmount").type(JsonFieldType.NUMBER)
+                        fieldWithPath("data.dataList.[].previousPaidAmount").type(JsonFieldType.NUMBER)
                                 .description("회원의 전달 구매 금액"),
-                        fieldWithPath("dataList.[].memberGrade").type(JsonFieldType.STRING)
+                        fieldWithPath("data.dataList.[].memberGrade").type(JsonFieldType.STRING)
                                 .description("회원의 등급"),
-                        fieldWithPath("dataList.[].loginId").type(JsonFieldType.STRING)
+                        fieldWithPath("data.dataList.[].loginId").type(JsonFieldType.STRING)
                                 .description("회원의 아이디"),
-                        fieldWithPath("totalPage").type(JsonFieldType.NUMBER).description("전체 페이지"),
-                        fieldWithPath("currentPage").type(JsonFieldType.NUMBER)
+                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER).description("전체 페이지"),
+                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER)
                                 .description("현재 페이지"),
-                        fieldWithPath("totalDataCount").type(JsonFieldType.NUMBER)
-                                .description("총 데이터 개수")
-                        )
+                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER)
+                                .description("총 데이터 개수"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지").optional()
+                )
         ));
     }
 

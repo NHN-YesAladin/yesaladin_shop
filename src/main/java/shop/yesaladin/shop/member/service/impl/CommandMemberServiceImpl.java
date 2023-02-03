@@ -1,9 +1,10 @@
 package shop.yesaladin.shop.member.service.impl;
 
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import shop.yesaladin.common.code.ErrorCode;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberRole;
 import shop.yesaladin.shop.member.domain.model.MemberRole.Pk;
@@ -28,7 +29,8 @@ import shop.yesaladin.shop.member.service.inter.CommandMemberService;
 /**
  * 회원 등록/수정/삭제용 서비스 구현체 입니다.
  *
- * @author 송학현, 최예린
+ * @author 송학현
+ * @author 최예린
  * @since 1.0
  */
 @RequiredArgsConstructor
@@ -106,16 +108,25 @@ public class CommandMemberServiceImpl implements CommandMemberService {
      */
     @Transactional
     @Override
-    public MemberUpdateResponseDto update(String loginId, MemberUpdateRequestDto updateDto) {
+    public MemberUpdateResponseDto update(String loginId, MemberUpdateRequestDto request) {
         Member member = tryGetMemberById(loginId);
 
-        checkUniqueData(
-                queryMemberRepository.findMemberByNickname(updateDto.getNickname()),
-                "nickname"
-        );
-        member.changeNickname(updateDto.getNickname());
+        checkNewNicknameIsUnique(request);
+
+        member.changeNickname(request.getNickname());
 
         return MemberUpdateResponseDto.fromEntity(member);
+    }
+
+    private void checkNewNicknameIsUnique(MemberUpdateRequestDto request) {
+        if (queryMemberRepository.findMemberByNickname(request.getNickname()).isPresent()) {
+            throw new ClientException(
+                    ErrorCode.MEMBER_NICKNAME_ALREADY_EXIST,
+                    "Member nickname is already exist with nickname : "
+                            + request.getNickname()
+                            + "."
+            );
+        }
     }
 
     /**
@@ -146,13 +157,10 @@ public class CommandMemberServiceImpl implements CommandMemberService {
 
     private Member tryGetMemberById(String loginId) {
         return queryMemberRepository.findMemberByLoginId(loginId)
-                .orElseThrow(() -> new MemberNotFoundException("Member loginId: " + loginId));
-    }
-
-    private void checkUniqueData(Optional<Member> member, String target) {
-        if (member.isPresent()) {
-            throw new MemberProfileAlreadyExistException(target);
-        }
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.MEMBER_NOT_FOUND,
+                        "Member not found with loginId : " + loginId
+                ));
     }
 
     /**

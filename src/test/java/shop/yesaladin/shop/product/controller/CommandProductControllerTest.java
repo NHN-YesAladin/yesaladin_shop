@@ -115,7 +115,7 @@ class CommandProductControllerTest {
                         fieldWithPath("productTypeCode").type(JsonFieldType.STRING).description("상품 유형"),
                         fieldWithPath("productSavingMethodCode").type(JsonFieldType.STRING).description("상품 적립 방식"),
                         fieldWithPath("tags").type(JsonFieldType.ARRAY).description("태그"),
-                        fieldWithPath("categories").type(JsonFieldType.ARRAY).description("카테고라")
+                        fieldWithPath("categories").type(JsonFieldType.ARRAY).description("카테고리")
                 ),
                 responseFields(
                         fieldWithPath("id").type(JsonFieldType.NUMBER).description("생성된 상품 아이디")

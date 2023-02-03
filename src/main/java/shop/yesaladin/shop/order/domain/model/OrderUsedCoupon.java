@@ -19,7 +19,8 @@ import shop.yesaladin.shop.member.domain.model.MemberCoupon;
 /**
  * 주문에 사용한 쿠폰 엔티티입니다.
  *
- * @author 최예린, 서민지
+ * @author 최예린
+ * @author 서민지
  * @since 1.0
  */
 @Getter
