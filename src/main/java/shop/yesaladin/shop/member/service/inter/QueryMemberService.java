@@ -59,7 +59,12 @@ public interface QueryMemberService {
      */
     MemberLoginResponseDto findMemberLoginInfoByLoginId(String loginId);
 
-    // TODO javadoc
+    /**
+     * n 일 후가 생일인 회원의 목록을 조회합니다.
+     *
+     * @param laterDays 오늘 날짜를 기준으로 생일을 계산할 일수
+     * @return 생일인 회원 리스트
+     */
     List<Long> findMemberIdsByBirthday(int laterDays);
 
     /**
