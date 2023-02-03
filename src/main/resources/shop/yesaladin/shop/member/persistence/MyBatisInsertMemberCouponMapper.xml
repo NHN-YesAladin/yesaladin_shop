@@ -5,15 +5,10 @@
 <mapper namespace="shop.yesaladin.shop.member.persistence.MyBatisInsertMemberCouponMapper">
     <insert id="insertMemberCoupon">
         INSERT INTO member_coupons(member_id, coupon_code, coupon_group_code) VALUES
-        <foreach collection="requestDtoList" item="data" separator=",">
-            (#{data.memberId},
-            <foreach collection="data.couponCodes" item="couponCode" separator=",">
-                #{couponCode},
+        <foreach collection="requestDtoList" index="i" item="data" separator=",">
+            <foreach collection="data.couponCodes" index="j" item="couponCode" separator=",">
+                (#{data.memberId}, #{couponCode}, #{data.couponGroupCodes[${j}]})
             </foreach>
-            <foreach collection="data.couponGroupCodes" item="couponGroupCode" separator=",">
-                #{couponGroupCode}
-            </foreach>
-            )
         </foreach>
     </insert>
 </mapper>
