@@ -3,11 +3,13 @@ package shop.yesaladin.shop.member.service.impl;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.data.domain.PageImpl;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberGrade;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
@@ -15,6 +17,7 @@ import shop.yesaladin.shop.member.domain.repository.QueryMemberRoleRepository;
 import shop.yesaladin.shop.member.dto.MemberDto;
 import shop.yesaladin.shop.member.dto.MemberGradeQueryResponseDto;
 import shop.yesaladin.shop.member.dto.MemberLoginResponseDto;
+import shop.yesaladin.shop.member.dto.MemberManagerListResponseDto;
 import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
@@ -158,6 +161,171 @@ class QueryMemberServiceImplTest {
         assertThat(response.getRoles()).hasSize(1);
         assertThat(response.getLoginId()).isEqualTo(loginId);
         assertThat(response.getId()).isEqualTo(memberId);
+    }
+
+    @Test
+    void findMemberManageByLoginId_failed_whenMemberNotFound() {
+        //given
+        String loginId = "loginId";
+
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
+                .thenReturn(Optional.empty());
+
+        //when, then
+        assertThatThrownBy(() -> service.findMemberManageByLoginId(
+                "Member LoginId : " + loginId))
+                .isInstanceOf(MemberNotFoundException.class);
+
+    }
+
+    @Test
+    void findMemberManageByLoginId() {
+        //given
+        String loginId = "loginId";
+
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
+                .thenReturn(Optional.of(expectedMember));
+        Mockito.when(expectedMember.getLoginId()).thenReturn(loginId);
+
+        //when
+        Optional<Member> result = queryMemberRepository.findMemberByLoginId(loginId);
+
+        //then
+        assertThat(result).isPresent();
+        assertThat(result.get().getLoginId()).isEqualTo(loginId);
+    }
+
+    @Test
+    void findMemberManageByNickName_failed_whenMemberNotFound() {
+        //given
+        String nickname = "nickname";
+
+        Mockito.when(queryMemberRepository.findMemberByNickname(nickname))
+                .thenReturn(Optional.empty());
+
+        //when, then
+        assertThatThrownBy(() -> service.findMemberManageByNickName(
+                "Member LoginId : " + nickname))
+                .isInstanceOf(MemberNotFoundException.class);
+    }
+
+    @Test
+    void findMemberManageByNickName() {
+        //given
+        String nickname = "nickname";
+
+        Mockito.when(queryMemberRepository.findMemberByNickname(nickname))
+                .thenReturn(Optional.of(expectedMember));
+        Mockito.when(expectedMember.getNickname()).thenReturn(nickname);
+
+        Optional<Member> result = queryMemberRepository.findMemberByNickname(nickname);
+
+        assertThat(result).isPresent();
+        assertThat(result.get().getNickname()).isEqualTo(nickname);
+    }
+
+    @Test
+    void findMemberManageByPhone_failed_whenMemberNotFound() {
+        //given
+        String phone = "phone";
+
+        Mockito.when(queryMemberRepository.findMemberByPhone(phone))
+                .thenReturn(Optional.empty());
+
+        //when then
+        assertThatThrownBy(() -> service.findMemberManageByPhone(
+                "Member Phone : " + phone))
+                .isInstanceOf(MemberNotFoundException.class);
+    }
+
+    @Test
+    void findMemberManageByPhone() {
+        //given
+        String phone = "phone";
+
+        Mockito.when(queryMemberRepository.findMemberByPhone(phone))
+                .thenReturn(Optional.of(expectedMember));
+        Mockito.when(expectedMember.getPhone()).thenReturn(phone);
+
+        Optional<Member> result = queryMemberRepository.findMemberByPhone(phone);
+
+        assertThat(result).isPresent();
+        assertThat(result.get().getPhone()).isEqualTo(phone);
+    }
+
+    @Test
+    void findMemberManagesByName_failed_whenMemberNotFound() {
+        //given
+        String name = "name";
+        int offset = 0;
+        int size = 1;
+
+        Mockito.when(queryMemberRepository.findMembersByName(name, offset, size))
+                .thenReturn(new PageImpl<>(List.of()));
+
+        //when then
+        assertThatThrownBy(() -> service.findMemberManagesByName(name, offset, size)).isInstanceOf(
+                MemberNotFoundException.class);
+    }
+
+    @Test
+    void findMemberManagesByName() {
+        //given
+        String name = "name";
+        int offset = 0;
+        int size = 1;
+
+        Mockito.when(queryMemberRepository.findMembersByName(name, offset, size))
+                .thenReturn(new PageImpl<>(List.of(expectedMember)));
+        Mockito.when(expectedMember.getName()).thenReturn(name);
+
+        //when
+        MemberManagerListResponseDto result = service.findMemberManagesByName(name, offset, size);
+
+        //then
+        assertThat(result.getCount()).isEqualTo(1);
+        assertThat(result.getMemberManagerResponseDtoList().get(0).getName()).isEqualTo(name);
+    }
+
+    @Test
+    void findMemberManagesBySignUpDate_failed_whenMemberNotFound() {
+        //given
+        LocalDate signUpDate = LocalDate.of(2011, 2, 2);
+        int offset = 0;
+        int size = 1;
+
+        Mockito.when(queryMemberRepository.findMembersBySignUpDate(signUpDate, offset, size))
+                .thenReturn(new PageImpl<>(List.of()));
+
+        //when then
+        assertThatThrownBy(() -> service.findMemberManagesBySignUpDate(
+                signUpDate,
+                offset,
+                size
+        )).isInstanceOf(MemberNotFoundException.class);
+    }
+
+    @Test
+    void findMemberManagesBySignUpDate() {
+        //given
+        LocalDate signUpDate = LocalDate.of(2011, 2, 2);
+        int offset = 0;
+        int size = 1;
+
+        Mockito.when(queryMemberRepository.findMembersBySignUpDate(signUpDate, offset, size))
+                .thenReturn(new PageImpl<>(List.of(expectedMember)));
+        Mockito.when(expectedMember.getSignUpDate()).thenReturn(signUpDate);
+
+        //when
+        MemberManagerListResponseDto result = service.findMemberManagesBySignUpDate(
+                signUpDate,
+                offset,
+                size
+        );
+
+        //then
+        assertThat(result.getCount()).isEqualTo(1);
+        assertThat(result.getMemberManagerResponseDtoList().get(0).getSignUpDate()).isEqualTo(signUpDate);
     }
 
     @Test
@@ -332,6 +500,7 @@ class QueryMemberServiceImplTest {
         assertThat(result.getEmail()).isEqualTo(member.getEmail());
         assertThat(result.getSignUpDate()).isEqualTo(member.getSignUpDate());
         assertThat(result.getGrade()).isEqualTo(member.getMemberGrade().getName());
-        assertThat(result.getGender()).isEqualTo(member.getMemberGenderCode().getGender() == 1 ? "남" : "여");
+        assertThat(result.getGender()).isEqualTo(
+                member.getMemberGenderCode().getGender() == 1 ? "남" : "여");
     }
 }

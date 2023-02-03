@@ -1,10 +1,16 @@
 package shop.yesaladin.shop.member.persistence;
 
+import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.time.LocalDate;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.querydsl.QMember;
@@ -15,6 +21,7 @@ import shop.yesaladin.shop.member.dto.MemberIdDto;
  * 회원 조회 관련 QueryDsl Repository 구현체 입니다.
  *
  * @author 송학현
+ * @author 김선홍
  * @since 1.0
  */
 @RequiredArgsConstructor
@@ -71,6 +78,59 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
      * {@inheritDoc}
      */
     @Override
+    public Optional<Member> findMemberByPhone(String phone) {
+        QMember member = QMember.member;
+        return Optional.ofNullable(queryFactory.selectFrom(member)
+                .where(member.phone.eq(phone).and(member.isWithdrawal.isFalse()))
+                .fetchFirst());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Page<Member> findMembersByName(String name, int offset, int limit) {
+        QMember member = QMember.member;
+        List<Member> memberList = queryFactory.selectFrom(member)
+                .where(member.name.eq(name))
+                .fetch();
+        JPAQuery<Long> countQuery = queryFactory.select(member.count())
+                .from(member)
+                .where(member.name.eq(name));
+
+        return PageableExecutionUtils.getPage(
+                memberList,
+                PageRequest.of(Math.toIntExact(offset), Math.toIntExact(limit)),
+                countQuery::fetchOne
+        );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Page<Member> findMembersBySignUpDate(LocalDate signUpDate, int offset, int limit) {
+        QMember member = QMember.member;
+        List<Member> memberList = queryFactory.selectFrom(member)
+                .where(member.signUpDate.eq(signUpDate))
+                .offset(offset)
+                .limit(limit)
+                .fetch();
+
+        JPAQuery<Long> countQuery = queryFactory.select(member.count())
+                .from(member)
+                .where(member.signUpDate.eq(signUpDate));
+
+        return PageableExecutionUtils.getPage(
+                memberList,
+                PageRequest.of(Math.toIntExact(offset), Math.toIntExact(limit)),
+                countQuery::fetchOne
+        );
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
     public List<MemberIdDto> findMemberIdsByBirthday(int month, int date) {
         QMember member = QMember.member;
         return queryFactory.select(Projections.constructor(MemberIdDto.class, member.id))

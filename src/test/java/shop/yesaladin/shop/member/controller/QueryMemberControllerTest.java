@@ -19,6 +19,8 @@ import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentRequest;
 import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.mockito.Mockito;
@@ -34,6 +36,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberGrade;
 import shop.yesaladin.shop.member.dto.MemberGradeQueryResponseDto;
+import shop.yesaladin.shop.member.dto.MemberManagerListResponseDto;
+import shop.yesaladin.shop.member.dto.MemberManagerResponseDto;
 import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
@@ -447,5 +451,335 @@ class QueryMemberControllerTest {
                                 .description("회원의 성별")
                 )
         ));
+    }
+
+    @WithMockUser
+    @Test
+    void manageMemberInfoByLoginId_fail_MemberNotFound() throws Exception {
+        //given
+        String loginId = "loginId";
+        Mockito.when(queryMemberService.findMemberManageByLoginId(loginId))
+                .thenThrow(new MemberNotFoundException("Member LoginId: " + loginId));
+
+        //when
+        ResultActions resultActions = mockMvc.perform(get("/v1/members/manage").param(
+                "loginid",
+                loginId
+        ));
+        resultActions.andExpect(status().isNotFound())
+                .andDo(print());
+    }
+
+    @WithMockUser
+    @Test
+    void manageMemberInfoByLoginId() throws Exception {
+        //given
+        String loginId = "loginId";
+        Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
+        MemberManagerResponseDto responseDto = MemberManagerResponseDto.fromEntity(member);
+        Mockito.when(queryMemberService.findMemberManageByLoginId(loginId)).thenReturn(responseDto);
+
+        ResultActions resultActions = mockMvc.perform(get("/v1/members/manage").param(
+                "loginid",
+                loginId
+        ));
+
+        resultActions.andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.data.id", equalTo(1)))
+                .andExpect(jsonPath("$.data.loginId", equalTo(member.getLoginId())))
+                .andExpect(jsonPath("$.data.nickname", equalTo(member.getNickname())))
+                .andExpect(jsonPath("$.data.email", equalTo(member.getEmail())))
+                .andExpect(jsonPath("$.data.phone", equalTo(member.getPhone())))
+                .andExpect(jsonPath("$.data.name", equalTo(member.getName())))
+                .andExpect(jsonPath(
+                        "$.data.signUpDate",
+                        equalTo(member.getSignUpDate().toString())
+                ))
+                .andExpect(jsonPath("$.data.withdrawalDate", equalTo(null)))
+                .andExpect(jsonPath("$.data.isWithdrawal", equalTo(member.isWithdrawal())))
+                .andExpect(jsonPath("$.data.isBlocked", equalTo(member.isBlocked())))
+                .andExpect(jsonPath("$.data.blockedReason", equalTo(null)))
+                .andExpect(jsonPath("$.data.blockedDate", equalTo(null)))
+                .andExpect(jsonPath("$.data.unblockedDate", equalTo(null)));
+    }
+
+    @WithMockUser
+    @Test
+    void manageMemberInfoByNickname_fail_MemberNotFound() throws Exception {
+        //given
+        String nickname = "nickname";
+        Mockito.when(queryMemberService.findMemberManageByNickName(nickname))
+                .thenThrow(new MemberNotFoundException("Member Nickname: " + nickname));
+
+        //when
+        ResultActions resultActions = mockMvc.perform(get("/v1/members/manage").param(
+                "nickname",
+                nickname
+        ));
+        resultActions.andExpect(status().isNotFound())
+                .andDo(print());
+    }
+
+    @WithMockUser
+    @Test
+    void manageMemberInfoByNickname() throws Exception {
+        //given
+        String loginId = "loginId";
+        Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
+        MemberManagerResponseDto responseDto = MemberManagerResponseDto.fromEntity(member);
+        Mockito.when(queryMemberService.findMemberManageByNickName(member.getNickname()))
+                .thenReturn(responseDto);
+
+        ResultActions resultActions = mockMvc.perform(get("/v1/members/manage").param(
+                "nickname",
+                member.getNickname()
+        ));
+
+        resultActions.andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.data.id", equalTo(1)))
+                .andExpect(jsonPath("$.data.loginId", equalTo(member.getLoginId())))
+                .andExpect(jsonPath("$.data.nickname", equalTo(member.getNickname())))
+                .andExpect(jsonPath("$.data.email", equalTo(member.getEmail())))
+                .andExpect(jsonPath("$.data.phone", equalTo(member.getPhone())))
+                .andExpect(jsonPath("$.data.name", equalTo(member.getName())))
+                .andExpect(jsonPath(
+                        "$.data.signUpDate",
+                        equalTo(member.getSignUpDate().toString())
+                ))
+                .andExpect(jsonPath("$.data.withdrawalDate", equalTo(null)))
+                .andExpect(jsonPath("$.data.isWithdrawal", equalTo(member.isWithdrawal())))
+                .andExpect(jsonPath("$.data.isBlocked", equalTo(member.isBlocked())))
+                .andExpect(jsonPath("$.data.blockedReason", equalTo(null)))
+                .andExpect(jsonPath("$.data.blockedDate", equalTo(null)))
+                .andExpect(jsonPath("$.data.unblockedDate", equalTo(null)));
+    }
+
+    @WithMockUser
+    @Test
+    void manageMemberInfoByPhone_fail_MemberNotFound() throws Exception {
+        //given
+        String phone = "phone";
+        Mockito.when(queryMemberService.findMemberManageByPhone(phone))
+                .thenThrow(new MemberNotFoundException("Member Phone: " + phone));
+
+        //when
+        ResultActions resultActions = mockMvc.perform(get("/v1/members/manage").param(
+                "phone", phone
+        ));
+        resultActions.andExpect(status().isNotFound())
+                .andDo(print());
+    }
+
+    @WithMockUser
+    @Test
+    void manageMemberInfoByPhone() throws Exception {
+        //given
+        String loginId = "loginId";
+        Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
+        MemberManagerResponseDto responseDto = MemberManagerResponseDto.fromEntity(member);
+        Mockito.when(queryMemberService.findMemberManageByPhone(member.getPhone()))
+                .thenReturn(responseDto);
+
+        ResultActions resultActions = mockMvc.perform(get("/v1/members/manage").param(
+                "phone",
+                member.getPhone()
+        ));
+
+        resultActions.andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.data.id", equalTo(1)))
+                .andExpect(jsonPath("$.data.loginId", equalTo(member.getLoginId())))
+                .andExpect(jsonPath("$.data.nickname", equalTo(member.getNickname())))
+                .andExpect(jsonPath("$.data.email", equalTo(member.getEmail())))
+                .andExpect(jsonPath("$.data.phone", equalTo(member.getPhone())))
+                .andExpect(jsonPath("$.data.name", equalTo(member.getName())))
+                .andExpect(jsonPath(
+                        "$.data.signUpDate",
+                        equalTo(member.getSignUpDate().toString())
+                ))
+                .andExpect(jsonPath("$.data.withdrawalDate", equalTo(null)))
+                .andExpect(jsonPath("$.data.isWithdrawal", equalTo(member.isWithdrawal())))
+                .andExpect(jsonPath("$.data.isBlocked", equalTo(member.isBlocked())))
+                .andExpect(jsonPath("$.data.blockedReason", equalTo(null)))
+                .andExpect(jsonPath("$.data.blockedDate", equalTo(null)))
+                .andExpect(jsonPath("$.data.unblockedDate", equalTo(null)));
+    }
+
+    @WithMockUser
+    @Test
+    void manageMemberInfosByName_fail_MemberNotFound() throws Exception {
+        //given
+        String phone = "phone";
+        Mockito.when(queryMemberService.findMemberManageByPhone(phone))
+                .thenThrow(new MemberNotFoundException("Member Name: " + phone));
+
+        //when
+        ResultActions resultActions = mockMvc.perform(get("/v1/member/manage").param("name", phone));
+
+        //then
+        resultActions.andExpect(status().isNotFound());
+    }
+
+    @WithMockUser
+    @Test
+    void manageMemberInfosByName() throws Exception {
+        //given
+        String loginId = "loginId";
+        Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
+        MemberManagerResponseDto responseDto = MemberManagerResponseDto.fromEntity(member);
+        Mockito.when(queryMemberService.findMemberManagesByName(member.getName(), 0, 10))
+                .thenReturn(MemberManagerListResponseDto.builder()
+                        .count(1L)
+                        .memberManagerResponseDtoList(List.of(responseDto))
+                        .build());
+
+        ResultActions resultActions = mockMvc.perform(get("/v1/members/manage").param(
+                "name",
+                member.getName()
+        ));
+
+        resultActions.andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.data.count", equalTo(1)))
+                .andExpect(jsonPath("$.data.memberManagerResponseDtoList[0].id", equalTo(1)))
+                .andExpect(jsonPath(
+                        "$.data.memberManagerResponseDtoList[0].loginId",
+                        equalTo(member.getLoginId())
+                ))
+                .andExpect(jsonPath(
+                        "$.data.memberManagerResponseDtoList[0].nickname",
+                        equalTo(member.getNickname())
+                ))
+                .andExpect(jsonPath(
+                        "$.data.memberManagerResponseDtoList[0].email",
+                        equalTo(member.getEmail())
+                ))
+                .andExpect(jsonPath(
+                        "$.data.memberManagerResponseDtoList[0].phone",
+                        equalTo(member.getPhone())
+                ))
+                .andExpect(jsonPath(
+                        "$.data.memberManagerResponseDtoList[0].name",
+                        equalTo(member.getName())
+                ))
+                .andExpect(jsonPath(
+                        "$.data.memberManagerResponseDtoList[0].signUpDate",
+                        equalTo(member.getSignUpDate().toString())
+                ))
+                .andExpect(jsonPath(
+                        "$.data.memberManagerResponseDtoList[0].withdrawalDate",
+                        equalTo(null)
+                ))
+                .andExpect(jsonPath(
+                        "$.data.memberManagerResponseDtoList[0].isWithdrawal",
+                        equalTo(member.isWithdrawal())
+                ))
+                .andExpect(jsonPath(
+                        "$.data.memberManagerResponseDtoList[0].isBlocked",
+                        equalTo(member.isBlocked())
+                ))
+                .andExpect(jsonPath(
+                        "$.data.memberManagerResponseDtoList[0].blockedReason",
+                        equalTo(null)
+                ))
+                .andExpect(jsonPath(
+                        "$.data.memberManagerResponseDtoList[0].blockedDate",
+                        equalTo(null)
+                ))
+                .andExpect(jsonPath(
+                        "$.data.memberManagerResponseDtoList[0].unblockedDate",
+                        equalTo(null)
+                ));
+    }
+
+    @WithMockUser
+    @Test
+    void manageMemberInfosBySignUp_MemberNotFound() throws Exception {
+        //given
+        String loginId = "loginId";
+        Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
+        Mockito.when(queryMemberService.findMemberManagesBySignUpDate(member.getSignUpDate(), 0, 10))
+                .thenThrow(new MemberNotFoundException("Member SignUpDate: " + member.getSignUpDate()));
+
+        //when
+        ResultActions resultActions = mockMvc.perform(get("/v1/member/manage").param("signupdate",
+                member.getSignUpDate().format(DateTimeFormatter.ISO_DATE)));
+
+        //then
+        resultActions.andExpect(status().isNotFound());
+    }
+
+    @WithMockUser
+    @Test
+    void manageMemberInfosBySignUpDate() throws Exception {
+        //given
+        String loginId = "loginId";
+        Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
+        MemberManagerResponseDto responseDto = MemberManagerResponseDto.fromEntity(member);
+        Mockito.when(queryMemberService.findMemberManagesBySignUpDate(member.getSignUpDate(), 0, 10))
+                .thenReturn(MemberManagerListResponseDto.builder()
+                        .count(1L)
+                        .memberManagerResponseDtoList(List.of(responseDto))
+                        .build());
+
+        ResultActions resultActions = mockMvc.perform(get("/v1/members/manage").param(
+                "signupdate",
+                member.getSignUpDate().format(DateTimeFormatter.ISO_DATE)
+        ));
+
+        resultActions.andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.data.count", equalTo(1)))
+                .andExpect(jsonPath("$.data.memberManagerResponseDtoList[0].id", equalTo(1)))
+                .andExpect(jsonPath(
+                        "$.data.memberManagerResponseDtoList[0].loginId",
+                        equalTo(member.getLoginId())
+                ))
+                .andExpect(jsonPath(
+                        "$.data.memberManagerResponseDtoList[0].nickname",
+                        equalTo(member.getNickname())
+                ))
+                .andExpect(jsonPath(
+                        "$.data.memberManagerResponseDtoList[0].email",
+                        equalTo(member.getEmail())
+                ))
+                .andExpect(jsonPath(
+                        "$.data.memberManagerResponseDtoList[0].phone",
+                        equalTo(member.getPhone())
+                ))
+                .andExpect(jsonPath(
+                        "$.data.memberManagerResponseDtoList[0].name",
+                        equalTo(member.getName())
+                ))
+                .andExpect(jsonPath(
+                        "$.data.memberManagerResponseDtoList[0].signUpDate",
+                        equalTo(member.getSignUpDate().toString())
+                ))
+                .andExpect(jsonPath(
+                        "$.data.memberManagerResponseDtoList[0].withdrawalDate",
+                        equalTo(null)
+                ))
+                .andExpect(jsonPath(
+                        "$.data.memberManagerResponseDtoList[0].isWithdrawal",
+                        equalTo(member.isWithdrawal())
+                ))
+                .andExpect(jsonPath(
+                        "$.data.memberManagerResponseDtoList[0].isBlocked",
+                        equalTo(member.isBlocked())
+                ))
+                .andExpect(jsonPath(
+                        "$.data.memberManagerResponseDtoList[0].blockedReason",
+                        equalTo(null)
+                ))
+                .andExpect(jsonPath(
+                        "$.data.memberManagerResponseDtoList[0].blockedDate",
+                        equalTo(null)
+                ))
+                .andExpect(jsonPath(
+                        "$.data.memberManagerResponseDtoList[0].unblockedDate",
+                        equalTo(null)
+                ));
     }
 }
