@@ -29,6 +29,7 @@ import shop.yesaladin.shop.order.dto.OrderSummaryResponseDto;
  * 주문 데이터 조회를 위한 레포지토리의 QueryDsl 구현체입니다.
  *
  * @author 김홍대
+ * @author 최예린
  * @since 1.0
  */
 @RequiredArgsConstructor
@@ -39,7 +40,6 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
 
     /**
      * {@inheritDoc}
-     *
      */
     @Override
     public Optional<Order> findById(Long id) {
@@ -65,7 +65,6 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
 
     /**
      * {@inheritDoc}
-     *
      */
     @Override
     public Page<OrderSummaryDto> findAllOrdersInPeriod(
@@ -99,7 +98,6 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
 
     /**
      * {@inheritDoc}
-     *
      */
     @Override
     public Page<OrderSummaryDto> findAllOrdersInPeriodByMemberId(
@@ -133,7 +131,6 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
 
     /**
      * {@inheritDoc}
-     *
      */
     @Override
     public long getCountOfOrdersInPeriod(LocalDate startDate, LocalDate endDate) {
@@ -146,7 +143,6 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
 
     /**
      * {@inheritDoc}
-     *
      */
     @Override
     public long getCountOfOrdersInPeriodByMemberId(
@@ -166,7 +162,6 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
 
     /**
      * {@inheritDoc}
-     *
      */
     @Override
     public Optional<Order> findByOrderNumber(String orderNumber) {

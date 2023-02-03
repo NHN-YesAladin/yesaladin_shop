@@ -58,6 +58,7 @@ public class QueryDslProductCategoryRepository implements QueryProductCategoryRe
                 .from(productCategory)
                 .innerJoin(productCategory.category, category)
                 .where(productCategory.product.eq(product))
+                .orderBy(productCategory.category.order.asc())
                 .fetch();
     }
 }

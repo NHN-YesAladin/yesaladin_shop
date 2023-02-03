@@ -3,6 +3,8 @@ package shop.yesaladin.shop.point.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import shop.yesaladin.common.code.ErrorCode;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.point.domain.model.PointCode;
@@ -11,7 +13,6 @@ import shop.yesaladin.shop.point.domain.repository.CommandPointHistoryRepository
 import shop.yesaladin.shop.point.domain.repository.QueryPointHistoryRepository;
 import shop.yesaladin.shop.point.dto.PointHistoryRequestDto;
 import shop.yesaladin.shop.point.dto.PointHistoryResponseDto;
-import shop.yesaladin.shop.point.exception.OverPointUseException;
 import shop.yesaladin.shop.point.service.inter.CommandPointHistoryService;
 
 /**
@@ -35,7 +36,9 @@ public class CommandPointHistoryServiceImpl implements CommandPointHistoryServic
     @Transactional
     public PointHistoryResponseDto use(PointHistoryRequestDto request) {
         PointHistory pointHistory = createPointHistory(request, PointCode.USE);
+
         checkMemberHasEnoughPoint(request);
+
         PointHistory savedPointHistory = commandPointHistoryRepository.save(pointHistory);
 
         return PointHistoryResponseDto.fromEntity(savedPointHistory);
@@ -45,7 +48,10 @@ public class CommandPointHistoryServiceImpl implements CommandPointHistoryServic
         long amount = queryPointHistoryRepository.getMemberPointByLoginId(request.getLoginId());
 
         if (request.getAmount() > amount) {
-            throw new OverPointUseException();
+            throw new ClientException(
+                    ErrorCode.POINT_OVER_USE,
+                    "Member use over point with loginId : " + request.getLoginId()
+            );
         }
     }
 
@@ -56,6 +62,7 @@ public class CommandPointHistoryServiceImpl implements CommandPointHistoryServic
     @Transactional
     public PointHistoryResponseDto save(PointHistoryRequestDto request) {
         PointHistory pointHistory = createPointHistory(request, PointCode.SAVE);
+
         PointHistory savedPointHistory = commandPointHistoryRepository.save(pointHistory);
 
         return PointHistoryResponseDto.fromEntity(savedPointHistory);
@@ -65,7 +72,7 @@ public class CommandPointHistoryServiceImpl implements CommandPointHistoryServic
             PointHistoryRequestDto request,
             PointCode pointCode
     ) {
-        Member member = queryMemberService.findMemberByLoginId(request.getLoginId()).toEntity();
+        Member member = queryMemberService.findByLoginId(request.getLoginId());
 
         return request.toEntity(pointCode, member);
     }

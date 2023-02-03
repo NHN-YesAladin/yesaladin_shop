@@ -14,7 +14,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import shop.yesaladin.shop.member.exception.AlreadyDeletedAddressException;
+import shop.yesaladin.common.code.ErrorCode;
+import shop.yesaladin.common.exception.ClientException;
 
 /**
  * 회원 배송지 엔티티 클래스 입니다.
@@ -56,6 +57,7 @@ public class MemberAddress {
     public void markAsDefault() {
         this.isDefault = true;
     }
+
     /**
      * 배송지를 삭제합니다.
      *
@@ -63,8 +65,11 @@ public class MemberAddress {
      * @since 1.0
      */
     public void delete() {
-        if(this.isDeleted) {
-            throw new AlreadyDeletedAddressException(this.id);
+        if (this.isDeleted) {
+            throw new ClientException(
+                    ErrorCode.ADDRESS_ALREADY_DELETED,
+                    "MemberAddress is already deleted with id : " + this.id
+            );
         }
         this.isDeleted = true;
     }

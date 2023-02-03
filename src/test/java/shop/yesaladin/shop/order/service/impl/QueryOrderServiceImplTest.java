@@ -33,31 +33,45 @@ import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
 import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
+import shop.yesaladin.shop.order.dto.OrderSheetRequestDto;
+import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryResponseDto;
 import shop.yesaladin.shop.order.exception.OrderNotFoundException;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMemberAddress;
 import shop.yesaladin.shop.order.persistence.dummy.DummyOrder;
+import shop.yesaladin.shop.point.service.inter.QueryPointHistoryService;
+import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
+import shop.yesaladin.shop.product.service.inter.QueryProductService;
 
 class QueryOrderServiceImplTest {
+
+    private QueryOrderServiceImpl service;
+    private QueryOrderRepository repository;
+    private QueryMemberService queryMemberService;
+    private QueryPointHistoryService queryPointHistoryService;
+    private QueryProductService queryProductService;
 
     private final Clock clock = Clock.fixed(
             Instant.parse("2023-01-10T00:00:00.000Z"),
             ZoneId.of("UTC")
     );
+
     long expectedMemberId = 1L;
-    private QueryOrderServiceImpl service;
-    private QueryOrderRepository repository;
-    private QueryMemberService queryMemberService;
+
 
     @BeforeEach
     void setUp() {
+        queryPointHistoryService = Mockito.mock(QueryPointHistoryService.class);
+        queryProductService = Mockito.mock(QueryProductService.class);
         repository = Mockito.mock(QueryOrderRepository.class);
         queryMemberService = Mockito.mock(QueryMemberService.class);
         service = new QueryOrderServiceImpl(
                 repository,
                 queryMemberService,
+                queryPointHistoryService,
+                queryProductService,
                 clock
         );
     }
@@ -321,6 +335,36 @@ class QueryOrderServiceImplTest {
     }
 
     @Test
+    @Disabled
+    @DisplayName("주문서에 필요한 데이터 조회한다.")
+    void getMemberOrderSheetData() {
+        //given
+        String loginId = "user@1";
+        String name = "test";
+        String phoneNumber = "01012341234";
+        String address = "address";
+        long amount = 1000;
+
+        List<ProductOrderRequestDto> productRequest = new ArrayList<>();
+        OrderSheetRequestDto request = new OrderSheetRequestDto(productRequest);
+        OrderSheetResponseDto response = new OrderSheetResponseDto(name, phoneNumber, address);
+
+        Mockito.when(queryPointHistoryService.getMemberPoint(loginId)).thenReturn(amount);
+        Mockito.when(queryProductService.getByIsbnList(any())).thenReturn(new ArrayList<>());
+        Mockito.when(queryMemberService.getMemberForOrder(loginId)).thenReturn(response);
+
+        //when
+        OrderSheetResponseDto result = service.getMemberOrderSheetData(request, loginId);
+
+        //then
+        Assertions.assertThat(result.getName()).isEqualTo(name);
+        Assertions.assertThat(result.getPhoneNumber()).isEqualTo(phoneNumber);
+        Assertions.assertThat(result.getAddress()).isEqualTo(address);
+        Assertions.assertThat(result.getPoint()).isEqualTo(amount);
+        Assertions.assertThat(result.getOrderProducts()).hasSize(0);
+    }
+
+    @Test
     @DisplayName("미래의 데이터를 조회하려고 시도하면 예외가 발생한다")
     void getOrderListInPeriodFailCauseByFutureQueryConditionTest() {
         // given
@@ -426,6 +470,5 @@ class QueryOrderServiceImplTest {
                         pageable
                 ))
                 .isInstanceOf(PageOffsetOutOfBoundsException.class);
-
     }
 }

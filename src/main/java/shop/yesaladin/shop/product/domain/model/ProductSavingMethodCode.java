@@ -1,5 +1,8 @@
 package shop.yesaladin.shop.product.domain.model;
 
+import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -12,8 +15,9 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum ProductSavingMethodCode {
-    ACTUAL_PURCHASE_PRICE(1),
-    SELLING_PRICE(2);
+    ACTUAL_PURCHASE_PRICE(1, "실구매가"),
+    SELLING_PRICE(2, "판매가");
 
     private final int id;
+    private final String koName;
 }

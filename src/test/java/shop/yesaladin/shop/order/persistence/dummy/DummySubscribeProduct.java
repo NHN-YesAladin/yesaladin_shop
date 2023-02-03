@@ -9,4 +9,11 @@ public class DummySubscribeProduct {
                 .ISSN("3924-1232")
                 .build();
     }
+
+    public static SubscribeProduct subscribeProductWithId() {
+        return SubscribeProduct.builder()
+                .id(1L)
+                .ISSN("3924-1232")
+                .build();
+    }
 }

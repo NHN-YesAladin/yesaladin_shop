@@ -3,11 +3,12 @@ package shop.yesaladin.shop.member.controller;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import shop.yesaladin.common.dto.ResponseDto;
+import shop.yesaladin.shop.common.utils.AuthorityUtils;
 import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
 import shop.yesaladin.shop.member.service.inter.QueryMemberAddressService;
 
@@ -19,7 +20,7 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberAddressService;
  */
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/v1/members/{loginId}/addresses")
+@RequestMapping("/v1/member-addresses")
 public class QueryMemberAddressController {
 
     private final QueryMemberAddressService queryMemberAddressService;
@@ -27,14 +28,20 @@ public class QueryMemberAddressController {
     /**
      * 회원아이디를 통해 배송지를 조회합니다.
      *
-     * @param loginId 회원 아이디
      * @return 회원의 배송지 목록
      * @author 최예린
      * @since 1.0
      */
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public List<MemberAddressResponseDto> getMemberAddressByMemberId(@PathVariable String loginId) {
-        return queryMemberAddressService.findByLoginId(loginId);
+    public ResponseDto<List<MemberAddressResponseDto>> getMemberAddressByMemberId(Authentication authentication) {
+        String loginId = AuthorityUtils.getAuthorizedUserName(authentication);
+
+        List<MemberAddressResponseDto> response = queryMemberAddressService.getByLoginId(loginId);
+
+        return ResponseDto.<List<MemberAddressResponseDto>>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(response)
+                .build();
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberAddressRepository;
+import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
 
 @Transactional
@@ -63,11 +64,11 @@ class QueryDslCommandMemberAddressRepositoryTest {
         entityManager.persist(memberAddress);
         Long id = memberAddress.getId();
 
-        assertThat(queryMemberAddressRepository.findById(id)).isPresent();
+        assertThat(queryMemberAddressRepository.getById(id)).isPresent();
         //when
         commandMemberAddressRepository.deleteById(id);
         //then
-        assertThat(queryMemberAddressRepository.findById(id)).isEmpty();
+        assertThat(queryMemberAddressRepository.getById(id)).isEmpty();
     }
 
     @Test
@@ -79,7 +80,7 @@ class QueryDslCommandMemberAddressRepositoryTest {
         commandMemberAddressRepository.updateIsDefaultToFalseByLoginId(loginId);
 
         //then
-        List<MemberAddress> result = queryMemberAddressRepository.findByLoginId(member);
-        assertThat(result.stream().anyMatch(MemberAddress::isDefault)).isFalse();
+        List<MemberAddressResponseDto> result = queryMemberAddressRepository.getByLoginId(loginId);
+        assertThat(result.stream().anyMatch(MemberAddressResponseDto::getIsDefault)).isFalse();
     }
 }

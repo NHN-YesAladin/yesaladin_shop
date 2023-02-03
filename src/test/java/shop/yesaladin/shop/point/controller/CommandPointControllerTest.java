@@ -58,7 +58,7 @@ class CommandPointControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @WithMockUser
+    @WithMockUser(username = "user@1")
     @Test
     @DisplayName("포인트 사용 실패 - 잘못된 파라미터를 요청한 경우")
     void createPointHistory_fail_InvalidCodeParameter() throws Exception {
@@ -67,12 +67,7 @@ class CommandPointControllerTest {
         Long amount = 1000L;
         PointReasonCode pointReasonCode = PointReasonCode.USE_ORDER;
 
-        PointHistoryRequestDto request = ReflectionUtils.newInstance(
-                PointHistoryRequestDto.class,
-                loginId,
-                amount,
-                pointReasonCode
-        );
+        PointHistoryRequestDto request = getPointHistoryRequest(loginId, amount, pointReasonCode);
 
         //when
         ResultActions result = mockMvc.perform(post("/v1/points")
@@ -117,7 +112,74 @@ class CommandPointControllerTest {
                 )
         ));
     }
-    @WithMockUser
+
+    @WithMockUser(username = "user@1")
+    @Test
+    @DisplayName("포인트 사용 실패 - 잘못된 요청 데이터")
+    void createPointHistory_fail_validationError() throws Exception {
+        //given
+        String loginId = "user@1";
+        Long amount = 1000L;
+        PointReasonCode pointReasonCode = PointReasonCode.USE_ORDER;
+
+        PointHistoryRequestDto request = getPointHistoryRequest(loginId, -1000L, pointReasonCode);
+
+        //when
+        ResultActions result = mockMvc.perform(post("/v1/points")
+                .with(csrf())
+                .param("code", "asel")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
+
+        //then
+        result.andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.BAD_REQUEST.value())))
+                .andExpect(jsonPath("$.data", equalTo(null)))
+                .andExpect(jsonPath("$.errorMessages[0]", equalTo(ErrorCode.BAD_REQUEST.getDisplayName())));
+
+        //docs
+        result.andDo(document(
+                "create-point-history-fail-validation-error",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                requestParameters(
+                        parameterWithName("code").description("포인트 사용/적립 구분"),
+                        parameterWithName("_csrf").description("csrf")
+                ),
+                requestFields(
+                        fieldWithPath("loginId").type(JsonFieldType.STRING).description("회원의 아이디"),
+                        fieldWithPath("amount").type(JsonFieldType.NUMBER).description("사용한 포인트 양"),
+                        fieldWithPath("pointReasonCode").type(JsonFieldType.STRING)
+                                .description("포인트 사용 사유")
+                ),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data").type(JsonFieldType.NUMBER)
+                                .description("null")
+                                .optional(),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
+                )
+        ));
+    }
+
+    private static PointHistoryRequestDto getPointHistoryRequest(
+            String loginId,
+            Long amount,
+            PointReasonCode pointReasonCode
+    ) {
+        return new PointHistoryRequestDto(
+                loginId,
+                amount,
+                pointReasonCode
+        );
+    }
+
+    @WithMockUser(username = "user@1")
     @Test
     @DisplayName("포인트 사용 실패 - 존재하지 않는 회원 아이디인 경우")
     void createPointHistory_use_fail_NotFoundMember() throws Exception {
@@ -126,12 +188,7 @@ class CommandPointControllerTest {
         Long amount = 1000L;
         PointReasonCode pointReasonCode = PointReasonCode.USE_ORDER;
 
-        PointHistoryRequestDto request = ReflectionUtils.newInstance(
-                PointHistoryRequestDto.class,
-                loginId,
-                amount,
-                pointReasonCode
-        );
+        PointHistoryRequestDto request = getPointHistoryRequest(loginId, amount, pointReasonCode);
 
         Mockito.when(commandPointHistoryService.use(any())).thenThrow(
                 new MemberNotFoundException("Member Id: " + loginId));
@@ -176,7 +233,8 @@ class CommandPointControllerTest {
                 )
         ));
     }
-    @WithMockUser
+
+    @WithMockUser(username = "user@1")
     @Test
     @DisplayName("포인트 사용 실패 - 회원이 소유한 포인트보다 많이 사용하고자한 경우")
     void createPointHistory_use_fail_OverPoint() throws Exception {
@@ -185,12 +243,7 @@ class CommandPointControllerTest {
         Long amount = 100000L;
         PointReasonCode pointReasonCode = PointReasonCode.USE_ORDER;
 
-        PointHistoryRequestDto request = ReflectionUtils.newInstance(
-                PointHistoryRequestDto.class,
-                loginId,
-                amount,
-                pointReasonCode
-        );
+        PointHistoryRequestDto request = getPointHistoryRequest(loginId, amount, pointReasonCode);
 
         Mockito.when(commandPointHistoryService.use(any())).thenThrow(new OverPointUseException());
 
@@ -246,7 +299,8 @@ class CommandPointControllerTest {
                 )
         ));
     }
-    @WithMockUser
+
+    @WithMockUser(username = "user@1")
     @Test
     @DisplayName("포인트 사용 성공")
     void createPointHistory_use_success() throws Exception {
@@ -255,12 +309,8 @@ class CommandPointControllerTest {
         Long amount = 1000L;
         PointReasonCode pointReasonCode = PointReasonCode.USE_ORDER;
 
-        PointHistoryRequestDto request = ReflectionUtils.newInstance(
-                PointHistoryRequestDto.class,
-                loginId,
-                amount,
-                pointReasonCode
-        );
+        PointHistoryRequestDto request = getPointHistoryRequest(loginId, amount, pointReasonCode);
+
         long pointHistoryId = 1;
         long curAmount = 1000;
         PointHistoryResponseDto response = ReflectionUtils.newInstance(
@@ -334,7 +384,8 @@ class CommandPointControllerTest {
                 )
         ));
     }
-    @WithMockUser
+
+    @WithMockUser(username = "user@1")
     @Test
     @DisplayName("포인트 적립 실패 - 존재하지 않는 회원 아이디인 경우")
     void createPointHistory_save_fail_MemberNotFound() throws Exception {
@@ -343,12 +394,7 @@ class CommandPointControllerTest {
         Long amount = 1000L;
         PointReasonCode pointReasonCode = PointReasonCode.SAVE_ORDER;
 
-        PointHistoryRequestDto request = ReflectionUtils.newInstance(
-                PointHistoryRequestDto.class,
-                loginId,
-                amount,
-                pointReasonCode
-        );
+        PointHistoryRequestDto request = getPointHistoryRequest(loginId, amount, pointReasonCode);
 
         Mockito.when(commandPointHistoryService.save(any())).thenThrow(
                 new MemberNotFoundException("Member Id: " + loginId));
@@ -394,7 +440,8 @@ class CommandPointControllerTest {
 
         ));
     }
-    @WithMockUser
+
+    @WithMockUser(username = "user@1")
     @Test
     @DisplayName("포인트 적립 성공")
     void createPointHistory_save_success() throws Exception {
@@ -403,16 +450,11 @@ class CommandPointControllerTest {
         Long amount = 1000L;
         PointReasonCode pointReasonCode = PointReasonCode.SAVE_ORDER;
 
-        PointHistoryRequestDto request = ReflectionUtils.newInstance(
-                PointHistoryRequestDto.class,
-                loginId,
-                amount,
-                pointReasonCode
-        );
+        PointHistoryRequestDto request = getPointHistoryRequest(loginId, amount, pointReasonCode);
+
         long pointHistoryId = 1;
         long curAmount = 1000;
-        PointHistoryResponseDto response = ReflectionUtils.newInstance(
-                PointHistoryResponseDto.class,
+        PointHistoryResponseDto response = new PointHistoryResponseDto(
                 pointHistoryId,
                 curAmount,
                 LocalDateTime.now(),
