@@ -17,6 +17,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MemberManagerListResponseDto {
-    Long count;
-    List<MemberManagerResponseDto> memberManagerResponseDtoList;
+    private Long count;
+    private List<MemberManagerResponseDto> memberManagerResponseDtoList;
 }
