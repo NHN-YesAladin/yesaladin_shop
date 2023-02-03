@@ -29,14 +29,14 @@ public class CommandMemberCouponController {
     /**
      * 회원 쿠폰을 등록합니다.
      *
-     * @param requestDtos 회원과 지급할 쿠폰 정보를 담은 dto 리스트
+     * @param requestDtoList 회원과 지급할 쿠폰 정보를 담은 dto 리스트
      * @return 회원 쿠폰 등록 요청 처리 정보를 담은 ResponseDto
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseDto<MemberCouponResponseDto> createMemberCoupon(@RequestBody List<MemberCouponRequestDto> requestDtos) {
+    public ResponseDto<MemberCouponResponseDto> createMemberCoupon(@RequestBody List<MemberCouponRequestDto> requestDtoList) {
         MemberCouponResponseDto memberCoupons = commandMemberCouponService.createMemberCoupons(
-                requestDtos);
+                requestDtoList);
 
         return ResponseDto.<MemberCouponResponseDto>builder()
                 .status(HttpStatus.CREATED)

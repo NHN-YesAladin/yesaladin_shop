@@ -15,8 +15,8 @@ public interface CommandMemberCouponService {
     /**
      * 회원 쿠폰을 등록합니다.
      *
-     * @param requestDtos 회원과 지급할 쿠폰 정보를 담은 dto 리스트
+     * @param requestDtoList 회원과 지급할 쿠폰 정보를 담은 dto 리스트
      * @return 회원 쿠폰 등록 요청에 대한 처리 정보
      */
-    MemberCouponResponseDto createMemberCoupons(List<MemberCouponRequestDto> requestDtos);
+    MemberCouponResponseDto createMemberCoupons(List<MemberCouponRequestDto> requestDtoList);
 }

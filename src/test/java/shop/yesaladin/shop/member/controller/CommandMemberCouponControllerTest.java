@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +32,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.member.dto.MemberCouponResponseDto;
-import shop.yesaladin.shop.member.dto.MemberDto;
-import shop.yesaladin.shop.member.dummy.MemberDummy;
 import shop.yesaladin.shop.member.service.inter.CommandMemberCouponService;
 
 @AutoConfigureRestDocs
@@ -54,13 +53,14 @@ class CommandMemberCouponControllerTest {
 
     @WithMockUser
     @Test
-    void test() throws Exception {
+    @DisplayName("회원쿠폰 지급 요청 처리 성공")
+    void registerMemberCouponSuccessTest() throws Exception {
         // given
         String couponCode = "e37ca01a-0fbb-4587-9972-97ccb971a815";
         String couponCode2 = "a265b062-a352-11ed-a8fc-0242ac120002";
 
         Map<String, Object> memberCouponRequestDto = new HashMap<>();
-        memberCouponRequestDto.put("memberDto", MemberDto.fromEntity(MemberDummy.dummy()));
+        memberCouponRequestDto.put("memberId", 1L);
         memberCouponRequestDto.put("couponCodes", List.of(couponCode, couponCode2));
         memberCouponRequestDto.put(
                 "couponGroupCodes",
@@ -96,8 +96,8 @@ class CommandMemberCouponControllerTest {
                                         .description("등록할 쿠폰 코드 리스트"),
                                 fieldWithPath("[].couponGroupCodes").type(JsonFieldType.ARRAY)
                                         .description("등록할 쿠폰의 그룹 코드 리스트"),
-                                fieldWithPath("[].memberDto").type(JsonFieldType.OBJECT)
-                                        .description("쿠폰을 등록할 회원")
+                                fieldWithPath("[].memberId").type(JsonFieldType.NUMBER)
+                                        .description("쿠폰을 등록할 회원의 Id")
                         ),
                         responseFields(
                                 beneathPath("data").withSubsectionId("data"),

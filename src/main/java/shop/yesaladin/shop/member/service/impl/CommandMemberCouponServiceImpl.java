@@ -2,15 +2,12 @@ package shop.yesaladin.shop.member.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import shop.yesaladin.shop.member.domain.model.MemberCoupon;
-import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
+import shop.yesaladin.shop.member.domain.repository.InsertMemberCouponRepository;
 import shop.yesaladin.shop.member.dto.MemberCouponRequestDto;
 import shop.yesaladin.shop.member.dto.MemberCouponResponseDto;
-import shop.yesaladin.shop.member.persistence.JpaCommandMemberCouponRepository;
 import shop.yesaladin.shop.member.service.inter.CommandMemberCouponService;
 
 /**
@@ -23,31 +20,18 @@ import shop.yesaladin.shop.member.service.inter.CommandMemberCouponService;
 @Service
 public class CommandMemberCouponServiceImpl implements CommandMemberCouponService {
 
-    private final JpaCommandMemberCouponRepository memberCouponRepository;
-    private final QueryMemberRepository queryMemberRepository;
+    private final InsertMemberCouponRepository insertMemberCouponRepository;
 
     /**
      * {@inheritDoc}
      */
     @Override
     @Transactional
-    public MemberCouponResponseDto createMemberCoupons(List<MemberCouponRequestDto> requestDtos) {
-        List<MemberCoupon> memberCouponList = new ArrayList<>();
-        for (MemberCouponRequestDto requestDto : requestDtos) {
-            for (int i = 0; i < requestDto.getCouponCodes().size(); i++) {
-                MemberCoupon memberCoupon = MemberCoupon.builder()
-                        .member(queryMemberRepository.findById(requestDto.getMemberId())
-                                .orElseThrow())
-                        .couponCode(requestDto.getCouponCodes().get(i))
-                        .couponGroupCode(requestDto.getCouponGroupCodes().get(i))
-                        .build();
-                memberCouponList.add(memberCoupon);
-            }
-        }
-        List<MemberCoupon> createdMemberCouponList = memberCouponRepository.saveAll(memberCouponList);
-        List<String> givenCouponCodeList = createdMemberCouponList.stream()
-                .map(MemberCoupon::getCouponCode)
-                .collect(Collectors.toList());
+    public MemberCouponResponseDto createMemberCoupons(List<MemberCouponRequestDto> requestDtoList) {
+        insertMemberCouponRepository.insertMemberCoupon(requestDtoList);
+        List<String> givenCouponCodeList = new ArrayList<>();
+        requestDtoList
+                .forEach(memberCouponRequestDto -> givenCouponCodeList.addAll(memberCouponRequestDto.getCouponCodes()));
 
         return new MemberCouponResponseDto(givenCouponCodeList);
     }
