@@ -2,7 +2,6 @@ package shop.yesaladin.shop.member.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.startsWith;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -29,7 +28,6 @@ import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.util.stream.Stream;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -43,11 +41,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import shop.yesaladin.common.code.ErrorCode;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberGrade;
 import shop.yesaladin.shop.member.domain.model.Role;
@@ -59,8 +60,6 @@ import shop.yesaladin.shop.member.dto.MemberUnblockResponseDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateResponseDto;
 import shop.yesaladin.shop.member.dto.MemberWithdrawResponseDto;
-import shop.yesaladin.shop.member.exception.AlreadyBlockedMemberException;
-import shop.yesaladin.shop.member.exception.AlreadyUnblockedMemberException;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.CommandMemberService;
 
@@ -252,12 +251,8 @@ class CommandMemberControllerTest {
     @Test
     @DisplayName("회원 정보 수정 실패 - body 가 null 인 경우")
     void updateMember_withNull() throws Exception {
-        //given
-        String loginId = "user@1";
-
         //when
-        ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}", loginId)
-                .with(csrf()));
+        ResultActions perform = mockMvc.perform(put("/v1/members").with(csrf()));
 
         //then
         perform.andDo(print()).andExpect(status().isBadRequest());
@@ -272,32 +267,35 @@ class CommandMemberControllerTest {
     void updateMember_withInvalidInputData_forParametrizedTest(String nickname, String info)
             throws Exception {
         //given
-        String loginId = "user@1";
-
         MemberUpdateRequestDto request = ReflectionUtils.newInstance(
                 MemberUpdateRequestDto.class,
                 nickname
         );
         //when
-        ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}", loginId)
+        ResultActions result = mockMvc.perform(put("/v1/members").contentType(
+                        MediaType.APPLICATION_JSON)
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
         //then
-        perform.andDo(print()).andExpect(status().isBadRequest())
+        result.andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message", startsWith("Validation failed")));
+                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.BAD_REQUEST.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.BAD_REQUEST.getDisplayName())
+                ));
 
         verify(commandMemberService, never()).update(anyString(), any());
     }
 
-    @WithMockUser
+    @WithMockUser(username = "testloginid")
     @Test
     @DisplayName("회원 정보 수정 실패-유효하지 않은 요청")
     void updateMember_withInvalidInputData() throws Exception {
         //given
-        String loginId = "user@1";
         String nickname = "";
 
         MemberUpdateRequestDto request = ReflectionUtils.newInstance(
@@ -305,39 +303,50 @@ class CommandMemberControllerTest {
                 nickname
         );
         //when
-        ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}", loginId)
+        ResultActions result = mockMvc.perform(put("/v1/members")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
         //then
-        perform.andDo(print()).andExpect(status().isBadRequest())
+        result.andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message", startsWith("Validation failed")));
+                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.BAD_REQUEST.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.BAD_REQUEST.getDisplayName())
+                ));
 
         verify(commandMemberService, never()).update(anyString(), any());
 
         //docs
-        perform.andDo(document(
+        result.andDo(document(
                 "update-member-fail-validation-failed",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 requestFields(
                         fieldWithPath("nickname").type(JsonFieldType.STRING).description("변경할 닉네임")
                 ),
                 responseFields(
-                        fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data").type(JsonFieldType.NUMBER)
+                                .description("null")
+                                .optional(),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
                 )
         ));
     }
 
-    @WithMockUser
+    @WithMockUser(username = "testloginid")
     @Test
     @DisplayName("회원정보수정 실패 - 존재하지 않는 회원인 경우")
     void updateMember_withInvalidMemberId() throws Exception {
         //given
-        String loginId = "user@1";
+        String loginId = "testloginid";
 
         MemberUpdateRequestDto request = ReflectionUtils.newInstance(
                 MemberUpdateRequestDto.class,
@@ -347,43 +356,54 @@ class CommandMemberControllerTest {
                 MemberUpdateRequestDto.class);
 
         Mockito.when(commandMemberService.update(eq(loginId), any()))
-                .thenThrow(new MemberNotFoundException("Member loginId: " + loginId));
+                .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, ""));
 
         //when
-        ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}", loginId)
+        ResultActions result = mockMvc.perform(put("/v1/members")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
         //then
-        perform.andDo(print()).andExpect(status().isNotFound())
+        result.andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message", startsWith("Member not found")));
+                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.NOT_FOUND.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.MEMBER_NOT_FOUND.getDisplayName())
+                ));
 
         verify(commandMemberService, times(1)).update(anyString(), requestArgumentCaptor.capture());
         assertThat(requestArgumentCaptor.getValue().getNickname()).isEqualTo(request.getNickname());
 
         //docs
-        perform.andDo(document(
+        result.andDo(document(
                 "update-member-fail-member-not-found",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 requestFields(
                         fieldWithPath("nickname").type(JsonFieldType.STRING).description("변경할 닉네임")
                 ),
                 responseFields(
-                        fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data").type(JsonFieldType.NUMBER)
+                                .description("null")
+                                .optional(),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
                 )
         ));
     }
 
-    @WithMockUser
+    @WithMockUser(username = "testloginid")
     @Test
     @DisplayName("회원 정보 수정 성공")
     void updateMember() throws Exception {
         //given
-        String loginId = "user@1";
+        String loginId = member.getLoginId();
 
         MemberUpdateRequestDto request = ReflectionUtils.newInstance(
                 MemberUpdateRequestDto.class,
@@ -395,13 +415,23 @@ class CommandMemberControllerTest {
         Mockito.when(commandMemberService.update(eq(loginId), any())).thenReturn(updateResponse);
 
         //when
-        ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}", loginId)
+        ResultActions perform = mockMvc.perform(put("/v1/members")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
         //then
-        perform.andDo(print()).andExpect(status().isOk());
+        perform.andDo(print()).andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())))
+                .andExpect(jsonPath("$.data.name", equalTo(member.getName())))
+                .andExpect(jsonPath("$.data.nickname", equalTo(member.getNickname())))
+                .andExpect(jsonPath("$.data.loginId", equalTo(member.getLoginId())))
+                .andExpect(jsonPath(
+                        "$.data.memberGrade",
+                        equalTo(member.getMemberGrade().toString())
+                ));
 
         verify(commandMemberService, times(1)).update(anyString(), requestArgumentCaptor.capture());
         assertThat(requestArgumentCaptor.getValue().getNickname()).isEqualTo(request.getNickname());
@@ -411,65 +441,136 @@ class CommandMemberControllerTest {
                 "update-member-success",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
                 requestFields(
                         fieldWithPath("nickname").type(JsonFieldType.STRING)
                                 .description("회원의 수정할 닉네임")
                 ),
                 responseFields(
-                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("회원의 Pk"),
-                        fieldWithPath("name").type(JsonFieldType.STRING).description("회원의 이름"),
-                        fieldWithPath("nickname").type(JsonFieldType.STRING).description("회원의 닉네임"),
-                        fieldWithPath("loginId").type(JsonFieldType.STRING).description("회원의 아이디"),
-                        fieldWithPath("memberGrade").type(JsonFieldType.STRING)
-                                .description("회원의 등급")
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("HTTP 상태 코드"),
+                        fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("회원의 Pk"),
+                        fieldWithPath("data.name").type(JsonFieldType.STRING).description("회원의 이름"),
+                        fieldWithPath("data.nickname").type(JsonFieldType.STRING)
+                                .description("회원의 닉네임"),
+                        fieldWithPath("data.loginId").type(JsonFieldType.STRING)
+                                .description("회원의 아이디"),
+                        fieldWithPath("data.memberGrade").type(JsonFieldType.STRING)
+                                .description("회원의 등급"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
+                                .optional()
                 )
         ));
     }
 
-    @WithMockUser
+    @WithMockUser(authorities = "ROLE_ADMIN")
     @Test
     @DisplayName("회원 차단 실패 - 유효하지 않은 요청 번수")
     void blockMember_fail_validationError() throws Exception {
         //given
-        String loginId = "user@1";
-
+        String loginId = member.getLoginId();
         String blockedReason = "";
         MemberBlockRequestDto request = ReflectionUtils.newInstance(
                 MemberBlockRequestDto.class,
                 blockedReason
         );
         //when
-        ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}/block", loginId)
+        ResultActions result = mockMvc.perform(put("/v1/members/{loginId}/block", loginId)
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
         //then
-        perform.andDo(print()).andExpect(status().isBadRequest())
+        result.andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message", Matchers.startsWith("Validation")));
+                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.BAD_REQUEST.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.BAD_REQUEST.getDisplayName())
+                ));
 
         //docs
-        perform.andDo(document(
+        result.andDo(document(
                 "block-member-fail-validation-error",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
+                pathParameters(
+                        parameterWithName("loginId").description("회원의 아이디")
+                ),
                 requestFields(fieldWithPath("blockedReason").type(JsonFieldType.STRING)
                         .description("차단 사유")),
                 responseFields(
-                        fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data").type(JsonFieldType.NUMBER)
+                                .description("null")
+                                .optional(),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
                 )
         ));
     }
 
     @WithMockUser
+    @Test
+    @DisplayName("회원 차단 실패 - 차단 권한 없는 경우")
+    void blockMember_fail_unauthorized() throws Exception {
+        //given
+        String loginId = member.getLoginId();
+        String blockedReason = "you are a bad guy";
+        MemberBlockRequestDto request = ReflectionUtils.newInstance(
+                MemberBlockRequestDto.class,
+                blockedReason
+        );
+        //when
+        ResultActions result = mockMvc.perform(put("/v1/members/{loginId}/block", loginId)
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
+
+        //then
+        result.andExpect(status().isUnauthorized())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.UNAUTHORIZED.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.UNAUTHORIZED.getDisplayName())
+                ));
+
+        //docs
+        result.andDo(document(
+                "block-member-fail-unauthorized",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                pathParameters(
+                        parameterWithName("loginId").description("회원의 아이디")
+                ),
+                requestFields(fieldWithPath("blockedReason").type(JsonFieldType.STRING)
+                        .description("차단 사유")),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data").type(JsonFieldType.NUMBER)
+                                .description("null")
+                                .optional(),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
+                )
+        ));
+    }
+
+    @WithMockUser(authorities = "ROLE_ADMIN")
     @Test
     @DisplayName("회원 차단 실패 - 존재하지 않는 회원인 경우")
     void blockMember_withInvalidMemberId() throws Exception {
         //given
-        String loginId = "user@1";
+        String loginId = member.getLoginId();
 
         String blockedReason = "You are bad guy";
         MemberBlockRequestDto request = ReflectionUtils.newInstance(
@@ -477,43 +578,57 @@ class CommandMemberControllerTest {
                 blockedReason
         );
         Mockito.when(commandMemberService.block(eq(loginId), any()))
-                .thenThrow(new MemberNotFoundException("Member loginId: " + loginId));
+                .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, ""));
 
         //when
-        ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}/block", loginId)
+        ResultActions result = mockMvc.perform(put("/v1/members/{loginId}/block", loginId)
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
         //then
-        perform.andDo(print()).andExpect(status().isNotFound())
+        result.andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message", Matchers.startsWith("Member not found")));
+                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.NOT_FOUND.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.MEMBER_NOT_FOUND.getDisplayName())
+                ));
 
         ArgumentCaptor<MemberBlockRequestDto> captor = ArgumentCaptor.forClass(MemberBlockRequestDto.class);
         verify(commandMemberService, times(1)).block(anyString(), captor.capture());
         assertThat(captor.getValue().getBlockedReason()).isEqualTo(blockedReason);
 
         //docs
-        perform.andDo(document(
+        result.andDo(document(
                 "block-member-fail-member-not-found",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
+                pathParameters(
+                        parameterWithName("loginId").description("회원의 아이디")
+                ),
                 requestFields(fieldWithPath("blockedReason").type(JsonFieldType.STRING)
                         .description("차단 사유")),
                 responseFields(
-                        fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data").type(JsonFieldType.NUMBER)
+                                .description("null")
+                                .optional(),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
                 )
         ));
     }
 
-    @WithMockUser
+    @WithMockUser(authorities = "ROLE_ADMIN")
     @Test
     @DisplayName("회원 차단 실패 - 이미 차단된 회원인 경우")
     void blockMember_fail_alreadyBlockedMember() throws Exception {
         //given
-        String loginId = "user@1";
+        String loginId = member.getLoginId();
 
         String blockedReason = "You are bad guy";
         MemberBlockRequestDto request = ReflectionUtils.newInstance(
@@ -521,45 +636,59 @@ class CommandMemberControllerTest {
                 blockedReason
         );
         Mockito.when(commandMemberService.block(eq(loginId), any()))
-                .thenThrow(new AlreadyBlockedMemberException(loginId));
+                .thenThrow(new ClientException(ErrorCode.MEMBER_ALREADY_BLOCKED, ""));
 
         //when
-        ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}/block", loginId)
+        ResultActions result = mockMvc.perform(put("/v1/members/{loginId}/block", loginId)
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
         //then
-        perform.andDo(print()).andExpect(status().isBadRequest())
+        result.andExpect(status().isConflict())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message", Matchers.startsWith("Already Blocked Member")));
+                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.CONFLICT.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.MEMBER_ALREADY_BLOCKED.getDisplayName())
+                ));
 
         ArgumentCaptor<MemberBlockRequestDto> captor = ArgumentCaptor.forClass(MemberBlockRequestDto.class);
         verify(commandMemberService, times(1)).block(anyString(), captor.capture());
         assertThat(captor.getValue().getBlockedReason()).isEqualTo(blockedReason);
 
         //docs
-        perform.andDo(document(
+        result.andDo(document(
                 "block-member-fail-already-blocked",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
+                pathParameters(
+                        parameterWithName("loginId").description("회원의 아이디")
+                ),
                 requestFields(fieldWithPath("blockedReason").type(JsonFieldType.STRING)
                         .description("차단 사유")),
                 responseFields(
-                        fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data").type(JsonFieldType.NUMBER)
+                                .description("null")
+                                .optional(),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
                 )
         ));
     }
 
-    @WithMockUser
+    @WithMockUser(authorities = "ROLE_ADMIN")
     @Test
     @DisplayName("회원 차단 성공")
     void blockMember() throws Exception {
         //given
         long memberId = 1L;
         String name = "사용자";
-        String loginId = "user@1";
+        String loginId = member.getLoginId();
         LocalDate blockedDate = LocalDate.now();
         String blockedReason = "You are bad guy";
 
@@ -587,12 +716,14 @@ class CommandMemberControllerTest {
         //then
         perform.andDo(print()).andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id", equalTo((int) memberId)))
-                .andExpect(jsonPath("$.name", equalTo(name)))
-                .andExpect(jsonPath("$.loginId", equalTo(loginId)))
-                .andExpect(jsonPath("$.isBlocked", equalTo(true)))
-                .andExpect(jsonPath("$.blockedDate", equalTo(blockedDate.toString())))
-                .andExpect(jsonPath("$.blockedReason", equalTo(blockedReason)));
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())))
+                .andExpect(jsonPath("$.data.id", equalTo((int) memberId)))
+                .andExpect(jsonPath("$.data.name", equalTo(name)))
+                .andExpect(jsonPath("$.data.loginId", equalTo(loginId)))
+                .andExpect(jsonPath("$.data.isBlocked", equalTo(true)))
+                .andExpect(jsonPath("$.data.blockedDate", equalTo(blockedDate.toString())))
+                .andExpect(jsonPath("$.data.blockedReason", equalTo(blockedReason)));
 
         ArgumentCaptor<MemberBlockRequestDto> captor = ArgumentCaptor.forClass(MemberBlockRequestDto.class);
         verify(commandMemberService, times(1)).block(anyString(), captor.capture());
@@ -603,98 +734,178 @@ class CommandMemberControllerTest {
                 "block-member-success",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
+                pathParameters(
+                        parameterWithName("loginId").description("회원의 아이디")
+                ),
                 requestFields(fieldWithPath("blockedReason").type(JsonFieldType.STRING)
                         .description("차단 사유")),
                 responseFields(
-                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("회원의 Pk"),
-                        fieldWithPath("name").type(JsonFieldType.STRING).description("회원의 이름"),
-                        fieldWithPath("loginId").type(JsonFieldType.STRING).description("회원의 아이디"),
-                        fieldWithPath("isBlocked").type(JsonFieldType.BOOLEAN)
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("HTTP 상태 코드"),
+                        fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("회원의 Pk"),
+                        fieldWithPath("data.name").type(JsonFieldType.STRING).description("회원의 이름"),
+                        fieldWithPath("data.loginId").type(JsonFieldType.STRING)
+                                .description("회원의 아이디"),
+                        fieldWithPath("data.isBlocked").type(JsonFieldType.BOOLEAN)
                                 .description("회원의 차단 여부"),
-                        fieldWithPath("blockedDate").type(JsonFieldType.STRING).description("차단일"),
-                        fieldWithPath("blockedReason").type(JsonFieldType.STRING)
-                                .description("차단 사유")
+                        fieldWithPath("data.blockedDate").type(JsonFieldType.STRING)
+                                .description("차단일"),
+                        fieldWithPath("data.blockedReason").type(JsonFieldType.STRING)
+                                .description("차단 사유"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
+                                .optional()
                 )
         ));
     }
 
-    @WithMockUser
+    @WithMockUser(authorities = "ROLE_ADMIN")
     @Test
     @DisplayName("회원 차단해지 실패 - 존재하지 않는 회원인 경우")
     void unblockMember_withInvalidMemberId() throws Exception {
         //given
-        String loginId = "user@1";
+        String loginId = "testloginid";
 
         Mockito.when(commandMemberService.unblock(loginId))
-                .thenThrow(new MemberNotFoundException("Member loginId: " + loginId));
+                .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, ""));
 
         //when
-        ResultActions perform = mockMvc.perform(put(
-                "/v1/members/{loginId}/unblock",
-                loginId
+        ResultActions result = mockMvc.perform(put(
+                "/v1/members/{loginId}/unblock", loginId
         ).with(csrf()).contentType(MediaType.APPLICATION_JSON));
 
         //then
-        perform.andDo(print()).andExpect(status().isNotFound())
+        result.andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message", Matchers.startsWith("Member not found")));
+                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.NOT_FOUND.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.MEMBER_NOT_FOUND.getDisplayName())
+                ));
 
         verify(commandMemberService, times(1)).unblock(loginId);
 
         //docs
-        perform.andDo(document(
+        result.andDo(document(
                 "unblock-member-fail-member-not-found",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
+                pathParameters(
+                        parameterWithName("loginId").description("회원의 아이디")
+                ),
                 responseFields(
-                        fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data").type(JsonFieldType.NUMBER)
+                                .description("null")
+                                .optional(),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
                 )
         ));
     }
 
     @WithMockUser
     @Test
-    @DisplayName("회원 차단 해지 실패 - 이미 차단 해지된 회원인 경우")
-    void unblockMember_fail_alreadyBlockedMember() throws Exception {
+    @DisplayName("회원 차단 해지 실패 - 차단 해지 권한 없는 경우")
+    void unblockMember_fail_unauthorized() throws Exception {
         //given
-        String loginId = "user@1";
-
-        Mockito.when(commandMemberService.unblock(loginId))
-                .thenThrow(new AlreadyUnblockedMemberException(loginId));
+        String loginId = member.getLoginId();
 
         //when
-        ResultActions perform = mockMvc.perform(put("/v1/members/{loginId}/unblock", loginId)
+        ResultActions result = mockMvc.perform(put("/v1/members/{loginId}/unblock", loginId)
                 .with(csrf()));
 
         //then
-        perform.andDo(print()).andExpect(status().isBadRequest())
+        result.andExpect(status().isUnauthorized())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message", Matchers.startsWith("Already Unblocked Member")));
-
-        verify(commandMemberService, times(1)).unblock(loginId);
+                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.UNAUTHORIZED.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.UNAUTHORIZED.getDisplayName())
+                ));
 
         //docs
-        perform.andDo(document(
-                "unblock-member-fail-already-unblocked",
+        result.andDo(document(
+                "unblock-member-fail-unauthorized",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
+                pathParameters(
+                        parameterWithName("loginId").description("회원의 아이디")
+                ),
                 responseFields(
-                        fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data").type(JsonFieldType.NUMBER)
+                                .description("null")
+                                .optional(),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
                 )
         ));
     }
 
-    @WithMockUser
+    @WithMockUser(authorities = "ROLE_ADMIN")
+    @Test
+    @DisplayName("회원 차단 해지 실패 - 이미 차단 해지된 회원인 경우")
+    void unblockMember_fail_alreadyBlockedMember() throws Exception {
+        //given
+        String loginId = "testloginid";
+
+        Mockito.when(commandMemberService.unblock(loginId))
+                .thenThrow(new ClientException(ErrorCode.MEMBER_ALREADY_UNBLOCKED, ""));
+
+        //when
+        ResultActions result = mockMvc.perform(put("/v1/members/{loginId}/unblock", loginId).with(
+                csrf()));
+
+        //then
+        result.andExpect(status().isConflict())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.CONFLICT.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.MEMBER_ALREADY_UNBLOCKED.getDisplayName())
+                ));
+
+        verify(commandMemberService, times(1)).unblock(loginId);
+
+        //docs
+        result.andDo(document(
+                "unblock-member-fail-already-unblocked",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                pathParameters(
+                        parameterWithName("loginId").description("회원의 아이디")
+                ),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data").type(JsonFieldType.NUMBER)
+                                .description("null")
+                                .optional(),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
+                )
+        ));
+    }
+
+    @WithMockUser(authorities = "ROLE_ADMIN")
     @Test
     @DisplayName("회원 차단해지 성공")
     void unblockMember() throws Exception {
         //given
         long memberId = 1L;
         String name = "사용자";
-        String loginId = "user@1";
+        String loginId = "testloginid";
         LocalDate unblockedDate = LocalDate.now();
 
         MemberUnblockResponseDto response = ReflectionUtils.newInstance(
@@ -709,18 +920,19 @@ class CommandMemberControllerTest {
 
         //when
         ResultActions perform = mockMvc.perform(put(
-                "/v1/members/{loginId}/unblock",
-                loginId
+                "/v1/members/{loginId}/unblock", loginId
         ).with(csrf()).contentType(MediaType.APPLICATION_JSON));
 
         //then
         perform.andDo(print()).andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id", equalTo((int) memberId)))
-                .andExpect(jsonPath("$.name", equalTo(name)))
-                .andExpect(jsonPath("$.loginId", equalTo(loginId)))
-                .andExpect(jsonPath("$.isBlocked", equalTo(false)))
-                .andExpect(jsonPath("$.unblockedDate", equalTo(unblockedDate.toString())));
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())))
+                .andExpect(jsonPath("$.data.id", equalTo((int) memberId)))
+                .andExpect(jsonPath("$.data.name", equalTo(name)))
+                .andExpect(jsonPath("$.data.loginId", equalTo(loginId)))
+                .andExpect(jsonPath("$.data.isBlocked", equalTo(false)))
+                .andExpect(jsonPath("$.data.unblockedDate", equalTo(unblockedDate.toString())));
 
         verify(commandMemberService, times(1)).unblock(loginId);
 
@@ -729,20 +941,30 @@ class CommandMemberControllerTest {
                 "unblock-member-success",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                pathParameters(parameterWithName("loginId").description("회원의 아이디")),
+                pathParameters(
+                        parameterWithName("loginId").description("회원의 아이디")
+                ),
                 responseFields(
-                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("회원의 Pk"),
-                        fieldWithPath("name").type(JsonFieldType.STRING).description("회원의 이름"),
-                        fieldWithPath("loginId").type(JsonFieldType.STRING).description("회원의 아이디"),
-                        fieldWithPath("isBlocked").type(JsonFieldType.BOOLEAN)
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("HTTP 상태 코드"),
+                        fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("회원의 Pk"),
+                        fieldWithPath("data.name").type(JsonFieldType.STRING).description("회원의 이름"),
+                        fieldWithPath("data.loginId").type(JsonFieldType.STRING)
+                                .description("회원의 아이디"),
+                        fieldWithPath("data.isBlocked").type(JsonFieldType.BOOLEAN)
                                 .description("회원의 차단 여부"),
-                        fieldWithPath("unblockedDate").type(JsonFieldType.STRING)
-                                .description("차단 해지일")
+                        fieldWithPath("data.unblockedDate").type(JsonFieldType.STRING)
+                                .description("차단 해지일"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
+                                .optional()
                 )
         ));
     }
 
-    @WithMockUser
+    @WithMockUser(username = "testloginid")
     @Test
     void withdrawMember_fail_invalidMember() throws Exception {
         //given
@@ -774,7 +996,7 @@ class CommandMemberControllerTest {
         ));
     }
 
-    @WithMockUser
+    @WithMockUser(username = "testloginid")
     @Test
     void withdrawMember() throws Exception {
         String loginId = "loginId";

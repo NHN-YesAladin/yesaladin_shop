@@ -13,9 +13,6 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -28,12 +25,12 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.common.exception.InvalidPeriodConditionException;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberGradeHistoryRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
 import shop.yesaladin.shop.member.dto.MemberGradeHistoryQueryResponseDto;
-import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberGradeHistoryService;
 
 
@@ -118,7 +115,7 @@ class QueryMemberGradeHistoryServiceImplTest {
                 loginId,
                 request,
                 pageable
-        )).isInstanceOf(MemberNotFoundException.class);
+        )).isInstanceOf(ClientException.class);
 
         verify(queryMemberRepository, times(1)).existsMemberByLoginId(loginId);
         verify(queryMemberGradeHistoryRepository, never()).findByLoginIdAndPeriod(

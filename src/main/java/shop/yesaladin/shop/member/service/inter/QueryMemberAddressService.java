@@ -1,6 +1,7 @@
 package shop.yesaladin.shop.member.service.inter;
 
 import java.util.List;
+import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
 
 /**
@@ -12,6 +13,22 @@ import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
 public interface QueryMemberAddressService {
 
     /**
+     * 회원배송지를 조회합니다.
+     *
+     * @param id 배송지 pk
+     * @return 배송지
+     */
+    MemberAddress findById(long id);
+
+    /**
+     * 회원배송지를 조회합니다.
+     *
+     * @param id 배송지 pk
+     * @return 배송지
+     */
+    MemberAddressResponseDto getById(long id);
+
+    /**
      * 회원의 배송지 목록들을 조회합니다.
      *
      * @param loginId 회원 아이디
@@ -19,5 +36,5 @@ public interface QueryMemberAddressService {
      * @author 최예린
      * @since 1.0
      */
-    List<MemberAddressResponseDto> findByLoginId(String loginId);
+    List<MemberAddressResponseDto> getByLoginId(String loginId);
 }

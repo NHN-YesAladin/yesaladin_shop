@@ -67,9 +67,7 @@ public class ProductUpdateDto {
     private int preferentialShowRanking;
 
     // 썸네일 파일
-    @NotBlank
     private String thumbnailFileUrl;
-    @NotBlank
     private String thumbnailFileUploadDateTime;
 
     // e-book 파일
@@ -182,5 +180,36 @@ public class ProductUpdateDto {
                         DateTimeFormatter.ISO_LOCAL_DATE_TIME
                 ))
                 .build();
+    }
+
+    @Override
+    public String toString() {
+        return "ProductUpdateDto{" +
+                "title='" + title + '\'' +
+                ", contents='" + contents + '\'' +
+                ", description='" + description + '\'' +
+                ", authors=" + authors +
+                ", publisherId=" + publisherId +
+                ", actualPrice=" + actualPrice +
+                ", discountRate=" + discountRate +
+                ", isSeparatelyDiscount=" + isSeparatelyDiscount +
+                ", givenPointRate=" + givenPointRate +
+                ", isGivenPoint=" + isGivenPoint +
+                ", issn='" + issn + '\'' +
+                ", isSubscriptionAvailable=" + isSubscriptionAvailable +
+                ", isSale=" + isSale +
+                ", quantity=" + quantity +
+                ", publishedDate='" + publishedDate + '\'' +
+                ", preferentialShowRanking=" + preferentialShowRanking +
+                ", thumbnailFileUrl='" + thumbnailFileUrl + '\'' +
+                ", thumbnailFileUploadDateTime='" + thumbnailFileUploadDateTime + '\'' +
+                ", ebookFileUrl='" + ebookFileUrl + '\'' +
+                ", ebookFileUploadDateTime='" + ebookFileUploadDateTime + '\'' +
+                ", productTypeCode='" + productTypeCode + '\'' +
+                ", productSavingMethodCode='" + productSavingMethodCode + '\'' +
+                ", tags=" + tags +
+                ", categories=" + categories +
+                ", isForcedOutOfStock=" + isForcedOutOfStock +
+                '}';
     }
 }

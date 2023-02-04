@@ -13,12 +13,13 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum ProductTypeCode {
-    NONE(1),
-    BESTSELLER(2),
-    RECOMMENDATION(3),
-    NEWBOOK(4),
-    POPULARITY(5),
-    DISCOUNTS(6);
+    NONE(1, "없음"),
+    BESTSELLER(2, "베스트셀러"),
+    RECOMMENDATION(3, "추천"),
+    NEWBOOK(4, "신간"),
+    POPULARITY(5, "인기"),
+    DISCOUNTS(6, "할인");
 
     private final int id;
+    private final String koName;
 }

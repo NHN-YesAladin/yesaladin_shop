@@ -13,6 +13,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import shop.yesaladin.common.code.ErrorCode;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.member.domain.repository.CommandMemberAddressRepository;
@@ -21,10 +23,6 @@ import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
 import shop.yesaladin.shop.member.dto.MemberAddressCreateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
-import shop.yesaladin.shop.member.exception.AlreadyRegisteredUpToLimit;
-import shop.yesaladin.shop.member.exception.AlreadyDeletedAddressException;
-import shop.yesaladin.shop.member.exception.MemberAddressNotFoundException;
-import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.CommandMemberAddressService;
 
 class CommandMemberAddressServiceImplTest {
@@ -66,10 +64,10 @@ class CommandMemberAddressServiceImplTest {
         );
 
         Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
-                .thenThrow(MemberNotFoundException.class);
+                .thenThrow(ClientException.class);
 
         assertThatThrownBy(() -> commandMemberAddressService.save(loginId, request)).isInstanceOf(
-                MemberNotFoundException.class);
+                ClientException.class);
     }
 
     @Test
@@ -79,7 +77,7 @@ class CommandMemberAddressServiceImplTest {
         MemberAddressCreateRequestDto request = ReflectionUtils.newInstance(
                 MemberAddressCreateRequestDto.class,
                 address,
-                isDefault
+                false
         );
 
         Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
@@ -89,20 +87,25 @@ class CommandMemberAddressServiceImplTest {
 
         //when, then
         assertThatThrownBy(() -> commandMemberAddressService.save(loginId, request)).isInstanceOf(
-                AlreadyRegisteredUpToLimit.class);
+                ClientException.class);
     }
 
     @Test
     void save() {
         String loginId = member.getLoginId();
+        long addressId = 1L;
 
         MemberAddressCreateRequestDto request = ReflectionUtils.newInstance(
                 MemberAddressCreateRequestDto.class,
                 address,
-                isDefault
+                true
         );
-        MemberAddress memberAddress = getMemberAddress(member, false);
+        MemberAddress memberAddress = getDefaultMemberAddressWithId(addressId, member, false);
 
+        Mockito.when(queryMemberAddressRepository.findByLoginIdAndMemberAddressId(
+                loginId,
+                addressId
+        )).thenReturn(Optional.of(memberAddress));
         Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
                 .thenReturn(Optional.of(member));
         Mockito.when(queryMemberAddressRepository.countByLoginId(loginId))
@@ -112,8 +115,7 @@ class CommandMemberAddressServiceImplTest {
         MemberAddressResponseDto actual = commandMemberAddressService.save(loginId, request);
 
         assertThat(actual.getAddress()).isEqualTo(address);
-        assertThat(actual.getIsDefault()).isEqualTo(isDefault);
-        assertThat(actual.getLoginId()).isEqualTo(loginId);
+        assertThat(actual.getIsDefault()).isTrue();
 
         ArgumentCaptor<MemberAddress> captor = ArgumentCaptor.forClass(MemberAddress.class);
 
@@ -136,25 +138,24 @@ class CommandMemberAddressServiceImplTest {
                 loginId,
                 addressId
         )).thenThrow(
-                MemberAddressNotFoundException.class);
+                ClientException.class);
 
         assertThatThrownBy(() -> commandMemberAddressService.markAsDefault(
                 loginId,
                 addressId
-        )).isInstanceOf(MemberAddressNotFoundException.class);
+        )).isInstanceOf(ClientException.class);
     }
 
     @Test
     void markAsDefault() {
         long addressId = 1L;
 
-        MemberAddress memberAddress = getMemberAddress(member,false);
+        MemberAddress memberAddress = getMemberAddressWithId(addressId, member, false);
 
-        Mockito.when(queryMemberAddressRepository.getByLoginIdAndMemberAddressId(
+        Mockito.when(queryMemberAddressRepository.findByLoginIdAndMemberAddressId(
                 loginId,
                 addressId
-        )).thenReturn(
-                Optional.of(memberAddress));
+        )).thenReturn(Optional.of(memberAddress));
 
         MemberAddressResponseDto result = commandMemberAddressService.markAsDefault(
                 loginId,
@@ -163,7 +164,6 @@ class CommandMemberAddressServiceImplTest {
 
         assertThat(result.getAddress()).isEqualTo(address);
         assertThat(result.getIsDefault()).isTrue();
-        assertThat(result.getLoginId()).isEqualTo(loginId);
     }
 
     @Test
@@ -171,15 +171,15 @@ class CommandMemberAddressServiceImplTest {
         String loginId = "user@1";
         long addressId = 1L;
 
-        Mockito.when(queryMemberAddressRepository.existByLoginIdAndMemberAddressId(
+        Mockito.when(queryMemberAddressRepository.findByLoginIdAndMemberAddressId(
                 loginId,
                 addressId
-        )).thenReturn(false);
+        )).thenThrow(new ClientException(ErrorCode.ADDRESS_NOT_FOUND, "address not found"));
 
         assertThatThrownBy(() -> commandMemberAddressService.delete(
                 loginId,
                 addressId
-        )).isInstanceOf(MemberAddressNotFoundException.class);
+        )).isInstanceOf(ClientException.class);
     }
 
     @Test
@@ -187,7 +187,8 @@ class CommandMemberAddressServiceImplTest {
         long addressId = 1L;
 
         MemberAddress memberAddress = getMemberAddress(member, true);
-        Mockito.when(queryMemberAddressRepository.getByLoginIdAndMemberAddressId(
+
+        Mockito.when(queryMemberAddressRepository.findByLoginIdAndMemberAddressId(
                 loginId,
                 addressId
         )).thenReturn(Optional.of(memberAddress));
@@ -195,14 +196,15 @@ class CommandMemberAddressServiceImplTest {
         assertThatThrownBy(() -> commandMemberAddressService.delete(
                 loginId,
                 addressId
-        )).isInstanceOf(AlreadyDeletedAddressException.class);
+        )).isInstanceOf(ClientException.class);
     }
+
     @Test
     void delete_success() {
         long addressId = 1L;
 
-        MemberAddress memberAddress = getMemberAddress(member, false);
-        Mockito.when(queryMemberAddressRepository.getByLoginIdAndMemberAddressId(
+        MemberAddress memberAddress = getMemberAddressWithId(addressId, member, false);
+        Mockito.when(queryMemberAddressRepository.findByLoginIdAndMemberAddressId(
                 loginId,
                 addressId
         )).thenReturn(Optional.of(memberAddress));
@@ -212,10 +214,30 @@ class CommandMemberAddressServiceImplTest {
         assertThat(result).isEqualTo(addressId);
         assertThat(memberAddress.isDeleted()).isTrue();
     }
+
     private MemberAddress getMemberAddress(Member member, boolean isDeleted) {
         return MemberAddress.builder()
                 .address(address)
                 .isDefault(isDefault)
+                .isDeleted(isDeleted)
+                .member(member)
+                .build();
+    }
+
+    private MemberAddress getMemberAddressWithId(long addressId, Member member, boolean isDeleted) {
+        return MemberAddress.builder()
+                .id(addressId)
+                .address(address)
+                .isDefault(isDefault)
+                .isDeleted(isDeleted)
+                .member(member)
+                .build();
+    }
+    private MemberAddress getDefaultMemberAddressWithId(long addressId, Member member, boolean isDeleted) {
+        return MemberAddress.builder()
+                .id(addressId)
+                .address(address)
+                .isDefault(true)
                 .isDeleted(isDeleted)
                 .member(member)
                 .build();
