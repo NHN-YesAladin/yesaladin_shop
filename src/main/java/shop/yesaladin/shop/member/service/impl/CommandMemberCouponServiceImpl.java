@@ -5,7 +5,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import shop.yesaladin.shop.member.domain.repository.InsertMemberCouponRepository;
+import shop.yesaladin.shop.coupon.service.inter.InsertMemberCouponRepository;
 import shop.yesaladin.shop.member.dto.MemberCouponRequestDto;
 import shop.yesaladin.shop.member.dto.MemberCouponResponseDto;
 import shop.yesaladin.shop.member.service.inter.CommandMemberCouponService;
