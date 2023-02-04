@@ -3,9 +3,12 @@ package shop.yesaladin.shop.coupon.adapter.kafka;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
+import shop.yesaladin.coupon.message.CouponGiveRequestMessage;
+import shop.yesaladin.coupon.message.MessageKey;
+import shop.yesaladin.shop.config.CouponProperties;
 
 /**
- * 메시지를 생산하는 생산자 클래스입니다.
+ * 쿠폰 관련 메시지를 생산하는 생산자 클래스입니다.
  *
  * @author 김홍대
  * @since 1.0
@@ -14,10 +17,23 @@ import org.springframework.stereotype.Component;
 @Component
 public class CouponProducer {
 
+    private final CouponProperties couponProperties;
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
-    public void produceMessage(String topic, Object message) {
-        kafkaTemplate.send(topic, message);
+    public void produceGiveRequestMessage(CouponGiveRequestMessage message) {
+        kafkaTemplate.send(
+                couponProperties.getCouponGiveRequestTopic(),
+                MessageKey.GIVE_REQUEST.name(),
+                message
+        );
+    }
+
+    public void produceGiveRequestLimitMessage(CouponGiveRequestMessage message) {
+        kafkaTemplate.send(
+                couponProperties.getCouponGiveRequestLimitTopic(),
+                MessageKey.GIVE_REQUEST.name(),
+                message
+        );
     }
 
 }
