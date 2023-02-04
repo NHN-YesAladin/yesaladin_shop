@@ -14,25 +14,25 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class CouponProperties {
 
-    @Value("${topic.give-request}")
+    @Value("${coupon.topic.give-request}")
     private String couponGiveRequestTopic;
 
-    @Value("${topic.given}")
+    @Value("${coupon.topic.given}")
     private String couponGivenTopic;
 
-    @Value("${topic.give-request-limit}")
+    @Value("${coupon.topic.give-request-limit}")
     private String couponGiveRequestLimitTopic;
 
-    @Value("${topic.give-request-cancel}")
+    @Value("${coupon.topic.give-request-cancel}")
     private String couponGiveRequestCancelTopic;
 
-    @Value("${topic.use-request}")
+    @Value("${coupon.topic.use-request}")
     private String couponUseRequestTopic;
 
-    @Value("${topic.used}")
+    @Value("${coupon.topic.used}")
     private String couponUsedTopic;
 
-    @Value("${topic.use-request-cancel}")
+    @Value("${coupon.topic.use-request-cancel}")
     private String couponUseRequestCancelTopic;
 
 }
