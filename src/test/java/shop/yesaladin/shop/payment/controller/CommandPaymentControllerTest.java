@@ -12,7 +12,6 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -30,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -39,6 +39,7 @@ import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.order.domain.model.MemberOrder;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
+import shop.yesaladin.shop.order.dto.OrderPaymentResponseDto;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMemberAddress;
 import shop.yesaladin.shop.payment.domain.model.Payment;
@@ -47,6 +48,7 @@ import shop.yesaladin.shop.payment.dto.PaymentCompleteSimpleResponseDto;
 import shop.yesaladin.shop.payment.dto.PaymentRequestDto;
 import shop.yesaladin.shop.payment.dummy.DummyPayment;
 import shop.yesaladin.shop.payment.dummy.DummyPaymentCard;
+import shop.yesaladin.shop.payment.exception.PaymentFailException;
 import shop.yesaladin.shop.payment.service.inter.CommandPaymentService;
 
 
@@ -105,8 +107,15 @@ class CommandPaymentControllerTest {
                 orderNumber,
                 15000L
         );
+
         PaymentCompleteSimpleResponseDto responseDto = PaymentCompleteSimpleResponseDto.fromEntity(
                 payment);
+        OrderPaymentResponseDto nameAndAddress = new OrderPaymentResponseDto(memberOrder.getMember()
+                .getName(), memberOrder.getMemberAddress().getAddress());
+        responseDto.setOrdererNameAndAddress(
+                nameAndAddress.getOrdererName(),
+                nameAndAddress.getAddress()
+        );
         when(paymentService.confirmTossRequest(any())).thenReturn(responseDto);
 
         // when
@@ -116,12 +125,13 @@ class CommandPaymentControllerTest {
                 .content(objectMapper.writeValueAsString(requestDto)));
 
         // then
-        perform.andDo(print())
-                .andExpect(status().isOk())
+        perform.andExpect(status().isOk())
                 .andExpect(header().stringValues("Content-Type", MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(jsonPath("$.paymentId", equalTo(responseDto.getPaymentId())))
-                .andExpect(jsonPath("$.orderNumber", equalTo(responseDto.getOrderNumber())))
-                .andExpect(jsonPath("$.cardNumber", equalTo(responseDto.getCardNumber())));
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())))
+                .andExpect(jsonPath("$.data.orderNumber", equalTo(responseDto.getOrderNumber())))
+                .andExpect(jsonPath("$.data.paymentId", equalTo(responseDto.getPaymentId())))
+                .andExpect(jsonPath("$.data.cardNumber", equalTo(responseDto.getCardNumber())));
 
         verify(paymentService, times(1)).confirmTossRequest(dtoArgumentCaptor.capture());
         assertThat(dtoArgumentCaptor.getValue()
@@ -140,29 +150,146 @@ class CommandPaymentControllerTest {
                                 .description("결제하고자하는 총 금액")
                 ),
                 responseFields(
-                        fieldWithPath("paymentId").type(JsonFieldType.STRING)
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("HTTP 상태 코드"),
+                        fieldWithPath("data.paymentId").type(JsonFieldType.STRING)
                                 .description("결제정보 아이디"),
-                        fieldWithPath("method").type(JsonFieldType.STRING).description("결제 방법"),
-                        fieldWithPath("currency").type(JsonFieldType.STRING).description("결제 통화"),
-                        fieldWithPath("totalAmount").type(JsonFieldType.NUMBER)
+                        fieldWithPath("data.method").type(JsonFieldType.STRING)
+                                .description("결제 방법"),
+                        fieldWithPath("data.currency").type(JsonFieldType.STRING)
+                                .description("결제 통화"),
+                        fieldWithPath("data.totalAmount").type(JsonFieldType.NUMBER)
                                 .description("결제 총 금액"),
-                        fieldWithPath("approvedDateTime").type(JsonFieldType.STRING)
+                        fieldWithPath("data.approvedDateTime").type(JsonFieldType.STRING)
                                 .description("결제 승인 일시"),
-                        fieldWithPath("orderNumber").type(JsonFieldType.STRING)
+                        fieldWithPath("data.ordererName").type(JsonFieldType.STRING)
+                                .description("주문자 이름"),
+                        fieldWithPath("data.orderNumber").type(JsonFieldType.STRING)
                                 .description("주문 번호"),
-                        fieldWithPath("orderName").type(JsonFieldType.STRING).description("주문명"),
-                        fieldWithPath("cardCode").type(JsonFieldType.STRING).description("카드 종류"),
-                        fieldWithPath("cardOwnerCode").type(JsonFieldType.STRING)
+                        fieldWithPath("data.orderAddress").type(JsonFieldType.STRING)
+                                .description("주문 배송지"),
+                        fieldWithPath("data.orderName").type(JsonFieldType.STRING)
+                                .description("주문명"),
+                        fieldWithPath("data.cardCode").type(JsonFieldType.STRING)
+                                .description("카드 종류"),
+                        fieldWithPath("data.cardOwnerCode").type(JsonFieldType.STRING)
                                 .description("카드 소유 구분"),
-                        fieldWithPath("cardNumber").type(JsonFieldType.STRING).description("카드 번호"),
-                        fieldWithPath("cardInstallmentPlanMonths").type(JsonFieldType.NUMBER)
+                        fieldWithPath("data.cardNumber").type(JsonFieldType.STRING)
+                                .description("카드 번호"),
+                        fieldWithPath("data.cardInstallmentPlanMonths").type(JsonFieldType.NUMBER)
                                 .description("할부 개월 수"),
-                        fieldWithPath("cardApproveNumber").type(JsonFieldType.STRING)
+                        fieldWithPath("data.cardApproveNumber").type(JsonFieldType.STRING)
                                 .description("카드 결제 승인 번호"),
-                        fieldWithPath("cardAcquirerCode").type(JsonFieldType.STRING)
-                                .description("카드 매입사")
+                        fieldWithPath("data.cardAcquirerCode").type(JsonFieldType.STRING)
+                                .description("카드 매입사"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
+                                .optional()
                 )
         ));
+    }
+
+    @WithMockUser
+    @Test
+    @DisplayName("결제 승인 실패 - 토스에서 실패처리")
+    void confirmPayment_fail() throws Exception {
+        // given
+        ArgumentCaptor<PaymentRequestDto> dtoArgumentCaptor = ArgumentCaptor.forClass(
+                PaymentRequestDto.class);
+
+        PaymentRequestDto requestDto = new PaymentRequestDto(
+                paymentId,
+                orderNumber,
+                15000L
+        );
+
+        PaymentCompleteSimpleResponseDto responseDto = PaymentCompleteSimpleResponseDto.fromEntity(
+                payment);
+        OrderPaymentResponseDto nameAndAddress = new OrderPaymentResponseDto(memberOrder.getMember()
+                .getName(), memberOrder.getMemberAddress().getAddress());
+        responseDto.setOrdererNameAndAddress(
+                nameAndAddress.getOrdererName(),
+                nameAndAddress.getAddress()
+        );
+        when(paymentService.confirmTossRequest(any())).thenThrow(new PaymentFailException(
+                "Payment fail"));
+
+        // when
+        ResultActions perform = mockMvc.perform(post("/v1/payments/confirm")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestDto)));
+
+        // then
+        perform.andExpect(status().isOk())
+                .andExpect(header().stringValues("Content-Type", MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())))
+                .andExpect(jsonPath("$.data.orderNumber", equalTo(requestDto.getOrderId())))
+                .andExpect(jsonPath("$.data.paymentId", equalTo(requestDto.getPaymentKey())))
+                .andExpect(jsonPath(
+                        "$.data.totalAmount",
+                        equalTo(requestDto.getAmount().intValue())
+                ));
+
+        verify(paymentService, times(1)).confirmTossRequest(dtoArgumentCaptor.capture());
+        assertThat(dtoArgumentCaptor.getValue()
+                .getPaymentKey()).isEqualTo(requestDto.getPaymentKey());
+
+        perform.andDo(document(
+                "confirm-payment-fail",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                requestFields(
+                        fieldWithPath("paymentKey").type(JsonFieldType.STRING)
+                                .description("토스 페이먼츠에서 제공하는 결제 id"),
+                        fieldWithPath("orderId").type(JsonFieldType.STRING)
+                                .description("결제하고자 하는 주문의 번호 - id 아님"),
+                        fieldWithPath("amount").type(JsonFieldType.NUMBER)
+                                .description("결제하고자하는 총 금액")
+                ),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("HTTP 상태 코드"),
+                        fieldWithPath("data.paymentId").type(JsonFieldType.STRING)
+                                .description("결제정보 아이디"),
+                        fieldWithPath("data.totalAmount").type(JsonFieldType.NUMBER)
+                                .description("결제 총 금액"),
+                        fieldWithPath("data.orderNumber").type(JsonFieldType.STRING)
+                                .description("주문 번호"),
+                        fieldWithPath("data.method").type(JsonFieldType.STRING)
+                                .description("결제 방법").optional(),
+                        fieldWithPath("data.currency").type(JsonFieldType.STRING)
+                                .description("결제 통화").optional(),
+                        fieldWithPath("data.approvedDateTime").type(JsonFieldType.STRING)
+                                .description("결제 승인 일시").optional(),
+                        fieldWithPath("data.ordererName").type(JsonFieldType.STRING)
+                                .description("주문자 이름").optional(),
+                        fieldWithPath("data.orderAddress").type(JsonFieldType.STRING)
+                                .description("주문 배송지").optional(),
+                        fieldWithPath("data.orderName").type(JsonFieldType.STRING)
+                                .description("주문명").optional(),
+                        fieldWithPath("data.cardCode").type(JsonFieldType.STRING)
+                                .description("카드 종류").optional(),
+                        fieldWithPath("data.cardOwnerCode").type(JsonFieldType.STRING)
+                                .description("카드 소유 구분").optional(),
+                        fieldWithPath("data.cardNumber").type(JsonFieldType.STRING)
+                                .description("카드 번호").optional(),
+                        fieldWithPath("data.cardInstallmentPlanMonths").type(JsonFieldType.NUMBER)
+                                .description("할부 개월 수").optional(),
+                        fieldWithPath("data.cardApproveNumber").type(JsonFieldType.STRING)
+                                .description("카드 결제 승인 번호").optional(),
+                        fieldWithPath("data.cardAcquirerCode").type(JsonFieldType.STRING)
+                                .description("카드 매입사").optional(),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지").optional()
+                )
+        ));
+
     }
 
 }

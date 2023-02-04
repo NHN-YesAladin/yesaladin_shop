@@ -30,8 +30,6 @@ import shop.yesaladin.shop.order.domain.model.OrderCode;
 import shop.yesaladin.shop.order.dto.OrderPaymentResponseDto;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMemberAddress;
-import shop.yesaladin.shop.order.persistence.dummy.DummyOrder;
-import shop.yesaladin.shop.order.persistence.dummy.DummySubscribeProduct;
 import shop.yesaladin.shop.order.service.inter.QueryOrderService;
 import shop.yesaladin.shop.payment.domain.model.Payment;
 import shop.yesaladin.shop.payment.domain.repository.CommandPaymentRepository;
@@ -39,7 +37,6 @@ import shop.yesaladin.shop.payment.dto.PaymentCompleteSimpleResponseDto;
 import shop.yesaladin.shop.payment.dto.PaymentRequestDto;
 import shop.yesaladin.shop.payment.exception.PaymentFailException;
 import shop.yesaladin.shop.payment.service.inter.CommandPaymentService;
-import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 
 /**
  * @author 배수한
@@ -137,7 +134,8 @@ class CommandPaymentServiceImplTest {
 
         OrderPaymentResponseDto orderPaymentResponseDto = new OrderPaymentResponseDto(memberOrder.getMember()
                 .getName(), memberOrder.getMemberAddress().getAddress());
-        when(orderService.getPaymentDtoByMemberOrderId(anyLong())).thenReturn(orderPaymentResponseDto);
+        when(orderService.getPaymentDtoByMemberOrderId(anyLong())).thenReturn(
+                orderPaymentResponseDto);
 
         // when
         PaymentCompleteSimpleResponseDto responseDto = paymentService.confirmTossRequest(requestDto);

@@ -60,7 +60,15 @@ public class PaymentCompleteSimpleResponseDto {
                 .build();
     }
 
-    public void setOrdererNameAndAddress(String ordererName,String orderAddress) {
+    public static PaymentCompleteSimpleResponseDto fromRequestDto(PaymentRequestDto request) {
+        return PaymentCompleteSimpleResponseDto.builder()
+                .paymentId(request.getPaymentKey())
+                .totalAmount(request.getAmount())
+                .orderNumber(request.getOrderId())
+                .build();
+    }
+
+    public void setOrdererNameAndAddress(String ordererName, String orderAddress) {
         this.ordererName = ordererName;
         this.orderAddress = orderAddress;
     }

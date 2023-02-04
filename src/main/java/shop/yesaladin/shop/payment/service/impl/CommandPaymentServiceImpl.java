@@ -68,12 +68,13 @@ public class CommandPaymentServiceImpl implements CommandPaymentService {
      * 주문 코드에 맞춰 주문자 이름, 주소지를 셋팅하는 메서드
      *
      * <p>
-     *     비회원 : 비회원 주문 엔티티에서 바로 필요 정보를 획득
+     * 비회원 : 비회원 주문 엔티티에서 바로 필요 정보를 획득
      * </p>
      * <p>
-     *     회원 & 구독 : 주문 id를 통해 회원 주문을 조회하여 정보 획득
+     * 회원 & 구독 : 주문 id를 통해 회원 주문을 조회하여 정보 획득
      * </p>
-     * @param order 추상화 되어있는 주문 엔티티
+     *
+     * @param order       추상화 되어있는 주문 엔티티
      * @param responseDto 결제 정보
      * @return 결제 정보 (주소,주문자 포함)
      */

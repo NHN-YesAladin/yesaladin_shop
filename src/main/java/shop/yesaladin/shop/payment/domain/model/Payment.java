@@ -18,7 +18,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.payment.persistence.converter.PaymentCodeConverter;
 
