@@ -41,22 +41,22 @@ public class CommandPaymentController {
     @PostMapping("/confirm")
     public PaymentCompleteSimpleResponseDto confirmPayment(@Valid @RequestBody PaymentRequestDto requestDto) {
         // TODO PaymentRequestDto에 orderResponse 추가하고 orderResponse가 null 아닌 경우에 동작시키기
-        return PaymentCompleteSimpleResponseDto.builder()
-                .paymentId("dummy paymentId")
-                .method(PaymentCode.CARD)
-                .currency(Payment.CURRENCY_KRW)
-                .totalAmount(10000000L)
-                .approvedDateTime(LocalDateTime.now())
-                .orderNumber("10101010010101010")
-                .orderName("dummy orderName")
-                .cardCode(PaymentCode.CREDIT)
-                .cardOwnerCode(PaymentCode.INDIVIDUAL)
-                .cardNumber("1111-xxxx-xxxx-1111")
-                .cardInstallmentPlanMonths(0)
-                .cardApproveNumber("010023289475832")
-                .cardAcquirerCode(PaymentCardAcquirerCode.BC)
-                .build();
+//        return PaymentCompleteSimpleResponseDto.builder()
+//                .paymentId("dummy paymentId")
+//                .method(PaymentCode.CARD)
+//                .currency(Payment.CURRENCY_KRW)
+//                .totalAmount(10000000L)
+//                .approvedDateTime(LocalDateTime.now())
+//                .orderNumber("10101010010101010")
+//                .orderName("dummy orderName")
+//                .cardCode(PaymentCode.CREDIT)
+//                .cardOwnerCode(PaymentCode.INDIVIDUAL)
+//                .cardNumber("1111-xxxx-xxxx-1111")
+//                .cardInstallmentPlanMonths(0)
+//                .cardApproveNumber("010023289475832")
+//                .cardAcquirerCode(PaymentCardAcquirerCode.BC)
+//                .build();
 
-//        return paymentService.confirmTossRequest(requestDto);
+        return paymentService.confirmTossRequest(requestDto);
     }
 }
