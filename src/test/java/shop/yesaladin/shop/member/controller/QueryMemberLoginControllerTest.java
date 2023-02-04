@@ -135,4 +135,95 @@ class QueryMemberLoginControllerTest {
                 )
         ));
     }
+
+    @WithMockUser
+    @Test
+    void getMemberByEmail_failed_whenMemberNotFound() throws Exception {
+        //given
+        String email = "test@test.com";
+
+        //when
+        Mockito.when(queryMemberService.findMemberLoginInfoByEmail(email))
+                .thenThrow(MemberNotFoundException.class);
+
+        //then
+        mockMvc.perform(get("/v1/members/oauth2/login/{email}", email))
+                .andExpect(status().is4xxClientError());
+
+        verify(queryMemberService, times(1)).findMemberLoginInfoByEmail(email);
+    }
+
+    @WithMockUser
+    @Test
+    void getMemberByEmail() throws Exception {
+        //given
+        Long memberId = 1L;
+        String memberName = "testName";
+        String memberNickname = "testNickname";
+        String loginId = "testId";
+        String email = "test@test.com";
+        String password = "testPassword";
+        List<String> roles = List.of("ROLE_MEMBER", "ROLE_ADMIN");
+
+        MemberLoginResponseDto response = new MemberLoginResponseDto(
+                memberId,
+                memberName,
+                memberNickname,
+                loginId,
+                email,
+                password,
+                roles
+        );
+
+        //when
+        Mockito.when(queryMemberService.findMemberLoginInfoByEmail(email))
+                .thenReturn(response);
+
+        //then
+        ResultActions resultActions = mockMvc.perform(get("/v1/members/oauth2/login/{email}", email))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.data.id", equalTo(memberId.intValue())))
+                .andExpect(jsonPath("$.data.name", equalTo(memberName)))
+                .andExpect(jsonPath("$.data.nickname", equalTo(memberNickname)))
+                .andExpect(jsonPath("$.data.loginId", equalTo(loginId)))
+                .andExpect(jsonPath("$.data.email", equalTo(email)))
+                .andExpect(jsonPath("$.data.password", equalTo(password)))
+                .andExpect(jsonPath("$.data.roles", equalTo(roles)));
+
+        verify(queryMemberService, times(1)).findMemberLoginInfoByEmail(email);
+
+        //docs
+        resultActions.andDo(document(
+                "doLogin",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                pathParameters(
+                        parameterWithName("email").description("회원의 Email")
+                ),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("data.id").type(JsonFieldType.NUMBER)
+                                .description("회원의 PK"),
+                        fieldWithPath("data.name").type(JsonFieldType.STRING)
+                                .description("회원의 이름"),
+                        fieldWithPath("data.nickname").type(JsonFieldType.STRING)
+                                .description("회원의 닉네임"),
+                        fieldWithPath("data.loginId").type(JsonFieldType.STRING)
+                                .description("회원의 loginId"),
+                        fieldWithPath("data.email").type(JsonFieldType.STRING)
+                                .description("회원의 email"),
+                        fieldWithPath("data.password").type(JsonFieldType.STRING)
+                                .description("회원의 password"),
+                        fieldWithPath("data.roles").type(JsonFieldType.ARRAY)
+                                .description("회원의 권한 리스트"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("HTTP 상태 코드"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메시지")
+                                .optional()
+                )
+        ));
+    }
 }
