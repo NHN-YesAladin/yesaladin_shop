@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.message.consumer;
 
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
@@ -9,14 +8,15 @@ import org.springframework.stereotype.Component;
 @Component
 public class CouponConsumer {
 
-    @KafkaListener(id = "user-download-consumer-request", topics = "${coupon.topic.user-download-response}")
-    public void consumeUserDownloadCouponTopic(Map<String, Object> data) {
+    @KafkaListener(id = "give-request-response", topics = "${topic.give-request-response}")
+    public void consumeGiveRequestResponseMessage() {
 
     }
 
-    @KafkaListener(id = "auto-issuance-consumer-response", topics = "${coupon.topic.auto-issuance-response}")
-    public void consumeAutoIssuanceCouponTopic() {
+    @KafkaListener(id = "use-request-response", topics = "${topic.use-request-response}")
+    public void consumeUseRequestResponseMessage() {
 
     }
+
 
 }
