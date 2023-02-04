@@ -8,12 +8,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class CouponConsumer {
 
-    @KafkaListener(id = "give-request-response", topics = "${topic.give-request-response}")
+    @KafkaListener(id = "give-request-response", topics = "${coupon.topic.give-request-response}")
     public void consumeGiveRequestResponseMessage() {
 
     }
 
-    @KafkaListener(id = "use-request-response", topics = "${topic.use-request-response}")
+    @KafkaListener(id = "use-request-response", topics = "${coupon.topic.use-request-response}")
     public void consumeUseRequestResponseMessage() {
 
     }
