@@ -2,6 +2,7 @@ package shop.yesaladin.shop.payment.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -214,7 +215,7 @@ class CommandPaymentControllerTest {
                 nameAndAddress.getAddress()
         );
         when(paymentService.confirmTossRequest(any())).thenThrow(new PaymentFailException(
-                "Payment fail"));
+                "Payment fail", "CANCELED"));
 
         // when
         ResultActions perform = mockMvc.perform(post("/v1/payments/confirm")
@@ -232,7 +233,8 @@ class CommandPaymentControllerTest {
                 .andExpect(jsonPath(
                         "$.data.totalAmount",
                         equalTo(requestDto.getAmount().intValue())
-                ));
+                ))
+                .andExpect(jsonPath("$.errorMessages", hasItem("Payment fail")));
 
         verify(paymentService, times(1)).confirmTossRequest(dtoArgumentCaptor.capture());
         assertThat(dtoArgumentCaptor.getValue()
@@ -286,7 +288,7 @@ class CommandPaymentControllerTest {
                         fieldWithPath("data.cardAcquirerCode").type(JsonFieldType.STRING)
                                 .description("카드 매입사").optional(),
                         fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
-                                .description("에러 메세지").optional()
+                                .description("에러 메세지")
                 )
         ));
 

@@ -122,15 +122,15 @@ public class CommandPaymentServiceImpl implements CommandPaymentService {
                 entity,
                 JsonNode.class
         );
+        JsonNode responseFromToss = Objects.requireNonNull(exchange.getBody());
 
         if (exchange.getStatusCode() != HttpStatus.OK) {
-            throw new PaymentFailException(exchange.getBody());
+            throw new PaymentFailException(
+                    responseFromToss.get("message").asText(),
+                    responseFromToss.get("code").asText()
+            );
         }
 
-        JsonNode responseFromToss = exchange.getBody();
-        if (Objects.isNull(responseFromToss)) {
-            throw new PaymentFailException("Body is empty");
-        }
         return responseFromToss;
     }
 
