@@ -1,4 +1,4 @@
-package shop.yesaladin.shop.message.producer;
+package shop.yesaladin.shop.coupon.adapter.kafka;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
  */
 @RequiredArgsConstructor
 @Component
-public class KafkaProducer {
+public class CouponProducer {
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
 

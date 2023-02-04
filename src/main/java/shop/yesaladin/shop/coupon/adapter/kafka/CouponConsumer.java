@@ -1,4 +1,4 @@
-package shop.yesaladin.shop.message.consumer;
+package shop.yesaladin.shop.coupon.adapter.kafka;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
