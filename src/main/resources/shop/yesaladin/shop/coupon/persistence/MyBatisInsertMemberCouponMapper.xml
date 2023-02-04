@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+                            "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="shop.yesaladin.shop.coupon.persistence.MyBatisInsertMemberCouponMapper">
+    <insert id="insertMemberCoupon">
+        INSERT INTO member_coupons(member_id, coupon_code, coupon_group_code) VALUES
+        <foreach collection="requestDtoList" index="i" item="data" separator=",">
+            <foreach collection="data.couponCodes" index="j" item="couponCode" separator=",">
+                (#{data.memberId}, #{couponCode}, #{data.couponGroupCodes[${j}]})
+            </foreach>
+        </foreach>
+    </insert>
+</mapper>
