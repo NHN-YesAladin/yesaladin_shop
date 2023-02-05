@@ -14,7 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import shop.yesaladin.shop.member.domain.model.MemberCoupon;
+import shop.yesaladin.shop.coupon.domain.model.MemberCoupon;
 
 /**
  * 주문에 사용한 쿠폰 엔티티입니다.
