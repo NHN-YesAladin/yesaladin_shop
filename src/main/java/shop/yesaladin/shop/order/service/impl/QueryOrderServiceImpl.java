@@ -2,10 +2,10 @@ package shop.yesaladin.shop.order.service.impl;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,7 +26,6 @@ import shop.yesaladin.shop.order.dto.OrderSummaryResponseDto;
 import shop.yesaladin.shop.order.exception.OrderNotFoundException;
 import shop.yesaladin.shop.order.service.inter.QueryOrderService;
 import shop.yesaladin.shop.point.service.inter.QueryPointHistoryService;
-import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
 import shop.yesaladin.shop.product.dto.ProductOrderResponseDto;
 import shop.yesaladin.shop.product.service.inter.QueryProductService;
 
@@ -137,11 +136,11 @@ public class QueryOrderServiceImpl implements QueryOrderService {
     }
 
     private List<ProductOrderResponseDto> getProductOrder(OrderSheetRequestDto request) {
-        Map<String, Integer> products = request.getProductList().stream()
-                .collect(Collectors.toMap(
-                        ProductOrderRequestDto::getIsbn,
-                        ProductOrderRequestDto::getQuantity
-                ));
+        Map<String, Integer> products = new HashMap<>();
+        for (int i = 0; i < request.getQuantityList().size(); i++) {
+            products.put(request.getIsbnList().get(i), request.getQuantityList().get(i));
+        }
+
         return queryProductService.getByOrderProducts(products);
     }
 

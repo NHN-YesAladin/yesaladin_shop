@@ -18,7 +18,7 @@ public class ProductOrderResponseDto {
     private String title;
     private Long actualPrice;
     private int discountRate;
-    private int expectedPoint;
+    private Long expectedPoint;
     private int quantity;
 
     public ProductOrderResponseDto(
@@ -27,7 +27,7 @@ public class ProductOrderResponseDto {
             String title,
             Long actualPrice,
             int discountRate,
-            int expectedPoint
+            Long expectedPoint
     ) {
         this.productId = productId;
         this.isbn = isbn;

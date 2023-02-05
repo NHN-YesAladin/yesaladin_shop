@@ -346,8 +346,9 @@ class QueryOrderServiceImplTest {
         String address = "address";
         long amount = 1000;
 
-        List<ProductOrderRequestDto> productRequest = new ArrayList<>();
-        OrderSheetRequestDto request = new OrderSheetRequestDto(productRequest);
+        List<String> isbn = new ArrayList<>();
+        List<Integer> quantity = new ArrayList<>();
+        OrderSheetRequestDto request = new OrderSheetRequestDto(isbn, quantity);
         MemberOrderResponseDto response = new MemberOrderResponseDto(name, phoneNumber, address);
 
         Mockito.when(queryPointHistoryService.getMemberPoint(loginId)).thenReturn(amount);

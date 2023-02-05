@@ -246,6 +246,7 @@ public class QueryDslProductRepository implements QueryProductRepository {
                         product.discountRate,
                         expectedEarnedPoint
                 ))
+                .from(product)
                 .where(product.isbn.in(isbnList))
                 .fetch();
     }
@@ -258,6 +259,7 @@ public class QueryDslProductRepository implements QueryProductRepository {
         QProduct product = QProduct.product;
 
         return queryFactory.select(product)
+                .from(product)
                 .where(product.isbn.in(isbnList)
                         .and(product.isDeleted.isFalse())
                         .and(product.isForcedOutOfStock.isFalse())

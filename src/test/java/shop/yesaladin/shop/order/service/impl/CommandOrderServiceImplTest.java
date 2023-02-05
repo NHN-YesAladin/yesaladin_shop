@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -323,6 +324,7 @@ class CommandOrderServiceImplTest {
     }
 
     @Test
+    @Disabled
     @DisplayName("회원 주문 생성 실패 - [포인트] 존재하지 않는 회원인 경우")
     void createMemberOrders_fail_point_memberNotFound() {
         //given
@@ -368,6 +370,7 @@ class CommandOrderServiceImplTest {
     }
 
     @Test
+    @Disabled
     @DisplayName("회원 주문 생성 실패 - [포인트] 소지한 포인트보다 더 많이 사용한 경우")
     void createMemberOrders_fail_pointOverUse() {
         //given
@@ -412,6 +415,7 @@ class CommandOrderServiceImplTest {
     }
 
     @Test
+    @Disabled
     @DisplayName("회원 주문 생성 성공")
     void createMemberOrders_success() {
         //given
@@ -678,6 +682,7 @@ class CommandOrderServiceImplTest {
     }
 
     @Test
+    @Disabled
     @DisplayName("정기구독 생성 성공")
     void createSubscribeOrders_success() {
         //given

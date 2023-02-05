@@ -31,12 +31,10 @@ public class AuthorityUtils {
      * @since 1.0
      */
     public static String getAuthorizedUserName(Authentication authentication, String errorMessage) {
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-        if (!AuthorityUtils.isAuthorized(userDetails)) {
+        if (!AuthorityUtils.isAuthorized(authentication)) {
             throw new ClientException(ErrorCode.UNAUTHORIZED, errorMessage);
         }
-        return userDetails.getUsername();
+        return authentication.getName();
     }
 
     /**
@@ -46,9 +44,7 @@ public class AuthorityUtils {
      * @throws shop.yesaladin.common.exception.ClientException 인증된 요청입니다.
      */
     public static void checkAnonymousClient(Authentication authentication) {
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-        if (!AuthorityUtils.isAnonymous(userDetails)) {
+        if (!AuthorityUtils.isAnonymous(authentication)) {
             throw new ClientException(ErrorCode.UNAUTHORIZED, "Unauthorized client.");
         }
     }
@@ -56,13 +52,13 @@ public class AuthorityUtils {
     /**
      * 인증된 요청인지 아닌지 반환합니다.
      *
-     * @param userDetails 인증정보
+     * @param authentication 인증정보
      * @return 인증여부
      * @author 최예린
      * @since 1.0
      */
-    public static boolean isAuthorized(UserDetails userDetails) {
-        return userDetails.getAuthorities()
+    public static boolean isAuthorized(Authentication authentication) {
+        return authentication.getAuthorities()
                 .stream()
                 .noneMatch(x -> x.getAuthority().equals(ROLE_ANONYMOUS));
     }
@@ -70,11 +66,11 @@ public class AuthorityUtils {
     /**
      * 익명으로부터의 요청인지 아닌지 반환합니다.
      *
-     * @param userDetails 인증정보
+     * @param authentication 인증정보
      * @return 익명 여부
      */
-    private static boolean isAnonymous(UserDetails userDetails) {
-        return userDetails.getAuthorities()
+    private static boolean isAnonymous(Authentication authentication) {
+        return authentication.getAuthorities()
                 .stream()
                 .anyMatch(x -> x.getAuthority().equals(ROLE_ANONYMOUS));
     }
@@ -98,9 +94,7 @@ public class AuthorityUtils {
      * @return 관리자 여부
      */
     public static boolean isAdmin(Authentication authentication) {
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-        return userDetails.getAuthorities()
+        return authentication.getAuthorities()
                 .stream()
                 .anyMatch(x -> x.getAuthority().equals(ROLE_ADMIN));
     }
