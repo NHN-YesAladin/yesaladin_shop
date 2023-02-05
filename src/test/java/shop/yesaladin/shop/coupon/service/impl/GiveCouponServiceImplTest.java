@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.coupon.service.impl;
 
+import java.time.Duration;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -97,7 +98,7 @@ class GiveCouponServiceImplTest {
                         Mockito.any(ParameterizedTypeReference.class)
                 );
         Mockito.verify(valueOperations, Mockito.times(1))
-                .set(Mockito.anyString(), Mockito.eq(memberId));
+                .set(Mockito.anyString(), Mockito.eq(memberId), Mockito.eq(Duration.ofMinutes(30)));
         CouponGiveRequestMessage actualRequestMessage = requestMessageCaptor.getValue();
         Assertions.assertThat(actualRequestMessage.getRequestId()).isNotBlank();
         Assertions.assertThat(actualRequestMessage.getCouponId()).isNull();
@@ -148,7 +149,7 @@ class GiveCouponServiceImplTest {
                         Mockito.any(ParameterizedTypeReference.class)
                 );
         Mockito.verify(valueOperations, Mockito.times(1))
-                .set(Mockito.anyString(), Mockito.eq(memberId));
+                .set(Mockito.anyString(), Mockito.eq(memberId), Mockito.eq(Duration.ofMinutes(30)));
         CouponGiveRequestMessage actualRequestMessage = requestMessageCaptor.getValue();
         Assertions.assertThat(actualRequestMessage.getRequestId()).isNotBlank();
         Assertions.assertThat(actualRequestMessage.getCouponId()).isNull();
@@ -224,11 +225,6 @@ class GiveCouponServiceImplTest {
     void sendCouponGiveRequestFailCauseByCouponServerResponseErrorTest() {
         // given
         String memberId = "mongmeo";
-        String couponGroupCode = "testCouponGroupCode";
-        List<CouponGroupAndLimitDto> couponGroupAndLimitDtoList = List.of(new CouponGroupAndLimitDto(
-                couponGroupCode,
-                false
-        ));
         Mockito.when(restTemplate.exchange(
                 Mockito.eq(
                         "http://localhost:8085/coupon-groups?trigger-type=SIGN_UP"),
