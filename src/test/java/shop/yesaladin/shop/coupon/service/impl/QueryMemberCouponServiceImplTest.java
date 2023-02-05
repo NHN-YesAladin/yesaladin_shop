@@ -19,11 +19,13 @@ import org.springframework.web.client.RestTemplate;
 import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.common.exception.ServerException;
+import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.config.GatewayProperties;
 import shop.yesaladin.shop.coupon.domain.model.MemberCoupon;
 import shop.yesaladin.shop.coupon.domain.repository.QueryMemberCouponRepository;
 import shop.yesaladin.shop.coupon.dto.MemberCouponSummaryDto;
 
+@SuppressWarnings("unchecked")
 class QueryMemberCouponServiceImplTest {
 
     private QueryMemberCouponRepository repository;
@@ -63,7 +65,7 @@ class QueryMemberCouponServiceImplTest {
                         .data(expectedData)
                         .build())));
         // when
-        List<MemberCouponSummaryDto> actual = service.getMemberCouponSummaryList(
+        PaginatedResponseDto<MemberCouponSummaryDto> actual = service.getMemberCouponSummaryList(
                 pageable,
                 "member"
         );
@@ -76,7 +78,7 @@ class QueryMemberCouponServiceImplTest {
                         Mockito.eq(null),
                         Mockito.any(ParameterizedTypeReference.class)
                 );
-        Assertions.assertThat(actual).isEqualTo(expectedData);
+        Assertions.assertThat(actual.getDataList()).isEqualTo(expectedData);
     }
 
     @Test

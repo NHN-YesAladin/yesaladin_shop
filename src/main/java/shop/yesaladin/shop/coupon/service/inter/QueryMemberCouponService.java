@@ -1,7 +1,7 @@
 package shop.yesaladin.shop.coupon.service.inter;
 
-import java.util.List;
 import org.springframework.data.domain.Pageable;
+import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.coupon.dto.MemberCouponSummaryDto;
 
 /**
@@ -18,5 +18,8 @@ public interface QueryMemberCouponService {
      * @param memberId 조회할 회원의 로그인 아이디
      * @return 회원이 가진 쿠폰의 요약 정보 리스트
      */
-    List<MemberCouponSummaryDto> getMemberCouponSummaryList(Pageable pageable, String memberId);
+    PaginatedResponseDto<MemberCouponSummaryDto> getMemberCouponSummaryList(
+            Pageable pageable,
+            String memberId
+    );
 }
