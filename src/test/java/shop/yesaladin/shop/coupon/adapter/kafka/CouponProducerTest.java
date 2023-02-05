@@ -15,6 +15,7 @@ import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import shop.yesaladin.coupon.code.TriggerTypeCode;
+import shop.yesaladin.coupon.message.CouponCodesAndResultMessage;
 import shop.yesaladin.coupon.message.CouponGiveRequestMessage;
 import shop.yesaladin.coupon.message.MessageKey;
 
@@ -28,6 +29,8 @@ class CouponProducerTest {
     private String giveRequestTopic;
     @Value("${coupon.topic.give-request-limit}")
     private String giveRequestLimitTopic;
+    @Value("${coupon.topic.given}")
+    private String givenTopic;
 
     @Autowired
     private CouponProducer couponProducer;
@@ -99,5 +102,31 @@ class CouponProducerTest {
         Assertions.assertThat(actualValue.getCouponId()).isEqualTo(1L);
         Assertions.assertThat(actualValue.getTriggerTypeCode()).isEqualTo(TriggerTypeCode.SIGN_UP);
         Assertions.assertThat(actualValue.getRequestId()).isEqualTo("1");
+    }
+
+    @Test
+    @DisplayName("수량 제한 쿠폰 지급 요청 메시지가 발행된다.")
+    void produceGivenResultMessage() {
+        // given
+        consumer = consumerFactory.createConsumer("testGroup", "1");
+        consumer.subscribe(List.of(givenTopic));
+
+        CouponCodesAndResultMessage resultMessage = CouponCodesAndResultMessage.builder()
+                .success(true)
+                .couponCodes(List.of("couponCode"))
+                .build();
+
+        // when
+        couponProducer.produceGivenResultMessage(resultMessage);
+
+        // then
+        ConsumerRecord<String, Object> actual = KafkaTestUtils.getSingleRecord(
+                consumer,
+                givenTopic
+        );
+        CouponCodesAndResultMessage actualValue = (CouponCodesAndResultMessage) actual.value();
+        Assertions.assertThat(actual.key()).isEqualTo(MessageKey.GIVEN.name());
+        Assertions.assertThat(actualValue.isSuccess()).isTrue();
+        Assertions.assertThat(actualValue.getCouponCodes()).containsOnly("couponCode");
     }
 }
