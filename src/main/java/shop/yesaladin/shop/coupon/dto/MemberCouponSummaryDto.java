@@ -1,6 +1,6 @@
 package shop.yesaladin.shop.coupon.dto;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,9 +14,9 @@ public class MemberCouponSummaryDto {
 
     private String name;
     private String couponCode;
-    private long amount;
+    private int amount;
     private CouponTypeCode couponTypeCode;
-    private LocalDateTime expireDate;
+    private LocalDate expireDate;
     private Boolean isUsed;
     private String couponBound;
     private CouponBoundCode couponBoundCode;
