@@ -6,6 +6,7 @@ import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.common.exception.PageOffsetOutOfBoundsException;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.order.domain.model.Order;
+import shop.yesaladin.shop.order.dto.OrderPaymentResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSheetRequestDto;
 import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
@@ -89,10 +90,22 @@ public interface QueryOrderService {
      * @return 특정 회원의 기간 내에 생성된 모든 주문 데이터의 요약본
      * @throws PageOffsetOutOfBoundsException 요청한 데이터 오프셋이 총 데이터 수보다 클 경우 예외
      * @throws MemberNotFoundException        요청한 회원 ID가 존재하지 않을 경우 예외
+     * @author 배수한
+     * @since 1.0
      */
     Page<OrderSummaryResponseDto> getOrderListInPeriodByMemberId(
             PeriodQueryRequestDto queryDto,
             long memberId,
             Pageable pageable
     );
+
+    /**
+     * 결제 이후 정보 중 주문 pk를 통해서 주문자 이름과 주소를 조회합니다.
+     *
+     * @param orderId 주문 pk
+     * @return 주문자 이름, 주문 주소지
+     * @author 배수한
+     * @since 1.0
+     */
+    OrderPaymentResponseDto getPaymentDtoByMemberOrderId(long orderId);
 }

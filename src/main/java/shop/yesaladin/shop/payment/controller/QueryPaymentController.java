@@ -2,10 +2,12 @@ package shop.yesaladin.shop.payment.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.shop.payment.dto.PaymentCompleteSimpleResponseDto;
 import shop.yesaladin.shop.payment.service.inter.QueryPaymentService;
 
@@ -31,8 +33,14 @@ public class QueryPaymentController {
      * @return 결제 정보
      */
     @GetMapping(value = "/{orderId}", params = "id=order")
-    public PaymentCompleteSimpleResponseDto getPaymentByOrderId(@PathVariable Long orderId) {
-        return queryPaymentService.findByOrderId(orderId);
+    public ResponseDto<PaymentCompleteSimpleResponseDto> getPaymentByOrderId(@PathVariable Long orderId) {
+        PaymentCompleteSimpleResponseDto responseDto = queryPaymentService.findByOrderId(orderId);
+
+        return ResponseDto.<PaymentCompleteSimpleResponseDto>builder()
+                .status(HttpStatus.OK)
+                .success(true)
+                .data(responseDto)
+                .build();
     }
 
 }
