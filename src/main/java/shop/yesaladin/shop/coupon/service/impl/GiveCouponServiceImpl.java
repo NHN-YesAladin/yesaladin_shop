@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.coupon.service.impl;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -135,7 +136,7 @@ public class GiveCouponServiceImpl implements GiveCouponService {
 
     private String generateRequestId(String memberId) {
         String requestId = UUID.randomUUID().toString();
-        redisTemplate.opsForValue().set(requestId, memberId);
+        redisTemplate.opsForValue().set(requestId, memberId, Duration.ofMinutes(30));
         return requestId;
     }
 
