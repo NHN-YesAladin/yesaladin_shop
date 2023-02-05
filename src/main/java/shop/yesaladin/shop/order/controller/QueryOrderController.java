@@ -80,9 +80,7 @@ public class QueryOrderController {
     ) {
         checkRequestValidation(bindingResult);
 
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-        OrderSheetResponseDto response = getOrderSheetData(request, userDetails);
+        OrderSheetResponseDto response = getOrderSheetData(request, authentication);
 
         return ResponseDto.<OrderSheetResponseDto>builder()
                 .success(true)
@@ -93,8 +91,10 @@ public class QueryOrderController {
 
     private OrderSheetResponseDto getOrderSheetData(
             OrderSheetRequestDto request,
-            UserDetails userDetails
+            Authentication authentication
     ) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
         if (!AuthorityUtils.isAuthorized(userDetails)) {
             return queryOrderService.getNonMemberOrderSheetData(request);
         }

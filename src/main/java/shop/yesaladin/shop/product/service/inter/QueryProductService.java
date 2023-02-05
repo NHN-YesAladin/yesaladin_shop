@@ -1,6 +1,7 @@
 package shop.yesaladin.shop.product.service.inter;
 
 import java.util.List;
+import java.util.Map;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.product.dto.SubscribeProductOrderResponseDto;
@@ -62,12 +63,12 @@ public interface QueryProductService {
     /**
      * 주문에 사용될 상품 관련 데이터 리스트를 반환합니다.
      *
-     * @param products 주문 관련 상품 리스트
+     * @param orderProducts 구독 상품 + 수량
      * @return 주문 상품 데이터 리스트
      * @author 최예린
      * @since 1.0
      */
-    List<ProductOrderResponseDto> getByOrderProducts(List<ProductOrderRequestDto> products);
+    List<ProductOrderResponseDto> getByOrderProducts(Map<String, Integer> orderProducts);
 
     /**
      * 주문에 사용될 구독 주문 상품을 조회합니다.

@@ -9,8 +9,8 @@ import shop.yesaladin.shop.member.dto.MemberIdDto;
 import shop.yesaladin.shop.member.dto.MemberLoginResponseDto;
 import shop.yesaladin.shop.member.dto.MemberManagerListResponseDto;
 import shop.yesaladin.shop.member.dto.MemberManagerResponseDto;
+import shop.yesaladin.shop.member.dto.MemberOrderResponseDto;
 import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
-import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
 
 
 /**
@@ -219,5 +219,5 @@ public interface QueryMemberService {
      * @author 최예린
      * @since 1.0
      */
-    OrderSheetResponseDto getMemberForOrder(String loginId);
+    MemberOrderResponseDto getMemberForOrder(String loginId);
 }

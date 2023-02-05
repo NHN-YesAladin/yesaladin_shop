@@ -2,6 +2,7 @@ package shop.yesaladin.shop.product.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -55,7 +56,7 @@ public class QueryProductServiceImpl implements QueryProductService {
     private final QueryProductTagService queryProductTagService;
     private final QueryProductCategoryService queryProductCategoryService;
 
-    private static List<String> getIsbnList(List<ProductOrderRequestDto> products) {
+    private List<String> getIsbnList(List<ProductOrderRequestDto> products) {
         return products
                 .stream()
                 .map(ProductOrderRequestDto::getIsbn)
@@ -335,13 +336,14 @@ public class QueryProductServiceImpl implements QueryProductService {
      */
     @Override
     @Transactional(readOnly = true)
-    public List<ProductOrderResponseDto> getByOrderProducts(List<ProductOrderRequestDto> orderProducts) {
-        List<String> isbnList = getIsbnList(orderProducts);
+    public List<ProductOrderResponseDto> getByOrderProducts(Map<String, Integer> orderProduct) {
+        List<String> isbnList = new ArrayList<>(orderProduct.keySet());
+
         List<ProductOrderResponseDto> result = queryProductRepository.getByIsbnList(isbnList);
 
-        result.forEach(x -> x.setQuantity(orderProducts));
-
-        return result;
+        return result.stream()
+                .peek(product -> product.setQuantity(orderProduct.get(product.getIsbn())))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -358,12 +360,17 @@ public class QueryProductServiceImpl implements QueryProductService {
                         ErrorCode.PRODUCT_NOT_FOUND,
                         "Product not found with isbn : " + isbn + "."
                 ));
+        checkValidSubscribeProducts(isbn, product);
+
+        return new SubscribeProductOrderResponseDto(product);
+    }
+
+    private void checkValidSubscribeProducts(String isbn, Product product) {
         if (!product.isSubscriptionAvailable()) {
             throw new ClientException(
                     ErrorCode.PRODUCT_NOT_SUBSCRIBE_PRODUCT,
                     "Product with isbn(" + isbn + ") is not a subscribe product."
             );
         }
-        return new SubscribeProductOrderResponseDto(product);
     }
 }

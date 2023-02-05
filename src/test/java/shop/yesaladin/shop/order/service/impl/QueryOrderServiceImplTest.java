@@ -27,6 +27,7 @@ import shop.yesaladin.shop.common.exception.InvalidPeriodConditionException;
 import shop.yesaladin.shop.common.exception.PageOffsetOutOfBoundsException;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
+import shop.yesaladin.shop.member.dto.MemberOrderResponseDto;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.order.domain.model.MemberOrder;
 import shop.yesaladin.shop.order.domain.model.Order;
@@ -347,7 +348,7 @@ class QueryOrderServiceImplTest {
 
         List<ProductOrderRequestDto> productRequest = new ArrayList<>();
         OrderSheetRequestDto request = new OrderSheetRequestDto(productRequest);
-        OrderSheetResponseDto response = new OrderSheetResponseDto(name, phoneNumber, address);
+        MemberOrderResponseDto response = new MemberOrderResponseDto(name, phoneNumber, address);
 
         Mockito.when(queryPointHistoryService.getMemberPoint(loginId)).thenReturn(amount);
         Mockito.when(queryProductService.getByOrderProducts(any())).thenReturn(new ArrayList<>());
