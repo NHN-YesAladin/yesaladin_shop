@@ -10,6 +10,8 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
+  kafka:
+    bootstrap-servers: localhost:9092
 elastic:
   host: 103.218.159.211:9200
 
@@ -26,12 +28,19 @@ storage-token:
   thumbnail-path: product/thumbnail
 
 yesaladin:
-  coupon:
-    url: http://localhost:8085
   gateway:
-    base : http://localhost:8072
-    auth : http://localhost:8072/auth
+    base: http://localhost:8072
+    auth: http://localhost:8072
+    coupon: http://localhost:8085
 
-logging:
-  level:
-    tracer: TRACE
+coupon:
+  topic:
+    give-request: dev_yesaladin_coupon_give_request
+    give-request-limit: dev_yesaladin_coupon_give_request_limit
+    given: dev_yesaladin_coupon_given
+    give-request-cancel: dev_yesaladin_coupon_give_request_cancel
+    use-request: dev_yesaladin_coupon_use_request
+    used: dev_yesaladin_coupon_used
+    use-request-cancel: dev_yesaladin_coupon_use_request_cancel
+    give-request-response: dev_yesaladin_coupon_give_request_response
+    use-request-response: dev_yesaladin_coupon_use_request_response
