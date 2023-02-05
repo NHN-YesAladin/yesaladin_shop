@@ -27,8 +27,8 @@ import shop.yesaladin.shop.member.domain.model.MemberCoupon;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @Entity
-@Table(name = "order_used_coupons")
-public class OrderUsedCoupon {
+@Table(name = "order_coupons")
+public class OrderCoupon {
 
     @EmbeddedId
     private Pk pk;
@@ -46,15 +46,15 @@ public class OrderUsedCoupon {
     /**
      * 주문에 사용한 쿠폰 엔티티 생성 메소드입니다.
      *
-     * @param memberOrder 회원주문 데이터
+     * @param memberOrder  회원주문 데이터
      * @param memberCoupon 회원이 소유한 쿠폰
      * @return 주문에 사용한 쿠폰 엔티티
      * @author 최예린
      * @since 1.0
      */
-    public static OrderUsedCoupon create(MemberOrder memberOrder, MemberCoupon memberCoupon) {
+    public static OrderCoupon create(MemberOrder memberOrder, MemberCoupon memberCoupon) {
         Pk pk = new Pk(memberOrder.getId(), memberCoupon.getId());
-        return new OrderUsedCoupon(pk, memberOrder, memberCoupon);
+        return new OrderCoupon(pk, memberOrder, memberCoupon);
     }
 
     /**
