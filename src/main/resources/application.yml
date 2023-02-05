@@ -18,10 +18,7 @@ spring:
     open-in-view: false
 
   kafka:
-    bootstrap-servers:
-      - 133.186.241.187:9092
-      - 133.186.223.175:9092
-      - 133.186.241.4:9092
+    bootstrap-servers: 133.186.241.187:9092,133.186.223.175:9092,133.186.241.4:9092
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
@@ -57,6 +54,15 @@ coupon:
   topic:
     user-download: user_download_coupon_dev
     auto-issuance: auto_issuance_coupon_dev
+    give-request: dev_yesaladin_coupon_give_request
+    give-request-limit: dev_yesaladin_coupon_give_request_limit
+    given: dev_yesaladin_coupon_given
+    give-request-cancel: dev_yesaladin_coupon_give_request_cancel
+    use-request: dev_yesaladin_coupon_use_request
+    used: dev_yesaladin_coupon_used
+    use-request-cancel: dev_yesaladin_coupon_use_request_cancel
+    give-request-response: dev_yesaladin_coupon_give_request_response
+    use-request-response: dev_yesaladin_coupon_use_request_response
 
 elastic:
   host: 103.218.159.211:9200
@@ -65,6 +71,7 @@ yesaladin:
   gateway:
     base: http://localhost:8072
     auth: http://localhost:8072/auth
+    coupon: http://localhost:8072/coupon
 
 # 테스트용 스토리지
 storage-token:
