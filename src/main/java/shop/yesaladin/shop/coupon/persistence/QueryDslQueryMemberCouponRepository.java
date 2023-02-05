@@ -10,8 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 import shop.yesaladin.shop.coupon.domain.model.MemberCoupon;
+import shop.yesaladin.shop.coupon.domain.model.querydsl.QMemberCoupon;
 import shop.yesaladin.shop.coupon.domain.repository.QueryMemberCouponRepository;
-import shop.yesaladin.shop.member.domain.model.querydsl.QMemberCoupon;
 
 /**
  * 멤버가 보유한 쿠폰을 조회하는 레포지토리 인터페이스의 QueryDsl 구현체입니다.
