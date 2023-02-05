@@ -1,6 +1,8 @@
 package shop.yesaladin.shop.coupon.domain.repository;
 
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.coupon.domain.model.MemberCoupon;
 
 /**
@@ -24,5 +26,5 @@ public interface QueryMemberCouponRepository {
      * @param memberId 회원의 로그인 아이디
      * @return 회원이 가진 쿠폰 리스트
      */
-    List<MemberCoupon> findMemberCouponByMemberId(String memberId);
+    Page<MemberCoupon> findMemberCouponByMemberId(Pageable pageable, String memberId);
 }
