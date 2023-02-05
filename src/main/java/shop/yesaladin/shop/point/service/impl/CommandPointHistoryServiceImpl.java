@@ -68,6 +68,19 @@ public class CommandPointHistoryServiceImpl implements CommandPointHistoryServic
         return PointHistoryResponseDto.fromEntity(savedPointHistory);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public PointHistoryResponseDto sum(PointHistoryRequestDto request) {
+        PointHistory pointHistory = createPointHistory(request, PointCode.SUM);
+
+        PointHistory savedPointHistory = commandPointHistoryRepository.save(pointHistory);
+
+        return PointHistoryResponseDto.fromEntity(savedPointHistory);
+    }
+
     private PointHistory createPointHistory(
             PointHistoryRequestDto request,
             PointCode pointCode
