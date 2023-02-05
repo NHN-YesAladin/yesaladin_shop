@@ -5,6 +5,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import shop.yesaladin.shop.coupon.domain.model.MemberCoupon;
 import shop.yesaladin.shop.coupon.domain.repository.QueryMemberCouponRepository;
 import shop.yesaladin.shop.member.domain.model.querydsl.QMemberCoupon;
 
@@ -32,5 +33,16 @@ public class QueryDslQueryMemberCouponRepository implements QueryMemberCouponRep
                 .where(memberCoupon.member.loginId.eq(memberId))
                 .where(memberCoupon.couponGroupCode.in(couponGroupCodeList))
                 .fetchFirst() != null;
+    }
+
+    @Override
+    public List<MemberCoupon> findMemberCouponByMemberId(String memberId) {
+        QMemberCoupon memberCoupon = QMemberCoupon.memberCoupon;
+
+        return queryFactory.select(memberCoupon)
+                .from(memberCoupon)
+                .where(memberCoupon.member.loginId.eq(memberId))
+                .orderBy(memberCoupon.id.desc())
+                .fetch();
     }
 }

@@ -63,4 +63,15 @@ class QueryDslQueryMemberCouponRepositoryTest {
         // then
         Assertions.assertThat(actual).isFalse();
     }
+
+    @Test
+    @DisplayName("회원이 가지고 있는 쿠폰 정보를 가져온다")
+    void findMemberCouponByMemberId() {
+        // when
+        List<MemberCoupon> actual = queryDslQueryMemberCouponRepository.findMemberCouponByMemberId(
+                member.getLoginId());
+        // then
+        Assertions.assertThat(actual).hasSize(1);
+        Assertions.assertThat(actual.get(0).getCouponCode()).isEqualTo("123");
+    }
 }
