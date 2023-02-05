@@ -15,7 +15,6 @@ import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.common.exception.PageOffsetOutOfBoundsException;
-import shop.yesaladin.shop.member.dto.MemberOrderResponseDto;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
@@ -119,26 +118,22 @@ public class QueryOrderServiceImpl implements QueryOrderService {
     @Override
     @Transactional(readOnly = true)
     public OrderSheetResponseDto getNonMemberOrderSheetData(OrderSheetRequestDto request) {
-        return getOrderSheetDataForNonMember(request);
+        List<ProductOrderResponseDto> orderProducts = getProductOrder(request);
+
+        return new OrderSheetResponseDto(orderProducts);
     }
 
     private OrderSheetResponseDto getOrderSheetDataForMember(
             OrderSheetRequestDto request,
             String loginId
     ) {
-        MemberOrderResponseDto member = queryMemberService.getMemberForOrder(loginId);
-
-        long point = queryPointHistoryService.getMemberPoint(loginId);
-
         List<ProductOrderResponseDto> orderProducts = getProductOrder(request);
 
-        return new OrderSheetResponseDto(member, point, orderProducts);
-    }
-
-    private OrderSheetResponseDto getOrderSheetDataForNonMember(OrderSheetRequestDto request) {
-        List<ProductOrderResponseDto> orderProducts = getProductOrder(request);
-
-        return new OrderSheetResponseDto(orderProducts);
+        return new OrderSheetResponseDto(
+                queryMemberService.getMemberForOrder(loginId),
+                queryPointHistoryService.getMemberPoint(loginId),
+                orderProducts
+        );
     }
 
     private List<ProductOrderResponseDto> getProductOrder(OrderSheetRequestDto request) {

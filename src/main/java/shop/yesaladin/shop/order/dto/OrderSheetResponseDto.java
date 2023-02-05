@@ -14,11 +14,11 @@ import shop.yesaladin.shop.product.dto.ProductOrderResponseDto;
 @Getter
 public class OrderSheetResponseDto {
 
+    private final List<ProductOrderResponseDto> orderProducts;
     private String name;
     private String phoneNumber;
     private Long point;
     private String address;
-    private final List<ProductOrderResponseDto> orderProducts;
 
     public OrderSheetResponseDto(
             MemberOrderResponseDto member,
