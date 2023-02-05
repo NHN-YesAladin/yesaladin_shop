@@ -81,7 +81,7 @@ class GiveCouponServiceImplTest {
         ));
         Mockito.when(restTemplate.exchange(
                         Mockito.eq(
-                                "http://localhost:8085/coupon-groups?trigger-type=SIGN_UP"),
+                                "http://localhost:8085/v1/coupon-groups?trigger-type=SIGN_UP"),
                         Mockito.eq(HttpMethod.GET),
                         Mockito.any(),
                         Mockito.any(ParameterizedTypeReference.class)
@@ -106,7 +106,7 @@ class GiveCouponServiceImplTest {
                 .produceGiveRequestLimitMessage(requestMessageCaptor.capture());
         Mockito.verify(restTemplate, Mockito.times(1))
                 .exchange(
-                        Mockito.eq("http://localhost:8085/coupon-groups?trigger-type=SIGN_UP"),
+                        Mockito.eq("http://localhost:8085/v1/coupon-groups?trigger-type=SIGN_UP"),
                         Mockito.eq(HttpMethod.GET),
                         Mockito.any(),
                         Mockito.any(ParameterizedTypeReference.class)
@@ -132,7 +132,7 @@ class GiveCouponServiceImplTest {
         ));
         Mockito.when(restTemplate.exchange(
                         Mockito.eq(
-                                "http://localhost:8085/coupon-groups?trigger-type=SIGN_UP"),
+                                "http://localhost:8085/v1/coupon-groups?trigger-type=SIGN_UP"),
                         Mockito.eq(HttpMethod.GET),
                         Mockito.any(),
                         Mockito.any(ParameterizedTypeReference.class)
@@ -157,7 +157,7 @@ class GiveCouponServiceImplTest {
                 .produceGiveRequestMessage(requestMessageCaptor.capture());
         Mockito.verify(restTemplate, Mockito.times(1))
                 .exchange(
-                        Mockito.eq("http://localhost:8085/coupon-groups?trigger-type=SIGN_UP"),
+                        Mockito.eq("http://localhost:8085/v1/coupon-groups?trigger-type=SIGN_UP"),
                         Mockito.eq(HttpMethod.GET),
                         Mockito.any(),
                         Mockito.any(ParameterizedTypeReference.class)
@@ -183,7 +183,7 @@ class GiveCouponServiceImplTest {
         ));
         Mockito.when(restTemplate.exchange(
                         Mockito.eq(
-                                "http://localhost:8085/coupon-groups?trigger-type=SIGN_UP"),
+                                "http://localhost:8085/v1/coupon-groups?trigger-type=SIGN_UP"),
                         Mockito.eq(HttpMethod.GET),
                         Mockito.any(),
                         Mockito.any(ParameterizedTypeReference.class)
@@ -212,10 +212,9 @@ class GiveCouponServiceImplTest {
     void sendCouponGiveRequestFailCauseByCouponGroupNotFoundTest() {
         // given
         String memberId = "mongmeo";
-        String couponGroupCode = "testCouponGroupCode";
         Mockito.when(restTemplate.exchange(
                 Mockito.eq(
-                        "http://localhost:8085/coupon-groups?trigger-type=SIGN_UP"),
+                        "http://localhost:8085/v1/coupon-groups?trigger-type=SIGN_UP"),
                 Mockito.eq(HttpMethod.GET),
                 Mockito.any(),
                 Mockito.any(ParameterizedTypeReference.class)
@@ -237,7 +236,7 @@ class GiveCouponServiceImplTest {
         String memberId = "mongmeo";
         Mockito.when(restTemplate.exchange(
                 Mockito.eq(
-                        "http://localhost:8085/coupon-groups?trigger-type=SIGN_UP"),
+                        "http://localhost:8085/v1/coupon-groups?trigger-type=SIGN_UP"),
                 Mockito.eq(HttpMethod.GET),
                 Mockito.any(),
                 Mockito.any(ParameterizedTypeReference.class)
