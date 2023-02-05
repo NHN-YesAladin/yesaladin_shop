@@ -17,12 +17,19 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.member.domain.model.Member;
+import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
+import shop.yesaladin.shop.order.domain.model.Order;
+import shop.yesaladin.shop.order.domain.model.OrderProduct;
+import shop.yesaladin.shop.order.persistence.dummy.DummyMemberAddress;
+import shop.yesaladin.shop.order.persistence.dummy.DummyOrder;
 import shop.yesaladin.shop.point.domain.model.PointCode;
 import shop.yesaladin.shop.point.domain.model.PointHistory;
 import shop.yesaladin.shop.point.domain.model.PointReasonCode;
 import shop.yesaladin.shop.point.domain.repository.QueryPointHistoryRepository;
 import shop.yesaladin.shop.point.dto.PointHistoryResponseDto;
+import shop.yesaladin.shop.product.domain.model.Product;
+import shop.yesaladin.shop.product.dummy.DummyProduct;
 
 @Transactional
 @SpringBootTest
@@ -213,5 +220,4 @@ class QuerydslQueryPointHistoryRepositoryTest {
             ));
         }
     }
-
 }

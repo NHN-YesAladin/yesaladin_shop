@@ -5,13 +5,13 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.order.domain.model.Order;
+import shop.yesaladin.shop.order.dto.OrderPaymentResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryResponseDto;
 
 /**
  * 주문 조회 관련 repository 클래스입니다.
  *
- * @author 최예린
  * @author 김홍대
  * @author 배수한
  * @since 1.0
@@ -89,6 +89,8 @@ public interface QueryOrderRepository {
      *
      * @param orderNumber 주문번호
      * @return 조회된 주문 데이터
+     * @author 배수한
+     * @since 1.0
      */
     Optional<Order> findByOrderNumber(String orderNumber);
 
@@ -100,6 +102,8 @@ public interface QueryOrderRepository {
      * @param memberId  주문 내역을 조회할 회원의 아이디
      * @param pageable  페이지네이션 정보
      * @return 페이지네이션 된 기간 내의 모든 주문 데이터의 요약
+     * @author 배수한
+     * @since 1.0
      */
     Page<OrderSummaryResponseDto> findOrdersInPeriodByMemberId(
             LocalDate startDate,
@@ -107,5 +111,15 @@ public interface QueryOrderRepository {
             long memberId,
             Pageable pageable
     );
+
+    /**
+     * 결제 이후 정보 중 주문 pk를 통해서 주문자 이름과 주소를 조회합니다.
+     *
+     * @param orderId 주문 pk
+     * @return 주문자 이름, 주문 주소지
+     * @author 배수한
+     * @since 1.0
+     */
+    Optional<OrderPaymentResponseDto> findPaymentDtoByMemberOrderId(long orderId);
 
 }

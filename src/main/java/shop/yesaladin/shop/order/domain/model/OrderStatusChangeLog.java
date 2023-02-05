@@ -46,8 +46,8 @@ public class OrderStatusChangeLog {
     /**
      * 주문상태변경내역 엔티티 생성 메소드입니다.
      *
-     * @param order 주문 데이터
-     * @param changeDateTime 변경된 일시
+     * @param order           주문 데이터
+     * @param changeDateTime  변경된 일시
      * @param orderStatusCode 주문 상태 코드
      * @return 주문상태변경내역 엔티티
      * @author 최예린
@@ -70,7 +70,7 @@ public class OrderStatusChangeLog {
      */
     @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @AllArgsConstructor
     @EqualsAndHashCode
     @Embeddable
     public static class Pk implements Serializable {

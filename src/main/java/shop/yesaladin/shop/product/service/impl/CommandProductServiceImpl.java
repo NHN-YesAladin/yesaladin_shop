@@ -1,7 +1,15 @@
 package shop.yesaladin.shop.product.service.impl;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import shop.yesaladin.common.code.ErrorCode;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.model.ProductCategory;
 import shop.yesaladin.shop.category.dto.CategoryResponseDto;
@@ -14,11 +22,20 @@ import shop.yesaladin.shop.file.service.inter.QueryFileService;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
-import shop.yesaladin.shop.product.domain.repository.*;
+import shop.yesaladin.shop.product.domain.repository.CommandProductRepository;
+import shop.yesaladin.shop.product.domain.repository.CommandSubscribeProductRepository;
+import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
+import shop.yesaladin.shop.product.domain.repository.QuerySubscribeProductRepository;
+import shop.yesaladin.shop.product.domain.repository.QueryTotalDiscountRateRepository;
 import shop.yesaladin.shop.product.dto.ProductCreateDto;
 import shop.yesaladin.shop.product.dto.ProductOnlyIdDto;
+import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
 import shop.yesaladin.shop.product.dto.ProductUpdateDto;
-import shop.yesaladin.shop.product.exception.*;
+import shop.yesaladin.shop.product.exception.NegativeOrZeroQuantityException;
+import shop.yesaladin.shop.product.exception.ProductAlreadyExistsException;
+import shop.yesaladin.shop.product.exception.ProductNotFoundException;
+import shop.yesaladin.shop.product.exception.RequestedQuantityLargerThanSellQuantityException;
+import shop.yesaladin.shop.product.exception.TotalDiscountRateNotExistsException;
 import shop.yesaladin.shop.product.service.inter.CommandProductService;
 import shop.yesaladin.shop.publish.domain.model.Publish;
 import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
@@ -33,17 +50,13 @@ import shop.yesaladin.shop.writing.domain.model.Writing;
 import shop.yesaladin.shop.writing.service.inter.CommandWritingService;
 import shop.yesaladin.shop.writing.service.inter.QueryAuthorService;
 
-import javax.transaction.Transactional;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
 /**
  * 상품 생성을 위한 Service 구현체 입니다.
  *
  * @author 이수정
  * @since 1.0
  */
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class CommandProductServiceImpl implements CommandProductService {
@@ -113,7 +126,7 @@ public class CommandProductServiceImpl implements CommandProductService {
                 .orElseThrow(TotalDiscountRateNotExistsException::new);
 
         // Product
-        Product product = queryProductRepository.findByISBN(dto.getIsbn()).orElse(null);
+        Product product = queryProductRepository.findByIsbn(dto.getIsbn()).orElse(null);
         if (!Objects.isNull(product)) {
             throw new ProductAlreadyExistsException(dto.getIsbn());
         }
@@ -193,17 +206,15 @@ public class CommandProductServiceImpl implements CommandProductService {
         }
 
         // ThumbnailFile
-        File thumbnailFile = queryFileService.findById(product.getThumbnailFile().getId())
-                .toEntity();
-        thumbnailFile = commandFileService.register(dto.changeThumbnailFile(thumbnailFile))
-                .toEntity();
+        File thumbnailFile = product.getThumbnailFile();
+        if (Objects.nonNull(dto.getThumbnailFileUrl())) {
+            thumbnailFile = commandFileService.register(dto.changeThumbnailFile(thumbnailFile)).toEntity();
+        }
 
         // EbookFile
-        File ebookFile = null;
-        if (Objects.nonNull(product.getEbookFile())) {
-            File foundEbookFile = queryFileService.findById(product.getEbookFile().getId())
-                    .toEntity();
-            ebookFile = commandFileService.register(dto.changeEbookFile(foundEbookFile)).toEntity();
+        File ebookFile = product.getEbookFile();
+        if (Objects.nonNull(dto.getEbookFileUrl())) {
+            ebookFile = commandFileService.register(dto.changeEbookFile(ebookFile)).toEntity();
         }
 
         // Writing
@@ -334,5 +345,54 @@ public class CommandProductServiceImpl implements CommandProductService {
         product.changeIsForcedOutOfStock();
 
         commandProductRepository.save(product);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public Map<String, Product> orderProducts(List<ProductOrderRequestDto> products) {
+        List<String> isbnList = getIsbnList(products);
+        Map<String, Integer> quantities = products.stream()
+                .collect(Collectors.toMap(
+                        ProductOrderRequestDto::getIsbn,
+                        ProductOrderRequestDto::getQuantity
+                ));
+
+        List<Product> productList = getAvailableProducts(
+                products,
+                isbnList,
+                quantities
+        );
+
+        productList.forEach(product -> product.changeQuantity(quantities.get(product.getIsbn())));
+
+        return productList
+                .stream()
+                .collect(Collectors.toMap(Product::getIsbn, product -> product));
+    }
+
+    private List<Product> getAvailableProducts(
+            List<ProductOrderRequestDto> products,
+            List<String> isbnList,
+            Map<String, Integer> quantities
+    ) {
+        List<Product> productList = queryProductRepository.findByIsbnList(isbnList, quantities);
+
+        if (productList.size() != products.size()) {
+            throw new ClientException(
+                    ErrorCode.BAD_REQUEST,
+                    "Product is not available to order."
+            );
+        }
+        return productList;
+    }
+
+    private static List<String> getIsbnList(List<ProductOrderRequestDto> products) {
+        return products
+                .stream()
+                .map(ProductOrderRequestDto::getIsbn)
+                .collect(Collectors.toList());
     }
 }

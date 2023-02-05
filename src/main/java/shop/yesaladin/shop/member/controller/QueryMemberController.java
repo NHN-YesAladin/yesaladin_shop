@@ -1,17 +1,29 @@
 package shop.yesaladin.shop.member.controller;
 
+import java.time.LocalDate;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.dto.ResponseDto;
+import shop.yesaladin.common.exception.ClientException;
+import shop.yesaladin.shop.common.utils.AuthorityUtils;
 import shop.yesaladin.shop.member.dto.MemberGradeQueryResponseDto;
+import shop.yesaladin.shop.member.dto.MemberManagerListResponseDto;
+import shop.yesaladin.shop.member.dto.MemberManagerResponseDto;
 import shop.yesaladin.shop.member.dto.MemberIdDto;
 import shop.yesaladin.shop.member.dto.MemberProfileExistResponseDto;
 import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
@@ -22,6 +34,7 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberService;
  *
  * @author 송학현
  * @author 최예린
+ * @author 김선홍
  * @since 1.0
  */
 @Slf4j
@@ -115,29 +128,161 @@ public class QueryMemberController {
     /**
      * 회원의 등급을 조회합니다.
      *
-     * @param loginId 회원의 아이디
+     * @param type           조회 정보 구분
+     * @param authentication 인증 정보
      * @return 회원의 등급
      * @author 최예린
      * @since 1.0
      */
-    @GetMapping("/{loginId}/grade")
-    public MemberGradeQueryResponseDto getMemberGrade(@PathVariable String loginId) {
-        return queryMemberService.getMemberGrade(loginId);
+    @GetMapping(params = "type")
+    @CrossOrigin(origins = {"http://localhost:9090", "https://www.yesaladin.shop"})
+    public ResponseDto<MemberGradeQueryResponseDto> getMemberGrade(
+            @RequestParam String type,
+            Authentication authentication
+    ) {
+        String loginId = AuthorityUtils.getAuthorizedUserName(authentication);
+
+        checkValidTypeParameterForMemberGrade(type);
+
+        MemberGradeQueryResponseDto response = queryMemberService.getMemberGradeByLoginId(loginId);
+
+        return ResponseDto.<MemberGradeQueryResponseDto>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(response)
+                .build();
+    }
+
+    private static void checkValidTypeParameterForMemberGrade(String type) {
+        if (!type.equals("grade")) {
+            throw new ClientException(
+                    ErrorCode.MEMBER_BAD_REQUEST,
+                    "Invalid type parameter for Member about grade"
+            );
+        }
     }
 
     /**
      * 회원의 정보를 조회합니다.
      *
-     * @param loginId 회원의 아이디
+     * @param authentication 인증 정보
      * @return 회원의 정보
      * @author 최예린
      * @since 1.0
      */
-    @GetMapping("{loginId}")
-    public MemberQueryResponseDto getMemberInfo(@PathVariable String loginId) {
-        return queryMemberService.getByLoginId(loginId);
+    @GetMapping
+    public ResponseDto<MemberQueryResponseDto> getMemberInfo(Authentication authentication) {
+        String loginId = AuthorityUtils.getAuthorizedUserName(authentication);
+
+        MemberQueryResponseDto response = queryMemberService.getByLoginId(loginId);
+
+        return ResponseDto.<MemberQueryResponseDto>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(response)
+                .build();
     }
 
+    /**
+     * 관리자가 회원의 loginId 를 이용해 회원의 정보를 조회
+     *
+     * @param loginId 조회할 회원의 loginId
+     * @return 조회된 회원의 정보
+     * @author 김선홍
+     * @since 1.0
+     */
+    @GetMapping(value = "/manage", params = "loginid")
+    public ResponseDto<MemberManagerResponseDto> manageMemberInfoByLoginId(@RequestParam(name = "loginid") String loginId) {
+        return ResponseDto.<MemberManagerResponseDto>builder()
+                .data(queryMemberService.findMemberManageByLoginId(loginId))
+                .status(HttpStatus.OK)
+                .success(true)
+                .build();
+    }
+
+    /**
+     * 관리자가 회원의 nickname 을 이용해 회원의 정보를 조회
+     *
+     * @param nickname 조회할 회원의 nickname
+     * @return 조회된 회원의 정보
+     * @author 김선홍
+     * @since 1.0
+     */
+    @GetMapping(value = "/manage", params = "nickname")
+    public ResponseDto<MemberManagerResponseDto> manageMemberInfoByNickname(@RequestParam String nickname) {
+        return ResponseDto.<MemberManagerResponseDto>builder()
+                .data(queryMemberService.findMemberManageByNickName(nickname))
+                .status(HttpStatus.OK)
+                .success(true)
+                .build();
+    }
+
+    /**
+     * 관리자가 회원의 phone 를 이용해 회원의 정보를 조회
+     *
+     * @param phone 조회할 회원의 phone
+     * @return 조회된 회원의 정보
+     * @author 김선홍
+     * @since 1.0
+     */
+    @GetMapping(value = "/manage", params = "phone")
+    public ResponseDto<MemberManagerResponseDto> manageMemberInfoByPhone(@RequestParam String phone) {
+        return ResponseDto.<MemberManagerResponseDto>builder()
+                .data(queryMemberService.findMemberManageByPhone(phone))
+                .status(HttpStatus.OK)
+                .success(true)
+                .build();
+    }
+
+    /**
+     * 관리자가 회원의 name 을 이용해 회원의 정보를 조회
+     *
+     * @param name 조회할 회원의 name
+     * @param pageable 페이지 위치 및 데이터 갯수
+     * @return 조회된 회원들의 정보
+     * @author 김선홍
+     * @since 1.0
+     */
+    @GetMapping(value = "/manage", params = "name")
+    public ResponseDto<MemberManagerListResponseDto> manageMembersInfoByName(
+            @RequestParam String name,
+            @PageableDefault Pageable pageable
+    ) {
+        return ResponseDto.<MemberManagerListResponseDto>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(queryMemberService.findMemberManagesByName(
+                        name,
+                        pageable.getPageNumber(),
+                        pageable.getPageSize()
+                ))
+                .build();
+    }
+
+    /**
+     * 관리자가 회원의  signUpDate 을 이용해 회원의 정보를 조회
+     *
+     * @param signUpDate 조회할 회원의 signUpDate
+     * @param pageable 페이지 위치 및 데이터 갯수
+     * @return 조회된 회원들의 정보
+     * @author 김선홍
+     * @since 1.0
+     */
+    @GetMapping(value = "/manage", params = "signupdate")
+    public ResponseDto<MemberManagerListResponseDto> manageMembersInfoBySignUpDate(
+            @RequestParam(name = "signupdate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate signUpDate,
+            @PageableDefault Pageable pageable
+    ) {
+        return ResponseDto.<MemberManagerListResponseDto>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(queryMemberService.findMemberManagesBySignUpDate(
+                        signUpDate,
+                        pageable.getPageNumber(),
+                        pageable.getPageSize()
+                )).build();
+     }
+     
     /**
      * n 일 후가 생일인 회원을 조회합니다.
      *

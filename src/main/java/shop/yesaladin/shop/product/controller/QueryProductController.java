@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
+import shop.yesaladin.shop.product.dto.ProductModifyDto;
 import shop.yesaladin.shop.product.dto.ProductsResponseDto;
 import shop.yesaladin.shop.product.service.inter.QueryProductService;
 
@@ -33,6 +34,19 @@ public class QueryProductController {
     @GetMapping("/{productId}")
     public ProductDetailResponseDto findProductById(@PathVariable long productId) {
         return queryProductService.findById(productId);
+    }
+
+    /**
+     * [GET /products/{productId}/manager] 요청을 받아 상품의 수정 View에 넣을 정보를 조회합니다.
+     *
+     * @param productId 조회하고자 하는 상품의 Id
+     * @return 조회한 상품의 상세 dto
+     * @author 이수정
+     * @since 1.0
+     */
+    @GetMapping("/{productId}/manager")
+    public ProductModifyDto findProductByIdForForm(@PathVariable long productId) {
+        return queryProductService.findProductByIdForForm(productId);
     }
 
     /**

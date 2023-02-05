@@ -13,6 +13,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.mockito.Mockito;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberGrade;
 import shop.yesaladin.shop.member.domain.model.Role;
@@ -31,8 +32,6 @@ import shop.yesaladin.shop.member.dto.MemberWithdrawResponseDto;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
 import shop.yesaladin.shop.member.dummy.MemberRoleDummy;
 import shop.yesaladin.shop.member.dummy.RoleDummy;
-import shop.yesaladin.shop.member.exception.AlreadyBlockedMemberException;
-import shop.yesaladin.shop.member.exception.AlreadyUnblockedMemberException;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.exception.MemberProfileAlreadyExistException;
 
@@ -328,7 +327,8 @@ class CommandMemberServiceImplTest {
                 .thenThrow(new MemberNotFoundException("Member loginId " + loginId));
 
         //when, then
-        assertThatThrownBy(() -> service.block(loginId, request)).isInstanceOf(MemberNotFoundException.class);
+        assertThatThrownBy(() -> service.block(loginId, request)).isInstanceOf(
+                MemberNotFoundException.class);
 
         verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
     }
@@ -353,7 +353,10 @@ class CommandMemberServiceImplTest {
                 .thenReturn(Optional.of(member));
 
         //when, then
-        assertThatThrownBy(() -> service.block(loginId, request)).isInstanceOf(AlreadyBlockedMemberException.class);
+        assertThatThrownBy(() -> service.block(
+                loginId,
+                request
+        )).isInstanceOf(ClientException.class);
 
         verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
     }
@@ -416,8 +419,7 @@ class CommandMemberServiceImplTest {
                 .thenReturn(Optional.of(member));
 
         //when, then
-        assertThatThrownBy(() -> service.unblock(loginId)).isInstanceOf(
-                AlreadyUnblockedMemberException.class);
+        assertThatThrownBy(() -> service.unblock(loginId)).isInstanceOf(ClientException.class);
 
         verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
     }

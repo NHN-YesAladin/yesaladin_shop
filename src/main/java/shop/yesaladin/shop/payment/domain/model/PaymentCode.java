@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.payment.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Arrays;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,11 @@ public enum PaymentCode {
                 .filter(code -> code.getKrName().equals(krName))
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
+    }
+
+    @JsonValue
+    public String getKrName() {
+        return krName;
     }
 
     @Override

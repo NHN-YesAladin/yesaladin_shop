@@ -14,8 +14,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import shop.yesaladin.shop.member.exception.AlreadyBlockedMemberException;
-import shop.yesaladin.shop.member.exception.AlreadyUnblockedMemberException;
+import shop.yesaladin.common.code.ErrorCode;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.member.persistence.converter.MemberGenderCodeConverter;
 import shop.yesaladin.shop.member.persistence.converter.MemberGradeCodeConverter;
 
@@ -126,7 +126,10 @@ public class Member {
      */
     public void unblockMember() {
         if (!this.isBlocked) {
-            throw new AlreadyUnblockedMemberException(this.loginId);
+            throw new ClientException(
+                    ErrorCode.MEMBER_ALREADY_UNBLOCKED,
+                    "Member is already unblocked with loginId : " + this.loginId
+            );
         }
         this.isBlocked = false;
         this.unblockedDate = LocalDate.now();
@@ -140,7 +143,10 @@ public class Member {
      */
     public void blockMember(String blockedReason) {
         if (this.isBlocked) {
-            throw new AlreadyBlockedMemberException(this.loginId);
+            throw new ClientException(
+                    ErrorCode.MEMBER_ALREADY_BLOCKED,
+                    "Member is already blocked with loginId : " + this.loginId
+            );
         }
         this.isBlocked = true;
         this.blockedReason = blockedReason;

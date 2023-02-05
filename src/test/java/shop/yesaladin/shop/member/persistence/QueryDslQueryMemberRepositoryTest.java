@@ -11,10 +11,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.member.domain.model.Member;
+import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.member.dto.MemberIdDto;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
+import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
 
 @Transactional
 @SpringBootTest
@@ -24,20 +27,36 @@ class QueryDslQueryMemberRepositoryTest {
     EntityManager entityManager;
 
     @Autowired
-    private QueryDslQueryMemberRepository queryMemberRepository;
+    QueryDslQueryMemberRepository queryMemberRepository;
 
+    String loginId = "user@1";
     Member member;
+    Member memberWithLoginId;
+    MemberAddress defaultMemberAddress;
+    MemberAddress memberAddress;
 
     @BeforeEach
     void setUp() {
         member = MemberDummy.dummy();
+        entityManager.persist(member);
+
+        memberWithLoginId = MemberDummy.dummyWithLoginId(loginId);
+        defaultMemberAddress = MemberAddress.builder().member(memberWithLoginId)
+                .isDeleted(false)
+                .address("First")
+                .isDefault(true).build();
+        memberAddress = MemberAddress.builder().member(memberWithLoginId)
+                .isDeleted(false)
+                .address("Second")
+                .isDefault(false).build();
+
+        entityManager.persist(memberWithLoginId);
+        entityManager.persist(defaultMemberAddress);
+        entityManager.persist(memberAddress);
     }
 
     @Test
     void findById() throws Exception {
-        //given
-        entityManager.persist(member);
-
         //when
         Optional<Member> optionalMember = queryMemberRepository.findById(member.getId());
 
@@ -49,9 +68,6 @@ class QueryDslQueryMemberRepositoryTest {
 
     @Test
     void findMemberByNickname() throws Exception {
-        //given
-        entityManager.persist(member);
-
         //when
         Optional<Member> optionalMember = queryMemberRepository.findMemberByNickname(member.getNickname());
 
@@ -63,9 +79,6 @@ class QueryDslQueryMemberRepositoryTest {
 
     @Test
     void findMemberByLoginId() throws Exception {
-        //given
-        entityManager.persist(member);
-
         //when
         Optional<Member> optionalMember = queryMemberRepository.findMemberByLoginId(member.getLoginId());
 
@@ -77,9 +90,6 @@ class QueryDslQueryMemberRepositoryTest {
 
     @Test
     void findMemberByEmail() throws Exception {
-        //given
-        entityManager.persist(member);
-
         //when
         Optional<Member> optionalMember = queryMemberRepository.findMemberByEmail(member.getEmail());
 
@@ -90,10 +100,56 @@ class QueryDslQueryMemberRepositoryTest {
     }
 
     @Test
+    void findMemberByPhone() {
+        //when
+        Optional<Member> optionalMember = queryMemberRepository.findMemberByPhone(member.getPhone());
+
+        //then
+        assertThat(optionalMember).isPresent();
+        assertThat(optionalMember.get().getPhone()).isEqualTo(member.getPhone());
+        assertThat(optionalMember.get().isWithdrawal()).isFalse();
+    }
+
+    @Test
+    void findMembersByName() {
+        //when
+        Page<Member> memberList = queryMemberRepository.findMembersByName(
+                member.getName(),
+                0,
+                10
+        );
+
+        //then
+        assertThat(memberList.getTotalElements()).isEqualTo(1);
+        assertThat(memberList.getContent().get(0).getName()).isEqualTo(member.getName());
+        assertThat(memberList.getContent().get(0).isWithdrawal()).isFalse();
+    }
+
+    @Test
+    void findMembersBySignUpDate() {
+        //when
+        Page<Member> memberList = queryMemberRepository.findMembersBySignUpDate(
+                member.getSignUpDate(),
+                0,
+                10
+        );
+
+        //then
+        assertThat(memberList.getTotalElements()).isEqualTo(2);
+        assertThat(memberList.getContent()
+                .get(0)
+                .getSignUpDate()).isEqualTo(member.getSignUpDate());
+        assertThat(memberList.getContent().get(0).isWithdrawal()).isFalse();
+    }
+
+    @Test
     void findMembersByBirthday() {
         //given
         LocalDate now = LocalDate.now();
-        Member dummyMember = MemberDummy.dummyWithBirthday(now.getMonthValue(), now.getDayOfMonth());
+        Member dummyMember = MemberDummy.dummyWithBirthday(
+                now.getMonthValue(),
+                now.getDayOfMonth()
+        );
         entityManager.persist(dummyMember);
 
         //when
@@ -108,9 +164,6 @@ class QueryDslQueryMemberRepositoryTest {
 
     @Test
     void existsMemberByLoginId() throws Exception {
-        //given
-        entityManager.persist(member);
-
         //when
         boolean result = queryMemberRepository.existsMemberByLoginId(member.getLoginId());
 
@@ -120,9 +173,6 @@ class QueryDslQueryMemberRepositoryTest {
 
     @Test
     void existsMemberByNickname() throws Exception {
-        //given
-        entityManager.persist(member);
-
         //when
         boolean result = queryMemberRepository.existsMemberByNickname(member.getNickname());
 
@@ -132,9 +182,6 @@ class QueryDslQueryMemberRepositoryTest {
 
     @Test
     void existsMemberByEmail() throws Exception {
-        //given
-        entityManager.persist(member);
-
         //when
         boolean result = queryMemberRepository.existsMemberByEmail(member.getEmail());
 
@@ -144,13 +191,24 @@ class QueryDslQueryMemberRepositoryTest {
 
     @Test
     void existsMemberByPhone() throws Exception {
-        //given
-        entityManager.persist(member);
-
         //when
         boolean result = queryMemberRepository.existsMemberByPhone(member.getPhone());
 
         //then
         assertThat(result).isTrue();
+    }
+
+    @Test
+    void getMemberOrderData() {
+        //when
+        Optional<OrderSheetResponseDto> response = queryMemberRepository.getMemberOrderData(loginId);
+
+        //then
+        assertThat(response).isPresent();
+        assertThat(response.get().getName()).isEqualTo(memberWithLoginId.getName());
+        assertThat(response.get().getPhoneNumber()).isEqualTo(memberWithLoginId.getPhone());
+        assertThat(response.get().getAddress()).isEqualTo(defaultMemberAddress.getAddress());
+        assertThat(response.get().getPoint()).isNull();
+        assertThat(response.get().getOrderProducts()).isNull();
     }
 }

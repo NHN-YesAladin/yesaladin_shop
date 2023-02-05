@@ -1,15 +1,15 @@
 package shop.yesaladin.shop.member.service.impl;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import shop.yesaladin.shop.member.domain.model.Member;
+import shop.yesaladin.common.code.ErrorCode;
+import shop.yesaladin.common.exception.ClientException;
+import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberAddressRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
 import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
-import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberAddressService;
 
 /**
@@ -30,17 +30,44 @@ public class QueryMemberAddressServiceImpl implements QueryMemberAddressService 
      */
     @Override
     @Transactional(readOnly = true)
-    public List<MemberAddressResponseDto> findByLoginId(String loginId) {
-        Member member = tryGetMemberById(loginId);
-
-        return queryMemberAddressRepository.findByLoginId(member)
-                .stream()
-                .map(MemberAddressResponseDto::fromEntity)
-                .collect(Collectors.toList());
+    public MemberAddress findById(long id) {
+        return queryMemberAddressRepository.findById(id)
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.ADDRESS_NOT_FOUND,
+                        "MemberAddress not found with id : " + id
+                ));
     }
 
-    private Member tryGetMemberById(String loginId) {
-        return queryMemberRepository.findMemberByLoginId(loginId)
-                .orElseThrow(() -> new MemberNotFoundException("Member loginId: " + loginId));
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public MemberAddressResponseDto getById(long id) {
+        return queryMemberAddressRepository.getById(id)
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.ADDRESS_NOT_FOUND,
+                        "MemberAddress not found with id : " + id
+                ));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<MemberAddressResponseDto> getByLoginId(String loginId) {
+        checkLoginIdIsExist(loginId);
+
+        return queryMemberAddressRepository.getByLoginId(loginId);
+    }
+
+    private void checkLoginIdIsExist(String loginId) {
+        if(!queryMemberRepository.existsMemberByLoginId(loginId)) {
+            throw new ClientException(
+                    ErrorCode.MEMBER_NOT_FOUND,
+                    "Member not found with loginId : " + loginId
+            );
+        }
     }
 }

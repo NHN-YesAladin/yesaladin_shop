@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
+import shop.yesaladin.shop.member.domain.model.querydsl.QMemberAddress;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
 import shop.yesaladin.shop.order.domain.model.querydsl.QMemberOrder;
@@ -22,6 +23,7 @@ import shop.yesaladin.shop.order.domain.model.querydsl.QOrder;
 import shop.yesaladin.shop.order.domain.model.querydsl.QOrderProduct;
 import shop.yesaladin.shop.order.domain.model.querydsl.QOrderStatusChangeLog;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
+import shop.yesaladin.shop.order.dto.OrderPaymentResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryResponseDto;
 
@@ -29,6 +31,7 @@ import shop.yesaladin.shop.order.dto.OrderSummaryResponseDto;
  * 주문 데이터 조회를 위한 레포지토리의 QueryDsl 구현체입니다.
  *
  * @author 김홍대
+ * @author 최예린
  * @since 1.0
  */
 @RequiredArgsConstructor
@@ -39,7 +42,6 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
 
     /**
      * {@inheritDoc}
-     *
      */
     @Override
     public Optional<Order> findById(Long id) {
@@ -65,7 +67,6 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
 
     /**
      * {@inheritDoc}
-     *
      */
     @Override
     public Page<OrderSummaryDto> findAllOrdersInPeriod(
@@ -99,7 +100,6 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
 
     /**
      * {@inheritDoc}
-     *
      */
     @Override
     public Page<OrderSummaryDto> findAllOrdersInPeriodByMemberId(
@@ -133,7 +133,6 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
 
     /**
      * {@inheritDoc}
-     *
      */
     @Override
     public long getCountOfOrdersInPeriod(LocalDate startDate, LocalDate endDate) {
@@ -146,7 +145,6 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
 
     /**
      * {@inheritDoc}
-     *
      */
     @Override
     public long getCountOfOrdersInPeriodByMemberId(
@@ -166,7 +164,6 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
 
     /**
      * {@inheritDoc}
-     *
      */
     @Override
     public Optional<Order> findByOrderNumber(String orderNumber) {
@@ -190,6 +187,10 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
                 .fetchFirst());
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     */
     @Override
     public Page<OrderSummaryResponseDto> findOrdersInPeriodByMemberId(
             LocalDate startDate,
@@ -238,6 +239,25 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
                 )));
 
         return PageableExecutionUtils.getPage(data, pageable, countQuery::fetchFirst);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     *
+     */
+    @Override
+    public Optional<OrderPaymentResponseDto> findPaymentDtoByMemberOrderId(long orderId) {
+        QMemberOrder memberOrder = QMemberOrder.memberOrder;
+        return Optional.ofNullable(queryFactory.select(Projections.constructor(
+                        OrderPaymentResponseDto.class,
+                        memberOrder.member.name,
+                        memberOrder.memberAddress.address
+                ))
+                .from(memberOrder)
+                .where(memberOrder.id.eq(orderId))
+                .fetchFirst());
+
     }
 
 

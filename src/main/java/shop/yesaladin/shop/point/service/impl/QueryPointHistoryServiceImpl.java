@@ -5,7 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import shop.yesaladin.shop.member.exception.MemberNotFoundException;
+import shop.yesaladin.common.code.ErrorCode;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.point.domain.model.PointCode;
 import shop.yesaladin.shop.point.domain.repository.QueryPointHistoryRepository;
@@ -84,8 +85,11 @@ public class QueryPointHistoryServiceImpl implements QueryPointHistoryService {
     }
 
     private void checkMemberExists(String loginId) {
-        if (queryMemberService.existsLoginId(loginId)) {
-            throw new MemberNotFoundException("Member loginId : " + loginId);
+        if (!queryMemberService.existsLoginId(loginId)) {
+            throw new ClientException(
+                    ErrorCode.MEMBER_NOT_FOUND,
+                    "Member not found with loginId : " + loginId
+            );
         }
     }
 }

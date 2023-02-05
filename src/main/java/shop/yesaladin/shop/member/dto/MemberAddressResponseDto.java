@@ -13,7 +13,7 @@ import shop.yesaladin.shop.member.domain.model.MemberAddress;
  * @since 1.0
  */
 @Getter
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MemberAddressResponseDto {
 
@@ -21,14 +21,12 @@ public class MemberAddressResponseDto {
     private String address;
 
     private Boolean isDefault;
-    private String loginId;
 
     public static MemberAddressResponseDto fromEntity(MemberAddress memberAddress) {
         return new MemberAddressResponseDto(
                 memberAddress.getId(),
                 memberAddress.getAddress(),
-                memberAddress.isDefault(),
-                memberAddress.getMember().getLoginId()
+                memberAddress.isDefault()
         );
     }
 }

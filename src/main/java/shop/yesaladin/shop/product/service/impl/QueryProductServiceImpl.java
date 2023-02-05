@@ -1,31 +1,44 @@
 package shop.yesaladin.shop.product.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import shop.yesaladin.common.code.ErrorCode;
+import shop.yesaladin.common.exception.ClientException;
+import shop.yesaladin.shop.category.dto.CategoryResponseDto;
+import shop.yesaladin.shop.category.service.inter.QueryProductCategoryService;
 import shop.yesaladin.shop.product.domain.model.Product;
+import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
 import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
+import shop.yesaladin.shop.product.dto.ProductModifyDto;
+import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
+import shop.yesaladin.shop.product.dto.ProductOrderResponseDto;
 import shop.yesaladin.shop.product.dto.ProductsResponseDto;
 import shop.yesaladin.shop.product.exception.ProductNotFoundException;
 import shop.yesaladin.shop.product.service.inter.QueryProductService;
 import shop.yesaladin.shop.publish.dto.PublishResponseDto;
+import shop.yesaladin.shop.publish.dto.PublishersResponseDto;
 import shop.yesaladin.shop.publish.service.inter.QueryPublishService;
+import shop.yesaladin.shop.tag.dto.ProductTagResponseDto;
+import shop.yesaladin.shop.tag.dto.TagsResponseDto;
 import shop.yesaladin.shop.tag.service.inter.QueryProductTagService;
+import shop.yesaladin.shop.writing.dto.AuthorsResponseDto;
+import shop.yesaladin.shop.writing.dto.WritingResponseDto;
 import shop.yesaladin.shop.writing.service.inter.QueryWritingService;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * 상품 조회를 위한 Service 구현체 입니다.
  *
  * @author 이수정
+ * @author 최예린
  * @since 1.0
  */
 @RequiredArgsConstructor
@@ -40,6 +53,7 @@ public class QueryProductServiceImpl implements QueryProductService {
     private final QueryWritingService queryWritingService;
     private final QueryPublishService queryPublishService;
     private final QueryProductTagService queryProductTagService;
+    private final QueryProductCategoryService queryProductCategoryService;
 
     /**
      * {@inheritDoc}
@@ -58,12 +72,16 @@ public class QueryProductServiceImpl implements QueryProductService {
 
         long pointPrice = 0;
         if (product.isGivenPoint() && product.getGivenPointRate() != 0) {
-            pointPrice = Math.round((product.getActualPrice() * product.getGivenPointRate() / PERCENT_DENOMINATOR_VALUE) / ROUND_OFF_VALUE) * ROUND_OFF_VALUE;
+            pointPrice = Math.round((product.getActualPrice() * product.getGivenPointRate()
+                    / PERCENT_DENOMINATOR_VALUE) / ROUND_OFF_VALUE) * ROUND_OFF_VALUE;
         }
 
         List<String> authors = findAuthorsByProduct(product);
 
         PublishResponseDto publish = queryPublishService.findByProduct(product);
+
+        List<CategoryResponseDto> categories = queryProductCategoryService.findCategoriesByProduct(
+                product);
 
         return new ProductDetailResponseDto(
                 product.getId(),
@@ -86,7 +104,71 @@ public class QueryProductServiceImpl implements QueryProductService {
                 product.getQuantity(),
                 product.isForcedOutOfStock(),
                 product.isSale(),
-                product.isDeleted()
+                product.isDeleted(),
+                categories
+        );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public ProductModifyDto findProductByIdForForm(long id) {
+        Product product = queryProductRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException(id));
+
+        List<WritingResponseDto> writings = queryWritingService.findByProduct(product);
+        List<AuthorsResponseDto> authors = new ArrayList<>();
+        for (WritingResponseDto writing : writings) {
+            authors.add(new AuthorsResponseDto(
+                    writing.getAuthor().getId(),
+                    writing.getAuthor().getName(),
+                    Objects.isNull(writing.getAuthor().getMember()) ? null
+                            : writing.getAuthor().getMember().getLoginId()
+            ));
+        }
+
+        PublishResponseDto publish = queryPublishService.findByProduct(product);
+
+        List<ProductTagResponseDto> productTags = queryProductTagService.findByProduct(product);
+        List<TagsResponseDto> tags = new ArrayList<>();
+        for (ProductTagResponseDto productTag : productTags) {
+            tags.add(new TagsResponseDto(
+                    productTag.getTag().getId(),
+                    productTag.getTag().getName()
+            ));
+        }
+
+        List<CategoryResponseDto> categories = queryProductCategoryService.findCategoriesByProduct(
+                product);
+
+        return new ProductModifyDto(
+                product.getIsbn(),
+                product.getThumbnailFile().getUrl(),
+                product.getTitle(),
+                product.getContents(),
+                product.getDescription(),
+                Objects.isNull(product.getEbookFile()) ? null : product.getEbookFile().getUrl(),
+                authors,
+                new PublishersResponseDto(
+                        publish.getPublisher().getId(),
+                        publish.getPublisher().getName()
+                ),
+                publish.getPublishedDate().toString(),
+                product.getProductTypeCode().name(),
+                tags,
+                product.getActualPrice(),
+                product.isSeparatelyDiscount(),
+                product.getDiscountRate(),
+                product.isGivenPoint(),
+                product.getGivenPointRate(),
+                product.getProductSavingMethodCode().name(),
+                product.isSubscriptionAvailable(),
+                product.getSubscribeProduct().getISSN(),
+                product.getQuantity(),
+                product.getPreferentialShowRanking(),
+                categories
         );
     }
 
@@ -208,7 +290,9 @@ public class QueryProductServiceImpl implements QueryProductService {
         if (rate == 0) {
             return product.getActualPrice();
         }
-        return Math.round((product.getActualPrice() - product.getActualPrice() * rate / PERCENT_DENOMINATOR_VALUE) / ROUND_OFF_VALUE) * ROUND_OFF_VALUE;
+        return Math.round((product.getActualPrice()
+                - product.getActualPrice() * rate / PERCENT_DENOMINATOR_VALUE) / ROUND_OFF_VALUE)
+                * ROUND_OFF_VALUE;
     }
 
     /**
@@ -237,5 +321,48 @@ public class QueryProductServiceImpl implements QueryProductService {
         return queryProductTagService.findByProduct(product).stream()
                 .map(tag -> tag.getTag().getName())
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProductOrderResponseDto> getByIsbnList(List<ProductOrderRequestDto> products) {
+        List<String> isbnList = getIsbnList(products);
+        List<ProductOrderResponseDto> result = queryProductRepository.getByIsbnList(isbnList);
+
+        result.forEach(x -> x.setQuantity(products));
+
+        return result;
+    }
+
+    private static List<String> getIsbnList(List<ProductOrderRequestDto> products) {
+        return products
+                .stream()
+                .map(ProductOrderRequestDto::getIsbn)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public SubscribeProduct findIssnByIsbn(ProductOrderRequestDto orderProduct) {
+        String isbn = orderProduct.getIsbn();
+        int quantity = orderProduct.getQuantity();
+        Product product = queryProductRepository.findOrderProductByIsbn(isbn, quantity)
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.PRODUCT_NOT_FOUND,
+                        "Product not found with isbn : " + isbn + "."
+                ));
+        if (!product.isSubscriptionAvailable()) {
+            throw new ClientException(
+                    ErrorCode.PRODUCT_NOT_SUBSCRIBE_PRODUCT,
+                    "Product with isbn(" + isbn + ") is not a subscribe product."
+            );
+        }
+        return product.getSubscribeProduct();
     }
 }

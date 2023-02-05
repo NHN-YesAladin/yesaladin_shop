@@ -91,14 +91,20 @@ class QueryProductControllerTest {
                         fieldWithPath("pointRate").type(JsonFieldType.NUMBER).description("포인트 적립율"),
                         fieldWithPath("publishedDate").type(JsonFieldType.STRING).description("출간일"),
                         fieldWithPath("isbn").type(JsonFieldType.STRING).description("ISBN"),
-                        fieldWithPath("subscriptionAvailable").type(JsonFieldType.BOOLEAN).description("구독 가능여부"),
+                        fieldWithPath("isSubscriptionAvailable").type(JsonFieldType.BOOLEAN).description("구독 가능여부"),
                         fieldWithPath("issn").type(JsonFieldType.STRING).description("ISSN"),
                         fieldWithPath("contents").type(JsonFieldType.STRING).description("목차"),
                         fieldWithPath("description").type(JsonFieldType.STRING).description("설명"),
                         fieldWithPath("quantity").type(JsonFieldType.NUMBER).description("수량"),
-                        fieldWithPath("forcedOutOfStock").type(JsonFieldType.BOOLEAN).description("강제품절여부"),
-                        fieldWithPath("sale").type(JsonFieldType.BOOLEAN).description("판매여부"),
-                        fieldWithPath("deleted").type(JsonFieldType.BOOLEAN).description("삭제여부")
+                        fieldWithPath("isForcedOutOfStock").type(JsonFieldType.BOOLEAN).description("강제품절여부"),
+                        fieldWithPath("isSale").type(JsonFieldType.BOOLEAN).description("판매여부"),
+                        fieldWithPath("isDeleted").type(JsonFieldType.BOOLEAN).description("삭제여부"),
+                        fieldWithPath("categories.[].id").type(JsonFieldType.NUMBER).description("연관된 카테고리 Id"),
+                        fieldWithPath("categories.[].name").type(JsonFieldType.STRING).description("연관된 카테고리 이름"),
+                        fieldWithPath("categories.[].isShown").type(JsonFieldType.BOOLEAN).description("연관된 카테고리 노출여부"),
+                        fieldWithPath("categories.[].order").type(JsonFieldType.NUMBER).description("연관된 카테고리 노출순서"),
+                        fieldWithPath("categories.[].parentId").type(JsonFieldType.NUMBER).description("연관된 카테고리의 부모카테고리 Id"),
+                        fieldWithPath("categories.[].parentName").type(JsonFieldType.STRING).description("연관된 카테고리의 부모카테고리 이름 ")
                 )
         ));
     }
@@ -233,7 +239,6 @@ class QueryProductControllerTest {
                         fieldWithPath("dataList.[].thumbnailFileUrl").type(JsonFieldType.STRING).description("썸네일 파일 URL"),
                         fieldWithPath("dataList.[].tags").type(JsonFieldType.ARRAY).description("태그"),
                         fieldWithPath("dataList.[].ebookFileUrl").description("E-book 파일 URL")
-
                 )
         ));
     }
