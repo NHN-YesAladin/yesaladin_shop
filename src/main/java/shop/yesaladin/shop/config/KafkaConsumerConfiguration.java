@@ -17,6 +17,12 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 
+/**
+ * kafka consumer를 생성하기 위한 설정 클래스입니다.
+ *
+ * @author 김홍대
+ * @since 1.0
+ */
 @EnableKafka
 @Configuration
 public class KafkaConsumerConfiguration {

@@ -13,6 +13,12 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
+/**
+ * Kafka producer 설정을 위한 설정 클래스입니다.
+ *
+ * @author 김홍대
+ * @since 1.0
+ */
 @Configuration
 public class KafkaProducerConfiguration {
 

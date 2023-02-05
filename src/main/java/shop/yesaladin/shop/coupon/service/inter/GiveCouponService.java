@@ -13,12 +13,18 @@ import shop.yesaladin.coupon.message.CouponGiveRequestResponseMessage;
 public interface GiveCouponService {
 
     /**
-     * 회원에게 쿠폰을 지급합니다. 쿠폰이 이미 존재하는 경우 지급하지 않습니다.
+     * 회원에게 쿠폰을 지급하는 요청 메시지를 발행합니다. 쿠폰이 이미 존재하는 경우 발행하지 않습니다.
+     *
      * @param triggerTypeCode 발행할 쿠폰의 트리거 타입 코드 (필수값)
-     * @param couponId 발행할 쿠폰의 ID (선택값)
+     * @param couponId        발행할 쿠폰의 ID (선택값)
      * @throws ClientException 쿠폰이 이미 존재하는 경우
      */
     void sendCouponGiveRequest(String memberId, TriggerTypeCode triggerTypeCode, Long couponId);
 
+    /**
+     * 쿠폰 서버에서 온 메시지를 바탕으로 회원에게 쿠폰을 지급합니다.
+     *
+     * @param responseMessage 쿠폰 서버에서 온 메시
+     */
     void giveCouponToMember(CouponGiveRequestResponseMessage responseMessage);
 }

@@ -35,6 +35,12 @@ import shop.yesaladin.shop.coupon.service.inter.GiveCouponService;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 
+/**
+ * 회원에게 쿠폰을 지급하는 서비스 인터페이스의 구현체입니다.
+ *
+ * @author 김홍대
+ * @since 1.0
+ */
 @RequiredArgsConstructor
 @Service
 public class GiveCouponServiceImpl implements GiveCouponService {
