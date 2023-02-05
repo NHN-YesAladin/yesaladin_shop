@@ -1,4 +1,4 @@
-package shop.yesaladin.shop.member.service.impl;
+package shop.yesaladin.shop.coupon.service.impl;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -6,9 +6,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.exception.ClientException;
-import shop.yesaladin.shop.member.domain.model.MemberCoupon;
-import shop.yesaladin.shop.member.domain.repository.QueryMemberCouponRepository;
-import shop.yesaladin.shop.member.service.inter.QueryMemberCouponService;
+import shop.yesaladin.shop.coupon.domain.model.MemberCoupon;
+import shop.yesaladin.shop.coupon.domain.repository.QueryMemberCouponRepository;
+import shop.yesaladin.shop.coupon.service.inter.QueryMemberCouponService;
 
 /**
  * 회원 쿠폰 조회와 관련한 서비스 구현체 입니다.
@@ -43,4 +43,6 @@ public class QueryMemberCouponServiceImpl implements QueryMemberCouponService {
             throw new ClientException(ErrorCode.COUPON_NOT_FOUND, "MemberCoupon not found.");
         }
     }
+
+
 }

@@ -1,7 +1,7 @@
-package shop.yesaladin.shop.member.service.inter;
+package shop.yesaladin.shop.coupon.service.inter;
 
 import java.util.List;
-import shop.yesaladin.shop.member.domain.model.MemberCoupon;
+import shop.yesaladin.shop.coupon.domain.model.MemberCoupon;
 
 /**
  * 회원 쿠폰 조회와 관련한 서비스 interface 입니다.

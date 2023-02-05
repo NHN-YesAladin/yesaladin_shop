@@ -29,7 +29,7 @@ import shop.yesaladin.shop.order.service.inter.CommandOrderStatusChangeLogServic
  */
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/v1/orders/{orderId}/status-change-logs")
+@RequestMapping("/v1/orders/{orderId}")
 public class CommandOrderStatusChangeLogController {
 
     private final CommandOrderStatusChangeLogService commandOrderStatusChangeLogService;
@@ -79,7 +79,7 @@ public class CommandOrderStatusChangeLogController {
      * @param authentication 인증
      * @return 생성된 주문 상태 변경 내역
      */
-    @PostMapping(params = "status")
+    @PostMapping(path = "/non-member", params = "status")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<OrderStatusChangeLogResponseDto> changeNonMemberOrderStatus(
             @PathVariable Long orderId,
