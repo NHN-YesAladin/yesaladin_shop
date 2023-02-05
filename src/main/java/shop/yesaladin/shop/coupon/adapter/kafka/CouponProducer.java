@@ -3,6 +3,7 @@ package shop.yesaladin.shop.coupon.adapter.kafka;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
+import shop.yesaladin.coupon.message.CouponCodesAndResultMessage;
 import shop.yesaladin.coupon.message.CouponGiveRequestMessage;
 import shop.yesaladin.coupon.message.MessageKey;
 import shop.yesaladin.shop.config.CouponProperties;
@@ -32,6 +33,14 @@ public class CouponProducer {
         kafkaTemplate.send(
                 couponProperties.getCouponGiveRequestLimitTopic(),
                 MessageKey.GIVE_REQUEST.name(),
+                message
+        );
+    }
+
+    public void produceGivenResultMessage(CouponCodesAndResultMessage message) {
+        kafkaTemplate.send(
+                couponProperties.getCouponGivenTopic(),
+                MessageKey.GIVEN.name(),
                 message
         );
     }

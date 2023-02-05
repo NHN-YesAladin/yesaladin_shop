@@ -2,6 +2,7 @@ package shop.yesaladin.shop.coupon.service.inter;
 
 import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.coupon.code.TriggerTypeCode;
+import shop.yesaladin.coupon.message.CouponGiveRequestResponseMessage;
 
 /**
  * 쿠폰 지급과 관련된 기능을 제공하는 서비스 인터페이스입니다.
@@ -18,4 +19,6 @@ public interface GiveCouponService {
      * @throws ClientException 쿠폰이 이미 존재하는 경우
      */
     void sendCouponGiveRequest(String memberId, TriggerTypeCode triggerTypeCode, Long couponId);
+
+    void giveCouponToMember(CouponGiveRequestResponseMessage responseMessage);
 }

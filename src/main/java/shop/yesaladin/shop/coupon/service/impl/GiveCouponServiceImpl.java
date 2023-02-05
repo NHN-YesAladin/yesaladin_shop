@@ -21,12 +21,19 @@ import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.common.exception.ServerException;
 import shop.yesaladin.coupon.code.TriggerTypeCode;
+import shop.yesaladin.coupon.message.CouponCodesAndResultMessage;
+import shop.yesaladin.coupon.message.CouponCodesAndResultMessage.CouponCodesAndResultMessageBuilder;
 import shop.yesaladin.coupon.message.CouponGiveRequestMessage;
+import shop.yesaladin.coupon.message.CouponGiveRequestResponseMessage;
 import shop.yesaladin.shop.config.GatewayProperties;
 import shop.yesaladin.shop.coupon.adapter.kafka.CouponProducer;
+import shop.yesaladin.shop.coupon.domain.model.MemberCoupon;
+import shop.yesaladin.shop.coupon.domain.repository.CommandMemberCouponRepository;
 import shop.yesaladin.shop.coupon.domain.repository.QueryMemberCouponRepository;
 import shop.yesaladin.shop.coupon.dto.CouponGroupAndLimitDto;
 import shop.yesaladin.shop.coupon.service.inter.GiveCouponService;
+import shop.yesaladin.shop.member.domain.model.Member;
+import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 
 @RequiredArgsConstructor
 @Service
@@ -37,11 +44,13 @@ public class GiveCouponServiceImpl implements GiveCouponService {
     private final GatewayProperties gatewayProperties;
     private final CouponProducer couponProducer;
     private final QueryMemberCouponRepository queryMemberCouponRepository;
+    private final CommandMemberCouponRepository commandMemberCouponRepository;
+    private final QueryMemberService queryMemberService;
     private final RestTemplate restTemplate;
     private final RedisTemplate<String, String> redisTemplate;
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public void sendCouponGiveRequest(
             String memberId, TriggerTypeCode triggerTypeCode, Long couponId
     ) {
@@ -66,6 +75,26 @@ public class GiveCouponServiceImpl implements GiveCouponService {
                     requestId
             );
         });
+
+    }
+
+    @Override
+    @Transactional
+    public void giveCouponToMember(CouponGiveRequestResponseMessage responseMessage) {
+        CouponCodesAndResultMessageBuilder resultBuilder = CouponCodesAndResultMessage.builder()
+                .couponCodes(responseMessage.getCoupons()
+                        .stream()
+                        .flatMap(coupon -> coupon.getCouponCodes().stream())
+                        .collect(Collectors.toList()));
+        try {
+            checkRequestSucceeded(responseMessage);
+            String memberId = getMemberIdFromRequestId(responseMessage.getRequestId());
+            tryGiveCouponToMember(responseMessage, memberId);
+            couponProducer.produceGivenResultMessage(resultBuilder.success(true).build());
+        } catch (Exception e) {
+            couponProducer.produceGivenResultMessage(resultBuilder.success(false).build());
+            throw e;
+        }
 
     }
 
@@ -154,5 +183,36 @@ public class GiveCouponServiceImpl implements GiveCouponService {
             return;
         }
         couponProducer.produceGiveRequestMessage(giveRequestMessage);
+    }
+
+    private void checkRequestSucceeded(CouponGiveRequestResponseMessage responseMessage) {
+        if (!responseMessage.isSuccess()) {
+            throw new ClientException(ErrorCode.BAD_REQUEST, responseMessage.getErrorMessage());
+        }
+    }
+
+    private String getMemberIdFromRequestId(String requestId) {
+        return Optional.ofNullable(redisTemplate.opsForValue().getAndDelete(requestId))
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.BAD_REQUEST,
+                        "Request id not exists or expired. request id : " + requestId
+                ));
+    }
+
+    private void tryGiveCouponToMember(
+            CouponGiveRequestResponseMessage responseMessage, String memberId
+    ) {
+        Member member = queryMemberService.findMemberByLoginId(memberId).toEntity();
+        responseMessage.getCoupons().forEach(coupon ->
+                coupon.getCouponCodes()
+                        .stream()
+                        .map(code -> MemberCoupon.builder()
+                                .member(member)
+                                .couponCode(code)
+                                .couponGroupCode(coupon.getCouponGroupCode())
+                                .build())
+                        .forEach(commandMemberCouponRepository::save)
+
+        );
     }
 }
