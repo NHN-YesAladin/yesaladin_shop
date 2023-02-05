@@ -108,6 +108,7 @@ public class GiveCouponServiceImpl implements GiveCouponService {
             TriggerTypeCode triggerTypeCode, Long couponId
     ) {
         String requestUri = UriComponentsBuilder.fromUriString(gatewayProperties.getCouponUrl())
+                .pathSegment("v1")
                 .pathSegment(COUPON_GROUP_CODE_REQUEST_URL_PREFIX)
                 .queryParam("trigger-type", triggerTypeCode.name())
                 .queryParamIfPresent("coupon-id", Optional.ofNullable(couponId))
