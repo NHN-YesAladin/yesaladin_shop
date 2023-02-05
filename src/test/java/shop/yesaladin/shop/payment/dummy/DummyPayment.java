@@ -16,7 +16,7 @@ public class DummyPayment {
                 .lastTransactionKey("DummyLastTransactionKey")
                 .orderName(order.getName())
                 .method(PaymentCode.CARD)
-                .currency("KRW")
+                .currency(Payment.CURRENCY_KRW)
                 .totalAmount(totalAmount)
                 .balanceAmount(totalAmount)
                 .suppliedAmount(totalAmount)

@@ -5,7 +5,6 @@ import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 /**
  * 결제 정보를 생성하기 위해 사용하는 요청 Dto from Toss

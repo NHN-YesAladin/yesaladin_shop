@@ -121,6 +121,28 @@ public class QueryMemberServiceImpl implements QueryMemberService {
      */
     @Transactional(readOnly = true)
     @Override
+    public MemberLoginResponseDto findMemberLoginInfoByEmail(String email) {
+        Member member = queryMemberRepository.findMemberByEmail(email)
+                .orElseThrow(() -> new MemberNotFoundException("Member email: " + email));
+
+        List<String> roles = queryMemberRoleRepository.findMemberRolesByMemberId(member.getId());
+
+        return new MemberLoginResponseDto(
+                member.getId(),
+                member.getName(),
+                member.getNickname(),
+                member.getLoginId(),
+                member.getEmail(),
+                member.getPassword(),
+                roles
+        );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
     public MemberManagerResponseDto findMemberManageByLoginId(String loginId) {
         return MemberManagerResponseDto.fromEntity(queryMemberRepository.findMemberByLoginId(loginId)
                 .orElseThrow(() -> {

@@ -30,8 +30,10 @@ public class PaymentCompleteSimpleResponseDto {
     private long totalAmount;
     private LocalDateTime approvedDateTime;
 
+    private String ordererName;
     private String orderNumber;
     private String orderName;
+    private String orderAddress;
 
     private PaymentCode cardCode;
     private PaymentCode cardOwnerCode;
@@ -56,6 +58,19 @@ public class PaymentCompleteSimpleResponseDto {
                 .cardApproveNumber(payment.getPaymentCard().getApproveNo())
                 .cardAcquirerCode(payment.getPaymentCard().getAcquirerCode())
                 .build();
+    }
+
+    public static PaymentCompleteSimpleResponseDto fromRequestDto(PaymentRequestDto request) {
+        return PaymentCompleteSimpleResponseDto.builder()
+                .paymentId(request.getPaymentKey())
+                .totalAmount(request.getAmount())
+                .orderNumber(request.getOrderId())
+                .build();
+    }
+
+    public void setOrdererNameAndAddress(String ordererName, String orderAddress) {
+        this.ordererName = ordererName;
+        this.orderAddress = orderAddress;
     }
 
 }

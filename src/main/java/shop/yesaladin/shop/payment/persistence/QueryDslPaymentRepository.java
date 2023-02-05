@@ -2,12 +2,14 @@ package shop.yesaladin.shop.payment.persistence;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
+import shop.yesaladin.shop.order.domain.model.querydsl.QMemberOrder;
 import shop.yesaladin.shop.order.domain.model.querydsl.QOrder;
 import shop.yesaladin.shop.payment.domain.model.Payment;
 import shop.yesaladin.shop.payment.domain.model.querydsl.QPayment;
@@ -68,6 +70,7 @@ public class QueryDslPaymentRepository implements QueryPaymentRepository {
         QPaymentCard paymentCard = QPaymentCard.paymentCard;
         QPaymentCancel paymentCancel = QPaymentCancel.paymentCancel;
         QOrder order = QOrder.order;
+        QMemberOrder memberOrder = QMemberOrder.memberOrder;
 
         return Optional.ofNullable(queryFactory.select(
                         Projections.constructor(
@@ -77,8 +80,10 @@ public class QueryDslPaymentRepository implements QueryPaymentRepository {
                                 payment.currency,
                                 payment.totalAmount,
                                 payment.approvedDatetime,
+                                Expressions.asString("ordererName"),
                                 payment.order.orderNumber,
                                 payment.order.name,
+                                Expressions.asString("orderAddress"),
                                 payment.paymentCard.cardCode,
                                 payment.paymentCard.ownerCode,
                                 payment.paymentCard.number,
