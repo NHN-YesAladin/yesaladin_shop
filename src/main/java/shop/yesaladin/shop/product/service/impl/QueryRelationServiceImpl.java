@@ -1,5 +1,8 @@
 package shop.yesaladin.shop.product.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -14,10 +17,6 @@ import shop.yesaladin.shop.product.service.inter.QueryRelationService;
 import shop.yesaladin.shop.publish.dto.PublishResponseDto;
 import shop.yesaladin.shop.publish.service.inter.QueryPublishService;
 import shop.yesaladin.shop.writing.service.inter.QueryWritingService;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 상품 연관관계 조회를 위한 Service 구현체 입니다.
@@ -58,7 +57,10 @@ public class QueryRelationServiceImpl implements QueryRelationService {
         return getRelationsResponseDtos(pageable, page);
     }
 
-    private Page<RelationsResponseDto> getRelationsResponseDtos(Pageable pageable, Page<Relation> page) {
+    private Page<RelationsResponseDto> getRelationsResponseDtos(
+            Pageable pageable,
+            Page<Relation> page
+    ) {
         List<RelationsResponseDto> relations = new ArrayList<>();
         for (Relation relation : page.getContent()) {
             Product product = relation.getProductSub();
@@ -115,6 +117,8 @@ public class QueryRelationServiceImpl implements QueryRelationService {
      * @since 1.0
      */
     private long calcSellingPrice(Product product, int rate) {
-        return Math.round((product.getActualPrice() - product.getActualPrice() * rate / PERCENT_DENOMINATOR_VALUE) / ROUND_OFF_VALUE) * ROUND_OFF_VALUE;
+        return Math.round((product.getActualPrice()
+                - product.getActualPrice() * rate / PERCENT_DENOMINATOR_VALUE) / ROUND_OFF_VALUE)
+                * ROUND_OFF_VALUE;
     }
 }

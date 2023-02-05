@@ -94,6 +94,13 @@ public class CommandProductServiceImpl implements CommandProductService {
     private final QueryCategoryService queryCategoryService;
     private final CommandProductCategoryService commandProductCategoryService;
 
+    private static List<String> getIsbnList(List<ProductOrderRequestDto> products) {
+        return products
+                .stream()
+                .map(ProductOrderRequestDto::getIsbn)
+                .collect(Collectors.toList());
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -208,7 +215,8 @@ public class CommandProductServiceImpl implements CommandProductService {
         // ThumbnailFile
         File thumbnailFile = product.getThumbnailFile();
         if (Objects.nonNull(dto.getThumbnailFileUrl())) {
-            thumbnailFile = commandFileService.register(dto.changeThumbnailFile(thumbnailFile)).toEntity();
+            thumbnailFile = commandFileService.register(dto.changeThumbnailFile(thumbnailFile))
+                    .toEntity();
         }
 
         // EbookFile
@@ -387,12 +395,5 @@ public class CommandProductServiceImpl implements CommandProductService {
             );
         }
         return productList;
-    }
-
-    private static List<String> getIsbnList(List<ProductOrderRequestDto> products) {
-        return products
-                .stream()
-                .map(ProductOrderRequestDto::getIsbn)
-                .collect(Collectors.toList());
     }
 }

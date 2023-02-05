@@ -15,13 +15,13 @@ import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 import shop.yesaladin.shop.category.service.inter.QueryProductCategoryService;
 import shop.yesaladin.shop.product.domain.model.Product;
-import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
 import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
 import shop.yesaladin.shop.product.dto.ProductModifyDto;
 import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
 import shop.yesaladin.shop.product.dto.ProductOrderResponseDto;
 import shop.yesaladin.shop.product.dto.ProductsResponseDto;
+import shop.yesaladin.shop.product.dto.SubscribeProductOrderResponseDto;
 import shop.yesaladin.shop.product.exception.ProductNotFoundException;
 import shop.yesaladin.shop.product.service.inter.QueryProductService;
 import shop.yesaladin.shop.publish.dto.PublishResponseDto;
@@ -54,6 +54,13 @@ public class QueryProductServiceImpl implements QueryProductService {
     private final QueryPublishService queryPublishService;
     private final QueryProductTagService queryProductTagService;
     private final QueryProductCategoryService queryProductCategoryService;
+
+    private static List<String> getIsbnList(List<ProductOrderRequestDto> products) {
+        return products
+                .stream()
+                .map(ProductOrderRequestDto::getIsbn)
+                .collect(Collectors.toList());
+    }
 
     /**
      * {@inheritDoc}
@@ -328,20 +335,13 @@ public class QueryProductServiceImpl implements QueryProductService {
      */
     @Override
     @Transactional(readOnly = true)
-    public List<ProductOrderResponseDto> getByIsbnList(List<ProductOrderRequestDto> products) {
-        List<String> isbnList = getIsbnList(products);
+    public List<ProductOrderResponseDto> getByOrderProducts(List<ProductOrderRequestDto> orderProducts) {
+        List<String> isbnList = getIsbnList(orderProducts);
         List<ProductOrderResponseDto> result = queryProductRepository.getByIsbnList(isbnList);
 
-        result.forEach(x -> x.setQuantity(products));
+        result.forEach(x -> x.setQuantity(orderProducts));
 
         return result;
-    }
-
-    private static List<String> getIsbnList(List<ProductOrderRequestDto> products) {
-        return products
-                .stream()
-                .map(ProductOrderRequestDto::getIsbn)
-                .collect(Collectors.toList());
     }
 
     /**
@@ -349,9 +349,10 @@ public class QueryProductServiceImpl implements QueryProductService {
      */
     @Override
     @Transactional(readOnly = true)
-    public SubscribeProduct findIssnByIsbn(ProductOrderRequestDto orderProduct) {
+    public SubscribeProductOrderResponseDto getIssnByOrderProduct(ProductOrderRequestDto orderProduct) {
         String isbn = orderProduct.getIsbn();
         int quantity = orderProduct.getQuantity();
+
         Product product = queryProductRepository.findOrderProductByIsbn(isbn, quantity)
                 .orElseThrow(() -> new ClientException(
                         ErrorCode.PRODUCT_NOT_FOUND,
@@ -363,6 +364,6 @@ public class QueryProductServiceImpl implements QueryProductService {
                     "Product with isbn(" + isbn + ") is not a subscribe product."
             );
         }
-        return product.getSubscribeProduct();
+        return new SubscribeProductOrderResponseDto(product);
     }
 }

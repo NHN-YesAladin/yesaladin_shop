@@ -3,7 +3,7 @@ package shop.yesaladin.shop.product.service.inter;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
+import shop.yesaladin.shop.product.dto.SubscribeProductOrderResponseDto;
 import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
 import shop.yesaladin.shop.product.dto.ProductModifyDto;
 import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
@@ -67,15 +67,15 @@ public interface QueryProductService {
      * @author 최예린
      * @since 1.0
      */
-    List<ProductOrderResponseDto> getByIsbnList(List<ProductOrderRequestDto> products);
+    List<ProductOrderResponseDto> getByOrderProducts(List<ProductOrderRequestDto> products);
 
     /**
      * 주문에 사용될 구독 주문 상품을 조회합니다.
      *
      * @param orderProduct 구독 상품 + 수량
-     * @return 상품
+     * @return 정기구독 상품과 제목
      * @author 최예린
      * @since 1.0
      */
-    SubscribeProduct findIssnByIsbn(ProductOrderRequestDto orderProduct);
+    SubscribeProductOrderResponseDto getIssnByOrderProduct(ProductOrderRequestDto orderProduct);
 }
