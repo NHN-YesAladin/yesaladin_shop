@@ -123,7 +123,7 @@ public class QueryOrderServiceImpl implements QueryOrderService {
         OrderSheetResponseDto memberOrderSheetData = queryMemberService.getMemberForOrder(loginId);
 
         long point = queryPointHistoryService.getMemberPoint(loginId);
-        List<ProductOrderResponseDto> orderProducts = queryProductService.getByIsbnList(request.getProductList());
+        List<ProductOrderResponseDto> orderProducts = queryProductService.getByOrderProducts(request.getProductList());
 
         memberOrderSheetData.setPoint(point);
         memberOrderSheetData.setOrderProducts(orderProducts);
@@ -132,7 +132,7 @@ public class QueryOrderServiceImpl implements QueryOrderService {
     }
 
     private OrderSheetResponseDto getOrderSheetDataForNonMember(OrderSheetRequestDto request) {
-        List<ProductOrderResponseDto> orderProducts = queryProductService.getByIsbnList(request.getProductList());
+        List<ProductOrderResponseDto> orderProducts = queryProductService.getByOrderProducts(request.getProductList());
 
         return new OrderSheetResponseDto(orderProducts);
     }

@@ -5,9 +5,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberGrade;
-import shop.yesaladin.shop.member.domain.model.MemberGradeHistory;
 
 /**
  * 회원 등급변경내역을 조회할 때 사용하는 dto 클래스입니다.

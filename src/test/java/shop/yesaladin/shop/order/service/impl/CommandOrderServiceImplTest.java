@@ -39,6 +39,7 @@ import shop.yesaladin.shop.order.domain.model.Subscribe;
 import shop.yesaladin.shop.order.domain.repository.CommandOrderProductRepository;
 import shop.yesaladin.shop.order.domain.repository.CommandOrderRepository;
 import shop.yesaladin.shop.order.domain.repository.CommandOrderStatusChangeLogRepository;
+import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
 import shop.yesaladin.shop.order.dto.OrderCreateResponseDto;
 import shop.yesaladin.shop.order.dto.OrderMemberCreateRequestDto;
 import shop.yesaladin.shop.order.dto.OrderNonMemberCreateRequestDto;
@@ -47,6 +48,7 @@ import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMemberAddress;
 import shop.yesaladin.shop.order.persistence.dummy.DummyOrder;
 import shop.yesaladin.shop.order.persistence.dummy.DummySubscribeProduct;
+import shop.yesaladin.shop.order.service.inter.CommandOrderCouponService;
 import shop.yesaladin.shop.order.service.inter.CommandOrderService;
 import shop.yesaladin.shop.point.domain.model.PointCode;
 import shop.yesaladin.shop.point.domain.model.PointReasonCode;
@@ -55,6 +57,7 @@ import shop.yesaladin.shop.point.service.inter.CommandPointHistoryService;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
+import shop.yesaladin.shop.product.dto.SubscribeProductOrderResponseDto;
 import shop.yesaladin.shop.product.dummy.DummyProduct;
 import shop.yesaladin.shop.product.service.inter.CommandProductService;
 import shop.yesaladin.shop.product.service.inter.QueryProductService;
@@ -65,10 +68,12 @@ class CommandOrderServiceImplTest {
     CommandOrderRepository<NonMemberOrder> nonMemberOrderCommandOrderRepository;
     CommandOrderRepository<MemberOrder> memberOrderCommandOrderRepository;
     CommandOrderRepository<Subscribe> subscribeCommandOrderRepository;
+    QueryOrderRepository queryOrderRepository;
 
     CommandOrderStatusChangeLogRepository commandOrderStatusChangeLogRepository;
     CommandOrderProductRepository commandOrderProductRepository;
     CommandPointHistoryService commandPointHistoryService;
+    CommandOrderCouponService commandOrderCouponService;
     CommandProductService commandProductService;
     QueryMemberAddressService queryMemberAddressService;
     QueryProductService queryProductService;
@@ -84,6 +89,7 @@ class CommandOrderServiceImplTest {
     MemberOrder memberOrder;
     Subscribe subscribe;
     SubscribeProduct subscribeProduct;
+    SubscribeProductOrderResponseDto subscribeProductOrder;
 
     String ordererName = "김몽머";
     String ordererPhoneNumber = "01012341234";
@@ -95,7 +101,7 @@ class CommandOrderServiceImplTest {
     int shippingFee = 3000;
     int wrappingFee = 0;
     Long ordererAddressId = 1L;
-    List<Long> orderCoupons;
+    List<String> orderCoupons;
     long orderPoint = 1000L;
     Integer expectedDay = 10;
     Integer intervalMonth = 6;
@@ -114,10 +120,12 @@ class CommandOrderServiceImplTest {
         //noinspection unchecked
         subscribeCommandOrderRepository = (CommandOrderRepository<Subscribe>) Mockito.mock(
                 CommandOrderRepository.class);
+        queryOrderRepository = Mockito.mock(QueryOrderRepository.class);
 
         commandOrderStatusChangeLogRepository = Mockito.mock(CommandOrderStatusChangeLogRepository.class);
         commandOrderProductRepository = Mockito.mock(CommandOrderProductRepository.class);
         commandPointHistoryService = Mockito.mock(CommandPointHistoryService.class);
+        commandOrderCouponService = Mockito.mock(CommandOrderCouponService.class);
         commandProductService = Mockito.mock(CommandProductService.class);
         queryMemberAddressService = Mockito.mock(QueryMemberAddressService.class);
         queryProductService = Mockito.mock(QueryProductService.class);
@@ -127,8 +135,10 @@ class CommandOrderServiceImplTest {
                 nonMemberOrderCommandOrderRepository,
                 memberOrderCommandOrderRepository,
                 subscribeCommandOrderRepository,
+                queryOrderRepository,
                 commandOrderStatusChangeLogRepository,
                 commandOrderProductRepository,
+                commandOrderCouponService,
                 commandPointHistoryService,
                 commandProductService,
                 queryMemberAddressService,
@@ -457,7 +467,6 @@ class CommandOrderServiceImplTest {
     void createSubscribeOrders_fail_productNotFound() {
         //given
         String loginId = member.getLoginId();
-        long addressId = memberAddress.getId();
         OrderSubscribeCreateRequestDto request = getSubscribeRequest();
 
         Mockito.when(queryMemberService.findByLoginId(anyString())).thenReturn(member);
@@ -465,7 +474,7 @@ class CommandOrderServiceImplTest {
 
         String isbn = subscribeProducts.get(0).getIsbn();
         String errorMessage = "Product with isbn(" + isbn + ") is not a subscribe product";
-        Mockito.when(queryProductService.findIssnByIsbn(any()))
+        Mockito.when(queryProductService.getIssnByOrderProduct(any()))
                 .thenThrow(new ClientException(
                         ErrorCode.PRODUCT_NOT_SUBSCRIBE_PRODUCT,
                         errorMessage
@@ -493,7 +502,7 @@ class CommandOrderServiceImplTest {
 
         String isbn = subscribeProducts.get(0).getIsbn();
         String errorMessage = "Product with isbn(" + isbn + ") is not a subscribe product";
-        Mockito.when(queryProductService.findIssnByIsbn(any()))
+        Mockito.when(queryProductService.getIssnByOrderProduct(any()))
                 .thenThrow(new ClientException(
                         ErrorCode.PRODUCT_NOT_SUBSCRIBE_PRODUCT,
                         errorMessage
@@ -510,7 +519,7 @@ class CommandOrderServiceImplTest {
         assertThat(result.getErrorCode()).isEqualTo(ErrorCode.PRODUCT_NOT_SUBSCRIBE_PRODUCT);
         assertThat(result.getMessage()).isEqualTo(errorMessage);
 
-        verify(queryProductService, times(1)).findIssnByIsbn(any());
+        verify(queryProductService, times(1)).getIssnByOrderProduct(any());
         verify(queryMemberService, never()).findByLoginId(loginId);
         verify(queryMemberAddressService, never()).findById(addressId);
         verify(subscribeCommandOrderRepository, never()).save(any());
@@ -526,7 +535,8 @@ class CommandOrderServiceImplTest {
         long addressId = memberAddress.getId();
         OrderSubscribeCreateRequestDto request = getSubscribeRequest();
 
-        Mockito.when(queryProductService.findIssnByIsbn(any())).thenReturn(subscribeProduct);
+        Mockito.when(queryProductService.getIssnByOrderProduct(any()))
+                .thenReturn(subscribeProductOrder);
 
         String errorMessage = "Member not found with loginId : " + loginId;
         Mockito.when(queryMemberService.findByLoginId(loginId))
@@ -546,7 +556,7 @@ class CommandOrderServiceImplTest {
         assertThat(result.getErrorCode()).isEqualTo(ErrorCode.MEMBER_NOT_FOUND);
         assertThat(result.getMessage()).isEqualTo(errorMessage);
 
-        verify(queryProductService, times(1)).findIssnByIsbn(any());
+        verify(queryProductService, times(1)).getIssnByOrderProduct(any());
         verify(queryMemberService, times(1)).findByLoginId(loginId);
         verify(queryMemberAddressService, never()).findById(addressId);
         verify(subscribeCommandOrderRepository, never()).save(any());
@@ -562,7 +572,8 @@ class CommandOrderServiceImplTest {
         long addressId = memberAddress.getId();
         OrderSubscribeCreateRequestDto request = getSubscribeRequest();
 
-        Mockito.when(queryProductService.findIssnByIsbn(any())).thenReturn(subscribeProduct);
+        Mockito.when(queryProductService.getIssnByOrderProduct(any()))
+                .thenReturn(subscribeProductOrder);
         Mockito.when(queryMemberService.findByLoginId(loginId)).thenReturn(member);
 
         long memberAddressId = memberAddress.getId();
@@ -584,7 +595,7 @@ class CommandOrderServiceImplTest {
         assertThat(result.getErrorCode()).isEqualTo(ErrorCode.ADDRESS_NOT_FOUND);
         assertThat(result.getMessage()).isEqualTo(errorMessage);
 
-        verify(queryProductService, times(1)).findIssnByIsbn(any());
+        verify(queryProductService, times(1)).getIssnByOrderProduct(any());
         verify(queryMemberService, times(1)).findByLoginId(loginId);
         verify(queryMemberAddressService, times(1)).findById(addressId);
         verify(subscribeCommandOrderRepository, never()).save(any());
@@ -600,7 +611,8 @@ class CommandOrderServiceImplTest {
         long addressId = memberAddress.getId();
         OrderSubscribeCreateRequestDto request = getSubscribeRequest();
 
-        Mockito.when(queryProductService.findIssnByIsbn(any())).thenReturn(subscribeProduct);
+        Mockito.when(queryProductService.getIssnByOrderProduct(any()))
+                .thenReturn(subscribeProductOrder);
         Mockito.when(queryMemberService.findByLoginId(anyString())).thenReturn(member);
         Mockito.when(queryMemberAddressService.findById(anyLong())).thenReturn(memberAddress);
         Mockito.when(subscribeCommandOrderRepository.save(any())).thenReturn(subscribe);
@@ -620,7 +632,7 @@ class CommandOrderServiceImplTest {
         assertThat(result.getErrorCode()).isEqualTo(ErrorCode.MEMBER_NOT_FOUND);
         assertThat(result.getMessage()).isEqualTo(errorMessage);
 
-        verify(queryProductService, times(1)).findIssnByIsbn(any());
+        verify(queryProductService, times(1)).getIssnByOrderProduct(any());
         verify(queryMemberService, times(1)).findByLoginId(loginId);
         verify(queryMemberAddressService, times(1)).findById(addressId);
         verify(subscribeCommandOrderRepository, times(1)).save(any());
@@ -636,8 +648,8 @@ class CommandOrderServiceImplTest {
         long addressId = memberAddress.getId();
         OrderSubscribeCreateRequestDto request = getSubscribeRequest();
 
-        Map<String, Product> mapProduct = getMapProducts(subscribeProducts);
-        Mockito.when(queryProductService.findIssnByIsbn(any())).thenReturn(subscribeProduct);
+        Mockito.when(queryProductService.getIssnByOrderProduct(any()))
+                .thenReturn(subscribeProductOrder);
         Mockito.when(queryMemberService.findByLoginId(anyString())).thenReturn(member);
         Mockito.when(queryMemberAddressService.findById(anyLong())).thenReturn(memberAddress);
         Mockito.when(subscribeCommandOrderRepository.save(any())).thenReturn(subscribe);
@@ -657,7 +669,7 @@ class CommandOrderServiceImplTest {
         assertThat(result.getErrorCode()).isEqualTo(ErrorCode.POINT_OVER_USE);
         assertThat(result.getMessage()).isEqualTo(errorMessage);
 
-        verify(queryProductService, times(1)).findIssnByIsbn(any());
+        verify(queryProductService, times(1)).getIssnByOrderProduct(any());
         verify(queryMemberService, times(1)).findByLoginId(loginId);
         verify(queryMemberAddressService, times(1)).findById(addressId);
         verify(subscribeCommandOrderRepository, times(1)).save(any());
@@ -673,7 +685,8 @@ class CommandOrderServiceImplTest {
         long addressId = memberAddress.getId();
         OrderSubscribeCreateRequestDto request = getSubscribeRequest();
 
-        Mockito.when(queryProductService.findIssnByIsbn(any())).thenReturn(subscribeProduct);
+        Mockito.when(queryProductService.getIssnByOrderProduct(any()))
+                .thenReturn(subscribeProductOrder);
         Mockito.when(queryMemberService.findByLoginId(anyString())).thenReturn(member);
         Mockito.when(queryMemberAddressService.findById(anyLong())).thenReturn(memberAddress);
         Mockito.when(subscribeCommandOrderRepository.save(any())).thenReturn(subscribe);
@@ -700,7 +713,7 @@ class CommandOrderServiceImplTest {
         assertThat(result.getShippingFee()).isEqualTo(shippingFee);
         assertThat(result.getTotalAmount()).isEqualTo(productTotalAmount);
 
-        verify(queryProductService, times(1)).findIssnByIsbn(any());
+        verify(queryProductService, times(1)).getIssnByOrderProduct(any());
         verify(queryMemberService, times(1)).findByLoginId(loginId);
         verify(queryMemberAddressService, times(1)).findById(addressId);
         verify(subscribeCommandOrderRepository, times(1)).save(any());
@@ -766,7 +779,9 @@ class CommandOrderServiceImplTest {
             orderProducts.add(new ProductOrderRequestDto(isbn + i, quantity));
             nonSubscribeProducts.add(DummyProduct.dummy(isbn + i, null, null, null, null));
         }
-        subscribeProducts.add(DummyProduct.dummy(isbn + 7, subscribeProduct, null, null, null));
+        Product product = DummyProduct.dummy(isbn + 7, subscribeProduct, null, null, null);
+        subscribeProducts.add(product);
+        subscribeProductOrder = new SubscribeProductOrderResponseDto(product);
     }
 
     private Map<String, Product> getMapProducts(List<Product> products) {

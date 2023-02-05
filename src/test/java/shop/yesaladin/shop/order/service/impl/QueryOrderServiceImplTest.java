@@ -350,7 +350,7 @@ class QueryOrderServiceImplTest {
         OrderSheetResponseDto response = new OrderSheetResponseDto(name, phoneNumber, address);
 
         Mockito.when(queryPointHistoryService.getMemberPoint(loginId)).thenReturn(amount);
-        Mockito.when(queryProductService.getByIsbnList(any())).thenReturn(new ArrayList<>());
+        Mockito.when(queryProductService.getByOrderProducts(any())).thenReturn(new ArrayList<>());
         Mockito.when(queryMemberService.getMemberForOrder(loginId)).thenReturn(response);
 
         //when

@@ -1,13 +1,12 @@
 package shop.yesaladin.shop.member.controller;
 
 import java.time.LocalDate;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.format.annotation.DateTimeFormat;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -22,9 +21,9 @@ import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.common.utils.AuthorityUtils;
 import shop.yesaladin.shop.member.dto.MemberGradeQueryResponseDto;
+import shop.yesaladin.shop.member.dto.MemberIdDto;
 import shop.yesaladin.shop.member.dto.MemberManagerListResponseDto;
 import shop.yesaladin.shop.member.dto.MemberManagerResponseDto;
-import shop.yesaladin.shop.member.dto.MemberIdDto;
 import shop.yesaladin.shop.member.dto.MemberProfileExistResponseDto;
 import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
@@ -44,6 +43,15 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 public class QueryMemberController {
 
     private final QueryMemberService queryMemberService;
+
+    private static void checkValidTypeParameterForMemberGrade(String type) {
+        if (!type.equals("grade")) {
+            throw new ClientException(
+                    ErrorCode.MEMBER_BAD_REQUEST,
+                    "Invalid type parameter for Member about grade"
+            );
+        }
+    }
 
     /**
      * 회원 가입 시 loginId의 중복 여부를 판별 하기 위한 기능 입니다.
@@ -140,7 +148,10 @@ public class QueryMemberController {
             @RequestParam String type,
             Authentication authentication
     ) {
-        String loginId = AuthorityUtils.getAuthorizedUserName(authentication);
+        String loginId = AuthorityUtils.getAuthorizedUserName(
+                authentication,
+                "Only authorized user can get their grade."
+        );
 
         checkValidTypeParameterForMemberGrade(type);
 
@@ -153,15 +164,6 @@ public class QueryMemberController {
                 .build();
     }
 
-    private static void checkValidTypeParameterForMemberGrade(String type) {
-        if (!type.equals("grade")) {
-            throw new ClientException(
-                    ErrorCode.MEMBER_BAD_REQUEST,
-                    "Invalid type parameter for Member about grade"
-            );
-        }
-    }
-
     /**
      * 회원의 정보를 조회합니다.
      *
@@ -172,7 +174,10 @@ public class QueryMemberController {
      */
     @GetMapping
     public ResponseDto<MemberQueryResponseDto> getMemberInfo(Authentication authentication) {
-        String loginId = AuthorityUtils.getAuthorizedUserName(authentication);
+        String loginId = AuthorityUtils.getAuthorizedUserName(
+                authentication,
+                "Only authorized user can get their information."
+        );
 
         MemberQueryResponseDto response = queryMemberService.getByLoginId(loginId);
 
@@ -237,7 +242,7 @@ public class QueryMemberController {
     /**
      * 관리자가 회원의 name 을 이용해 회원의 정보를 조회
      *
-     * @param name 조회할 회원의 name
+     * @param name     조회할 회원의 name
      * @param pageable 페이지 위치 및 데이터 갯수
      * @return 조회된 회원들의 정보
      * @author 김선홍
@@ -263,7 +268,7 @@ public class QueryMemberController {
      * 관리자가 회원의  signUpDate 을 이용해 회원의 정보를 조회
      *
      * @param signUpDate 조회할 회원의 signUpDate
-     * @param pageable 페이지 위치 및 데이터 갯수
+     * @param pageable   페이지 위치 및 데이터 갯수
      * @return 조회된 회원들의 정보
      * @author 김선홍
      * @since 1.0
@@ -281,8 +286,8 @@ public class QueryMemberController {
                         pageable.getPageNumber(),
                         pageable.getPageSize()
                 )).build();
-     }
-     
+    }
+
     /**
      * n 일 후가 생일인 회원을 조회합니다.
      *

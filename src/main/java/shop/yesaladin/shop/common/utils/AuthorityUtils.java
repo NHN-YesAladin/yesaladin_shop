@@ -1,5 +1,7 @@
 package shop.yesaladin.shop.common.utils;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import shop.yesaladin.common.code.ErrorCode;
@@ -11,6 +13,7 @@ import shop.yesaladin.common.exception.ClientException;
  * @author 최예린
  * @since 1.0
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AuthorityUtils {
 
     private static final String ROLE_USER = "ROLE_USER";
@@ -21,16 +24,17 @@ public class AuthorityUtils {
      * 인증된 요청인지 검증하고, 해당 인증의 username을 반환합니다.
      *
      * @param authentication 인증
+     * @param errorMessage   인증 실패시 로그에 남길 에러 메세지
      * @return 인증된 username
      * @throws shop.yesaladin.common.exception.ClientException 인증되지 않은 요청입니다.
      * @author 최예린
      * @since 1.0
      */
-    public static String getAuthorizedUserName(Authentication authentication) {
+    public static String getAuthorizedUserName(Authentication authentication, String errorMessage) {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
         if (!AuthorityUtils.isAuthorized(userDetails)) {
-            throw new ClientException(ErrorCode.UNAUTHORIZED, "Unauthorized client.");
+            throw new ClientException(ErrorCode.UNAUTHORIZED, errorMessage);
         }
         return userDetails.getUsername();
     }
@@ -38,7 +42,7 @@ public class AuthorityUtils {
     /**
      * 인증이 되지 않은 요청인지 검증합니다.
      *
-     * @param authentication
+     * @param authentication 인증
      * @throws shop.yesaladin.common.exception.ClientException 인증된 요청입니다.
      */
     public static void checkAnonymousClient(Authentication authentication) {

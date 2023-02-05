@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.order.controller;
 
-import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
