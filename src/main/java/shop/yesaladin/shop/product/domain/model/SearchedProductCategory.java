@@ -8,6 +8,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 @Getter
 @AllArgsConstructor
 public class SearchedProductCategory {
+
     @Field(name = "id", type = FieldType.Long)
     private final Long id;
     @Field(name = "parent", type = FieldType.Long)

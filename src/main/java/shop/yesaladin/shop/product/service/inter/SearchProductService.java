@@ -33,7 +33,11 @@ public interface SearchProductService {
      * @author : 김선홍
      * @since : 1.0
      */
-    SearchedProductManagerResponseDto searchProductsByCategoryName(String name, int offset, int size);
+    SearchedProductManagerResponseDto searchProductsByCategoryName(
+            String name,
+            int offset,
+            int size
+    );
 
     /**
      * 상품 제목으로 상품을 검색하는 메서드

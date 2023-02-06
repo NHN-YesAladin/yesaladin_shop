@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.product.domain.model.Product;
-import shop.yesaladin.shop.product.dto.ProductOrderResponseDto;
+import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
 
 /**
  * 상품 조회 관련 Repository Interface 입니다.
@@ -48,7 +48,7 @@ public interface QueryProductRepository {
      * @author 최예린
      * @since 1.0
      */
-    List<ProductOrderResponseDto> getByIsbnList(List<String> isbnList);
+    List<ProductOrderSheetResponseDto> getByIsbnList(List<String> isbnList);
 
     /**
      * 주문 상품의 isbn을 통해 주문 상품의 엔티티를 반환합니다.

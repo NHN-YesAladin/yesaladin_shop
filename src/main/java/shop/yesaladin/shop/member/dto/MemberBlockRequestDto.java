@@ -11,6 +11,7 @@ import org.hibernate.validator.constraints.Length;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MemberBlockRequestDto {
+
     @NotBlank
     @Length(min = 2, max = 255)
     private String blockedReason;

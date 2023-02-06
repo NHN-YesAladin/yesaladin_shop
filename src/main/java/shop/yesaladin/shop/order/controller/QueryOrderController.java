@@ -1,25 +1,23 @@
 package shop.yesaladin.shop.order.controller;
 
-import javax.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
-import shop.yesaladin.shop.common.utils.AuthorityUtils;
 import shop.yesaladin.shop.order.dto.OrderSheetRequestDto;
 import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
@@ -66,8 +64,8 @@ public class QueryOrderController {
     /**
      * 회원 주문서에 필요한 데이터들을 반환합니다.
      *
-     * @param request        주문서 데이터 요청 dto
-     * @param bindingResult  유효성 검사
+     * @param isbnList       상품의 isbn 리스트
+     * @param quantityList   상품의 수량 리스트
      * @param authentication 인증
      * @return 주문서에 필요한 데이터
      * @author 최예린
@@ -75,15 +73,18 @@ public class QueryOrderController {
      */
     @GetMapping("/v1/order-sheets")
     public ResponseDto<OrderSheetResponseDto> getOrderSheetData(
-            @ModelAttribute OrderSheetRequestDto request,
-            BindingResult bindingResult,
+            @RequestParam(value = "isbnList") List<String> isbnList,
+            @RequestParam(value = "quantityList") List<Integer> quantityList,
             Authentication authentication
     ) {
-        checkRequestValidation(bindingResult);
-
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-        OrderSheetResponseDto response = getOrderSheetData(request, userDetails);
+        if (isbnList.size() != quantityList.size()) {
+            throw new ClientException(
+                    ErrorCode.ORDER_INVALID_PARAMETER,
+                    "Order has invalid parameter : isbn size not equal to quantity size"
+            );
+        }
+        OrderSheetRequestDto request = new OrderSheetRequestDto(isbnList, quantityList);
+        OrderSheetResponseDto response = getOrderSheetData(request, authentication);
 
         return ResponseDto.<OrderSheetResponseDto>builder()
                 .success(true)
@@ -94,13 +95,13 @@ public class QueryOrderController {
 
     private OrderSheetResponseDto getOrderSheetData(
             OrderSheetRequestDto request,
-            UserDetails userDetails
+            Authentication authentication
     ) {
-        if (!AuthorityUtils.isAuthorized(userDetails)) {
-            return queryOrderService.getNonMemberOrderSheetData(request);
-        }
-        String loginId = userDetails.getUsername();
-        return queryOrderService.getMemberOrderSheetData(request, loginId);
+//        if (Objects.isNull(authentication.getName())) {
+        return queryOrderService.getNonMemberOrderSheetData(request);
+//        }
+//        String loginId = authentication.getName();
+//        return queryOrderService.getMemberOrderSheetData(request, loginId);
     }
 
     private void checkRequestValidation(BindingResult bindingResult) {

@@ -1,8 +1,8 @@
 package shop.yesaladin.shop.order.domain.repository;
 
 import java.util.Optional;
-import shop.yesaladin.shop.order.domain.model.OrderUsedCoupon;
-import shop.yesaladin.shop.order.domain.model.OrderUsedCoupon.Pk;
+import shop.yesaladin.shop.order.domain.model.OrderCoupon;
+import shop.yesaladin.shop.order.domain.model.OrderCoupon.Pk;
 
 /**
  * 주문에 사용한 쿠폰 조회 관련 repository 클래스입니다.
@@ -10,7 +10,7 @@ import shop.yesaladin.shop.order.domain.model.OrderUsedCoupon.Pk;
  * @author 최예린
  * @since 1.0
  */
-public interface QueryOrderUsedCouponRepository {
+public interface QueryOrderCouponRepository {
 
     /**
      * pk를 통해 주문에 사용한 쿠폰 데이터를 조회합니다.
@@ -20,6 +20,6 @@ public interface QueryOrderUsedCouponRepository {
      * @author 최예린
      * @since 1.0
      */
-    Optional<OrderUsedCoupon> findById(Pk pk);
+    Optional<OrderCoupon> findById(Pk pk);
 
 }

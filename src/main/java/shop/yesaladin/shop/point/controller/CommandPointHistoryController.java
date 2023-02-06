@@ -32,10 +32,10 @@ public class CommandPointHistoryController {
     private final CommandPointHistoryService pointCommandService;
 
     /**
-     * 포인트를 사용/적립했을 때 포인트 내역에 등록합니다.
+     * 포인트를 집계/사용/적립했을 때 포인트 내역에 등록합니다.
      *
-     * @param code          전체/사용/적립 구분
-     * @param request       사용/적립한 포인트 값
+     * @param code          집계/사용/적립 구분
+     * @param request       집계/사용/적립한 포인트 값
      * @param bindingResult 유효성 검사
      * @return 등록된 포인트 내역
      * @author 최예린
@@ -52,14 +52,27 @@ public class CommandPointHistoryController {
 
         PointCode pointCode = PointCode.findByCode(code);
 
-        PointHistoryResponseDto response = (pointCode.equals(PointCode.USE)) ?
-                pointCommandService.use(request) : pointCommandService.save(request);
+        PointHistoryResponseDto response = createPointHistoryWith(request, pointCode);
 
         return ResponseDto.<PointHistoryResponseDto>builder()
                 .success(true)
                 .status(HttpStatus.CREATED)
                 .data(response)
                 .build();
+    }
+
+    private PointHistoryResponseDto createPointHistoryWith(
+            PointHistoryRequestDto request,
+            PointCode pointCode
+    ) {
+        switch (pointCode) {
+            case USE:
+                return pointCommandService.use(request);
+            case SAVE:
+                return pointCommandService.save(request);
+            default:
+                return pointCommandService.sum(request);
+        }
     }
 
     private void checkRequestValidation(BindingResult bindingResult) {

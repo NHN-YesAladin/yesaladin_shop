@@ -67,7 +67,7 @@ class CommandOrderControllerTest {
     int shippingFee = 3000;
     int wrappingFee = 0;
     Long ordererAddressId = 1L;
-    List<Long> orderCoupons;
+    List<String> orderCoupons;
     long orderPoint = 1000L;
     int expectedDay = 10;
     int intervalMonth = 6;

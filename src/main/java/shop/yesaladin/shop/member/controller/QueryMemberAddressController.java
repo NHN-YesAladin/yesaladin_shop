@@ -34,7 +34,10 @@ public class QueryMemberAddressController {
      */
     @GetMapping
     public ResponseDto<List<MemberAddressResponseDto>> getMemberAddressByMemberId(Authentication authentication) {
-        String loginId = AuthorityUtils.getAuthorizedUserName(authentication);
+        String loginId = AuthorityUtils.getAuthorizedUserName(
+                authentication,
+                "Only authorized user can get their address list."
+        );
 
         List<MemberAddressResponseDto> response = queryMemberAddressService.getByLoginId(loginId);
 

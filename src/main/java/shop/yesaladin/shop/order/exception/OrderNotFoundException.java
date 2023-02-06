@@ -6,7 +6,7 @@ package shop.yesaladin.shop.order.exception;
  * @author 배수한
  * @since 1.0
  */
-public class OrderNotFoundException extends RuntimeException{
+public class OrderNotFoundException extends RuntimeException {
 
     public OrderNotFoundException(Object orderInfo) {
         super("Order not found : " + orderInfo);

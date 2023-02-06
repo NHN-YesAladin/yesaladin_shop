@@ -1,6 +1,11 @@
 package shop.yesaladin.shop.coupon.persistence;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -78,4 +83,42 @@ class QueryDslQueryMemberCouponRepositoryTest {
         Assertions.assertThat(actual).hasSize(1);
         Assertions.assertThat(actual.getContent().get(0).getCouponCode()).isEqualTo("123");
     }
+
+    @Test
+    void findByCouponCodes() {
+        //given
+        List<String> couponCodes = setCouponCodeData();
+
+        //when
+        List<MemberCoupon> result = queryDslQueryMemberCouponRepository.findByCouponCodes(
+                couponCodes);
+
+        //then
+        assertThat(result).hasSize(5);
+        assertThat(result.get(0).getMember()).isEqualTo(member);
+    }
+
+    private List<String> setCouponCodeData() {
+        List<MemberCoupon> memberCoupons = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            MemberCoupon memberCoupon = getMemberCoupon();
+
+            memberCoupons.add(memberCoupon);
+
+            em.persist(memberCoupon);
+        }
+        return memberCoupons.stream().map(MemberCoupon::getCouponCode).collect(Collectors.toList());
+    }
+
+    private MemberCoupon getMemberCoupon() {
+        String couponCode = UUID.randomUUID().toString();
+        String couponGroupCode = UUID.randomUUID().toString();
+
+        return MemberCoupon.builder()
+                .couponCode(couponCode)
+                .couponGroupCode(couponGroupCode)
+                .member(member)
+                .build();
+    }
+
 }

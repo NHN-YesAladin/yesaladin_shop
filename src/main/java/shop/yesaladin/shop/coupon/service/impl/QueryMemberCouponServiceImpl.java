@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -26,10 +27,11 @@ import shop.yesaladin.shop.coupon.domain.repository.QueryMemberCouponRepository;
 import shop.yesaladin.shop.coupon.dto.MemberCouponSummaryDto;
 import shop.yesaladin.shop.coupon.service.inter.QueryMemberCouponService;
 
+
 /**
- * 회원이 가진 쿠폰 정보를 조회하기 위한 서비스 인터페이스입니다.
+ * 회원 쿠폰 조회와 관련한 서비스 구현체 입니다.
  *
- * @author 김홍대
+ * @author 최예린
  * @since 1.0
  */
 @Slf4j
@@ -59,7 +61,8 @@ public class QueryMemberCouponServiceImpl implements QueryMemberCouponService {
     }
 
     private Page<String> getMemberCouponCodeList(Pageable pageable, String memberId) {
-        Page<MemberCoupon> memberCouponList = memberCouponRepository.findMemberCouponByMemberId(pageable,
+        Page<MemberCoupon> memberCouponList = memberCouponRepository.findMemberCouponByMemberId(
+                pageable,
                 memberId
         );
         List<String> couponCodes = memberCouponList.stream()
@@ -83,7 +86,8 @@ public class QueryMemberCouponServiceImpl implements QueryMemberCouponService {
                     }
             ).getBody();
             return Optional.ofNullable(response)
-                    .orElseThrow(() -> new ServerException(ErrorCode.INTERNAL_SERVER_ERROR,
+                    .orElseThrow(() -> new ServerException(
+                            ErrorCode.INTERNAL_SERVER_ERROR,
                             "Server received empty response"
                     ));
         } catch (HttpClientErrorException e) {
@@ -92,9 +96,32 @@ public class QueryMemberCouponServiceImpl implements QueryMemberCouponService {
             if (e.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
                 throw new ClientException(ErrorCode.NOT_FOUND, "Invalid coupon code");
             }
-            throw new ServerException(ErrorCode.INTERNAL_SERVER_ERROR,
+            throw new ServerException(
+                    ErrorCode.INTERNAL_SERVER_ERROR,
                     "Cannot send request to server"
             );
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<MemberCoupon> findByCouponCodes(List<String> couponCodes) {
+        List<MemberCoupon> memberCoupons = memberCouponRepository.findByCouponCodes(couponCodes);
+
+        checkAllCouponCodesAreAvailable(couponCodes, memberCoupons);
+
+        return memberCoupons;
+    }
+
+    private void checkAllCouponCodesAreAvailable(
+            List<String> couponCodes,
+            List<MemberCoupon> memberCoupons
+    ) {
+        if (memberCoupons.size() != couponCodes.size()) {
+            throw new ClientException(ErrorCode.COUPON_NOT_FOUND, "MemberCoupon not found.");
         }
     }
 }

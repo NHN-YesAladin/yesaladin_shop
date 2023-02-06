@@ -3,6 +3,8 @@ package shop.yesaladin.shop.product.persistence;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
@@ -16,9 +18,6 @@ import shop.yesaladin.shop.product.dto.SearchedProductManagerDto;
 import shop.yesaladin.shop.product.dto.SearchedProductManagerResponseDto;
 import shop.yesaladin.shop.product.dto.SearchedProductResponseDto;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 /**
  * 상품 검색 레포지토리
  *
@@ -29,7 +28,6 @@ import java.util.stream.Collectors;
 @Repository
 public class ElasticProductRepository implements SearchProductRepository {
 
-    private final ElasticsearchOperations elasticsearchOperations;
     private static final String CATEGORIES_ID = "categories.id";
     private static final String CATEGORIES_NAME = "categories.name";
     private static final String TITLE = "title^2";
@@ -42,6 +40,7 @@ public class ElasticProductRepository implements SearchProductRepository {
     private static final String CATEGORIES_DISABLE = "categories.disable";
     private static final String CATEGORIES_IS_SHOWN = "categories.is_shown";
     private static final String IS_DELETE = "is_deleted";
+    private final ElasticsearchOperations elasticsearchOperations;
 
     /**
      * 카테고리 id를 이용한 검색하는 메소드
@@ -111,7 +110,12 @@ public class ElasticProductRepository implements SearchProductRepository {
     public SearchedProductResponseDto searchProductsByProductContent(
             String content, int offset, int size
     ) {
-        return searchResponseProductByMultiQuery(content, offset, size, List.of(CONTENT, TAG, DESCRIPTION));
+        return searchResponseProductByMultiQuery(
+                content,
+                offset,
+                size,
+                List.of(CONTENT, TAG, DESCRIPTION)
+        );
     }
 
     /**
@@ -289,9 +293,7 @@ public class ElasticProductRepository implements SearchProductRepository {
     }
 
     /**
-     * Term 쿼리를 이용한 상품 검색 아래와 같은 기본 조건을 가지고 있다.
-     * categories.is_shown: true
-     * categories.disable: false
+     * Term 쿼리를 이용한 상품 검색 아래와 같은 기본 조건을 가지고 있다. categories.is_shown: true categories.disable: false
      * products.is_deleted: false
      *
      * @param field  필드 이름
@@ -300,7 +302,12 @@ public class ElasticProductRepository implements SearchProductRepository {
      * @param size   데이터 갯수
      * @return 해당 쿼리
      */
-    private NativeQuery getDefaultSearchProductTermQuery(String field, String value, int offset, int size) {
+    private NativeQuery getDefaultSearchProductTermQuery(
+            String field,
+            String value,
+            int offset,
+            int size
+    ) {
         return NativeQuery.builder()
                 .withFilter(QueryBuilders.bool(v -> v.must(
                         getTermQueryByString(field, value),

@@ -30,4 +30,14 @@ public interface CommandPointHistoryService {
      * @since 1.0
      */
     PointHistoryResponseDto save(PointHistoryRequestDto request);
+
+    /**
+     * 포인트 집계 내역을 등록합니다.
+     *
+     * @param request 집계한 포인트
+     * @return 집계된 포인트 내역
+     * @author 최예린
+     * @since 1.0
+     */
+    PointHistoryResponseDto sum(PointHistoryRequestDto request);
 }

@@ -1,6 +1,6 @@
 package shop.yesaladin.shop.order.domain.repository;
 
-import shop.yesaladin.shop.order.domain.model.OrderUsedCoupon;
+import shop.yesaladin.shop.order.domain.model.OrderCoupon;
 
 /**
  * 주문에 사용한 쿠폰 등록 및 수정 관련 repository 클래스입니다.
@@ -8,7 +8,7 @@ import shop.yesaladin.shop.order.domain.model.OrderUsedCoupon;
  * @author 최예린
  * @since 1.0
  */
-public interface CommandOrderUsedCouponRepository {
+public interface CommandOrderCouponRepository {
 
     /**
      * 주문에 사용한 쿠폰 데이터를 등록합니다.
@@ -18,6 +18,6 @@ public interface CommandOrderUsedCouponRepository {
      * @author 최예린
      * @since 1.0
      */
-    OrderUsedCoupon save(OrderUsedCoupon orderUsedCoupon);
+    OrderCoupon save(OrderCoupon orderUsedCoupon);
 
 }
