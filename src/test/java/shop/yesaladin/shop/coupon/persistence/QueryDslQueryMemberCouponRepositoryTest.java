@@ -1,7 +1,7 @@
 package shop.yesaladin.shop.coupon.persistence;
 
-import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -38,6 +38,8 @@ class QueryDslQueryMemberCouponRepositoryTest {
                 .member(member)
                 .couponCode("123")
                 .couponGroupCode(testCouponGroupCode)
+                .isUsed(false)
+                .expirationDate(LocalDate.of(2023, 2, 1))
                 .build();
         em.persist(member);
         em.persist(memberCoupon);
@@ -82,6 +84,9 @@ class QueryDslQueryMemberCouponRepositoryTest {
         // then
         Assertions.assertThat(actual).hasSize(1);
         Assertions.assertThat(actual.getContent().get(0).getCouponCode()).isEqualTo("123");
+        Assertions.assertThat(actual.getContent().get(0).isUsed()).isFalse();
+        Assertions.assertThat(actual.getContent().get(0).getExpirationDate())
+                .isEqualTo(LocalDate.of(2023, 2, 1));
     }
 
     @Test
@@ -94,8 +99,8 @@ class QueryDslQueryMemberCouponRepositoryTest {
                 couponCodes);
 
         //then
-        assertThat(result).hasSize(5);
-        assertThat(result.get(0).getMember()).isEqualTo(member);
+        Assertions.assertThat(result).hasSize(5);
+        Assertions.assertThat(result.get(0).getMember()).isEqualTo(member);
     }
 
     private List<String> setCouponCodeData() {
@@ -118,6 +123,8 @@ class QueryDslQueryMemberCouponRepositoryTest {
                 .couponCode(couponCode)
                 .couponGroupCode(couponGroupCode)
                 .member(member)
+                .expirationDate(LocalDate.of(2023, 1, 1))
+                .isUsed(false)
                 .build();
     }
 
