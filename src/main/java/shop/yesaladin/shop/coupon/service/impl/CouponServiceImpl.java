@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import shop.yesaladin.common.dto.ResponseDto;
-import shop.yesaladin.coupon.trigger.TriggerTypeCode;
+import shop.yesaladin.coupon.code.TriggerTypeCode;
 import shop.yesaladin.shop.config.CouponServerMetaConfig;
 import shop.yesaladin.shop.coupon.dto.CouponIssueRequestDto;
 import shop.yesaladin.shop.coupon.dto.CouponIssueResponseDto;

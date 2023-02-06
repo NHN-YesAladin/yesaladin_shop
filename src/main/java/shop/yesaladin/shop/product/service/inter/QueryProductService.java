@@ -5,6 +5,10 @@ import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
 import shop.yesaladin.shop.product.dto.ProductModifyDto;
 import shop.yesaladin.shop.product.dto.ProductsResponseDto;
+import shop.yesaladin.shop.product.dto.ViewCartDto;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * 상품 조회를 위한 Service Interface 입니다.
@@ -53,4 +57,14 @@ public interface QueryProductService {
      * @since 1.0
      */
     Page<ProductsResponseDto> findAllForManager(Pageable pageable, Integer typeId);
+
+    /**
+     * 장바구니에 넣은 상품의 정보를 얻어 반환합니다.
+     *
+     * @param cart 찾고자하는 Cart의 정보를 담은 Map
+     * @return 장바구니의 상품의 정보를 담은 Dto
+     * @author 이수정
+     * @since 1.0
+     */
+    List<ViewCartDto> getCartProduct(Map<String, String> cart);
 }
