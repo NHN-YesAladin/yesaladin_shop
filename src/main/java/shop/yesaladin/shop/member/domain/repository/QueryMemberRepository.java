@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.dto.MemberIdDto;
-import shop.yesaladin.shop.member.dto.MemberOrderResponseDto;
+import shop.yesaladin.shop.member.dto.MemberOrderSheetResponseDto;
 
 /**
  * 회원 조회 관련 repository interface 입니다.
@@ -147,5 +147,5 @@ public interface QueryMemberRepository {
      * @author 최예린
      * @since 1.0
      */
-    Optional<MemberOrderResponseDto> getMemberOrderData(String loginId);
+    Optional<MemberOrderSheetResponseDto> getMemberOrderData(String loginId);
 }

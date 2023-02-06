@@ -2,8 +2,8 @@ package shop.yesaladin.shop.order.dto;
 
 import java.util.List;
 import lombok.Getter;
-import shop.yesaladin.shop.member.dto.MemberOrderResponseDto;
-import shop.yesaladin.shop.product.dto.ProductOrderResponseDto;
+import shop.yesaladin.shop.member.dto.MemberOrderSheetResponseDto;
+import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
 
 /**
  * 회원 주문서에 필요한 데이터를 반환하는 dto 클래스입니다.
@@ -14,16 +14,16 @@ import shop.yesaladin.shop.product.dto.ProductOrderResponseDto;
 @Getter
 public class OrderSheetResponseDto {
 
-    private final List<ProductOrderResponseDto> orderProducts;
+    private final List<ProductOrderSheetResponseDto> orderProducts;
     private String name;
     private String phoneNumber;
     private Long point;
     private String address;
 
     public OrderSheetResponseDto(
-            MemberOrderResponseDto member,
+            MemberOrderSheetResponseDto member,
             long point,
-            List<ProductOrderResponseDto> orderProducts
+            List<ProductOrderSheetResponseDto> orderProducts
     ) {
         this.name = member.getName();
         this.phoneNumber = member.getPhoneNumber();
@@ -32,7 +32,7 @@ public class OrderSheetResponseDto {
         this.orderProducts = orderProducts;
     }
 
-    public OrderSheetResponseDto(List<ProductOrderResponseDto> orderProducts) {
+    public OrderSheetResponseDto(List<ProductOrderSheetResponseDto> orderProducts) {
         this.orderProducts = orderProducts;
     }
 }

@@ -20,7 +20,7 @@ import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
 import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
 import shop.yesaladin.shop.product.dto.ProductModifyDto;
 import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
-import shop.yesaladin.shop.product.dto.ProductOrderResponseDto;
+import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
 import shop.yesaladin.shop.product.dto.ProductsResponseDto;
 import shop.yesaladin.shop.product.dto.SubscribeProductOrderResponseDto;
 import shop.yesaladin.shop.product.exception.ProductNotFoundException;
@@ -336,10 +336,10 @@ public class QueryProductServiceImpl implements QueryProductService {
      */
     @Override
     @Transactional(readOnly = true)
-    public List<ProductOrderResponseDto> getByOrderProducts(Map<String, Integer> orderProduct) {
+    public List<ProductOrderSheetResponseDto> getByOrderProducts(Map<String, Integer> orderProduct) {
         List<String> isbnList = new ArrayList<>(orderProduct.keySet());
 
-        List<ProductOrderResponseDto> result = queryProductRepository.getByIsbnList(isbnList);
+        List<ProductOrderSheetResponseDto> result = queryProductRepository.getByIsbnList(isbnList);
 
         return result.stream()
                 .peek(product -> product.setQuantity(orderProduct.get(product.getIsbn())))

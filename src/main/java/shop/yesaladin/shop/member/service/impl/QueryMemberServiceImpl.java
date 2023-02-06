@@ -20,7 +20,7 @@ import shop.yesaladin.shop.member.dto.MemberIdDto;
 import shop.yesaladin.shop.member.dto.MemberLoginResponseDto;
 import shop.yesaladin.shop.member.dto.MemberManagerListResponseDto;
 import shop.yesaladin.shop.member.dto.MemberManagerResponseDto;
-import shop.yesaladin.shop.member.dto.MemberOrderResponseDto;
+import shop.yesaladin.shop.member.dto.MemberOrderSheetResponseDto;
 import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
@@ -316,7 +316,7 @@ public class QueryMemberServiceImpl implements QueryMemberService {
      */
     @Override
     @Transactional(readOnly = true)
-    public MemberOrderResponseDto getMemberForOrder(String loginId) {
+    public MemberOrderSheetResponseDto getMemberForOrder(String loginId) {
         return queryMemberRepository.getMemberOrderData(loginId)
                 .orElseThrow(() -> new ClientException(
                         ErrorCode.MEMBER_NOT_FOUND,

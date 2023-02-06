@@ -16,9 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.member.dto.MemberIdDto;
-import shop.yesaladin.shop.member.dto.MemberOrderResponseDto;
+import shop.yesaladin.shop.member.dto.MemberOrderSheetResponseDto;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
-import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
 
 @Transactional
 @SpringBootTest
@@ -202,7 +201,7 @@ class QueryDslQueryMemberRepositoryTest {
     @Test
     void getMemberOrderData() {
         //when
-        Optional<MemberOrderResponseDto> response = queryMemberRepository.getMemberOrderData(loginId);
+        Optional<MemberOrderSheetResponseDto> response = queryMemberRepository.getMemberOrderData(loginId);
 
         //then
         assertThat(response).isPresent();

@@ -11,7 +11,7 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public class ProductOrderResponseDto {
+public class ProductOrderSheetResponseDto {
 
     private Long productId;
     private String isbn;
@@ -21,7 +21,7 @@ public class ProductOrderResponseDto {
     private Long expectedPoint;
     private int quantity;
 
-    public ProductOrderResponseDto(
+    public ProductOrderSheetResponseDto(
             Long productId,
             String isbn,
             String title,

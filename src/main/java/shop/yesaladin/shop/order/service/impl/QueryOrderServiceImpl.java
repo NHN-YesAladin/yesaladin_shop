@@ -26,7 +26,7 @@ import shop.yesaladin.shop.order.dto.OrderSummaryResponseDto;
 import shop.yesaladin.shop.order.exception.OrderNotFoundException;
 import shop.yesaladin.shop.order.service.inter.QueryOrderService;
 import shop.yesaladin.shop.point.service.inter.QueryPointHistoryService;
-import shop.yesaladin.shop.product.dto.ProductOrderResponseDto;
+import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
 import shop.yesaladin.shop.product.service.inter.QueryProductService;
 
 /**
@@ -117,7 +117,7 @@ public class QueryOrderServiceImpl implements QueryOrderService {
     @Override
     @Transactional(readOnly = true)
     public OrderSheetResponseDto getNonMemberOrderSheetData(OrderSheetRequestDto request) {
-        List<ProductOrderResponseDto> orderProducts = getProductOrder(request);
+        List<ProductOrderSheetResponseDto> orderProducts = getProductOrder(request);
 
         return new OrderSheetResponseDto(orderProducts);
     }
@@ -126,7 +126,7 @@ public class QueryOrderServiceImpl implements QueryOrderService {
             OrderSheetRequestDto request,
             String loginId
     ) {
-        List<ProductOrderResponseDto> orderProducts = getProductOrder(request);
+        List<ProductOrderSheetResponseDto> orderProducts = getProductOrder(request);
 
         return new OrderSheetResponseDto(
                 queryMemberService.getMemberForOrder(loginId),
@@ -135,7 +135,7 @@ public class QueryOrderServiceImpl implements QueryOrderService {
         );
     }
 
-    private List<ProductOrderResponseDto> getProductOrder(OrderSheetRequestDto request) {
+    private List<ProductOrderSheetResponseDto> getProductOrder(OrderSheetRequestDto request) {
         Map<String, Integer> products = new HashMap<>();
         for (int i = 0; i < request.getQuantityList().size(); i++) {
             products.put(request.getIsbnList().get(i), request.getQuantityList().get(i));

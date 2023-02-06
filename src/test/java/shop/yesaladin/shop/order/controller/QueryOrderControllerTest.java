@@ -43,7 +43,7 @@ import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 import shop.yesaladin.shop.order.service.inter.QueryOrderService;
-import shop.yesaladin.shop.product.dto.ProductOrderResponseDto;
+import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
 
 @AutoConfigureRestDocs
 @WebMvcTest(QueryOrderController.class)
@@ -155,12 +155,12 @@ class QueryOrderControllerTest {
     @Test
     void getOrderSheetData_success() throws Exception {
         //given
-        List<ProductOrderResponseDto> orderProducts = new ArrayList<>();
+        List<ProductOrderSheetResponseDto> orderProducts = new ArrayList<>();
 
         List<String> titles = List.of("책 1번", "책 2번", "책 3번", "책 4번", "책 5번");
         for (int i = 0; i < 5; i++) {
             String isbn = "12342736-4812204";
-            orderProducts.add(new ProductOrderResponseDto(
+            orderProducts.add(new ProductOrderSheetResponseDto(
                     (long) i,
                     isbn + i,
                     titles.get(i),

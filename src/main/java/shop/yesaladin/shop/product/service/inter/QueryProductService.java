@@ -8,7 +8,7 @@ import shop.yesaladin.shop.product.dto.SubscribeProductOrderResponseDto;
 import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
 import shop.yesaladin.shop.product.dto.ProductModifyDto;
 import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
-import shop.yesaladin.shop.product.dto.ProductOrderResponseDto;
+import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
 import shop.yesaladin.shop.product.dto.ProductsResponseDto;
 
 /**
@@ -68,7 +68,7 @@ public interface QueryProductService {
      * @author 최예린
      * @since 1.0
      */
-    List<ProductOrderResponseDto> getByOrderProducts(Map<String, Integer> orderProducts);
+    List<ProductOrderSheetResponseDto> getByOrderProducts(Map<String, Integer> orderProducts);
 
     /**
      * 주문에 사용될 구독 주문 상품을 조회합니다.

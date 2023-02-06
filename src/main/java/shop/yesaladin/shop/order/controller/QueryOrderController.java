@@ -77,6 +77,12 @@ public class QueryOrderController {
             @RequestParam(value = "quantityList") List<Integer> quantityList,
             Authentication authentication
     ) {
+        if (isbnList.size() != quantityList.size()) {
+            throw new ClientException(
+                    ErrorCode.ORDER_INVALID_PARAMETER,
+                    "Order has invalid parameter : isbn size not equal to quantity size"
+            );
+        }
         OrderSheetRequestDto request = new OrderSheetRequestDto(isbnList, quantityList);
         OrderSheetResponseDto response = getOrderSheetData(request, authentication);
 

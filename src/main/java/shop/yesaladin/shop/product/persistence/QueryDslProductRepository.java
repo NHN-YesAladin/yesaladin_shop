@@ -16,7 +16,7 @@ import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.ProductTypeCode;
 import shop.yesaladin.shop.product.domain.model.querydsl.QProduct;
 import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
-import shop.yesaladin.shop.product.dto.ProductOrderResponseDto;
+import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
 import shop.yesaladin.shop.product.exception.ProductTypeCodeNotFoundException;
 
 
@@ -229,7 +229,7 @@ public class QueryDslProductRepository implements QueryProductRepository {
      * {@inheritDoc}
      */
     @Override
-    public List<ProductOrderResponseDto> getByIsbnList(List<String> isbnList) {
+    public List<ProductOrderSheetResponseDto> getByIsbnList(List<String> isbnList) {
         QProduct product = QProduct.product;
 
         NumberExpression<Long> expectedEarnedPoint = product.actualPrice.multiply(product.isGivenPoint.when(
@@ -238,7 +238,7 @@ public class QueryDslProductRepository implements QueryProductRepository {
                 .otherwise(product.totalDiscountRate.discountRate.divide(100)));
 
         return queryFactory.select(Projections.constructor(
-                        ProductOrderResponseDto.class,
+                        ProductOrderSheetResponseDto.class,
                         product.id,
                         product.isbn,
                         product.title,

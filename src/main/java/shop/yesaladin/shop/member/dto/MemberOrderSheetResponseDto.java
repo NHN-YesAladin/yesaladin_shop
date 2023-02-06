@@ -11,7 +11,7 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public class MemberOrderResponseDto {
+public class MemberOrderSheetResponseDto {
 
     private String name;
     private String phoneNumber;
