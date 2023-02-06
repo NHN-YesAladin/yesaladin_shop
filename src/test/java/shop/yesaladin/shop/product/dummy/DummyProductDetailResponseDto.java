@@ -22,7 +22,7 @@ public class DummyProductDetailResponseDto {
 
         return new ProductDetailResponseDto(
                 1L,
-                "E-BOOK-URL",
+                false,
                 "제목",
                 authors,
                 "출판사",
@@ -38,10 +38,7 @@ public class DummyProductDetailResponseDto {
                 "",
                 "목차",
                 "설명",
-                10,
-                false,
                 true,
-                false,
                 categories
         );
     }

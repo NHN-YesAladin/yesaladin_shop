@@ -101,7 +101,6 @@ class QueryProductServiceImplTest {
         assertThat(response).isNotNull();
         assertThat(response.getId()).isEqualTo(1L);
         assertThat(response.getThumbnailFileUrl()).isEqualTo(URL + "/image1.png");
-        assertThat(response.getEbookFileUrl()).isEqualTo(URL + "/ebook1.pdf");
         assertThat(response.getActualPrice()).isEqualTo(10000L);
         assertThat(response.getSellingPrice()).isEqualTo(9000L);
         assertThat(response.getPointPrice()).isEqualTo(200L);

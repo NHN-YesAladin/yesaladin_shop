@@ -20,7 +20,7 @@ public class ProductDetailResponseDto {
 
     private Long id;
 
-    private String ebookFileUrl;
+    private Boolean isEbook;
     private String title;
     private List<String> authors;
     private String publisher;
@@ -43,10 +43,7 @@ public class ProductDetailResponseDto {
     private String description;
 
     // 판매여부 관련
-    private long quantity;
-    private Boolean isForcedOutOfStock;
-    private Boolean isSale;
-    private Boolean isDeleted;
+    private boolean onSale;
 
     private List<CategoryResponseDto> categories;
 }
