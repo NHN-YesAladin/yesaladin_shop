@@ -1,5 +1,7 @@
 package shop.yesaladin.shop.product.dto;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -13,6 +15,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public class ProductOrderRequestDto {
 
+    @NotBlank
     private String isbn;
+    @Min(1)
     private int quantity;
 }

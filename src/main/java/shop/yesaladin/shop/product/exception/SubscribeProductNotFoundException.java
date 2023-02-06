@@ -7,6 +7,7 @@ package shop.yesaladin.shop.product.exception;
  * @since 1.0
  */
 public class SubscribeProductNotFoundException extends RuntimeException {
+
     public SubscribeProductNotFoundException(Long id) {
         super("SubscribeProduct " + id + "(ID) is not found.");
     }

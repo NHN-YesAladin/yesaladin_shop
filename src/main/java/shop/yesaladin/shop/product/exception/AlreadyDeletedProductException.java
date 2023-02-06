@@ -7,6 +7,7 @@ package shop.yesaladin.shop.product.exception;
  * @since 1.0
  */
 public class AlreadyDeletedProductException extends RuntimeException {
+
     public AlreadyDeletedProductException(Long id) {
         super("Product " + id + "(ID) is already deleted.");
     }

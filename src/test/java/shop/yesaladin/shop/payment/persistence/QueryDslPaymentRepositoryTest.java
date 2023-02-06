@@ -89,12 +89,19 @@ class QueryDslPaymentRepositoryTest {
         assertThat(foundPayment.getPaymentCard()
                 .getApproveNo()).isEqualTo(paymentCard.getApproveNo());
         assertThat(foundPayment.getPaymentCard().getId()).isEqualTo(paymentCard.getId());
-        assertThat(foundPayment.getPaymentCard().getPayment().getId()).isEqualTo(paymentCard.getPayment().getId());
-        assertThat(foundPayment.getPaymentCard().isUseCardPoint()).isEqualTo(paymentCard.isUseCardPoint());
-        assertThat(foundPayment.getPaymentCard().isInterestFree()).isEqualTo(paymentCard.isInterestFree());
-        assertThat(foundPayment.getPaymentCard().getInterestPayer()).isEqualTo(paymentCard.getInterestPayer());
-        assertThat(foundPayment.getPaymentCard().getAcquireStatus()).isEqualTo(paymentCard.getAcquireStatus());
-        assertThat(foundPayment.getPaymentCard().getIssuerCode()).isEqualTo(paymentCard.getIssuerCode());
+        assertThat(foundPayment.getPaymentCard()
+                .getPayment()
+                .getId()).isEqualTo(paymentCard.getPayment().getId());
+        assertThat(foundPayment.getPaymentCard()
+                .isUseCardPoint()).isEqualTo(paymentCard.isUseCardPoint());
+        assertThat(foundPayment.getPaymentCard()
+                .isInterestFree()).isEqualTo(paymentCard.isInterestFree());
+        assertThat(foundPayment.getPaymentCard()
+                .getInterestPayer()).isEqualTo(paymentCard.getInterestPayer());
+        assertThat(foundPayment.getPaymentCard()
+                .getAcquireStatus()).isEqualTo(paymentCard.getAcquireStatus());
+        assertThat(foundPayment.getPaymentCard()
+                .getIssuerCode()).isEqualTo(paymentCard.getIssuerCode());
     }
 
     @Test
@@ -122,12 +129,19 @@ class QueryDslPaymentRepositoryTest {
         assertThat(foundPayment.getPaymentCard()
                 .getApproveNo()).isEqualTo(paymentCard.getApproveNo());
         assertThat(foundPayment.getPaymentCard().getId()).isEqualTo(paymentCard.getId());
-        assertThat(foundPayment.getPaymentCard().getPayment().getId()).isEqualTo(paymentCard.getPayment().getId());
-        assertThat(foundPayment.getPaymentCard().isUseCardPoint()).isEqualTo(paymentCard.isUseCardPoint());
-        assertThat(foundPayment.getPaymentCard().isInterestFree()).isEqualTo(paymentCard.isInterestFree());
-        assertThat(foundPayment.getPaymentCard().getInterestPayer()).isEqualTo(paymentCard.getInterestPayer());
-        assertThat(foundPayment.getPaymentCard().getAcquireStatus()).isEqualTo(paymentCard.getAcquireStatus());
-        assertThat(foundPayment.getPaymentCard().getIssuerCode()).isEqualTo(paymentCard.getIssuerCode());
+        assertThat(foundPayment.getPaymentCard()
+                .getPayment()
+                .getId()).isEqualTo(paymentCard.getPayment().getId());
+        assertThat(foundPayment.getPaymentCard()
+                .isUseCardPoint()).isEqualTo(paymentCard.isUseCardPoint());
+        assertThat(foundPayment.getPaymentCard()
+                .isInterestFree()).isEqualTo(paymentCard.isInterestFree());
+        assertThat(foundPayment.getPaymentCard()
+                .getInterestPayer()).isEqualTo(paymentCard.getInterestPayer());
+        assertThat(foundPayment.getPaymentCard()
+                .getAcquireStatus()).isEqualTo(paymentCard.getAcquireStatus());
+        assertThat(foundPayment.getPaymentCard()
+                .getIssuerCode()).isEqualTo(paymentCard.getIssuerCode());
     }
 
     @Test
@@ -155,12 +169,19 @@ class QueryDslPaymentRepositoryTest {
         assertThat(foundPayment.getPaymentCard()
                 .getApproveNo()).isEqualTo(paymentCard.getApproveNo());
         assertThat(foundPayment.getPaymentCard().getId()).isEqualTo(paymentCard.getId());
-        assertThat(foundPayment.getPaymentCard().getPayment().getId()).isEqualTo(paymentCard.getPayment().getId());
-        assertThat(foundPayment.getPaymentCard().isUseCardPoint()).isEqualTo(paymentCard.isUseCardPoint());
-        assertThat(foundPayment.getPaymentCard().isInterestFree()).isEqualTo(paymentCard.isInterestFree());
-        assertThat(foundPayment.getPaymentCard().getInterestPayer()).isEqualTo(paymentCard.getInterestPayer());
-        assertThat(foundPayment.getPaymentCard().getAcquireStatus()).isEqualTo(paymentCard.getAcquireStatus());
-        assertThat(foundPayment.getPaymentCard().getIssuerCode()).isEqualTo(paymentCard.getIssuerCode());
+        assertThat(foundPayment.getPaymentCard()
+                .getPayment()
+                .getId()).isEqualTo(paymentCard.getPayment().getId());
+        assertThat(foundPayment.getPaymentCard()
+                .isUseCardPoint()).isEqualTo(paymentCard.isUseCardPoint());
+        assertThat(foundPayment.getPaymentCard()
+                .isInterestFree()).isEqualTo(paymentCard.isInterestFree());
+        assertThat(foundPayment.getPaymentCard()
+                .getInterestPayer()).isEqualTo(paymentCard.getInterestPayer());
+        assertThat(foundPayment.getPaymentCard()
+                .getAcquireStatus()).isEqualTo(paymentCard.getAcquireStatus());
+        assertThat(foundPayment.getPaymentCard()
+                .getIssuerCode()).isEqualTo(paymentCard.getIssuerCode());
     }
 
     @Test

@@ -16,8 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.member.dto.MemberIdDto;
+import shop.yesaladin.shop.member.dto.MemberOrderSheetResponseDto;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
-import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
 
 @Transactional
 @SpringBootTest
@@ -201,14 +201,12 @@ class QueryDslQueryMemberRepositoryTest {
     @Test
     void getMemberOrderData() {
         //when
-        Optional<OrderSheetResponseDto> response = queryMemberRepository.getMemberOrderData(loginId);
+        Optional<MemberOrderSheetResponseDto> response = queryMemberRepository.getMemberOrderData(loginId);
 
         //then
         assertThat(response).isPresent();
         assertThat(response.get().getName()).isEqualTo(memberWithLoginId.getName());
         assertThat(response.get().getPhoneNumber()).isEqualTo(memberWithLoginId.getPhone());
         assertThat(response.get().getAddress()).isEqualTo(defaultMemberAddress.getAddress());
-        assertThat(response.get().getPoint()).isNull();
-        assertThat(response.get().getOrderProducts()).isNull();
     }
 }

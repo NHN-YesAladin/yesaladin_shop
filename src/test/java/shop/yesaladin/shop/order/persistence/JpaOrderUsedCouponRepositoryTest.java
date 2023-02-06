@@ -13,10 +13,10 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
-import shop.yesaladin.shop.member.domain.model.MemberCoupon;
+import shop.yesaladin.shop.coupon.domain.model.MemberCoupon;
 import shop.yesaladin.shop.order.domain.model.MemberOrder;
-import shop.yesaladin.shop.order.domain.model.OrderUsedCoupon;
-import shop.yesaladin.shop.order.domain.model.OrderUsedCoupon.Pk;
+import shop.yesaladin.shop.order.domain.model.OrderCoupon;
+import shop.yesaladin.shop.order.domain.model.OrderCoupon.Pk;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMemberAddress;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMemberCoupon;
@@ -35,7 +35,7 @@ class JpaOrderUsedCouponRepositoryTest {
     private MemberOrder memberOrder;
     private MemberCoupon memberCoupon;
 
-    private OrderUsedCoupon orderUsedCoupon;
+    private OrderCoupon orderUsedCoupon;
 
 
     @BeforeEach
@@ -52,13 +52,13 @@ class JpaOrderUsedCouponRepositoryTest {
         entityManager.persist(memberOrder);
         entityManager.persist(memberCoupon);
 
-        orderUsedCoupon = OrderUsedCoupon.create(memberOrder, memberCoupon);
+        orderUsedCoupon = OrderCoupon.create(memberOrder, memberCoupon);
     }
 
     @Test
     void save() {
         //when
-        OrderUsedCoupon savedOrderUsedCoupon = orderUsedCouponRepository.save(orderUsedCoupon);
+        OrderCoupon savedOrderUsedCoupon = orderUsedCouponRepository.save(orderUsedCoupon);
 
         //then
         assertThat(savedOrderUsedCoupon.getMemberOrder()).isSameAs(memberOrder);
@@ -72,7 +72,7 @@ class JpaOrderUsedCouponRepositoryTest {
         Pk pk = orderUsedCoupon.getPk();
 
         //when
-        Optional<OrderUsedCoupon> foundOrderUsedCoupon = orderUsedCouponRepository.findById(pk);
+        Optional<OrderCoupon> foundOrderUsedCoupon = orderUsedCouponRepository.findById(pk);
 
         //then
         assertThat(foundOrderUsedCoupon).isPresent();

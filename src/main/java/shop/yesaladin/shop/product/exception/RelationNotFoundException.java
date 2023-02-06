@@ -7,6 +7,7 @@ package shop.yesaladin.shop.product.exception;
  * @since 1.0
  */
 public class RelationNotFoundException extends RuntimeException {
+
     public RelationNotFoundException(Long productMainId, Long productSubId) {
         super("ProductMain " + productMainId + ", ProductSub " + productSubId + " is not found.");
     }

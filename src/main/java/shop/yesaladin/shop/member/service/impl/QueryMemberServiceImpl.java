@@ -20,10 +20,10 @@ import shop.yesaladin.shop.member.dto.MemberIdDto;
 import shop.yesaladin.shop.member.dto.MemberLoginResponseDto;
 import shop.yesaladin.shop.member.dto.MemberManagerListResponseDto;
 import shop.yesaladin.shop.member.dto.MemberManagerResponseDto;
+import shop.yesaladin.shop.member.dto.MemberOrderSheetResponseDto;
 import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
-import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
 
 /**
  * 회원 조회용 서비스 구현체 입니다.
@@ -102,6 +102,28 @@ public class QueryMemberServiceImpl implements QueryMemberService {
                 queryMemberRepository.findMemberByLoginId(loginId),
                 "Member Login Id: "
         );
+
+        List<String> roles = queryMemberRoleRepository.findMemberRolesByMemberId(member.getId());
+
+        return new MemberLoginResponseDto(
+                member.getId(),
+                member.getName(),
+                member.getNickname(),
+                member.getLoginId(),
+                member.getEmail(),
+                member.getPassword(),
+                roles
+        );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public MemberLoginResponseDto findMemberLoginInfoByEmail(String email) {
+        Member member = queryMemberRepository.findMemberByEmail(email)
+                .orElseThrow(() -> new MemberNotFoundException("Member email: " + email));
 
         List<String> roles = queryMemberRoleRepository.findMemberRolesByMemberId(member.getId());
 
@@ -294,7 +316,7 @@ public class QueryMemberServiceImpl implements QueryMemberService {
      */
     @Override
     @Transactional(readOnly = true)
-    public OrderSheetResponseDto getMemberForOrder(String loginId) {
+    public MemberOrderSheetResponseDto getMemberForOrder(String loginId) {
         return queryMemberRepository.getMemberOrderData(loginId)
                 .orElseThrow(() -> new ClientException(
                         ErrorCode.MEMBER_NOT_FOUND,

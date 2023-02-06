@@ -52,7 +52,10 @@ public class CommandMemberAddressController {
     ) {
         checkRequestValidation(bindingResult);
 
-        String loginId = AuthorityUtils.getAuthorizedUserName(authentication);
+        String loginId = AuthorityUtils.getAuthorizedUserName(
+                authentication,
+                "Only authorized user can create address."
+        );
 
         MemberAddressResponseDto response = commandMemberAddressService.save(loginId, request);
 
@@ -76,7 +79,10 @@ public class CommandMemberAddressController {
             @PathVariable Long addressId,
             Authentication authentication
     ) {
-        String loginId = AuthorityUtils.getAuthorizedUserName(authentication);
+        String loginId = AuthorityUtils.getAuthorizedUserName(
+                authentication,
+                "Only authorized user can mark their address as default."
+        );
 
         MemberAddressResponseDto response = commandMemberAddressService.markAsDefault(
                 loginId,
@@ -103,7 +109,10 @@ public class CommandMemberAddressController {
             @PathVariable Long addressId,
             Authentication authentication
     ) {
-        String loginId = AuthorityUtils.getAuthorizedUserName(authentication);
+        String loginId = AuthorityUtils.getAuthorizedUserName(
+                authentication,
+                "Only authorized user can delete their address."
+        );
 
         commandMemberAddressService.delete(loginId, addressId);
 

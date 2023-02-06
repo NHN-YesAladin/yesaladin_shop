@@ -1,4 +1,4 @@
-package shop.yesaladin.shop.member.domain.repository;
+package shop.yesaladin.shop.coupon.domain.repository;
 
 import java.util.List;
 import shop.yesaladin.shop.member.dto.MemberCouponRequestDto;

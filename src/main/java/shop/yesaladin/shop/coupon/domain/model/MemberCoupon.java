@@ -1,4 +1,4 @@
-package shop.yesaladin.shop.member.domain.model;
+package shop.yesaladin.shop.coupon.domain.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import shop.yesaladin.shop.member.domain.model.Member;
 
 /**
  * 회원 쿠폰 엔터티 입니다.

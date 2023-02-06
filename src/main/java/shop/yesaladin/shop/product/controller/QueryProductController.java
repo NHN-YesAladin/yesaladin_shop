@@ -3,7 +3,11 @@ package shop.yesaladin.shop.product.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
 import shop.yesaladin.shop.product.dto.ProductModifyDto;
@@ -58,7 +62,10 @@ public class QueryProductController {
      * @since 1.0
      */
     @GetMapping
-    public PaginatedResponseDto<ProductsResponseDto> getProducts(Pageable pageable, @RequestParam(required = false) Integer typeId) {
+    public PaginatedResponseDto<ProductsResponseDto> getProducts(
+            Pageable pageable,
+            @RequestParam(required = false) Integer typeId
+    ) {
         Page<ProductsResponseDto> products = queryProductService.findAll(pageable, typeId);
 
         return PaginatedResponseDto.<ProductsResponseDto>builder()
@@ -78,8 +85,14 @@ public class QueryProductController {
      * @since 1.0
      */
     @GetMapping("/manager")
-    public PaginatedResponseDto<ProductsResponseDto> getProductsForManager(Pageable pageable, @RequestParam(required = false) Integer typeId) {
-        Page<ProductsResponseDto> products = queryProductService.findAllForManager(pageable, typeId);
+    public PaginatedResponseDto<ProductsResponseDto> getProductsForManager(
+            Pageable pageable,
+            @RequestParam(required = false) Integer typeId
+    ) {
+        Page<ProductsResponseDto> products = queryProductService.findAllForManager(
+                pageable,
+                typeId
+        );
 
         return PaginatedResponseDto.<ProductsResponseDto>builder()
                 .totalPage(products.getTotalPages())

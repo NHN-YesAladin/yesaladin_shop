@@ -25,6 +25,8 @@ public class QueryMemberAddressServiceImpl implements QueryMemberAddressService 
     private final QueryMemberRepository queryMemberRepository;
     private final QueryMemberAddressRepository queryMemberAddressRepository;
 
+    private final String MEMBER_ADDRESS_NOT_FOUND = "MemberAddress not found with id : ";
+
     /**
      * {@inheritDoc}
      */
@@ -34,7 +36,7 @@ public class QueryMemberAddressServiceImpl implements QueryMemberAddressService 
         return queryMemberAddressRepository.findById(id)
                 .orElseThrow(() -> new ClientException(
                         ErrorCode.ADDRESS_NOT_FOUND,
-                        "MemberAddress not found with id : " + id
+                        MEMBER_ADDRESS_NOT_FOUND + id
                 ));
     }
 
@@ -47,7 +49,7 @@ public class QueryMemberAddressServiceImpl implements QueryMemberAddressService 
         return queryMemberAddressRepository.getById(id)
                 .orElseThrow(() -> new ClientException(
                         ErrorCode.ADDRESS_NOT_FOUND,
-                        "MemberAddress not found with id : " + id
+                        MEMBER_ADDRESS_NOT_FOUND + id
                 ));
     }
 
@@ -63,7 +65,7 @@ public class QueryMemberAddressServiceImpl implements QueryMemberAddressService 
     }
 
     private void checkLoginIdIsExist(String loginId) {
-        if(!queryMemberRepository.existsMemberByLoginId(loginId)) {
+        if (!queryMemberRepository.existsMemberByLoginId(loginId)) {
             throw new ClientException(
                     ErrorCode.MEMBER_NOT_FOUND,
                     "Member not found with loginId : " + loginId

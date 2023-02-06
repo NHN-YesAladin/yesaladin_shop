@@ -167,6 +167,43 @@ class QueryMemberServiceImplTest {
     }
 
     @Test
+    void findMemberLoginInfoByEmail_failed_whenMemberNotFound() throws Exception {
+        //given
+        String email = "test@test.com";
+
+        Mockito.when(queryMemberRepository.findMemberByEmail(email))
+                .thenReturn(Optional.empty());
+
+        //when, then
+        assertThatThrownBy(() -> service.findMemberLoginInfoByEmail(email))
+                .isInstanceOf(MemberNotFoundException.class);
+    }
+
+    @Test
+    void findMemberLoginInfoByEmail() throws Exception {
+        //given
+        String email = "test@test.com";
+        Long memberId = 1L;
+
+        Mockito.when(queryMemberRepository.findMemberByEmail(email))
+                .thenReturn(Optional.of(expectedMember));
+        Mockito.when(expectedMember.getLoginId()).thenReturn(email);
+        Mockito.when(expectedMember.getId()).thenReturn(memberId);
+
+        Mockito.when(queryMemberRoleRepository.findMemberRolesByMemberId(memberId))
+                .thenReturn(List.of("ROLE_MEMBER"));
+
+        //when
+        MemberLoginResponseDto response = service.findMemberLoginInfoByEmail(
+                email);
+
+        //then
+        assertThat(response.getRoles()).hasSize(1);
+        assertThat(response.getLoginId()).isEqualTo(email);
+        assertThat(response.getId()).isEqualTo(memberId);
+    }
+
+    @Test
     void findMemberManageByLoginId_failed_whenMemberNotFound() {
         //given
         String loginId = "loginId";

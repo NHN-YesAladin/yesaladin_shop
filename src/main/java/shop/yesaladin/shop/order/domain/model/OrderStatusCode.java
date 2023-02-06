@@ -1,5 +1,7 @@
 package shop.yesaladin.shop.order.domain.model;
 
+import java.util.Arrays;
+import java.util.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -21,4 +23,18 @@ public enum OrderStatusCode {
     CANCEL(7);
 
     private final int statusCode;
+
+    /**
+     * 상태 문자열을 통해 주문상태코드를 찾아냅니다.
+     *
+     * @param status 상태
+     * @return 주문상태코드
+     * @author 최예린
+     * @since 1.0
+     */
+    public static Optional<OrderStatusCode> findByStatus(String status) {
+        return Arrays.stream(OrderStatusCode.values())
+                .filter(code -> status.equals(code.name()))
+                .findFirst();
+    }
 }

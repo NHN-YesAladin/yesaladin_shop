@@ -43,6 +43,15 @@ public class CommandMemberController {
 
     private final CommandMemberService commandMemberService;
 
+    private static void checkAuthorityOfManager(Authentication authentication) {
+        if (!AuthorityUtils.isAdmin(authentication)) {
+            throw new ClientException(
+                    ErrorCode.UNAUTHORIZED,
+                    "Only Admin can block/unblock member."
+            );
+        }
+    }
+
     /**
      * 회원 가입을 위한 Post 요청을 처리 하는 기능 입니다.
      *
@@ -80,7 +89,10 @@ public class CommandMemberController {
     ) {
         checkRequestValidation(bindingResult);
 
-        String loginId = AuthorityUtils.getAuthorizedUserName(authentication);
+        String loginId = AuthorityUtils.getAuthorizedUserName(
+                authentication,
+                "Only authorized user can update their information."
+        );
 
         MemberUpdateResponseDto response = commandMemberService.update(loginId, updateDto);
 
@@ -153,15 +165,6 @@ public class CommandMemberController {
             throw new ClientException(
                     ErrorCode.BAD_REQUEST,
                     "Validation Error in member request."
-            );
-        }
-    }
-
-    private static void checkAuthorityOfManager(Authentication authentication) {
-        if (!AuthorityUtils.isAdmin(authentication)) {
-            throw new ClientException(
-                    ErrorCode.UNAUTHORIZED,
-                    "Only Admin can block/unblock member."
             );
         }
     }

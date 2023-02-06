@@ -1,4 +1,4 @@
-package shop.yesaladin.shop.member.persistence;
+package shop.yesaladin.shop.coupon.persistence;
 
 import java.util.ArrayList;
 import java.util.List;

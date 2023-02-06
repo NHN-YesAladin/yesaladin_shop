@@ -5,9 +5,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.common.code.ErrorCode;
@@ -18,6 +21,7 @@ import shop.yesaladin.shop.order.dto.OrderCreateResponseDto;
 import shop.yesaladin.shop.order.dto.OrderMemberCreateRequestDto;
 import shop.yesaladin.shop.order.dto.OrderNonMemberCreateRequestDto;
 import shop.yesaladin.shop.order.dto.OrderSubscribeCreateRequestDto;
+import shop.yesaladin.shop.order.dto.OrderUpdateResponseDto;
 import shop.yesaladin.shop.order.service.inter.CommandOrderService;
 
 /**
@@ -78,7 +82,10 @@ public class CommandOrderController {
     ) {
         checkRequestValidation(bindingResult, "MemberOrder");
 
-        String loginId = AuthorityUtils.getAuthorizedUserName(authentication);
+        String loginId = AuthorityUtils.getAuthorizedUserName(
+                authentication,
+                "Only authorized user can create order."
+        );
 
         OrderCreateResponseDto response = commandOrderService.createMemberOrders(request, loginId);
 
@@ -106,7 +113,10 @@ public class CommandOrderController {
     ) {
         checkRequestValidation(bindingResult, "SubscribeOrder");
 
-        String loginId = AuthorityUtils.getAuthorizedUserName(authentication);
+        String loginId = AuthorityUtils.getAuthorizedUserName(
+                authentication,
+                "Only authorized user can create subscribe order."
+        );
 
         OrderCreateResponseDto response = commandOrderService.createSubscribeOrders(
                 request,
@@ -120,12 +130,32 @@ public class CommandOrderController {
                 .build();
     }
 
+    @PutMapping(path = "/{orderId}", params = "hide")
+    public ResponseDto<OrderUpdateResponseDto> hide(
+            @PathVariable Long orderId,
+            @RequestParam Boolean hide,
+            Authentication authentication
+    ) {
+        String loginId = AuthorityUtils.getAuthorizedUserName(
+                authentication,
+                "Only authorized user can hide their order."
+        );
+
+        OrderUpdateResponseDto response = commandOrderService.hideOnOrder(loginId, orderId, hide);
+
+        return ResponseDto.<OrderUpdateResponseDto>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(response)
+                .build();
+    }
+
     private void checkRequestValidation(BindingResult bindingResult, String order) {
         if (bindingResult.hasErrors()) {
             throw new ClientException(
                     ErrorCode.ORDER_BAD_REQUEST,
                     "Validation Error in " + order + "." +
-                    bindingResult.getAllErrors()
+                            bindingResult.getAllErrors()
             );
         }
     }

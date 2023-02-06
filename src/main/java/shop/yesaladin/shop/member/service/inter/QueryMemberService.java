@@ -9,8 +9,8 @@ import shop.yesaladin.shop.member.dto.MemberIdDto;
 import shop.yesaladin.shop.member.dto.MemberLoginResponseDto;
 import shop.yesaladin.shop.member.dto.MemberManagerListResponseDto;
 import shop.yesaladin.shop.member.dto.MemberManagerResponseDto;
+import shop.yesaladin.shop.member.dto.MemberOrderSheetResponseDto;
 import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
-import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
 
 
 /**
@@ -76,6 +76,16 @@ public interface QueryMemberService {
      * @since 1.0
      */
     MemberLoginResponseDto findMemberLoginInfoByLoginId(String loginId);
+
+    /**
+     * OAuth2 로그인 시 이미 자사 회원인 경우 해당 회원 정보를 조회 하기 위한 메서드 입니다.
+     *
+     * @param email member의 email
+     * @return login 대상의 유저 정보와 권한 정보를 담은 DTO
+     * @author 송학현
+     * @since 1.0
+     */
+    MemberLoginResponseDto findMemberLoginInfoByEmail(String email);
 
     /**
      * 관리자의 회원 관리 요창에 대해 회원을 unique column 인 LoginId 를 기준으로 조회하는 메서드 이다.
@@ -209,5 +219,5 @@ public interface QueryMemberService {
      * @author 최예린
      * @since 1.0
      */
-    OrderSheetResponseDto getMemberForOrder(String loginId);
+    MemberOrderSheetResponseDto getMemberForOrder(String loginId);
 }

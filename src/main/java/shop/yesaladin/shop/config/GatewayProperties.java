@@ -19,4 +19,7 @@ public class GatewayProperties {
 
     @Value("${yesaladin.gateway.auth}")
     private String authUrl;
+
+    @Value("${yesaladin.gateway.coupon}")
+    private String couponUrl;
 }
