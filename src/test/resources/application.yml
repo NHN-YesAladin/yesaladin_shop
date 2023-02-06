@@ -12,6 +12,12 @@ spring:
         format_sql: true
   kafka:
     bootstrap-servers: localhost:9092
+  redis:
+    host: 133.186.151.141
+    port: 6379
+    password: "*N2vya7H@muDTwdNMR!"
+    database: 26
+
 elastic:
   host: 103.218.159.211:9200
 
