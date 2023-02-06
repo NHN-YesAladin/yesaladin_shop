@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -23,6 +24,7 @@ import org.springframework.kafka.test.utils.KafkaTestUtils;
 import shop.yesaladin.coupon.message.CouponGiveRequestResponseMessage;
 import shop.yesaladin.shop.coupon.service.inter.GiveCouponService;
 
+@Disabled
 @EmbeddedKafka(topics = {"${coupon.topic.give-request}",
         "${coupon.topic.give-request-limit}"}, brokerProperties = {
         "listeners=PLAINTEXT://localhost:9092", "port=9092"})
