@@ -19,11 +19,13 @@ public interface QueryMemberCouponService {
      * 회원이 가진 쿠폰의 요약 정보 리스트를 반환합니다.
      *
      * @param memberId 조회할 회원의 로그인 아이디
+     * @param usable 사용 가능 여부
      * @return 회원이 가진 쿠폰의 요약 정보 리스트
      */
     PaginatedResponseDto<MemberCouponSummaryDto> getMemberCouponSummaryList(
             Pageable pageable,
-            String memberId
+            String memberId,
+            boolean usable
     );
 
     /**

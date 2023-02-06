@@ -45,9 +45,10 @@ public class QueryMemberCouponServiceImpl implements QueryMemberCouponService {
 
     @Override
     public PaginatedResponseDto<MemberCouponSummaryDto> getMemberCouponSummaryList(
-            Pageable pageable, String memberId
+            Pageable pageable, String memberId,
+            boolean usable
     ) {
-        Page<String> memberCouponCodeList = getMemberCouponCodeList(pageable, memberId);
+        Page<String> memberCouponCodeList = getMemberCouponCodeList(pageable, memberId, usable);
 
         ResponseDto<List<MemberCouponSummaryDto>> response = tryGetCouponSummary(
                 memberCouponCodeList.getContent());
@@ -60,10 +61,11 @@ public class QueryMemberCouponServiceImpl implements QueryMemberCouponService {
                 .build();
     }
 
-    private Page<String> getMemberCouponCodeList(Pageable pageable, String memberId) {
+    private Page<String> getMemberCouponCodeList(Pageable pageable, String memberId, boolean usable) {
         Page<MemberCoupon> memberCouponList = memberCouponRepository.findMemberCouponByMemberId(
                 pageable,
-                memberId
+                memberId,
+                usable
         );
         List<String> couponCodes = memberCouponList.stream()
                 .map(MemberCoupon::getCouponCode)

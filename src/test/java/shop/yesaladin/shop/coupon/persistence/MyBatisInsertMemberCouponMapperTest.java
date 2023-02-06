@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.coupon.persistence;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -41,16 +42,19 @@ class MyBatisInsertMemberCouponMapperTest {
         for (int i = 0; i < 500; i++) {
             List<String> couponCodes = new ArrayList<>();
             List<String> couponGroupCodes = new ArrayList<>();
+            List<LocalDate> expirationCodes = new ArrayList<>();
 
             for (int j = 0; j < 10; j++) {
                 couponCodes.add(UUID.randomUUID().toString());
                 couponGroupCodes.add(UUID.randomUUID().toString());
+                expirationCodes.add(LocalDate.of(2023, 2, j + 1));
             }
 
             MemberCouponRequestDto requestDto = new MemberCouponRequestDto(
                     member.getId(),
                     couponCodes,
-                    couponGroupCodes
+                    couponGroupCodes,
+                    expirationCodes
             );
             requestDtoList.add(requestDto);
         }

@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.coupon.persistence;
 
+import java.time.LocalDate;
 import javax.persistence.EntityManager;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,6 +37,8 @@ class JpaCommandMemberCouponRepositoryTest {
                 .member(member)
                 .couponCode("couponCode")
                 .couponGroupCode("couponGroupCode")
+                .isUsed(false)
+                .expirationDate(LocalDate.of(2023, 2, 15))
                 .build();
 
         // when
