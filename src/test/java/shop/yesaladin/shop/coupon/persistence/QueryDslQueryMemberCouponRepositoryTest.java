@@ -13,10 +13,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.coupon.domain.model.MemberCoupon;
 import shop.yesaladin.shop.member.domain.model.Member;
-import shop.yesaladin.shop.member.dummy.MemberDummy;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
 
 @Transactional
@@ -71,12 +72,26 @@ class QueryDslQueryMemberCouponRepositoryTest {
     }
 
     @Test
+    @DisplayName("회원이 가지고 있는 쿠폰 정보를 가져온다")
+    void findMemberCouponByMemberId() {
+        // when
+        Page<MemberCoupon> actual = queryDslQueryMemberCouponRepository.findMemberCouponByMemberId(
+                PageRequest.of(0, 10),
+                member.getLoginId()
+        );
+        // then
+        Assertions.assertThat(actual).hasSize(1);
+        Assertions.assertThat(actual.getContent().get(0).getCouponCode()).isEqualTo("123");
+    }
+
+    @Test
     void findByCouponCodes() {
         //given
         List<String> couponCodes = setCouponCodeData();
 
         //when
-        List<MemberCoupon> result = queryDslQueryMemberCouponRepository.findByCouponCodes(couponCodes);
+        List<MemberCoupon> result = queryDslQueryMemberCouponRepository.findByCouponCodes(
+                couponCodes);
 
         //then
         assertThat(result).hasSize(5);

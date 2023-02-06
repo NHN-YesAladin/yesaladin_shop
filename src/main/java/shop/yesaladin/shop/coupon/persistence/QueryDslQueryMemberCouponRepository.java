@@ -1,9 +1,13 @@
 package shop.yesaladin.shop.coupon.persistence;
 
 
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 import shop.yesaladin.shop.coupon.domain.model.MemberCoupon;
 import shop.yesaladin.shop.coupon.domain.model.querydsl.QMemberCoupon;
@@ -34,6 +38,25 @@ public class QueryDslQueryMemberCouponRepository implements QueryMemberCouponRep
                 .where(memberCoupon.member.loginId.eq(memberId))
                 .where(memberCoupon.couponGroupCode.in(couponGroupCodeList))
                 .fetchFirst() != null;
+    }
+
+    @Override
+    public Page<MemberCoupon> findMemberCouponByMemberId(Pageable pageable, String memberId) {
+        QMemberCoupon memberCoupon = QMemberCoupon.memberCoupon;
+
+        List<MemberCoupon> memberCouponList = queryFactory.select(memberCoupon)
+                .from(memberCoupon)
+                .where(memberCoupon.member.loginId.eq(memberId))
+                .orderBy(memberCoupon.id.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        JPAQuery<Long> countQuery = queryFactory.select(memberCoupon.id.count())
+                .from(memberCoupon)
+                .where(memberCoupon.member.loginId.eq(memberId));
+
+        return PageableExecutionUtils.getPage(memberCouponList, pageable, countQuery::fetchFirst);
     }
 
     /**
