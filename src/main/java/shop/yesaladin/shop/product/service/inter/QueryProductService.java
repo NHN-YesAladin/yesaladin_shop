@@ -73,6 +73,8 @@ public interface QueryProductService {
      * @since 1.0
      */
     List<ViewCartDto> getCartProduct(Map<String, String> cart);
+
+    /**
      * 주문에 사용될 상품 관련 데이터 리스트를 반환합니다.
      *
      * @param orderProducts 구독 상품 + 수량
