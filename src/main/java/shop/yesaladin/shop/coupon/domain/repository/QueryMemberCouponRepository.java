@@ -27,9 +27,12 @@ public interface QueryMemberCouponRepository {
      * 회원의 로그인 아이디로 회원을 쿠폰 목록을 가져옵니다.
      *
      * @param memberId 회원의 로그인 아이디
+     * @param usable 사용 가능 여부
      * @return 회원이 가진 쿠폰 리스트
      */
-    Page<MemberCoupon> findMemberCouponByMemberId(Pageable pageable, String memberId);
+    Page<MemberCoupon> findMemberCouponByMemberId(Pageable pageable, String memberId,
+            boolean usable
+    );
 
     /**
      * 쿠폰 코드 리스트를 이용하여 회원의 쿠폰 리스트를 조회합니다.

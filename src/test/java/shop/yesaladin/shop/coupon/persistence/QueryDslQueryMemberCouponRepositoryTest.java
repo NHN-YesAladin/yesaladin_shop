@@ -1,7 +1,10 @@
 package shop.yesaladin.shop.coupon.persistence;
 
 
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -11,8 +14,10 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,21 +33,27 @@ class QueryDslQueryMemberCouponRepositoryTest {
     private EntityManager em;
     @Autowired
     private QueryDslQueryMemberCouponRepository queryDslQueryMemberCouponRepository;
+    @MockBean
+    private Clock clock;
     private Member member;
     private static final String testCouponGroupCode = "test-coupon-group";
 
     @BeforeEach
     void setup() {
+        Mockito.when(clock.instant()).thenReturn(Instant.parse("2023-02-11T00:00:00.000Z"));
+        Mockito.when(clock.getZone()).thenReturn(ZoneId.of("UTC"));
         member = DummyMember.member();
-        MemberCoupon memberCoupon = MemberCoupon.builder()
-                .member(member)
-                .couponCode("123")
-                .couponGroupCode(testCouponGroupCode)
-                .isUsed(false)
-                .expirationDate(LocalDate.of(2023, 2, 1))
-                .build();
         em.persist(member);
-        em.persist(memberCoupon);
+        for (int i = 0; i < 20; i++) {
+            MemberCoupon memberCoupon = MemberCoupon.builder()
+                    .member(member)
+                    .couponCode("123" + i)
+                    .couponGroupCode(testCouponGroupCode)
+                    .isUsed(i % 2 == 0)
+                    .expirationDate(LocalDate.of(2023, 2, i + 1))
+                    .build();
+            em.persist(memberCoupon);
+        }
         em.flush();
         em.clear();
     }
@@ -74,19 +85,37 @@ class QueryDslQueryMemberCouponRepositoryTest {
     }
 
     @Test
-    @DisplayName("회원이 가지고 있는 쿠폰 정보를 가져온다")
-    void findMemberCouponByMemberId() {
+    @DisplayName("회원이 가지고 있는 사용 가능한 쿠폰 정보를 가져온다")
+    void findUsableMemberCouponByMemberId() {
         // when
         Page<MemberCoupon> actual = queryDslQueryMemberCouponRepository.findMemberCouponByMemberId(
                 PageRequest.of(0, 10),
-                member.getLoginId()
+                member.getLoginId(),
+                true
         );
+
         // then
-        Assertions.assertThat(actual).hasSize(1);
-        Assertions.assertThat(actual.getContent().get(0).getCouponCode()).isEqualTo("123");
-        Assertions.assertThat(actual.getContent().get(0).isUsed()).isFalse();
-        Assertions.assertThat(actual.getContent().get(0).getExpirationDate())
-                .isEqualTo(LocalDate.of(2023, 2, 1));
+        Assertions.assertThat(actual).hasSize(5);
+        Assertions.assertThat(actual.getContent())
+                .allMatch(actualElement -> !actualElement.isUsed()
+                        && !actualElement.getExpirationDate().isBefore(LocalDate.now(clock)));
+    }
+
+    @Test
+    @DisplayName("회원이 가지고 있는 사용 불가능한 쿠폰 정보를 가져온다")
+    void findUnusableMemberCouponByMemberId() {
+        // when
+        Page<MemberCoupon> actual = queryDslQueryMemberCouponRepository.findMemberCouponByMemberId(
+                PageRequest.of(0, 20),
+                member.getLoginId(),
+                false
+        );
+
+        // then
+        Assertions.assertThat(actual).hasSize(15);
+        Assertions.assertThat(actual.getContent())
+                .allMatch(actualElement -> actualElement.isUsed()
+                        || actualElement.getExpirationDate().isBefore(LocalDate.now(clock)));
     }
 
     @Test

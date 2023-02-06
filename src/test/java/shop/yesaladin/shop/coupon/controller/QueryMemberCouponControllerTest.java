@@ -65,7 +65,8 @@ class QueryMemberCouponControllerTest {
         ));
         Mockito.when(queryMemberCouponService.getMemberCouponSummaryList(
                         Mockito.any(),
-                        Mockito.anyString()
+                        Mockito.anyString(),
+                        Mockito.eq(true)
                 ))
                 .thenReturn(PaginatedResponseDto.<MemberCouponSummaryDto>builder()
                         .dataList(result)
@@ -81,7 +82,7 @@ class QueryMemberCouponControllerTest {
         // then
         Mockito.verify(queryMemberCouponService, Mockito.times(1))
                 .getMemberCouponSummaryList(Mockito.argThat(arg -> arg.getPageSize() == 20
-                        && arg.getPageNumber() == 0), Mockito.eq("loginId"));
+                        && arg.getPageNumber() == 0), Mockito.eq("loginId"), Mockito.eq(true));
         actual.andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.success").value(true))

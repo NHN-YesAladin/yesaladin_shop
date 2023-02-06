@@ -1,8 +1,11 @@
 package shop.yesaladin.shop.coupon.persistence;
 
 
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.time.Clock;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -25,11 +28,11 @@ import shop.yesaladin.shop.coupon.domain.repository.QueryMemberCouponRepository;
 public class QueryDslQueryMemberCouponRepository implements QueryMemberCouponRepository {
 
     private final JPAQueryFactory queryFactory;
+    private final Clock clock;
 
     @Override
     public boolean existsByMemberAndCouponGroupCodeList(
-            String memberId,
-            List<String> couponGroupCodeList
+            String memberId, List<String> couponGroupCodeList
     ) {
         QMemberCoupon memberCoupon = QMemberCoupon.memberCoupon;
 
@@ -41,12 +44,20 @@ public class QueryDslQueryMemberCouponRepository implements QueryMemberCouponRep
     }
 
     @Override
-    public Page<MemberCoupon> findMemberCouponByMemberId(Pageable pageable, String memberId) {
+    public Page<MemberCoupon> findMemberCouponByMemberId(
+            Pageable pageable, String memberId, boolean usable
+    ) {
         QMemberCoupon memberCoupon = QMemberCoupon.memberCoupon;
+        LocalDate today = LocalDate.now(clock);
+        BooleanExpression usableCondition = memberCoupon.isUsed.eq(false)
+                .and(memberCoupon.expirationDate.goe(today));
+        BooleanExpression unusableCondition = memberCoupon.isUsed.eq(true)
+                .or(memberCoupon.expirationDate.before(today));
 
         List<MemberCoupon> memberCouponList = queryFactory.select(memberCoupon)
                 .from(memberCoupon)
                 .where(memberCoupon.member.loginId.eq(memberId))
+                .where(usable ? usableCondition : unusableCondition)
                 .orderBy(memberCoupon.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
