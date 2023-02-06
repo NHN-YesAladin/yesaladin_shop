@@ -1,10 +1,5 @@
 package shop.yesaladin.shop.product.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -56,6 +51,24 @@ public class QueryProductServiceImpl implements QueryProductService {
     private final QueryPublishService queryPublishService;
     private final QueryProductTagService queryProductTagService;
     private final QueryProductCategoryService queryProductCategoryService;
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public ProductOnlyTitleDto findTitleByIsbn(String isbn) {
+        ProductOnlyTitleDto productOnlyTitleDto = queryProductRepository.findTitleByIsbn(isbn);
+        if (Objects.isNull(productOnlyTitleDto)) {
+            throw new ClientException(
+                    ErrorCode.PRODUCT_NOT_FOUND,
+                    "Product not found with isbn : " + isbn
+            );
+        }
+        return productOnlyTitleDto;
+    }
+
+    // TODO: ResponseDto 수정
 
     private List<String> getIsbnList(List<ProductOrderRequestDto> products) {
         return products
