@@ -18,5 +18,5 @@ public class OrderPaymentResponseDto {
 
     private String ordererName;
     private String address;
-    
+
 }

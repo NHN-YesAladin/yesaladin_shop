@@ -2,6 +2,7 @@ package shop.yesaladin.shop.product.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -15,13 +16,13 @@ import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 import shop.yesaladin.shop.category.service.inter.QueryProductCategoryService;
 import shop.yesaladin.shop.product.domain.model.Product;
-import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
 import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
 import shop.yesaladin.shop.product.dto.ProductModifyDto;
 import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
-import shop.yesaladin.shop.product.dto.ProductOrderResponseDto;
+import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
 import shop.yesaladin.shop.product.dto.ProductsResponseDto;
+import shop.yesaladin.shop.product.dto.SubscribeProductOrderResponseDto;
 import shop.yesaladin.shop.product.exception.ProductNotFoundException;
 import shop.yesaladin.shop.product.service.inter.QueryProductService;
 import shop.yesaladin.shop.publish.dto.PublishResponseDto;
@@ -54,6 +55,13 @@ public class QueryProductServiceImpl implements QueryProductService {
     private final QueryPublishService queryPublishService;
     private final QueryProductTagService queryProductTagService;
     private final QueryProductCategoryService queryProductCategoryService;
+
+    private List<String> getIsbnList(List<ProductOrderRequestDto> products) {
+        return products
+                .stream()
+                .map(ProductOrderRequestDto::getIsbn)
+                .collect(Collectors.toList());
+    }
 
     /**
      * {@inheritDoc}
@@ -328,19 +336,13 @@ public class QueryProductServiceImpl implements QueryProductService {
      */
     @Override
     @Transactional(readOnly = true)
-    public List<ProductOrderResponseDto> getByIsbnList(List<ProductOrderRequestDto> products) {
-        List<String> isbnList = getIsbnList(products);
-        List<ProductOrderResponseDto> result = queryProductRepository.getByIsbnList(isbnList);
+    public List<ProductOrderSheetResponseDto> getByOrderProducts(Map<String, Integer> orderProduct) {
+        List<String> isbnList = new ArrayList<>(orderProduct.keySet());
 
-        result.forEach(x -> x.setQuantity(products));
+        List<ProductOrderSheetResponseDto> result = queryProductRepository.getByIsbnList(isbnList);
 
-        return result;
-    }
-
-    private static List<String> getIsbnList(List<ProductOrderRequestDto> products) {
-        return products
-                .stream()
-                .map(ProductOrderRequestDto::getIsbn)
+        return result.stream()
+                .peek(product -> product.setQuantity(orderProduct.get(product.getIsbn())))
                 .collect(Collectors.toList());
     }
 
@@ -349,20 +351,26 @@ public class QueryProductServiceImpl implements QueryProductService {
      */
     @Override
     @Transactional(readOnly = true)
-    public SubscribeProduct findIssnByIsbn(ProductOrderRequestDto orderProduct) {
+    public SubscribeProductOrderResponseDto getIssnByOrderProduct(ProductOrderRequestDto orderProduct) {
         String isbn = orderProduct.getIsbn();
         int quantity = orderProduct.getQuantity();
+
         Product product = queryProductRepository.findOrderProductByIsbn(isbn, quantity)
                 .orElseThrow(() -> new ClientException(
                         ErrorCode.PRODUCT_NOT_FOUND,
                         "Product not found with isbn : " + isbn + "."
                 ));
+        checkValidSubscribeProducts(isbn, product);
+
+        return new SubscribeProductOrderResponseDto(product);
+    }
+
+    private void checkValidSubscribeProducts(String isbn, Product product) {
         if (!product.isSubscriptionAvailable()) {
             throw new ClientException(
                     ErrorCode.PRODUCT_NOT_SUBSCRIBE_PRODUCT,
                     "Product with isbn(" + isbn + ") is not a subscribe product."
             );
         }
-        return product.getSubscribeProduct();
     }
 }

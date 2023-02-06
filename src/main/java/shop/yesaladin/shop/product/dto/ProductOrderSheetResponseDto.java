@@ -1,7 +1,5 @@
 package shop.yesaladin.shop.product.dto;
 
-import java.util.List;
-import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -13,23 +11,23 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public class ProductOrderResponseDto {
+public class ProductOrderSheetResponseDto {
 
     private Long productId;
     private String isbn;
     private String title;
     private Long actualPrice;
     private int discountRate;
-    private int expectedPoint;
+    private Long expectedPoint;
     private int quantity;
 
-    public ProductOrderResponseDto(
+    public ProductOrderSheetResponseDto(
             Long productId,
             String isbn,
             String title,
             Long actualPrice,
             int discountRate,
-            int expectedPoint
+            Long expectedPoint
     ) {
         this.productId = productId;
         this.isbn = isbn;
@@ -39,18 +37,7 @@ public class ProductOrderResponseDto {
         this.expectedPoint = expectedPoint;
     }
 
-    /**
-     * 주문상품의 수량을 저장합니다.
-     *
-     * @param request 상품 정보
-     * @author 최예린
-     * @since 1.0
-     */
-    public void setQuantity(List<ProductOrderRequestDto> request) {
-        this.quantity = request.stream()
-                .filter(x -> Objects.equals(this.isbn, x.getIsbn()))
-                .map(ProductOrderRequestDto::getQuantity)
-                .findFirst()
-                .orElse(0);
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 }

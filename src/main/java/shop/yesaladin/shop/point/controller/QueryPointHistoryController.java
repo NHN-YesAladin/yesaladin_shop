@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.common.dto.ResponseDto;
@@ -43,7 +42,10 @@ public class QueryPointHistoryController {
     @GetMapping("/v1/points")
     @CrossOrigin(origins = {"http://localhost:9090", "https://www.yesaladin.shop"})
     public ResponseDto<Long> getMemberPoint(Authentication authentication) {
-        String loginId = AuthorityUtils.getAuthorizedUserName(authentication);
+        String loginId = AuthorityUtils.getAuthorizedUserName(
+                authentication,
+                "Only authorized user can get their own point."
+        );
 
         long memberPoint = queryPointHistoryService.getMemberPoint(loginId);
 
@@ -70,7 +72,10 @@ public class QueryPointHistoryController {
             @PageableDefault Pageable pageable,
             Authentication authentication
     ) {
-        String loginId = AuthorityUtils.getAuthorizedUserName(authentication);
+        String loginId = AuthorityUtils.getAuthorizedUserName(
+                authentication,
+                "Only authorized user can get their point history."
+        );
 
         Page<PointHistoryResponseDto> response = getPointHistoriesWith(
                 code,

@@ -1,9 +1,8 @@
 package shop.yesaladin.shop.product.domain.repository;
 
+import java.util.List;
 import shop.yesaladin.shop.product.dto.SearchedProductManagerResponseDto;
 import shop.yesaladin.shop.product.dto.SearchedProductResponseDto;
-
-import java.util.List;
 
 /**
  * 상품 검색 레포지토리의 인터페이스
@@ -34,7 +33,11 @@ public interface SearchProductRepository {
      * @author : 김선홍
      * @since : 1.0
      */
-    SearchedProductManagerResponseDto searchProductsByCategoryName(String name, int offset, int size);
+    SearchedProductManagerResponseDto searchProductsByCategoryName(
+            String name,
+            int offset,
+            int size
+    );
 
     /**
      * 상품 이름으로 상품을 검색하는 메서드
@@ -175,5 +178,10 @@ public interface SearchProductRepository {
      * @author : 김선홍
      * @since : 1.0
      */
-    SearchedProductManagerResponseDto searchProductByCategory(String field, String value, int offset, int size);
+    SearchedProductManagerResponseDto searchProductByCategory(
+            String field,
+            String value,
+            int offset,
+            int size
+    );
 }

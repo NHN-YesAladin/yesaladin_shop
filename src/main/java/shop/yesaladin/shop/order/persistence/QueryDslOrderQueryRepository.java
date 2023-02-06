@@ -15,7 +15,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
-import shop.yesaladin.shop.member.domain.model.querydsl.QMemberAddress;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
 import shop.yesaladin.shop.order.domain.model.querydsl.QMemberOrder;
@@ -189,7 +188,6 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
 
     /**
      * {@inheritDoc}
-     *
      */
     @Override
     public Page<OrderSummaryResponseDto> findOrdersInPeriodByMemberId(
@@ -244,7 +242,6 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
 
     /**
      * {@inheritDoc}
-     *
      */
     @Override
     public Optional<OrderPaymentResponseDto> findPaymentDtoByMemberOrderId(long orderId) {

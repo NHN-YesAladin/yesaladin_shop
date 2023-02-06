@@ -24,7 +24,7 @@ public class OrderMemberCreateRequestDto extends OrderCreateRequestDto {
 
     @NotNull
     protected Long ordererAddressId;
-    protected List<Long> orderCoupons;
+    protected List<String> orderCoupons;
     @Min(value = 0)
     protected long orderPoint;
 
@@ -35,7 +35,7 @@ public class OrderMemberCreateRequestDto extends OrderCreateRequestDto {
             @Min(value = 0) int shippingFee,
             @Min(value = 0) int wrappingFee,
             Long ordererAddressId,
-            List<Long> orderCoupons,
+            List<String> orderCoupons,
             long orderPoint
     ) {
         super(expectedShippingDate, orderProducts, productTotalAmount, shippingFee, wrappingFee);

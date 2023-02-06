@@ -7,6 +7,7 @@ package shop.yesaladin.shop.product.exception;
  * @since 1.0
  */
 public class ProductNotFoundException extends RuntimeException {
+
     public ProductNotFoundException(Long id) {
         super("Product " + id + "(ID) is not found.");
     }

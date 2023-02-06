@@ -6,10 +6,13 @@ import java.time.LocalDateTime;
 import java.time.chrono.ChronoLocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import shop.yesaladin.common.code.ErrorCode;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberAddressService;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.order.domain.model.MemberOrder;
@@ -22,17 +25,20 @@ import shop.yesaladin.shop.order.domain.model.Subscribe;
 import shop.yesaladin.shop.order.domain.repository.CommandOrderProductRepository;
 import shop.yesaladin.shop.order.domain.repository.CommandOrderRepository;
 import shop.yesaladin.shop.order.domain.repository.CommandOrderStatusChangeLogRepository;
+import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
 import shop.yesaladin.shop.order.dto.OrderCreateRequestDto;
 import shop.yesaladin.shop.order.dto.OrderCreateResponseDto;
 import shop.yesaladin.shop.order.dto.OrderMemberCreateRequestDto;
 import shop.yesaladin.shop.order.dto.OrderNonMemberCreateRequestDto;
 import shop.yesaladin.shop.order.dto.OrderSubscribeCreateRequestDto;
+import shop.yesaladin.shop.order.dto.OrderUpdateResponseDto;
+import shop.yesaladin.shop.order.service.inter.CommandOrderCouponService;
 import shop.yesaladin.shop.order.service.inter.CommandOrderService;
 import shop.yesaladin.shop.point.domain.model.PointReasonCode;
 import shop.yesaladin.shop.point.dto.PointHistoryRequestDto;
 import shop.yesaladin.shop.point.service.inter.CommandPointHistoryService;
 import shop.yesaladin.shop.product.domain.model.Product;
-import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
+import shop.yesaladin.shop.product.dto.SubscribeProductOrderResponseDto;
 import shop.yesaladin.shop.product.service.inter.CommandProductService;
 import shop.yesaladin.shop.product.service.inter.QueryProductService;
 
@@ -49,9 +55,11 @@ public class CommandOrderServiceImpl implements CommandOrderService {
     private final CommandOrderRepository<NonMemberOrder> nonMemberOrderCommandOrderRepository;
     private final CommandOrderRepository<MemberOrder> memberOrderCommandOrderRepository;
     private final CommandOrderRepository<Subscribe> subscribeCommandOrderRepository;
+    private final QueryOrderRepository queryOrderRepository;
 
     private final CommandOrderStatusChangeLogRepository commandOrderStatusChangeLogRepository;
     private final CommandOrderProductRepository commandOrderProductRepository;
+    private final CommandOrderCouponService commandOrderCouponService;
     private final CommandPointHistoryService commandPointHistoryService;
     private final CommandProductService commandProductService;
     private final QueryMemberAddressService queryMemberAddressService;
@@ -94,7 +102,10 @@ public class CommandOrderServiceImpl implements CommandOrderService {
         Order savedOrder = createMemberOrder(request, orderDateTime, products, loginId);
 
         createOrderProduct(request, products, savedOrder);
+        createOrderCoupon(request, savedOrder);
+
         createUsePointHistory(request.getOrderPoint(), loginId);
+
         createOrderStatusChangeLog(orderDateTime, savedOrder);
 
         return OrderCreateResponseDto.fromEntity(savedOrder);
@@ -114,11 +125,48 @@ public class CommandOrderServiceImpl implements CommandOrderService {
         Order savedOrder = creatSubscribe(request, orderDateTime, loginId);
 
         createUsePointHistory(request.getOrderPoint(), loginId);
+        createOrderCoupon(request, savedOrder);
+
         createOrderStatusChangeLog(orderDateTime, savedOrder);
 
         return OrderCreateResponseDto.fromEntity(savedOrder);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public OrderUpdateResponseDto hideOnOrder(String loginId, Long orderId, boolean hide) {
+        MemberOrder order = tryGetMemberOrderById(orderId);
+
+        checkUserIsOwnerOfOrder(loginId, orderId, order);
+
+        if (hide) {
+            order.hiddenOn();
+        } else {
+            order.hiddenOff();
+        }
+
+        return OrderUpdateResponseDto.fromEntity(order);
+    }
+
+    private MemberOrder tryGetMemberOrderById(Long orderId) {
+        return (MemberOrder) queryOrderRepository.findById(orderId)
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.ORDER_NOT_FOUND,
+                        "Order not found with id : " + orderId
+                ));
+    }
+
+    private void checkUserIsOwnerOfOrder(String loginId, Long orderId, MemberOrder order) {
+        if (!Objects.equals(order.getMember().getLoginId(), (loginId))) {
+            throw new ClientException(
+                    ErrorCode.ORDER_BAD_REQUEST,
+                    loginId + " is not a owner of order(" + orderId + ")."
+            );
+        }
+    }
 
     private Order createNonMemberOrder(
             OrderNonMemberCreateRequestDto request,
@@ -156,18 +204,18 @@ public class CommandOrderServiceImpl implements CommandOrderService {
             LocalDateTime orderDateTime,
             String loginId
     ) {
-        SubscribeProduct subscribeProduct = queryProductService.findIssnByIsbn(request.getOrderProducts()
-                .get(0));
+        SubscribeProductOrderResponseDto subscribeProductOrder = queryProductService.getIssnByOrderProduct(
+                request.getOrderProducts().get(0));
 
         Subscribe subscribe = request.toEntity(
-                // TODO 구독 상품의 주문 명 -> 구독 상품의 총칭 필요
-                subscribeProduct.getISSN(),
+                subscribeProductOrder.getTitle()
+                        .replace("((\\d|1[012])(월호|월))|(no.*(\\d|1[012]))", ""),
                 generateOrderNumber(orderDateTime),
                 orderDateTime,
                 queryMemberService.findByLoginId(loginId),
                 queryMemberAddressService.findById(request.getOrdererAddressId()),
                 generateNextRenewalDate(request.getExpectedDay(), orderDateTime),
-                subscribeProduct
+                subscribeProductOrder.getSubscribeProduct()
         );
         return subscribeCommandOrderRepository.save(subscribe);
     }
@@ -194,6 +242,15 @@ public class CommandOrderServiceImpl implements CommandOrderService {
                     orderPoint,
                     PointReasonCode.USE_ORDER
             ));
+        }
+    }
+
+    private void createOrderCoupon(OrderMemberCreateRequestDto request, Order savedOrder) {
+        if (!request.getOrderCoupons().isEmpty()) {
+            commandOrderCouponService.createOrderCoupons(
+                    savedOrder.getId(),
+                    request.getOrderCoupons()
+            );
         }
     }
 

@@ -33,7 +33,7 @@ public class OrderSubscribeCreateRequestDto extends OrderMemberCreateRequestDto 
             int shippingFee,
             int wrappingFee,
             Long ordererAddressId,
-            List<Long> orderCoupons,
+            List<String> orderCoupons,
             long orderPoint,
             Integer expectedDay,
             Integer intervalMonth

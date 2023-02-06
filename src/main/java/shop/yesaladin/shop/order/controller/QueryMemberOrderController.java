@@ -35,7 +35,12 @@ public class QueryMemberOrderController {
     ) {
         // TODO AOP로 멤버 id 가져오기
         Long memberId = 1L;
-        log.info("startDate: {} | endDate : {}  | pageable : {}", queryDto.getStartDate(), queryDto.getEndDate(), pageable);
+        log.info(
+                "startDate: {} | endDate : {}  | pageable : {}",
+                queryDto.getStartDate(),
+                queryDto.getEndDate(),
+                pageable
+        );
 
         Page<OrderSummaryResponseDto> data = queryOrderService.getOrderListInPeriodByMemberId(
                 queryDto,

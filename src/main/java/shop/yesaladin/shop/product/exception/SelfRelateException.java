@@ -7,6 +7,7 @@ package shop.yesaladin.shop.product.exception;
  * @since 1.0
  */
 public class SelfRelateException extends RuntimeException {
+
     public SelfRelateException(Long id) {
         super("Product " + id + " can't self relate.");
     }

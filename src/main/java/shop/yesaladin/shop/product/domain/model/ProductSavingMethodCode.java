@@ -1,8 +1,5 @@
 package shop.yesaladin.shop.product.domain.model;
 
-import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
