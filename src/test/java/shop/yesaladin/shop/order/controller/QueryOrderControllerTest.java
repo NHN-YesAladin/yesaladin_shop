@@ -19,6 +19,7 @@ import static shop.yesaladin.shop.docs.DocumentFormatGenerator.getDateFormat;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
@@ -42,6 +43,7 @@ import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 import shop.yesaladin.shop.order.service.inter.QueryOrderService;
+import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
 
 @AutoConfigureRestDocs
 @WebMvcTest(QueryOrderController.class)
@@ -148,5 +150,37 @@ class QueryOrderControllerTest {
                                 .description("주문 구분")
                 )
         ));
+    }
+
+    @Test
+    void getOrderSheetData_success() throws Exception {
+        //given
+        List<ProductOrderSheetResponseDto> orderProducts = new ArrayList<>();
+
+        List<String> titles = List.of("책 1번", "책 2번", "책 3번", "책 4번", "책 5번");
+        for (int i = 0; i < 5; i++) {
+            String isbn = "12342736-4812204";
+            orderProducts.add(new ProductOrderSheetResponseDto(
+                    (long) i,
+                    isbn + i,
+                    titles.get(i),
+                    10000L,
+                    10,
+                    10L,
+                    1
+            ));
+        }
+
+        //when
+        ResultActions result = mockMvc.perform(get("/v1/order-sheets")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("productList", objectMapper.writeValueAsString(orderProducts))
+                .param("page", "1"));
+
+        //then
+
+
+        //docs
     }
 }

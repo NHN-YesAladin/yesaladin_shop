@@ -28,6 +28,7 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @Table(name = "subscribe_order_lists")
 public class SubscribeOrderList {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

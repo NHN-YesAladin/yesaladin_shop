@@ -2,7 +2,7 @@ package shop.yesaladin.shop.order.persistence.dummy;
 
 
 import shop.yesaladin.shop.member.domain.model.Member;
-import shop.yesaladin.shop.member.domain.model.MemberCoupon;
+import shop.yesaladin.shop.coupon.domain.model.MemberCoupon;
 
 public class DummyMemberCoupon {
 

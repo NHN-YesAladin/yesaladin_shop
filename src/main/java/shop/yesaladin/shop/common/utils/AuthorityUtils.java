@@ -1,5 +1,7 @@
 package shop.yesaladin.shop.common.utils;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import shop.yesaladin.common.code.ErrorCode;
@@ -11,6 +13,7 @@ import shop.yesaladin.common.exception.ClientException;
  * @author 최예린
  * @since 1.0
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AuthorityUtils {
 
     private static final String ROLE_USER = "ROLE_USER";
@@ -21,30 +24,27 @@ public class AuthorityUtils {
      * 인증된 요청인지 검증하고, 해당 인증의 username을 반환합니다.
      *
      * @param authentication 인증
+     * @param errorMessage   인증 실패시 로그에 남길 에러 메세지
      * @return 인증된 username
      * @throws shop.yesaladin.common.exception.ClientException 인증되지 않은 요청입니다.
      * @author 최예린
      * @since 1.0
      */
-    public static String getAuthorizedUserName(Authentication authentication) {
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-        if (!AuthorityUtils.isAuthorized(userDetails)) {
-            throw new ClientException(ErrorCode.UNAUTHORIZED, "Unauthorized client.");
+    public static String getAuthorizedUserName(Authentication authentication, String errorMessage) {
+        if (!AuthorityUtils.isAuthorized(authentication)) {
+            throw new ClientException(ErrorCode.UNAUTHORIZED, errorMessage);
         }
-        return userDetails.getUsername();
+        return authentication.getName();
     }
 
     /**
      * 인증이 되지 않은 요청인지 검증합니다.
      *
-     * @param authentication
+     * @param authentication 인증
      * @throws shop.yesaladin.common.exception.ClientException 인증된 요청입니다.
      */
     public static void checkAnonymousClient(Authentication authentication) {
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-        if (!AuthorityUtils.isAnonymous(userDetails)) {
+        if (!AuthorityUtils.isAnonymous(authentication)) {
             throw new ClientException(ErrorCode.UNAUTHORIZED, "Unauthorized client.");
         }
     }
@@ -52,13 +52,13 @@ public class AuthorityUtils {
     /**
      * 인증된 요청인지 아닌지 반환합니다.
      *
-     * @param userDetails 인증정보
+     * @param authentication 인증정보
      * @return 인증여부
      * @author 최예린
      * @since 1.0
      */
-    public static boolean isAuthorized(UserDetails userDetails) {
-        return userDetails.getAuthorities()
+    public static boolean isAuthorized(Authentication authentication) {
+        return authentication.getAuthorities()
                 .stream()
                 .noneMatch(x -> x.getAuthority().equals(ROLE_ANONYMOUS));
     }
@@ -66,11 +66,11 @@ public class AuthorityUtils {
     /**
      * 익명으로부터의 요청인지 아닌지 반환합니다.
      *
-     * @param userDetails 인증정보
+     * @param authentication 인증정보
      * @return 익명 여부
      */
-    private static boolean isAnonymous(UserDetails userDetails) {
-        return userDetails.getAuthorities()
+    private static boolean isAnonymous(Authentication authentication) {
+        return authentication.getAuthorities()
                 .stream()
                 .anyMatch(x -> x.getAuthority().equals(ROLE_ANONYMOUS));
     }
@@ -94,9 +94,7 @@ public class AuthorityUtils {
      * @return 관리자 여부
      */
     public static boolean isAdmin(Authentication authentication) {
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-        return userDetails.getAuthorities()
+        return authentication.getAuthorities()
                 .stream()
                 .anyMatch(x -> x.getAuthority().equals(ROLE_ADMIN));
     }

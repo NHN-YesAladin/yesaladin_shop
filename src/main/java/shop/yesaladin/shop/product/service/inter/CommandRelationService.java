@@ -12,8 +12,8 @@ public interface CommandRelationService {
 
 
     /**
-     * 상품 연관관계를 생성하여 등록하고 상품 연관관계 Dto를 반환합니다.
-     * 양쪽 다 연결됩니다. (productMain - productSub / productSub - productMain)
+     * 상품 연관관계를 생성하여 등록하고 상품 연관관계 Dto를 반환합니다. 양쪽 다 연결됩니다. (productMain - productSub / productSub -
+     * productMain)
      *
      * @param productMainId 연관관계를 이을 메인 상품 Id
      * @param productSubId  연관관계를 이을 서브 상품 Id
@@ -24,8 +24,7 @@ public interface CommandRelationService {
     ProductOnlyIdDto create(Long productMainId, Long productSubId);
 
     /**
-     * 상품 연관관계를 삭제합니다.
-     * 양쪽 다 삭제됩니다. (productMain - productSub / productSub - productMain)
+     * 상품 연관관계를 삭제합니다. 양쪽 다 삭제됩니다. (productMain - productSub / productSub - productMain)
      *
      * @param productMainId 연관관계를 끊을 메인 상품 Id
      * @param productSubId  연관관계를 끊을 서브 상품 Id

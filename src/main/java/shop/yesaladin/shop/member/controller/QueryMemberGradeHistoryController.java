@@ -47,7 +47,10 @@ public class QueryMemberGradeHistoryController {
             Pageable pageable,
             Authentication authentication
     ) {
-        String loginId = AuthorityUtils.getAuthorizedUserName(authentication);
+        String loginId = AuthorityUtils.getAuthorizedUserName(
+                authentication,
+                "Only authorized user can get grade history."
+        );
 
         Page<MemberGradeHistoryQueryResponseDto> response = queryMemberGradeHistoryService.getByLoginId(
                 loginId,

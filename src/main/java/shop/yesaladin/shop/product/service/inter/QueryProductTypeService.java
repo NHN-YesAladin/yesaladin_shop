@@ -1,8 +1,7 @@
 package shop.yesaladin.shop.product.service.inter;
 
-import shop.yesaladin.shop.product.dto.ProductTypeResponseDto;
-
 import java.util.List;
+import shop.yesaladin.shop.product.dto.ProductTypeResponseDto;
 
 /**
  * 상품유형 조회를 위한 Service Interface 입니다.

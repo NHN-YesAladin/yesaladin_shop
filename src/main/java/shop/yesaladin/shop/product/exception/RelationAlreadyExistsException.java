@@ -9,6 +9,7 @@ package shop.yesaladin.shop.product.exception;
 public class RelationAlreadyExistsException extends RuntimeException {
 
     public RelationAlreadyExistsException(Long productMainId, Long productSubId) {
-        super("ProductMain " + productMainId + ", ProductSub " + productSubId + " is already exists.");
+        super("ProductMain " + productMainId + ", ProductSub " + productSubId
+                + " is already exists.");
     }
 }

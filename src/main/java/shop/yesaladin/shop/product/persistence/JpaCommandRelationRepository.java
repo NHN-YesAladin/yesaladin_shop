@@ -12,4 +12,5 @@ import shop.yesaladin.shop.product.domain.repository.CommandRelationRepository;
  */
 public interface JpaCommandRelationRepository extends Repository<Relation, Relation.Pk>,
         CommandRelationRepository {
+
 }

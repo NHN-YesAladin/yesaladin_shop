@@ -22,6 +22,7 @@ import shop.yesaladin.shop.order.domain.model.querydsl.QOrder;
 import shop.yesaladin.shop.order.domain.model.querydsl.QOrderProduct;
 import shop.yesaladin.shop.order.domain.model.querydsl.QOrderStatusChangeLog;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
+import shop.yesaladin.shop.order.dto.OrderPaymentResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryResponseDto;
 
@@ -185,6 +186,9 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
                 .fetchFirst());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Page<OrderSummaryResponseDto> findOrdersInPeriodByMemberId(
             LocalDate startDate,
@@ -233,6 +237,24 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
                 )));
 
         return PageableExecutionUtils.getPage(data, pageable, countQuery::fetchFirst);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Optional<OrderPaymentResponseDto> findPaymentDtoByMemberOrderId(long orderId) {
+        QMemberOrder memberOrder = QMemberOrder.memberOrder;
+        return Optional.ofNullable(queryFactory.select(Projections.constructor(
+                        OrderPaymentResponseDto.class,
+                        memberOrder.member.name,
+                        memberOrder.memberAddress.address
+                ))
+                .from(memberOrder)
+                .where(memberOrder.id.eq(orderId))
+                .fetchFirst());
+
     }
 
 

@@ -29,6 +29,7 @@ import shop.yesaladin.shop.order.domain.model.OrderStatusChangeLog;
 import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
 import shop.yesaladin.shop.order.domain.model.Subscribe;
 import shop.yesaladin.shop.order.domain.model.SubscribeOrderList;
+import shop.yesaladin.shop.order.dto.OrderPaymentResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryResponseDto;
 import shop.yesaladin.shop.product.domain.model.Product;
@@ -393,6 +394,23 @@ class QueryDslOrderQueryRepositoryTest {
         // then
         Assertions.assertThat(actual.get()).hasSize(5);
         Assertions.assertThat(actual.getContent()).hasSize(pageSize);
+    }
+
+    @Test
+    @DisplayName("회원 주문 번호를 통해 결제 이후의 제공할 정보를 조회한다.")
+    void findPaymentDtoByOrderId() throws Exception {
+        // given
+        MemberOrder memberOrder = memberOrderList.get(0);
+
+        // when
+        Optional<OrderPaymentResponseDto> responseDto = queryRepository.findPaymentDtoByMemberOrderId(
+                memberOrder.getId());
+
+        // then
+        Assertions.assertThat(responseDto.get().getOrdererName())
+                .isEqualTo(memberOrder.getMember().getName());
+        Assertions.assertThat(responseDto.get().getAddress())
+                .isEqualTo(memberOrder.getMemberAddress().getAddress());
     }
 
 }
