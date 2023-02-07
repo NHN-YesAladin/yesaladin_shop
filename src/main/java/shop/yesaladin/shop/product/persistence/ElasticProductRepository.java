@@ -3,8 +3,6 @@ package shop.yesaladin.shop.product.persistence;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
@@ -17,6 +15,9 @@ import shop.yesaladin.shop.product.dto.SearchedProductDto;
 import shop.yesaladin.shop.product.dto.SearchedProductManagerDto;
 import shop.yesaladin.shop.product.dto.SearchedProductManagerResponseDto;
 import shop.yesaladin.shop.product.dto.SearchedProductResponseDto;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 상품 검색 레포지토리
