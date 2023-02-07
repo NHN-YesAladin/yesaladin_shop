@@ -225,6 +225,7 @@ public class QueryProductServiceImpl implements QueryProductService {
                     viewCart.add(new ViewCartDto(
                             product.getId(),
                             Integer.parseInt(cart.get(product.getId().toString())),
+                            product.getIsbn(),
                             product.getThumbnailFile().getUrl(),
                             product.getTitle(),
                             product.getActualPrice(),
