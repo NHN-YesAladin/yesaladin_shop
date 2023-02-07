@@ -3,10 +3,6 @@ package shop.yesaladin.shop.product.persistence;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -16,8 +12,14 @@ import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.ProductTypeCode;
 import shop.yesaladin.shop.product.domain.model.querydsl.QProduct;
 import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
+import shop.yesaladin.shop.product.dto.ProductOnlyTitleDto;
 import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
 import shop.yesaladin.shop.product.exception.ProductTypeCodeNotFoundException;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 
 /**
@@ -34,9 +36,25 @@ public class QueryDslProductRepository implements QueryProductRepository {
     private final JPAQueryFactory queryFactory;
 
     /**
-     * Id를 기준으로 상품을 조회합니다.
-     *
-     * @since 1.0
+     * {@inheritDoc}
+     */
+    @Override
+    public ProductOnlyTitleDto findTitleByIsbn(String isbn) {
+        QProduct product = QProduct.product;
+
+        return queryFactory.select(Projections.constructor(
+                        ProductOnlyTitleDto.class,
+                        product.title
+                ))
+                .from(product)
+                .where(product.isbn.eq(isbn))
+                .fetchFirst();
+    }
+
+    // TODO: ResponseDto 수정
+
+    /**
+     * {@inheritDoc}
      */
     @Override
     public Optional<Product> findById(Long id) {
@@ -51,12 +69,7 @@ public class QueryDslProductRepository implements QueryProductRepository {
     }
 
     /**
-     * ISSN(Unique)기준으로 상품을 조회합니다.
-     *
-     * @param isbn 상품의 isbn (Unique)
-     * @return 조회된 상품 엔터티
-     * @author 이수정
-     * @since 1.0
+     * {@inheritDoc}
      */
     @Override
     public Optional<Product> findByIsbn(String isbn) {
@@ -72,12 +85,7 @@ public class QueryDslProductRepository implements QueryProductRepository {
 
 
     /**
-     * 상품을 Paging하여 관리자용 전체 조회합니다.
-     *
-     * @param pageable page, size 정보를 담은 Pagination을 위한 객체
-     * @return 조회된 상품 엔터티 Page
-     * @author 이수정
-     * @since 1.0
+     * {@inheritDoc}
      */
     @Override
     public Page<Product> findAllForManager(Pageable pageable) {
@@ -99,13 +107,7 @@ public class QueryDslProductRepository implements QueryProductRepository {
     }
 
     /**
-     * 상품을 상품 유형별로 Paging하여 관리자용 전체 조회합니다.
-     *
-     * @param pageable page, size 정보를 담은 Pagination을 위한 객체
-     * @param typeId   조회할 상품 유형 Id
-     * @return 조회된 상품 엔터티 Page
-     * @author 이수정
-     * @since 1.0
+     * {@inheritDoc}
      */
     @Override
     public Page<Product> findAllByTypeIdForManager(Pageable pageable, Integer typeId) {
@@ -137,12 +139,7 @@ public class QueryDslProductRepository implements QueryProductRepository {
     }
 
     /**
-     * 상품을 Paging하여 전체 사용자용 전체 조회합니다.
-     *
-     * @param pageable page, size 정보를 담은 Pagination을 위한 객체
-     * @return 조회된 상품 엔터티 Page
-     * @author 이수정
-     * @since 1.0
+     * {@inheritDoc}
      */
     @Override
     public Page<Product> findAll(Pageable pageable) {
@@ -166,13 +163,7 @@ public class QueryDslProductRepository implements QueryProductRepository {
     }
 
     /**
-     * 상품을 상품 유형별로 Paging하여 전체 사용자용 전체 조회합니다.
-     *
-     * @param pageable page, size 정보를 담은 Pagination을 위한 객체
-     * @param typeId   조회할 상품 유형 Id
-     * @return 조회된 상품 엔터티 Page
-     * @author 이수정
-     * @since 1.0
+     * {@inheritDoc}
      */
     @Override
     public Page<Product> findAllByTypeId(Pageable pageable, Integer typeId) {
