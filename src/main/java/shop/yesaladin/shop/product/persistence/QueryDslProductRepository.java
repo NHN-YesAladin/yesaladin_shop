@@ -14,12 +14,17 @@ import shop.yesaladin.shop.product.domain.model.querydsl.QProduct;
 import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
 import shop.yesaladin.shop.product.dto.ProductOnlyTitleDto;
 import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
+import shop.yesaladin.shop.product.dto.ProductRelationResponseDto;
 import shop.yesaladin.shop.product.exception.ProductTypeCodeNotFoundException;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import shop.yesaladin.shop.publish.domain.model.querydsl.QPublish;
+import shop.yesaladin.shop.publish.domain.model.querydsl.QPublisher;
+import shop.yesaladin.shop.writing.domain.model.querydsl.QAuthor;
+import shop.yesaladin.shop.writing.domain.model.querydsl.QWriting;
 
 
 /**
@@ -257,6 +262,41 @@ public class QueryDslProductRepository implements QueryProductRepository {
                         .and(product.isSale.isTrue())
                         .and(product.quantity.goe(quantities.get(product.isbn.toString()))))
                 .fetch();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<ProductRelationResponseDto> findProductRelationByTitle(
+            String title,
+            Pageable pageable
+    ) {
+        QProduct product = QProduct.product;
+        QWriting writing = QWriting.writing;
+        QAuthor author = QAuthor.author;
+        QPublish publish = QPublish.publish;
+        QPublisher publisher = QPublisher.publisher;
+
+        queryFactory.select(
+                        product.id,
+                        product.isbn,
+                        product.title,
+                        product.actualPrice,
+                        product.discountRate,
+                        product.isForcedOutOfStock,
+                        product.quantity,
+                        product.preferentialShowRanking,
+                        author.name.as("authors"),
+                        publisher.name.as("publisher"),
+                        publish.publishedDate
+                )
+                .from(product, author, publisher, publish)
+                .where(product.title.contains(title).and(product.isDeleted.isFalse()))
+                .leftJoin(writing.product, product).leftJoin(writing.author, author)
+                .leftJoin(publish.product, product).leftJoin(publish.publisher, publisher);
+
+        return null;
     }
 }
 
