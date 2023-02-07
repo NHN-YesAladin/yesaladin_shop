@@ -3,9 +3,14 @@ spring:
     name: yesaladin-shop
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://133.186.151.141:3306/yesaladin_shop_dev?serverTimezone=Asia/Seoul
+    url: jdbc:mysql://133.186.151.141:3306/yesaladin_shop_prod?serverTimezone=Asia/Seoul
     username: yesaladin
     password: PR7QyDl]Ojwaw7Y@
+  redis:
+    host: 133.186.151.141
+    port: 6379
+    password: "*N2vya7H@muDTwdNMR!"
+    database: 26
 
   jpa:
     hibernate:

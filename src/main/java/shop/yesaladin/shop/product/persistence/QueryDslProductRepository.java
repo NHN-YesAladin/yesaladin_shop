@@ -235,7 +235,11 @@ public class QueryDslProductRepository implements QueryProductRepository {
         NumberExpression<Long> expectedEarnedPoint = product.actualPrice.multiply(product.isGivenPoint.when(
                         true)
                 .then(product.givenPointRate.divide(100))
-                .otherwise(product.totalDiscountRate.discountRate.divide(100)));
+                .otherwise(0));
+
+        NumberExpression<Integer> discountRate = product.isSeparatelyDiscount.when(true)
+                .then(product.discountRate)
+                .otherwise(product.totalDiscountRate.discountRate);
 
         return queryFactory.select(Projections.constructor(
                         ProductOrderSheetResponseDto.class,
@@ -243,7 +247,7 @@ public class QueryDslProductRepository implements QueryProductRepository {
                         product.isbn,
                         product.title,
                         product.actualPrice,
-                        product.discountRate,
+                        discountRate,
                         expectedEarnedPoint
                 ))
                 .from(product)

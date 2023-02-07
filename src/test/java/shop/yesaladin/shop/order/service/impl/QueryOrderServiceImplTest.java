@@ -25,6 +25,7 @@ import org.springframework.data.support.PageableExecutionUtils;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.common.exception.InvalidPeriodConditionException;
 import shop.yesaladin.shop.common.exception.PageOffsetOutOfBoundsException;
+import shop.yesaladin.shop.coupon.service.inter.QueryMemberCouponService;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.member.dto.MemberOrderSheetResponseDto;
@@ -52,6 +53,7 @@ class QueryOrderServiceImplTest {
     private QueryMemberService queryMemberService;
     private QueryPointHistoryService queryPointHistoryService;
     private QueryProductService queryProductService;
+    private QueryMemberCouponService queryMemberCouponService;
 
     private final Clock clock = Clock.fixed(
             Instant.parse("2023-01-10T00:00:00.000Z"),
@@ -67,11 +69,14 @@ class QueryOrderServiceImplTest {
         queryProductService = Mockito.mock(QueryProductService.class);
         repository = Mockito.mock(QueryOrderRepository.class);
         queryMemberService = Mockito.mock(QueryMemberService.class);
+        queryMemberCouponService = Mockito.mock(QueryMemberCouponService.class);
+
         service = new QueryOrderServiceImpl(
                 repository,
                 queryMemberService,
                 queryPointHistoryService,
                 queryProductService,
+                queryMemberCouponService,
                 clock
         );
     }
@@ -348,7 +353,7 @@ class QueryOrderServiceImplTest {
         List<String> isbn = new ArrayList<>();
         List<Integer> quantity = new ArrayList<>();
         OrderSheetRequestDto request = new OrderSheetRequestDto(isbn, quantity);
-        MemberOrderSheetResponseDto response = new MemberOrderSheetResponseDto(name, phoneNumber, address);
+        MemberOrderSheetResponseDto response = new MemberOrderSheetResponseDto(name, phoneNumber, address, 7);
 
         Mockito.when(queryPointHistoryService.getMemberPoint(loginId)).thenReturn(amount);
         Mockito.when(queryProductService.getByOrderProducts(any())).thenReturn(new ArrayList<>());

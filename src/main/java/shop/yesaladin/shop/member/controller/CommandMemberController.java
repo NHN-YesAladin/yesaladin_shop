@@ -4,6 +4,7 @@ import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.common.exception.ClientException;
+import shop.yesaladin.shop.common.aspect.annotation.LoginId;
 import shop.yesaladin.shop.common.utils.AuthorityUtils;
 import shop.yesaladin.shop.member.dto.MemberBlockRequestDto;
 import shop.yesaladin.shop.member.dto.MemberBlockResponseDto;
@@ -43,15 +45,6 @@ public class CommandMemberController {
 
     private final CommandMemberService commandMemberService;
 
-    private static void checkAuthorityOfManager(Authentication authentication) {
-        if (!AuthorityUtils.isAdmin(authentication)) {
-            throw new ClientException(
-                    ErrorCode.UNAUTHORIZED,
-                    "Only Admin can block/unblock member."
-            );
-        }
-    }
-
     /**
      * 회원 가입을 위한 Post 요청을 처리 하는 기능 입니다.
      *
@@ -74,9 +67,9 @@ public class CommandMemberController {
     /**
      * 회원 정보 수정을 위한 Post 요청을 처리하는 기능입니다.
      *
-     * @param updateDto      회원 정보 수정을 위한 요청 파라미터
-     * @param bindingResult  유효성 검사
-     * @param authentication 인증
+     * @param updateDto     회원 정보 수정을 위한 요청 파라미터
+     * @param bindingResult 유효성 검사
+     * @param loginId       회원의 아이디
      * @return 수정된 회원 정보를 담은 responseEntity
      * @author 최예린
      * @since 1.0
@@ -85,14 +78,9 @@ public class CommandMemberController {
     public ResponseDto<MemberUpdateResponseDto> updateMember(
             @Valid @RequestBody MemberUpdateRequestDto updateDto,
             BindingResult bindingResult,
-            Authentication authentication
+            @LoginId(required = true) String loginId
     ) {
         checkRequestValidation(bindingResult);
-
-        String loginId = AuthorityUtils.getAuthorizedUserName(
-                authentication,
-                "Only authorized user can update their information."
-        );
 
         MemberUpdateResponseDto response = commandMemberService.update(loginId, updateDto);
 
@@ -109,21 +97,19 @@ public class CommandMemberController {
      * @param loginId        차단할 회원의 아이디
      * @param request        회원 차단 사유
      * @param bindingResult  유효성 검사
-     * @param authentication 인증
+     * @param loginId        회원의 아이디
      * @return 차단된 회원 정보
      * @author 최예린
      * @since 1.0
      */
     @PutMapping("{loginId}/block")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseDto<MemberBlockResponseDto> blockMember(
             @PathVariable String loginId,
             @Valid @RequestBody MemberBlockRequestDto request,
-            BindingResult bindingResult,
-            Authentication authentication
+            BindingResult bindingResult
     ) {
         checkRequestValidation(bindingResult);
-
-        checkAuthorityOfManager(authentication);
 
         MemberBlockResponseDto response = commandMemberService.block(loginId, request);
 
@@ -137,20 +123,17 @@ public class CommandMemberController {
     /**
      * 회원 차단 해지를 위한 Put 요청을 처리하는 기능입니다.
      *
-     * @param loginId        차단 해지할 회원의 아이디
-     * @param authentication 인증
+     * @param loginId 차단 해지할 회원의 아이디
+     * @param loginId 회원의 아이디
      * @return 차단 해지된 회원 정보
      * @author 최예린
      * @since 1.0
      */
     @PutMapping("/{loginId}/unblock")
-    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseDto<MemberUnblockResponseDto> unblockMember(
-            @PathVariable String loginId,
-            Authentication authentication
+            @PathVariable String loginId
     ) {
-        checkAuthorityOfManager(authentication);
-
         MemberUnblockResponseDto response = commandMemberService.unblock(loginId);
 
         return ResponseDto.<MemberUnblockResponseDto>builder()

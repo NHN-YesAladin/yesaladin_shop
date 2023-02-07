@@ -8,7 +8,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.common.exception.ClientException;
-import shop.yesaladin.shop.common.utils.AuthorityUtils;
+import shop.yesaladin.shop.common.aspect.annotation.LoginId;
 import shop.yesaladin.shop.member.dto.MemberGradeQueryResponseDto;
 import shop.yesaladin.shop.member.dto.MemberIdDto;
 import shop.yesaladin.shop.member.dto.MemberManagerListResponseDto;
@@ -44,7 +43,7 @@ public class QueryMemberController {
 
     private final QueryMemberService queryMemberService;
 
-    private static void checkValidTypeParameterForMemberGrade(String type) {
+    private void checkValidTypeParameterForMemberGrade(String type) {
         if (!type.equals("grade")) {
             throw new ClientException(
                     ErrorCode.MEMBER_BAD_REQUEST,
@@ -136,8 +135,8 @@ public class QueryMemberController {
     /**
      * 회원의 등급을 조회합니다.
      *
-     * @param type           조회 정보 구분
-     * @param authentication 인증 정보
+     * @param type    조회 정보 구분
+     * @param loginId 회원의 아이디
      * @return 회원의 등급
      * @author 최예린
      * @since 1.0
@@ -146,13 +145,8 @@ public class QueryMemberController {
     @CrossOrigin(origins = {"http://localhost:9090", "https://www.yesaladin.shop"})
     public ResponseDto<MemberGradeQueryResponseDto> getMemberGrade(
             @RequestParam String type,
-            Authentication authentication
+            @LoginId(required = true) String loginId
     ) {
-        String loginId = AuthorityUtils.getAuthorizedUserName(
-                authentication,
-                "Only authorized user can get their grade."
-        );
-
         checkValidTypeParameterForMemberGrade(type);
 
         MemberGradeQueryResponseDto response = queryMemberService.getMemberGradeByLoginId(loginId);
@@ -167,18 +161,13 @@ public class QueryMemberController {
     /**
      * 회원의 정보를 조회합니다.
      *
-     * @param authentication 인증 정보
+     * @param loginId 회원의 아이디
      * @return 회원의 정보
      * @author 최예린
      * @since 1.0
      */
     @GetMapping
-    public ResponseDto<MemberQueryResponseDto> getMemberInfo(Authentication authentication) {
-        String loginId = AuthorityUtils.getAuthorizedUserName(
-                authentication,
-                "Only authorized user can get their information."
-        );
-
+    public ResponseDto<MemberQueryResponseDto> getMemberInfo(@LoginId(required = true) String loginId) {
         MemberQueryResponseDto response = queryMemberService.getByLoginId(loginId);
 
         return ResponseDto.<MemberQueryResponseDto>builder()

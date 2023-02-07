@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
+import shop.yesaladin.shop.coupon.domain.model.querydsl.QMemberCoupon;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.querydsl.QMember;
 import shop.yesaladin.shop.member.domain.model.querydsl.QMemberAddress;
@@ -193,6 +194,7 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
     public Optional<MemberOrderSheetResponseDto> getMemberOrderData(String loginId) {
         QMember member = QMember.member;
         QMemberAddress memberAddress = QMemberAddress.memberAddress;
+        QMemberCoupon memberCoupon = QMemberCoupon.memberCoupon;
 
         Expression<String> memberDefaultAddress = queryFactory.select(memberAddress.address)
                 .from(memberAddress)
@@ -205,9 +207,13 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
                                 MemberOrderSheetResponseDto.class,
                                 member.name,
                                 member.phone,
-                                memberDefaultAddress
+                                memberDefaultAddress,
+                                memberCoupon.count().intValue()
                         ))
                 .from(member)
+                        .leftJoin(memberCoupon)
+                        .on(member.id.eq(memberCoupon.member.id))
+                        .groupBy(member)
                 .where(member.loginId.eq(loginId))
                 .fetchFirst());
     }

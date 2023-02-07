@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.common.utils;
 
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -43,8 +44,8 @@ public class AuthorityUtils {
      * @param authentication 인증
      * @throws shop.yesaladin.common.exception.ClientException 인증된 요청입니다.
      */
-    public static void checkAnonymousClient(Authentication authentication) {
-        if (!AuthorityUtils.isAnonymous(authentication)) {
+    public void checkAnonymousClient(String loginId) {
+        if (Objects.nonNull(loginId)) {
             throw new ClientException(ErrorCode.UNAUTHORIZED, "Unauthorized client.");
         }
     }
