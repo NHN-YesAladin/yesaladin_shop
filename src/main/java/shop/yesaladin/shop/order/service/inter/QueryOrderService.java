@@ -95,7 +95,7 @@ public interface QueryOrderService {
      */
     Page<OrderSummaryResponseDto> getOrderListInPeriodByMemberId(
             PeriodQueryRequestDto queryDto,
-            long memberId,
+            String loginId,
             Pageable pageable
     );
 

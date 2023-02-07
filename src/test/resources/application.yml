@@ -1,4 +1,8 @@
 spring:
+  profiles:
+    active: prod
+  config:
+    import: optional:configserver:http://192.168.0.78:8888
   application:
     name: yesaladin-shop
   datasource:

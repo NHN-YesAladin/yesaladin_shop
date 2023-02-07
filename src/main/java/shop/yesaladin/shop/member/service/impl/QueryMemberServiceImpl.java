@@ -3,10 +3,10 @@ package shop.yesaladin.shop.member.service.impl;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.common.code.ErrorCode;
@@ -18,7 +18,6 @@ import shop.yesaladin.shop.member.dto.MemberDto;
 import shop.yesaladin.shop.member.dto.MemberGradeQueryResponseDto;
 import shop.yesaladin.shop.member.dto.MemberIdDto;
 import shop.yesaladin.shop.member.dto.MemberLoginResponseDto;
-import shop.yesaladin.shop.member.dto.MemberManagerListResponseDto;
 import shop.yesaladin.shop.member.dto.MemberManagerResponseDto;
 import shop.yesaladin.shop.member.dto.MemberOrderSheetResponseDto;
 import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
@@ -143,11 +142,8 @@ public class QueryMemberServiceImpl implements QueryMemberService {
      */
     @Transactional(readOnly = true)
     @Override
-    public MemberManagerResponseDto findMemberManageByLoginId(String loginId) {
-        return MemberManagerResponseDto.fromEntity(queryMemberRepository.findMemberByLoginId(loginId)
-                .orElseThrow(() -> {
-                    throw new MemberNotFoundException("Member LoginId : " + loginId);
-                }));
+    public Page<MemberManagerResponseDto> findMemberManagesByLoginId(String loginId, Pageable pageable) {
+        return queryMemberRepository.findMemberManagersByLoginId(loginId, pageable);
     }
 
     /**
@@ -155,11 +151,8 @@ public class QueryMemberServiceImpl implements QueryMemberService {
      */
     @Transactional(readOnly = true)
     @Override
-    public MemberManagerResponseDto findMemberManageByNickName(String nickname) {
-        return MemberManagerResponseDto.fromEntity(queryMemberRepository.findMemberByNickname(
-                nickname).orElseThrow(() -> {
-            throw new MemberNotFoundException("Member Nickname : " + nickname);
-        }));
+    public Page<MemberManagerResponseDto> findMemberManagesByNickName(String nickname, Pageable pageable) {
+        return queryMemberRepository.findMemberManagersByNickname(nickname, pageable);
     }
 
     /**
@@ -167,11 +160,18 @@ public class QueryMemberServiceImpl implements QueryMemberService {
      */
     @Transactional(readOnly = true)
     @Override
-    public MemberManagerResponseDto findMemberManageByPhone(String phone) {
-        return MemberManagerResponseDto.fromEntity(queryMemberRepository.findMemberByPhone(
-                phone).orElseThrow(() -> {
-            throw new MemberNotFoundException("Member Phone : " + phone);
-        }));
+    public Page<MemberManagerResponseDto> findMemberManagesByPhone(String phone, Pageable pageable) {
+        return queryMemberRepository.findMemberManagersByPhone(phone, pageable);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public Page<MemberManagerResponseDto> findMemberManagesByName(String name, Pageable pageable) {
+        return queryMemberRepository.findMemberManagersByName(name, pageable);
     }
 
     /**
@@ -179,55 +179,8 @@ public class QueryMemberServiceImpl implements QueryMemberService {
      */
     @Transactional(readOnly = true)
     @Override
-    public MemberManagerListResponseDto findMemberManagesByName(
-            String name,
-            int offset,
-            int limit
-    ) {
-        Page<Member> result = queryMemberRepository.findMembersByName(name, offset, limit);
-        return MemberManagerListResponseDto.builder()
-                .count(result.getTotalElements())
-                .memberManagerResponseDtoList(Optional.of(queryMemberRepository.findMembersByName(
-                                name,
-                                offset,
-                                limit
-                        ).getContent())
-                        .filter(m -> !m.isEmpty())
-                        .orElseThrow(() -> new MemberNotFoundException(""))
-                        .stream()
-                        .map(MemberManagerResponseDto::fromEntity)
-                        .collect(Collectors.toList()))
-                .build();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Transactional(readOnly = true)
-    @Override
-    public MemberManagerListResponseDto findMemberManagesBySignUpDate(
-            LocalDate signUpDate,
-            int offset,
-            int limit
-    ) {
-        Page<Member> result = queryMemberRepository.findMembersBySignUpDate(
-                signUpDate,
-                offset,
-                limit
-        );
-        return MemberManagerListResponseDto.builder()
-                .count(result.getTotalElements())
-                .memberManagerResponseDtoList(Optional.of(queryMemberRepository.findMembersBySignUpDate(
-                                signUpDate,
-                                offset,
-                                limit
-                        ).getContent())
-                        .filter(m -> !m.isEmpty())
-                        .orElseThrow(() -> new MemberNotFoundException(""))
-                        .stream()
-                        .map(MemberManagerResponseDto::fromEntity)
-                        .collect(Collectors.toList()))
-                .build();
+    public Page<MemberManagerResponseDto> findMemberManagesBySignUpDate(LocalDate signUpDate, Pageable pageable) {
+        return queryMemberRepository.findMemberManagersBySignUpDate(signUpDate, pageable);
     }
 
     /**

@@ -10,12 +10,16 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import shop.yesaladin.common.code.ErrorCode;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
+import shop.yesaladin.shop.product.dto.ProductOnlyTitleDto;
 import shop.yesaladin.shop.product.dto.ProductsResponseDto;
 import shop.yesaladin.shop.product.dummy.DummyProductDetailResponseDto;
 import shop.yesaladin.shop.product.dummy.DummyProductsResponseDto;
@@ -24,6 +28,7 @@ import shop.yesaladin.shop.product.service.inter.QueryProductService;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.times;
@@ -35,8 +40,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentRequest;
 import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
 
@@ -49,6 +53,85 @@ class QueryProductControllerTest {
     private MockMvc mockMvc;
     @MockBean
     private QueryProductService service;
+
+    @WithMockUser
+    @Test
+    @DisplayName("상품 ISBN으로 제목 조회 성공")
+    void findTitleByIsbn_success() throws Exception {
+        // given
+        String isbn = "0000000000001";
+        ProductOnlyTitleDto productOnlyTitleDto = new ProductOnlyTitleDto("제목");
+
+        Mockito.when(service.findTitleByIsbn(isbn)).thenReturn(productOnlyTitleDto);
+
+        // when
+        ResultActions result = mockMvc.perform(get("/v1/products/info/{isbn}", isbn)
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(200)));
+
+        verify(service, times(1)).findTitleByIsbn(isbn);
+
+        // docs
+        result.andDo(document(
+                "find-title-by-isbn",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                pathParameters(parameterWithName("isbn").description("ISBN")),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data.title").type(JsonFieldType.STRING).description("제목").optional(),
+                        fieldWithPath("errorMessages").type(JsonFieldType.NULL).description("에러 메세지 NULL")
+                )
+        ));
+    }
+
+    @WithMockUser
+    @Test
+    @DisplayName("상품 ISBN으로 제목 조회 실패_ISBN로 조회되는 상품이 없는 경우 예외 발생")
+    void findTitleByIsbn_notExistISBN_throwProductNotFoundException() throws Exception {
+        // given
+        String isbn = "0000000000001";
+        Mockito.when(service.findTitleByIsbn(isbn))
+                .thenThrow(new ClientException(ErrorCode.PRODUCT_NOT_FOUND, "Product not found with isbn : " + isbn));
+
+        // when
+        ResultActions result = mockMvc.perform(get("/v1/products/info/{isbn}", isbn)
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.NOT_FOUND.value())));
+
+        verify(service, times(1)).findTitleByIsbn(isbn);
+
+        // docs
+        result.andDo(document(
+                "find-title-by-isbn-throw-not-found",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                pathParameters(parameterWithName("isbn").description("ISBN")),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data").type(JsonFieldType.NULL).description("NULL"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY).description("에러 메세지")
+                )
+        ));
+    }
+
+    // TODO: ResponseDto 수정
 
     @WithMockUser
     @Test
@@ -79,7 +162,7 @@ class QueryProductControllerTest {
                 pathParameters(parameterWithName("productId").description("조회할 상품의 아이디")),
                 responseFields(
                         fieldWithPath("id").type(JsonFieldType.NUMBER).description("상품 아이디"),
-                        fieldWithPath("ebookFileUrl").type(JsonFieldType.STRING).description("E-Book 파일 URL"),
+                        fieldWithPath("isEbook").type(JsonFieldType.BOOLEAN).description("E-Book 여부"),
                         fieldWithPath("title").type(JsonFieldType.STRING).description("제목"),
                         fieldWithPath("authors").type(JsonFieldType.ARRAY).description("작가"),
                         fieldWithPath("publisher").type(JsonFieldType.STRING).description("출판사"),
@@ -95,10 +178,7 @@ class QueryProductControllerTest {
                         fieldWithPath("issn").type(JsonFieldType.STRING).description("ISSN"),
                         fieldWithPath("contents").type(JsonFieldType.STRING).description("목차"),
                         fieldWithPath("description").type(JsonFieldType.STRING).description("설명"),
-                        fieldWithPath("quantity").type(JsonFieldType.NUMBER).description("수량"),
-                        fieldWithPath("isForcedOutOfStock").type(JsonFieldType.BOOLEAN).description("강제품절여부"),
-                        fieldWithPath("isSale").type(JsonFieldType.BOOLEAN).description("판매여부"),
-                        fieldWithPath("isDeleted").type(JsonFieldType.BOOLEAN).description("삭제여부"),
+                        fieldWithPath("onSale").type(JsonFieldType.BOOLEAN).description("판매여부"),
                         fieldWithPath("categories.[].id").type(JsonFieldType.NUMBER).description("연관된 카테고리 Id"),
                         fieldWithPath("categories.[].name").type(JsonFieldType.STRING).description("연관된 카테고리 이름"),
                         fieldWithPath("categories.[].isShown").type(JsonFieldType.BOOLEAN).description("연관된 카테고리 노출여부"),

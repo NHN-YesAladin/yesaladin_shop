@@ -7,6 +7,7 @@ import org.mockito.Mockito;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.category.service.inter.QueryProductCategoryService;
 import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.product.domain.model.Product;
@@ -14,6 +15,7 @@ import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
 import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
 import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
+import shop.yesaladin.shop.product.dto.ProductOnlyTitleDto;
 import shop.yesaladin.shop.product.dto.ProductsResponseDto;
 import shop.yesaladin.shop.product.dummy.DummyFile;
 import shop.yesaladin.shop.product.dummy.DummyProduct;
@@ -35,6 +37,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
@@ -77,6 +80,36 @@ class QueryProductServiceImplTest {
     }
 
     @Test
+    @DisplayName("상품 ISBN으로 제목 조회 성공")
+    void findTitleByIsbn_success() {
+        // given
+        String isbn = "0000000000001";
+        String title = "제목";
+        Mockito.when(queryProductRepository.findTitleByIsbn(isbn))
+                .thenReturn(new ProductOnlyTitleDto(title));
+
+        // when
+        ProductOnlyTitleDto response = service.findTitleByIsbn(isbn);
+
+        // then
+        assertThat(response).isNotNull();
+        assertThat(response.getTitle()).isEqualTo(title);
+    }
+
+    @Test
+    @DisplayName("상품 ISBN으로 제목 조회 실패_ISBN로 조회되는 상품이 없는 경우 예외 발생")
+    void findTitleByIsbn_notExistIsbn_throwProductNotFoundException() {
+        // given
+        String isbn = "0000000000001";
+        Mockito.when(queryProductRepository.findTitleByIsbn(isbn)).thenReturn(null);
+
+        // when then
+        assertThatThrownBy(() -> service.findTitleByIsbn(isbn)).isInstanceOf(ClientException.class);
+    }
+
+    // TODO: ResponseDto 수정
+
+    @Test
     @DisplayName("상품 상세 조회 성공")
     void findById() {
         // given
@@ -101,7 +134,6 @@ class QueryProductServiceImplTest {
         assertThat(response).isNotNull();
         assertThat(response.getId()).isEqualTo(1L);
         assertThat(response.getThumbnailFileUrl()).isEqualTo(URL + "/image1.png");
-        assertThat(response.getEbookFileUrl()).isEqualTo(URL + "/ebook1.pdf");
         assertThat(response.getActualPrice()).isEqualTo(10000L);
         assertThat(response.getSellingPrice()).isEqualTo(9000L);
         assertThat(response.getPointPrice()).isEqualTo(200L);

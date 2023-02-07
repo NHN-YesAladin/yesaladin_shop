@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.product.controller;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,6 +7,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.shop.product.dto.ProductTypeResponseDto;
 import shop.yesaladin.shop.product.service.inter.QueryProductTypeService;
+
+import java.util.List;
 
 /**
  * 상품 유형 조회를 위한 RestController 입니다.

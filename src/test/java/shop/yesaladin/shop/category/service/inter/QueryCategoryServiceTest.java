@@ -1,6 +1,7 @@
 package shop.yesaladin.shop.category.service.inter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
@@ -19,6 +20,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import shop.yesaladin.common.code.ErrorCode;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.repository.QueryCategoryRepository;
 import shop.yesaladin.shop.category.dto.CategoryResponseDto;
@@ -109,6 +112,29 @@ class QueryCategoryServiceTest {
         assertThat(longArgumentCaptor.getValue()).isEqualTo(id);
     }
 
+    @Test
+    void findCategoryById_notFound_fail() {
+        //given
+        ArgumentCaptor<Long> longArgumentCaptor = ArgumentCaptor.forClass(Long.class);
+        Long id = 1L;
+
+        Category category = CategoryDummy.dummyParent(id);
+
+        String errorMessage =  "Category not found with id : " + category.getId();
+        when(queryCategoryRepository.findById(any())).thenThrow(new ClientException(
+                ErrorCode.CATEGORY_NOT_FOUND,
+                errorMessage
+        ));
+
+        //when
+        assertThatCode(() -> queryCategoryService.findCategoryById(id)).isInstanceOf(ClientException.class);
+
+
+
+        //then
+        verify(queryCategoryRepository, times(1)).findById(longArgumentCaptor.capture());
+        assertThat(longArgumentCaptor.getValue()).isEqualTo(id);
+    }
 
     @Test
     void findParentCategories() throws Exception {

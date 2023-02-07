@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.coupon.domain.model;
 
+import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -43,4 +44,10 @@ public class MemberCoupon {
 
     @Column(name = "coupon_group_code", nullable = false, length = 36)
     private String couponGroupCode;
+
+    @Column(nullable = false)
+    private boolean isUsed;
+
+    @Column(nullable = false)
+    private LocalDate expirationDate;
 }
