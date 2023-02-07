@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.coupon.service.impl;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -50,6 +51,15 @@ public class QueryMemberCouponServiceImpl implements QueryMemberCouponService {
     ) {
         Page<String> memberCouponCodeList = getMemberCouponCodeList(pageable, memberId, usable);
 
+        if (memberCouponCodeList.isEmpty()) {
+            return PaginatedResponseDto.<MemberCouponSummaryDto>builder()
+                    .dataList(Collections.emptyList())
+                    .totalDataCount(0)
+                    .currentPage(1)
+                    .totalPage(1)
+                    .build();
+        }
+
         ResponseDto<List<MemberCouponSummaryDto>> response = tryGetCouponSummary(
                 memberCouponCodeList.getContent());
 
@@ -61,7 +71,11 @@ public class QueryMemberCouponServiceImpl implements QueryMemberCouponService {
                 .build();
     }
 
-    private Page<String> getMemberCouponCodeList(Pageable pageable, String memberId, boolean usable) {
+    private Page<String> getMemberCouponCodeList(
+            Pageable pageable,
+            String memberId,
+            boolean usable
+    ) {
         Page<MemberCoupon> memberCouponList = memberCouponRepository.findMemberCouponByMemberId(
                 pageable,
                 memberId,
