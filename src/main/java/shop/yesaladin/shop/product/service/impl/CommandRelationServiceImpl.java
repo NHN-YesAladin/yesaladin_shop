@@ -87,7 +87,7 @@ public class CommandRelationServiceImpl implements CommandRelationService {
      * @since 1.0
      */
     private Product getProduct(Long productId) {
-        return queryProductRepository.findById(productId)
+        return queryProductRepository.findProductById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
     }
 

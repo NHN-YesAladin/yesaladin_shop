@@ -1,8 +1,12 @@
 package shop.yesaladin.shop.product.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
+import shop.yesaladin.shop.tag.dto.TagResponseDto;
+import shop.yesaladin.shop.writing.dto.AuthorsResponseDto;
 
 import java.util.List;
 
@@ -13,6 +17,7 @@ import java.util.List;
  * @since 1.0
  */
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductsResponseDto {
@@ -20,8 +25,8 @@ public class ProductsResponseDto {
     private long id;
 
     private String title;
-    private List<String> authors;
-    private String publisher;
+    private List<AuthorsResponseDto> authors;
+    private PublisherResponseDto publisher;
     private String publishedDate;
     private long sellingPrice;
     private int discountRate;
@@ -33,6 +38,6 @@ public class ProductsResponseDto {
     private Boolean isDeleted;
 
     private String thumbnailFileUrl;
-    private List<String> tags;
+    private List<TagResponseDto> tags;
     private String ebookFileUrl;
 }
