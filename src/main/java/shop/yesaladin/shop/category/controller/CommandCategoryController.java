@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.dto.ResponseDto;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.category.dto.CategoryModifyRequestDto;
 import shop.yesaladin.shop.category.dto.CategoryRequestDto;
 import shop.yesaladin.shop.category.dto.CategoryResponseDto;
@@ -51,8 +54,11 @@ public class CommandCategoryController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<CategoryResponseDto> createCategory(
-            @Valid @RequestBody CategoryRequestDto categoryRequest
+            @Valid @RequestBody CategoryRequestDto categoryRequest,
+            BindingResult bindingResult
     ) {
+        checkRequestValidation(bindingResult);
+
         CategoryResponseDto categoryResponseDto = commandCategoryService.create(categoryRequest);
         return ResponseDto.<CategoryResponseDto>builder()
                 .success(true)
@@ -72,8 +78,11 @@ public class CommandCategoryController {
     @ResponseStatus(HttpStatus.OK)
     public ResponseDto<CategoryResponseDto> updateCategory(
             @PathVariable Long categoryId,
-            @Valid @RequestBody CategoryRequestDto categoryRequestDto
+            @Valid @RequestBody CategoryRequestDto categoryRequestDto,
+            BindingResult bindingResult
     ) {
+        checkRequestValidation(bindingResult);
+
         CategoryResponseDto categoryResponseDto = commandCategoryService.update(
                 categoryId,
                 categoryRequestDto
@@ -86,15 +95,19 @@ public class CommandCategoryController {
     }
 
     /**
-     * 카테고리 순서 수정 요청을 처리하는 기능
-     *  최악의 경우 모든 카테고리를 수정해야하기 때문에 인자가 List 형식이다.
+     * 카테고리 순서 수정 요청을 처리하는 기능 최악의 경우 모든 카테고리를 수정해야하기 때문에 인자가 List 형식이다.
      *
      * @param requestList 수정을 요청하는 카테고리 리스트
      * @return 결과를 출력해주는 String result를 가지는  객체
      */
     @PutMapping("/order")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseDto<ResultCodeDto> modifyCategoriesOrder(@Valid @RequestBody List<CategoryModifyRequestDto> requestList) {
+    public ResponseDto<ResultCodeDto> modifyCategoriesOrder(
+            @Valid @RequestBody List<CategoryModifyRequestDto> requestList,
+            BindingResult bindingResult
+    ) {
+        checkRequestValidation(bindingResult);
+
         commandCategoryService.updateOrder(requestList);
         return ResponseDto.<ResultCodeDto>builder()
                 .status(HttpStatus.OK)
@@ -118,5 +131,15 @@ public class CommandCategoryController {
                 .success(true)
                 .data(new ResultCodeDto("Success"))
                 .build();
+    }
+
+    private void checkRequestValidation(BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new ClientException(
+                    ErrorCode.BAD_REQUEST,
+                    "Validation Error in Category ." +
+                            bindingResult.getAllErrors()
+            );
+        }
     }
 }

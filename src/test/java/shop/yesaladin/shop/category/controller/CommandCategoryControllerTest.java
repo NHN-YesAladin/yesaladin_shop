@@ -44,6 +44,7 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.dto.CategoryModifyRequestDto;
 import shop.yesaladin.shop.category.dto.CategoryRequestDto;
@@ -286,7 +287,14 @@ class CommandCategoryControllerTest {
                 .content(objectMapper.writeValueAsString(createDto)));
 
         // then
-        perform.andDo(print()).andExpect(status().isBadRequest());
+        perform.andExpect(status().is4xxClientError())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.BAD_REQUEST.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.BAD_REQUEST.getDisplayName())
+                ));
 
         verify(commandCategoryService, never()).create(any());
 
@@ -536,7 +544,14 @@ class CommandCategoryControllerTest {
                 .content(objectMapper.writeValueAsString(categoryRequestDto)));
 
         // then
-        perform.andDo(print()).andExpect(status().isBadRequest());
+        perform.andExpect(status().is4xxClientError())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.BAD_REQUEST.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.BAD_REQUEST.getDisplayName())
+                ));
 
         verify(commandCategoryService, never()).update(any(), any());
     }
