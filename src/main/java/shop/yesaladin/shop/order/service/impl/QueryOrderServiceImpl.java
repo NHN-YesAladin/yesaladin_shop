@@ -26,7 +26,6 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
 import shop.yesaladin.shop.order.dto.OrderPaymentResponseDto;
-import shop.yesaladin.shop.order.dto.OrderSheetProductRequestDto;
 import shop.yesaladin.shop.order.dto.OrderSheetRequestDto;
 import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
@@ -184,18 +183,6 @@ public class QueryOrderServiceImpl implements QueryOrderService {
                 .collect(Collectors.toMap(isbnList::get, quantityList::get));
 
         return queryProductService.getByOrderProducts(products);
-    }
-
-    private List<ProductOrderSheetResponseDto> getProductOrder(
-            List<OrderSheetProductRequestDto> products
-    ) {
-        Map<String, Integer> productMap = products.stream()
-                .collect(Collectors.toMap(
-                        OrderSheetProductRequestDto::getIsbn,
-                        OrderSheetProductRequestDto::getQuantity
-                ));
-
-        return queryProductService.getByOrderProducts(productMap);
     }
 
     /**
