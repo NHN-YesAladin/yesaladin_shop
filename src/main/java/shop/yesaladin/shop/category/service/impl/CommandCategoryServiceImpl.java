@@ -5,6 +5,8 @@ import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import shop.yesaladin.common.code.ErrorCode;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.repository.CommandCategoryRepository;
 import shop.yesaladin.shop.category.domain.repository.QueryCategoryRepository;
@@ -72,7 +74,10 @@ public class CommandCategoryServiceImpl implements CommandCategoryService {
                 parentId
         );
         Category parentCategory = queryCategoryRepository.findById(parentId)
-                .orElseThrow(() -> new CategoryNotFoundException(parentId));
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.CATEGORY_NOT_FOUND,
+                        "Category not found with id : " + parentId
+                ));
 
         createRequest.setOrder(queryCategoryRepository.getLatestChildOrderByDepthAndParentId(
                 Category.DEPTH_CHILD,
@@ -95,7 +100,10 @@ public class CommandCategoryServiceImpl implements CommandCategoryService {
     @Override
     public CategoryResponseDto update(Long id, CategoryRequestDto createRequest) {
         Category categoryById = queryCategoryRepository.findById(id)
-                .orElseThrow(() -> new CategoryNotFoundException(id));
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.CATEGORY_NOT_FOUND,
+                        "Category not found with id : " + id
+                ));
         String nameBeforeChanging = categoryById.getName();
         categoryById.verifyChange(
                 createRequest.getName(),
@@ -151,7 +159,10 @@ public class CommandCategoryServiceImpl implements CommandCategoryService {
     @Override
     public void delete(Long id) {
         Category category = queryCategoryRepository.findById(id)
-                .orElseThrow(() -> new CategoryNotFoundException(id));
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.CATEGORY_NOT_FOUND,
+                        "Category not found with id : " + id
+                ));
         category.disableCategory(category.getName());
     }
 
@@ -173,7 +184,10 @@ public class CommandCategoryServiceImpl implements CommandCategoryService {
                 Category category = categories.stream()
                         .filter(it -> it.getId().equals(id))
                         .findFirst()
-                        .orElseThrow(() -> new CategoryNotFoundException(id));
+                        .orElseThrow(() -> new ClientException(
+                                ErrorCode.CATEGORY_NOT_FOUND,
+                                "Category not found with id : " + id
+                        ));
                 category.verifyChange(null, null, request.getOrder());
             }
             return;
@@ -187,7 +201,10 @@ public class CommandCategoryServiceImpl implements CommandCategoryService {
                     .stream()
                     .filter(it -> it.getId().equals(request.getId()))
                     .findFirst()
-                    .orElseThrow(() -> new CategoryNotFoundException(request.getId()));
+                    .orElseThrow(() -> new ClientException(
+                            ErrorCode.CATEGORY_NOT_FOUND,
+                            "Category not found with id : " + request.getId()
+                    ));
             category.verifyChange(null, null, request.getOrder());
         }
     }

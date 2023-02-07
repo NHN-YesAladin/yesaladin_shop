@@ -17,6 +17,7 @@ public class ViewCartDto {
 
     private Long id;
     private Integer quantity;
+    private String isbn;
 
     private String thumbnailFileUrl;
     private String title;
