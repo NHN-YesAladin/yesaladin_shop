@@ -88,13 +88,13 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
     ) {
         QMember member = QMember.member;
         List<Member> list = queryFactory.selectFrom(member)
-                .where(member.loginId.contains(loginId))
+                .where(member.loginId.contains(loginId).and(member.isWithdrawal.isFalse()))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
         Long count = queryFactory.select(member.count())
                 .from(member)
-                .where(member.loginId.contains(loginId))
+                .where(member.loginId.contains(loginId).and(member.isWithdrawal.isFalse()))
                 .fetchFirst();
         return new PageImpl<>(list.stream()
                 .map(MemberManagerResponseDto::fromEntity)
@@ -111,13 +111,13 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
     ) {
         QMember member = QMember.member;
         List<Member> list = queryFactory.selectFrom(member)
-                .where(member.nickname.contains(nickname))
+                .where(member.nickname.contains(nickname).and(member.isWithdrawal.isFalse()))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
         Long count = queryFactory.select(member.count())
                 .from(member)
-                .where(member.nickname.contains(nickname))
+                .where(member.nickname.contains(nickname).and(member.isWithdrawal.isFalse()))
                 .fetchFirst();
         return new PageImpl<>(list.stream()
                 .map(MemberManagerResponseDto::fromEntity)
@@ -134,13 +134,13 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
     ) {
         QMember member = QMember.member;
         List<Member> list = queryFactory.selectFrom(member)
-                .where(member.phone.contains(phone))
+                .where(member.phone.contains(phone).and(member.isWithdrawal.isFalse()))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
         Long count = queryFactory.select(member.count())
                 .from(member)
-                .where(member.phone.contains(phone))
+                .where(member.phone.contains(phone).and(member.isWithdrawal.isFalse()))
                 .fetchFirst();
         return new PageImpl<>(list.stream()
                 .map(MemberManagerResponseDto::fromEntity)
@@ -154,13 +154,13 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
     public Page<MemberManagerResponseDto> findMemberManagersByName(String name, Pageable pageable) {
         QMember member = QMember.member;
         List<Member> list = queryFactory.selectFrom(member)
-                .where(member.name.contains(name))
+                .where(member.name.contains(name).and(member.isWithdrawal.isFalse()))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
         Long count = queryFactory.select(member.count())
                 .from(member)
-                .where(member.name.contains(name))
+                .where(member.name.contains(name).and(member.isWithdrawal.isFalse()))
                 .fetchFirst();
         return new PageImpl<>(list.stream()
                 .map(MemberManagerResponseDto::fromEntity)
@@ -177,13 +177,13 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
     ) {
         QMember member = QMember.member;
         List<Member> list = queryFactory.selectFrom(member)
-                .where(member.signUpDate.eq(signUpDate))
+                .where(member.signUpDate.eq(signUpDate).and(member.isWithdrawal.isFalse()))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
         Long count = queryFactory.select(member.count())
                 .from(member)
-                .where(member.signUpDate.eq(signUpDate))
+                .where(member.signUpDate.eq(signUpDate).and(member.isWithdrawal.isFalse()))
                 .fetchFirst();
         return new PageImpl<>(list.stream()
                 .map(MemberManagerResponseDto::fromEntity)
