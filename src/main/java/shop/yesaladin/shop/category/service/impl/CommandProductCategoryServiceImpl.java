@@ -2,6 +2,7 @@ package shop.yesaladin.shop.category.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.category.domain.model.ProductCategory;
 import shop.yesaladin.shop.category.domain.repository.CommandProductCategoryRepository;
 import shop.yesaladin.shop.category.dto.ProductCategoryResponseDto;
@@ -23,6 +24,7 @@ public class CommandProductCategoryServiceImpl implements CommandProductCategory
      * {@inheritDoc}
      *
      */
+    @Transactional
     @Override
     public ProductCategoryResponseDto register(ProductCategory productCategory) {
         ProductCategory foundProductCategory = commandProductCategoryRepository.save(
@@ -37,6 +39,7 @@ public class CommandProductCategoryServiceImpl implements CommandProductCategory
      * {@inheritDoc}
      *
      */
+    @Transactional
     @Override
     public void deleteByProduct(Product product) {
         commandProductCategoryRepository.deleteByProduct(product);
