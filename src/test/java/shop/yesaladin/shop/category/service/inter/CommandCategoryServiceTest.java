@@ -14,6 +14,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.repository.CommandCategoryRepository;
 import shop.yesaladin.shop.category.domain.repository.QueryCategoryRepository;
@@ -452,7 +453,7 @@ class CommandCategoryServiceTest {
 
         // when
         assertThatCode(() -> commandCategoryService.updateOrder(requestList)).isInstanceOf(
-                CategoryNotFoundException.class);
+                ClientException.class);
 
         // then
         verify(queryCategoryRepository, times(1)).findCategories(null, Category.DEPTH_PARENT);
@@ -493,7 +494,7 @@ class CommandCategoryServiceTest {
 
         // when
         assertThatCode(() -> commandCategoryService.updateOrder(requestList)).isInstanceOf(
-                CategoryNotFoundException.class);
+                ClientException.class);
 
         // then
         verify(queryCategoryRepository, times(1)).findById(parentCategory.getId());
