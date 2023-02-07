@@ -15,6 +15,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentRequest;
@@ -36,6 +37,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -86,10 +88,12 @@ class QueryCategoryControllerTest {
                 .contentType(MediaType.APPLICATION_JSON));
 
         // then
-        perform.andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", equalTo(id.intValue())))
-                .andExpect(jsonPath("$.name", equalTo(name)));
+        perform.andExpect(status().isOk())
+                .andExpect(header().stringValues("Content-Type", MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())))
+                .andExpect(jsonPath("$.data.id", equalTo(id.intValue())))
+                .andExpect(jsonPath("$.data.name", equalTo(name)));
 
         verify(queryCategoryService, times(1)).findCategoryById(longArgumentCaptor.capture());
         assertThat(longArgumentCaptor.getValue()).isEqualTo(id);
@@ -102,16 +106,23 @@ class QueryCategoryControllerTest {
                         parameterWithName("categoryId").description("찾고자하는 카테고리의 아이디")
                 ),
                 responseFields(
-                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("카테고리 아이디"),
-                        fieldWithPath("name").type(JsonFieldType.STRING).description("카테고리 이름"),
-                        fieldWithPath("isShown").type(JsonFieldType.BOOLEAN)
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("HTTP 상태 코드"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .optional()
+                                .description("에러 메세지"),
+                        fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("카테고리 아이디"),
+                        fieldWithPath("data.name").type(JsonFieldType.STRING).description("카테고리 이름"),
+                        fieldWithPath("data.isShown").type(JsonFieldType.BOOLEAN)
                                 .description("카테고리 노출 여부"),
-                        fieldWithPath("order").type(JsonFieldType.NUMBER)
+                        fieldWithPath("data.order").type(JsonFieldType.NUMBER)
                                 .optional()
                                 .description("카테고리 순서"),
-                        fieldWithPath("parentId").type(JsonFieldType.NUMBER).optional()
+                        fieldWithPath("data.parentId").type(JsonFieldType.NUMBER).optional()
                                 .description("부모 카테고리(=1차 카테고리)의 아이디"),
-                        fieldWithPath("parentName").type(JsonFieldType.STRING).optional()
+                        fieldWithPath("data.parentName").type(JsonFieldType.STRING).optional()
                                 .description("부모 카테고리(=1차 카테고리)의 이름")
                 )
         ));
@@ -192,16 +203,18 @@ class QueryCategoryControllerTest {
                 .contentType(MediaType.APPLICATION_JSON));
 
         // then
-        perform.andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalPage", equalTo(dtoList.size() / size)))
-                .andExpect(jsonPath("$.currentPage", equalTo(page)))
-                .andExpect(jsonPath("$.totalDataCount", equalTo(dtoList.size())))
+        perform.andExpect(status().isOk())
+                .andExpect(header().stringValues("Content-Type", MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())))
+                .andExpect(jsonPath("$.data.totalPage", equalTo(dtoList.size() / size)))
+                .andExpect(jsonPath("$.data.currentPage", equalTo(page)))
+                .andExpect(jsonPath("$.data.totalDataCount", equalTo(dtoList.size())))
                 .andExpect(jsonPath(
-                        "$.dataList.[0].id",
+                        "$.data.dataList.[0].id",
                         equalTo(dtoList.get(0).getId().intValue())
                 ))
-                .andExpect(jsonPath("$.dataList.[0].name", equalTo(dtoList.get(0).getName())));
+                .andExpect(jsonPath("$.data.dataList.[0].name", equalTo(dtoList.get(0).getName())));
 
         verify(queryCategoryService, times(1)).findCategoriesByParentId(
                 pageableCaptor.capture(),
@@ -224,26 +237,33 @@ class QueryCategoryControllerTest {
                                 .attributes(defaultValue(0))
                 ),
                 responseFields(
-                        fieldWithPath("totalPage").type(JsonFieldType.NUMBER)
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("HTTP 상태 코드"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .optional()
+                                .description("에러 메세지"),
+                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER)
                                 .description("총 페이지 수"),
-                        fieldWithPath("currentPage").type(JsonFieldType.NUMBER)
+                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER)
                                 .description("현재 페이지 번호"),
-                        fieldWithPath("totalDataCount").type(JsonFieldType.NUMBER)
+                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER)
                                 .description("모든 데이터의 수"),
-                        fieldWithPath("dataList").type(JsonFieldType.ARRAY)
+                        fieldWithPath("data.dataList").type(JsonFieldType.ARRAY)
                                 .description("조회된 카테고리 요약 데이터 리스트"),
-                        fieldWithPath("dataList.[].id").type(JsonFieldType.NUMBER)
+                        fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER)
                                 .description("카테고리 아이디"),
-                        fieldWithPath("dataList.[].name").type(JsonFieldType.STRING)
+                        fieldWithPath("data.dataList.[].name").type(JsonFieldType.STRING)
                                 .description("카테고리 이름"),
-                        fieldWithPath("dataList.[].isShown").type(JsonFieldType.BOOLEAN)
+                        fieldWithPath("data.dataList.[].isShown").type(JsonFieldType.BOOLEAN)
                                 .description("카테고리 노출 여부"),
-                        fieldWithPath("dataList.[].order").type(JsonFieldType.NUMBER)
+                        fieldWithPath("data.dataList.[].order").type(JsonFieldType.NUMBER)
                                 .optional()
                                 .description("카테고리 순서"),
-                        fieldWithPath("dataList.[].parentId").type(JsonFieldType.NUMBER).optional()
+                        fieldWithPath("data.dataList.[].parentId").type(JsonFieldType.NUMBER).optional()
                                 .description("부모 카테고리(=1차 카테고리)의 아이디"),
-                        fieldWithPath("dataList.[].parentName").type(JsonFieldType.STRING)
+                        fieldWithPath("data.dataList.[].parentName").type(JsonFieldType.STRING)
                                 .optional()
                                 .description("부모 카테고리(=1차 카테고리)의 이름")
                 )
@@ -276,11 +296,13 @@ class QueryCategoryControllerTest {
                 .contentType(MediaType.APPLICATION_JSON));
 
         // then
-        perform.andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.[0].id", equalTo(dtoList.get(0).getId().intValue())))
-                .andExpect(jsonPath("$.[0].name", equalTo(dtoList.get(0).getName())))
-                .andExpect(jsonPath("$.[0].isShown", equalTo(dtoList.get(0).getIsShown())));
+        perform.andExpect(status().isOk())
+                .andExpect(header().stringValues("Content-Type", MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())))
+                .andExpect(jsonPath("$.data.[0].id", equalTo(dtoList.get(0).getId().intValue())))
+                .andExpect(jsonPath("$.data.[0].name", equalTo(dtoList.get(0).getName())))
+                .andExpect(jsonPath("$.data.[0].isShown", equalTo(dtoList.get(0).getIsShown())));
 
         verify(queryCategoryService, times(1)).findParentCategories();
 
@@ -294,18 +316,25 @@ class QueryCategoryControllerTest {
                         parameterWithName("_csrf").description("csrf")
                 ),
                 responseFields(
-                        fieldWithPath("[].id").type(JsonFieldType.NUMBER)
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("HTTP 상태 코드"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .optional()
+                                .description("에러 메세지"),
+                        fieldWithPath("data.[].id").type(JsonFieldType.NUMBER)
                                 .description("1차 카테고리 아이디"),
-                        fieldWithPath("[].name").type(JsonFieldType.STRING)
+                        fieldWithPath("data.[].name").type(JsonFieldType.STRING)
                                 .description("1차 카테고리 이름"),
-                        fieldWithPath("[].isShown").type(JsonFieldType.BOOLEAN)
+                        fieldWithPath("data.[].isShown").type(JsonFieldType.BOOLEAN)
                                 .description("1차 카테고리 노출 여부"),
-                        fieldWithPath("[].order").type(JsonFieldType.NUMBER)
+                        fieldWithPath("data.[].order").type(JsonFieldType.NUMBER)
                                 .optional()
                                 .description("1차 카테고리 순서"),
-                        fieldWithPath("[].parentId").type(JsonFieldType.NUMBER).optional()
+                        fieldWithPath("data.[].parentId").type(JsonFieldType.NUMBER).optional()
                                 .description("부모 카테고리(=1차 카테고리)의 아이디 - null"),
-                        fieldWithPath("[].parentName").type(JsonFieldType.STRING)
+                        fieldWithPath("data.[].parentName").type(JsonFieldType.STRING)
                                 .optional()
                                 .description("부모 카테고리(=1차 카테고리)의 이름 - null")
                 )
@@ -343,11 +372,13 @@ class QueryCategoryControllerTest {
                 .contentType(MediaType.APPLICATION_JSON));
 
         // then
-        perform.andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.[0].id", equalTo(dtoList.get(0).getId().intValue())))
-                .andExpect(jsonPath("$.[0].name", equalTo(dtoList.get(0).getName())))
-                .andExpect(jsonPath("$.[0].isShown", equalTo(dtoList.get(0).getIsShown())));
+        perform.andExpect(status().isOk())
+                .andExpect(header().stringValues("Content-Type", MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())))
+                .andExpect(jsonPath("$.data.[0].id", equalTo(dtoList.get(0).getId().intValue())))
+                .andExpect(jsonPath("$.data.[0].name", equalTo(dtoList.get(0).getName())))
+                .andExpect(jsonPath("$.data.[0].isShown", equalTo(dtoList.get(0).getIsShown())));
 
         verify(
                 queryCategoryService,
@@ -368,18 +399,25 @@ class QueryCategoryControllerTest {
                         parameterWithName("_csrf").description("csrf")
                 ),
                 responseFields(
-                        fieldWithPath("[].id").type(JsonFieldType.NUMBER)
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("HTTP 상태 코드"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .optional()
+                                .description("에러 메세지"),
+                        fieldWithPath("data.[].id").type(JsonFieldType.NUMBER)
                                 .description("2차 카테고리 아이디"),
-                        fieldWithPath("[].name").type(JsonFieldType.STRING)
+                        fieldWithPath("data.[].name").type(JsonFieldType.STRING)
                                 .description("2차 카테고리 이름"),
-                        fieldWithPath("[].isShown").type(JsonFieldType.BOOLEAN)
+                        fieldWithPath("data.[].isShown").type(JsonFieldType.BOOLEAN)
                                 .description("2차 카테고리 노출 여부"),
-                        fieldWithPath("[].order").type(JsonFieldType.NUMBER)
+                        fieldWithPath("data.[].order").type(JsonFieldType.NUMBER)
                                 .optional()
                                 .description("2차 카테고리 순서"),
-                        fieldWithPath("[].parentId").type(JsonFieldType.NUMBER).optional()
+                        fieldWithPath("data.[].parentId").type(JsonFieldType.NUMBER).optional()
                                 .description("부모 카테고리(=1차 카테고리)의 아이디"),
-                        fieldWithPath("[].parentName").type(JsonFieldType.STRING)
+                        fieldWithPath("data.[].parentName").type(JsonFieldType.STRING)
                                 .optional()
                                 .description("부모 카테고리(=1차 카테고리)의 이름")
                 )
