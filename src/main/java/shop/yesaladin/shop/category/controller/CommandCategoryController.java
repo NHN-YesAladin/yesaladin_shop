@@ -21,6 +21,7 @@ import shop.yesaladin.shop.category.dto.CategoryRequestDto;
 import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 import shop.yesaladin.shop.category.dto.ResultCodeDto;
 import shop.yesaladin.shop.category.service.inter.CommandCategoryService;
+import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 
 /**
  * 카테고리 생성,수정,삭제를 api를 통하여 동작하기 위한 rest controller
@@ -48,11 +49,16 @@ public class CommandCategoryController {
      * @return ResponseEntity로 카테고리 생성 성공시 생성된 카테고리의 일부 데이터를 반환
      */
     @PostMapping
-    @ResponseStatus(HttpStatus.OK)
-    public CategoryResponseDto createCategory(
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseDto<CategoryResponseDto> createCategory(
             @Valid @RequestBody CategoryRequestDto categoryRequest
     ) {
-        return commandCategoryService.create(categoryRequest);
+        CategoryResponseDto categoryResponseDto = commandCategoryService.create(categoryRequest);
+        return ResponseDto.<CategoryResponseDto>builder()
+                .success(true)
+                .status(HttpStatus.CREATED)
+                .data(categoryResponseDto)
+                .build();
     }
 
     /**
@@ -63,7 +69,8 @@ public class CommandCategoryController {
      * @return ResponseEntity로 카테고리 수정 성공시 200 코드 및 카테고리의 일부 데이터 반환
      */
     @PutMapping("/{categoryId}")
-    public ResponseEntity<CategoryResponseDto> updateCategory(
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseDto<CategoryResponseDto> updateCategory(
             @PathVariable Long categoryId,
             @Valid @RequestBody CategoryRequestDto categoryRequestDto
     ) {
@@ -71,7 +78,11 @@ public class CommandCategoryController {
                 categoryId,
                 categoryRequestDto
         );
-        return ResponseEntity.ok(categoryResponseDto);
+        return ResponseDto.<CategoryResponseDto>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(categoryResponseDto)
+                .build();
     }
 
     /**
@@ -100,8 +111,12 @@ public class CommandCategoryController {
      */
     @DeleteMapping("/{categoryId}")
     @ResponseStatus(HttpStatus.OK)
-    public ResultCodeDto deleteCategory(@PathVariable Long categoryId) {
+    public ResponseDto<ResultCodeDto> deleteCategory(@PathVariable Long categoryId) {
         commandCategoryService.delete(categoryId);
-        return new ResultCodeDto("Success");
+        return ResponseDto.<ResultCodeDto>builder()
+                .status(HttpStatus.OK)
+                .success(true)
+                .data(new ResultCodeDto("Success"))
+                .build();
     }
 }

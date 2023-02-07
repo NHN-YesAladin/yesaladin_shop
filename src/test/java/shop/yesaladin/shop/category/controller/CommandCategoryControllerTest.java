@@ -38,6 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -83,16 +84,23 @@ class CommandCategoryControllerTest {
                                 .optional()
                 ),
                 responseFields(
-                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("카테고리 아이디"),
-                        fieldWithPath("name").type(JsonFieldType.STRING).description("카테고리 이름"),
-                        fieldWithPath("isShown").type(JsonFieldType.BOOLEAN)
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("HTTP 상태 코드"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .optional()
+                                .description("에러 메세지"),
+                        fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("카테고리 아이디"),
+                        fieldWithPath("data.name").type(JsonFieldType.STRING).description("카테고리 이름"),
+                        fieldWithPath("data.isShown").type(JsonFieldType.BOOLEAN)
                                 .description("카테고리 노출 여부"),
-                        fieldWithPath("order").type(JsonFieldType.NUMBER)
+                        fieldWithPath("data.order").type(JsonFieldType.NUMBER)
                                 .optional()
                                 .description("카테고리 순서"),
-                        fieldWithPath("parentId").type(JsonFieldType.NUMBER).optional()
+                        fieldWithPath("data.parentId").type(JsonFieldType.NUMBER).optional()
                                 .description("부모 카테고리(=1차 카테고리)의 아이디"),
-                        fieldWithPath("parentName").type(JsonFieldType.STRING).optional()
+                        fieldWithPath("data.parentName").type(JsonFieldType.STRING).optional()
                                 .description("부모 카테고리(=1차 카테고리)의 이름")
                 )
         ));
@@ -120,16 +128,23 @@ class CommandCategoryControllerTest {
                                 .optional()
                 ),
                 responseFields(
-                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("카테고리 아이디"),
-                        fieldWithPath("name").type(JsonFieldType.STRING).description("카테고리 이름"),
-                        fieldWithPath("isShown").type(JsonFieldType.BOOLEAN)
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("HTTP 상태 코드"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .optional()
+                                .description("에러 메세지"),
+                        fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("카테고리 아이디"),
+                        fieldWithPath("data.name").type(JsonFieldType.STRING).description("카테고리 이름"),
+                        fieldWithPath("data.isShown").type(JsonFieldType.BOOLEAN)
                                 .description("카테고리 노출 여부"),
-                        fieldWithPath("order").type(JsonFieldType.NUMBER)
+                        fieldWithPath("data.order").type(JsonFieldType.NUMBER)
                                 .optional()
                                 .description("카테고리 순서"),
-                        fieldWithPath("parentId").type(JsonFieldType.NUMBER).optional()
+                        fieldWithPath("data.parentId").type(JsonFieldType.NUMBER).optional()
                                 .description("부모 카테고리(=1차 카테고리)의 아이디"),
-                        fieldWithPath("parentName").type(JsonFieldType.STRING).optional()
+                        fieldWithPath("data.parentName").type(JsonFieldType.STRING).optional()
                                 .description("부모 카테고리(=1차 카테고리)의 이름")
                 )
         ));
@@ -200,12 +215,13 @@ class CommandCategoryControllerTest {
                 .content(objectMapper.writeValueAsString(createDto)));
 
         // then
-        perform.andDo(print())
-                .andExpect(status().isOk())
+        perform.andExpect(status().isCreated())
                 .andExpect(header().stringValues("Content-Type", MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(jsonPath("$.id", equalTo(responseDto.getId().intValue())))
-                .andExpect(jsonPath("$.name", equalTo(responseDto.getName())))
-                .andExpect(jsonPath("$.isShown", equalTo(responseDto.getIsShown())));
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.CREATED.value())))
+                .andExpect(jsonPath("$.data.id", equalTo(responseDto.getId().intValue())))
+                .andExpect(jsonPath("$.data.name", equalTo(responseDto.getName())))
+                .andExpect(jsonPath("$.data.isShown", equalTo(responseDto.getIsShown())));
 
         verify(commandCategoryService, times(1)).create(argumentCaptor.capture());
         assertThat(argumentCaptor.getValue().getName()).isEqualTo(createDto.getName());
@@ -240,12 +256,13 @@ class CommandCategoryControllerTest {
                 .content(objectMapper.writeValueAsString(createDto)));
 
         // then
-        perform.andDo(print())
-                .andExpect(status().isOk())
+        perform.andExpect(status().isCreated())
                 .andExpect(header().stringValues("Content-Type", MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(jsonPath("$.id", equalTo(responseDto.getId().intValue())))
-                .andExpect(jsonPath("$.name", equalTo(responseDto.getName())))
-                .andExpect(jsonPath("$.isShown", equalTo(responseDto.getIsShown())));
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.CREATED.value())))
+                .andExpect(jsonPath("$.data.id", equalTo(responseDto.getId().intValue())))
+                .andExpect(jsonPath("$.data.name", equalTo(responseDto.getName())))
+                .andExpect(jsonPath("$.data.isShown", equalTo(responseDto.getIsShown())));
 
         verify(commandCategoryService, times(1)).create(argumentCaptor.capture());
         assertThat(argumentCaptor.getValue().getName()).isEqualTo(createDto.getName());
@@ -308,12 +325,13 @@ class CommandCategoryControllerTest {
                 .content(objectMapper.writeValueAsString(categoryRequestDto)));
 
         // then
-        perform.andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id", equalTo(toEntity.getId().intValue())))
-                .andExpect(jsonPath("$.name", equalTo(toEntity.getName())))
-                .andExpect(jsonPath("$.isShown", equalTo(toEntity.isShown())));
+        perform.andExpect(status().isOk())
+                .andExpect(header().stringValues("Content-Type", MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())))
+                .andExpect(jsonPath("$.data.id", equalTo(toEntity.getId().intValue())))
+                .andExpect(jsonPath("$.data.name", equalTo(toEntity.getName())))
+                .andExpect(jsonPath("$.data.isShown", equalTo(toEntity.isShown())));
 
         verify(commandCategoryService, times(1)).update(
                 longArgumentCaptor.capture(),
@@ -361,12 +379,13 @@ class CommandCategoryControllerTest {
                 .content(objectMapper.writeValueAsString(categoryRequestDto)));
 
         // then
-        perform.andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id", equalTo(toEntity.getId().intValue())))
-                .andExpect(jsonPath("$.name", equalTo(toEntity.getName())))
-                .andExpect(jsonPath("$.isShown", equalTo(toEntity.isShown())));
+        perform.andExpect(status().isOk())
+                .andExpect(header().stringValues("Content-Type", MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())))
+                .andExpect(jsonPath("$.data.id", equalTo(toEntity.getId().intValue())))
+                .andExpect(jsonPath("$.data.name", equalTo(toEntity.getName())))
+                .andExpect(jsonPath("$.data.isShown", equalTo(toEntity.isShown())));
 
         verify(commandCategoryService, times(1)).update(
                 longArgumentCaptor.capture(),
@@ -415,12 +434,13 @@ class CommandCategoryControllerTest {
                 .content(objectMapper.writeValueAsString(categoryRequestDto)));
 
         // then
-        perform.andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id", equalTo(responseDto.getId().intValue())))
-                .andExpect(jsonPath("$.name", equalTo(toEntity.getName())))
-                .andExpect(jsonPath("$.isShown", equalTo(toEntity.isShown())));
+        perform.andExpect(status().isOk())
+                .andExpect(header().stringValues("Content-Type", MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())))
+                .andExpect(jsonPath("$.data.id", equalTo(toEntity.getId().intValue())))
+                .andExpect(jsonPath("$.data.name", equalTo(toEntity.getName())))
+                .andExpect(jsonPath("$.data.isShown", equalTo(toEntity.isShown())));
 
         verify(commandCategoryService, times(1)).update(
                 longArgumentCaptor.capture(),
@@ -472,12 +492,13 @@ class CommandCategoryControllerTest {
                 .content(objectMapper.writeValueAsString(categoryRequestDto)));
 
         // then
-        perform.andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id", equalTo(toEntity.getId().intValue())))
-                .andExpect(jsonPath("$.name", equalTo(toEntity.getName())))
-                .andExpect(jsonPath("$.isShown", equalTo(toEntity.isShown())));
+        perform.andExpect(status().isOk())
+                .andExpect(header().stringValues("Content-Type", MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())))
+                .andExpect(jsonPath("$.data.id", equalTo(toEntity.getId().intValue())))
+                .andExpect(jsonPath("$.data.name", equalTo(toEntity.getName())))
+                .andExpect(jsonPath("$.data.isShown", equalTo(toEntity.isShown())));
 
         verify(commandCategoryService, times(1)).update(
                 longArgumentCaptor.capture(),
@@ -623,7 +644,10 @@ class CommandCategoryControllerTest {
         // then
         perform.andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.result", equalTo("Success")));
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(200)))
+                .andExpect(jsonPath("$.data.result", equalTo("Success")))
+                .andExpect(jsonPath("$.errorMessages", equalTo(null)));
 
         verify(commandCategoryService, times(1)).delete(longArgumentCaptor.capture());
         assertThat(longArgumentCaptor.getValue().intValue()).isEqualTo(parentCategory.getId()
@@ -637,7 +661,15 @@ class CommandCategoryControllerTest {
                         parameterWithName("id").description("삭제할 카테고리 아이디")
                 ),
                 responseFields(
-                        fieldWithPath("result").type(JsonFieldType.STRING).description("삭제 성공 메시지")
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("HTTP status code"),
+                        fieldWithPath("data.result").type(JsonFieldType.STRING)
+                                .description("수정 성공 메시지"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러메시지")
+                                .optional()
                 )
         ));
 
