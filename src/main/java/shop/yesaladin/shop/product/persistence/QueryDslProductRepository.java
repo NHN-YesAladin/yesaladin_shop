@@ -1,8 +1,15 @@
 package shop.yesaladin.shop.product.persistence;
 
+import static com.querydsl.jpa.JPAExpressions.select;
+
+import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -16,11 +23,6 @@ import shop.yesaladin.shop.product.dto.ProductOnlyTitleDto;
 import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
 import shop.yesaladin.shop.product.dto.ProductRelationResponseDto;
 import shop.yesaladin.shop.product.exception.ProductTypeCodeNotFoundException;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import shop.yesaladin.shop.publish.domain.model.querydsl.QPublish;
 import shop.yesaladin.shop.publish.domain.model.querydsl.QPublisher;
 import shop.yesaladin.shop.writing.domain.model.querydsl.QAuthor;
@@ -278,25 +280,30 @@ public class QueryDslProductRepository implements QueryProductRepository {
         QPublish publish = QPublish.publish;
         QPublisher publisher = QPublisher.publisher;
 
-        queryFactory.select(
-                        product.id,
-                        product.isbn,
-                        product.title,
-                        product.actualPrice,
-                        product.discountRate,
-                        product.isForcedOutOfStock,
-                        product.quantity,
-                        product.preferentialShowRanking,
-                        author.name.as("authors"),
-                        publisher.name.as("publisher"),
-                        publish.publishedDate
+        return queryFactory.select(
+                        Projections.bean(
+                                ProductRelationResponseDto.class,
+                                product.id,
+                                product.isbn,
+                                product.title,
+                                product.actualPrice,
+                                product.discountRate,
+                                product.isForcedOutOfStock,
+                                product.quantity,
+                                product.preferentialShowRanking,
+                                ExpressionUtils.as(select(author.name).from(author), "authors")
+//                                publisher.name.as("publisher"),
+//                                publish.publishedDate
+                        )
                 )
-                .from(product, author, publisher, publish)
+                .from(product, writing)
                 .where(product.title.contains(title).and(product.isDeleted.isFalse()))
-                .leftJoin(writing.product, product).leftJoin(writing.author, author)
-                .leftJoin(publish.product, product).leftJoin(publish.publisher, publisher);
-
-        return null;
+                .leftJoin(writing).on(product.eq(writing.product)).fetchJoin()
+                .leftJoin(author).on(writing.author.eq(author)).fetchJoin()
+//                .groupBy(author.name)
+//                .leftJoin(publish).on(product.id.eq(publish.product.id))
+//                .leftJoin(publish).on(publisher.id.eq(publish.publisher.id))
+                .fetch();
     }
 }
 
