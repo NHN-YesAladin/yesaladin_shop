@@ -74,8 +74,7 @@ public class OrderNonMemberCreateRequestDto extends OrderCreateRequestDto {
     public NonMemberOrder toEntity(
             String name,
             String orderNumber,
-            LocalDateTime orderDateTime,
-            OrderRecipient orderRecipient
+            LocalDateTime orderDateTime
     ) {
         return NonMemberOrder.builder()
                 .name(name)
@@ -87,7 +86,8 @@ public class OrderNonMemberCreateRequestDto extends OrderCreateRequestDto {
                 .wrappingFee(wrappingFee)
                 .totalAmount(productTotalAmount)
                 .orderCode(OrderCode.NON_MEMBER_ORDER)
-                .orderRecipient(orderRecipient)
+                .recipientName(recipientName)
+                .recipientPhoneNumber(recipientPhoneNumber)
                 .address(ordererAddress)
                 .nonMemberName(ordererName)
                 .phoneNumber(ordererPhoneNumber)

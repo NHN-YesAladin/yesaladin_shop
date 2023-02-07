@@ -72,7 +72,6 @@ public class OrderMemberCreateRequestDto extends OrderCreateRequestDto {
             String name,
             String orderNumber,
             LocalDateTime orderDateTime,
-            OrderRecipient orderRecipient,
             Member member,
             MemberAddress address
     ) {
@@ -87,7 +86,8 @@ public class OrderMemberCreateRequestDto extends OrderCreateRequestDto {
                 .wrappingFee(wrappingFee)
                 .totalAmount(productTotalAmount)
                 .orderCode(OrderCode.MEMBER_ORDER)
-                .orderRecipient(orderRecipient)
+                .recipientName(recipientName)
+                .recipientPhoneNumber(recipientPhoneNumber)
                 .member(member)
                 .memberAddress(address)
                 .build();

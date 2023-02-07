@@ -76,7 +76,6 @@ public class OrderSubscribeCreateRequestDto extends OrderMemberCreateRequestDto 
             String name,
             String orderNumber,
             LocalDateTime orderDateTime,
-            OrderRecipient orderRecipient,
             Member member,
             MemberAddress address,
             LocalDate nextRenewalDate,
@@ -93,7 +92,8 @@ public class OrderSubscribeCreateRequestDto extends OrderMemberCreateRequestDto 
                 .wrappingFee(wrappingFee)
                 .totalAmount(productTotalAmount)
                 .orderCode(OrderCode.MEMBER_SUBSCRIBE)
-                .orderRecipient(orderRecipient)
+                .recipientName(recipientName)
+                .recipientPhoneNumber(recipientPhoneNumber)
                 .member(member)
                 .memberAddress(address)
                 .expectedDay(expectedDay)

@@ -62,11 +62,13 @@ public abstract class Order {
     @Column(name = "total_amount", nullable = false)
     private long totalAmount;
 
+    @Column(name = "name", nullable = false, length = 20)
+    private String recipientName;
+
+    @Column(name = "phone_number", nullable = false, length = 11)
+    private String recipientPhoneNumber;
+
     @Column(name = "order_code_id", nullable = false)
     @Convert(converter = OrderCodeConverter.class)
     private OrderCode orderCode;
-
-    @JoinColumn(name = "order_recipient_id", nullable = false)
-    @ManyToOne(fetch = FetchType.LAZY)
-    private OrderRecipient orderRecipient;
 }
