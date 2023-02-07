@@ -2,6 +2,8 @@ package shop.yesaladin.shop.member.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.verify;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -9,7 +11,9 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberGrade;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
@@ -17,7 +21,7 @@ import shop.yesaladin.shop.member.domain.repository.QueryMemberRoleRepository;
 import shop.yesaladin.shop.member.dto.MemberDto;
 import shop.yesaladin.shop.member.dto.MemberGradeQueryResponseDto;
 import shop.yesaladin.shop.member.dto.MemberLoginResponseDto;
-import shop.yesaladin.shop.member.dto.MemberManagerListResponseDto;
+import shop.yesaladin.shop.member.dto.MemberManagerResponseDto;
 import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
@@ -204,168 +208,125 @@ class QueryMemberServiceImplTest {
     }
 
     @Test
-    void findMemberManageByLoginId_failed_whenMemberNotFound() {
+    void findMemberManagesByLoginId() {
         //given
         String loginId = "loginId";
+        Member member = Member.builder().loginId(loginId).build();
+        MemberManagerResponseDto dto = MemberManagerResponseDto.fromEntity(member);
 
-        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
-                .thenReturn(Optional.empty());
-
-        //when, then
-        assertThatThrownBy(() -> service.findMemberManageByLoginId(
-                "Member LoginId : " + loginId))
-                .isInstanceOf(MemberNotFoundException.class);
-
-    }
-
-    @Test
-    void findMemberManageByLoginId() {
-        //given
-        String loginId = "loginId";
-
-        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
-                .thenReturn(Optional.of(expectedMember));
-        Mockito.when(expectedMember.getLoginId()).thenReturn(loginId);
+        Mockito.when(queryMemberRepository.findMemberManagersByLoginId(
+                        loginId,
+                        PageRequest.of(0, 10)
+                ))
+                .thenReturn(new PageImpl<>(List.of(dto), PageRequest.of(0, 10), 1L));
 
         //when
-        Optional<Member> result = queryMemberRepository.findMemberByLoginId(loginId);
+        Page<MemberManagerResponseDto> result = service.findMemberManagesByLoginId(
+                loginId,
+                PageRequest.of(0, 10)
+        );
 
         //then
-        assertThat(result).isPresent();
-        assertThat(result.get().getLoginId()).isEqualTo(loginId);
+        assertThat(result.getTotalElements()).isEqualTo(1);
+        assertThat(result.getContent()).hasSize(1);
+        assertThat(result.getNumber()).isEqualTo(0);
+        assertThat(result.getContent().get(0).getLoginId()).isEqualTo(loginId);
+        verify(queryMemberRepository, atLeastOnce()).findMemberManagersByLoginId(loginId, PageRequest.of(0, 10));
     }
 
+
     @Test
-    void findMemberManageByNickName_failed_whenMemberNotFound() {
+    void findMemberManagesByNickName() {
         //given
         String nickname = "nickname";
+        Member member = Member.builder().nickname(nickname).build();
+        MemberManagerResponseDto dto = MemberManagerResponseDto.fromEntity(member);
 
-        Mockito.when(queryMemberRepository.findMemberByNickname(nickname))
-                .thenReturn(Optional.empty());
+        Mockito.when(queryMemberRepository.findMemberManagersByNickname(
+                nickname,
+                PageRequest.of(0, 1)
+        )).thenReturn(new PageImpl<>(List.of(dto), PageRequest.of(0, 1), 1L));
 
-        //when, then
-        assertThatThrownBy(() -> service.findMemberManageByNickName(
-                "Member LoginId : " + nickname))
-                .isInstanceOf(MemberNotFoundException.class);
+        //when
+        Page<MemberManagerResponseDto> result = service.findMemberManagesByNickName(
+                nickname,
+                PageRequest.of(0, 1)
+        );
+
+        //then
+        assertThat(result.getTotalElements()).isEqualTo(1);
+        assertThat(result.getContent().get(0).getNickname()).isEqualTo(nickname);
     }
 
     @Test
-    void findMemberManageByNickName() {
-        //given
-        String nickname = "nickname";
-
-        Mockito.when(queryMemberRepository.findMemberByNickname(nickname))
-                .thenReturn(Optional.of(expectedMember));
-        Mockito.when(expectedMember.getNickname()).thenReturn(nickname);
-
-        Optional<Member> result = queryMemberRepository.findMemberByNickname(nickname);
-
-        assertThat(result).isPresent();
-        assertThat(result.get().getNickname()).isEqualTo(nickname);
-    }
-
-    @Test
-    void findMemberManageByPhone_failed_whenMemberNotFound() {
+    void findMemberManagesByPhone() {
         //given
         String phone = "phone";
+        Member member = Member.builder().phone(phone).build();
+        MemberManagerResponseDto dto = MemberManagerResponseDto.fromEntity(member);
 
-        Mockito.when(queryMemberRepository.findMemberByPhone(phone))
-                .thenReturn(Optional.empty());
+        Mockito.when(queryMemberRepository.findMemberManagersByPhone(
+                phone,
+                PageRequest.of(0, 1)
+        )).thenReturn(new PageImpl<>(List.of(dto), PageRequest.of(0, 1), 1L));
 
-        //when then
-        assertThatThrownBy(() -> service.findMemberManageByPhone(
-                "Member Phone : " + phone))
-                .isInstanceOf(MemberNotFoundException.class);
+        //when
+        Page<MemberManagerResponseDto> result = service.findMemberManagesByPhone(
+                phone,
+                PageRequest.of(0, 1)
+        );
+
+        //then
+        assertThat(result.getTotalElements()).isEqualTo(1);
+        assertThat(result.getContent().get(0).getPhone()).isEqualTo(phone);
     }
 
-    @Test
-    void findMemberManageByPhone() {
-        //given
-        String phone = "phone";
-
-        Mockito.when(queryMemberRepository.findMemberByPhone(phone))
-                .thenReturn(Optional.of(expectedMember));
-        Mockito.when(expectedMember.getPhone()).thenReturn(phone);
-
-        Optional<Member> result = queryMemberRepository.findMemberByPhone(phone);
-
-        assertThat(result).isPresent();
-        assertThat(result.get().getPhone()).isEqualTo(phone);
-    }
-
-    @Test
-    void findMemberManagesByName_failed_whenMemberNotFound() {
-        //given
-        String name = "name";
-        int offset = 0;
-        int size = 1;
-
-        Mockito.when(queryMemberRepository.findMembersByName(name, offset, size))
-                .thenReturn(new PageImpl<>(List.of()));
-
-        //when then
-        assertThatThrownBy(() -> service.findMemberManagesByName(name, offset, size)).isInstanceOf(
-                MemberNotFoundException.class);
-    }
 
     @Test
     void findMemberManagesByName() {
         //given
         String name = "name";
-        int offset = 0;
-        int size = 1;
+        Member member = Member.builder().name(name).build();
+        MemberManagerResponseDto dto = MemberManagerResponseDto.fromEntity(member);
 
-        Mockito.when(queryMemberRepository.findMembersByName(name, offset, size))
-                .thenReturn(new PageImpl<>(List.of(expectedMember)));
-        Mockito.when(expectedMember.getName()).thenReturn(name);
+        Mockito.when(queryMemberRepository.findMemberManagersByName(
+                name,
+                PageRequest.of(0, 1)
+        )).thenReturn(new PageImpl<>(List.of(dto), PageRequest.of(0, 1), 1L));
 
         //when
-        MemberManagerListResponseDto result = service.findMemberManagesByName(name, offset, size);
+        Page<MemberManagerResponseDto> result = service.findMemberManagesByName(
+                name,
+                PageRequest.of(0, 1)
+        );
 
         //then
-        assertThat(result.getCount()).isEqualTo(1);
-        assertThat(result.getMemberManagerResponseDtoList().get(0).getName()).isEqualTo(name);
+        assertThat(result.getTotalElements()).isEqualTo(1);
+        assertThat(result.getContent().get(0).getName()).isEqualTo(name);
     }
 
-    @Test
-    void findMemberManagesBySignUpDate_failed_whenMemberNotFound() {
-        //given
-        LocalDate signUpDate = LocalDate.of(2011, 2, 2);
-        int offset = 0;
-        int size = 1;
-
-        Mockito.when(queryMemberRepository.findMembersBySignUpDate(signUpDate, offset, size))
-                .thenReturn(new PageImpl<>(List.of()));
-
-        //when then
-        assertThatThrownBy(() -> service.findMemberManagesBySignUpDate(
-                signUpDate,
-                offset,
-                size
-        )).isInstanceOf(MemberNotFoundException.class);
-    }
 
     @Test
     void findMemberManagesBySignUpDate() {
         //given
-        LocalDate signUpDate = LocalDate.of(2011, 2, 2);
-        int offset = 0;
-        int size = 1;
+        LocalDate signUpDate = LocalDate.now();
+        Member member = Member.builder().signUpDate(signUpDate).build();
+        MemberManagerResponseDto dto = MemberManagerResponseDto.fromEntity(member);
 
-        Mockito.when(queryMemberRepository.findMembersBySignUpDate(signUpDate, offset, size))
-                .thenReturn(new PageImpl<>(List.of(expectedMember)));
-        Mockito.when(expectedMember.getSignUpDate()).thenReturn(signUpDate);
+        Mockito.when(queryMemberRepository.findMemberManagersBySignUpDate(
+                signUpDate,
+                PageRequest.of(0, 1)
+        )).thenReturn(new PageImpl<>(List.of(dto), PageRequest.of(0, 1), 1L));
 
         //when
-        MemberManagerListResponseDto result = service.findMemberManagesBySignUpDate(
+        Page<MemberManagerResponseDto> result = service.findMemberManagesBySignUpDate(
                 signUpDate,
-                offset,
-                size
+                PageRequest.of(0, 1)
         );
 
         //then
-        assertThat(result.getCount()).isEqualTo(1);
-        assertThat(result.getMemberManagerResponseDtoList().get(0).getSignUpDate()).isEqualTo(signUpDate);
+        assertThat(result.getTotalElements()).isEqualTo(1);
+        assertThat(result.getContent().get(0).getSignUpDate()).isEqualTo(signUpDate.toString());
     }
 
     @Test
