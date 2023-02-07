@@ -199,7 +199,7 @@ public class QueryMemberController {
      * @since 1.0
      */
     @GetMapping(value = "/manage", params = "loginid")
-    public PaginatedResponseDto<MemberManagerResponseDto> manageMemberInfoByLoginId(
+    public ResponseDto<PaginatedResponseDto<MemberManagerResponseDto>> manageMemberInfoByLoginId(
             @RequestParam(name = "loginid") String loginId,
             @PageableDefault Pageable pageable
     ) {
@@ -208,11 +208,15 @@ public class QueryMemberController {
                 pageable
         );
 
-        return PaginatedResponseDto.<MemberManagerResponseDto>builder()
-                .dataList(members.toList())
-                .totalPage(members.getTotalPages())
-                .currentPage(members.getNumber())
-                .totalDataCount(members.getTotalElements())
+        return ResponseDto.<PaginatedResponseDto<MemberManagerResponseDto>>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(PaginatedResponseDto.<MemberManagerResponseDto>builder()
+                        .dataList(members.toList())
+                        .totalPage(members.getTotalPages())
+                        .currentPage(members.getNumber())
+                        .totalDataCount(members.getTotalElements())
+                        .build())
                 .build();
     }
 
@@ -226,7 +230,7 @@ public class QueryMemberController {
      * @since 1.0
      */
     @GetMapping(value = "/manage", params = "nickname")
-    public PaginatedResponseDto<MemberManagerResponseDto> manageMemberInfoByNickname(
+    public ResponseDto<PaginatedResponseDto<MemberManagerResponseDto>> manageMemberInfoByNickname(
             @RequestParam String nickname,
             @PageableDefault Pageable pageable
     ) {
@@ -235,11 +239,15 @@ public class QueryMemberController {
                 pageable
         );
 
-        return PaginatedResponseDto.<MemberManagerResponseDto>builder()
-                .dataList(members.toList())
-                .totalPage(members.getTotalPages())
-                .currentPage(members.getNumber())
-                .totalDataCount(members.getTotalElements())
+        return ResponseDto.<PaginatedResponseDto<MemberManagerResponseDto>>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(PaginatedResponseDto.<MemberManagerResponseDto>builder()
+                        .dataList(members.toList())
+                        .totalPage(members.getTotalPages())
+                        .currentPage(members.getNumber())
+                        .totalDataCount(members.getTotalElements())
+                        .build())
                 .build();
     }
 
@@ -253,7 +261,7 @@ public class QueryMemberController {
      * @since 1.0
      */
     @GetMapping(value = "/manage", params = "phone")
-    public PaginatedResponseDto<MemberManagerResponseDto> manageMemberInfoByPhone(
+    public ResponseDto<PaginatedResponseDto<MemberManagerResponseDto>> manageMemberInfoByPhone(
             @RequestParam String phone,
             @PageableDefault Pageable pageable
     ) {
@@ -262,11 +270,15 @@ public class QueryMemberController {
                 pageable
         );
 
-        return PaginatedResponseDto.<MemberManagerResponseDto>builder()
-                .dataList(members.toList())
-                .totalPage(members.getTotalPages())
-                .currentPage(members.getNumber())
-                .totalDataCount(members.getTotalElements())
+        return ResponseDto.<PaginatedResponseDto<MemberManagerResponseDto>>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(PaginatedResponseDto.<MemberManagerResponseDto>builder()
+                        .dataList(members.toList())
+                        .totalPage(members.getTotalPages())
+                        .currentPage(members.getNumber())
+                        .totalDataCount(members.getTotalElements())
+                        .build())
                 .build();
     }
 
@@ -280,7 +292,7 @@ public class QueryMemberController {
      * @since 1.0
      */
     @GetMapping(value = "/manage", params = "name")
-    public PaginatedResponseDto<MemberManagerResponseDto> manageMembersInfoByName(
+    public ResponseDto<PaginatedResponseDto<MemberManagerResponseDto>> manageMembersInfoByName(
             @RequestParam String name,
             @PageableDefault Pageable pageable
     ) {
@@ -289,11 +301,15 @@ public class QueryMemberController {
                 pageable
         );
 
-        return PaginatedResponseDto.<MemberManagerResponseDto>builder()
-                .dataList(members.toList())
-                .totalPage(members.getTotalPages())
-                .currentPage(members.getNumber())
-                .totalDataCount(members.getTotalElements())
+        return ResponseDto.<PaginatedResponseDto<MemberManagerResponseDto>>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(PaginatedResponseDto.<MemberManagerResponseDto>builder()
+                        .dataList(members.toList())
+                        .totalPage(members.getTotalPages())
+                        .currentPage(members.getNumber())
+                        .totalDataCount(members.getTotalElements())
+                        .build())
                 .build();
     }
 
@@ -307,7 +323,7 @@ public class QueryMemberController {
      * @since 1.0
      */
     @GetMapping(value = "/manage", params = "signupdate")
-    public PaginatedResponseDto<MemberManagerResponseDto> manageMembersInfoBySignUpDate(
+    public ResponseDto<PaginatedResponseDto<MemberManagerResponseDto>> manageMembersInfoBySignUpDate(
             @RequestParam(name = "signupdate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate signUpDate,
             @PageableDefault Pageable pageable
     ) {
@@ -316,11 +332,15 @@ public class QueryMemberController {
                 pageable
         );
 
-        return PaginatedResponseDto.<MemberManagerResponseDto>builder()
-                .dataList(members.toList())
-                .totalPage(members.getTotalPages())
-                .currentPage(members.getNumber())
-                .totalDataCount(members.getTotalElements())
+        return ResponseDto.<PaginatedResponseDto<MemberManagerResponseDto>>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(PaginatedResponseDto.<MemberManagerResponseDto>builder()
+                        .dataList(members.toList())
+                        .totalPage(members.getTotalPages())
+                        .currentPage(members.getNumber())
+                        .totalDataCount(members.getTotalElements())
+                        .build())
                 .build();
     }
 

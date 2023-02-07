@@ -546,25 +546,25 @@ class QueryMemberControllerTest {
                 loginId
         ));
 
+
         resultActions.andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.dataList[0].id", equalTo(1)))
-                .andExpect(jsonPath("$.dataList[0].loginId", equalTo(member.getLoginId())))
-                .andExpect(jsonPath("$.dataList[0].nickname", equalTo(member.getNickname())))
-                .andExpect(jsonPath("$.dataList[0].email", equalTo(member.getEmail())))
-                .andExpect(jsonPath("$.dataList[0].phone", equalTo(member.getPhone())))
-                .andExpect(jsonPath("$.dataList[0].name", equalTo(member.getName())))
+                .andExpect(jsonPath("$.data.dataList[0].id", equalTo(1)))
+                .andExpect(jsonPath("$.data.dataList[0].loginId", equalTo(member.getLoginId())))
+                .andExpect(jsonPath("$.data.dataList[0].nickname", equalTo(member.getNickname())))
+                .andExpect(jsonPath("$.data.dataList[0].email", equalTo(member.getEmail())))
+                .andExpect(jsonPath("$.data.dataList[0].phone", equalTo(member.getPhone())))
+                .andExpect(jsonPath("$.data.dataList[0].name", equalTo(member.getName())))
                 .andExpect(jsonPath(
-                        "$.dataList[0].signUpDate",
+                        "$.data.dataList[0].signUpDate",
                         equalTo(member.getSignUpDate().toString())
                 ))
-                .andExpect(jsonPath("$.dataList[0].withdrawalDate", equalTo(null)))
-                .andExpect(jsonPath("$.dataList[0].isWithdrawal", equalTo(member.isWithdrawal())))
-                .andExpect(jsonPath("$.dataList[0].isBlocked", equalTo(member.isBlocked())))
-                .andExpect(jsonPath("$.dataList[0].blockedReason", equalTo(null)))
-                .andExpect(jsonPath("$.dataList[0].blockedDate", equalTo(null)))
-                .andExpect(jsonPath("$.dataList[0].unblockedDate", equalTo(null)))
-                .andDo(print());
+                .andExpect(jsonPath("$.data.dataList[0].withdrawalDate", equalTo(null)))
+                .andExpect(jsonPath("$.data.dataList[0].isWithdrawal", equalTo(member.isWithdrawal())))
+                .andExpect(jsonPath("$.data.dataList[0].isBlocked", equalTo(member.isBlocked())))
+                .andExpect(jsonPath("$.data.dataList[0].blockedReason", equalTo(null)))
+                .andExpect(jsonPath("$.data.dataList[0].blockedDate", equalTo(null)))
+                .andExpect(jsonPath("$.data.dataList[0].unblockedDate", equalTo(null)));
     }
 
 
@@ -586,24 +586,25 @@ class QueryMemberControllerTest {
                 member.getNickname()
         ));
 
+
         resultActions.andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.dataList[0].id", equalTo(1)))
-                .andExpect(jsonPath("$.dataList[0].loginId", equalTo(member.getLoginId())))
-                .andExpect(jsonPath("$.dataList[0].nickname", equalTo(member.getNickname())))
-                .andExpect(jsonPath("$.dataList[0].email", equalTo(member.getEmail())))
-                .andExpect(jsonPath("$.dataList[0].phone", equalTo(member.getPhone())))
-                .andExpect(jsonPath("$.dataList[0].name", equalTo(member.getName())))
+                .andExpect(jsonPath("$.data.dataList[0].id", equalTo(1)))
+                .andExpect(jsonPath("$.data.dataList[0].loginId", equalTo(member.getLoginId())))
+                .andExpect(jsonPath("$.data.dataList[0].nickname", equalTo(member.getNickname())))
+                .andExpect(jsonPath("$.data.dataList[0].email", equalTo(member.getEmail())))
+                .andExpect(jsonPath("$.data.dataList[0].phone", equalTo(member.getPhone())))
+                .andExpect(jsonPath("$.data.dataList[0].name", equalTo(member.getName())))
                 .andExpect(jsonPath(
-                        "$.dataList[0].signUpDate",
+                        "$.data.dataList[0].signUpDate",
                         equalTo(member.getSignUpDate().toString())
                 ))
-                .andExpect(jsonPath("$.dataList[0].withdrawalDate", equalTo(null)))
-                .andExpect(jsonPath("$.dataList[0].isWithdrawal", equalTo(member.isWithdrawal())))
-                .andExpect(jsonPath("$.dataList[0].isBlocked", equalTo(member.isBlocked())))
-                .andExpect(jsonPath("$.dataList[0].blockedReason", equalTo(null)))
-                .andExpect(jsonPath("$.dataList[0].blockedDate", equalTo(null)))
-                .andExpect(jsonPath("$.dataList[0].unblockedDate", equalTo(null)));
+                .andExpect(jsonPath("$.data.dataList[0].withdrawalDate", equalTo(null)))
+                .andExpect(jsonPath("$.data.dataList[0].isWithdrawal", equalTo(member.isWithdrawal())))
+                .andExpect(jsonPath("$.data.dataList[0].isBlocked", equalTo(member.isBlocked())))
+                .andExpect(jsonPath("$.data.dataList[0].blockedReason", equalTo(null)))
+                .andExpect(jsonPath("$.data.dataList[0].blockedDate", equalTo(null)))
+                .andExpect(jsonPath("$.data.dataList[0].unblockedDate", equalTo(null)));
     }
 
     @WithMockUser
@@ -622,25 +623,25 @@ class QueryMemberControllerTest {
                 phone
         ));
 
+
         resultActions.andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.dataList[0].id", equalTo(1)))
-                .andExpect(jsonPath("$.dataList[0].loginId", equalTo(member.getLoginId())))
-                .andExpect(jsonPath("$.dataList[0].nickname", equalTo(member.getNickname())))
-                .andExpect(jsonPath("$.dataList[0].email", equalTo(member.getEmail())))
-                .andExpect(jsonPath("$.dataList[0].phone", equalTo(member.getPhone())))
-                .andExpect(jsonPath("$.dataList[0].name", equalTo(member.getName())))
+                .andExpect(jsonPath("$.data.dataList[0].id", equalTo(1)))
+                .andExpect(jsonPath("$.data.dataList[0].loginId", equalTo(member.getLoginId())))
+                .andExpect(jsonPath("$.data.dataList[0].nickname", equalTo(member.getNickname())))
+                .andExpect(jsonPath("$.data.dataList[0].email", equalTo(member.getEmail())))
+                .andExpect(jsonPath("$.data.dataList[0].phone", equalTo(member.getPhone())))
+                .andExpect(jsonPath("$.data.dataList[0].name", equalTo(member.getName())))
                 .andExpect(jsonPath(
-                        "$.dataList[0].signUpDate",
+                        "$.data.dataList[0].signUpDate",
                         equalTo(member.getSignUpDate().toString())
                 ))
-                .andExpect(jsonPath("$.dataList[0].withdrawalDate", equalTo(null)))
-                .andExpect(jsonPath("$.dataList[0].isWithdrawal", equalTo(member.isWithdrawal())))
-                .andExpect(jsonPath("$.dataList[0].isBlocked", equalTo(member.isBlocked())))
-                .andExpect(jsonPath("$.dataList[0].blockedReason", equalTo(null)))
-                .andExpect(jsonPath("$.dataList[0].blockedDate", equalTo(null)))
-                .andExpect(jsonPath("$.dataList[0].unblockedDate", equalTo(null)))
-                .andDo(print());
+                .andExpect(jsonPath("$.data.dataList[0].withdrawalDate", equalTo(null)))
+                .andExpect(jsonPath("$.data.dataList[0].isWithdrawal", equalTo(member.isWithdrawal())))
+                .andExpect(jsonPath("$.data.dataList[0].isBlocked", equalTo(member.isBlocked())))
+                .andExpect(jsonPath("$.data.dataList[0].blockedReason", equalTo(null)))
+                .andExpect(jsonPath("$.data.dataList[0].blockedDate", equalTo(null)))
+                .andExpect(jsonPath("$.data.dataList[0].unblockedDate", equalTo(null)));
     }
 
     @WithMockUser
@@ -660,24 +661,25 @@ class QueryMemberControllerTest {
                 name
         ));
 
+
         resultActions.andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.dataList[0].id", equalTo(1)))
-                .andExpect(jsonPath("$.dataList[0].loginId", equalTo(member.getLoginId())))
-                .andExpect(jsonPath("$.dataList[0].nickname", equalTo(member.getNickname())))
-                .andExpect(jsonPath("$.dataList[0].email", equalTo(member.getEmail())))
-                .andExpect(jsonPath("$.dataList[0].phone", equalTo(member.getPhone())))
-                .andExpect(jsonPath("$.dataList[0].name", equalTo(member.getName())))
+                .andExpect(jsonPath("$.data.dataList[0].id", equalTo(1)))
+                .andExpect(jsonPath("$.data.dataList[0].loginId", equalTo(member.getLoginId())))
+                .andExpect(jsonPath("$.data.dataList[0].nickname", equalTo(member.getNickname())))
+                .andExpect(jsonPath("$.data.dataList[0].email", equalTo(member.getEmail())))
+                .andExpect(jsonPath("$.data.dataList[0].phone", equalTo(member.getPhone())))
+                .andExpect(jsonPath("$.data.dataList[0].name", equalTo(member.getName())))
                 .andExpect(jsonPath(
-                        "$.dataList[0].signUpDate",
+                        "$.data.dataList[0].signUpDate",
                         equalTo(member.getSignUpDate().toString())
                 ))
-                .andExpect(jsonPath("$.dataList[0].withdrawalDate", equalTo(null)))
-                .andExpect(jsonPath("$.dataList[0].isWithdrawal", equalTo(member.isWithdrawal())))
-                .andExpect(jsonPath("$.dataList[0].isBlocked", equalTo(member.isBlocked())))
-                .andExpect(jsonPath("$.dataList[0].blockedReason", equalTo(null)))
-                .andExpect(jsonPath("$.dataList[0].blockedDate", equalTo(null)))
-                .andExpect(jsonPath("$.dataList[0].unblockedDate", equalTo(null)));
+                .andExpect(jsonPath("$.data.dataList[0].withdrawalDate", equalTo(null)))
+                .andExpect(jsonPath("$.data.dataList[0].isWithdrawal", equalTo(member.isWithdrawal())))
+                .andExpect(jsonPath("$.data.dataList[0].isBlocked", equalTo(member.isBlocked())))
+                .andExpect(jsonPath("$.data.dataList[0].blockedReason", equalTo(null)))
+                .andExpect(jsonPath("$.data.dataList[0].blockedDate", equalTo(null)))
+                .andExpect(jsonPath("$.data.dataList[0].unblockedDate", equalTo(null)));
     }
 
     @WithMockUser
@@ -699,21 +701,21 @@ class QueryMemberControllerTest {
 
         resultActions.andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.dataList[0].id", equalTo(1)))
-                .andExpect(jsonPath("$.dataList[0].loginId", equalTo(member.getLoginId())))
-                .andExpect(jsonPath("$.dataList[0].nickname", equalTo(member.getNickname())))
-                .andExpect(jsonPath("$.dataList[0].email", equalTo(member.getEmail())))
-                .andExpect(jsonPath("$.dataList[0].phone", equalTo(member.getPhone())))
-                .andExpect(jsonPath("$.dataList[0].name", equalTo(member.getName())))
+                .andExpect(jsonPath("$.data.dataList[0].id", equalTo(1)))
+                .andExpect(jsonPath("$.data.dataList[0].loginId", equalTo(member.getLoginId())))
+                .andExpect(jsonPath("$.data.dataList[0].nickname", equalTo(member.getNickname())))
+                .andExpect(jsonPath("$.data.dataList[0].email", equalTo(member.getEmail())))
+                .andExpect(jsonPath("$.data.dataList[0].phone", equalTo(member.getPhone())))
+                .andExpect(jsonPath("$.data.dataList[0].name", equalTo(member.getName())))
                 .andExpect(jsonPath(
-                        "$.dataList[0].signUpDate",
+                        "$.data.dataList[0].signUpDate",
                         equalTo(member.getSignUpDate().toString())
                 ))
-                .andExpect(jsonPath("$.dataList[0].withdrawalDate", equalTo(null)))
-                .andExpect(jsonPath("$.dataList[0].isWithdrawal", equalTo(member.isWithdrawal())))
-                .andExpect(jsonPath("$.dataList[0].isBlocked", equalTo(member.isBlocked())))
-                .andExpect(jsonPath("$.dataList[0].blockedReason", equalTo(null)))
-                .andExpect(jsonPath("$.dataList[0].blockedDate", equalTo(null)))
-                .andExpect(jsonPath("$.dataList[0].unblockedDate", equalTo(null)));
+                .andExpect(jsonPath("$.data.dataList[0].withdrawalDate", equalTo(null)))
+                .andExpect(jsonPath("$.data.dataList[0].isWithdrawal", equalTo(member.isWithdrawal())))
+                .andExpect(jsonPath("$.data.dataList[0].isBlocked", equalTo(member.isBlocked())))
+                .andExpect(jsonPath("$.data.dataList[0].blockedReason", equalTo(null)))
+                .andExpect(jsonPath("$.data.dataList[0].blockedDate", equalTo(null)))
+                .andExpect(jsonPath("$.data.dataList[0].unblockedDate", equalTo(null)));
     }
 }
