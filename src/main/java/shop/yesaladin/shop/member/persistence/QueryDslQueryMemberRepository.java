@@ -2,21 +2,22 @@ package shop.yesaladin.shop.member.persistence;
 
 import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.Projections;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.querydsl.QMember;
 import shop.yesaladin.shop.member.domain.model.querydsl.QMemberAddress;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
 import shop.yesaladin.shop.member.dto.MemberIdDto;
+import shop.yesaladin.shop.member.dto.MemberManagerResponseDto;
 import shop.yesaladin.shop.member.dto.MemberOrderSheetResponseDto;
 
 /**
@@ -81,55 +82,114 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
      * {@inheritDoc}
      */
     @Override
-    public Optional<Member> findMemberByPhone(String phone) {
+    public Page<MemberManagerResponseDto> findMemberManagersByLoginId(
+            String loginId,
+            Pageable pageable
+    ) {
         QMember member = QMember.member;
-        return Optional.ofNullable(queryFactory.selectFrom(member)
-                .where(member.phone.eq(phone).and(member.isWithdrawal.isFalse()))
-                .fetchFirst());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Page<Member> findMembersByName(String name, int offset, int limit) {
-        QMember member = QMember.member;
-        List<Member> memberList = queryFactory.selectFrom(member)
-                .where(member.name.eq(name))
+        List<Member> list = queryFactory.selectFrom(member)
+                .where(member.loginId.contains(loginId))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
-        JPAQuery<Long> countQuery = queryFactory.select(member.count())
+        Long count = queryFactory.select(member.count())
                 .from(member)
-                .where(member.name.eq(name));
-
-        return PageableExecutionUtils.getPage(
-                memberList,
-                PageRequest.of(Math.toIntExact(offset), Math.toIntExact(limit)),
-                countQuery::fetchOne
-        );
+                .where(member.loginId.contains(loginId))
+                .fetchFirst();
+        return new PageImpl<>(list.stream()
+                .map(MemberManagerResponseDto::fromEntity)
+                .collect(Collectors.toList()),pageable, count);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Page<Member> findMembersBySignUpDate(LocalDate signUpDate, int offset, int limit) {
+    public Page<MemberManagerResponseDto> findMemberManagersByNickname(
+            String nickname,
+            Pageable pageable
+    ) {
         QMember member = QMember.member;
-        List<Member> memberList = queryFactory.selectFrom(member)
+        List<Member> list = queryFactory.selectFrom(member)
+                .where(member.nickname.contains(nickname))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+        Long count = queryFactory.select(member.count())
+                .from(member)
+                .where(member.nickname.contains(nickname))
+                .fetchFirst();
+        return new PageImpl<>(list.stream()
+                .map(MemberManagerResponseDto::fromEntity)
+                .collect(Collectors.toList()),pageable, count);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Page<MemberManagerResponseDto> findMemberManagersByPhone(
+            String phone,
+            Pageable pageable
+    ) {
+        QMember member = QMember.member;
+        List<Member> list = queryFactory.selectFrom(member)
+                .where(member.phone.contains(phone))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+        Long count = queryFactory.select(member.count())
+                .from(member)
+                .where(member.phone.contains(phone))
+                .fetchFirst();
+        return new PageImpl<>(list.stream()
+                .map(MemberManagerResponseDto::fromEntity)
+                .collect(Collectors.toList()),pageable, count);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Page<MemberManagerResponseDto> findMemberManagersByName(String name, Pageable pageable) {
+        QMember member = QMember.member;
+        List<Member> list = queryFactory.selectFrom(member)
+                .where(member.name.contains(name))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+        Long count = queryFactory.select(member.count())
+                .from(member)
+                .where(member.name.contains(name))
+                .fetchFirst();
+        return new PageImpl<>(list.stream()
+                .map(MemberManagerResponseDto::fromEntity)
+                .collect(Collectors.toList()),pageable, count);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Page<MemberManagerResponseDto> findMemberManagersBySignUpDate(
+            LocalDate signUpDate,
+            Pageable pageable
+    ) {
+        QMember member = QMember.member;
+        List<Member> list = queryFactory.selectFrom(member)
                 .where(member.signUpDate.eq(signUpDate))
-                .offset(offset)
-                .limit(limit)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
-
-        JPAQuery<Long> countQuery = queryFactory.select(member.count())
+        Long count = queryFactory.select(member.count())
                 .from(member)
-                .where(member.signUpDate.eq(signUpDate));
-
-        return PageableExecutionUtils.getPage(
-                memberList,
-                PageRequest.of(Math.toIntExact(offset), Math.toIntExact(limit)),
-                countQuery::fetchOne
-        );
+                .where(member.signUpDate.eq(signUpDate))
+                .fetchFirst();
+        return new PageImpl<>(list.stream()
+                .map(MemberManagerResponseDto::fromEntity)
+                .collect(Collectors.toList()),pageable, count);
     }
+
 
     /**
      * {@inheritDoc}

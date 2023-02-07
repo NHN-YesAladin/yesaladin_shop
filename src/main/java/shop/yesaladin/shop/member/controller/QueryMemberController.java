@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -19,10 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.common.exception.ClientException;
+import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.common.utils.AuthorityUtils;
 import shop.yesaladin.shop.member.dto.MemberGradeQueryResponseDto;
 import shop.yesaladin.shop.member.dto.MemberIdDto;
-import shop.yesaladin.shop.member.dto.MemberManagerListResponseDto;
 import shop.yesaladin.shop.member.dto.MemberManagerResponseDto;
 import shop.yesaladin.shop.member.dto.MemberProfileExistResponseDto;
 import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
@@ -191,17 +192,27 @@ public class QueryMemberController {
     /**
      * 관리자가 회원의 loginId 를 이용해 회원의 정보를 조회
      *
-     * @param loginId 조회할 회원의 loginId
+     * @param loginId  조회할 회원의 loginId
+     * @param pageable 페이지 위치 및 데이터 갯수
      * @return 조회된 회원의 정보
      * @author 김선홍
      * @since 1.0
      */
     @GetMapping(value = "/manage", params = "loginid")
-    public ResponseDto<MemberManagerResponseDto> manageMemberInfoByLoginId(@RequestParam(name = "loginid") String loginId) {
-        return ResponseDto.<MemberManagerResponseDto>builder()
-                .data(queryMemberService.findMemberManageByLoginId(loginId))
-                .status(HttpStatus.OK)
-                .success(true)
+    public PaginatedResponseDto<MemberManagerResponseDto> manageMemberInfoByLoginId(
+            @RequestParam(name = "loginid") String loginId,
+            @PageableDefault Pageable pageable
+    ) {
+        Page<MemberManagerResponseDto> members = queryMemberService.findMemberManagesByLoginId(
+                loginId,
+                pageable
+        );
+
+        return PaginatedResponseDto.<MemberManagerResponseDto>builder()
+                .dataList(members.toList())
+                .totalPage(members.getTotalPages())
+                .currentPage(members.getNumber())
+                .totalDataCount(members.getTotalElements())
                 .build();
     }
 
@@ -209,33 +220,53 @@ public class QueryMemberController {
      * 관리자가 회원의 nickname 을 이용해 회원의 정보를 조회
      *
      * @param nickname 조회할 회원의 nickname
+     * @param pageable 페이지 위치 및 데이터 갯수
      * @return 조회된 회원의 정보
      * @author 김선홍
      * @since 1.0
      */
     @GetMapping(value = "/manage", params = "nickname")
-    public ResponseDto<MemberManagerResponseDto> manageMemberInfoByNickname(@RequestParam String nickname) {
-        return ResponseDto.<MemberManagerResponseDto>builder()
-                .data(queryMemberService.findMemberManageByNickName(nickname))
-                .status(HttpStatus.OK)
-                .success(true)
+    public PaginatedResponseDto<MemberManagerResponseDto> manageMemberInfoByNickname(
+            @RequestParam String nickname,
+            @PageableDefault Pageable pageable
+    ) {
+        Page<MemberManagerResponseDto> members = queryMemberService.findMemberManagesByNickName(
+                nickname,
+                pageable
+        );
+
+        return PaginatedResponseDto.<MemberManagerResponseDto>builder()
+                .dataList(members.toList())
+                .totalPage(members.getTotalPages())
+                .currentPage(members.getNumber())
+                .totalDataCount(members.getTotalElements())
                 .build();
     }
 
     /**
      * 관리자가 회원의 phone 를 이용해 회원의 정보를 조회
      *
-     * @param phone 조회할 회원의 phone
+     * @param phone    조회할 회원의 phone
+     * @param pageable 페이지 위치 및 데이터 갯수
      * @return 조회된 회원의 정보
      * @author 김선홍
      * @since 1.0
      */
     @GetMapping(value = "/manage", params = "phone")
-    public ResponseDto<MemberManagerResponseDto> manageMemberInfoByPhone(@RequestParam String phone) {
-        return ResponseDto.<MemberManagerResponseDto>builder()
-                .data(queryMemberService.findMemberManageByPhone(phone))
-                .status(HttpStatus.OK)
-                .success(true)
+    public PaginatedResponseDto<MemberManagerResponseDto> manageMemberInfoByPhone(
+            @RequestParam String phone,
+            @PageableDefault Pageable pageable
+    ) {
+        Page<MemberManagerResponseDto> members = queryMemberService.findMemberManagesByPhone(
+                phone,
+                pageable
+        );
+
+        return PaginatedResponseDto.<MemberManagerResponseDto>builder()
+                .dataList(members.toList())
+                .totalPage(members.getTotalPages())
+                .currentPage(members.getNumber())
+                .totalDataCount(members.getTotalElements())
                 .build();
     }
 
@@ -249,18 +280,20 @@ public class QueryMemberController {
      * @since 1.0
      */
     @GetMapping(value = "/manage", params = "name")
-    public ResponseDto<MemberManagerListResponseDto> manageMembersInfoByName(
+    public PaginatedResponseDto<MemberManagerResponseDto> manageMembersInfoByName(
             @RequestParam String name,
             @PageableDefault Pageable pageable
     ) {
-        return ResponseDto.<MemberManagerListResponseDto>builder()
-                .success(true)
-                .status(HttpStatus.OK)
-                .data(queryMemberService.findMemberManagesByName(
-                        name,
-                        pageable.getPageNumber(),
-                        pageable.getPageSize()
-                ))
+        Page<MemberManagerResponseDto> members = queryMemberService.findMemberManagesByName(
+                name,
+                pageable
+        );
+
+        return PaginatedResponseDto.<MemberManagerResponseDto>builder()
+                .dataList(members.toList())
+                .totalPage(members.getTotalPages())
+                .currentPage(members.getNumber())
+                .totalDataCount(members.getTotalElements())
                 .build();
     }
 
@@ -274,18 +307,21 @@ public class QueryMemberController {
      * @since 1.0
      */
     @GetMapping(value = "/manage", params = "signupdate")
-    public ResponseDto<MemberManagerListResponseDto> manageMembersInfoBySignUpDate(
+    public PaginatedResponseDto<MemberManagerResponseDto> manageMembersInfoBySignUpDate(
             @RequestParam(name = "signupdate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate signUpDate,
             @PageableDefault Pageable pageable
     ) {
-        return ResponseDto.<MemberManagerListResponseDto>builder()
-                .success(true)
-                .status(HttpStatus.OK)
-                .data(queryMemberService.findMemberManagesBySignUpDate(
-                        signUpDate,
-                        pageable.getPageNumber(),
-                        pageable.getPageSize()
-                )).build();
+        Page<MemberManagerResponseDto> members = queryMemberService.findMemberManagesBySignUpDate(
+                signUpDate,
+                pageable
+        );
+
+        return PaginatedResponseDto.<MemberManagerResponseDto>builder()
+                .dataList(members.toList())
+                .totalPage(members.getTotalPages())
+                .currentPage(members.getNumber())
+                .totalDataCount(members.getTotalElements())
+                .build();
     }
 
     /**
