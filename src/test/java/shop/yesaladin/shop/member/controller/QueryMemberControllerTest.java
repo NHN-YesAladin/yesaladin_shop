@@ -18,7 +18,6 @@ import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentRequest;
 import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.ReflectionUtils;
@@ -27,6 +26,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
@@ -38,11 +39,9 @@ import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberGrade;
 import shop.yesaladin.shop.member.dto.MemberGradeQueryResponseDto;
-import shop.yesaladin.shop.member.dto.MemberManagerListResponseDto;
 import shop.yesaladin.shop.member.dto.MemberManagerResponseDto;
 import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
-import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 
 @AutoConfigureRestDocs
@@ -534,18 +533,13 @@ class QueryMemberControllerTest {
 
     @WithMockUser
     @Test
-    void manageMemberInfoByLoginId_fail_MemberNotFound() throws Exception {
-
-    }
-
-    @WithMockUser
-    @Test
     void manageMemberInfoByLoginId() throws Exception {
         //given
         String loginId = "loginId";
         Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
         MemberManagerResponseDto responseDto = MemberManagerResponseDto.fromEntity(member);
-//        Mockito.when(queryMemberService.findMemberManageByLoginId(loginId)).thenReturn(responseDto);
+        Mockito.when(queryMemberService.findMemberManagesByLoginId(loginId, PageRequest.of(0, 10)))
+                .thenReturn(new PageImpl<>(List.of(responseDto), PageRequest.of(0, 1), 1L));
 
         ResultActions resultActions = mockMvc.perform(get("/v1/members/manage").param(
                 "loginid",
@@ -554,50 +548,38 @@ class QueryMemberControllerTest {
 
         resultActions.andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data.id", equalTo(1)))
-                .andExpect(jsonPath("$.data.loginId", equalTo(member.getLoginId())))
-                .andExpect(jsonPath("$.data.nickname", equalTo(member.getNickname())))
-                .andExpect(jsonPath("$.data.email", equalTo(member.getEmail())))
-                .andExpect(jsonPath("$.data.phone", equalTo(member.getPhone())))
-                .andExpect(jsonPath("$.data.name", equalTo(member.getName())))
+                .andExpect(jsonPath("$.dataList[0].id", equalTo(1)))
+                .andExpect(jsonPath("$.dataList[0].loginId", equalTo(member.getLoginId())))
+                .andExpect(jsonPath("$.dataList[0].nickname", equalTo(member.getNickname())))
+                .andExpect(jsonPath("$.dataList[0].email", equalTo(member.getEmail())))
+                .andExpect(jsonPath("$.dataList[0].phone", equalTo(member.getPhone())))
+                .andExpect(jsonPath("$.dataList[0].name", equalTo(member.getName())))
                 .andExpect(jsonPath(
-                        "$.data.signUpDate",
+                        "$.dataList[0].signUpDate",
                         equalTo(member.getSignUpDate().toString())
                 ))
-                .andExpect(jsonPath("$.data.withdrawalDate", equalTo(null)))
-                .andExpect(jsonPath("$.data.isWithdrawal", equalTo(member.isWithdrawal())))
-                .andExpect(jsonPath("$.data.isBlocked", equalTo(member.isBlocked())))
-                .andExpect(jsonPath("$.data.blockedReason", equalTo(null)))
-                .andExpect(jsonPath("$.data.blockedDate", equalTo(null)))
-                .andExpect(jsonPath("$.data.unblockedDate", equalTo(null)));
-    }
-
-    @WithMockUser
-    @Test
-    void manageMemberInfoByNickname_fail_MemberNotFound() throws Exception {
-        //given
-        String nickname = "nickname";
-//        Mockito.when(queryMemberService.findMemberManageByNickName(nickname))
-//                .thenThrow(new MemberNotFoundException("Member Nickname: " + nickname));
-
-        //when
-        ResultActions resultActions = mockMvc.perform(get("/v1/members/manage").param(
-                "nickname",
-                nickname
-        ));
-        resultActions.andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.dataList[0].withdrawalDate", equalTo(null)))
+                .andExpect(jsonPath("$.dataList[0].isWithdrawal", equalTo(member.isWithdrawal())))
+                .andExpect(jsonPath("$.dataList[0].isBlocked", equalTo(member.isBlocked())))
+                .andExpect(jsonPath("$.dataList[0].blockedReason", equalTo(null)))
+                .andExpect(jsonPath("$.dataList[0].blockedDate", equalTo(null)))
+                .andExpect(jsonPath("$.dataList[0].unblockedDate", equalTo(null)))
                 .andDo(print());
     }
+
 
     @WithMockUser
     @Test
     void manageMemberInfoByNickname() throws Exception {
         //given
-        String loginId = "loginId";
-        Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
+        String nickname = "nickname";
+        Member member = MemberDummy.dummyWithLoginIdAndId(nickname);
         MemberManagerResponseDto responseDto = MemberManagerResponseDto.fromEntity(member);
-//        Mockito.when(queryMemberService.findMemberManageByNickName(member.getNickname()))
-//                .thenReturn(responseDto);
+        Mockito.when(queryMemberService.findMemberManagesByNickName(
+                        nickname,
+                        PageRequest.of(0, 10)
+                ))
+                .thenReturn(new PageImpl<>(List.of(responseDto), PageRequest.of(0, 1), 1L));
 
         ResultActions resultActions = mockMvc.perform(get("/v1/members/manage").param(
                 "nickname",
@@ -606,248 +588,132 @@ class QueryMemberControllerTest {
 
         resultActions.andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data.id", equalTo(1)))
-                .andExpect(jsonPath("$.data.loginId", equalTo(member.getLoginId())))
-                .andExpect(jsonPath("$.data.nickname", equalTo(member.getNickname())))
-                .andExpect(jsonPath("$.data.email", equalTo(member.getEmail())))
-                .andExpect(jsonPath("$.data.phone", equalTo(member.getPhone())))
-                .andExpect(jsonPath("$.data.name", equalTo(member.getName())))
+                .andExpect(jsonPath("$.dataList[0].id", equalTo(1)))
+                .andExpect(jsonPath("$.dataList[0].loginId", equalTo(member.getLoginId())))
+                .andExpect(jsonPath("$.dataList[0].nickname", equalTo(member.getNickname())))
+                .andExpect(jsonPath("$.dataList[0].email", equalTo(member.getEmail())))
+                .andExpect(jsonPath("$.dataList[0].phone", equalTo(member.getPhone())))
+                .andExpect(jsonPath("$.dataList[0].name", equalTo(member.getName())))
                 .andExpect(jsonPath(
-                        "$.data.signUpDate",
+                        "$.dataList[0].signUpDate",
                         equalTo(member.getSignUpDate().toString())
                 ))
-                .andExpect(jsonPath("$.data.withdrawalDate", equalTo(null)))
-                .andExpect(jsonPath("$.data.isWithdrawal", equalTo(member.isWithdrawal())))
-                .andExpect(jsonPath("$.data.isBlocked", equalTo(member.isBlocked())))
-                .andExpect(jsonPath("$.data.blockedReason", equalTo(null)))
-                .andExpect(jsonPath("$.data.blockedDate", equalTo(null)))
-                .andExpect(jsonPath("$.data.unblockedDate", equalTo(null)));
-    }
-
-    @WithMockUser
-    @Test
-    void manageMemberInfoByPhone_fail_MemberNotFound() throws Exception {
-        //given
-        String phone = "phone";
-//        Mockito.when(queryMemberService.findMemberManageByPhone(phone))
-//                .thenThrow(new MemberNotFoundException("Member Phone: " + phone));
-
-        //when
-        ResultActions resultActions = mockMvc.perform(get("/v1/members/manage").param(
-                "phone", phone
-        ));
-        resultActions.andExpect(status().isNotFound())
-                .andDo(print());
+                .andExpect(jsonPath("$.dataList[0].withdrawalDate", equalTo(null)))
+                .andExpect(jsonPath("$.dataList[0].isWithdrawal", equalTo(member.isWithdrawal())))
+                .andExpect(jsonPath("$.dataList[0].isBlocked", equalTo(member.isBlocked())))
+                .andExpect(jsonPath("$.dataList[0].blockedReason", equalTo(null)))
+                .andExpect(jsonPath("$.dataList[0].blockedDate", equalTo(null)))
+                .andExpect(jsonPath("$.dataList[0].unblockedDate", equalTo(null)));
     }
 
     @WithMockUser
     @Test
     void manageMemberInfoByPhone() throws Exception {
+
         //given
-        String loginId = "loginId";
-        Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
+        String phone = "phone";
+        Member member = MemberDummy.dummyWithLoginIdAndId(phone);
         MemberManagerResponseDto responseDto = MemberManagerResponseDto.fromEntity(member);
-//        Mockito.when(queryMemberService.findMemberManageByPhone(member.getPhone()))
-//                .thenReturn(responseDto);
+        Mockito.when(queryMemberService.findMemberManagesByPhone(phone, PageRequest.of(0, 10)))
+                .thenReturn(new PageImpl<>(List.of(responseDto), PageRequest.of(0, 1), 1L));
 
         ResultActions resultActions = mockMvc.perform(get("/v1/members/manage").param(
                 "phone",
-                member.getPhone()
+                phone
         ));
 
         resultActions.andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data.id", equalTo(1)))
-                .andExpect(jsonPath("$.data.loginId", equalTo(member.getLoginId())))
-                .andExpect(jsonPath("$.data.nickname", equalTo(member.getNickname())))
-                .andExpect(jsonPath("$.data.email", equalTo(member.getEmail())))
-                .andExpect(jsonPath("$.data.phone", equalTo(member.getPhone())))
-                .andExpect(jsonPath("$.data.name", equalTo(member.getName())))
+                .andExpect(jsonPath("$.dataList[0].id", equalTo(1)))
+                .andExpect(jsonPath("$.dataList[0].loginId", equalTo(member.getLoginId())))
+                .andExpect(jsonPath("$.dataList[0].nickname", equalTo(member.getNickname())))
+                .andExpect(jsonPath("$.dataList[0].email", equalTo(member.getEmail())))
+                .andExpect(jsonPath("$.dataList[0].phone", equalTo(member.getPhone())))
+                .andExpect(jsonPath("$.dataList[0].name", equalTo(member.getName())))
                 .andExpect(jsonPath(
-                        "$.data.signUpDate",
+                        "$.dataList[0].signUpDate",
                         equalTo(member.getSignUpDate().toString())
                 ))
-                .andExpect(jsonPath("$.data.withdrawalDate", equalTo(null)))
-                .andExpect(jsonPath("$.data.isWithdrawal", equalTo(member.isWithdrawal())))
-                .andExpect(jsonPath("$.data.isBlocked", equalTo(member.isBlocked())))
-                .andExpect(jsonPath("$.data.blockedReason", equalTo(null)))
-                .andExpect(jsonPath("$.data.blockedDate", equalTo(null)))
-                .andExpect(jsonPath("$.data.unblockedDate", equalTo(null)));
-    }
-
-    @WithMockUser
-    @Test
-    void manageMemberInfosByName_fail_MemberNotFound() throws Exception {
-        //given
-        String phone = "phone";
-//        Mockito.when(queryMemberService.findMemberManageByPhone(phone))
-//                .thenThrow(new MemberNotFoundException("Member Name: " + phone));
-
-        //when
-        ResultActions resultActions = mockMvc.perform(get("/v1/member/manage").param("name", phone));
-
-        //then
-        resultActions.andExpect(status().isNotFound());
+                .andExpect(jsonPath("$.dataList[0].withdrawalDate", equalTo(null)))
+                .andExpect(jsonPath("$.dataList[0].isWithdrawal", equalTo(member.isWithdrawal())))
+                .andExpect(jsonPath("$.dataList[0].isBlocked", equalTo(member.isBlocked())))
+                .andExpect(jsonPath("$.dataList[0].blockedReason", equalTo(null)))
+                .andExpect(jsonPath("$.dataList[0].blockedDate", equalTo(null)))
+                .andExpect(jsonPath("$.dataList[0].unblockedDate", equalTo(null)))
+                .andDo(print());
     }
 
     @WithMockUser
     @Test
     void manageMemberInfosByName() throws Exception {
         //given
-        String loginId = "loginId";
-        Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
+        String name = "name";
+        Member member = MemberDummy.dummyWithLoginIdAndId(name);
         MemberManagerResponseDto responseDto = MemberManagerResponseDto.fromEntity(member);
-        Mockito.when(queryMemberService.findMemberManagesByName(member.getName(), 0, 10))
-                .thenReturn(MemberManagerListResponseDto.builder()
-                        .count(1L)
-                        .memberManagerResponseDtoList(List.of(responseDto))
-                        .build());
+        Mockito.when(queryMemberService.findMemberManagesByName(
+                name,
+                PageRequest.of(0, 10)
+        )).thenReturn(new PageImpl<>(List.of(responseDto), PageRequest.of(0, 10), 1L));
 
         ResultActions resultActions = mockMvc.perform(get("/v1/members/manage").param(
                 "name",
-                member.getName()
+                name
         ));
 
         resultActions.andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data.count", equalTo(1)))
-                .andExpect(jsonPath("$.data.memberManagerResponseDtoList[0].id", equalTo(1)))
+                .andExpect(jsonPath("$.dataList[0].id", equalTo(1)))
+                .andExpect(jsonPath("$.dataList[0].loginId", equalTo(member.getLoginId())))
+                .andExpect(jsonPath("$.dataList[0].nickname", equalTo(member.getNickname())))
+                .andExpect(jsonPath("$.dataList[0].email", equalTo(member.getEmail())))
+                .andExpect(jsonPath("$.dataList[0].phone", equalTo(member.getPhone())))
+                .andExpect(jsonPath("$.dataList[0].name", equalTo(member.getName())))
                 .andExpect(jsonPath(
-                        "$.data.memberManagerResponseDtoList[0].loginId",
-                        equalTo(member.getLoginId())
-                ))
-                .andExpect(jsonPath(
-                        "$.data.memberManagerResponseDtoList[0].nickname",
-                        equalTo(member.getNickname())
-                ))
-                .andExpect(jsonPath(
-                        "$.data.memberManagerResponseDtoList[0].email",
-                        equalTo(member.getEmail())
-                ))
-                .andExpect(jsonPath(
-                        "$.data.memberManagerResponseDtoList[0].phone",
-                        equalTo(member.getPhone())
-                ))
-                .andExpect(jsonPath(
-                        "$.data.memberManagerResponseDtoList[0].name",
-                        equalTo(member.getName())
-                ))
-                .andExpect(jsonPath(
-                        "$.data.memberManagerResponseDtoList[0].signUpDate",
+                        "$.dataList[0].signUpDate",
                         equalTo(member.getSignUpDate().toString())
                 ))
-                .andExpect(jsonPath(
-                        "$.data.memberManagerResponseDtoList[0].withdrawalDate",
-                        equalTo(null)
-                ))
-                .andExpect(jsonPath(
-                        "$.data.memberManagerResponseDtoList[0].isWithdrawal",
-                        equalTo(member.isWithdrawal())
-                ))
-                .andExpect(jsonPath(
-                        "$.data.memberManagerResponseDtoList[0].isBlocked",
-                        equalTo(member.isBlocked())
-                ))
-                .andExpect(jsonPath(
-                        "$.data.memberManagerResponseDtoList[0].blockedReason",
-                        equalTo(null)
-                ))
-                .andExpect(jsonPath(
-                        "$.data.memberManagerResponseDtoList[0].blockedDate",
-                        equalTo(null)
-                ))
-                .andExpect(jsonPath(
-                        "$.data.memberManagerResponseDtoList[0].unblockedDate",
-                        equalTo(null)
-                ));
-    }
-
-    @WithMockUser
-    @Test
-    void manageMemberInfosBySignUp_MemberNotFound() throws Exception {
-        //given
-        String loginId = "loginId";
-        Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
-        Mockito.when(queryMemberService.findMemberManagesBySignUpDate(member.getSignUpDate(), 0, 10))
-                .thenThrow(new MemberNotFoundException("Member SignUpDate: " + member.getSignUpDate()));
-
-        //when
-        ResultActions resultActions = mockMvc.perform(get("/v1/member/manage").param("signupdate",
-                member.getSignUpDate().format(DateTimeFormatter.ISO_DATE)));
-
-        //then
-        resultActions.andExpect(status().isNotFound());
+                .andExpect(jsonPath("$.dataList[0].withdrawalDate", equalTo(null)))
+                .andExpect(jsonPath("$.dataList[0].isWithdrawal", equalTo(member.isWithdrawal())))
+                .andExpect(jsonPath("$.dataList[0].isBlocked", equalTo(member.isBlocked())))
+                .andExpect(jsonPath("$.dataList[0].blockedReason", equalTo(null)))
+                .andExpect(jsonPath("$.dataList[0].blockedDate", equalTo(null)))
+                .andExpect(jsonPath("$.dataList[0].unblockedDate", equalTo(null)));
     }
 
     @WithMockUser
     @Test
     void manageMemberInfosBySignUpDate() throws Exception {
         //given
-        String loginId = "loginId";
-        Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
+        String name = "name";
+        Member member = MemberDummy.dummyWithLoginIdAndId(name);
         MemberManagerResponseDto responseDto = MemberManagerResponseDto.fromEntity(member);
-        Mockito.when(queryMemberService.findMemberManagesBySignUpDate(member.getSignUpDate(), 0, 10))
-                .thenReturn(MemberManagerListResponseDto.builder()
-                        .count(1L)
-                        .memberManagerResponseDtoList(List.of(responseDto))
-                        .build());
+        Mockito.when(queryMemberService.findMemberManagesBySignUpDate(
+                member.getSignUpDate(),
+                PageRequest.of(0, 10)
+        )).thenReturn(new PageImpl<>(List.of(responseDto), PageRequest.of(0, 10), 1L));
 
         ResultActions resultActions = mockMvc.perform(get("/v1/members/manage").param(
                 "signupdate",
-                member.getSignUpDate().format(DateTimeFormatter.ISO_DATE)
+                member.getSignUpDate().toString()
         ));
 
         resultActions.andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data.count", equalTo(1)))
-                .andExpect(jsonPath("$.data.memberManagerResponseDtoList[0].id", equalTo(1)))
+                .andExpect(jsonPath("$.dataList[0].id", equalTo(1)))
+                .andExpect(jsonPath("$.dataList[0].loginId", equalTo(member.getLoginId())))
+                .andExpect(jsonPath("$.dataList[0].nickname", equalTo(member.getNickname())))
+                .andExpect(jsonPath("$.dataList[0].email", equalTo(member.getEmail())))
+                .andExpect(jsonPath("$.dataList[0].phone", equalTo(member.getPhone())))
+                .andExpect(jsonPath("$.dataList[0].name", equalTo(member.getName())))
                 .andExpect(jsonPath(
-                        "$.data.memberManagerResponseDtoList[0].loginId",
-                        equalTo(member.getLoginId())
-                ))
-                .andExpect(jsonPath(
-                        "$.data.memberManagerResponseDtoList[0].nickname",
-                        equalTo(member.getNickname())
-                ))
-                .andExpect(jsonPath(
-                        "$.data.memberManagerResponseDtoList[0].email",
-                        equalTo(member.getEmail())
-                ))
-                .andExpect(jsonPath(
-                        "$.data.memberManagerResponseDtoList[0].phone",
-                        equalTo(member.getPhone())
-                ))
-                .andExpect(jsonPath(
-                        "$.data.memberManagerResponseDtoList[0].name",
-                        equalTo(member.getName())
-                ))
-                .andExpect(jsonPath(
-                        "$.data.memberManagerResponseDtoList[0].signUpDate",
+                        "$.dataList[0].signUpDate",
                         equalTo(member.getSignUpDate().toString())
                 ))
-                .andExpect(jsonPath(
-                        "$.data.memberManagerResponseDtoList[0].withdrawalDate",
-                        equalTo(null)
-                ))
-                .andExpect(jsonPath(
-                        "$.data.memberManagerResponseDtoList[0].isWithdrawal",
-                        equalTo(member.isWithdrawal())
-                ))
-                .andExpect(jsonPath(
-                        "$.data.memberManagerResponseDtoList[0].isBlocked",
-                        equalTo(member.isBlocked())
-                ))
-                .andExpect(jsonPath(
-                        "$.data.memberManagerResponseDtoList[0].blockedReason",
-                        equalTo(null)
-                ))
-                .andExpect(jsonPath(
-                        "$.data.memberManagerResponseDtoList[0].blockedDate",
-                        equalTo(null)
-                ))
-                .andExpect(jsonPath(
-                        "$.data.memberManagerResponseDtoList[0].unblockedDate",
-                        equalTo(null)
-                ));
+                .andExpect(jsonPath("$.dataList[0].withdrawalDate", equalTo(null)))
+                .andExpect(jsonPath("$.dataList[0].isWithdrawal", equalTo(member.isWithdrawal())))
+                .andExpect(jsonPath("$.dataList[0].isBlocked", equalTo(member.isBlocked())))
+                .andExpect(jsonPath("$.dataList[0].blockedReason", equalTo(null)))
+                .andExpect(jsonPath("$.dataList[0].blockedDate", equalTo(null)))
+                .andExpect(jsonPath("$.dataList[0].unblockedDate", equalTo(null)));
     }
 }

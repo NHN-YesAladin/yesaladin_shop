@@ -136,7 +136,7 @@ class QueryDslQueryMemberRepositoryTest {
         );
         //then
         assertThat(memberList.getTotalElements()).isEqualTo(2);
-        assertThat(memberList.getContent()).hasSize(2);
+        assertThat(memberList.getContent()).hasSize(1);
         assertThat(memberList.getContent().get(0).getPhone().contains(member.getPhone())).isTrue();
     }
 
@@ -163,7 +163,7 @@ class QueryDslQueryMemberRepositoryTest {
 
         //then
         assertThat(memberList.getTotalElements()).isEqualTo(2);
-        assertThat(memberList.getContent()).hasSize(2);
+        assertThat(memberList.getContent()).hasSize(1);
         assertThat(memberList.getContent().get(0).getSignUpDate()).isEqualTo(
                 member.getSignUpDate());
     }
