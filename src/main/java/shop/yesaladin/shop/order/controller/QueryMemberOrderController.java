@@ -2,12 +2,17 @@ package shop.yesaladin.shop.order.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.common.protocol.types.Field.Str;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import shop.yesaladin.common.dto.ResponseDto;
+import shop.yesaladin.shop.category.dto.ResultCodeDto;
+import shop.yesaladin.shop.common.aspect.annotation.LoginId;
 import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryResponseDto;
@@ -29,32 +34,28 @@ public class QueryMemberOrderController {
     private final QueryOrderService queryOrderService;
 
     @GetMapping
-    public PaginatedResponseDto<OrderSummaryResponseDto> getAllOrdersByMemberId(
+    public ResponseDto<PaginatedResponseDto<OrderSummaryResponseDto>> getAllOrdersByMemberId(
+            @LoginId(required = true) String loginId,
             @ModelAttribute PeriodQueryRequestDto queryDto,
             Pageable pageable
     ) {
-        // TODO AOP로 멤버 id 가져오기
-        Long memberId = 1L;
-        log.info(
-                "startDate: {} | endDate : {}  | pageable : {}",
-                queryDto.getStartDate(),
-                queryDto.getEndDate(),
-                pageable
-        );
-
         Page<OrderSummaryResponseDto> data = queryOrderService.getOrderListInPeriodByMemberId(
                 queryDto,
-                memberId,
+                loginId,
                 pageable
         );
 
-        log.info("{}", data.getContent());
-
-        return PaginatedResponseDto.<OrderSummaryResponseDto>builder()
+        PaginatedResponseDto<OrderSummaryResponseDto> paginatedResponseDto = PaginatedResponseDto.<OrderSummaryResponseDto>builder()
                 .currentPage(data.getNumber())
                 .totalPage(data.getTotalPages())
                 .totalDataCount(data.getTotalElements())
                 .dataList(data.getContent())
+                .build();
+
+        return ResponseDto.<PaginatedResponseDto<OrderSummaryResponseDto>>builder()
+                .status(HttpStatus.OK)
+                .success(true)
+                .data(paginatedResponseDto)
                 .build();
     }
 }
