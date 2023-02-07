@@ -9,6 +9,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import shop.yesaladin.common.code.ErrorCode;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.repository.QueryCategoryRepository;
 import shop.yesaladin.shop.category.dto.CategoryResponseDto;
@@ -108,11 +110,14 @@ public class QueryCategoryServiceImpl implements QueryCategoryService {
      *
      * @param id
      * @return
-     * @throws CategoryNotFoundException 해당하는 id의 카테고리가 없을 경우
+     * @throws ClientException 해당하는 id의 카테고리가 없을 경우
      */
     private Category tryGetCategoryById(long id) {
         return queryCategoryRepository.findById(id)
-                .orElseThrow(() -> new CategoryNotFoundException(id));
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.CATEGORY_NOT_FOUND,
+                        "Category not found with id : " + id
+                ));
     }
 
 }
