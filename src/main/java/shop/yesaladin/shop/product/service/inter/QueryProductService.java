@@ -1,16 +1,8 @@
 package shop.yesaladin.shop.product.service.inter;
 
-import java.util.List;
-import java.util.Map;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import shop.yesaladin.shop.product.dto.SubscribeProductOrderResponseDto;
-import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
-import shop.yesaladin.shop.product.dto.ProductModifyDto;
-import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
-import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
-import shop.yesaladin.shop.product.dto.ProductsResponseDto;
-import shop.yesaladin.shop.product.dto.ViewCartDto;
+import shop.yesaladin.shop.product.dto.*;
 
 import java.util.List;
 import java.util.Map;
@@ -23,6 +15,18 @@ import java.util.Map;
  * @since 1.0
  */
 public interface QueryProductService {
+
+    /**
+     * ISBN이 isbn인 상품을 찾아 반환합니다.
+     *
+     * @param isbn 찾고자하는 상품의 isbn
+     * @return 찾은 상품의 제목을 담은 Dto
+     * @author 이수정
+     * @since 1.0
+     */
+    ProductOnlyTitleDto findTitleByIsbn(String isbn);
+
+    // TODO: ResponseDto 수정
 
     /**
      * 아이디가 id인 상품을 찾아 반환합니다.

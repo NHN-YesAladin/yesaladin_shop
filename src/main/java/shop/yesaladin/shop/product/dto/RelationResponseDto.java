@@ -1,9 +1,10 @@
 package shop.yesaladin.shop.product.dto;
 
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 /**
  * 상품 연관관계 데이터를 반환받는 Dto 입니다.

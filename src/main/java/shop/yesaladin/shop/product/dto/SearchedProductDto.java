@@ -1,7 +1,5 @@
 package shop.yesaladin.shop.product.dto;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,6 +7,9 @@ import shop.yesaladin.shop.product.domain.model.SearchedProduct;
 import shop.yesaladin.shop.product.domain.model.SearchedProductAuthor;
 import shop.yesaladin.shop.product.domain.model.SearchedProductCategory;
 import shop.yesaladin.shop.product.domain.model.SearchedProductTag;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Getter
