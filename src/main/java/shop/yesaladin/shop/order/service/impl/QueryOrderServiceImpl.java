@@ -14,13 +14,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.common.exception.PageOffsetOutOfBoundsException;
-import shop.yesaladin.shop.config.GatewayProperties;
 import shop.yesaladin.shop.coupon.dto.MemberCouponSummaryDto;
 import shop.yesaladin.shop.coupon.service.inter.QueryMemberCouponService;
 import shop.yesaladin.shop.member.dto.MemberOrderSheetResponseDto;
@@ -28,6 +26,7 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
 import shop.yesaladin.shop.order.dto.OrderPaymentResponseDto;
+import shop.yesaladin.shop.order.dto.OrderSheetProductRequestDto;
 import shop.yesaladin.shop.order.dto.OrderSheetRequestDto;
 import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
@@ -128,8 +127,8 @@ public class QueryOrderServiceImpl implements QueryOrderService {
     @Transactional(readOnly = true)
     public OrderSheetResponseDto getNonMemberOrderSheetData(OrderSheetRequestDto request) {
         List<ProductOrderSheetResponseDto> orderProducts = getProductOrder(
-                request.getIsbnList(),
-                request.getQuantityList()
+                request.getIsbn(),
+                request.getQuantity()
         );
 
         return new OrderSheetResponseDto(orderProducts);
@@ -141,8 +140,8 @@ public class QueryOrderServiceImpl implements QueryOrderService {
     ) {
         MemberOrderSheetResponseDto member = queryMemberService.getMemberForOrder(loginId);
         List<ProductOrderSheetResponseDto> orderProducts = getProductOrder(
-                request.getIsbnList(),
-                request.getQuantityList()
+                request.getIsbn(),
+                request.getQuantity()
         );
         List<MemberCouponSummaryDto> memberCoupons = getMemberCoupons(
                 loginId,
@@ -185,6 +184,18 @@ public class QueryOrderServiceImpl implements QueryOrderService {
                 .collect(Collectors.toMap(isbnList::get, quantityList::get));
 
         return queryProductService.getByOrderProducts(products);
+    }
+
+    private List<ProductOrderSheetResponseDto> getProductOrder(
+            List<OrderSheetProductRequestDto> products
+    ) {
+        Map<String, Integer> productMap = products.stream()
+                .collect(Collectors.toMap(
+                        OrderSheetProductRequestDto::getIsbn,
+                        OrderSheetProductRequestDto::getQuantity
+                ));
+
+        return queryProductService.getByOrderProducts(productMap);
     }
 
     /**

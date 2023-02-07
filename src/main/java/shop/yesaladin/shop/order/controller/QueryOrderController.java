@@ -1,20 +1,18 @@
 package shop.yesaladin.shop.order.controller;
 
-import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.dto.ResponseDto;
-import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.common.aspect.annotation.LoginId;
 import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
@@ -31,6 +29,7 @@ import shop.yesaladin.shop.order.service.inter.QueryOrderService;
  * @author 김홍대
  * @since 1.0
  */
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping
@@ -64,41 +63,27 @@ public class QueryOrderController {
     /**
      * 회원 주문서에 필요한 데이터들을 반환합니다.
      *
-     * @param isbnList     상품의 isbn 리스트
-     * @param quantityList 상품의 수량 리스트
-     * @param loginId      회원의 아이디
+     * @param products 상품 정보
+     * @param loginId  회원의 아이디
      * @return 주문서에 필요한 데이터
      * @author 최예린
      * @since 1.0
      */
     @GetMapping("/v1/order-sheets")
     public ResponseDto<OrderSheetResponseDto> getOrderSheetData(
-            @RequestParam(value = "isbnList") List<String> isbnList,
-            @RequestParam(value = "quantityList") List<Integer> quantityList,
+            @ModelAttribute OrderSheetRequestDto products,
             @LoginId String loginId
     ) {
-        if (isbnList.size() != quantityList.size()) {
-            throw new ClientException(
-                    ErrorCode.ORDER_INVALID_PARAMETER,
-                    "Order has invalid parameter : isbn size not equal to quantity size"
-            );
-        }
-        OrderSheetRequestDto request = new OrderSheetRequestDto(isbnList, quantityList);
-        OrderSheetResponseDto response = getOrderSheetData(request, loginId);
+        log.info("order-sheets parameter : {}", products.getIsbn().size());
+        OrderSheetResponseDto response = (Objects.isNull(loginId)) ?
+                queryOrderService.getNonMemberOrderSheetData(products)
+                : queryOrderService.getMemberOrderSheetData(products, loginId);
 
         return ResponseDto.<OrderSheetResponseDto>builder()
                 .success(true)
                 .status(HttpStatus.OK)
                 .data(response)
                 .build();
-    }
-
-    private OrderSheetResponseDto getOrderSheetData(
-            OrderSheetRequestDto request,
-            String loginId
-    ) {
-        return (Objects.isNull(loginId)) ? queryOrderService.getNonMemberOrderSheetData(request)
-                : queryOrderService.getMemberOrderSheetData(request, loginId);
     }
 
     @GetMapping("/{memberId}")
