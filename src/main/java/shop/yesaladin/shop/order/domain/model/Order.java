@@ -5,11 +5,14 @@ import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -59,7 +62,11 @@ public abstract class Order {
     @Column(name = "total_amount", nullable = false)
     private long totalAmount;
 
-    @Column(name = "order_code_id")
+    @Column(name = "order_code_id", nullable = false)
     @Convert(converter = OrderCodeConverter.class)
     private OrderCode orderCode;
+
+    @JoinColumn(name = "order_recipient_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    private OrderRecipient orderRecipient;
 }

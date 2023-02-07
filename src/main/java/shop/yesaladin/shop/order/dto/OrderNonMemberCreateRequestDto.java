@@ -12,6 +12,7 @@ import lombok.Getter;
 import org.hibernate.validator.constraints.Length;
 import shop.yesaladin.shop.order.domain.model.NonMemberOrder;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
+import shop.yesaladin.shop.order.domain.model.OrderRecipient;
 import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
 
 /**
@@ -40,11 +41,21 @@ public class OrderNonMemberCreateRequestDto extends OrderCreateRequestDto {
             @Min(value = 0) long productTotalAmount,
             @Min(value = 0) int shippingFee,
             @Min(value = 0) int wrappingFee,
+            @NotBlank String recipientName,
+            @NotBlank String recipientPhoneNumber,
             String ordererName,
             String ordererPhoneNumber,
             String ordererAddress
     ) {
-        super(expectedShippingDate, orderProducts, productTotalAmount, shippingFee, wrappingFee);
+        super(
+                expectedShippingDate,
+                orderProducts,
+                productTotalAmount,
+                shippingFee,
+                wrappingFee,
+                recipientName,
+                recipientPhoneNumber
+        );
         this.ordererName = ordererName;
         this.ordererPhoneNumber = ordererPhoneNumber;
         this.ordererAddress = ordererAddress;
@@ -60,7 +71,12 @@ public class OrderNonMemberCreateRequestDto extends OrderCreateRequestDto {
      * @author 최예린
      * @since 1.0
      */
-    public NonMemberOrder toEntity(String name, String orderNumber, LocalDateTime orderDateTime) {
+    public NonMemberOrder toEntity(
+            String name,
+            String orderNumber,
+            LocalDateTime orderDateTime,
+            OrderRecipient orderRecipient
+    ) {
         return NonMemberOrder.builder()
                 .name(name)
                 .orderNumber(orderNumber)
@@ -71,6 +87,7 @@ public class OrderNonMemberCreateRequestDto extends OrderCreateRequestDto {
                 .wrappingFee(wrappingFee)
                 .totalAmount(productTotalAmount)
                 .orderCode(OrderCode.NON_MEMBER_ORDER)
+                .orderRecipient(orderRecipient)
                 .address(ordererAddress)
                 .nonMemberName(ordererName)
                 .phoneNumber(ordererPhoneNumber)

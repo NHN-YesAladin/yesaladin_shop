@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import java.time.LocalDate;
 import java.util.List;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -33,4 +34,8 @@ public abstract class OrderCreateRequestDto {
     protected int shippingFee;
     @Min(value = 0)
     protected int wrappingFee;
+    @NotBlank
+    protected String recipientName;
+    @NotBlank
+    protected String recipientPhoneNumber;
 }

@@ -3,12 +3,14 @@ package shop.yesaladin.shop.order.dto;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import lombok.Getter;
 import org.hibernate.validator.constraints.Range;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
+import shop.yesaladin.shop.order.domain.model.OrderRecipient;
 import shop.yesaladin.shop.order.domain.model.Subscribe;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
@@ -32,6 +34,8 @@ public class OrderSubscribeCreateRequestDto extends OrderMemberCreateRequestDto 
             long productTotalAmount,
             int shippingFee,
             int wrappingFee,
+            String recipientName,
+            String recipientPhoneNumber,
             Long ordererAddressId,
             List<String> orderCoupons,
             long orderPoint,
@@ -44,6 +48,8 @@ public class OrderSubscribeCreateRequestDto extends OrderMemberCreateRequestDto 
                 productTotalAmount,
                 shippingFee,
                 wrappingFee,
+                recipientName,
+                recipientPhoneNumber,
                 ordererAddressId,
                 orderCoupons,
                 orderPoint
@@ -70,6 +76,7 @@ public class OrderSubscribeCreateRequestDto extends OrderMemberCreateRequestDto 
             String name,
             String orderNumber,
             LocalDateTime orderDateTime,
+            OrderRecipient orderRecipient,
             Member member,
             MemberAddress address,
             LocalDate nextRenewalDate,
@@ -86,6 +93,7 @@ public class OrderSubscribeCreateRequestDto extends OrderMemberCreateRequestDto 
                 .wrappingFee(wrappingFee)
                 .totalAmount(productTotalAmount)
                 .orderCode(OrderCode.MEMBER_SUBSCRIBE)
+                .orderRecipient(orderRecipient)
                 .member(member)
                 .memberAddress(address)
                 .expectedDay(expectedDay)

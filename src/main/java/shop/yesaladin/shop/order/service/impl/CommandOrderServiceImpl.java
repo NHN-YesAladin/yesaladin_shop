@@ -19,10 +19,12 @@ import shop.yesaladin.shop.order.domain.model.MemberOrder;
 import shop.yesaladin.shop.order.domain.model.NonMemberOrder;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.model.OrderProduct;
+import shop.yesaladin.shop.order.domain.model.OrderRecipient;
 import shop.yesaladin.shop.order.domain.model.OrderStatusChangeLog;
 import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
 import shop.yesaladin.shop.order.domain.model.Subscribe;
 import shop.yesaladin.shop.order.domain.repository.CommandOrderProductRepository;
+import shop.yesaladin.shop.order.domain.repository.CommandOrderRecipientRepository;
 import shop.yesaladin.shop.order.domain.repository.CommandOrderRepository;
 import shop.yesaladin.shop.order.domain.repository.CommandOrderStatusChangeLogRepository;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
@@ -58,6 +60,7 @@ public class CommandOrderServiceImpl implements CommandOrderService {
     private final QueryOrderRepository queryOrderRepository;
 
     private final CommandOrderStatusChangeLogRepository commandOrderStatusChangeLogRepository;
+    private final CommandOrderRecipientRepository commandOrderRecipientRepository;
     private final CommandOrderProductRepository commandOrderProductRepository;
     private final CommandOrderCouponService commandOrderCouponService;
     private final CommandPointHistoryService commandPointHistoryService;
@@ -176,7 +179,11 @@ public class CommandOrderServiceImpl implements CommandOrderService {
         NonMemberOrder nonMemberOrder = request.toEntity(
                 generateOrderName(List.copyOf(products.values())),
                 generateOrderNumber(orderDateTime),
-                orderDateTime
+                orderDateTime,
+                createOrderRecipient(
+                        request.getRecipientName(),
+                        request.getRecipientPhoneNumber()
+                )
         );
 
         return nonMemberOrderCommandOrderRepository.save(nonMemberOrder);
@@ -192,6 +199,10 @@ public class CommandOrderServiceImpl implements CommandOrderService {
                 generateOrderName(List.copyOf(products.values())),
                 generateOrderNumber(orderDateTime),
                 orderDateTime,
+                createOrderRecipient(
+                        request.getRecipientName(),
+                        request.getRecipientPhoneNumber()
+                ),
                 queryMemberService.findByLoginId(loginId),
                 queryMemberAddressService.findById(request.getOrdererAddressId())
         );
@@ -212,12 +223,28 @@ public class CommandOrderServiceImpl implements CommandOrderService {
                         .replace("((\\d|1[012])(월호|월))|(no.*(\\d|1[012]))", ""),
                 generateOrderNumber(orderDateTime),
                 orderDateTime,
+                createOrderRecipient(
+                        request.getRecipientName(),
+                        request.getRecipientPhoneNumber()
+                ),
                 queryMemberService.findByLoginId(loginId),
                 queryMemberAddressService.findById(request.getOrdererAddressId()),
                 generateNextRenewalDate(request.getExpectedDay(), orderDateTime),
                 subscribeProductOrder.getSubscribeProduct()
         );
         return subscribeCommandOrderRepository.save(subscribe);
+    }
+
+    private OrderRecipient createOrderRecipient(
+            String recipientName,
+            String recipientPhoneNumber
+    ) {
+        OrderRecipient orderRecipient = OrderRecipient.builder()
+                .recipientName(recipientName)
+                .recipientPhoneNumber(recipientPhoneNumber)
+                .build();
+
+        return commandOrderRecipientRepository.save(orderRecipient);
     }
 
     private void createOrderProduct(

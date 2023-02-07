@@ -54,8 +54,6 @@ public class QueryOrderServiceImpl implements QueryOrderService {
     private final QueryPointHistoryService queryPointHistoryService;
     private final QueryProductService queryProductService;
     private final QueryMemberCouponService queryMemberCouponService;
-    private final RestTemplate restTemplate;
-    private final GatewayProperties gatewayProperties;
 
     private final Clock clock;
 

@@ -38,6 +38,7 @@ import shop.yesaladin.shop.order.domain.model.OrderStatusChangeLog;
 import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
 import shop.yesaladin.shop.order.domain.model.Subscribe;
 import shop.yesaladin.shop.order.domain.repository.CommandOrderProductRepository;
+import shop.yesaladin.shop.order.domain.repository.CommandOrderRecipientRepository;
 import shop.yesaladin.shop.order.domain.repository.CommandOrderRepository;
 import shop.yesaladin.shop.order.domain.repository.CommandOrderStatusChangeLogRepository;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
@@ -72,6 +73,7 @@ class CommandOrderServiceImplTest {
     QueryOrderRepository queryOrderRepository;
 
     CommandOrderStatusChangeLogRepository commandOrderStatusChangeLogRepository;
+    CommandOrderRecipientRepository commandOrderRecipientRepository;
     CommandOrderProductRepository commandOrderProductRepository;
     CommandPointHistoryService commandPointHistoryService;
     CommandOrderCouponService commandOrderCouponService;
@@ -96,6 +98,8 @@ class CommandOrderServiceImplTest {
     String ordererPhoneNumber = "01012341234";
     String ordererAddress = "서울특별시 구로구 디지털로26길 72 (구로동, NHN KCP)";
     LocalDate expectedShippingDate = LocalDate.of(2023, 1, 5);
+    String recipientName = "김몽대";
+    String recipientPhoneNumber = "01029482743";
     List<ProductOrderRequestDto> orderProducts;
     long nonMemberProductTotalAmount = 10000L;
     long productTotalAmount = 9000L;
@@ -124,6 +128,7 @@ class CommandOrderServiceImplTest {
         queryOrderRepository = Mockito.mock(QueryOrderRepository.class);
 
         commandOrderStatusChangeLogRepository = Mockito.mock(CommandOrderStatusChangeLogRepository.class);
+        commandOrderRecipientRepository = Mockito.mock(CommandOrderRecipientRepository.class);
         commandOrderProductRepository = Mockito.mock(CommandOrderProductRepository.class);
         commandPointHistoryService = Mockito.mock(CommandPointHistoryService.class);
         commandOrderCouponService = Mockito.mock(CommandOrderCouponService.class);
@@ -138,6 +143,7 @@ class CommandOrderServiceImplTest {
                 subscribeCommandOrderRepository,
                 queryOrderRepository,
                 commandOrderStatusChangeLogRepository,
+                commandOrderRecipientRepository,
                 commandOrderProductRepository,
                 commandOrderCouponService,
                 commandPointHistoryService,
@@ -733,6 +739,8 @@ class CommandOrderServiceImplTest {
                 nonMemberProductTotalAmount,
                 shippingFee,
                 wrappingFee,
+                recipientName,
+                recipientPhoneNumber,
                 ordererName,
                 ordererPhoneNumber,
                 ordererAddress
@@ -746,6 +754,8 @@ class CommandOrderServiceImplTest {
                 productTotalAmount,
                 shippingFee,
                 wrappingFee,
+                recipientName,
+                recipientPhoneNumber,
                 ordererAddressId,
                 orderCoupons,
                 orderPoint
@@ -759,6 +769,8 @@ class CommandOrderServiceImplTest {
                 productTotalAmount,
                 shippingFee,
                 wrappingFee,
+                recipientName,
+                recipientPhoneNumber,
                 ordererAddressId,
                 orderCoupons,
                 orderPoint,
