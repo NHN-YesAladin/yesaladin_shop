@@ -39,6 +39,7 @@ public class QueryMemberOrderController {
             @ModelAttribute PeriodQueryRequestDto queryDto,
             Pageable pageable
     ) {
+        //테스트시, @LoginId 주석처리하고 String loginId = "admin"; 로 두고 사용
         Page<OrderSummaryResponseDto> data = queryOrderService.getOrderListInPeriodByMemberId(
                 queryDto,
                 loginId,
