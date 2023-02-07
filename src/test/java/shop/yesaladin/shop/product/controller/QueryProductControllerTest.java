@@ -136,7 +136,7 @@ class QueryProductControllerTest {
     @WithMockUser
     @Test
     @DisplayName("상품 상세 조회 성공")
-    void findProductById() throws Exception {
+    void findDetailProductById() throws Exception {
         // given
         ProductDetailResponseDto responseDto = DummyProductDetailResponseDto.dummy();
 

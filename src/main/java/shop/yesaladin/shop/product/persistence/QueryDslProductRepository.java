@@ -51,21 +51,17 @@ public class QueryDslProductRepository implements QueryProductRepository {
                 .fetchFirst();
     }
 
-    // TODO: ResponseDto 수정
-
     /**
      * {@inheritDoc}
      */
     @Override
-    public Optional<Product> findById(Long id) {
+    public Optional<Product> findProductById(long id) {
         QProduct product = QProduct.product;
 
-        return Optional.ofNullable(
-                queryFactory.select(product)
-                        .from(product)
-                        .where(product.id.eq(id))
-                        .fetchFirst()
-        );
+        return Optional.ofNullable(queryFactory.select(product)
+                .from(product)
+                .where(product.id.eq(id))
+                .fetchFirst());
     }
 
     /**
@@ -81,61 +77,6 @@ public class QueryDslProductRepository implements QueryProductRepository {
                         .where(product.isbn.eq(isbn))
                         .fetchFirst()
         );
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Page<Product> findAllForManager(Pageable pageable) {
-        QProduct product = QProduct.product;
-
-        List<Product> products = queryFactory
-                .select(product)
-                .from(product)
-                .orderBy(product.preferentialShowRanking.asc())
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
-
-        Long totalCount = queryFactory.select(product.count())
-                .from(product)
-                .fetchFirst();
-
-        return new PageImpl<>(products, pageable, totalCount);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Page<Product> findAllByTypeIdForManager(Pageable pageable, Integer typeId) {
-        QProduct product = QProduct.product;
-
-        Optional<ProductTypeCode> productTypeCode = Arrays.stream(ProductTypeCode.values())
-                .filter(value -> typeId.equals(value.getId()))
-                .findAny();
-
-        if (productTypeCode.isEmpty()) {
-            throw new ProductTypeCodeNotFoundException(typeId);
-        }
-
-        List<Product> products = queryFactory
-                .select(product)
-                .from(product)
-                .where(product.productTypeCode.eq(productTypeCode.get()))
-                .orderBy(product.preferentialShowRanking.asc())
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
-
-        Long totalCount = queryFactory.select(product.count())
-                .from(product)
-                .where(product.productTypeCode.eq(productTypeCode.get()))
-                .fetchFirst();
-
-        return new PageImpl<>(products, pageable, totalCount);
     }
 
     /**
@@ -191,6 +132,60 @@ public class QueryDslProductRepository implements QueryProductRepository {
                 .from(product)
                 .where(product.productTypeCode.eq(productTypeCode.get())
                         .and(product.isDeleted.isFalse().and(product.isSale.isTrue())))
+                .fetchFirst();
+
+        return new PageImpl<>(products, pageable, totalCount);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Page<Product> findAllForManager(Pageable pageable) {
+        QProduct product = QProduct.product;
+
+        List<Product> products = queryFactory
+                .select(product)
+                .from(product)
+                .orderBy(product.preferentialShowRanking.asc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        Long totalCount = queryFactory.select(product.count())
+                .from(product)
+                .fetchFirst();
+
+        return new PageImpl<>(products, pageable, totalCount);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Page<Product> findAllByTypeIdForManager(Pageable pageable, Integer typeId) {
+        QProduct product = QProduct.product;
+
+        Optional<ProductTypeCode> productTypeCode = Arrays.stream(ProductTypeCode.values())
+                .filter(value -> typeId.equals(value.getId()))
+                .findAny();
+
+        if (productTypeCode.isEmpty()) {
+            throw new ProductTypeCodeNotFoundException(typeId);
+        }
+
+        List<Product> products = queryFactory
+                .select(product)
+                .from(product)
+                .where(product.productTypeCode.eq(productTypeCode.get()))
+                .orderBy(product.preferentialShowRanking.asc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        Long totalCount = queryFactory.select(product.count())
+                .from(product)
+                .where(product.productTypeCode.eq(productTypeCode.get()))
                 .fetchFirst();
 
         return new PageImpl<>(products, pageable, totalCount);
