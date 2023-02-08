@@ -1,6 +1,7 @@
 package shop.yesaladin.shop.publish.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.yesaladin.shop.publish.domain.model.Publisher;
@@ -12,6 +13,7 @@ import shop.yesaladin.shop.publish.domain.model.Publisher;
  * @since 1.0
  */
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class PublisherResponseDto {
@@ -28,5 +30,20 @@ public class PublisherResponseDto {
      */
     public Publisher toEntity() {
         return Publisher.builder().id(id).name(name).build();
+    }
+
+    /**
+     * 출판을 바탕으로 출판사 Dto를 만들어 반환합니다.
+     *
+     * @param publish 바탕이 될 출판 Dto
+     * @return 출판사 Dto
+     * @author 이수정
+     * @since 1.0
+     */
+    public static PublisherResponseDto getPublisherFromPublish(PublishResponseDto publish) {
+        return PublisherResponseDto.builder()
+                .id(publish.getPublisher().getId())
+                .name(publish.getPublisher().getName())
+                .build();
     }
 }

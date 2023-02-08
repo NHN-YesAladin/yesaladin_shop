@@ -3,13 +3,13 @@ package shop.yesaladin.shop.publish.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import shop.yesaladin.common.code.ErrorCode;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.publish.domain.model.Publisher;
 import shop.yesaladin.shop.publish.domain.repository.CommandPublisherRepository;
 import shop.yesaladin.shop.publish.domain.repository.QueryPublisherRepository;
 import shop.yesaladin.shop.publish.dto.PublisherRequestDto;
 import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
-import shop.yesaladin.shop.publish.exception.PublisherAlreadyExistsException;
-import shop.yesaladin.shop.publish.exception.PublisherNotFoundException;
 import shop.yesaladin.shop.publish.service.inter.CommandPublisherService;
 
 /**
@@ -30,33 +30,18 @@ public class CommandPublisherServiceImpl implements CommandPublisherService {
      */
     @Transactional
     @Override
-    public PublisherResponseDto register(Publisher publisher) {
-        if (queryPublisherRepository.existsByName(publisher.getName())) {
-            throw new PublisherAlreadyExistsException(publisher.getName());
-        }
-        commandPublisherRepository.save(publisher);
-
-        return new PublisherResponseDto(publisher.getId(), publisher.getName());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Transactional
-    @Override
     public PublisherResponseDto create(PublisherRequestDto createDto) {
         if (queryPublisherRepository.existsByName(createDto.getName())) {
-            throw new PublisherAlreadyExistsException(createDto.getName());
+            throw new ClientException(
+                    ErrorCode.PUBLISH_ALREADY_EXIST,
+                    "Publisher you are trying to create already exists => publisher name : " + createDto.getName()
+            );
         }
-
         Publisher publisher = Publisher.builder().name(createDto.getName()).build();
 
         commandPublisherRepository.save(publisher);
 
-        return new PublisherResponseDto(
-                publisher.getId(),
-                publisher.getName()
-        );
+        return PublisherResponseDto.builder().id(publisher.getId()).name(publisher.getName()).build();
     }
 
     /**
@@ -66,22 +51,23 @@ public class CommandPublisherServiceImpl implements CommandPublisherService {
     @Override
     public PublisherResponseDto modify(Long id, PublisherRequestDto modifyDto) {
         Publisher publisher = queryPublisherRepository.findById(id)
-                .orElseThrow(() -> new PublisherNotFoundException(id));
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.PUBLISH_PUBLISHER_NOT_FOUND,
+                        "Publisher not found with id : " + id));
 
         String modifyName = modifyDto.getName();
         if (!publisher.getName().equals(modifyName)) {
             if (queryPublisherRepository.existsByName(modifyName)) {
-                throw new PublisherAlreadyExistsException(modifyName);
+                throw new ClientException(
+                        ErrorCode.PUBLISH_ALREADY_EXIST,
+                        "Publisher you are trying to modify already exists => publisher name : " + modifyDto.getName());
             }
             publisher.changeName(modifyName);
         }
 
         commandPublisherRepository.save(publisher);
 
-        return new PublisherResponseDto(
-                publisher.getId(),
-                publisher.getName()
-        );
+        return PublisherResponseDto.builder().id(publisher.getId()).name(publisher.getName()).build();
     }
 }
 
