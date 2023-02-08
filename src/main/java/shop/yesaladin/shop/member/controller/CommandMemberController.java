@@ -97,7 +97,6 @@ public class CommandMemberController {
      * @param loginId        차단할 회원의 아이디
      * @param request        회원 차단 사유
      * @param bindingResult  유효성 검사
-     * @param loginId        회원의 아이디
      * @return 차단된 회원 정보
      * @author 최예린
      * @since 1.0
