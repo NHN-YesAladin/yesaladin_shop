@@ -6,9 +6,11 @@ import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.common.exception.PageOffsetOutOfBoundsException;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.order.domain.model.Order;
+import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
 import shop.yesaladin.shop.order.dto.OrderPaymentResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSheetRequestDto;
 import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
+import shop.yesaladin.shop.order.dto.OrderStatusResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryResponseDto;
 
@@ -108,4 +110,18 @@ public interface QueryOrderService {
      * @since 1.0
      */
     OrderPaymentResponseDto getPaymentDtoByMemberOrderId(long orderId);
+
+    /**
+     * 주문 상태와 로그인 아이디에 맞춰 주문을 조회합니다.
+     *
+     * @param loginId 로그인 id
+     * @param code 주문 상태
+     * @param pageable 페이징 처리
+     * @return 페이징된 주문의 일부 정보
+     */
+    Page<OrderStatusResponseDto> getStatusResponsesByLoginIdAndStatus(
+            String loginId,
+            OrderStatusCode code,
+            Pageable pageable
+    );
 }
