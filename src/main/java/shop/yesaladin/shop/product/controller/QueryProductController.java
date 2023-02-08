@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import shop.yesaladin.common.dto.ResponseDto;
@@ -135,5 +136,34 @@ public class QueryProductController {
             @RequestParam Map<String, String> cart
     ) {
         return queryProductService.getCartProduct(cart);
+    }
+
+    /**
+     * 연관관계 등록을 위한 상품 검색 메서드
+     *
+     * @param title 검색할 상품 제목
+     * @param pageable 페이지 정보
+     * @return 검색된 상품 정보와 페이지 정보 그리고 응답 메시지
+     */
+    @GetMapping("/relation")
+    public ResponseDto<PaginatedResponseDto<ProductRelationResponseDto>> findProductRelationByTitle(
+            @RequestParam String title,
+            @PageableDefault Pageable pageable
+    ) {
+        Page<ProductRelationResponseDto> products = queryProductService.findProductRelationByTitle(
+                title,
+                pageable
+        );
+
+        return ResponseDto.<PaginatedResponseDto<ProductRelationResponseDto>>builder()
+                .status(HttpStatus.OK)
+                .success(true)
+                .data(PaginatedResponseDto.<ProductRelationResponseDto>builder()
+                        .dataList(products.getContent())
+                        .totalPage(products.getTotalPages())
+                        .currentPage(products.getNumber())
+                        .totalDataCount(products.getTotalElements())
+                        .build())
+                .build();
     }
 }

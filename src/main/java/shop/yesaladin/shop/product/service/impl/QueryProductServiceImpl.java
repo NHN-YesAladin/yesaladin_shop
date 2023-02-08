@@ -1,5 +1,10 @@
 package shop.yesaladin.shop.product.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -12,7 +17,15 @@ import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 import shop.yesaladin.shop.category.service.inter.QueryProductCategoryService;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
-import shop.yesaladin.shop.product.dto.*;
+import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
+import shop.yesaladin.shop.product.dto.ProductModifyDto;
+import shop.yesaladin.shop.product.dto.ProductOnlyTitleDto;
+import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
+import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
+import shop.yesaladin.shop.product.dto.ProductRelationResponseDto;
+import shop.yesaladin.shop.product.dto.ProductsResponseDto;
+import shop.yesaladin.shop.product.dto.SubscribeProductOrderResponseDto;
+import shop.yesaladin.shop.product.dto.ViewCartDto;
 import shop.yesaladin.shop.product.exception.ProductNotFoundException;
 import shop.yesaladin.shop.product.service.inter.QueryProductService;
 import shop.yesaladin.shop.publish.dto.PublishResponseDto;
@@ -24,12 +37,6 @@ import shop.yesaladin.shop.tag.service.inter.QueryProductTagService;
 import shop.yesaladin.shop.writing.dto.AuthorsResponseDto;
 import shop.yesaladin.shop.writing.dto.WritingResponseDto;
 import shop.yesaladin.shop.writing.service.inter.QueryWritingService;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * 상품 조회를 위한 Service 구현체 입니다.
@@ -94,7 +101,9 @@ public class QueryProductServiceImpl implements QueryProductService {
 
         return new ProductDetailResponseDto(
                 product.getId(),
-                Objects.nonNull(product.getEbookFile()) && !product.getEbookFile().getUrl().isBlank(),
+                Objects.nonNull(product.getEbookFile()) && !product.getEbookFile()
+                        .getUrl()
+                        .isBlank(),
                 product.getTitle(),
                 findAuthorsByProduct(product),
                 publish.getPublisher().getName(),
@@ -110,7 +119,8 @@ public class QueryProductServiceImpl implements QueryProductService {
                 product.getSubscribeProduct().getISSN(),
                 product.getContents(),
                 product.getDescription(),
-                product.getQuantity() > 0 && !product.isForcedOutOfStock() && product.isSale() && !product.isDeleted(),
+                product.getQuantity() > 0 && !product.isForcedOutOfStock() && product.isSale()
+                        && !product.isDeleted(),
                 queryProductCategoryService.findCategoriesByProduct(product)
         );
     }
@@ -300,7 +310,9 @@ public class QueryProductServiceImpl implements QueryProductService {
      * @since 1.0
      */
     private long calcPointPrice(Product product) {
-        return Math.round((product.getActualPrice() * product.getGivenPointRate() / PERCENT_DENOMINATOR_VALUE) / ROUND_OFF_VALUE) * ROUND_OFF_VALUE;
+        return Math.round(
+                (product.getActualPrice() * product.getGivenPointRate() / PERCENT_DENOMINATOR_VALUE)
+                        / ROUND_OFF_VALUE) * ROUND_OFF_VALUE;
     }
 
     /**
@@ -413,6 +425,29 @@ public class QueryProductServiceImpl implements QueryProductService {
         checkValidSubscribeProducts(isbn, product);
 
         return new SubscribeProductOrderResponseDto(product);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ProductRelationResponseDto> findProductRelationByTitle(
+            String title,
+            Pageable pageable
+    ) {
+        Page<Product> products = queryProductRepository.findProductRelationByTitle(title, pageable);
+        List<ProductRelationResponseDto> dtoList = new ArrayList<>();
+        for (Product product : products) {
+            List<String> author = findAuthorsByProduct(product);
+            PublishResponseDto publish = queryPublishService.findByProduct(product);
+
+            dtoList.add(ProductRelationResponseDto.createDto(
+                    product,
+                    author,
+                    publish.getPublisher().getName(),
+                    publish.getPublishedDate()
+            ));
+
+        }
+        return new PageImpl<>(dtoList, pageable, products.getTotalElements());
     }
 
     private void checkValidSubscribeProducts(String isbn, Product product) {

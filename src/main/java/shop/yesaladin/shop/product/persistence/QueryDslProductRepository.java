@@ -1,8 +1,5 @@
 package shop.yesaladin.shop.product.persistence;
 
-import static com.querydsl.jpa.JPAExpressions.select;
-
-import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -21,12 +18,7 @@ import shop.yesaladin.shop.product.domain.model.querydsl.QProduct;
 import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
 import shop.yesaladin.shop.product.dto.ProductOnlyTitleDto;
 import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
-import shop.yesaladin.shop.product.dto.ProductRelationResponseDto;
 import shop.yesaladin.shop.product.exception.ProductTypeCodeNotFoundException;
-import shop.yesaladin.shop.publish.domain.model.querydsl.QPublish;
-import shop.yesaladin.shop.publish.domain.model.querydsl.QPublisher;
-import shop.yesaladin.shop.writing.domain.model.querydsl.QAuthor;
-import shop.yesaladin.shop.writing.domain.model.querydsl.QWriting;
 
 
 /**
@@ -270,40 +262,23 @@ public class QueryDslProductRepository implements QueryProductRepository {
      * {@inheritDoc}
      */
     @Override
-    public List<ProductRelationResponseDto> findProductRelationByTitle(
-            String title,
-            Pageable pageable
-    ) {
+    public Page<Product> findProductRelationByTitle(String title, Pageable pageable) {
         QProduct product = QProduct.product;
-        QWriting writing = QWriting.writing;
-        QAuthor author = QAuthor.author;
-        QPublish publish = QPublish.publish;
-        QPublisher publisher = QPublisher.publisher;
 
-        return queryFactory.select(
-                        Projections.bean(
-                                ProductRelationResponseDto.class,
-                                product.id,
-                                product.isbn,
-                                product.title,
-                                product.actualPrice,
-                                product.discountRate,
-                                product.isForcedOutOfStock,
-                                product.quantity,
-                                product.preferentialShowRanking,
-                                ExpressionUtils.as(select(author.name).from(author), "authors")
-//                                publisher.name.as("publisher"),
-//                                publish.publishedDate
-                        )
-                )
-                .from(product, writing)
+        List<Product> products =  queryFactory.selectFrom(product)
                 .where(product.title.contains(title).and(product.isDeleted.isFalse()))
-                .leftJoin(writing).on(product.eq(writing.product)).fetchJoin()
-                .leftJoin(author).on(writing.author.eq(author)).fetchJoin()
-//                .groupBy(author.name)
-//                .leftJoin(publish).on(product.id.eq(publish.product.id))
-//                .leftJoin(publish).on(publisher.id.eq(publish.publisher.id))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
+
+        Long count = queryFactory.select(product.count())
+                .from(product)
+                .where(product.title.contains(title).and(product.isDeleted.isFalse()))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetchFirst();
+
+        return  new PageImpl<>(products, pageable, count);
     }
 }
 

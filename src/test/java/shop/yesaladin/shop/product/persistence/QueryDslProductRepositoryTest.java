@@ -25,7 +25,6 @@ import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
 import shop.yesaladin.shop.product.dto.ProductOnlyTitleDto;
 import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
-import shop.yesaladin.shop.product.dto.ProductRelationResponseDto;
 import shop.yesaladin.shop.product.dummy.DummyFile;
 import shop.yesaladin.shop.product.dummy.DummyProduct;
 import shop.yesaladin.shop.product.dummy.DummySubscribeProduct;
@@ -224,18 +223,14 @@ class QueryDslProductRepositoryTest {
 
     @Test
     void findProductRelationByTitle() {
-//        Author author = Author.builder().id(1L).name("name").build();
-//        Author author2 = Author.builder().id(2L).name("name").build();
-//        Writing writing = Writing.create(product2, author);
-//        Writing writing1 = Writing.create(product2, author2);
-
+        //given
         entityManager.persist(product2);
-//        entityManager.persist(author);
-//        entityManager.persist(writing);
-        List<ProductRelationResponseDto> test = repository.findProductRelationByTitle("title", PageRequest.of(0, 10));
-        System.out.println(test.size());
-        System.out.println(test.get(0).getTitle());
-//        System.out.println(test.get(0).getAuthors());
+
+        //when
+        Page<Product> products = repository.findProductRelationByTitle(product1.getTitle().substring(0, 1), PageRequest.of(0, 1));
+
+        //then
+
     }
 
     private List<ProductOrderRequestDto> getOrderProductRequestData() {

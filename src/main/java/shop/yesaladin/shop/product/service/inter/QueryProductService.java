@@ -1,17 +1,25 @@
 package shop.yesaladin.shop.product.service.inter;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import shop.yesaladin.shop.product.dto.*;
-
 import java.util.List;
 import java.util.Map;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
+import shop.yesaladin.shop.product.dto.ProductModifyDto;
+import shop.yesaladin.shop.product.dto.ProductOnlyTitleDto;
+import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
+import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
+import shop.yesaladin.shop.product.dto.ProductRelationResponseDto;
+import shop.yesaladin.shop.product.dto.ProductsResponseDto;
+import shop.yesaladin.shop.product.dto.SubscribeProductOrderResponseDto;
+import shop.yesaladin.shop.product.dto.ViewCartDto;
 
 /**
  * 상품 조회를 위한 Service Interface 입니다.
  *
  * @author 이수정
  * @author 최예린
+ * @author 김선홍
  * @since 1.0
  */
 public interface QueryProductService {
@@ -97,4 +105,15 @@ public interface QueryProductService {
      * @since 1.0
      */
     SubscribeProductOrderResponseDto getIssnByOrderProduct(ProductOrderRequestDto orderProduct);
+
+    /**
+     * 연관관계를 등록하기 위한 상품 제목 contains 검색 메서드 입니다.
+     *
+     * @param title 검색할 상품의 제목
+     * @param pageable 페이징 정보
+     * @return 검색된 상품들
+     * @author 김선홍
+     * @since 1.0
+     */
+    Page<ProductRelationResponseDto> findProductRelationByTitle(String title, Pageable pageable);
 }
