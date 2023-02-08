@@ -60,6 +60,8 @@ class CommandOrderControllerTest {
     String ordererPhoneNumber = "01012341234";
     String ordererAddress = "서울특별시 구로구 디지털로26길 72 (구로동, NHN KCP)";
     LocalDate expectedShippingDate = LocalDate.of(2023, 1, 5);
+    String recipientName = "김몽대";
+    String recipientPhoneNumber = "01029482743";
     List<ProductOrderRequestDto> orderProducts;
     List<ProductOrderRequestDto> subscribeOrderProducts;
     long nonMemberProductTotalAmount = 10000L;
@@ -131,6 +133,10 @@ class CommandOrderControllerTest {
                                 .description("총 상품 금액"),
                         fieldWithPath("shippingFee").type(JsonFieldType.NUMBER).description("배송비"),
                         fieldWithPath("wrappingFee").type(JsonFieldType.NUMBER).description("포장비"),
+                        fieldWithPath("recipientName").type(JsonFieldType.STRING)
+                                .description("수령인명"),
+                        fieldWithPath("recipientPhoneNumber").type(JsonFieldType.STRING)
+                                .description("수령인 연락처"),
                         fieldWithPath("ordererName").type(JsonFieldType.STRING).description("주문자명"),
                         fieldWithPath("ordererPhoneNumber").type(JsonFieldType.STRING)
                                 .description("주문자 연락처"),
@@ -192,6 +198,10 @@ class CommandOrderControllerTest {
                                 .description("총 상품 금액"),
                         fieldWithPath("shippingFee").type(JsonFieldType.NUMBER).description("배송비"),
                         fieldWithPath("wrappingFee").type(JsonFieldType.NUMBER).description("포장비"),
+                        fieldWithPath("recipientName").type(JsonFieldType.STRING)
+                                .description("수령인명"),
+                        fieldWithPath("recipientPhoneNumber").type(JsonFieldType.STRING)
+                                .description("수령인 연락처"),
                         fieldWithPath("ordererName").type(JsonFieldType.STRING).description("주문자명"),
                         fieldWithPath("ordererPhoneNumber").type(JsonFieldType.STRING)
                                 .description("주문자 연락처"),
@@ -256,6 +266,10 @@ class CommandOrderControllerTest {
                                 .description("총 상품 금액"),
                         fieldWithPath("shippingFee").type(JsonFieldType.NUMBER).description("배송비"),
                         fieldWithPath("wrappingFee").type(JsonFieldType.NUMBER).description("포장비"),
+                        fieldWithPath("recipientName").type(JsonFieldType.STRING)
+                                .description("수령인명"),
+                        fieldWithPath("recipientPhoneNumber").type(JsonFieldType.STRING)
+                                .description("수령인 연락처"),
                         fieldWithPath("ordererName").type(JsonFieldType.STRING).description("주문자명"),
                         fieldWithPath("ordererPhoneNumber").type(JsonFieldType.STRING)
                                 .description("주문자 연락처"),
@@ -325,6 +339,10 @@ class CommandOrderControllerTest {
                                 .description("총 상품 금액"),
                         fieldWithPath("shippingFee").type(JsonFieldType.NUMBER).description("배송비"),
                         fieldWithPath("wrappingFee").type(JsonFieldType.NUMBER).description("포장비"),
+                        fieldWithPath("recipientName").type(JsonFieldType.STRING)
+                                .description("수령인명"),
+                        fieldWithPath("recipientPhoneNumber").type(JsonFieldType.STRING)
+                                .description("수령인 연락처"),
                         fieldWithPath("ordererName").type(JsonFieldType.STRING).description("주문자명"),
                         fieldWithPath("ordererPhoneNumber").type(JsonFieldType.STRING)
                                 .description("주문자 연락처"),
@@ -397,6 +415,10 @@ class CommandOrderControllerTest {
                                 .description("총 상품 금액"),
                         fieldWithPath("shippingFee").type(JsonFieldType.NUMBER).description("배송비"),
                         fieldWithPath("wrappingFee").type(JsonFieldType.NUMBER).description("포장비"),
+                        fieldWithPath("recipientName").type(JsonFieldType.STRING)
+                                .description("수령인명"),
+                        fieldWithPath("recipientPhoneNumber").type(JsonFieldType.STRING)
+                                .description("수령인 연락처"),
                         fieldWithPath("ordererAddressId").type(JsonFieldType.NUMBER)
                                 .description("회원 배송지 Pk"),
                         fieldWithPath("orderCoupons").type(JsonFieldType.ARRAY)
@@ -461,6 +483,10 @@ class CommandOrderControllerTest {
                                 .description("총 상품 금액"),
                         fieldWithPath("shippingFee").type(JsonFieldType.NUMBER).description("배송비"),
                         fieldWithPath("wrappingFee").type(JsonFieldType.NUMBER).description("포장비"),
+                        fieldWithPath("recipientName").type(JsonFieldType.STRING)
+                                .description("수령인명"),
+                        fieldWithPath("recipientPhoneNumber").type(JsonFieldType.STRING)
+                                .description("수령인 연락처"),
                         fieldWithPath("ordererAddressId").type(JsonFieldType.NUMBER)
                                 .description("회원 배송지 Pk"),
                         fieldWithPath("orderCoupons").type(JsonFieldType.ARRAY)
@@ -528,6 +554,10 @@ class CommandOrderControllerTest {
                                 .description("총 상품 금액"),
                         fieldWithPath("shippingFee").type(JsonFieldType.NUMBER).description("배송비"),
                         fieldWithPath("wrappingFee").type(JsonFieldType.NUMBER).description("포장비"),
+                        fieldWithPath("recipientName").type(JsonFieldType.STRING)
+                                .description("수령인명"),
+                        fieldWithPath("recipientPhoneNumber").type(JsonFieldType.STRING)
+                                .description("수령인 연락처"),
                         fieldWithPath("ordererAddressId").type(JsonFieldType.NUMBER)
                                 .description("회원 배송지 Pk"),
                         fieldWithPath("orderCoupons").type(JsonFieldType.ARRAY)
@@ -595,6 +625,10 @@ class CommandOrderControllerTest {
                                 .description("총 상품 금액"),
                         fieldWithPath("shippingFee").type(JsonFieldType.NUMBER).description("배송비"),
                         fieldWithPath("wrappingFee").type(JsonFieldType.NUMBER).description("포장비"),
+                        fieldWithPath("recipientName").type(JsonFieldType.STRING)
+                                .description("수령인명"),
+                        fieldWithPath("recipientPhoneNumber").type(JsonFieldType.STRING)
+                                .description("수령인 연락처"),
                         fieldWithPath("ordererAddressId").type(JsonFieldType.NUMBER)
                                 .description("회원 배송지 Pk"),
                         fieldWithPath("orderCoupons").type(JsonFieldType.ARRAY)
@@ -662,6 +696,10 @@ class CommandOrderControllerTest {
                                 .description("총 상품 금액"),
                         fieldWithPath("shippingFee").type(JsonFieldType.NUMBER).description("배송비"),
                         fieldWithPath("wrappingFee").type(JsonFieldType.NUMBER).description("포장비"),
+                        fieldWithPath("recipientName").type(JsonFieldType.STRING)
+                                .description("수령인명"),
+                        fieldWithPath("recipientPhoneNumber").type(JsonFieldType.STRING)
+                                .description("수령인 연락처"),
                         fieldWithPath("ordererAddressId").type(JsonFieldType.NUMBER)
                                 .description("회원 배송지 Pk"),
                         fieldWithPath("orderCoupons").type(JsonFieldType.ARRAY)
@@ -729,6 +767,10 @@ class CommandOrderControllerTest {
                                 .description("총 상품 금액"),
                         fieldWithPath("shippingFee").type(JsonFieldType.NUMBER).description("배송비"),
                         fieldWithPath("wrappingFee").type(JsonFieldType.NUMBER).description("포장비"),
+                        fieldWithPath("recipientName").type(JsonFieldType.STRING)
+                                .description("수령인명"),
+                        fieldWithPath("recipientPhoneNumber").type(JsonFieldType.STRING)
+                                .description("수령인 연락처"),
                         fieldWithPath("ordererAddressId").type(JsonFieldType.NUMBER)
                                 .description("회원 배송지 Pk"),
                         fieldWithPath("orderCoupons").type(JsonFieldType.ARRAY)
@@ -799,6 +841,10 @@ class CommandOrderControllerTest {
                                 .description("총 상품 금액"),
                         fieldWithPath("shippingFee").type(JsonFieldType.NUMBER).description("배송비"),
                         fieldWithPath("wrappingFee").type(JsonFieldType.NUMBER).description("포장비"),
+                        fieldWithPath("recipientName").type(JsonFieldType.STRING)
+                                .description("수령인명"),
+                        fieldWithPath("recipientPhoneNumber").type(JsonFieldType.STRING)
+                                .description("수령인 연락처"),
                         fieldWithPath("ordererAddressId").type(JsonFieldType.NUMBER)
                                 .description("회원 배송지 Pk"),
                         fieldWithPath("orderCoupons").type(JsonFieldType.ARRAY)
@@ -874,6 +920,10 @@ class CommandOrderControllerTest {
                                 .description("총 상품 금액"),
                         fieldWithPath("shippingFee").type(JsonFieldType.NUMBER).description("배송비"),
                         fieldWithPath("wrappingFee").type(JsonFieldType.NUMBER).description("포장비"),
+                        fieldWithPath("recipientName").type(JsonFieldType.STRING)
+                                .description("수령인명"),
+                        fieldWithPath("recipientPhoneNumber").type(JsonFieldType.STRING)
+                                .description("수령인 연락처"),
                         fieldWithPath("ordererAddressId").type(JsonFieldType.NUMBER)
                                 .description("회원 배송지 Pk"),
                         fieldWithPath("orderCoupons").type(JsonFieldType.ARRAY)
@@ -942,6 +992,10 @@ class CommandOrderControllerTest {
                                 .description("총 상품 금액"),
                         fieldWithPath("shippingFee").type(JsonFieldType.NUMBER).description("배송비"),
                         fieldWithPath("wrappingFee").type(JsonFieldType.NUMBER).description("포장비"),
+                        fieldWithPath("recipientName").type(JsonFieldType.STRING)
+                                .description("수령인명"),
+                        fieldWithPath("recipientPhoneNumber").type(JsonFieldType.STRING)
+                                .description("수령인 연락처"),
                         fieldWithPath("ordererAddressId").type(JsonFieldType.NUMBER)
                                 .description("회원 배송지 Pk"),
                         fieldWithPath("orderCoupons").type(JsonFieldType.ARRAY)
@@ -1013,6 +1067,10 @@ class CommandOrderControllerTest {
                                 .description("총 상품 금액"),
                         fieldWithPath("shippingFee").type(JsonFieldType.NUMBER).description("배송비"),
                         fieldWithPath("wrappingFee").type(JsonFieldType.NUMBER).description("포장비"),
+                        fieldWithPath("recipientName").type(JsonFieldType.STRING)
+                                .description("수령인명"),
+                        fieldWithPath("recipientPhoneNumber").type(JsonFieldType.STRING)
+                                .description("수령인 연락처"),
                         fieldWithPath("ordererAddressId").type(JsonFieldType.NUMBER)
                                 .description("회원 배송지 Pk"),
                         fieldWithPath("orderCoupons").type(JsonFieldType.ARRAY)
@@ -1084,6 +1142,10 @@ class CommandOrderControllerTest {
                                 .description("총 상품 금액"),
                         fieldWithPath("shippingFee").type(JsonFieldType.NUMBER).description("배송비"),
                         fieldWithPath("wrappingFee").type(JsonFieldType.NUMBER).description("포장비"),
+                        fieldWithPath("recipientName").type(JsonFieldType.STRING)
+                                .description("수령인명"),
+                        fieldWithPath("recipientPhoneNumber").type(JsonFieldType.STRING)
+                                .description("수령인 연락처"),
                         fieldWithPath("ordererAddressId").type(JsonFieldType.NUMBER)
                                 .description("회원 배송지 Pk"),
                         fieldWithPath("orderCoupons").type(JsonFieldType.ARRAY)
@@ -1155,6 +1217,10 @@ class CommandOrderControllerTest {
                                 .description("총 상품 금액"),
                         fieldWithPath("shippingFee").type(JsonFieldType.NUMBER).description("배송비"),
                         fieldWithPath("wrappingFee").type(JsonFieldType.NUMBER).description("포장비"),
+                        fieldWithPath("recipientName").type(JsonFieldType.STRING)
+                                .description("수령인명"),
+                        fieldWithPath("recipientPhoneNumber").type(JsonFieldType.STRING)
+                                .description("수령인 연락처"),
                         fieldWithPath("ordererAddressId").type(JsonFieldType.NUMBER)
                                 .description("회원 배송지 Pk"),
                         fieldWithPath("orderCoupons").type(JsonFieldType.ARRAY)
@@ -1226,6 +1292,10 @@ class CommandOrderControllerTest {
                                 .description("총 상품 금액"),
                         fieldWithPath("shippingFee").type(JsonFieldType.NUMBER).description("배송비"),
                         fieldWithPath("wrappingFee").type(JsonFieldType.NUMBER).description("포장비"),
+                        fieldWithPath("recipientName").type(JsonFieldType.STRING)
+                                .description("수령인명"),
+                        fieldWithPath("recipientPhoneNumber").type(JsonFieldType.STRING)
+                                .description("수령인 연락처"),
                         fieldWithPath("ordererAddressId").type(JsonFieldType.NUMBER)
                                 .description("회원 배송지 Pk"),
                         fieldWithPath("orderCoupons").type(JsonFieldType.ARRAY)
@@ -1297,6 +1367,10 @@ class CommandOrderControllerTest {
                                 .description("총 상품 금액"),
                         fieldWithPath("shippingFee").type(JsonFieldType.NUMBER).description("배송비"),
                         fieldWithPath("wrappingFee").type(JsonFieldType.NUMBER).description("포장비"),
+                        fieldWithPath("recipientName").type(JsonFieldType.STRING)
+                                .description("수령인명"),
+                        fieldWithPath("recipientPhoneNumber").type(JsonFieldType.STRING)
+                                .description("수령인 연락처"),
                         fieldWithPath("ordererAddressId").type(JsonFieldType.NUMBER)
                                 .description("회원 배송지 Pk"),
                         fieldWithPath("orderCoupons").type(JsonFieldType.ARRAY)
@@ -1371,6 +1445,10 @@ class CommandOrderControllerTest {
                                 .description("총 상품 금액"),
                         fieldWithPath("shippingFee").type(JsonFieldType.NUMBER).description("배송비"),
                         fieldWithPath("wrappingFee").type(JsonFieldType.NUMBER).description("포장비"),
+                        fieldWithPath("recipientName").type(JsonFieldType.STRING)
+                                .description("수령인명"),
+                        fieldWithPath("recipientPhoneNumber").type(JsonFieldType.STRING)
+                                .description("수령인 연락처"),
                         fieldWithPath("ordererAddressId").type(JsonFieldType.NUMBER)
                                 .description("회원 배송지 Pk"),
                         fieldWithPath("orderCoupons").type(JsonFieldType.ARRAY)
@@ -1415,6 +1493,8 @@ class CommandOrderControllerTest {
                 nonMemberProductTotalAmount,
                 shippingFee,
                 wrappingFee,
+                recipientName,
+                recipientPhoneNumber,
                 ordererName,
                 ordererPhoneNumber,
                 ordererAddress
@@ -1428,6 +1508,8 @@ class CommandOrderControllerTest {
                 nonMemberProductTotalAmount,
                 shippingFee,
                 wrappingFee,
+                recipientName,
+                recipientPhoneNumber,
                 "  ",
                 "675",
                 "d"
@@ -1441,6 +1523,8 @@ class CommandOrderControllerTest {
                 productTotalAmount,
                 shippingFee,
                 wrappingFee,
+                recipientName,
+                recipientPhoneNumber,
                 ordererAddressId,
                 orderCoupons,
                 orderPoint
@@ -1454,6 +1538,8 @@ class CommandOrderControllerTest {
                 productTotalAmount,
                 shippingFee,
                 wrappingFee,
+                recipientName,
+                recipientPhoneNumber,
                 -7L,
                 orderCoupons,
                 -1000
@@ -1467,6 +1553,8 @@ class CommandOrderControllerTest {
                 productTotalAmount,
                 shippingFee,
                 wrappingFee,
+                recipientName,
+                recipientPhoneNumber,
                 ordererAddressId,
                 orderCoupons,
                 orderPoint,
@@ -1482,6 +1570,8 @@ class CommandOrderControllerTest {
                 productTotalAmount,
                 shippingFee,
                 wrappingFee,
+                recipientName,
+                recipientPhoneNumber,
                 ordererAddressId,
                 orderCoupons,
                 orderPoint,

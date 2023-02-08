@@ -2,20 +2,30 @@ package shop.yesaladin.shop.order.service.impl;
 
 import java.time.Clock;
 import java.time.LocalDate;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.exception.ClientException;
+import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.common.exception.PageOffsetOutOfBoundsException;
+import shop.yesaladin.shop.coupon.dto.MemberCouponSummaryDto;
+import shop.yesaladin.shop.coupon.service.inter.QueryMemberCouponService;
 import shop.yesaladin.shop.member.domain.model.Member;
+import shop.yesaladin.shop.member.dto.MemberAddressOrderSheetResponseDto;
+import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
+import shop.yesaladin.shop.member.dto.MemberOrderSheetResponseDto;
+import shop.yesaladin.shop.member.service.inter.QueryMemberAddressService;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
@@ -45,8 +55,10 @@ public class QueryOrderServiceImpl implements QueryOrderService {
 
     private final QueryOrderRepository queryOrderRepository;
     private final QueryMemberService queryMemberService;
+    private final QueryMemberAddressService queryMemberAddressService;
     private final QueryPointHistoryService queryPointHistoryService;
     private final QueryProductService queryProductService;
+    private final QueryMemberCouponService queryMemberCouponService;
 
     private final Clock clock;
 
@@ -105,6 +117,19 @@ public class QueryOrderServiceImpl implements QueryOrderService {
      */
     @Override
     @Transactional(readOnly = true)
+    public OrderSheetResponseDto getNonMemberOrderSheetData(OrderSheetRequestDto request) {
+        List<ProductOrderSheetResponseDto> orderProducts = getProductOrder(
+                request.getIsbn(),
+                request.getQuantity()
+        );
+        return new OrderSheetResponseDto(orderProducts);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
     public OrderSheetResponseDto getMemberOrderSheetData(
             OrderSheetRequestDto request,
             String loginId
@@ -114,37 +139,59 @@ public class QueryOrderServiceImpl implements QueryOrderService {
         return getOrderSheetDataForMember(request, loginId);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public OrderSheetResponseDto getNonMemberOrderSheetData(OrderSheetRequestDto request) {
-        List<ProductOrderSheetResponseDto> orderProducts = getProductOrder(request);
-
-        return new OrderSheetResponseDto(orderProducts);
-    }
-
     private OrderSheetResponseDto getOrderSheetDataForMember(
             OrderSheetRequestDto request,
             String loginId
     ) {
-        List<ProductOrderSheetResponseDto> orderProducts = getProductOrder(request);
+        MemberOrderSheetResponseDto member = queryMemberService.getMemberForOrder(loginId);
+        List<MemberAddressResponseDto> memberAddress = queryMemberAddressService.getByLoginId(loginId);
+        List<ProductOrderSheetResponseDto> orderProducts = getProductOrder(
+                request.getIsbn(),
+                request.getQuantity()
+        );
+
+        List<MemberCouponSummaryDto> memberCoupons = getMemberCoupons(
+                loginId,
+                member.getCouponCount()
+        );
 
         return new OrderSheetResponseDto(
-                queryMemberService.getMemberForOrder(loginId),
+                member,
                 queryPointHistoryService.getMemberPoint(loginId),
-                orderProducts
+                orderProducts,
+                memberAddress,
+                memberCoupons
         );
     }
 
-    private List<ProductOrderSheetResponseDto> getProductOrder(OrderSheetRequestDto request) {
-        Map<String, Integer> products = new HashMap<>();
-        for (int i = 0; i < request.getQuantityList().size(); i++) {
-            products.put(request.getIsbnList().get(i), request.getQuantityList().get(i));
-        }
+    private List<ProductOrderSheetResponseDto> getProductOrder(
+            List<String> isbnList,
+            List<Integer> quantityList
+    ) {
+        Map<String, Integer> products = IntStream.range(0, isbnList.size())
+                .boxed()
+                .collect(Collectors.toMap(isbnList::get, quantityList::get));
 
         return queryProductService.getByOrderProducts(products);
+    }
+
+    private List<MemberCouponSummaryDto> getMemberCoupons(
+            String loginId,
+            int totalPage
+    ) {
+        int offset = 20;
+        List<MemberCouponSummaryDto> memberCoupons = new ArrayList<>();
+
+        PaginatedResponseDto<MemberCouponSummaryDto> coupons;
+        for (int i = 0; i < totalPage; i++) {
+            coupons = queryMemberCouponService.getMemberCouponSummaryList(
+                    PageRequest.of(i, offset),
+                    loginId,
+                    true
+            );
+            memberCoupons.addAll(coupons.getDataList());
+        }
+        return memberCoupons;
     }
 
     /**

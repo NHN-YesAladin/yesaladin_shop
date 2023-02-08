@@ -3,7 +3,6 @@ package shop.yesaladin.shop.member.controller;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.common.exception.ClientException;
+import shop.yesaladin.shop.common.aspect.annotation.LoginId;
 import shop.yesaladin.shop.common.utils.AuthorityUtils;
 import shop.yesaladin.shop.member.dto.MemberAddressCreateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
@@ -37,8 +37,8 @@ public class CommandMemberAddressController {
     /**
      * 회원지 배송 등록을 위한 기능입니다.
      *
-     * @param request        등록할 배송지 데이터
-     * @param authentication 인증
+     * @param request 등록할 배송지 데이터
+     * @param loginId 회원의 아이디
      * @return 등록된 배송지 데이터
      * @author 최예린
      * @since 1.0
@@ -48,14 +48,9 @@ public class CommandMemberAddressController {
     public ResponseDto<MemberAddressResponseDto> createMemberAddress(
             @Valid @RequestBody MemberAddressCreateRequestDto request,
             BindingResult bindingResult,
-            Authentication authentication
+            @LoginId(required = true) String loginId
     ) {
         checkRequestValidation(bindingResult);
-
-        String loginId = AuthorityUtils.getAuthorizedUserName(
-                authentication,
-                "Only authorized user can create address."
-        );
 
         MemberAddressResponseDto response = commandMemberAddressService.save(loginId, request);
 
@@ -68,8 +63,8 @@ public class CommandMemberAddressController {
     /**
      * 회원의 배송지를 대표 배송지로 설정하는 기능입니다.
      *
-     * @param addressId      대표로 지정할 배송지 id
-     * @param authentication 인증
+     * @param addressId 대표로 지정할 배송지 id
+     * @param loginId   회원의 아이디
      * @return 회원의 대표 배송지 정보
      * @author 최예린
      * @since 1.0
@@ -77,13 +72,8 @@ public class CommandMemberAddressController {
     @PutMapping("/{addressId}")
     public ResponseDto<MemberAddressResponseDto> markAsDefaultAddress(
             @PathVariable Long addressId,
-            Authentication authentication
+            @LoginId(required = true) String loginId
     ) {
-        String loginId = AuthorityUtils.getAuthorizedUserName(
-                authentication,
-                "Only authorized user can mark their address as default."
-        );
-
         MemberAddressResponseDto response = commandMemberAddressService.markAsDefault(
                 loginId,
                 addressId
@@ -99,21 +89,16 @@ public class CommandMemberAddressController {
     /**
      * 회원의 배송지를 삭제하는 기능입니다.
      *
-     * @param addressId      삭제할 배송 id
-     * @param authentication 인증
+     * @param addressId 삭제할 배송 id
+     * @param loginId   회원의 아이디
      * @author 최예린
      * @since 1.0
      */
     @DeleteMapping("/{addressId}")
     public ResponseDto<Void> deleteMemberAddress(
             @PathVariable Long addressId,
-            Authentication authentication
+            @LoginId(required = true) String loginId
     ) {
-        String loginId = AuthorityUtils.getAuthorizedUserName(
-                authentication,
-                "Only authorized user can delete their address."
-        );
-
         commandMemberAddressService.delete(loginId, addressId);
 
         return ResponseDto.<Void>builder().success(true).status(HttpStatus.OK).build();

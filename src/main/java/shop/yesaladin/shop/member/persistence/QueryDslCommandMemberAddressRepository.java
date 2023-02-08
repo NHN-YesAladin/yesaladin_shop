@@ -41,8 +41,7 @@ public class QueryDslCommandMemberAddressRepository implements CommandMemberAddr
 
         queryFactory.update(memberAddress)
                 .where(memberAddress.member.loginId.eq(loginId)
-                        .and(memberAddress.isDefault)
-                        .isTrue())
+                        .and(memberAddress.isDefault.isTrue()))
                 .set(memberAddress.isDefault, false);
     }
 }
