@@ -18,7 +18,7 @@ import shop.yesaladin.shop.member.dto.MemberWithdrawResponseDto;
 public interface CommandMemberService {
 
     /**
-     * 회원을 등록하기 위한 기능 입니다.
+     * 회원을 등록하기 위한 기능 입니다. 회원 등록 후 회원가입 쿠폰 요청 메시지를 발행합니다.
      *
      * @param createDto 회원 등록 요청 dto
      * @return 회원 등록 결과를 반환할 dto
