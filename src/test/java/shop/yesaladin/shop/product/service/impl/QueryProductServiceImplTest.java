@@ -24,7 +24,6 @@ import shop.yesaladin.shop.product.service.inter.QueryProductService;
 import shop.yesaladin.shop.publish.domain.model.Publish;
 import shop.yesaladin.shop.publish.domain.model.Publisher;
 import shop.yesaladin.shop.publish.dto.PublishResponseDto;
-import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
 import shop.yesaladin.shop.publish.service.inter.QueryPublishService;
 import shop.yesaladin.shop.tag.service.inter.QueryProductTagService;
 import shop.yesaladin.shop.writing.service.inter.QueryWritingService;
@@ -203,7 +202,7 @@ class QueryProductServiceImplTest {
         assertThat(response.get(0).getId()).isEqualTo(1L);
         assertThat(response.get(0).getIsbn()).isEqualTo(isbn);
 
-     }
+    }
 
     @Test
     @DisplayName("상품 전체 사용자용 전체 조회 성공_타입 있음")

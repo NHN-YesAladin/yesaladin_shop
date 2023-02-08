@@ -22,7 +22,6 @@ import shop.yesaladin.shop.product.dummy.DummyFile;
 import shop.yesaladin.shop.product.dummy.DummyProduct;
 import shop.yesaladin.shop.product.dummy.DummySubscribeProduct;
 import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
-import shop.yesaladin.shop.product.exception.ProductTypeCodeNotFoundException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;

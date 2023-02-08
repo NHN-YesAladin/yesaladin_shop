@@ -11,7 +11,6 @@ import shop.yesaladin.shop.publish.domain.model.Publisher;
 import shop.yesaladin.shop.publish.domain.repository.CommandPublishRepository;
 import shop.yesaladin.shop.publish.domain.repository.QueryPublishRepository;
 import shop.yesaladin.shop.publish.dto.PublishResponseDto;
-import shop.yesaladin.shop.publish.exception.PublishNotFoundException;
 import shop.yesaladin.shop.publish.service.inter.CommandPublishService;
 
 import java.time.Clock;

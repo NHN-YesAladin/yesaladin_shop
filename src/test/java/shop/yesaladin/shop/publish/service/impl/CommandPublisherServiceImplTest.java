@@ -11,7 +11,6 @@ import shop.yesaladin.shop.publish.domain.repository.CommandPublisherRepository;
 import shop.yesaladin.shop.publish.domain.repository.QueryPublisherRepository;
 import shop.yesaladin.shop.publish.dto.PublisherRequestDto;
 import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
-import shop.yesaladin.shop.publish.exception.PublisherAlreadyExistsException;
 import shop.yesaladin.shop.publish.exception.PublisherNotFoundException;
 import shop.yesaladin.shop.publish.service.inter.CommandPublisherService;
 

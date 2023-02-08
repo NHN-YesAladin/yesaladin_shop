@@ -15,7 +15,6 @@ import shop.yesaladin.shop.writing.domain.repository.CommandWritingRepository;
 import shop.yesaladin.shop.writing.domain.repository.QueryWritingRepository;
 import shop.yesaladin.shop.writing.dto.WritingResponseDto;
 import shop.yesaladin.shop.writing.dummy.DummyAuthor;
-import shop.yesaladin.shop.writing.exception.WritingNotFoundException;
 import shop.yesaladin.shop.writing.service.inter.CommandWritingService;
 
 import static org.assertj.core.api.Assertions.assertThat;

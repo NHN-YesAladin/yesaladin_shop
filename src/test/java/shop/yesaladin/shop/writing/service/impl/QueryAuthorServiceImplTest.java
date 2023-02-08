@@ -9,13 +9,11 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
-import shop.yesaladin.shop.member.dummy.MemberDummy;
 import shop.yesaladin.shop.writing.domain.model.Author;
 import shop.yesaladin.shop.writing.domain.repository.QueryAuthorRepository;
 import shop.yesaladin.shop.writing.dto.AuthorResponseDto;
 import shop.yesaladin.shop.writing.dto.AuthorsResponseDto;
 import shop.yesaladin.shop.writing.dummy.DummyAuthor;
-import shop.yesaladin.shop.writing.exception.AuthorNotFoundException;
 import shop.yesaladin.shop.writing.service.inter.QueryAuthorService;
 
 import java.util.ArrayList;
