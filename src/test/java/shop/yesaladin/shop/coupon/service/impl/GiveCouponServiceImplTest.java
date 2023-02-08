@@ -269,7 +269,7 @@ class GiveCouponServiceImplTest {
         Member member = Mockito.mock(Member.class);
         ValueOperations mockValueOperation = Mockito.mock(ValueOperations.class);
         Mockito.when(redisTemplate.opsForValue()).thenReturn(mockValueOperation);
-        Mockito.when(mockValueOperation.getAndDelete("requestId")).thenReturn("member");
+        Mockito.when(mockValueOperation.get("requestId")).thenReturn("member");
         Mockito.when(member.getLoginId()).thenReturn("member");
         Mockito.when(queryMemberService.findMemberByLoginId("member")).thenReturn(mockMemberDto);
         Mockito.when(mockMemberDto.toEntity()).thenReturn(member);
