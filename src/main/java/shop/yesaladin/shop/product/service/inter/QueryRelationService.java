@@ -1,7 +1,7 @@
 package shop.yesaladin.shop.product.service.inter;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.product.dto.RelationsResponseDto;
 
 /**
@@ -21,7 +21,7 @@ public interface QueryRelationService {
      * @author 이수정
      * @since 1.0
      */
-    Page<RelationsResponseDto> findAllForManager(Long productId, Pageable pageable);
+    PaginatedResponseDto<RelationsResponseDto> findAllForManager(Long productId, Pageable pageable);
 
     /**
      * 상품을 기준으로 상품 연관관계를 조회하여 조회된 모든 사용자용 상품 연관관계 Dto를 반환합니다.
@@ -32,5 +32,5 @@ public interface QueryRelationService {
      * @author 이수정
      * @since 1.0
      */
-    Page<RelationsResponseDto> findAll(Long productId, Pageable pageable);
+    PaginatedResponseDto<RelationsResponseDto> findAll(Long productId, Pageable pageable);
 }

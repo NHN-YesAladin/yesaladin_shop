@@ -26,10 +26,6 @@ jobs:
           java-version: "11"
           distribution: "temurin"
 
-      - uses: actions/checkout@v3
-      - run: "curl -H 'Authorization: Bearer ${{secrets.GIT_TOKEN}}' -H 'Accept: application/vnd.github.raw+json' -O ${{ secrets.GIT_APPLICATION_URL }}"
-      - run: cat "${{ secrets.CONFIG_FILE_NAME }}" > ./src/main/resources/application.yml
-
       - name: Build with Maven
         run: mvn -B package --file pom.xml
 
