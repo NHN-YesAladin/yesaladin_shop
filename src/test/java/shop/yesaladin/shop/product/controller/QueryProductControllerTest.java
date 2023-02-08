@@ -384,7 +384,7 @@ class QueryProductControllerTest {
 
     @WithMockUser
     @Test
-    @DisplayName("dfdfgdfg")
+    @DisplayName("연관 상품 등록을 위한 상품 검색 성공")
     void findProductRelationByTitle() throws Exception {
         //given
         String title = "title";
