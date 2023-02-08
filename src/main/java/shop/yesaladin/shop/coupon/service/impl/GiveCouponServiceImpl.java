@@ -217,6 +217,7 @@ public class GiveCouponServiceImpl implements GiveCouponService {
                                 .member(member)
                                 .couponCode(code)
                                 .couponGroupCode(coupon.getCouponGroupCode())
+                                .expirationDate(coupon.getExpirationDate())
                                 .build())
                         .forEach(commandMemberCouponRepository::save)
 
