@@ -4,7 +4,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.writing.domain.model.Author;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -24,15 +23,6 @@ public interface QueryAuthorRepository {
      * @since 1.0
      */
     Optional<Author> findById(Long id);
-
-    /**
-     * 저자를 전체 조회합니다.
-     *
-     * @return 조회된 저자 엔터티 List
-     * @author 이수정
-     * @since 1.0
-     */
-    List<Author> findAll();
 
     /**
      * 저자를 Paging하여 관리자용 전체 조회합니다.

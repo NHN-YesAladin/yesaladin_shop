@@ -7,14 +7,13 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.exception.ClientException;
-import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 import shop.yesaladin.shop.category.service.inter.QueryProductCategoryService;
+import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
 import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
@@ -25,16 +24,13 @@ import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
 import shop.yesaladin.shop.product.dto.ProductsResponseDto;
 import shop.yesaladin.shop.product.dto.SubscribeProductOrderResponseDto;
 import shop.yesaladin.shop.product.dto.ViewCartDto;
-import shop.yesaladin.shop.product.exception.ProductNotFoundException;
 import shop.yesaladin.shop.product.service.inter.QueryProductService;
 import shop.yesaladin.shop.publish.dto.PublishResponseDto;
-import shop.yesaladin.shop.publish.dto.PublishersResponseDto;
+import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
 import shop.yesaladin.shop.publish.service.inter.QueryPublishService;
-import shop.yesaladin.shop.tag.dto.ProductTagResponseDto;
-import shop.yesaladin.shop.tag.dto.TagsResponseDto;
+import shop.yesaladin.shop.tag.dto.TagResponseDto;
 import shop.yesaladin.shop.tag.service.inter.QueryProductTagService;
 import shop.yesaladin.shop.writing.dto.AuthorsResponseDto;
-import shop.yesaladin.shop.writing.dto.WritingResponseDto;
 import shop.yesaladin.shop.writing.service.inter.QueryWritingService;
 
 /**
@@ -48,8 +44,8 @@ import shop.yesaladin.shop.writing.service.inter.QueryWritingService;
 @Service
 public class QueryProductServiceImpl implements QueryProductService {
 
-    private final float PERCENT_DENOMINATOR_VALUE = 100;
-    private final long ROUND_OFF_VALUE = 10;
+    private static final float PERCENT_DENOMINATOR_VALUE = 100;
+    private static final long ROUND_OFF_VALUE = 10;
 
     private final QueryProductRepository queryProductRepository;
 
@@ -79,40 +75,38 @@ public class QueryProductServiceImpl implements QueryProductService {
      */
     @Transactional(readOnly = true)
     @Override
-    public ProductDetailResponseDto findById(long id) {
-        Product product = queryProductRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException(id));
+    public ProductDetailResponseDto findDetailProductById(long id) {
+        Product product = queryProductRepository.findProductById(id)
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.PRODUCT_NOT_FOUND,
+                        "Target product not found with id : " + id
+                ));
 
-        int rate = getRate(product);
-        long pointPrice = product.isGivenPoint() && product.getGivenPointRate() != 0
-                ? calcPointPrice(product) : 0;
-
+        int rate = getRateByProduct(product);
         PublishResponseDto publish = queryPublishService.findByProduct(product);
 
-        return new ProductDetailResponseDto(
-                product.getId(),
-                Objects.nonNull(product.getEbookFile()) && !product.getEbookFile()
-                        .getUrl()
-                        .isBlank(),
-                product.getTitle(),
-                findAuthorsByProduct(product),
-                publish.getPublisher().getName(),
-                product.getThumbnailFile().getUrl(),
-                product.getActualPrice(),
-                calcSellingPrice(product, rate),
-                rate,
-                pointPrice,
-                product.getGivenPointRate(),
-                publish.getPublishedDate().toString(),
-                product.getIsbn(),
-                product.isSubscriptionAvailable(),
-                product.getSubscribeProduct().getISSN(),
-                product.getContents(),
-                product.getDescription(),
-                product.getQuantity() > 0 && !product.isForcedOutOfStock() && product.isSale()
-                        && !product.isDeleted(),
-                queryProductCategoryService.findCategoriesByProduct(product)
-        );
+        return ProductDetailResponseDto.builder()
+                .id(product.getId())
+                .isbn(product.getIsbn())
+                .title(product.getTitle())
+                .contents(product.getContents())
+                .description(product.getDescription())
+                .thumbnailFileUrl(product.getThumbnailFile().getUrl())
+                .authors(findAuthorsByProduct(product))
+                .publisher(PublisherResponseDto.getPublisherFromPublish(publish))
+                .publishedDate(publish.getPublishedDate().toString())
+                .tags(findTagsByProduct(product))
+                .categories(queryProductCategoryService.findCategoriesByProduct(product))
+                .actualPrice(product.getActualPrice())
+                .sellingPrice(calcSellingPrice(product.getActualPrice(), rate))
+                .discountRate(rate)
+                .pointPrice(getPointPrice(product))
+                .pointRate(product.getGivenPointRate())
+                .isEbook(isEbook(product))
+                .isSubscriptionAvailable(product.isSubscriptionAvailable())
+                .issn(product.getSubscribeProduct().getISSN())
+                .onSale(isOnSale(product))
+                .build();
     }
 
     /**
@@ -121,89 +115,38 @@ public class QueryProductServiceImpl implements QueryProductService {
     @Transactional(readOnly = true)
     @Override
     public ProductModifyDto findProductByIdForForm(long id) {
-        Product product = queryProductRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException(id));
-
-        List<WritingResponseDto> writings = queryWritingService.findByProduct(product);
-        List<AuthorsResponseDto> authors = new ArrayList<>();
-        for (WritingResponseDto writing : writings) {
-            authors.add(new AuthorsResponseDto(
-                    writing.getAuthor().getId(),
-                    writing.getAuthor().getName(),
-                    Objects.isNull(writing.getAuthor().getMember()) ? null
-                            : writing.getAuthor().getMember().getLoginId()
-            ));
-        }
+        Product product = queryProductRepository.findProductById(id)
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.PRODUCT_NOT_FOUND,
+                        "Product not found with id : " + id
+                ));
 
         PublishResponseDto publish = queryPublishService.findByProduct(product);
 
-        List<ProductTagResponseDto> productTags = queryProductTagService.findByProduct(product);
-        List<TagsResponseDto> tags = new ArrayList<>();
-        for (ProductTagResponseDto productTag : productTags) {
-            tags.add(new TagsResponseDto(
-                    productTag.getTag().getId(),
-                    productTag.getTag().getName()
-            ));
-        }
-
-        List<CategoryResponseDto> categories = queryProductCategoryService.findCategoriesByProduct(
-                product);
-
-        return new ProductModifyDto(
-                product.getIsbn(),
-                product.getThumbnailFile().getUrl(),
-                product.getTitle(),
-                product.getContents(),
-                product.getDescription(),
-                Objects.isNull(product.getEbookFile()) ? null : product.getEbookFile().getUrl(),
-                authors,
-                new PublishersResponseDto(
-                        publish.getPublisher().getId(),
-                        publish.getPublisher().getName()
-                ),
-                publish.getPublishedDate().toString(),
-                product.getProductTypeCode().name(),
-                tags,
-                product.getActualPrice(),
-                product.isSeparatelyDiscount(),
-                product.getDiscountRate(),
-                product.isGivenPoint(),
-                product.getGivenPointRate(),
-                product.getProductSavingMethodCode().name(),
-                product.isSubscriptionAvailable(),
-                product.getSubscribeProduct().getISSN(),
-                product.getQuantity(),
-                product.getPreferentialShowRanking(),
-                categories
-        );
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Transactional(readOnly = true)
-    @Override
-    public Page<ProductsResponseDto> findAllForManager(Pageable pageable, Integer typeId) {
-        Page<Product> page = getPaginatedProductsForManager(
-                pageable,
-                typeId
-        );
-
-        return getProductResponses(pageable, page);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Transactional(readOnly = true)
-    @Override
-    public Page<ProductsResponseDto> findAll(Pageable pageable, Integer typeId) {
-        Page<Product> page = getPaginatedProducts(
-                pageable,
-                typeId
-        );
-
-        return getProductResponses(pageable, page);
+        return ProductModifyDto.builder()
+                .isbn(product.getIsbn())
+                .thumbnailFile(product.getThumbnailFile().getUrl())
+                .title(product.getTitle())
+                .contents(product.getContents())
+                .description(product.getDescription())
+                .ebookFileUrl(isEbook(product) ? product.getEbookFile().getUrl() : null)
+                .authors(findAuthorsByProduct(product))
+                .publisher(PublisherResponseDto.getPublisherFromPublish(publish))
+                .publishedDate(publish.getPublishedDate().toString())
+                .tags(findTagsByProduct(product))
+                .categories(queryProductCategoryService.findCategoriesByProduct(product))
+                .actualPrice(product.getActualPrice())
+                .isSeparatelyDiscount(product.isSeparatelyDiscount())
+                .discountRate(product.getDiscountRate())
+                .isGivenPoint(product.isGivenPoint())
+                .givenPointRate(product.getGivenPointRate())
+                .productTypeCode(product.getProductTypeCode().name())
+                .productSavingMethodCode(product.getProductSavingMethodCode().name())
+                .isSubscriptionAvailable(product.isSubscriptionAvailable())
+                .issn(product.getSubscribeProduct().getISSN())
+                .quantity(product.getQuantity())
+                .preferentialShowRanking(product.getPreferentialShowRanking())
+                .build();
     }
 
     /**
@@ -215,67 +158,148 @@ public class QueryProductServiceImpl implements QueryProductService {
         List<ViewCartDto> viewCart = new ArrayList<>();
 
         cart.keySet().stream()
-                .map(key -> queryProductRepository.findById(Long.valueOf(key))
-                        .orElseThrow(() -> new ProductNotFoundException(Long.valueOf(key))))
+                .map(key -> queryProductRepository.findProductById(Long.parseLong(key))
+                        .orElseThrow(() -> new ClientException(
+                                ErrorCode.PRODUCT_NOT_FOUND,
+                                "Product not found with id : " + Long.parseLong(key)
+                        )))
                 .forEach(product -> {
-                    int rate = getRate(product);
-                    long pointPrice = product.isGivenPoint() && product.getGivenPointRate() != 0
-                            ? calcPointPrice(product) : 0;
+                    int rate = getRateByProduct(product);
 
-                    viewCart.add(new ViewCartDto(
-                            product.getId(),
-                            Integer.parseInt(cart.get(product.getId().toString())),
-                            product.getIsbn(),
-                            product.getThumbnailFile().getUrl(),
-                            product.getTitle(),
-                            product.getActualPrice(),
-                            calcSellingPrice(product, rate),
-                            rate,
-                            pointPrice,
-                            product.isForcedOutOfStock() || product.getQuantity() <= 0,
-                            product.isSale(),
-                            product.isDeleted(),
-                            !Objects.isNull(product.getEbookFile()),
-                            product.isSubscriptionAvailable()
-                    ));
+                    viewCart.add(ViewCartDto.builder()
+                            .id(product.getId())
+                            .quantity(Integer.parseInt(cart.get(product.getId().toString())))
+                            .thumbnailFileUrl(product.getThumbnailFile().getUrl())
+                            .isbn(product.getIsbn())
+                            .title(product.getTitle())
+                            .actualPrice(product.getActualPrice())
+                            .sellingPrice(calcSellingPrice(product.getActualPrice(), rate))
+                            .discountRate(rate)
+                            .pointPrice(getPointPrice(product))
+                            .isOutOfStack(product.isForcedOutOfStock() || product.getQuantity() <= 0)
+                            .isSale(product.isSale())
+                            .isDeleted(product.isDeleted())
+                            .isEbook(isEbook(product))
+                            .isSubscribeProduct(product.isSubscriptionAvailable())
+                            .build());
                 });
 
         return viewCart;
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public PaginatedResponseDto<ProductsResponseDto> findAll(Pageable pageable, Integer typeId) {
+        Page<Product> page;
+        if (Objects.isNull(typeId)) {
+            page = queryProductRepository.findAll(pageable);
+        } else {
+            page = queryProductRepository.findAllByTypeId(pageable, typeId);
+        }
+        return getProductPaginatedResponses(page);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public PaginatedResponseDto<ProductsResponseDto> findAllForManager(Pageable pageable, Integer typeId) {
+        Page<Product> page;
+        if (Objects.isNull(typeId)) {
+            page = queryProductRepository.findAllForManager(pageable);
+        } else {
+            page = queryProductRepository.findAllByTypeIdForManager(pageable, typeId);
+        }
+        return getProductPaginatedResponses(page);
+    }
+
+    /**
      * 전체 조회된 page 객체를 바탕으로 전체 조회 화면에 내보낼 정보를 담은 dto page 객체를 반환합니다.
      *
-     * @param pageable 페이징 처리를 위한 객체
-     * @param page     페이징 전체 조회된 객체
-     * @return dto page 객체
+     * @param page 페이징 전체 조회된 객체
+     * @return PaginatedResponseDto
+     * @author 이수정
+     * @since 1.0
      */
-    private Page<ProductsResponseDto> getProductResponses(Pageable pageable, Page<Product> page) {
+    private PaginatedResponseDto<ProductsResponseDto> getProductPaginatedResponses(Page<Product> page) {
         List<ProductsResponseDto> products = new ArrayList<>();
+
         for (Product product : page.getContent()) {
-            int rate = getRate(product);
+            int rate = getRateByProduct(product);
             PublishResponseDto publish = queryPublishService.findByProduct(product);
 
-            products.add(new ProductsResponseDto(
-                    product.getId(),
-                    product.getTitle(),
-                    findAuthorsByProduct(product),
-                    publish.getPublisher().getName(),
-                    publish.getPublishedDate().toString(),
-                    calcSellingPrice(product, rate),
-                    rate,
-                    product.getQuantity(),
-                    product.isSale(),
-                    product.isForcedOutOfStock(),
-                    product.isSale() && !product.isDeleted(),
-                    product.isDeleted(),
-                    product.getThumbnailFile().getUrl(),
-                    findTagsByProduct(product),
-                    product.getEbookFile() != null ? product.getEbookFile().getUrl() : null
-            ));
+            products.add(ProductsResponseDto.builder()
+                    .id(product.getId())
+                    .title(product.getTitle())
+                    .authors(findAuthorsByProduct(product))
+                    .publisher(PublisherResponseDto.getPublisherFromPublish(publish))
+                    .publishedDate(publish.getPublishedDate().toString())
+                    .sellingPrice(calcSellingPrice(product.getActualPrice(), rate))
+                    .discountRate(rate)
+                    .quantity(product.getQuantity())
+                    .isSale(product.isSale())
+                    .isForcedOutOfStock(product.isForcedOutOfStock())
+                    .isShown(product.isSale() && !product.isDeleted())
+                    .isDeleted(product.isDeleted())
+                    .thumbnailFileUrl(product.getThumbnailFile().getUrl())
+                    .tags(findTagsByProduct(product))
+                    .ebookFileUrl(isEbook(product) ? product.getEbookFile().getUrl() : null)
+                    .isEbook(isEbook(product))
+                    .isSubscribeProduct(product.isSubscriptionAvailable())
+                    .build());
         }
 
-        return new PageImpl<>(products, pageable, page.getTotalElements());
+        return PaginatedResponseDto.<ProductsResponseDto>builder()
+                .totalPage(page.getTotalPages())
+                .currentPage(page.getNumber())
+                .totalDataCount(page.getTotalElements())
+                .dataList(products)
+                .build();
+    }
+
+    /**
+     * 상품의 판매여부를 반환합니다.
+     *
+     * @param product 판매여부를 얻을 상품
+     * @return 상품의 판매여부
+     * @author 이수정
+     * @since 1.0
+     */
+    private boolean isOnSale(Product product) {
+        return product.getQuantity() > 0 && !product.isForcedOutOfStock() && product.isSale() && !product.isDeleted();
+    }
+
+    /**
+     * 상품이 eBook인지를 판단하여 반환합니다.
+     *
+     * @param product 판단할 상품
+     * @return eBook 여부
+     * @author 이수정
+     * @since 1.0
+     */
+    private boolean isEbook(Product product) {
+        return Objects.nonNull(product.getEbookFile()) && !product.getEbookFile().getUrl().isBlank();
+    }
+
+    /**
+     * 상품의 정가, 할인율을 바탕으로 판매가를 계산해 반환합니다.
+     *
+     * @param actualPrice 상품의 정가
+     * @param rate        상품의 할인율(전체 / 개별)
+     * @return 계산된 상품의 판매가
+     * @author 이수정
+     * @since 1.0
+     */
+    private long calcSellingPrice(long actualPrice, int rate) {
+        if (rate > 0) {
+            return Math.round((actualPrice - actualPrice * rate / PERCENT_DENOMINATOR_VALUE)
+                    / ROUND_OFF_VALUE) * ROUND_OFF_VALUE;
+        }
+        return actualPrice;
     }
 
     /**
@@ -286,73 +310,23 @@ public class QueryProductServiceImpl implements QueryProductService {
      * @author 이수정
      * @since 1.0
      */
-    private int getRate(Product product) {
+    private int getRateByProduct(Product product) {
         return product.isSeparatelyDiscount()
                 ? product.getDiscountRate() : product.getTotalDiscountRate().getDiscountRate();
     }
 
     /**
-     * 상품의 포인트 금액을 계산하여 반환합니다.
+     * 상품의 포인트를 반환합니다.
      *
-     * @param product 계산할 상품
-     * @return 계산된 상품의 포인트 금액
+     * @param product 포인트를 얻을 상품
+     * @return 상품의 포인트
      * @author 이수정
      * @since 1.0
      */
-    private long calcPointPrice(Product product) {
-        return Math.round(
-                (product.getActualPrice() * product.getGivenPointRate() / PERCENT_DENOMINATOR_VALUE)
-                        / ROUND_OFF_VALUE) * ROUND_OFF_VALUE;
-    }
-
-    /**
-     * 상품 유형에 따라 알맞은 전체 사용자용 전체 조회를 진행하고 Paging된 조회 결과를 반환합니다.
-     *
-     * @param pageable page 와 size를 자동으로 parsing 하여줌
-     * @param typeId   상품 유형 Id
-     * @return 전체 조회된 Page 객체
-     * @author 이수정
-     * @since 1.0
-     */
-    private Page<Product> getPaginatedProducts(Pageable pageable, Integer typeId) {
-        if (Objects.isNull(typeId)) {
-            return queryProductRepository.findAll(pageable);
-        }
-        return queryProductRepository.findAllByTypeId(pageable, typeId);
-    }
-
-    /**
-     * 상품 유형에 따라 알맞은 관리자용 전체 조회를 진행하고 Paging된 조회 결과를 반환합니다.
-     *
-     * @param pageable page 와 size를 자동으로 parsing 하여줌
-     * @param typeId   상품 유형 Id
-     * @return 전체 조회된 Page 객체
-     * @author 이수정
-     * @since 1.0
-     */
-    private Page<Product> getPaginatedProductsForManager(Pageable pageable, Integer typeId) {
-        if (Objects.isNull(typeId)) {
-            return queryProductRepository.findAllForManager(pageable);
-        }
-        return queryProductRepository.findAllByTypeIdForManager(pageable, typeId);
-    }
-
-    /**
-     * 상품의 정가, 할인율을 바탕으로 판매가를 계산해 반환합니다.
-     *
-     * @param product 정가를 계산할 상품
-     * @param rate    상품의 할인율(전체 / 개별)
-     * @return 계산된 상품의 판매가
-     * @author 이수정
-     * @since 1.0
-     */
-    private long calcSellingPrice(Product product, int rate) {
-        if (rate == 0) {
-            return product.getActualPrice();
-        }
-        return Math.round((product.getActualPrice()
-                - product.getActualPrice() * rate / PERCENT_DENOMINATOR_VALUE) / ROUND_OFF_VALUE)
-                * ROUND_OFF_VALUE;
+    private long getPointPrice(Product product) {
+        return product.isGivenPoint() && product.getGivenPointRate() != 0 ?
+                Math.round((product.getActualPrice() * product.getGivenPointRate() / PERCENT_DENOMINATOR_VALUE)
+                        / ROUND_OFF_VALUE) * ROUND_OFF_VALUE : 0;
     }
 
     /**
@@ -363,9 +337,9 @@ public class QueryProductServiceImpl implements QueryProductService {
      * @author 이수정
      * @since 1.0
      */
-    private List<String> findAuthorsByProduct(Product product) {
+    private List<AuthorsResponseDto> findAuthorsByProduct(Product product) {
         return queryWritingService.findByProduct(product).stream()
-                .map(writing -> writing.getAuthor().getName())
+                .map(AuthorsResponseDto::getAuthorFromWriting)
                 .collect(Collectors.toList());
     }
 
@@ -377,9 +351,9 @@ public class QueryProductServiceImpl implements QueryProductService {
      * @author 이수정
      * @since 1.0
      */
-    private List<String> findTagsByProduct(Product product) {
+    private List<TagResponseDto> findTagsByProduct(Product product) {
         return queryProductTagService.findByProduct(product).stream()
-                .map(tag -> tag.getTag().getName())
+                .map(TagResponseDto::getTagFromProductTag)
                 .collect(Collectors.toList());
     }
 

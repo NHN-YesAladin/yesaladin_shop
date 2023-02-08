@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
+import org.elasticsearch.monitor.os.OsStats.Mem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -170,7 +171,6 @@ class QueryOrderServiceImplTest {
                     i,
                     OrderCode.MEMBER_ORDER
             ));
-
         }
 
         Page<OrderSummaryResponseDto> expectedValue = PageableExecutionUtils.getPage(
@@ -188,10 +188,13 @@ class QueryOrderServiceImplTest {
                         clock), queryDto.getEndDateOrDefaultValue(clock), expectedMemberId, pageable))
                 .thenReturn(expectedValue);
 
+        Member member = DummyMember.memberWithId();
+        Mockito.when(queryMemberService.findByLoginId(any())).thenReturn(member);
+
         // when
         Page<OrderSummaryResponseDto> actual = service.getOrderListInPeriodByMemberId(
                 queryDto,
-                expectedMemberId,
+                member.getLoginId(),
                 pageable
         );
 
@@ -204,6 +207,7 @@ class QueryOrderServiceImplTest {
                         expectedMemberId,
                         pageable
                 );
+        Mockito.verify(queryMemberService, Mockito.times(1)).findByLoginId(any());
     }
 
     @Test
@@ -382,11 +386,14 @@ class QueryOrderServiceImplTest {
 
         Pageable pageable = PageRequest.of(1, 10);
 
+        Member member = DummyMember.memberWithId();
+        Mockito.when(queryMemberService.findByLoginId(any())).thenReturn(member);
+
         // when
         // then
         Assertions.assertThatThrownBy(() -> service.getOrderListInPeriodByMemberId(
                         queryDto,
-                        expectedMemberId,
+                        member.getLoginId(),
                         pageable
                 ))
                 .isInstanceOf(InvalidPeriodConditionException.class);
@@ -404,11 +411,14 @@ class QueryOrderServiceImplTest {
 
         Pageable pageable = PageRequest.of(1, 10);
 
+        Member member = DummyMember.memberWithId();
+        Mockito.when(queryMemberService.findByLoginId(any())).thenReturn(member);
+
         // when
         // then
         Assertions.assertThatThrownBy(() -> service.getOrderListInPeriodByMemberId(
                         queryDto,
-                        expectedMemberId,
+                        member.getLoginId(),
                         pageable
                 ))
                 .isInstanceOf(InvalidPeriodConditionException.class);
@@ -426,11 +436,14 @@ class QueryOrderServiceImplTest {
 
         Pageable pageable = PageRequest.of(1, 10);
 
+        Member member = DummyMember.memberWithId();
+        Mockito.when(queryMemberService.findByLoginId(any())).thenReturn(member);
+
         // when
         // then
         Assertions.assertThatThrownBy(() -> service.getOrderListInPeriodByMemberId(
                         queryDto,
-                        expectedMemberId,
+                        member.getLoginId(),
                         pageable
                 ))
                 .isInstanceOf(InvalidPeriodConditionException.class);
@@ -448,11 +461,14 @@ class QueryOrderServiceImplTest {
 
         Pageable pageable = PageRequest.of(1, 10);
 
+        Member member = DummyMember.memberWithId();
+        Mockito.when(queryMemberService.findByLoginId(any())).thenReturn(member);
+
         // when
         // then
         Assertions.assertThatThrownBy(() -> service.getOrderListInPeriodByMemberId(
                         queryDto,
-                        expectedMemberId,
+                        member.getLoginId(),
                         pageable
                 ))
                 .isInstanceOf(InvalidPeriodConditionException.class);
@@ -468,11 +484,14 @@ class QueryOrderServiceImplTest {
                 .thenReturn(1L);
         Pageable pageable = PageRequest.of(2, 10);
 
+        Member member = DummyMember.memberWithId();
+        Mockito.when(queryMemberService.findByLoginId(any())).thenReturn(member);
+
         // when
         // then
         Assertions.assertThatThrownBy(() -> service.getOrderListInPeriodByMemberId(
                         queryDto,
-                        expectedMemberId,
+                        member.getLoginId(),
                         pageable
                 ))
                 .isInstanceOf(PageOffsetOutOfBoundsException.class);

@@ -4,13 +4,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.product.dummy.DummyPublisher;
 import shop.yesaladin.shop.publish.domain.model.Publisher;
 import shop.yesaladin.shop.publish.domain.repository.CommandPublisherRepository;
 import shop.yesaladin.shop.publish.domain.repository.QueryPublisherRepository;
 import shop.yesaladin.shop.publish.dto.PublisherRequestDto;
 import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
-import shop.yesaladin.shop.publish.exception.PublisherAlreadyExistsException;
 import shop.yesaladin.shop.publish.exception.PublisherNotFoundException;
 import shop.yesaladin.shop.publish.service.inter.CommandPublisherService;
 
@@ -41,36 +41,6 @@ class CommandPublisherServiceImplTest {
     }
 
     @Test
-    @DisplayName("출판사 등록 성공")
-    void register_success() {
-        // given
-        Publisher publisher = DummyPublisher.dummy();
-
-        when(commandPublisherRepository.save(any())).thenReturn(publisher);
-
-        // when
-        PublisherResponseDto response = service.register(publisher);
-
-        // then
-        assertThat(response.getName()).isEqualTo(publisher.getName());
-
-        verify(commandPublisherRepository, times(1)).save(publisher);
-    }
-
-    @Test
-    @DisplayName("출판사 등록 실패_이미 존재하는 출판사명인 경우 예외 발생")
-    void register_throwPublisherAlreadyExistsException() {
-        // given
-        Publisher publisher = DummyPublisher.dummy();
-        Mockito.when(queryPublisherRepository.existsByName(anyString())).thenReturn(true);
-
-        // when
-        assertThatThrownBy(() -> service.register(publisher)).isInstanceOf(PublisherAlreadyExistsException.class);
-
-        verify(queryPublisherRepository, times(1)).existsByName(anyString());
-    }
-
-    @Test
     @DisplayName("출판사 생성 후 등록 성공")
     void create_success() {
         // given
@@ -96,7 +66,7 @@ class CommandPublisherServiceImplTest {
         Mockito.when(queryPublisherRepository.existsByName(anyString())).thenReturn(true);
 
         // when
-        assertThatThrownBy(() -> service.create(createDto)).isInstanceOf(PublisherAlreadyExistsException.class);
+        assertThatThrownBy(() -> service.create(createDto)).isInstanceOf(ClientException.class);
 
         verify(queryPublisherRepository, times(1)).existsByName(anyString());
     }
@@ -141,7 +111,7 @@ class CommandPublisherServiceImplTest {
         Mockito.when(queryPublisherRepository.existsByName(anyString())).thenReturn(true);
 
         // when
-        assertThatThrownBy(() -> service.modify(id, modifyDto)).isInstanceOf(PublisherAlreadyExistsException.class);
+        assertThatThrownBy(() -> service.modify(id, modifyDto)).isInstanceOf(ClientException.class);
 
         verify(queryPublisherRepository, times(1)).findById(anyLong());
         verify(queryPublisherRepository, times(1)).existsByName(anyString());

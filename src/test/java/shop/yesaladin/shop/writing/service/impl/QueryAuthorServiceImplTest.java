@@ -7,13 +7,13 @@ import org.mockito.Mockito;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import shop.yesaladin.shop.member.dummy.MemberDummy;
+import shop.yesaladin.common.exception.ClientException;
+import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.writing.domain.model.Author;
 import shop.yesaladin.shop.writing.domain.repository.QueryAuthorRepository;
 import shop.yesaladin.shop.writing.dto.AuthorResponseDto;
 import shop.yesaladin.shop.writing.dto.AuthorsResponseDto;
 import shop.yesaladin.shop.writing.dummy.DummyAuthor;
-import shop.yesaladin.shop.writing.exception.AuthorNotFoundException;
 import shop.yesaladin.shop.writing.service.inter.QueryAuthorService;
 
 import java.util.ArrayList;
@@ -65,30 +65,7 @@ class QueryAuthorServiceImplTest {
         Mockito.when(queryAuthorRepository.findById(id)).thenReturn(Optional.ofNullable(null));
 
         // when then
-        assertThatThrownBy(() -> service.findById(id)).isInstanceOf(AuthorNotFoundException.class);
-    }
-
-    @Test
-    @DisplayName("저자 전체 조회 성공")
-    void findAll() {
-        // given
-        String name1 = "저자1";
-        String name2 = "저자2";
-
-        List<Author> authors = List.of(
-                DummyAuthor.dummy(name1, MemberDummy.dummyWithId(1L)),
-                DummyAuthor.dummy(name2, null)
-        );
-
-        Mockito.when(queryAuthorRepository.findAll()).thenReturn(authors);
-
-        // when
-        List<AuthorsResponseDto> response = service.findAll();
-
-        // then
-        assertThat(response.size()).isEqualTo(2);
-        assertThat(response.get(0).getName()).isEqualTo(name1);
-        assertThat(response.get(1).getName()).isEqualTo(name2);
+        assertThatThrownBy(() -> service.findById(id)).isInstanceOf(ClientException.class);
     }
 
     @Test
@@ -110,11 +87,11 @@ class QueryAuthorServiceImplTest {
         Mockito.when(queryAuthorRepository.findAllForManager(any())).thenReturn(page);
 
         // when
-        Page<AuthorsResponseDto> response = service.findAllForManager(PageRequest.of(0, 5));
+        PaginatedResponseDto<AuthorsResponseDto> response = service.findAllForManager(PageRequest.of(0, 5));
 
         // then
-        assertThat(response.getTotalElements()).isEqualTo(10);
-        assertThat(response.getContent().get(0).getId()).isEqualTo(1L);
-        assertThat(response.getContent().get(9).getId()).isEqualTo(10L);
+        assertThat(response.getTotalDataCount()).isEqualTo(10);
+        assertThat(response.getDataList().get(0).getId()).isEqualTo(1L);
+        assertThat(response.getDataList().get(9).getId()).isEqualTo(10L);
     }
 }

@@ -34,6 +34,7 @@ import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.dto.MemberDto;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 
+@SuppressWarnings("unchecked")
 class GiveCouponServiceImplTest {
 
     private GatewayProperties gatewayProperties;
@@ -278,7 +279,7 @@ class GiveCouponServiceImplTest {
 
         // then
         ArgumentCaptor<MemberCoupon> argumentCaptor = ArgumentCaptor.forClass(MemberCoupon.class);
-        Mockito.verify(mockValueOperation, Mockito.times(1)).getAndDelete("requestId");
+        Mockito.verify(mockValueOperation, Mockito.times(1)).get("requestId");
         Mockito.verify(queryMemberService, Mockito.times(1)).findMemberByLoginId("member");
         Mockito.verify(commandMemberCouponRepository, Mockito.times(1))
                 .save(argumentCaptor.capture());
@@ -329,7 +330,7 @@ class GiveCouponServiceImplTest {
                 .build();
         ValueOperations mockValueOperation = Mockito.mock(ValueOperations.class);
         Mockito.when(redisTemplate.opsForValue()).thenReturn(mockValueOperation);
-        Mockito.when(mockValueOperation.getAndDelete("requestId")).thenReturn(null);
+        Mockito.when(mockValueOperation.get("requestId")).thenReturn(null);
 
         // when
         // then

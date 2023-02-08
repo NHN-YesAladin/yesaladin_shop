@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.common.dto.ResponseDto;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.common.aspect.annotation.LoginId;
 import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
@@ -80,25 +81,6 @@ public class QueryOrderController {
                 .success(true)
                 .status(HttpStatus.OK)
                 .data(response)
-                .build();
-    }
-
-    @GetMapping("/{memberId}")
-    public PaginatedResponseDto<OrderSummaryResponseDto> getAllOrdersByMemberId(
-            @PathVariable Long memberId,
-            @RequestBody PeriodQueryRequestDto queryDto,
-            Pageable pageable
-    ) {
-        Page<OrderSummaryResponseDto> data = queryOrderService.getOrderListInPeriodByMemberId(
-                queryDto,
-                memberId,
-                pageable
-        );
-        return PaginatedResponseDto.<OrderSummaryResponseDto>builder()
-                .currentPage(data.getNumber())
-                .totalPage(data.getTotalPages())
-                .totalDataCount(data.getTotalElements())
-                .dataList(data.getContent())
                 .build();
     }
 }

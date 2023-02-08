@@ -21,6 +21,7 @@ import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.common.exception.PageOffsetOutOfBoundsException;
 import shop.yesaladin.shop.coupon.dto.MemberCouponSummaryDto;
 import shop.yesaladin.shop.coupon.service.inter.QueryMemberCouponService;
+import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.dto.MemberOrderSheetResponseDto;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.order.domain.model.Order;
@@ -193,20 +194,20 @@ public class QueryOrderServiceImpl implements QueryOrderService {
     @Transactional(readOnly = true)
     public Page<OrderSummaryResponseDto> getOrderListInPeriodByMemberId(
             PeriodQueryRequestDto queryDto,
-            long memberId,
+            String loginId,
             Pageable pageable
     ) {
-        checkValidMemberId(memberId);
+        Member foundMember = queryMemberService.findByLoginId(loginId);
         queryDto.validate(clock);
 
         LocalDate startDate = queryDto.getStartDateOrDefaultValue(clock);
         LocalDate endDate = queryDto.getEndDateOrDefaultValue(clock);
 
-        checkRequestedOffsetInBounds(startDate, endDate, memberId, pageable);
+        checkRequestedOffsetInBounds(startDate, endDate, foundMember.getId(), pageable);
         return queryOrderRepository.findOrdersInPeriodByMemberId(
                 startDate,
                 endDate,
-                memberId,
+                foundMember.getId(),
                 pageable
         );
     }
