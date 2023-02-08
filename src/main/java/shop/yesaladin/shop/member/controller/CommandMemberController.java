@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,7 +18,6 @@ import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.common.aspect.annotation.LoginId;
-import shop.yesaladin.shop.common.utils.AuthorityUtils;
 import shop.yesaladin.shop.member.dto.MemberBlockRequestDto;
 import shop.yesaladin.shop.member.dto.MemberBlockResponseDto;
 import shop.yesaladin.shop.member.dto.MemberCreateRequestDto;
@@ -123,7 +121,6 @@ public class CommandMemberController {
      * 회원 차단 해지를 위한 Put 요청을 처리하는 기능입니다.
      *
      * @param loginId 차단 해지할 회원의 아이디
-     * @param loginId 회원의 아이디
      * @return 차단 해지된 회원 정보
      * @author 최예린
      * @since 1.0
