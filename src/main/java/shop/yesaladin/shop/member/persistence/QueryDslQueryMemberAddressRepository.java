@@ -54,6 +54,20 @@ public class QueryDslQueryMemberAddressRepository implements QueryMemberAddressR
      * {@inheritDoc}
      */
     @Override
+    public List<MemberAddress> findByLoginId(String loginId) {
+        QMemberAddress memberAddress = QMemberAddress.memberAddress;
+
+        return queryFactory.select(memberAddress)
+                .from(memberAddress)
+                .where(memberAddress.member.loginId.eq(loginId)
+                        .and(memberAddress.isDeleted.isFalse()))
+                .fetch();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Optional<MemberAddress> findByLoginIdAndMemberAddressId(
             String loginId,
             long memberAddressId
@@ -102,7 +116,7 @@ public class QueryDslQueryMemberAddressRepository implements QueryMemberAddressR
                 .from(memberAddress)
                 .where(memberAddress.member.loginId.eq(loginId)
                         .and(memberAddress.isDeleted.isFalse()))
-                .orderBy(memberAddress.isDefault.asc())
+                .orderBy(memberAddress.isDefault.desc())
                 .fetch();
     }
 

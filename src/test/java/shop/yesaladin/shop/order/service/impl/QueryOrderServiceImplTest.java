@@ -33,6 +33,7 @@ import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.member.dto.MemberOrderSheetResponseDto;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
+import shop.yesaladin.shop.member.service.inter.QueryMemberAddressService;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.order.domain.model.MemberOrder;
 import shop.yesaladin.shop.order.domain.model.Order;
@@ -56,6 +57,7 @@ class QueryOrderServiceImplTest {
     private QueryOrderServiceImpl service;
     private QueryOrderRepository repository;
     private QueryMemberService queryMemberService;
+    private QueryMemberAddressService queryMemberAddressService;
     private QueryPointHistoryService queryPointHistoryService;
     private QueryProductService queryProductService;
     private QueryMemberCouponService queryMemberCouponService;
@@ -73,12 +75,14 @@ class QueryOrderServiceImplTest {
         queryPointHistoryService = Mockito.mock(QueryPointHistoryService.class);
         queryProductService = Mockito.mock(QueryProductService.class);
         repository = Mockito.mock(QueryOrderRepository.class);
+        queryMemberAddressService = Mockito.mock(QueryMemberAddressService.class);
         queryMemberService = Mockito.mock(QueryMemberService.class);
         queryMemberCouponService = Mockito.mock(QueryMemberCouponService.class);
 
         service = new QueryOrderServiceImpl(
                 repository,
                 queryMemberService,
+                queryMemberAddressService,
                 queryPointHistoryService,
                 queryProductService,
                 queryMemberCouponService,
@@ -361,7 +365,7 @@ class QueryOrderServiceImplTest {
         List<String> isbn = new ArrayList<>();
         List<Integer> quantity = new ArrayList<>();
         OrderSheetRequestDto request = new OrderSheetRequestDto(isbn, quantity);
-        MemberOrderSheetResponseDto response = new MemberOrderSheetResponseDto(name, phoneNumber, address, 7);
+        MemberOrderSheetResponseDto response = new MemberOrderSheetResponseDto(name, phoneNumber, 7);
 
         Mockito.when(queryPointHistoryService.getMemberPoint(loginId)).thenReturn(amount);
         Mockito.when(queryProductService.getByOrderProducts(any())).thenReturn(new ArrayList<>());
@@ -373,7 +377,6 @@ class QueryOrderServiceImplTest {
         //then
         Assertions.assertThat(result.getName()).isEqualTo(name);
         Assertions.assertThat(result.getPhoneNumber()).isEqualTo(phoneNumber);
-        Assertions.assertThat(result.getAddress()).isEqualTo(address);
         Assertions.assertThat(result.getPoint()).isEqualTo(amount);
         Assertions.assertThat(result.getOrderProducts()).hasSize(0);
     }

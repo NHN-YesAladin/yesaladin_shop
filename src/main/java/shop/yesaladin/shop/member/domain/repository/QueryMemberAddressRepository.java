@@ -3,7 +3,6 @@ package shop.yesaladin.shop.member.domain.repository;
 import java.util.List;
 import java.util.Optional;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
-import shop.yesaladin.shop.member.dto.MemberAddressOrderSheetResponseDto;
 import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
 
 /**
@@ -33,6 +32,15 @@ public interface QueryMemberAddressRepository {
      * @since 1.0
      */
     Optional<MemberAddress> findById(long id);
+
+    /**
+     * 회원의 배송지 리스트를 조회 합니다.
+     *
+     * @param loginId 회원의 아이디
+     * @return 회원의 배송지 목록
+     * @author 최예린
+     */
+    List<MemberAddress> findByLoginId(String loginId);
 
     /**
      * 회원의 특정한 배송지를 조회합니다.
