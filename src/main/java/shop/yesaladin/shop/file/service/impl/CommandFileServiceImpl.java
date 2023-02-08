@@ -27,12 +27,12 @@ public class CommandFileServiceImpl implements CommandFileService {
     @Transactional
     @Override
     public FileResponseDto register(File file) {
-        File savedFile = commandFileRepository.save(file);
+        commandFileRepository.save(file);
 
         return new FileResponseDto(
-                savedFile.getId(),
-                savedFile.getUrl(),
-                savedFile.getUploadDateTime()
+                file.getId(),
+                file.getUrl(),
+                file.getUploadDateTime()
         );
     }
 }

@@ -1,10 +1,11 @@
 package shop.yesaladin.shop.writing.persistence;
 
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 import shop.yesaladin.shop.writing.domain.model.Author;
 import shop.yesaladin.shop.writing.domain.model.querydsl.QAuthor;
@@ -44,18 +45,6 @@ public class QueryDslAuthorRepository implements QueryAuthorRepository {
      * {@inheritDoc}
      */
     @Override
-    public List<Author> findAll() {
-        QAuthor author = QAuthor.author;
-
-        return queryFactory.select(author)
-                .from(author)
-                .fetch();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public Page<Author> findAllForManager(Pageable pageable) {
         QAuthor author = QAuthor.author;
 
@@ -65,10 +54,8 @@ public class QueryDslAuthorRepository implements QueryAuthorRepository {
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        Long totalCount = queryFactory.select(author.count())
-                .from(author)
-                .fetchFirst();
+        JPAQuery<Long> countQuery = queryFactory.select(author.count()).from(author);
 
-        return new PageImpl<>(authors, pageable, totalCount);
+        return PageableExecutionUtils.getPage(authors, pageable, countQuery::fetchFirst);
     }
 }

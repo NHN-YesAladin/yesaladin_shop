@@ -2,10 +2,10 @@ package shop.yesaladin.shop.product.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.Relation;
 import shop.yesaladin.shop.product.domain.repository.QueryRelationRepository;
@@ -29,8 +29,8 @@ import java.util.stream.Collectors;
 @Service
 public class QueryRelationServiceImpl implements QueryRelationService {
 
-    private final float PERCENT_DENOMINATOR_VALUE = 100;
-    private final long ROUND_OFF_VALUE = 10;
+    private static final float PERCENT_DENOMINATOR_VALUE = 100;
+    private static final long ROUND_OFF_VALUE = 10;
 
     private final QueryRelationRepository queryRelationRepository;
     private final QueryWritingService queryWritingService;
@@ -41,10 +41,10 @@ public class QueryRelationServiceImpl implements QueryRelationService {
      */
     @Transactional(readOnly = true)
     @Override
-    public Page<RelationsResponseDto> findAllForManager(Long productId, Pageable pageable) {
+    public PaginatedResponseDto<RelationsResponseDto> findAllForManager(Long productId, Pageable pageable) {
         Page<Relation> page = queryRelationRepository.findAllForManager(productId, pageable);
 
-        return getRelationsResponseDtos(pageable, page);
+        return getRelationsPaginatedResponses(page);
     }
 
     /**
@@ -52,16 +52,21 @@ public class QueryRelationServiceImpl implements QueryRelationService {
      */
     @Transactional(readOnly = true)
     @Override
-    public Page<RelationsResponseDto> findAll(Long productId, Pageable pageable) {
+    public PaginatedResponseDto<RelationsResponseDto> findAll(Long productId, Pageable pageable) {
         Page<Relation> page = queryRelationRepository.findAll(productId, pageable);
 
-        return getRelationsResponseDtos(pageable, page);
+        return getRelationsPaginatedResponses(page);
     }
 
-    private Page<RelationsResponseDto> getRelationsResponseDtos(
-            Pageable pageable,
-            Page<Relation> page
-    ) {
+    /**
+     * 페이징된 연관관계 Dto를 반환합니다.
+     *
+     * @param page 페이징 전체 조회된 객체
+     * @return PaginatedResponseDto
+     * @author 이수정
+     * @since 1.0
+     */
+    private PaginatedResponseDto<RelationsResponseDto> getRelationsPaginatedResponses(Page<Relation> page) {
         List<RelationsResponseDto> relations = new ArrayList<>();
         for (Relation relation : page.getContent()) {
             Product product = relation.getProductSub();
@@ -91,7 +96,12 @@ public class QueryRelationServiceImpl implements QueryRelationService {
             ));
         }
 
-        return new PageImpl<>(relations, pageable, page.getTotalElements());
+        return PaginatedResponseDto.<RelationsResponseDto>builder()
+                .totalPage(page.getTotalPages())
+                .currentPage(page.getNumber())
+                .totalDataCount(page.getTotalElements())
+                .dataList(relations)
+                .build();
     }
 
     /**

@@ -1,15 +1,14 @@
 package shop.yesaladin.shop.writing.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.shop.writing.dto.AuthorRequestDto;
 import shop.yesaladin.shop.writing.dto.AuthorResponseDto;
 import shop.yesaladin.shop.writing.service.inter.CommandAuthorService;
 
 import javax.validation.Valid;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 /**
  * 저자 등록을 위한 RestController 입니다.
@@ -29,15 +28,18 @@ public class CommandAuthorController {
      * [POST /authors] 요청을 받아 저자를 생성하여 등록합니다.
      *
      * @param createDto 요청받은 저자 정보(저자 이름, 저자의 로그인 Id)
-     * @return ResponseEntity
+     * @return ResponseDto
      * @author 이수정
      * @since 1.0
      */
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ResponseEntity registerAuthor(@Valid @RequestBody AuthorRequestDto createDto) throws URISyntaxException {
-        AuthorResponseDto author = commandAuthorService.create(createDto);
-
-        return ResponseEntity.created(new URI(author.getId().toString())).body(author);
+    public ResponseDto<AuthorResponseDto> registerAuthor(@Valid @RequestBody AuthorRequestDto createDto) {
+        return ResponseDto.<AuthorResponseDto>builder()
+                .success(true)
+                .status(HttpStatus.CREATED)
+                .data(commandAuthorService.create(createDto))
+                .build();
     }
 
     /**
@@ -48,11 +50,16 @@ public class CommandAuthorController {
      * @author 이수정
      * @since 1.0
      */
-    @PutMapping("/{authorId}")
-    public ResponseEntity modifyAuthor(@Valid @RequestBody AuthorRequestDto modifyDto, @PathVariable Long authorId) {
-        AuthorResponseDto author = commandAuthorService.modify(authorId, modifyDto);
-
-        return ResponseEntity.ok().body(author);
+    @PutMapping("/{id}")
+    public ResponseDto<AuthorResponseDto> modifyAuthor(
+            @Valid @RequestBody AuthorRequestDto modifyDto,
+            @PathVariable Long id
+    ) {
+        return ResponseDto.<AuthorResponseDto>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(commandAuthorService.modify(id, modifyDto))
+                .build();
     }
 }
 
