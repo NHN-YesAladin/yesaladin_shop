@@ -29,12 +29,10 @@ public class LoginIdAspect {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Parameter[] methodParams = signature.getMethod().getParameters();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String loginId = authentication.getName();
 
         for (int i = 0; i < args.length; i++) {
             if (methodParams[i].isAnnotationPresent(LoginId.class)) {
-                checkAuthenticationRequired(methodParams[i], authentication);
-                args[i] = loginId;
+                args[i] = getLoginId(methodParams[i], authentication);
                 break;
             }
         }
@@ -42,12 +40,16 @@ public class LoginIdAspect {
         return joinPoint.proceed(args);
     }
 
-    private void checkAuthenticationRequired(
+    private String getLoginId(
             Parameter methodParam, Authentication authentication
     ) {
-        if (methodParam.getAnnotation(LoginId.class).required()
-                && (authentication instanceof AnonymousAuthenticationToken)) {
+        boolean isAnonymous = authentication instanceof AnonymousAuthenticationToken;
+        if (methodParam.getAnnotation(LoginId.class).required() && isAnonymous) {
             throw new ClientException(ErrorCode.UNAUTHORIZED, "Unauthorized request");
         }
+        if (isAnonymous) {
+            return null;
+        }
+        return authentication.getName();
     }
 }
