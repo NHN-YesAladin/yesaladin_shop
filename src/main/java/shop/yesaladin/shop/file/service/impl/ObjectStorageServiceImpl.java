@@ -12,7 +12,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import shop.yesaladin.shop.config.ObjectStorageProperties;
 import shop.yesaladin.shop.file.dto.FileUploadResponseDto;
-import shop.yesaladin.shop.file.service.inter.FileStorageService;
+import shop.yesaladin.shop.file.service.inter.ObjectStorageService;
 import shop.yesaladin.shop.file.service.inter.StorageAuthService;
 
 import java.time.Clock;
@@ -27,7 +27,7 @@ import java.util.UUID;
  */
 @RequiredArgsConstructor
 @Service
-public class FileStorageServiceImpl implements FileStorageService {
+public class ObjectStorageServiceImpl implements ObjectStorageService {
 
     private final StorageAuthService storageAuthService;
 
@@ -43,15 +43,12 @@ public class FileStorageServiceImpl implements FileStorageService {
             @NonNull String typeName,
             @NonNull String fileName
     ) {
-        StringBuilder stringBuilder = new StringBuilder();
-
-        return stringBuilder
-                .append(objectStorage.getStorageUrl()).append("/")
-                .append(objectStorage.getStorageAccount()).append("/")
-                .append(objectStorage.getContainerName()).append("/")
-                .append(domainName).append("/")
-                .append(typeName).append("/")
-                .append(fileName).toString();
+        return objectStorage.getStorageUrl() + "/" +
+                objectStorage.getStorageAccount() + "/" +
+                objectStorage.getContainerName() + "/" +
+                domainName + "/" +
+                typeName + "/" +
+                fileName;
     }
 
     /**
@@ -66,13 +63,13 @@ public class FileStorageServiceImpl implements FileStorageService {
         String token = storageAuthService.getAuthToken();
 
         // InputStream을 요청 본문에 추가할 수 있도록 RequestCallback 오버라이드
-        final RequestCallback requestCallback = (request) -> {
+        final RequestCallback requestCallback = request -> {
             request.getHeaders().add("X-Auth-Token", token);
             IOUtils.copy(file.getInputStream(), request.getBody());
         };
 
         HttpMessageConverterExtractor<String> responseExtractor
-                = new HttpMessageConverterExtractor<String>(
+                = new HttpMessageConverterExtractor<>(
                 String.class,
                 restTemplate.getMessageConverters()
         );
