@@ -40,7 +40,7 @@ public class CouponConsumer {
      *
      * @since 1.0
      */
-    @KafkaListener(id = "${coupon.consumer-group.give-request-response}", topics = "${coupon.topic.use-request-response}")
+    @KafkaListener(id = "${coupon.consumer-group.use-request-response}", topics = "${coupon.topic.use-request-response}")
     public void consumeUseRequestResponseMessage() {
 
         markAsConsumed();
