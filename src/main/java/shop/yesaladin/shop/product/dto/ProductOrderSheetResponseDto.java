@@ -18,10 +18,11 @@ public class ProductOrderSheetResponseDto {
     private String title;
     private Long actualPrice;
     private int discountRate;
-    private Long expectedPoint;
-    private int quantity;
+    private Boolean isGivenPoint;
+    private int givenPointRate;
+    private long quantity;
 
-    public void setQuantity(int quantity) {
+    public void setQuantity(long quantity) {
         this.quantity = quantity;
     }
 }

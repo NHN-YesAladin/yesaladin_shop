@@ -219,11 +219,6 @@ public class QueryDslProductRepository implements QueryProductRepository {
     public List<ProductOrderSheetResponseDto> getByIsbnList(List<String> isbnList) {
         QProduct product = QProduct.product;
 
-        NumberExpression<Long> expectedEarnedPoint = product.actualPrice.multiply(product.isGivenPoint.when(
-                        true)
-                .then(product.givenPointRate.divide(100))
-                .otherwise(0));
-
         NumberExpression<Integer> discountRate = product.isSeparatelyDiscount.when(true)
                 .then(product.discountRate)
                 .otherwise(product.totalDiscountRate.discountRate);
@@ -235,7 +230,8 @@ public class QueryDslProductRepository implements QueryProductRepository {
                         product.title,
                         product.actualPrice,
                         discountRate,
-                        expectedEarnedPoint,
+                        product.isGivenPoint,
+                        product.givenPointRate,
                         product.quantity
                 ))
                 .from(product)

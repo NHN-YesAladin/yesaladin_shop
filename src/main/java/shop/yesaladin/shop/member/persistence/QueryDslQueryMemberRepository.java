@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import shop.yesaladin.shop.coupon.domain.model.querydsl.QMemberCoupon;
 import shop.yesaladin.shop.member.domain.model.Member;
+import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.member.domain.model.querydsl.QMember;
 import shop.yesaladin.shop.member.domain.model.querydsl.QMemberAddress;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
@@ -253,21 +254,13 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
     @Override
     public Optional<MemberOrderSheetResponseDto> getMemberOrderData(String loginId) {
         QMember member = QMember.member;
-        QMemberAddress memberAddress = QMemberAddress.memberAddress;
         QMemberCoupon memberCoupon = QMemberCoupon.memberCoupon;
-
-        Expression<String> memberDefaultAddress = queryFactory.select(memberAddress.address)
-                .from(memberAddress)
-                .where(memberAddress.member.loginId.eq(loginId)
-                        .and(memberAddress.isDefault.isTrue()
-                                .and(memberAddress.isDeleted.isFalse())));
 
         return Optional.ofNullable(queryFactory.select(
                         Projections.constructor(
                                 MemberOrderSheetResponseDto.class,
                                 member.name,
                                 member.phone,
-                                memberDefaultAddress,
                                 memberCoupon.count().intValue()
                         ))
                 .from(member)

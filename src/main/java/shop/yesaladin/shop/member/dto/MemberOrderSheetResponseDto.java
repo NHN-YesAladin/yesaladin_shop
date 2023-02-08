@@ -17,6 +17,5 @@ public class MemberOrderSheetResponseDto {
 
     private String name;
     private String phoneNumber;
-    private String address;
     private int couponCount;
 }

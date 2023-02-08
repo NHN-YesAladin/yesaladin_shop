@@ -8,9 +8,11 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.hibernate.validator.constraints.Length;
 import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
 
 /**
@@ -35,7 +37,9 @@ public abstract class OrderCreateRequestDto {
     @Min(value = 0)
     protected int wrappingFee;
     @NotBlank
+    @Length(min = 1, max = 20)
     protected String recipientName;
     @NotBlank
+    @Pattern(regexp = "^01([0|1])([0-9]{8})$")
     protected String recipientPhoneNumber;
 }

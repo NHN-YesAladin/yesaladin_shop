@@ -22,7 +22,10 @@ import shop.yesaladin.shop.common.exception.PageOffsetOutOfBoundsException;
 import shop.yesaladin.shop.coupon.dto.MemberCouponSummaryDto;
 import shop.yesaladin.shop.coupon.service.inter.QueryMemberCouponService;
 import shop.yesaladin.shop.member.domain.model.Member;
+import shop.yesaladin.shop.member.dto.MemberAddressOrderSheetResponseDto;
+import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
 import shop.yesaladin.shop.member.dto.MemberOrderSheetResponseDto;
+import shop.yesaladin.shop.member.service.inter.QueryMemberAddressService;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
@@ -50,6 +53,7 @@ public class QueryOrderServiceImpl implements QueryOrderService {
 
     private final QueryOrderRepository queryOrderRepository;
     private final QueryMemberService queryMemberService;
+    private final QueryMemberAddressService queryMemberAddressService;
     private final QueryPointHistoryService queryPointHistoryService;
     private final QueryProductService queryProductService;
     private final QueryMemberCouponService queryMemberCouponService;
@@ -138,7 +142,7 @@ public class QueryOrderServiceImpl implements QueryOrderService {
             String loginId
     ) {
         MemberOrderSheetResponseDto member = queryMemberService.getMemberForOrder(loginId);
-
+        List<MemberAddressResponseDto> memberAddress = queryMemberAddressService.getByLoginId(loginId);
         List<ProductOrderSheetResponseDto> orderProducts = getProductOrder(
                 request.getIsbn(),
                 request.getQuantity()
@@ -153,6 +157,7 @@ public class QueryOrderServiceImpl implements QueryOrderService {
                 member,
                 queryPointHistoryService.getMemberPoint(loginId),
                 orderProducts,
+                memberAddress,
                 memberCoupons
         );
     }

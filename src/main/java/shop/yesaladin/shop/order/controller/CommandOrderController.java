@@ -5,6 +5,7 @@ import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -44,6 +45,7 @@ public class CommandOrderController {
      * @param loginId       회원의 아이디
      * @return 생성된 주문 정보
      */
+    @CrossOrigin(origins = {"http://localhost:9090", "https://www.yesaladin.shop"})
     @PostMapping("/non-member")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<OrderCreateResponseDto> createNonMemberOrder(
@@ -75,6 +77,7 @@ public class CommandOrderController {
      * @param loginId       회원의 아이디
      * @return 생성된 주문 정보
      */
+    @CrossOrigin(origins = {"http://localhost:9090", "https://www.yesaladin.shop"})
     @PostMapping("/member")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<OrderCreateResponseDto> createMemberOrder(
@@ -101,6 +104,7 @@ public class CommandOrderController {
      * @param loginId       회원의 아이디
      * @return 생성된 주문 정보
      */
+    @CrossOrigin(origins = {"http://localhost:9090", "https://www.yesaladin.shop"})
     @PostMapping("/subscribe")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<OrderCreateResponseDto> createSubscribeOrder(

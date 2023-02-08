@@ -2,6 +2,8 @@ package shop.yesaladin.shop.order.controller;
 
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -26,6 +28,7 @@ import shop.yesaladin.shop.order.service.inter.QueryOrderService;
  * @author 김홍대
  * @since 1.0
  */
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping
@@ -73,6 +76,8 @@ public class QueryOrderController {
         OrderSheetResponseDto response = (Objects.isNull(loginId)) ?
                 queryOrderService.getNonMemberOrderSheetData(products)
                 : queryOrderService.getMemberOrderSheetData(products, loginId);
+
+        log.error("coupon list : : {}", response.getMemberCoupons());
 
         return ResponseDto.<OrderSheetResponseDto>builder()
                 .success(true)
