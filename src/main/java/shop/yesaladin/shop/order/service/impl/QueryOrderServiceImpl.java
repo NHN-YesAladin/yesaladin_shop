@@ -110,6 +110,19 @@ public class QueryOrderServiceImpl implements QueryOrderService {
      */
     @Override
     @Transactional(readOnly = true)
+    public OrderSheetResponseDto getNonMemberOrderSheetData(OrderSheetRequestDto request) {
+        List<ProductOrderSheetResponseDto> orderProducts = getProductOrder(
+                request.getIsbn(),
+                request.getQuantity()
+        );
+        return new OrderSheetResponseDto(orderProducts);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
     public OrderSheetResponseDto getMemberOrderSheetData(
             OrderSheetRequestDto request,
             String loginId
@@ -119,29 +132,17 @@ public class QueryOrderServiceImpl implements QueryOrderService {
         return getOrderSheetDataForMember(request, loginId);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public OrderSheetResponseDto getNonMemberOrderSheetData(OrderSheetRequestDto request) {
-        List<ProductOrderSheetResponseDto> orderProducts = getProductOrder(
-                request.getIsbn(),
-                request.getQuantity()
-        );
-
-        return new OrderSheetResponseDto(orderProducts);
-    }
-
     private OrderSheetResponseDto getOrderSheetDataForMember(
             OrderSheetRequestDto request,
             String loginId
     ) {
         MemberOrderSheetResponseDto member = queryMemberService.getMemberForOrder(loginId);
+
         List<ProductOrderSheetResponseDto> orderProducts = getProductOrder(
                 request.getIsbn(),
                 request.getQuantity()
         );
+
         List<MemberCouponSummaryDto> memberCoupons = getMemberCoupons(
                 loginId,
                 member.getCouponCount()
@@ -153,6 +154,17 @@ public class QueryOrderServiceImpl implements QueryOrderService {
                 orderProducts,
                 memberCoupons
         );
+    }
+
+    private List<ProductOrderSheetResponseDto> getProductOrder(
+            List<String> isbnList,
+            List<Integer> quantityList
+    ) {
+        Map<String, Integer> products = IntStream.range(0, isbnList.size())
+                .boxed()
+                .collect(Collectors.toMap(isbnList::get, quantityList::get));
+
+        return queryProductService.getByOrderProducts(products);
     }
 
     private List<MemberCouponSummaryDto> getMemberCoupons(
@@ -172,17 +184,6 @@ public class QueryOrderServiceImpl implements QueryOrderService {
             memberCoupons.addAll(coupons.getDataList());
         }
         return memberCoupons;
-    }
-
-    private List<ProductOrderSheetResponseDto> getProductOrder(
-            List<String> isbnList,
-            List<Integer> quantityList
-    ) {
-        Map<String, Integer> products = IntStream.range(0, isbnList.size())
-                .boxed()
-                .collect(Collectors.toMap(isbnList::get, quantityList::get));
-
-        return queryProductService.getByOrderProducts(products);
     }
 
     /**

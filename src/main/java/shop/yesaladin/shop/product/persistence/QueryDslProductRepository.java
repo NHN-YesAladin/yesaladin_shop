@@ -3,6 +3,9 @@ package shop.yesaladin.shop.product.persistence;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -15,11 +18,6 @@ import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
 import shop.yesaladin.shop.product.dto.ProductOnlyTitleDto;
 import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
 import shop.yesaladin.shop.product.exception.ProductTypeCodeNotFoundException;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 
 /**
@@ -239,10 +237,15 @@ public class QueryDslProductRepository implements QueryProductRepository {
                         product.title,
                         product.actualPrice,
                         discountRate,
-                        expectedEarnedPoint
+                        expectedEarnedPoint,
+                        product.quantity
                 ))
                 .from(product)
-                .where(product.isbn.in(isbnList))
+                .where(product.isbn.in(isbnList)
+                        .and(product.isDeleted.isFalse())
+                        .and(product.isForcedOutOfStock.isFalse())
+                        .and(product.isSale.isTrue())
+                )
                 .fetch();
     }
 
@@ -250,7 +253,7 @@ public class QueryDslProductRepository implements QueryProductRepository {
      * {@inheritDoc}
      */
     @Override
-    public List<Product> findByIsbnList(List<String> isbnList, Map<String, Integer> quantities) {
+    public List<Product> findByIsbnList(List<String> isbnList) {
         QProduct product = QProduct.product;
 
         return queryFactory.select(product)
@@ -258,8 +261,7 @@ public class QueryDslProductRepository implements QueryProductRepository {
                 .where(product.isbn.in(isbnList)
                         .and(product.isDeleted.isFalse())
                         .and(product.isForcedOutOfStock.isFalse())
-                        .and(product.isSale.isTrue())
-                        .and(product.quantity.goe(quantities.get(product.isbn.toString()))))
+                        .and(product.isSale.isTrue()))
                 .fetch();
     }
 }

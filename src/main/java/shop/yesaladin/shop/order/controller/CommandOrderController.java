@@ -33,7 +33,7 @@ import shop.yesaladin.shop.order.service.inter.CommandOrderService;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/v1/orders")
-public class xCommandOrderController {
+public class CommandOrderController {
 
     private final CommandOrderService commandOrderService;
 

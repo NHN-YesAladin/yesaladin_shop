@@ -21,22 +21,6 @@ public class ProductOrderSheetResponseDto {
     private Long expectedPoint;
     private int quantity;
 
-    public ProductOrderSheetResponseDto(
-            Long productId,
-            String isbn,
-            String title,
-            Long actualPrice,
-            int discountRate,
-            Long expectedPoint
-    ) {
-        this.productId = productId;
-        this.isbn = isbn;
-        this.title = title;
-        this.actualPrice = actualPrice;
-        this.discountRate = discountRate;
-        this.expectedPoint = expectedPoint;
-    }
-
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }

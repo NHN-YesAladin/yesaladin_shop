@@ -12,7 +12,6 @@ import lombok.Getter;
 import org.hibernate.validator.constraints.Length;
 import shop.yesaladin.shop.order.domain.model.NonMemberOrder;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
-import shop.yesaladin.shop.order.domain.model.OrderRecipient;
 import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
 
 /**

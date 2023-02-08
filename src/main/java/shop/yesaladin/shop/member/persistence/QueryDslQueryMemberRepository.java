@@ -211,9 +211,9 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
                                 memberCoupon.count().intValue()
                         ))
                 .from(member)
-                        .leftJoin(memberCoupon)
-                        .on(member.id.eq(memberCoupon.member.id))
-                        .groupBy(member)
+                .leftJoin(memberCoupon)
+                .on(member.id.eq(memberCoupon.member.id))
+                .groupBy(member)
                 .where(member.loginId.eq(loginId))
                 .fetchFirst());
     }

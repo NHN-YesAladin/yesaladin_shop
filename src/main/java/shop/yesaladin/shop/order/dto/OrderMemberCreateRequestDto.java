@@ -12,7 +12,6 @@ import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.order.domain.model.MemberOrder;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
-import shop.yesaladin.shop.order.domain.model.OrderRecipient;
 import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
 
 /**

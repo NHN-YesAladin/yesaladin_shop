@@ -1,5 +1,10 @@
 package shop.yesaladin.shop.product.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -12,7 +17,14 @@ import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 import shop.yesaladin.shop.category.service.inter.QueryProductCategoryService;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
-import shop.yesaladin.shop.product.dto.*;
+import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
+import shop.yesaladin.shop.product.dto.ProductModifyDto;
+import shop.yesaladin.shop.product.dto.ProductOnlyTitleDto;
+import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
+import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
+import shop.yesaladin.shop.product.dto.ProductsResponseDto;
+import shop.yesaladin.shop.product.dto.SubscribeProductOrderResponseDto;
+import shop.yesaladin.shop.product.dto.ViewCartDto;
 import shop.yesaladin.shop.product.exception.ProductNotFoundException;
 import shop.yesaladin.shop.product.service.inter.QueryProductService;
 import shop.yesaladin.shop.publish.dto.PublishResponseDto;
@@ -24,12 +36,6 @@ import shop.yesaladin.shop.tag.service.inter.QueryProductTagService;
 import shop.yesaladin.shop.writing.dto.AuthorsResponseDto;
 import shop.yesaladin.shop.writing.dto.WritingResponseDto;
 import shop.yesaladin.shop.writing.service.inter.QueryWritingService;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * 상품 조회를 위한 Service 구현체 입니다.
@@ -68,15 +74,6 @@ public class QueryProductServiceImpl implements QueryProductService {
         return productOnlyTitleDto;
     }
 
-    // TODO: ResponseDto 수정
-
-    private List<String> getIsbnList(List<ProductOrderRequestDto> products) {
-        return products
-                .stream()
-                .map(ProductOrderRequestDto::getIsbn)
-                .collect(Collectors.toList());
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -94,7 +91,9 @@ public class QueryProductServiceImpl implements QueryProductService {
 
         return new ProductDetailResponseDto(
                 product.getId(),
-                Objects.nonNull(product.getEbookFile()) && !product.getEbookFile().getUrl().isBlank(),
+                Objects.nonNull(product.getEbookFile()) && !product.getEbookFile()
+                        .getUrl()
+                        .isBlank(),
                 product.getTitle(),
                 findAuthorsByProduct(product),
                 publish.getPublisher().getName(),
@@ -110,7 +109,8 @@ public class QueryProductServiceImpl implements QueryProductService {
                 product.getSubscribeProduct().getISSN(),
                 product.getContents(),
                 product.getDescription(),
-                product.getQuantity() > 0 && !product.isForcedOutOfStock() && product.isSale() && !product.isDeleted(),
+                product.getQuantity() > 0 && !product.isForcedOutOfStock() && product.isSale()
+                        && !product.isDeleted(),
                 queryProductCategoryService.findCategoriesByProduct(product)
         );
     }
@@ -300,7 +300,9 @@ public class QueryProductServiceImpl implements QueryProductService {
      * @since 1.0
      */
     private long calcPointPrice(Product product) {
-        return Math.round((product.getActualPrice() * product.getGivenPointRate() / PERCENT_DENOMINATOR_VALUE) / ROUND_OFF_VALUE) * ROUND_OFF_VALUE;
+        return Math.round(
+                (product.getActualPrice() * product.getGivenPointRate() / PERCENT_DENOMINATOR_VALUE)
+                        / ROUND_OFF_VALUE) * ROUND_OFF_VALUE;
     }
 
     /**
@@ -391,9 +393,31 @@ public class QueryProductServiceImpl implements QueryProductService {
 
         List<ProductOrderSheetResponseDto> result = queryProductRepository.getByIsbnList(isbnList);
 
-        return result.stream()
-                .peek(product -> product.setQuantity(orderProduct.get(product.getIsbn())))
-                .collect(Collectors.toList());
+        checkAvailableProductToOrder(orderProduct, result);
+
+        return result;
+    }
+
+    private void checkAvailableProductToOrder(
+            Map<String, Integer> orderProduct,
+            List<ProductOrderSheetResponseDto> result
+    ) {
+        if (orderProduct.size() != result.size()) {
+            throw new ClientException(
+                    ErrorCode.BAD_REQUEST,
+                    "Product not available to order."
+            );
+        }
+        result.forEach(product -> {
+            int count;
+            if (product.getQuantity() < (count = orderProduct.get(product.getIsbn()))) {
+                throw new ClientException(
+                        ErrorCode.PRODUCT_NOT_AVAILABLE_TO_ORDER,
+                        "Product not available to order."
+                );
+            }
+            product.setQuantity(count);
+        });
     }
 
     /**
