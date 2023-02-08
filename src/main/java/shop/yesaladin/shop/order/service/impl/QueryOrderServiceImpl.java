@@ -180,6 +180,7 @@ public class QueryOrderServiceImpl implements QueryOrderService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<OrderStatusResponseDto> getStatusResponsesByLoginIdAndStatus(
             String loginId,
             OrderStatusCode code,
