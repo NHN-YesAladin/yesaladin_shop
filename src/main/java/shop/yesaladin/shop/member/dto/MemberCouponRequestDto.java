@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.member.dto;
 
+import java.time.LocalDate;
 import java.util.List;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -24,4 +25,6 @@ public class MemberCouponRequestDto {
     private List<String> couponCodes;
     @NotEmpty(message = "CouponGroupCodes cannot be empty.")
     private List<String> couponGroupCodes;
+    @NotEmpty(message = "ExpirationDates cannot be empty.")
+    private List<LocalDate> expirationDates;
 }

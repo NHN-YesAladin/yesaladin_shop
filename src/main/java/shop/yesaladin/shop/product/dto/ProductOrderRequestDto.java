@@ -1,9 +1,10 @@
 package shop.yesaladin.shop.product.dto;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 
 /**
  * 주문한 상품의 정보를 보내기 위한 dto 클래스입니다.

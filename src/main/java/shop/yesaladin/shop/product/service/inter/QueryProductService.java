@@ -1,15 +1,11 @@
 package shop.yesaladin.shop.product.service.inter;
 
-import java.util.List;
-import java.util.Map;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import shop.yesaladin.shop.product.dto.SubscribeProductOrderResponseDto;
-import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
-import shop.yesaladin.shop.product.dto.ProductModifyDto;
-import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
-import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
-import shop.yesaladin.shop.product.dto.ProductsResponseDto;
+import shop.yesaladin.shop.product.dto.*;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * 상품 조회를 위한 Service Interface 입니다.
@@ -19,6 +15,18 @@ import shop.yesaladin.shop.product.dto.ProductsResponseDto;
  * @since 1.0
  */
 public interface QueryProductService {
+
+    /**
+     * ISBN이 isbn인 상품을 찾아 반환합니다.
+     *
+     * @param isbn 찾고자하는 상품의 isbn
+     * @return 찾은 상품의 제목을 담은 Dto
+     * @author 이수정
+     * @since 1.0
+     */
+    ProductOnlyTitleDto findTitleByIsbn(String isbn);
+
+    // TODO: ResponseDto 수정
 
     /**
      * 아이디가 id인 상품을 찾아 반환합니다.
@@ -59,6 +67,16 @@ public interface QueryProductService {
      * @since 1.0
      */
     Page<ProductsResponseDto> findAllForManager(Pageable pageable, Integer typeId);
+
+    /**
+     * 장바구니에 넣은 상품의 정보를 얻어 반환합니다.
+     *
+     * @param cart 찾고자하는 Cart의 정보를 담은 Map
+     * @return 장바구니의 상품의 정보를 담은 Dto
+     * @author 이수정
+     * @since 1.0
+     */
+    List<ViewCartDto> getCartProduct(Map<String, String> cart);
 
     /**
      * 주문에 사용될 상품 관련 데이터 리스트를 반환합니다.

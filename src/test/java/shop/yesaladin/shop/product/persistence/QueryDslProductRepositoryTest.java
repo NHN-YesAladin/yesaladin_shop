@@ -1,7 +1,5 @@
 package shop.yesaladin.shop.product.persistence;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -17,6 +15,7 @@ import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.ProductTypeCode;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
+import shop.yesaladin.shop.product.dto.ProductOnlyTitleDto;
 import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
 import shop.yesaladin.shop.product.dummy.DummyFile;
 import shop.yesaladin.shop.product.dummy.DummyProduct;
@@ -26,6 +25,8 @@ import shop.yesaladin.shop.product.exception.ProductTypeCodeNotFoundException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -86,6 +87,20 @@ class QueryDslProductRepositoryTest {
                 totalDiscountRate,
                 ProductTypeCode.NEWBOOK
         );
+    }
+
+    @Test
+    @DisplayName("상품 ISBN으로 상품 제목 조회")
+    void findTitleByIsbn() {
+        // given
+        entityManager.persist(product1);
+
+        // when
+        ProductOnlyTitleDto response = repository.findTitleByIsbn(ISBN1);
+
+        // then
+        assertThat(response).isNotNull();
+        assertThat(response.getTitle()).isEqualTo(product1.getTitle());
     }
 
     @Test
@@ -215,7 +230,7 @@ class QueryDslProductRepositoryTest {
                     ProductOrderRequestDto.class,
                     "103-341",
                     2
-                    ));
+            ));
         }
         return request;
     }

@@ -5,12 +5,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 import shop.yesaladin.shop.category.service.inter.QueryCategoryService;
 import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
@@ -41,8 +44,14 @@ public class QueryCategoryController {
      * @return 카테고리의 일부 데이터를 반환
      */
     @GetMapping("/{categoryId}")
-    public CategoryResponseDto getCategoryById(@PathVariable Long categoryId) {
-        return queryCategoryService.findCategoryById(categoryId);
+    public ResponseDto<CategoryResponseDto> getCategoryById(@PathVariable Long categoryId) {
+        CategoryResponseDto category = queryCategoryService.findCategoryById(categoryId);
+
+        return ResponseDto.<CategoryResponseDto>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(category)
+                .build();
     }
 
     /**
@@ -52,7 +61,7 @@ public class QueryCategoryController {
      * @return 카테고리의 일부 데이터를 페이징데이터와 함게 List 화 하여 전달
      */
     @GetMapping
-    public PaginatedResponseDto<CategoryResponseDto> getCategoriesByParentId(
+    public ResponseDto<PaginatedResponseDto<CategoryResponseDto>> getCategoriesByParentId(
             @RequestParam("parentId") Long parentId,
             Pageable pageable
     ) {
@@ -60,11 +69,16 @@ public class QueryCategoryController {
                 pageable,
                 parentId
         );
-        return PaginatedResponseDto.<CategoryResponseDto>builder()
+        PaginatedResponseDto<CategoryResponseDto> paginatedResponseDto = PaginatedResponseDto.<CategoryResponseDto>builder()
                 .currentPage(data.getNumber())
                 .totalPage(data.getTotalPages())
                 .totalDataCount(data.getTotalElements())
                 .dataList(data.getContent())
+                .build();
+        return ResponseDto.<PaginatedResponseDto<CategoryResponseDto>>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(paginatedResponseDto)
                 .build();
     }
 
@@ -74,19 +88,31 @@ public class QueryCategoryController {
      * @return 카테고리의 일부 데이터를 List화 하여 반환
      */
     @GetMapping(params = "cate=parents")
-    public List<CategoryResponseDto> getParentCategories() {
-        return queryCategoryService.findParentCategories();
+    public ResponseDto<List<CategoryResponseDto>> getParentCategories() {
+        List<CategoryResponseDto> parentCategories = queryCategoryService.findParentCategories();
+
+        return ResponseDto.<List<CategoryResponseDto>>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(parentCategories)
+                .build();
     }
 
     /**
      * 주어진 1차 카테고리 id를 통해 아래의 자식 카테고리를 모두 조회 하는 기능
      *
      * @param parentId
-     * @return
+     * @return 카테고리의 일부 데이터를 List화 하여 반환
      */
     @GetMapping(value = "/{parentId}", params = "cate=children")
-    public List<CategoryResponseDto> getChildCategoriesByParentId(@PathVariable Long parentId) {
-        return queryCategoryService.findChildCategoriesByParentId(parentId);
+    public ResponseDto<List<CategoryResponseDto>> getChildCategoriesByParentId(@PathVariable Long parentId) {
+        List<CategoryResponseDto> childCategoriesByParentId = queryCategoryService.findChildCategoriesByParentId(
+                parentId);
+        return ResponseDto.<List<CategoryResponseDto>>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(childCategoriesByParentId)
+                .build();
     }
 
 }

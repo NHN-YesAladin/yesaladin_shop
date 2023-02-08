@@ -2,12 +2,13 @@ package shop.yesaladin.shop.member.service.inter;
 
 import java.time.LocalDate;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.dto.MemberDto;
 import shop.yesaladin.shop.member.dto.MemberGradeQueryResponseDto;
 import shop.yesaladin.shop.member.dto.MemberIdDto;
 import shop.yesaladin.shop.member.dto.MemberLoginResponseDto;
-import shop.yesaladin.shop.member.dto.MemberManagerListResponseDto;
 import shop.yesaladin.shop.member.dto.MemberManagerResponseDto;
 import shop.yesaladin.shop.member.dto.MemberOrderSheetResponseDto;
 import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
@@ -95,7 +96,7 @@ public interface QueryMemberService {
      * @author 김선홍
      * @since 1.0
      */
-    MemberManagerResponseDto findMemberManageByLoginId(String loginId);
+    Page<MemberManagerResponseDto> findMemberManagesByLoginId(String loginId, Pageable pageable);
 
     /**
      * 관리자의 회원 관리 요창에 대해 회원을 unique column 인 nickname 를 기준으로 조회하는 메서드 이다.
@@ -105,7 +106,7 @@ public interface QueryMemberService {
      * @author 김선홍
      * @since 1.0
      */
-    MemberManagerResponseDto findMemberManageByNickName(String nickname);
+    Page<MemberManagerResponseDto> findMemberManagesByNickName(String nickname, Pageable pageable);
 
     /**
      * 관리자의 회원 관리 요창에 대해 회원을 unique column 인 phone 를 기준으로 조회하는 메서드 이다.
@@ -115,7 +116,7 @@ public interface QueryMemberService {
      * @author 김선홍
      * @since 1.0
      */
-    MemberManagerResponseDto findMemberManageByPhone(String phone);
+    Page<MemberManagerResponseDto> findMemberManagesByPhone(String phone, Pageable pageable);
 
     /**
      * 관리자의 회원 관리 요창에 대해 회원을 column 인 name 을 기준으로 조회하는 메서드 이다.
@@ -125,7 +126,7 @@ public interface QueryMemberService {
      * @author 김선홍
      * @since 1.0
      */
-    MemberManagerListResponseDto findMemberManagesByName(String name, int offset, int limit);
+    Page<MemberManagerResponseDto> findMemberManagesByName(String name, Pageable pageable);
 
     /**
      * 관리자의 회원 관리 요창에 대해 회원을 column 인 signUpDate 를 기준으로 조회하는 메서드 이다.
@@ -135,11 +136,7 @@ public interface QueryMemberService {
      * @author 김선홍
      * @since 1.0
      */
-    MemberManagerListResponseDto findMemberManagesBySignUpDate(
-            LocalDate signUpDate,
-            int offset,
-            int limit
-    );
+    Page<MemberManagerResponseDto> findMemberManagesBySignUpDate(LocalDate signUpDate, Pageable pageable);
 
     /**
      * n 일 후가 생일인 회원의 목록을 조회합니다.

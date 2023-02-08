@@ -4,8 +4,10 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.dto.MemberIdDto;
+import shop.yesaladin.shop.member.dto.MemberManagerResponseDto;
 import shop.yesaladin.shop.member.dto.MemberOrderSheetResponseDto;
 
 /**
@@ -59,34 +61,60 @@ public interface QueryMemberRepository {
     Optional<Member> findMemberByEmail(String email);
 
     /**
-     * 회원의 phone 를 통해 회원을 조회 합니다.
+     * 회원의 LoginId 를 통해 회원 Like 검색
      *
-     * @param phone 회원의 phone 입니다.
-     * @return 조회된 회원
+     * @param loginId 회원의 loginId
+     * @param pageable 페이징 정보
+     * @return 검색된 회원 리스트와 총 갯수
      * @author 김선홍
      * @since 1.0
      */
-    Optional<Member> findMemberByPhone(String phone);
+    Page<MemberManagerResponseDto> findMemberManagersByLoginId(String loginId, Pageable pageable);
 
     /**
-     * 회원의 name 을 통해 회원을 조회합니다.
+     * 회원의 nickname 을 통해 회원 Like 검색
+     *
+     * @param nickname 회원의 nickname
+     * @param pageable 페이징 정보
+     * @return 검색된 회원 리스트와 총 갯수
+     * @author 김선홍
+     * @since 1.0
+     */
+    Page<MemberManagerResponseDto> findMemberManagersByNickname(String nickname, Pageable pageable);
+
+    /**
+     * 회원의 phone 를 통해 회원 Like 검색
+     *
+     * @param phone 회원의 phone 입니다.
+     * @param pageable 페이징 정보
+     * @return 검색된 회원 리스트와 총 갯수
+     * @author 김선홍
+     * @since 1.0
+     */
+    Page<MemberManagerResponseDto> findMemberManagersByPhone(String phone, Pageable pageable);
+
+
+    /**
+     * 회원의 name 을 통해 회원 Like 검색
      *
      * @param name   회원의 name 입니다.
-     * @param offset 페이지 위치
-     * @param limit  데이터 갯수
-     * @return 조회된 회원
+     * @param pageable 페이징 정보
+     * @return 검색된 회원 리스트와 총 갯수
+     * @author 김선홍
+     * @since 1.0
      */
-    Page<Member> findMembersByName(String name, int offset, int limit);
+    Page<MemberManagerResponseDto> findMemberManagersByName(String name, Pageable pageable);
 
     /**
-     * 회원의 signUpDate 를 통해 회원을 조회합니다.
+     * 회원의 signUpDate 를 통해 회원 검색
      *
      * @param signUpDate 회원의 signUpDate 입니다.
-     * @param offset     페이지 위치
-     * @param limit      데이터 갯수
-     * @return 조회된 회원
+     * @param pageable 페이징 정보
+     * @return 검색된 회원 리스트와 총 갯수
+     * @author 김선홍
+     * @since 1.0
      */
-    Page<Member> findMembersBySignUpDate(LocalDate signUpDate, int offset, int limit);
+    Page<MemberManagerResponseDto> findMemberManagersBySignUpDate(LocalDate signUpDate, Pageable pageable);
 
     /**
      * 회원의 birthMonth, birthDay 를 통해 회원을 조회 합니다.
