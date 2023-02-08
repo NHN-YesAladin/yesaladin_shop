@@ -176,7 +176,8 @@ public class QueryProductServiceImpl implements QueryProductService {
                             .sellingPrice(calcSellingPrice(product.getActualPrice(), rate))
                             .discountRate(rate)
                             .pointPrice(getPointPrice(product))
-                            .isOutOfStack(product.isForcedOutOfStock() || product.getQuantity() <= 0)
+                            .isOutOfStack(
+                                    product.isForcedOutOfStock() || product.getQuantity() <= 0)
                             .isSale(product.isSale())
                             .isDeleted(product.isDeleted())
                             .isEbook(isEbook(product))
@@ -207,7 +208,10 @@ public class QueryProductServiceImpl implements QueryProductService {
      */
     @Transactional(readOnly = true)
     @Override
-    public PaginatedResponseDto<ProductsResponseDto> findAllForManager(Pageable pageable, Integer typeId) {
+    public PaginatedResponseDto<ProductsResponseDto> findAllForManager(
+            Pageable pageable,
+            Integer typeId
+    ) {
         Page<Product> page;
         if (Objects.isNull(typeId)) {
             page = queryProductRepository.findAllForManager(pageable);
@@ -270,7 +274,8 @@ public class QueryProductServiceImpl implements QueryProductService {
      * @since 1.0
      */
     private boolean isOnSale(Product product) {
-        return product.getQuantity() > 0 && !product.isForcedOutOfStock() && product.isSale() && !product.isDeleted();
+        return product.getQuantity() > 0 && !product.isForcedOutOfStock() && product.isSale()
+                && !product.isDeleted();
     }
 
     /**
@@ -282,7 +287,9 @@ public class QueryProductServiceImpl implements QueryProductService {
      * @since 1.0
      */
     private boolean isEbook(Product product) {
-        return Objects.nonNull(product.getEbookFile()) && !product.getEbookFile().getUrl().isBlank();
+        return Objects.nonNull(product.getEbookFile()) && !product.getEbookFile()
+                .getUrl()
+                .isBlank();
     }
 
     /**
@@ -325,7 +332,8 @@ public class QueryProductServiceImpl implements QueryProductService {
      */
     private long getPointPrice(Product product) {
         return product.isGivenPoint() && product.getGivenPointRate() != 0 ?
-                Math.round((product.getActualPrice() * product.getGivenPointRate() / PERCENT_DENOMINATOR_VALUE)
+                Math.round((product.getActualPrice() * product.getGivenPointRate()
+                        / PERCENT_DENOMINATOR_VALUE)
                         / ROUND_OFF_VALUE) * ROUND_OFF_VALUE : 0;
     }
 
