@@ -2,6 +2,7 @@ package shop.yesaladin.shop.order.dto;
 
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +15,8 @@ import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
  * @since 1.0
  */
 
-@ToString
 @Getter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderStatusResponseDto {

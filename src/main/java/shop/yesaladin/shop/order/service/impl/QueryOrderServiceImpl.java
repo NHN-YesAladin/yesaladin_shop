@@ -18,10 +18,12 @@ import shop.yesaladin.shop.common.exception.PageOffsetOutOfBoundsException;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.order.domain.model.Order;
+import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
 import shop.yesaladin.shop.order.dto.OrderPaymentResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSheetRequestDto;
 import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
+import shop.yesaladin.shop.order.dto.OrderStatusResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryResponseDto;
 import shop.yesaladin.shop.order.exception.OrderNotFoundException;
@@ -175,6 +177,20 @@ public class QueryOrderServiceImpl implements QueryOrderService {
     public OrderPaymentResponseDto getPaymentDtoByMemberOrderId(long orderId) {
         return queryOrderRepository.findPaymentDtoByMemberOrderId(orderId)
                 .orElseThrow(() -> new OrderNotFoundException(orderId));
+    }
+
+    @Override
+    public Page<OrderStatusResponseDto> getStatusResponsesByLoginIdAndStatus(
+            String loginId,
+            OrderStatusCode code,
+            Pageable pageable
+    ) {
+        checkValidLoginId(loginId);
+        return queryOrderRepository.findSuccessStatusResponsesByLoginIdAndStatus(
+                loginId,
+                code,
+                pageable
+        );
     }
 
     private void checkRequestedOffsetInBounds(
