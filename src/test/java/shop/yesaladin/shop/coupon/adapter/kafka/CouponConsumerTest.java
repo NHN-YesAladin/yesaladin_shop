@@ -24,7 +24,6 @@ import org.springframework.kafka.test.utils.KafkaTestUtils;
 import shop.yesaladin.coupon.message.CouponGiveRequestResponseMessage;
 import shop.yesaladin.shop.coupon.service.inter.GiveCouponService;
 
-@Disabled
 @EmbeddedKafka(topics = {"${coupon.topic.give-request}",
         "${coupon.topic.give-request-limit}"}, brokerProperties = {
         "listeners=PLAINTEXT://localhost:9092", "port=9092"})
