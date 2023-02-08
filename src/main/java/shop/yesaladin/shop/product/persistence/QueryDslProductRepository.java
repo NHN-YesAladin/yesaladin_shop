@@ -267,17 +267,15 @@ public class QueryDslProductRepository implements QueryProductRepository {
     public Page<Product> findProductRelationByTitle(Long id, String title, Pageable pageable) {
         QProduct product = QProduct.product;
         QRelation relation = QRelation.relation;
-
+        
         List<Product> reId = queryFactory.select(relation.productSub).from(relation).where(relation.productMain.id.eq(id)).fetch();
-
         List<Product> products = queryFactory.selectFrom(product)
                 .where(product.title.contains(title)
                         .and(product.isDeleted.isFalse())
                         .and(product.id.ne(id))
                         .and(product.notIn(reId)))
-                .offset(pageable.getOffset())
+                .offset((long) pageable.getPageNumber() * pageable.getPageSize())
                 .limit(pageable.getPageSize())
-                .leftJoin(relation).on(product.eq(relation.productMain))
                 .fetch();
 
         Long count = queryFactory.select(product.count())
@@ -286,9 +284,6 @@ public class QueryDslProductRepository implements QueryProductRepository {
                         .and(product.isDeleted.isFalse())
                         .and(product.id.ne(id))
                         .and(product.notIn(reId)))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .leftJoin(relation).on(product.eq(relation.productMain))
                 .fetchFirst();
 
         return new PageImpl<>(products, pageable, count);
