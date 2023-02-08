@@ -128,5 +128,5 @@ public interface QueryProductRepository {
      * @author 김선홍
      * @since 1,0
      */
-    Page<Product> findProductRelationByTitle(String title, Pageable pageable);
+    Page<Product> findProductRelationByTitle(Long id, String title, Pageable pageable);
 }

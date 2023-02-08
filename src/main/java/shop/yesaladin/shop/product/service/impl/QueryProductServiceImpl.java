@@ -22,8 +22,8 @@ import shop.yesaladin.shop.product.dto.ProductModifyDto;
 import shop.yesaladin.shop.product.dto.ProductOnlyTitleDto;
 import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
 import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
-import shop.yesaladin.shop.product.dto.ProductRelationResponseDto;
 import shop.yesaladin.shop.product.dto.ProductsResponseDto;
+import shop.yesaladin.shop.product.dto.RelationsResponseDto;
 import shop.yesaladin.shop.product.dto.SubscribeProductOrderResponseDto;
 import shop.yesaladin.shop.product.dto.ViewCartDto;
 import shop.yesaladin.shop.product.exception.ProductNotFoundException;
@@ -427,23 +427,40 @@ public class QueryProductServiceImpl implements QueryProductService {
         return new SubscribeProductOrderResponseDto(product);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional(readOnly = true)
-    public Page<ProductRelationResponseDto> findProductRelationByTitle(
+    public Page<RelationsResponseDto> findProductRelationByTitle(
+            Long id,
             String title,
             Pageable pageable
     ) {
-        Page<Product> products = queryProductRepository.findProductRelationByTitle(title, pageable);
-        List<ProductRelationResponseDto> dtoList = new ArrayList<>();
+        Page<Product> products = queryProductRepository.findProductRelationByTitle(
+                id,
+                title,
+                pageable
+        );
+        List<RelationsResponseDto> dtoList = new ArrayList<>();
         for (Product product : products) {
             List<String> author = findAuthorsByProduct(product);
             PublishResponseDto publish = queryPublishService.findByProduct(product);
 
-            dtoList.add(ProductRelationResponseDto.createDto(
-                    product,
+            int rate = product.getTotalDiscountRate().getDiscountRate();
+            if (product.isSeparatelyDiscount()) {
+                rate = product.getDiscountRate();
+            }
+
+            dtoList.add(new RelationsResponseDto(
+                    product.getId(),
+                    product.getThumbnailFile().getUrl(),
+                    product.getTitle(),
                     author,
                     publish.getPublisher().getName(),
-                    publish.getPublishedDate()
+                    publish.getPublishedDate().toString(),
+                    calcSellingPrice(product, rate),
+                    rate
             ));
 
         }

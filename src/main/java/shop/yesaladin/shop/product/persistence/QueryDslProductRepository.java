@@ -262,18 +262,19 @@ public class QueryDslProductRepository implements QueryProductRepository {
      * {@inheritDoc}
      */
     @Override
-    public Page<Product> findProductRelationByTitle(String title, Pageable pageable) {
+    public Page<Product> findProductRelationByTitle(Long id, String title, Pageable pageable) {
         QProduct product = QProduct.product;
 
         List<Product> products =  queryFactory.selectFrom(product)
-                .where(product.title.contains(title).and(product.isDeleted.isFalse()))
+                .where(product.title.contains(title).and(product.isDeleted.isFalse()).and(product.id.ne(id)))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
         Long count = queryFactory.select(product.count())
                 .from(product)
-                .where(product.title.contains(title).and(product.isDeleted.isFalse()))
+                .where(product.title.contains(title).and(product.isDeleted.isFalse()).and(product.id.ne(id)))
+                .where(product.id.notIn(id))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetchFirst();

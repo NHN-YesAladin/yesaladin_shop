@@ -145,20 +145,22 @@ public class QueryProductController {
      * @param pageable 페이지 정보
      * @return 검색된 상품 정보와 페이지 정보 그리고 응답 메시지
      */
-    @GetMapping("/relation")
-    public ResponseDto<PaginatedResponseDto<ProductRelationResponseDto>> findProductRelationByTitle(
+    @GetMapping(value = "/{id}/relation", params = "title")
+    public ResponseDto<PaginatedResponseDto<RelationsResponseDto>> findProductRelationByTitle(
+            @PathVariable Long id,
             @RequestParam String title,
             @PageableDefault Pageable pageable
     ) {
-        Page<ProductRelationResponseDto> products = queryProductService.findProductRelationByTitle(
+        Page<RelationsResponseDto> products = queryProductService.findProductRelationByTitle(
+                id,
                 title,
                 pageable
         );
 
-        return ResponseDto.<PaginatedResponseDto<ProductRelationResponseDto>>builder()
+        return ResponseDto.<PaginatedResponseDto<RelationsResponseDto>>builder()
                 .status(HttpStatus.OK)
                 .success(true)
-                .data(PaginatedResponseDto.<ProductRelationResponseDto>builder()
+                .data(PaginatedResponseDto.<RelationsResponseDto>builder()
                         .dataList(products.getContent())
                         .totalPage(products.getTotalPages())
                         .currentPage(products.getNumber())
