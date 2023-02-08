@@ -70,7 +70,7 @@ class FileStorageControllerTest {
         result.andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("url", equalTo(URL + "/image.jpg")));
+                .andExpect(jsonPath("$.data.url", equalTo(URL + "/image.jpg")));
 
         verify(service, times(1)).fileUpload(anyString(), anyString(), any());
 
@@ -84,8 +84,11 @@ class FileStorageControllerTest {
                         parameterWithName("typeName").description("업로드할 파일의 유형")
                 ),
                 responseFields(
-                        fieldWithPath("url").type(JsonFieldType.STRING).description("업로드한 파일의 URL"),
-                        fieldWithPath("fileUploadDateTime").type(JsonFieldType.STRING).description("업로드한 파일의 업로드 시간")
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data.url").type(JsonFieldType.STRING).description("업로드한 파일의 URL"),
+                        fieldWithPath("data.fileUploadDateTime").type(JsonFieldType.STRING).description("업로드한 파일의 업로드 시간"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY).description("에러 메세지").optional()
                 )
         ));
     }

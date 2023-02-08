@@ -49,32 +49,14 @@ class CommandAuthorServiceImplTest {
     }
 
     @Test
-    @DisplayName("저자 등록 성공")
-    void register() {
-        // given
-        Author author = DummyAuthor.dummy(NAME, null);
-
-        Mockito.when(commandAuthorRepository.save(any())).thenReturn(author);
-
-        // when
-        AuthorResponseDto response = service.register(author);
-
-        // then
-        assertThat(response.getName()).isEqualTo(NAME);
-        assertThat(response.getMember()).isNull();
-
-        verify(commandAuthorRepository, times(1)).save(author);
-    }
-
-    @Test
     @DisplayName("저자 생성 후 등록 성공")
     void create_success() {
         // given
         AuthorRequestDto createDto = new AuthorRequestDto(NAME, "loginId");
-        Author author = DummyAuthor.dummy(NAME, null);
 
         Member member = DummyMember.member();
         MemberDto dto = MemberDto.fromEntity(member);
+        Author author = DummyAuthor.dummy(NAME, member);
 
         Mockito.when(queryMemberService.findMemberByLoginId(anyString())).thenReturn(dto);
         Mockito.when(commandAuthorRepository.save(any())).thenReturn(author);
@@ -84,7 +66,7 @@ class CommandAuthorServiceImplTest {
 
         // then
         assertThat(response.getName()).isEqualTo(NAME);
-        assertThat(response.getMember()).isNull();
+        assertThat(response.getMember().getId()).isEqualTo(member.getId());
 
         verify(queryMemberService, times(1)).findMemberByLoginId(createDto.getLoginId());
         verify(commandAuthorRepository, times(1)).save(any());

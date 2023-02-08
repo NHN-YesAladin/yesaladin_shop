@@ -1,7 +1,7 @@
 package shop.yesaladin.shop.product.service.inter;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.product.dto.*;
 
 import java.util.List;
@@ -26,8 +26,6 @@ public interface QueryProductService {
      */
     ProductOnlyTitleDto findTitleByIsbn(String isbn);
 
-    // TODO: ResponseDto 수정
-
     /**
      * 아이디가 id인 상품을 찾아 반환합니다.
      *
@@ -36,7 +34,7 @@ public interface QueryProductService {
      * @author 이수정
      * @since 1.0
      */
-    ProductDetailResponseDto findById(long id);
+    ProductDetailResponseDto findDetailProductById(long id);
 
     /**
      * 아이디가 id인 상품을 찾아 수정 View에 넣을 정보를 반환합니다.
@@ -49,6 +47,16 @@ public interface QueryProductService {
     ProductModifyDto findProductByIdForForm(long id);
 
     /**
+     * 장바구니에 넣은 상품의 정보를 얻어 반환합니다.
+     *
+     * @param cart 찾고자하는 Cart의 정보를 담은 Map
+     * @return 장바구니의 상품의 정보를 담은 Dto
+     * @author 이수정
+     * @since 1.0
+     */
+    List<ViewCartDto> getCartProduct(Map<String, String> cart);
+
+    /**
      * 페이징된 모든사용자용 상품 리스트를 반환합니다.
      *
      * @param pageable 페이징 처리를 위한 객체
@@ -56,7 +64,7 @@ public interface QueryProductService {
      * @author 이수정
      * @since 1.0
      */
-    Page<ProductsResponseDto> findAll(Pageable pageable, Integer typeId);
+    PaginatedResponseDto<ProductsResponseDto> findAll(Pageable pageable, Integer typeId);
 
     /**
      * 페이징된 관리자용 상품 리스트를 반환합니다.
@@ -66,17 +74,7 @@ public interface QueryProductService {
      * @author 이수정
      * @since 1.0
      */
-    Page<ProductsResponseDto> findAllForManager(Pageable pageable, Integer typeId);
-
-    /**
-     * 장바구니에 넣은 상품의 정보를 얻어 반환합니다.
-     *
-     * @param cart 찾고자하는 Cart의 정보를 담은 Map
-     * @return 장바구니의 상품의 정보를 담은 Dto
-     * @author 이수정
-     * @since 1.0
-     */
-    List<ViewCartDto> getCartProduct(Map<String, String> cart);
+    PaginatedResponseDto<ProductsResponseDto> findAllForManager(Pageable pageable, Integer typeId);
 
     /**
      * 주문에 사용될 상품 관련 데이터 리스트를 반환합니다.

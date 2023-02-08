@@ -3,6 +3,7 @@ package shop.yesaladin.shop.writing.service.impl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.dummy.DummyFile;
 import shop.yesaladin.shop.product.dummy.DummyProduct;
@@ -14,7 +15,6 @@ import shop.yesaladin.shop.writing.domain.repository.CommandWritingRepository;
 import shop.yesaladin.shop.writing.domain.repository.QueryWritingRepository;
 import shop.yesaladin.shop.writing.dto.WritingResponseDto;
 import shop.yesaladin.shop.writing.dummy.DummyAuthor;
-import shop.yesaladin.shop.writing.exception.WritingNotFoundException;
 import shop.yesaladin.shop.writing.service.inter.CommandWritingService;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -94,8 +94,7 @@ class CommandWritingServiceImplTest {
         when(queryWritingRepository.existsByProduct(any())).thenReturn(false);
 
         // when then
-        assertThatCode(() -> service.deleteByProduct(product))
-                .isInstanceOf(WritingNotFoundException.class);
+        assertThatCode(() -> service.deleteByProduct(product)).isInstanceOf(ClientException.class);
 
         verify(commandWritingRepository, never()).deleteByProduct(product);
     }
