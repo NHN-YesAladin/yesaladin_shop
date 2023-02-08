@@ -12,7 +12,6 @@ import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.tag.domain.model.Tag;
 import shop.yesaladin.shop.tag.domain.repository.QueryTagRepository;
 import shop.yesaladin.shop.tag.dto.TagResponseDto;
-import shop.yesaladin.shop.tag.exception.TagNotFoundException;
 import shop.yesaladin.shop.tag.service.inter.QueryTagService;
 
 import java.util.ArrayList;

@@ -10,7 +10,6 @@ import shop.yesaladin.shop.tag.domain.repository.CommandTagRepository;
 import shop.yesaladin.shop.tag.domain.repository.QueryTagRepository;
 import shop.yesaladin.shop.tag.dto.TagRequestDto;
 import shop.yesaladin.shop.tag.dto.TagResponseDto;
-import shop.yesaladin.shop.tag.exception.TagAlreadyExistsException;
 import shop.yesaladin.shop.tag.exception.TagNotFoundException;
 import shop.yesaladin.shop.tag.service.inter.CommandTagService;
 
