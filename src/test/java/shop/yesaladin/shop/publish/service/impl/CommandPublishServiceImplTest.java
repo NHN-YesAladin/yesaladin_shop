@@ -3,6 +3,7 @@ package shop.yesaladin.shop.publish.service.impl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.dummy.*;
 import shop.yesaladin.shop.publish.domain.model.Publish;
@@ -10,7 +11,6 @@ import shop.yesaladin.shop.publish.domain.model.Publisher;
 import shop.yesaladin.shop.publish.domain.repository.CommandPublishRepository;
 import shop.yesaladin.shop.publish.domain.repository.QueryPublishRepository;
 import shop.yesaladin.shop.publish.dto.PublishResponseDto;
-import shop.yesaladin.shop.publish.exception.PublishNotFoundException;
 import shop.yesaladin.shop.publish.service.inter.CommandPublishService;
 
 import java.time.Clock;
@@ -100,7 +100,7 @@ class CommandPublishServiceImplTest {
 
         // when then
         assertThatCode(() -> service.deleteByProduct(product))
-                .isInstanceOf(PublishNotFoundException.class);
+                .isInstanceOf(ClientException.class);
 
         verify(commandPublishRepository, never()).deleteByProduct(product);
     }

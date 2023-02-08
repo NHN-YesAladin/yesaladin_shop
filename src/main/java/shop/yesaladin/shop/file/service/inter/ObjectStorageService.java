@@ -9,7 +9,7 @@ import shop.yesaladin.shop.file.dto.FileUploadResponseDto;
  * @author 이수정
  * @since 1.0
  */
-public interface FileStorageService {
+public interface ObjectStorageService {
 
     /**
      * 요청받은 파일을 업로드하고 파일의 url과 업로드 시간을 반환합니다.

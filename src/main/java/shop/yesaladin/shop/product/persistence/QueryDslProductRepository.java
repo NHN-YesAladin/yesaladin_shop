@@ -3,16 +3,18 @@ package shop.yesaladin.shop.product.persistence;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.NumberExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
+import shop.yesaladin.common.code.ErrorCode;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.ProductTypeCode;
 import shop.yesaladin.shop.product.domain.model.querydsl.QProduct;
@@ -20,8 +22,6 @@ import shop.yesaladin.shop.product.domain.model.querydsl.QRelation;
 import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
 import shop.yesaladin.shop.product.dto.ProductOnlyTitleDto;
 import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
-import shop.yesaladin.shop.product.exception.ProductTypeCodeNotFoundException;
-
 
 /**
  * 상품 조회를 위한 Repository QueryDsl 구현체 입니다.
@@ -52,21 +52,17 @@ public class QueryDslProductRepository implements QueryProductRepository {
                 .fetchFirst();
     }
 
-    // TODO: ResponseDto 수정
-
     /**
      * {@inheritDoc}
      */
     @Override
-    public Optional<Product> findById(Long id) {
+    public Optional<Product> findProductById(long id) {
         QProduct product = QProduct.product;
 
-        return Optional.ofNullable(
-                queryFactory.select(product)
-                        .from(product)
-                        .where(product.id.eq(id))
-                        .fetchFirst()
-        );
+        return Optional.ofNullable(queryFactory.select(product)
+                .from(product)
+                .where(product.id.eq(id))
+                .fetchFirst());
     }
 
     /**
@@ -82,61 +78,6 @@ public class QueryDslProductRepository implements QueryProductRepository {
                         .where(product.isbn.eq(isbn))
                         .fetchFirst()
         );
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Page<Product> findAllForManager(Pageable pageable) {
-        QProduct product = QProduct.product;
-
-        List<Product> products = queryFactory
-                .select(product)
-                .from(product)
-                .orderBy(product.preferentialShowRanking.asc())
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
-
-        Long totalCount = queryFactory.select(product.count())
-                .from(product)
-                .fetchFirst();
-
-        return new PageImpl<>(products, pageable, totalCount);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Page<Product> findAllByTypeIdForManager(Pageable pageable, Integer typeId) {
-        QProduct product = QProduct.product;
-
-        Optional<ProductTypeCode> productTypeCode = Arrays.stream(ProductTypeCode.values())
-                .filter(value -> typeId.equals(value.getId()))
-                .findAny();
-
-        if (productTypeCode.isEmpty()) {
-            throw new ProductTypeCodeNotFoundException(typeId);
-        }
-
-        List<Product> products = queryFactory
-                .select(product)
-                .from(product)
-                .where(product.productTypeCode.eq(productTypeCode.get()))
-                .orderBy(product.preferentialShowRanking.asc())
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
-
-        Long totalCount = queryFactory.select(product.count())
-                .from(product)
-                .where(product.productTypeCode.eq(productTypeCode.get()))
-                .fetchFirst();
-
-        return new PageImpl<>(products, pageable, totalCount);
     }
 
     /**
@@ -155,12 +96,11 @@ public class QueryDslProductRepository implements QueryProductRepository {
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        Long totalCount = queryFactory.select(product.count())
+        JPAQuery<Long> countQuery = queryFactory.select(product.count())
                 .from(product)
-                .where(product.isDeleted.isFalse().and(product.isSale.isTrue()))
-                .fetchFirst();
+                .where(product.isDeleted.isFalse().and(product.isSale.isTrue()));
 
-        return new PageImpl<>(products, pageable, totalCount);
+        return PageableExecutionUtils.getPage(products, pageable, countQuery::fetchFirst);
     }
 
     /**
@@ -175,7 +115,10 @@ public class QueryDslProductRepository implements QueryProductRepository {
                 .findAny();
 
         if (productTypeCode.isEmpty()) {
-            throw new ProductTypeCodeNotFoundException(typeId);
+            throw new ClientException(
+                    ErrorCode.PRODUCT_TYPE_CODE_NOT_FOUND,
+                    "ProductTypeCode is not found : " + typeId
+            );
         }
 
         List<Product> products = queryFactory
@@ -188,13 +131,66 @@ public class QueryDslProductRepository implements QueryProductRepository {
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        Long totalCount = queryFactory.select(product.count())
+        JPAQuery<Long> countQuery = queryFactory.select(product.count())
                 .from(product)
                 .where(product.productTypeCode.eq(productTypeCode.get())
-                        .and(product.isDeleted.isFalse().and(product.isSale.isTrue())))
-                .fetchFirst();
+                        .and(product.isDeleted.isFalse().and(product.isSale.isTrue())));
 
-        return new PageImpl<>(products, pageable, totalCount);
+        return PageableExecutionUtils.getPage(products, pageable, countQuery::fetchFirst);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Page<Product> findAllForManager(Pageable pageable) {
+        QProduct product = QProduct.product;
+
+        List<Product> products = queryFactory
+                .select(product)
+                .from(product)
+                .orderBy(product.preferentialShowRanking.asc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        JPAQuery<Long> countQuery = queryFactory.select(product.count()).from(product);
+
+        return PageableExecutionUtils.getPage(products, pageable, countQuery::fetchFirst);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Page<Product> findAllByTypeIdForManager(Pageable pageable, Integer typeId) {
+        QProduct product = QProduct.product;
+
+        Optional<ProductTypeCode> productTypeCode = Arrays.stream(ProductTypeCode.values())
+                .filter(value -> typeId.equals(value.getId()))
+                .findAny();
+
+        if (productTypeCode.isEmpty()) {
+            throw new ClientException(
+                    ErrorCode.PRODUCT_TYPE_CODE_NOT_FOUND,
+                    "ProductTypeCode is not found : " + typeId
+            );
+        }
+
+        List<Product> products = queryFactory
+                .select(product)
+                .from(product)
+                .where(product.productTypeCode.eq(productTypeCode.get()))
+                .orderBy(product.preferentialShowRanking.asc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        JPAQuery<Long> countQuery = queryFactory.select(product.count())
+                .from(product)
+                .where(product.productTypeCode.eq(productTypeCode.get()));
+
+        return PageableExecutionUtils.getPage(products, pageable, countQuery::fetchFirst);
     }
 
 
@@ -224,10 +220,9 @@ public class QueryDslProductRepository implements QueryProductRepository {
     public List<ProductOrderSheetResponseDto> getByIsbnList(List<String> isbnList) {
         QProduct product = QProduct.product;
 
-        NumberExpression<Long> expectedEarnedPoint = product.actualPrice.multiply(product.isGivenPoint.when(
-                        true)
-                .then(product.givenPointRate.divide(100))
-                .otherwise(product.totalDiscountRate.discountRate.divide(100)));
+        NumberExpression<Integer> discountRate = product.isSeparatelyDiscount.when(true)
+                .then(product.discountRate)
+                .otherwise(product.totalDiscountRate.discountRate);
 
         return queryFactory.select(Projections.constructor(
                         ProductOrderSheetResponseDto.class,
@@ -235,11 +230,17 @@ public class QueryDslProductRepository implements QueryProductRepository {
                         product.isbn,
                         product.title,
                         product.actualPrice,
-                        product.discountRate,
-                        expectedEarnedPoint
+                        discountRate,
+                        product.isGivenPoint,
+                        product.givenPointRate,
+                        product.quantity
                 ))
                 .from(product)
-                .where(product.isbn.in(isbnList))
+                .where(product.isbn.in(isbnList)
+                        .and(product.isDeleted.isFalse())
+                        .and(product.isForcedOutOfStock.isFalse())
+                        .and(product.isSale.isTrue())
+                )
                 .fetch();
     }
 
@@ -247,7 +248,7 @@ public class QueryDslProductRepository implements QueryProductRepository {
      * {@inheritDoc}
      */
     @Override
-    public List<Product> findByIsbnList(List<String> isbnList, Map<String, Integer> quantities) {
+    public List<Product> findByIsbnList(List<String> isbnList) {
         QProduct product = QProduct.product;
 
         return queryFactory.select(product)
@@ -255,8 +256,7 @@ public class QueryDslProductRepository implements QueryProductRepository {
                 .where(product.isbn.in(isbnList)
                         .and(product.isDeleted.isFalse())
                         .and(product.isForcedOutOfStock.isFalse())
-                        .and(product.isSale.isTrue())
-                        .and(product.quantity.goe(quantities.get(product.isbn.toString()))))
+                        .and(product.isSale.isTrue()))
                 .fetch();
     }
 

@@ -1,12 +1,9 @@
 package shop.yesaladin.shop.product.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import shop.yesaladin.shop.category.dto.CategoryResponseDto;
-import shop.yesaladin.shop.publish.dto.PublishersResponseDto;
-import shop.yesaladin.shop.tag.dto.TagsResponseDto;
+import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
+import shop.yesaladin.shop.tag.dto.TagResponseDto;
 import shop.yesaladin.shop.writing.dto.AuthorsResponseDto;
 
 import java.util.List;
@@ -19,6 +16,7 @@ import java.util.List;
  */
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductModifyDto {
@@ -34,21 +32,21 @@ public class ProductModifyDto {
     private String contents;
     private String description;
 
-    // e-book 파일
-    private String ebookFile;
+    // e-book 파일 url
+    private String ebookFileUrl;
 
     // 저자
     private List<AuthorsResponseDto> authors;
 
     // 출판사
-    private PublishersResponseDto publisher;
+    private PublisherResponseDto publisher;
     private String publishedDate;
 
     // 상품 유형
     private String productTypeCode;
 
     // 상품 태그
-    private List<TagsResponseDto> tags;
+    private List<TagResponseDto> tags;
 
     // 정가
     private long actualPrice;
@@ -74,32 +72,4 @@ public class ProductModifyDto {
 
     // 카테고리
     private List<CategoryResponseDto> categories;
-
-    @Override
-    public String toString() {
-        return "ProductModifyDto{" +
-                "isbn='" + isbn + '\'' +
-                ", thumbnailFile=" + thumbnailFile +
-                ", title='" + title + '\'' +
-                ", contents='" + contents + '\'' +
-                ", description='" + description + '\'' +
-                ", ebookFile=" + ebookFile +
-                ", authors=" + authors +
-                ", publisher=" + publisher +
-                ", publishedDate='" + publishedDate + '\'' +
-                ", productTypeCode='" + productTypeCode + '\'' +
-                ", tags=" + tags +
-                ", actualPrice=" + actualPrice +
-                ", isSeparatelyDiscount='" + isSeparatelyDiscount + '\'' +
-                ", discountRate=" + discountRate +
-                ", isGivenPoint='" + isGivenPoint + '\'' +
-                ", givenPointRate=" + givenPointRate +
-                ", productSavingMethodCode='" + productSavingMethodCode + '\'' +
-                ", isSubscriptionAvailable='" + isSubscriptionAvailable + '\'' +
-                ", issn='" + issn + '\'' +
-                ", quantity=" + quantity +
-                ", preferentialShowRanking=" + preferentialShowRanking +
-                ", categories=" + categories +
-                '}';
-    }
 }

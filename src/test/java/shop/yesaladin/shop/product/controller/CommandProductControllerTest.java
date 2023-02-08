@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -81,7 +82,9 @@ class CommandProductControllerTest {
         result.andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("id", equalTo(1)));
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.CREATED.value())))
+                .andExpect(jsonPath("$.data.id", equalTo(1)));
 
         verify(service, times(1)).create(any());
 
@@ -118,7 +121,10 @@ class CommandProductControllerTest {
                         fieldWithPath("categories").type(JsonFieldType.ARRAY).description("카테고리")
                 ),
                 responseFields(
-                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("생성된 상품 아이디")
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("HTTP 상태 코드"),
+                        fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("생성된 상품 아이디"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY).description("에러 메세지").optional()
                 )
         ));
     }
@@ -176,7 +182,10 @@ class CommandProductControllerTest {
                         fieldWithPath("isForcedOutOfStock").type(JsonFieldType.BOOLEAN).description("강제 품절 여부")
                 ),
                 responseFields(
-                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("수정된 상품 아이디")
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("HTTP 상태 코드"),
+                        fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("수정된 상품 아이디"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY).description("에러 메세지").optional()
                 )
         ));
     }

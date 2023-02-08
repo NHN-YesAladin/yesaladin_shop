@@ -1,11 +1,8 @@
 package shop.yesaladin.shop.tag.service.inter;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.tag.dto.TagResponseDto;
-import shop.yesaladin.shop.tag.dto.TagsResponseDto;
-
-import java.util.List;
 
 
 /**
@@ -27,15 +24,6 @@ public interface QueryTagService {
     TagResponseDto findById(Long id);
 
     /**
-     * 태그를 전체 조회하여 Dto List를 반환합니다.
-     *
-     * @return 태그 전체 조회한 List
-     * @author 이수정
-     * @since 1.0
-     */
-    List<TagsResponseDto> findAll();
-
-    /**
      * 페이징된 관리자용 태그 리스트를 반환합니다.
      *
      * @param pageable 페이징 처리를 위한 객체
@@ -43,5 +31,5 @@ public interface QueryTagService {
      * @author 이수정
      * @since 1.0
      */
-    Page<TagsResponseDto> findAllForManager(Pageable pageable);
+    PaginatedResponseDto<TagResponseDto> findAllForManager(Pageable pageable);
 }

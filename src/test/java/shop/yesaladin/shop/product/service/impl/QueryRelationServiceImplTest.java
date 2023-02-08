@@ -7,6 +7,7 @@ import org.mockito.Mockito;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.Relation;
@@ -113,11 +114,11 @@ class QueryRelationServiceImplTest {
                 ));
 
         // when
-        Page<RelationsResponseDto> response = service.findAllForManager(PRODUCT_ID, PageRequest.of(0, 3));
+        PaginatedResponseDto<RelationsResponseDto> response = service.findAllForManager(PRODUCT_ID, PageRequest.of(0, 3));
 
         // then
-        assertThat(response.getTotalElements()).isEqualTo(9);
-        assertThat(response.getTotalPages()).isEqualTo(3);
+        assertThat(response.getTotalDataCount()).isEqualTo(9);
+        assertThat(response.getTotalPage()).isEqualTo(3);
     }
 
     @Test
@@ -134,8 +135,7 @@ class QueryRelationServiceImplTest {
                 PageRequest.of(0, 3),
                 relations.size()
         );
-
-        Mockito.when(queryRelationRepository.findAll(any(), any())).thenReturn(page);
+        Mockito.when(queryRelationRepository.findAll(PRODUCT_ID, PageRequest.of(0, 3))).thenReturn(page);
 
         Publisher publisher = DummyPublisher.dummy();
         Mockito.when(queryPublishService.findByProduct(any()))
@@ -147,10 +147,10 @@ class QueryRelationServiceImplTest {
                 ));
 
         // when
-        Page<RelationsResponseDto> response = service.findAll(PRODUCT_ID, PageRequest.of(0, 3));
+        PaginatedResponseDto<RelationsResponseDto> response = service.findAll(PRODUCT_ID, PageRequest.of(0, 3));
 
         // then
-        assertThat(response.getTotalElements()).isEqualTo(4);
-        assertThat(response.getTotalPages()).isEqualTo(2);
+        assertThat(response.getTotalDataCount()).isEqualTo(4);
+        assertThat(response.getTotalPage()).isEqualTo(2);
     }
 }

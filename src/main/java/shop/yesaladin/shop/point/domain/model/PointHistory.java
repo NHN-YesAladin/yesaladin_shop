@@ -41,7 +41,7 @@ public class PointHistory {
     @Column(nullable = false)
     private long amount;
 
-    @Column(name = "create_datetime", nullable = false)
+    @Column(name = "created_datetime", nullable = false)
     private LocalDateTime createDateTime;
 
     @Column(name = "point_code_id", nullable = false)

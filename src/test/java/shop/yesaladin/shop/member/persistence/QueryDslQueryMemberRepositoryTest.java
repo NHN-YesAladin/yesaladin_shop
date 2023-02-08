@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,10 +13,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
+import shop.yesaladin.shop.coupon.domain.model.MemberCoupon;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.member.dto.MemberIdDto;
+import shop.yesaladin.shop.member.dto.MemberManagerResponseDto;
 import shop.yesaladin.shop.member.dto.MemberOrderSheetResponseDto;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
 
@@ -100,46 +104,70 @@ class QueryDslQueryMemberRepositoryTest {
     }
 
     @Test
-    void findMemberByPhone() {
+    void findMemberManagersByLoginId() {
         //when
-        Optional<Member> optionalMember = queryMemberRepository.findMemberByPhone(member.getPhone());
-
-        //then
-        assertThat(optionalMember).isPresent();
-        assertThat(optionalMember.get().getPhone()).isEqualTo(member.getPhone());
-        assertThat(optionalMember.get().isWithdrawal()).isFalse();
-    }
-
-    @Test
-    void findMembersByName() {
-        //when
-        Page<Member> memberList = queryMemberRepository.findMembersByName(
-                member.getName(),
-                0,
-                10
+        Page<MemberManagerResponseDto> memberList = queryMemberRepository.findMemberManagersByLoginId(
+                member.getLoginId().substring(0, 1),
+                PageRequest.of(0, 1)
         );
-
         //then
         assertThat(memberList.getTotalElements()).isEqualTo(1);
-        assertThat(memberList.getContent().get(0).getName()).isEqualTo(member.getName());
-        assertThat(memberList.getContent().get(0).isWithdrawal()).isFalse();
+        assertThat(memberList.getContent()).hasSize(1);
+        assertThat(memberList.getContent().get(0).getLoginId().contains(member.getLoginId())).isTrue();
     }
 
     @Test
-    void findMembersBySignUpDate() {
+    void findMemberManagersByNickname() {
         //when
-        Page<Member> memberList = queryMemberRepository.findMembersBySignUpDate(
+        Page<MemberManagerResponseDto> memberList = queryMemberRepository.findMemberManagersByNickname(
+                member.getNickname().substring(0, 1),
+                PageRequest.of(0, 1)
+        );
+        //then
+        assertThat(memberList.getTotalElements()).isEqualTo(1);
+        assertThat(memberList.getContent()).hasSize(1);
+        assertThat(memberList.getContent().get(0).getNickname().contains(member.getNickname())).isTrue();
+    }
+
+    @Test
+    void findMemberManagersByPhone() {
+        //when
+        Page<MemberManagerResponseDto> memberList = queryMemberRepository.findMemberManagersByPhone(
+                member.getPhone().substring(0, 1),
+                PageRequest.of(0, 1)
+        );
+        //then
+        assertThat(memberList.getTotalElements()).isEqualTo(2);
+        assertThat(memberList.getContent()).hasSize(1);
+        assertThat(memberList.getContent().get(0).getPhone().contains(member.getPhone())).isTrue();
+    }
+
+    @Test
+    void findMemberManagersByName() {
+        //when
+        Page<MemberManagerResponseDto> memberList = queryMemberRepository.findMemberManagersByName(
+                member.getName().substring(0, 1),
+                PageRequest.of(0, 1)
+                );
+        //then
+        assertThat(memberList.getTotalElements()).isEqualTo(1);
+        assertThat(memberList.getContent()).hasSize(1);
+        assertThat(memberList.getContent().get(0).getName().contains(member.getName())).isTrue();
+    }
+
+    @Test
+    void findMemberManagersBySignUpDate() {
+        //when
+        Page<MemberManagerResponseDto> memberList = queryMemberRepository.findMemberManagersBySignUpDate(
                 member.getSignUpDate(),
-                0,
-                10
+                PageRequest.of(0, 1)
         );
 
         //then
         assertThat(memberList.getTotalElements()).isEqualTo(2);
-        assertThat(memberList.getContent()
-                .get(0)
-                .getSignUpDate()).isEqualTo(member.getSignUpDate());
-        assertThat(memberList.getContent().get(0).isWithdrawal()).isFalse();
+        assertThat(memberList.getContent()).hasSize(1);
+        assertThat(memberList.getContent().get(0).getSignUpDate()).isEqualTo(
+                member.getSignUpDate());
     }
 
     @Test
@@ -200,13 +228,25 @@ class QueryDslQueryMemberRepositoryTest {
 
     @Test
     void getMemberOrderData() {
+        for (int i = 0; i < 5; i++) {
+            String uuid = UUID.randomUUID().toString();
+            String guuid = UUID.randomUUID().toString();
+            MemberCoupon memberCoupon = MemberCoupon.builder()
+                    .member(memberWithLoginId)
+                    .couponCode(uuid)
+                    .couponGroupCode(guuid)
+                    .build();
+            entityManager.persist(memberCoupon);
+        }
         //when
-        Optional<MemberOrderSheetResponseDto> response = queryMemberRepository.getMemberOrderData(loginId);
+        Optional<MemberOrderSheetResponseDto> response = queryMemberRepository.getMemberOrderData(
+                loginId);
 
         //then
         assertThat(response).isPresent();
         assertThat(response.get().getName()).isEqualTo(memberWithLoginId.getName());
         assertThat(response.get().getPhoneNumber()).isEqualTo(memberWithLoginId.getPhone());
         assertThat(response.get().getAddress()).isEqualTo(defaultMemberAddress.getAddress());
+        assertThat(response.get().getCouponCount()).isEqualTo(5);
     }
 }

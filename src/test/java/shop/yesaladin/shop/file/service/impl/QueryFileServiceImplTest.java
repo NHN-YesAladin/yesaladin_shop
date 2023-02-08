@@ -4,10 +4,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.file.domain.repository.QueryFileRepository;
 import shop.yesaladin.shop.file.dto.FileResponseDto;
-import shop.yesaladin.shop.file.exception.FileNotFoundException;
 import shop.yesaladin.shop.file.service.inter.QueryFileService;
 import shop.yesaladin.shop.product.dummy.DummyFile;
 
@@ -57,7 +57,7 @@ class QueryFileServiceImplTest {
         Mockito.when(queryFileRepository.findById(any())).thenReturn(Optional.ofNullable(null));
 
         // when then
-        assertThatThrownBy(() -> service.findById(id)).isInstanceOf(FileNotFoundException.class);
+        assertThatThrownBy(() -> service.findById(id)).isInstanceOf(ClientException.class);
     }
 
 }

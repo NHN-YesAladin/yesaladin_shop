@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.mockito.Mockito;
 import shop.yesaladin.common.exception.ClientException;
+import shop.yesaladin.shop.coupon.service.inter.GiveCouponService;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberGrade;
 import shop.yesaladin.shop.member.domain.model.Role;
@@ -42,6 +43,7 @@ class CommandMemberServiceImplTest {
     private QueryMemberRepository queryMemberRepository;
     private QueryRoleRepository queryRoleRepository;
     private CommandMemberRoleRepository commandMemberRoleRepository;
+    private GiveCouponService giveCouponService;
 
     @BeforeEach
     void setUp() {
@@ -49,11 +51,14 @@ class CommandMemberServiceImplTest {
         queryMemberRepository = Mockito.mock(QueryMemberRepository.class);
         queryRoleRepository = Mockito.mock(QueryRoleRepository.class);
         commandMemberRoleRepository = Mockito.mock(CommandMemberRoleRepository.class);
+        giveCouponService = Mockito.mock(GiveCouponService.class);
+
         service = new CommandMemberServiceImpl(
                 commandMemberRepository,
                 queryMemberRepository,
                 queryRoleRepository,
-                commandMemberRoleRepository
+                commandMemberRoleRepository,
+                giveCouponService
         );
     }
 
@@ -87,6 +92,7 @@ class CommandMemberServiceImplTest {
                 .isInstanceOf(MemberProfileAlreadyExistException.class);
 
         verify(commandMemberRoleRepository, never()).save(any());
+        verify(giveCouponService, never()).sendCouponGiveRequest(any(), any(), any());
     }
 
     @Test
@@ -119,6 +125,7 @@ class CommandMemberServiceImplTest {
                 .isInstanceOf(MemberProfileAlreadyExistException.class);
 
         verify(commandMemberRoleRepository, never()).save(any());
+        verify(giveCouponService, never()).sendCouponGiveRequest(any(), any(), any());
     }
 
     @Test
@@ -151,6 +158,7 @@ class CommandMemberServiceImplTest {
                 .isInstanceOf(MemberProfileAlreadyExistException.class);
 
         verify(commandMemberRoleRepository, never()).save(any());
+        verify(giveCouponService, never()).sendCouponGiveRequest(any(), any(), any());
     }
 
     @Test
@@ -183,6 +191,7 @@ class CommandMemberServiceImplTest {
                 .isInstanceOf(MemberProfileAlreadyExistException.class);
 
         verify(commandMemberRoleRepository, never()).save(any());
+        verify(giveCouponService, never()).sendCouponGiveRequest(any(), any(), any());
     }
 
     @Test
@@ -233,6 +242,7 @@ class CommandMemberServiceImplTest {
         verify(queryRoleRepository, times(1)).findById(roleId);
         verify(commandMemberRoleRepository, times(1)).save(any());
         verify(commandMemberRepository, times(1)).save(member);
+        verify(giveCouponService).sendCouponGiveRequest(any(), any(), any());
     }
 
     @Test
@@ -255,7 +265,6 @@ class CommandMemberServiceImplTest {
 
         verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
         verify(queryMemberRepository, never()).findMemberByNickname(nickname);
-
     }
 
     @Test

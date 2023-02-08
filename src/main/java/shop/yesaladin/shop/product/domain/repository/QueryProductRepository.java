@@ -1,7 +1,6 @@
 package shop.yesaladin.shop.product.domain.repository;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,7 +33,7 @@ public interface QueryProductRepository {
      * @author 이수정
      * @since 1.0
      */
-    Optional<Product> findById(Long id);
+    Optional<Product> findProductById(long id);
 
     /**
      * ISSN(Unique)기준으로 상품을 조회합니다.
@@ -45,27 +44,6 @@ public interface QueryProductRepository {
      * @since 1.0
      */
     Optional<Product> findByIsbn(String isbn);
-
-    /**
-     * 상품을 Paging하여 관리자용 전체 조회합니다.
-     *
-     * @param pageable page, size 정보를 담은 Pagination을 위한 객체
-     * @return 조회된 상품 엔터티 Page
-     * @author 이수정
-     * @since 1.0
-     */
-    Page<Product> findAllForManager(Pageable pageable);
-
-    /**
-     * 상품을 상품 유형별로 Paging하여 관리자용 전체 조회합니다.
-     *
-     * @param pageable page, size 정보를 담은 Pagination을 위한 객체
-     * @param typeId   조회할 상품 유형 Id
-     * @return 조회된 상품 엔터티 Page
-     * @author 이수정
-     * @since 1.0
-     */
-    Page<Product> findAllByTypeIdForManager(Pageable pageable, Integer typeId);
 
     /**
      * 상품을 Paging하여 전체 사용자용 전체 조회합니다.
@@ -87,6 +65,27 @@ public interface QueryProductRepository {
      * @since 1.0
      */
     Page<Product> findAllByTypeId(Pageable pageable, Integer typeId);
+
+    /**
+     * 상품을 Paging하여 관리자용 전체 조회합니다.
+     *
+     * @param pageable page, size 정보를 담은 Pagination을 위한 객체
+     * @return 조회된 상품 엔터티 Page
+     * @author 이수정
+     * @since 1.0
+     */
+    Page<Product> findAllForManager(Pageable pageable);
+
+    /**
+     * 상품을 상품 유형별로 Paging하여 관리자용 전체 조회합니다.
+     *
+     * @param pageable page, size 정보를 담은 Pagination을 위한 객체
+     * @param typeId   조회할 상품 유형 Id
+     * @return 조회된 상품 엔터티 Page
+     * @author 이수정
+     * @since 1.0
+     */
+    Page<Product> findAllByTypeIdForManager(Pageable pageable, Integer typeId);
 
     /**
      * 주문 상품의 isbn 과 수량으로 구매 가능한 상품을 조회 합니다.
@@ -129,4 +128,7 @@ public interface QueryProductRepository {
      * @since 1,0
      */
     Page<Product> findProductRelationByTitle(Long id, String title, Pageable pageable);
+  
+    List<Product> findByIsbnList(List<String> isbnList);
+
 }
