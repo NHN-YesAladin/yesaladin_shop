@@ -3,6 +3,7 @@ package shop.yesaladin.shop.order.persistence;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import javax.persistence.EntityManager;
@@ -10,6 +11,8 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
@@ -30,6 +33,7 @@ import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
 import shop.yesaladin.shop.order.domain.model.Subscribe;
 import shop.yesaladin.shop.order.domain.model.SubscribeOrderList;
 import shop.yesaladin.shop.order.dto.OrderPaymentResponseDto;
+import shop.yesaladin.shop.order.dto.OrderStatusResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryResponseDto;
 import shop.yesaladin.shop.product.domain.model.Product;
@@ -53,6 +57,8 @@ class QueryDslOrderQueryRepositoryTest {
     private List<Subscribe> subscribeList;
     private List<Member> memberList;
     private List<MemberAddress> memberAddressList;
+
+    private List<OrderStatusChangeLog> logList = new ArrayList<>();
 
 
     @BeforeEach
@@ -91,7 +97,6 @@ class QueryDslOrderQueryRepositoryTest {
 
             entityManager.persist(member);
             entityManager.persist(memberAddress);
-            memberList.add(member);
         }
         for (int i = 0; i < 10; i++) {
             NonMemberOrder nonMemberOrder = NonMemberOrder.builder()
@@ -112,6 +117,9 @@ class QueryDslOrderQueryRepositoryTest {
             entityManager.persist(nonMemberOrder);
         }
         for (int i = 0; i < 30; i++) {
+            int index = i % 5;
+            Member member = memberList.get(index);
+            System.out.println("member = " + member.getLoginId());
             MemberOrder memberOrder = MemberOrder.builder()
                     .orderNumber("M-" + i)
                     .name("member-order" + i)
@@ -122,25 +130,13 @@ class QueryDslOrderQueryRepositoryTest {
                     .shippingFee(0)
                     .wrappingFee(0)
                     .orderCode(OrderCode.MEMBER_ORDER)
-                    .member(memberList.get(i % 5))
-                    .memberAddress(memberAddressList.get(i % 5))
+                    .member(member)
+                    .memberAddress(memberAddressList.get(index))
                     .build();
             memberOrderList.add(memberOrder);
             entityManager.persist(memberOrder);
 
-            OrderStatusChangeLog orderStatusChangeLog = OrderStatusChangeLog.create(
-                    memberOrder,
-                    LocalDateTime.now(),
-                    OrderStatusCode.ORDER
-            );
-            entityManager.persist(orderStatusChangeLog);
-
-            OrderStatusChangeLog orderStatusChangeLogComplete = OrderStatusChangeLog.create(
-                    memberOrder,
-                    LocalDateTime.now(),
-                    OrderStatusCode.COMPLETE
-            );
-            entityManager.persist(orderStatusChangeLogComplete);
+            persistStatusLog(index, memberOrder);
         }
         for (int i = 0; i < 10; i++) {
             SubscribeProduct subscribeProduct = SubscribeProduct.builder()
@@ -173,6 +169,56 @@ class QueryDslOrderQueryRepositoryTest {
         }
 
         entityManager.flush();
+    }
+
+    private void persistStatusLog(int index, MemberOrder memberOrder) {
+        OrderStatusChangeLog orderStatusChangeLogOrder = OrderStatusChangeLog.create(
+                memberOrder,
+                LocalDateTime.now(),
+                OrderStatusCode.ORDER
+        );
+        entityManager.persist(orderStatusChangeLogOrder);
+
+        if (index == 0) {
+            return;
+        }
+        OrderStatusChangeLog orderStatusChangeLogDeposit = OrderStatusChangeLog.create(
+                memberOrder,
+                LocalDateTime.now().plusSeconds(5),
+                OrderStatusCode.DEPOSIT
+        );
+        entityManager.persist(orderStatusChangeLogDeposit);
+
+        if (index == 1) {
+            return;
+        }
+        OrderStatusChangeLog orderStatusChangeLogReady = OrderStatusChangeLog.create(
+                memberOrder,
+                LocalDateTime.now().plusMinutes(5),
+                OrderStatusCode.READY
+        );
+        entityManager.persist(orderStatusChangeLogReady);
+        logList.add(orderStatusChangeLogReady);
+        if (index == 2) {
+            return;
+        }
+        OrderStatusChangeLog orderStatusChangeLogDelivery = OrderStatusChangeLog.create(
+                memberOrder,
+                LocalDateTime.now().plusHours(1),
+                OrderStatusCode.DELIVERY
+        );
+        entityManager.persist(orderStatusChangeLogDelivery);
+
+        if (index == 3) {
+            return;
+        }
+        OrderStatusChangeLog orderStatusChangeLogComplete = OrderStatusChangeLog.create(
+                memberOrder,
+                LocalDateTime.now().plusHours(2),
+                OrderStatusCode.COMPLETE
+        );
+        entityManager.persist(orderStatusChangeLogComplete);
+
     }
 
     @Test
@@ -256,7 +302,7 @@ class QueryDslOrderQueryRepositoryTest {
         );
 
         // then
-        Assertions.assertThat(actual.get()).hasSize(4);
+        Assertions.assertThat(actual.get()).hasSize(2);
     }
 
     @Test
@@ -289,7 +335,7 @@ class QueryDslOrderQueryRepositoryTest {
 
     @Test
     @DisplayName("특정 회원의 특정 기간 내 주문 수가 반환된다.")
-    void getCountOrdersInPeriodByMemberId() {
+    void getCountOrdersInPeriodById() {
         // when
         long actual = queryRepository.getCountOfOrdersInPeriodByMemberId(
                 LocalDate.of(2023, 1, 1),
@@ -298,7 +344,7 @@ class QueryDslOrderQueryRepositoryTest {
         );
 
         // then
-        Assertions.assertThat(actual).isEqualTo(4);
+        Assertions.assertThat(actual).isEqualTo(2);
     }
 
     @Test
@@ -411,6 +457,48 @@ class QueryDslOrderQueryRepositoryTest {
                 .isEqualTo(memberOrder.getMember().getName());
         Assertions.assertThat(responseDto.get().getAddress())
                 .isEqualTo(memberOrder.getMemberAddress().getAddress());
+    }
+
+
+    @ParameterizedTest
+    @ValueSource(ints = {0, 1, 2, 3, 4})
+    @DisplayName("주문상태조회 dto를 조회 성공 - ready상태가 가장 최근")
+    void findStatusResponsesByLoginIdAndStatusCode_ready(int index) throws Exception {
+        // given
+        Member member = memberList.get(index);
+
+        // when
+        OrderStatusCode code = Arrays.stream(OrderStatusCode.values())
+                .filter(c -> c.getStatusCode() == (index + 1))
+                .findFirst()
+                .get();
+
+        Page<OrderStatusResponseDto> responses = queryRepository.findSuccessStatusResponsesByLoginIdAndStatus(
+                member.getLoginId(),
+                code,
+                PageRequest.of(0, 300)
+        );
+
+        // then
+        Assertions.assertThat(responses).hasSize(6);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {1, 2, 3, 4})
+    @DisplayName("주문상태조회 dto를 조회 실패 - 맞지않는 코드 값 ")
+    void findStatusResponsesByLoginIdAndStatusCode_notMatch(int index) throws Exception {
+        // given
+        Member member = memberList.get(index);
+
+        // when
+        Page<OrderStatusResponseDto> responses = queryRepository.findSuccessStatusResponsesByLoginIdAndStatus(
+                member.getLoginId(),
+                OrderStatusCode.ORDER,
+                PageRequest.of(0, 300)
+        );
+
+        // then
+        Assertions.assertThat(responses).isEmpty();
     }
 
 }
