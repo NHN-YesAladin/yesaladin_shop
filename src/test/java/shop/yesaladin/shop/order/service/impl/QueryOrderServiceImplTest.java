@@ -516,7 +516,7 @@ class QueryOrderServiceImplTest {
                     .build();
             responseList.add(responseDto);
         }
-        PageRequest pageRequest = PageRequest.of(0, 5);
+        PageRequest pageRequest = PageRequest.of(1, 3);
         Mockito.when(repository.findSuccessStatusResponsesByLoginIdAndStatus(any(), any(), any()))
                 .thenReturn(new PageImpl<>(responseList, pageRequest, responseList.size()));
 
@@ -537,6 +537,7 @@ class QueryOrderServiceImplTest {
                 .isEqualTo(responseList.get(0).getOrderName());
         Assertions.assertThat(responses.getContent().get(1).getOrderId())
                 .isEqualTo(responseList.get(1).getOrderId());
+        Assertions.assertThat(responses.getNumber()).isEqualTo(pageRequest.getPageNumber());
 
         Mockito.verify(repository, Mockito.times(1))
                 .findSuccessStatusResponsesByLoginIdAndStatus(any(), any(), any());
