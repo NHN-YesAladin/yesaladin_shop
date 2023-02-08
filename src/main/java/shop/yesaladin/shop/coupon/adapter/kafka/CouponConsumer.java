@@ -27,7 +27,7 @@ public class CouponConsumer {
      *
      * @since 1.0
      */
-    @KafkaListener(id = "give-request-response", topics = "${coupon.topic.give-request-response}")
+    @KafkaListener(id = "${coupon.consumer-group.give-request-response}", topics = "${coupon.topic.give-request-response}")
     public void consumeGiveRequestResponseMessage(CouponGiveRequestResponseMessage message) {
         giveCouponService.giveCouponToMember(message);
 
@@ -40,7 +40,7 @@ public class CouponConsumer {
      *
      * @since 1.0
      */
-    @KafkaListener(id = "use-request-response", topics = "${coupon.topic.use-request-response}")
+    @KafkaListener(id = "${coupon.consumer-group.give-request-response}", topics = "${coupon.topic.use-request-response}")
     public void consumeUseRequestResponseMessage() {
 
         markAsConsumed();
