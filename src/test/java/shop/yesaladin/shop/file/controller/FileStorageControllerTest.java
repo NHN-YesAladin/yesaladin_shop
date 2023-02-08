@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.file.dto.FileUploadResponseDto;
 import shop.yesaladin.shop.file.service.inter.ObjectStorageService;
+import shop.yesaladin.shop.file.service.inter.StorageAuthService;
 import shop.yesaladin.shop.product.dummy.DummyFile;
 
 import java.io.FileInputStream;
@@ -27,6 +28,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -40,7 +42,7 @@ import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
 
 @AutoConfigureRestDocs
 @WebMvcTest(ObjectStorageController.class)
-class FileStorageControllerTest {
+class ObjectStorageControllerTest {
 
     private final String URL = "https://api-storage.cloud.toast.com/v1/AUTH_/container/domain/type";
 
@@ -48,7 +50,9 @@ class FileStorageControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private ObjectStorageService service;
+    private ObjectStorageService objectStorageService;
+    @MockBean
+    private StorageAuthService storageAuthService;
 
     @WithMockUser
     @Test
@@ -57,8 +61,8 @@ class FileStorageControllerTest {
         // given
         MultipartFile multipartFile = new MockMultipartFile("image", new FileInputStream("src/test/resources/img/yesaladinnotfound.png"));
 
-        File file = DummyFile.dummy(URL + "/image.jpg");
-        Mockito.when(service.fileUpload(anyString(), anyString(), any()))
+        File file = DummyFile.dummy(URL + "/yesaladinnotfound.png");
+        Mockito.when(objectStorageService.fileUpload(anyString(), anyString(), any()))
                 .thenReturn(new FileUploadResponseDto(file.getUrl(), file.getUploadDateTime().toString()));
 
         // when
@@ -70,9 +74,9 @@ class FileStorageControllerTest {
         result.andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data.url", equalTo(URL + "/image.jpg")));
+                .andExpect(jsonPath("$.data.url", equalTo(URL + "/yesaladinnotfound.png")));
 
-        verify(service, times(1)).fileUpload(anyString(), anyString(), any());
+        verify(objectStorageService, times(1)).fileUpload(anyString(), anyString(), any());
 
         // docs
         result.andDo(document(
@@ -88,6 +92,38 @@ class FileStorageControllerTest {
                         fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
                         fieldWithPath("data.url").type(JsonFieldType.STRING).description("업로드한 파일의 URL"),
                         fieldWithPath("data.fileUploadDateTime").type(JsonFieldType.STRING).description("업로드한 파일의 업로드 시간"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY).description("에러 메세지").optional()
+                )
+        ));
+    }
+
+    @WithMockUser
+    @Test
+    @DisplayName("오브젝트 스토리지의 토큰을 얻어 반환")
+    void getObjectStorageAuthToken() throws Exception {
+        // given
+        Mockito.when(storageAuthService.getAuthToken()).thenReturn("auth-token");
+
+        // when
+        ResultActions result = mockMvc.perform(get("/v1/files/auth-token"));
+
+        // then
+        result.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.data", equalTo("auth-token")));
+
+        verify(storageAuthService, times(1)).getAuthToken();
+
+        // docs
+        result.andDo(document(
+                "get-object-storage-auth-token",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data").type(JsonFieldType.STRING).description("Object Storage Auth Token"),
                         fieldWithPath("errorMessages").type(JsonFieldType.ARRAY).description("에러 메세지").optional()
                 )
         ));

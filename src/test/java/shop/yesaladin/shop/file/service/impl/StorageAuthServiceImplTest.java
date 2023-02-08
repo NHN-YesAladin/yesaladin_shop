@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.client.RestTemplate;
 import shop.yesaladin.shop.config.ObjectStorageProperties;
-import shop.yesaladin.shop.config.RedisConfig;
 import shop.yesaladin.shop.file.service.inter.StorageAuthService;
 
 import static org.mockito.Mockito.mock;
