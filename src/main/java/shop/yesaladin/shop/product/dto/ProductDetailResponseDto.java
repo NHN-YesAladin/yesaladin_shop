@@ -2,9 +2,13 @@ package shop.yesaladin.shop.product.dto;
 
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.yesaladin.shop.category.dto.CategoryResponseDto;
+import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
+import shop.yesaladin.shop.tag.dto.TagResponseDto;
+import shop.yesaladin.shop.writing.dto.AuthorsResponseDto;
 
 import java.util.List;
 
@@ -15,36 +19,40 @@ import java.util.List;
  * @since 1.0
  */
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductDetailResponseDto {
 
+    // 기본 정보
     private Long id;
-
-    private Boolean isEbook;
+    private String isbn;
     private String title;
-    private List<String> authors;
-    private String publisher;
-
+    private String contents;
+    private String description;
+    private String publishedDate;
     private String thumbnailFileUrl;
 
+    // 저자, 출판사, 태그, 카테고리
+    private List<AuthorsResponseDto> authors;
+    private PublisherResponseDto publisher;
+    private List<TagResponseDto> tags;
+    private List<CategoryResponseDto> categories;
+
+    // 금액
     private long actualPrice;
     private long sellingPrice;
     private int discountRate;
     private long pointPrice;
     private int pointRate;
 
-    private String publishedDate;
-    private String isbn;
+    // E-Book
+    private Boolean isEbook;
+
+    // 구독
     private Boolean isSubscriptionAvailable;
     private String issn;
 
-    private String contents;
-
-    private String description;
-
     // 판매여부 관련
     private boolean onSale;
-
-    private List<CategoryResponseDto> categories;
 }

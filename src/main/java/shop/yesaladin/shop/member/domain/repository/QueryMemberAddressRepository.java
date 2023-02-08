@@ -3,6 +3,7 @@ package shop.yesaladin.shop.member.domain.repository;
 import java.util.List;
 import java.util.Optional;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
+import shop.yesaladin.shop.member.dto.MemberAddressOrderSheetResponseDto;
 import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
 
 /**

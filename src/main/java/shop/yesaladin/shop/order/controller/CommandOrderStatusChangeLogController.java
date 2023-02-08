@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.common.exception.ClientException;
+import shop.yesaladin.shop.common.aspect.annotation.LoginId;
 import shop.yesaladin.shop.common.utils.AuthorityUtils;
 import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
 import shop.yesaladin.shop.order.dto.NonMemberRequestDto;
@@ -76,7 +77,6 @@ public class CommandOrderStatusChangeLogController {
      * @param status         주문 상태
      * @param request        비회원 데이터
      * @param bindingResult  유효성 검사
-     * @param authentication 인증
      * @return 생성된 주문 상태 변경 내역
      */
     @PostMapping(path = "/non-member", params = "status")
@@ -85,14 +85,12 @@ public class CommandOrderStatusChangeLogController {
             @PathVariable Long orderId,
             @RequestParam String status,
             @Valid @RequestBody NonMemberRequestDto request,
-            BindingResult bindingResult,
-            Authentication authentication
+            BindingResult bindingResult
     ) {
         checkRequestValidation(bindingResult);
 
         OrderStatusCode orderStatus = getValidOrderStatus(status);
 
-        AuthorityUtils.checkAnonymousClient(authentication);
 
         OrderStatusChangeLogResponseDto response = commandOrderStatusChangeLogService.createNonMemberOrderStatusChangeLog(
                 orderId,

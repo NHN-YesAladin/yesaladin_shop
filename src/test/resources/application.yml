@@ -1,4 +1,7 @@
 spring:
+  cloud:
+    config:
+      enabled: false
   application:
     name: yesaladin-shop
   datasource:
@@ -10,6 +13,8 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
+    hibernate:
+      ddl-auto: create
   kafka:
     bootstrap-servers: localhost:9092
   redis:
@@ -40,6 +45,9 @@ yesaladin:
     coupon: http://localhost:8085
 
 coupon:
+  consumer-group:
+    give-request-response: give-request-response-dev
+    use-request-response: use-request-response-dev
   topic:
     give-request: dev_yesaladin_coupon_give_request
     give-request-limit: dev_yesaladin_coupon_give_request_limit

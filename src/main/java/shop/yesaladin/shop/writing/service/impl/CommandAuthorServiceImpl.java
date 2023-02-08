@@ -3,6 +3,8 @@ package shop.yesaladin.shop.writing.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import shop.yesaladin.common.code.ErrorCode;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.writing.domain.model.Author;
@@ -10,7 +12,6 @@ import shop.yesaladin.shop.writing.domain.repository.CommandAuthorRepository;
 import shop.yesaladin.shop.writing.domain.repository.QueryAuthorRepository;
 import shop.yesaladin.shop.writing.dto.AuthorRequestDto;
 import shop.yesaladin.shop.writing.dto.AuthorResponseDto;
-import shop.yesaladin.shop.writing.exception.AuthorNotFoundException;
 import shop.yesaladin.shop.writing.service.inter.CommandAuthorService;
 
 import java.util.Objects;
@@ -34,21 +35,6 @@ public class CommandAuthorServiceImpl implements CommandAuthorService {
      */
     @Transactional
     @Override
-    public AuthorResponseDto register(Author author) {
-        Author savedAuthor = commandAuthorRepository.save(author);
-
-        return new AuthorResponseDto(
-                savedAuthor.getId(),
-                savedAuthor.getName(),
-                savedAuthor.getMember()
-        );
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Transactional
-    @Override
     public AuthorResponseDto create(AuthorRequestDto createDto) {
         Member member = getMember(createDto.getLoginId());
 
@@ -57,12 +43,12 @@ public class CommandAuthorServiceImpl implements CommandAuthorService {
                 .member(member)
                 .build();
 
-        Author savedAuthor = commandAuthorRepository.save(author);
+        commandAuthorRepository.save(author);
 
         return new AuthorResponseDto(
-                savedAuthor.getId(),
-                savedAuthor.getName(),
-                savedAuthor.getMember()
+                author.getId(),
+                author.getName(),
+                author.getMember()
         );
     }
 
@@ -73,7 +59,10 @@ public class CommandAuthorServiceImpl implements CommandAuthorService {
     @Override
     public AuthorResponseDto modify(Long id, AuthorRequestDto modifyDto) {
         Author author = queryAuthorRepository.findById(id)
-                .orElseThrow(() -> new AuthorNotFoundException(id));
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.WRITING_AUTHOR_NOT_FOUND,
+                        "Author is not found with id : " + id
+                ));
 
         author.changeName(modifyDto.getName());
         author.changeMember(getMember(modifyDto.getLoginId()));

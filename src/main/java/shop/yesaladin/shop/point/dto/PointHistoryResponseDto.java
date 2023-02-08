@@ -3,6 +3,7 @@ package shop.yesaladin.shop.point.dto;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.ToString;
 import shop.yesaladin.shop.point.domain.model.PointCode;
 import shop.yesaladin.shop.point.domain.model.PointHistory;
 import shop.yesaladin.shop.point.domain.model.PointReasonCode;
@@ -14,6 +15,7 @@ import shop.yesaladin.shop.point.domain.model.PointReasonCode;
  * @since 1.0
  */
 @Getter
+@ToString
 @AllArgsConstructor
 public class PointHistoryResponseDto {
 

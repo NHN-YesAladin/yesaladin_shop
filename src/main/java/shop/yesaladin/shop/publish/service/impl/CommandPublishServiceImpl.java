@@ -3,12 +3,13 @@ package shop.yesaladin.shop.publish.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import shop.yesaladin.common.code.ErrorCode;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.publish.domain.model.Publish;
 import shop.yesaladin.shop.publish.domain.repository.CommandPublishRepository;
 import shop.yesaladin.shop.publish.domain.repository.QueryPublishRepository;
 import shop.yesaladin.shop.publish.dto.PublishResponseDto;
-import shop.yesaladin.shop.publish.exception.PublishNotFoundException;
 import shop.yesaladin.shop.publish.service.inter.CommandPublishService;
 
 /**
@@ -47,7 +48,9 @@ public class CommandPublishServiceImpl implements CommandPublishService {
     @Override
     public void deleteByProduct(Product product) {
         if (!queryPublishRepository.existsByProduct(product)) {
-            throw new PublishNotFoundException(product);
+            throw new ClientException(
+                    ErrorCode.PUBLISH_NOT_FOUND,
+                    "Publish not found with id : " + product.getId());
         }
         commandPublishRepository.deleteByProduct(product);
     }

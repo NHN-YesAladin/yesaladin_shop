@@ -83,11 +83,11 @@ class CommandRelationServiceImplTest {
 
         Mockito.when(queryRelationRepository.existsByPk(any())).thenReturn(false);
 
-        Mockito.when(queryProductRepository.findById(MAIN_ID)).thenReturn(Optional.of(productMain));
-        Mockito.when(queryProductRepository.findById(SUB_ID)).thenReturn(Optional.ofNullable(productSub));
+        Mockito.when(queryProductRepository.findProductById(MAIN_ID)).thenReturn(Optional.of(productMain));
+        Mockito.when(queryProductRepository.findProductById(SUB_ID)).thenReturn(Optional.ofNullable(productSub));
 
-        Mockito.when(queryProductRepository.findById(MAIN_ID)).thenReturn(Optional.of(productMain));
-        Mockito.when(queryProductRepository.findById(SUB_ID)).thenReturn(Optional.of(productSub));
+        Mockito.when(queryProductRepository.findProductById(MAIN_ID)).thenReturn(Optional.of(productMain));
+        Mockito.when(queryProductRepository.findProductById(SUB_ID)).thenReturn(Optional.of(productSub));
 
         // when
         ProductOnlyIdDto productMAIN_ID = service.create(MAIN_ID, SUB_ID);
@@ -97,8 +97,8 @@ class CommandRelationServiceImplTest {
         assertThat(productMAIN_ID.getId()).isEqualTo(MAIN_ID);
 
         verify(queryRelationRepository, times(2)).existsByPk(any());
-        verify(queryProductRepository, times(1)).findById(MAIN_ID);
-        verify(queryProductRepository, times(1)).findById(SUB_ID);
+        verify(queryProductRepository, times(1)).findProductById(MAIN_ID);
+        verify(queryProductRepository, times(1)).findProductById(SUB_ID);
 
         verify(commandRelationRepository, times(2)).save(any());
     }
