@@ -46,24 +46,6 @@ class QueryDslAuthorRepositoryTest {
     }
 
     @Test
-    @DisplayName("저자 전체 조회")
-    void findAll() {
-        // given
-        Author author1 = DummyAuthor.dummy("저자1", null);
-        Author author2 = DummyAuthor.dummy("저자2", null);
-
-        entityManager.persist(author1);
-        entityManager.persist(author2);
-
-        // when
-        List<Author> authors = repository.findAll();
-
-        // then
-        assertThat(authors.contains(author1)).isTrue();
-        assertThat(authors.contains(author2)).isTrue();
-    }
-
-    @Test
     @DisplayName("저자 페이징된 전체 조회")
     void findAllForManager() {
         // given

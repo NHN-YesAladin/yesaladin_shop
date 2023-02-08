@@ -34,6 +34,7 @@ public class CommandRelationController {
      * @author 이수정
      * @since 1.0
      */
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public ResponseDto<ProductOnlyIdDto> registerRelation(
             @PathVariable Long productMainId,

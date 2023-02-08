@@ -114,12 +114,12 @@ public class CommandProductServiceImpl implements CommandProductService {
         TotalDiscountRate totalDiscountRate = queryTotalDiscountRateRepository.findById(TOTAL_DISCOUNT_RATE_DEFAULT_ID)
                 .orElseThrow(() -> new ClientException(
                         ErrorCode.PRODUCT_TOTAL_DISCOUNT_RATE_NOT_EXIST,
-                                "TotalDiscountRate not exists with id : " + TOTAL_DISCOUNT_RATE_DEFAULT_ID
-                        ));
+                        "TotalDiscountRate not exists with id : " + TOTAL_DISCOUNT_RATE_DEFAULT_ID
+                ));
 
         // Product
         Product product = queryProductRepository.findByIsbn(dto.getIsbn()).orElse(null);
-        if (!Objects.isNull(product)) {
+        if (Objects.nonNull(product)) {
             throw new ClientException(
                     ErrorCode.PRODUCT_ALREADY_EXIST,
                     "Product already exists with isbn : " + dto.getIsbn()

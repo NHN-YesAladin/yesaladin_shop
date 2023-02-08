@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -67,7 +68,9 @@ class CommandRelationControllerTest {
         result.andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("id", equalTo(1)));
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.CREATED.value())))
+                .andExpect(jsonPath("$.data.id", equalTo(1)));
 
         verify(service, times(1)).create(mainId, subId);
 
@@ -80,7 +83,10 @@ class CommandRelationControllerTest {
                         fieldWithPath("productSubId").type(JsonFieldType.NUMBER).description("연관관계를 맺어줄 Sub 상품의 아이디")
                 ),
                 responseFields(
-                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("연관관계를 맺은 Main 상품의 아이디")
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("HTTP 상태 코드"),
+                        fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("연관관계를 맺은 Main 상품의 아이디"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY).optional().description("에러 메세지")
                 )
         ));
     }

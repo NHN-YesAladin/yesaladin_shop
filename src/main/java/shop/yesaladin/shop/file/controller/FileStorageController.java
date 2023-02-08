@@ -1,11 +1,13 @@
 package shop.yesaladin.shop.file.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.shop.file.dto.FileUploadResponseDto;
 import shop.yesaladin.shop.file.service.inter.FileStorageService;
 
@@ -33,15 +35,16 @@ public class FileStorageController {
      * @since 1.0
      */
     @PostMapping("/file-upload/{domainName}/{typeName}")
-    public FileUploadResponseDto fileUpload(
+    public ResponseDto<FileUploadResponseDto> fileUpload(
             MultipartFile file,
             @PathVariable String domainName,
             @PathVariable String typeName
     ) {
-        return fileStorageService.fileUpload(
-                domainName,
-                typeName,
-                file
-        );
+        return ResponseDto.<FileUploadResponseDto>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(fileStorageService.fileUpload(domainName, typeName, file))
+                .errorMessages(null)
+                .build();
     }
 }

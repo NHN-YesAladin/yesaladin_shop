@@ -34,6 +34,7 @@ public class CommandProductController {
      * @author 이수정
      * @since 1.0
      */
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public ResponseDto<ProductOnlyIdDto> registerProduct(@Valid @RequestBody ProductCreateDto createDto) {
         return ResponseDto.<ProductOnlyIdDto>builder()

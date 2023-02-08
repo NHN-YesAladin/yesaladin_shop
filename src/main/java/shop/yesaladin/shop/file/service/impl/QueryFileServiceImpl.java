@@ -3,10 +3,11 @@ package shop.yesaladin.shop.file.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import shop.yesaladin.common.code.ErrorCode;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.file.domain.repository.QueryFileRepository;
 import shop.yesaladin.shop.file.dto.FileResponseDto;
-import shop.yesaladin.shop.file.exception.FileNotFoundException;
 import shop.yesaladin.shop.file.service.inter.QueryFileService;
 
 /**
@@ -28,7 +29,9 @@ public class QueryFileServiceImpl implements QueryFileService {
     @Override
     public FileResponseDto findById(Long id) {
         File file = queryFileRepository.findById(id)
-                .orElseThrow(() -> new FileNotFoundException(id));
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.FILE_NOT_FOUND,
+                        "File is not found with id : " + id));
 
         return new FileResponseDto(file.getId(), file.getUrl(), file.getUploadDateTime());
     }

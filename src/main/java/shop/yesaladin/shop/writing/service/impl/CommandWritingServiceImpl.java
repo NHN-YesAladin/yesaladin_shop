@@ -2,12 +2,13 @@ package shop.yesaladin.shop.writing.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import shop.yesaladin.common.code.ErrorCode;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.writing.domain.model.Writing;
 import shop.yesaladin.shop.writing.domain.repository.CommandWritingRepository;
 import shop.yesaladin.shop.writing.domain.repository.QueryWritingRepository;
 import shop.yesaladin.shop.writing.dto.WritingResponseDto;
-import shop.yesaladin.shop.writing.exception.WritingNotFoundException;
 import shop.yesaladin.shop.writing.service.inter.CommandWritingService;
 
 import javax.transaction.Transactional;
@@ -37,11 +38,11 @@ public class CommandWritingServiceImpl implements CommandWritingService {
     @Transactional
     @Override
     public WritingResponseDto register(Writing writing) {
-        Writing savedWriting = commandWritingRepository.save(writing);
+        commandWritingRepository.save(writing);
 
         return new WritingResponseDto(
-                savedWriting.getProduct(),
-                savedWriting.getAuthor()
+                writing.getProduct(),
+                writing.getAuthor()
         );
     }
 
@@ -49,7 +50,6 @@ public class CommandWritingServiceImpl implements CommandWritingService {
      * product에 맞는 집필을 삭제합니다.
      *
      * @param product 삭제할 집필의 product
-     * @throws WritingNotFoundException 삭제할 집필이 존재하지 않는 경우
      * @author 이수정
      * @since 1.0
      */
@@ -57,7 +57,10 @@ public class CommandWritingServiceImpl implements CommandWritingService {
     @Override
     public void deleteByProduct(Product product) {
         if (!queryWritingRepository.existsByProduct(product)) {
-            throw new WritingNotFoundException(product);
+            throw new ClientException(
+                    ErrorCode.WRITING_NOT_FOUND,
+                    "Writing is not found with product id : " + product.getId()
+            );
         }
         commandWritingRepository.deleteByProduct(product);
     }

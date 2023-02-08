@@ -97,7 +97,7 @@ public class QueryRelationServiceImpl implements QueryRelationService {
         }
 
         return PaginatedResponseDto.<RelationsResponseDto>builder()
-                .totalPage(page.getNumber())
+                .totalPage(page.getTotalPages())
                 .currentPage(page.getNumber())
                 .totalDataCount(page.getTotalElements())
                 .dataList(relations)

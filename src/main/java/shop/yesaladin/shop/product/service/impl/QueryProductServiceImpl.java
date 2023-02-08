@@ -73,7 +73,7 @@ public class QueryProductServiceImpl implements QueryProductService {
         Product product = queryProductRepository.findProductById(id)
                 .orElseThrow(() -> new ClientException(
                         ErrorCode.PRODUCT_NOT_FOUND,
-                        "Product not found with id : " + id
+                        "Target product not found with id : " + id
                 ));
 
         int rate = getRateByProduct(product);
@@ -191,7 +191,7 @@ public class QueryProductServiceImpl implements QueryProductService {
         if (Objects.isNull(typeId)) {
             page = queryProductRepository.findAll(pageable);
         } else {
-            page =  queryProductRepository.findAllByTypeId(pageable, typeId);
+            page = queryProductRepository.findAllByTypeId(pageable, typeId);
         }
         return getProductPaginatedResponses(page);
     }
@@ -206,7 +206,7 @@ public class QueryProductServiceImpl implements QueryProductService {
         if (Objects.isNull(typeId)) {
             page = queryProductRepository.findAllForManager(pageable);
         } else {
-            page =  queryProductRepository.findAllByTypeIdForManager(pageable, typeId);
+            page = queryProductRepository.findAllByTypeIdForManager(pageable, typeId);
         }
         return getProductPaginatedResponses(page);
     }
@@ -214,7 +214,7 @@ public class QueryProductServiceImpl implements QueryProductService {
     /**
      * 전체 조회된 page 객체를 바탕으로 전체 조회 화면에 내보낼 정보를 담은 dto page 객체를 반환합니다.
      *
-     * @param page     페이징 전체 조회된 객체
+     * @param page 페이징 전체 조회된 객체
      * @return PaginatedResponseDto
      * @author 이수정
      * @since 1.0
@@ -242,6 +242,8 @@ public class QueryProductServiceImpl implements QueryProductService {
                     .thumbnailFileUrl(product.getThumbnailFile().getUrl())
                     .tags(findTagsByProduct(product))
                     .ebookFileUrl(isEbook(product) ? product.getEbookFile().getUrl() : null)
+                    .isEbook(isEbook(product))
+                    .isSubscribeProduct(product.isSubscriptionAvailable())
                     .build());
         }
 
@@ -281,7 +283,7 @@ public class QueryProductServiceImpl implements QueryProductService {
      * 상품의 정가, 할인율을 바탕으로 판매가를 계산해 반환합니다.
      *
      * @param actualPrice 상품의 정가
-     * @param rate    상품의 할인율(전체 / 개별)
+     * @param rate        상품의 할인율(전체 / 개별)
      * @return 계산된 상품의 판매가
      * @author 이수정
      * @since 1.0

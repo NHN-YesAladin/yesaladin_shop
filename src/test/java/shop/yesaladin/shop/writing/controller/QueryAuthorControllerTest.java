@@ -15,6 +15,7 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.writing.dto.AuthorsResponseDto;
 import shop.yesaladin.shop.writing.service.inter.QueryAuthorService;
 
@@ -48,45 +49,6 @@ class QueryAuthorControllerTest {
 
     @WithMockUser
     @Test
-    @DisplayName("저자 전체 조회 성공")
-    void getAuthors() throws Exception {
-        // given
-        List<AuthorsResponseDto> authors = List.of(
-                new AuthorsResponseDto(1L, "저자1", "happyAuthor"),
-                new AuthorsResponseDto(2L, "저자2", "sadAuthor")
-        );
-        Mockito.when(service.findAll()).thenReturn(authors);
-
-        // when
-        ResultActions result = mockMvc.perform(get("/v1/authors")
-                .contentType(MediaType.APPLICATION_JSON));
-
-        // then
-        result.andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$[0].id", equalTo(1)))
-                .andExpect(jsonPath("$[1].id", equalTo(2)))
-                .andExpect(jsonPath("$[0].name", equalTo("저자1")))
-                .andExpect(jsonPath("$[1].name", equalTo("저자2")))
-                .andExpect(jsonPath("$[0].loginId", equalTo("happyAuthor")))
-                .andExpect(jsonPath("$[1].loginId", equalTo("sadAuthor")));
-
-        // docs
-        result.andDo(document(
-                "find-all-author",
-                getDocumentRequest(),
-                getDocumentResponse(),
-                responseFields(
-                        fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("저자 아이디"),
-                        fieldWithPath("[].name").type(JsonFieldType.STRING).description("저자 이름"),
-                        fieldWithPath("[].loginId").type(JsonFieldType.STRING).description("저자 로그인 아이디")
-                )
-        ));
-    }
-
-    @WithMockUser
-    @Test
     @DisplayName("저자 관리자용 페이징 전체 조회 성공")
     void getAuthorsForManager() throws Exception {
         // given
@@ -100,14 +62,20 @@ class QueryAuthorControllerTest {
                 PageRequest.of(0, 5),
                 authors.size()
         );
-        Mockito.when(service.findAllForManager(any())).thenReturn(page);
+        PaginatedResponseDto<AuthorsResponseDto> paginated = PaginatedResponseDto.<AuthorsResponseDto>builder()
+                .totalPage(page.getTotalPages())
+                .currentPage(page.getNumber())
+                .totalDataCount(page.getTotalElements())
+                .dataList(authors)
+                .build();
+        Mockito.when(service.findAllForManager(any())).thenReturn(paginated);
 
         // when
         ResultActions result = mockMvc.perform(get("/v1/authors/manager")
                 .param("page", "0")
                 .param("size", "5")
                 .contentType(MediaType.APPLICATION_JSON));
-        Mockito.when(service.findAllForManager(PageRequest.of(0, 5))).thenReturn(page);
+        Mockito.when(service.findAllForManager(PageRequest.of(0, 5))).thenReturn(paginated);
 
         // then
         result.andDo(print())
@@ -126,12 +94,15 @@ class QueryAuthorControllerTest {
                         parameterWithName("page").description("페이지네이션 페이지 번호")
                 ),
                 responseFields(
-                        fieldWithPath("totalPage").type(JsonFieldType.NUMBER).description("전체 페이지"),
-                        fieldWithPath("currentPage").type(JsonFieldType.NUMBER).description("현재 페이지"),
-                        fieldWithPath("totalDataCount").type(JsonFieldType.NUMBER).description("데이터 개수"),
-                        fieldWithPath("dataList.[].id").type(JsonFieldType.NUMBER).description("저자 아이디"),
-                        fieldWithPath("dataList.[].name").type(JsonFieldType.STRING).description("저자명"),
-                        fieldWithPath("dataList.[].loginId").description("저자 로그인 아이디")
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("HTTP 상태 코드"),
+                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER).description("전체 페이지"),
+                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER).description("현재 페이지"),
+                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER).description("데이터 개수"),
+                        fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER).description("저자 아이디"),
+                        fieldWithPath("data.dataList.[].name").type(JsonFieldType.STRING).description("저자명"),
+                        fieldWithPath("data.dataList.[].loginId").description("저자 로그인 아이디"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY).description("에러 메세지").optional()
                 )
         ));
     }
