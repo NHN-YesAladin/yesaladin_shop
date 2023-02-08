@@ -16,7 +16,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.web.multipart.MultipartFile;
 import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.file.dto.FileUploadResponseDto;
-import shop.yesaladin.shop.file.service.inter.FileStorageService;
+import shop.yesaladin.shop.file.service.inter.ObjectStorageService;
 import shop.yesaladin.shop.product.dummy.DummyFile;
 
 import java.io.FileInputStream;
@@ -39,7 +39,7 @@ import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentRequest;
 import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
 
 @AutoConfigureRestDocs
-@WebMvcTest(FileStorageController.class)
+@WebMvcTest(ObjectStorageController.class)
 class FileStorageControllerTest {
 
     private final String URL = "https://api-storage.cloud.toast.com/v1/AUTH_/container/domain/type";
@@ -48,7 +48,7 @@ class FileStorageControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private FileStorageService service;
+    private ObjectStorageService service;
 
     @WithMockUser
     @Test
