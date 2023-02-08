@@ -7,10 +7,11 @@ import org.mockito.Mockito;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import shop.yesaladin.common.exception.ClientException;
+import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.tag.domain.model.Tag;
 import shop.yesaladin.shop.tag.domain.repository.QueryTagRepository;
 import shop.yesaladin.shop.tag.dto.TagResponseDto;
-import shop.yesaladin.shop.tag.dto.TagsResponseDto;
 import shop.yesaladin.shop.tag.exception.TagNotFoundException;
 import shop.yesaladin.shop.tag.service.inter.QueryTagService;
 
@@ -60,30 +61,7 @@ class QueryTagServiceImplTest {
         Mockito.when(queryTagRepository.findById(id)).thenReturn(Optional.ofNullable(null));
 
         // when then
-        assertThatThrownBy(() -> service.findById(id)).isInstanceOf(TagNotFoundException.class);
-    }
-
-    @Test
-    @DisplayName("태그 전체 조회 성공")
-    void findAll() {
-        // given
-        String name1 = "행복한";
-        String name2 = "슬픈";
-
-        List<Tag> tags = List.of(
-                Tag.builder().name(name1).build(),
-                Tag.builder().name(name2).build()
-        );
-
-        Mockito.when(queryTagRepository.findAll()).thenReturn(tags);
-
-        // when
-        List<TagsResponseDto> response = service.findAll();
-
-        // then
-        assertThat(response.size()).isEqualTo(2);
-        assertThat(response.get(0).getName()).isEqualTo(name1);
-        assertThat(response.get(1).getName()).isEqualTo(name2);
+        assertThatThrownBy(() -> service.findById(id)).isInstanceOf(ClientException.class);
     }
 
     @Test
@@ -104,11 +82,11 @@ class QueryTagServiceImplTest {
         Mockito.when(queryTagRepository.findAllForManager(any())).thenReturn(page);
 
         // when
-        Page<TagsResponseDto> response = service.findAllForManager(PageRequest.of(0, 5));
+        PaginatedResponseDto<TagResponseDto> response = service.findAllForManager(PageRequest.of(0, 5));
 
         // then
-        assertThat(response.getTotalElements()).isEqualTo(10);
-        assertThat(response.getContent().get(0).getId()).isEqualTo(1L);
-        assertThat(response.getContent().get(9).getId()).isEqualTo(10L);
+        assertThat(response.getTotalDataCount()).isEqualTo(10);
+        assertThat(response.getDataList().get(0).getId()).isEqualTo(1L);
+        assertThat(response.getDataList().get(9).getId()).isEqualTo(10L);
     }
 }

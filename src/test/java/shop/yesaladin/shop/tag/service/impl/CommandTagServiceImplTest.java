@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.tag.domain.model.Tag;
 import shop.yesaladin.shop.tag.domain.repository.CommandTagRepository;
 import shop.yesaladin.shop.tag.domain.repository.QueryTagRepository;
@@ -38,38 +39,6 @@ class CommandTagServiceImplTest {
     }
 
     @Test
-    @DisplayName("태그 등록 성공")
-    void register_success() {
-        // given
-        String name = "아름다운";
-        Tag tag = Tag.builder().name(name).build();
-
-        when(commandTagRepository.save(any())).thenReturn(tag);
-
-        // when
-        TagResponseDto response = service.register(tag);
-
-        // then
-        assertThat(response.getName()).isEqualTo(name);
-
-        verify(commandTagRepository, times(1)).save(tag);
-    }
-
-    @Test
-    @DisplayName("태그 등록 실패_이미 존재하는 태그명인 경우 예외 발생")
-    void register_throwTagAlreadyExistsException() {
-        // given
-        String name = "아름다운";
-        Tag tag = Tag.builder().name(name).build();
-        Mockito.when(queryTagRepository.existsByName(anyString())).thenReturn(true);
-
-        // when
-        assertThatThrownBy(() -> service.register(tag)).isInstanceOf(TagAlreadyExistsException.class);
-
-        verify(queryTagRepository, times(1)).existsByName(anyString());
-    }
-
-    @Test
     @DisplayName("태그 생성 후 등록 성공")
     void create_success() {
         // given
@@ -98,7 +67,7 @@ class CommandTagServiceImplTest {
         Mockito.when(queryTagRepository.existsByName(anyString())).thenReturn(true);
 
         // when
-        assertThatThrownBy(() -> service.create(createDto)).isInstanceOf(TagAlreadyExistsException.class);
+        assertThatThrownBy(() -> service.create(createDto)).isInstanceOf(ClientException.class);
 
         verify(queryTagRepository, times(1)).existsByName(anyString());
     }
@@ -144,7 +113,7 @@ class CommandTagServiceImplTest {
         Mockito.when(queryTagRepository.existsByName(anyString())).thenReturn(true);
 
         // when
-        assertThatThrownBy(() -> service.modify(id, modifyDto)).isInstanceOf(TagAlreadyExistsException.class);
+        assertThatThrownBy(() -> service.modify(id, modifyDto)).isInstanceOf(ClientException.class);
 
         verify(queryTagRepository, times(1)).findById(anyLong());
         verify(queryTagRepository, times(1)).existsByName(anyString());

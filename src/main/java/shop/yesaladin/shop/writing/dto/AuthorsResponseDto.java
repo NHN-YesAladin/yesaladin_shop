@@ -4,8 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import shop.yesaladin.shop.tag.dto.ProductTagResponseDto;
-import shop.yesaladin.shop.tag.dto.TagResponseDto;
 
 import java.util.Objects;
 

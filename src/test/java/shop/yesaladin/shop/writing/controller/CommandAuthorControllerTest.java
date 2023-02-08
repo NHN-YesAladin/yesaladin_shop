@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -65,8 +66,10 @@ class CommandAuthorControllerTest {
         result.andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("id", equalTo(1)))
-                .andExpect(jsonPath("name", equalTo(name)));
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.CREATED.value())))
+                .andExpect(jsonPath("$.data.id", equalTo(1)))
+                .andExpect(jsonPath("$.data.name", equalTo(name)));
 
         verify(service, times(1)).create(any());
 
@@ -80,9 +83,12 @@ class CommandAuthorControllerTest {
                         fieldWithPath("loginId").description("저자 로그인 아이디")
                 ),
                 responseFields(
-                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("생성된 저자 아이디"),
-                        fieldWithPath("name").type(JsonFieldType.STRING).description("저자명"),
-                        fieldWithPath("member").description("저자 멤버 엔터티")
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("생성된 저자 아이디"),
+                        fieldWithPath("data.name").type(JsonFieldType.STRING).description("저자명"),
+                        fieldWithPath("data.member").description("저자 멤버 엔터티"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY).description("에러 메세지").optional()
                 )
         ));
     }
@@ -133,8 +139,10 @@ class CommandAuthorControllerTest {
         result.andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("id", equalTo(1)))
-                .andExpect(jsonPath("name", equalTo(name2)));
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())))
+                .andExpect(jsonPath("$.data.id", equalTo(1)))
+                .andExpect(jsonPath("$.data.name", equalTo(name2)));
 
         verify(service, times(1)).modify(anyLong(), any());
 
@@ -148,9 +156,12 @@ class CommandAuthorControllerTest {
                         fieldWithPath("loginId").description("저자 로그인 아이디")
                 ),
                 responseFields(
-                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("수정된 저자 아이디"),
-                        fieldWithPath("name").type(JsonFieldType.STRING).description("저자명"),
-                        fieldWithPath("member").description("저자")
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("HTTP 상태 코드"),
+                        fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("수정된 저자 아이디"),
+                        fieldWithPath("data.name").type(JsonFieldType.STRING).description("저자명"),
+                        fieldWithPath("data.member").description("저자"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY).description("에러 메세지").optional()
                 )
         ));
     }

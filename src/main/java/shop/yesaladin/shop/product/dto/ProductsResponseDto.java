@@ -40,4 +40,7 @@ public class ProductsResponseDto {
     private String thumbnailFileUrl;
     private List<TagResponseDto> tags;
     private String ebookFileUrl;
+
+    private Boolean isEbook;
+    private Boolean isSubscribeProduct;
 }
