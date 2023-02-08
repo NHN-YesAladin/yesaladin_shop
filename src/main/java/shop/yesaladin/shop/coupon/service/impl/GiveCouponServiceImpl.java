@@ -199,7 +199,7 @@ public class GiveCouponServiceImpl implements GiveCouponService {
     }
 
     private String getMemberIdFromRequestId(String requestId) {
-        return Optional.ofNullable(redisTemplate.opsForValue().getAndDelete(requestId))
+        return Optional.ofNullable(redisTemplate.opsForValue().get(requestId))
                 .orElseThrow(() -> new ClientException(
                         ErrorCode.BAD_REQUEST,
                         "Request id not exists or expired. request id : " + requestId
