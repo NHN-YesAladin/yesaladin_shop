@@ -17,7 +17,8 @@ public interface QueryWishlistRepository {
      *
      * @param memberId 조회할 회원의 id
      * @param pageable 페이지 정보
-     *
+     * @author 김선홍
+     * @since 1.0
      */
     Page<Wishlist> findWishlistByMemberId(Long memberId, Pageable pageable);
 }

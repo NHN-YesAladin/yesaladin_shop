@@ -47,6 +47,14 @@ public class Wishlist {
     @JoinColumn(name = "product_id")
     Product product;
 
+    public static Wishlist create(Member member, Product product) {
+        return Wishlist.builder()
+                .pk(Pk.builder().memberId(member.getId()).productId(product.getId()).build())
+                .member(member)
+                .product(product)
+                .build();
+    }
+
     @Getter
     @Builder
     @NoArgsConstructor(access = AccessLevel.PROTECTED)

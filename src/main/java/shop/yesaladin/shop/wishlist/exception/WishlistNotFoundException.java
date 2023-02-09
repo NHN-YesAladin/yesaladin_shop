@@ -8,7 +8,7 @@ package shop.yesaladin.shop.wishlist.exception;
  */
 public class WishlistNotFoundException extends RuntimeException {
 
-    public WishlistNotFoundException(Long memberId, Long productId) {
-        super(memberId + "의 위시리스트에는 " + productId + "가 위시리스트에 등록되지 않았습니다.");
+    public WishlistNotFoundException(String loginId, Long productId) {
+        super(loginId + "의 위시리스트에는 " + productId + "가 위시리스트에 등록되지 않았습니다.");
     }
 }

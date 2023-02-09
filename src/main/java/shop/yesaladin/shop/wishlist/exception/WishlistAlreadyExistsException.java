@@ -8,7 +8,7 @@ package shop.yesaladin.shop.wishlist.exception;
  */
 public class WishlistAlreadyExistsException extends RuntimeException {
 
-    public WishlistAlreadyExistsException(Long memberId, Long productId) {
-        super(memberId+ "은(는) " + productId + "를 이미 위시리스트에 등록하였습니다.");
+    public WishlistAlreadyExistsException(String loginId, Long productId) {
+        super(loginId+ "은(는) " + productId + "를 이미 위시리스트에 등록하였습니다.");
     }
 }

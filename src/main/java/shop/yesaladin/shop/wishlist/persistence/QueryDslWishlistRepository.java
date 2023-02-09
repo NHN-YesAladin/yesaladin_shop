@@ -34,7 +34,7 @@ public class QueryDslWishlistRepository implements QueryWishlistRepository {
                 .from(wishlist)
                 .where(wishlist.pk.memberId.eq(memberId))
                 .offset((long) pageable.getPageSize() * pageable.getPageNumber())
-                .limit(pageable.getPageNumber())
+                .limit(pageable.getPageSize())
                 .fetch();
         Long count = queryFactory.select(wishlist.pk.productId)
                 .from(wishlist)
