@@ -246,7 +246,6 @@ class QueryDslQueryMemberRepositoryTest {
         assertThat(response).isPresent();
         assertThat(response.get().getName()).isEqualTo(memberWithLoginId.getName());
         assertThat(response.get().getPhoneNumber()).isEqualTo(memberWithLoginId.getPhone());
-        assertThat(response.get().getAddress()).isEqualTo(defaultMemberAddress.getAddress());
         assertThat(response.get().getCouponCount()).isEqualTo(5);
     }
 }

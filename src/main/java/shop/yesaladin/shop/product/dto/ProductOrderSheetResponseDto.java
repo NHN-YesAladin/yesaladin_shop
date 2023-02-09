@@ -16,7 +16,7 @@ public class ProductOrderSheetResponseDto {
     private Long productId;
     private String isbn;
     private String title;
-    private Long actualPrice;
+    private long actualPrice;
     private int discountRate;
     private Boolean isGivenPoint;
     private int givenPointRate;

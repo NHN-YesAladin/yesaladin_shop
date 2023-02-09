@@ -19,7 +19,7 @@ public class OrderSheetResponseDto {
     private final List<ProductOrderSheetResponseDto> orderProducts;
     private String name;
     private String phoneNumber;
-    private Long point;
+    private long point;
     private List<MemberAddressResponseDto> memberAddress;
     private List<MemberCouponSummaryDto> memberCoupons;
 
