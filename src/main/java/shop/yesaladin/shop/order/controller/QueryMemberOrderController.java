@@ -1,19 +1,18 @@
 package shop.yesaladin.shop.order.controller;
 
-import java.util.Arrays;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.dto.ResponseDto;
-import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.common.aspect.annotation.LoginId;
 import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
@@ -94,5 +93,16 @@ public class QueryMemberOrderController {
                 .build();
     }
 
+    @GetMapping(params = "status-count")
+    public ResponseDto<Map<OrderStatusCode, Long>> getOrderCountsByStatusAndLoginId(@LoginId(required = true) String loginId) {
+
+        Map<OrderStatusCode, Long> orderCountByLoginIdStatus = queryOrderService.getOrderCountByLoginIdStatus(
+                loginId);
+        return ResponseDto.<Map<OrderStatusCode, Long>>builder()
+                .status(HttpStatus.OK)
+                .success(true)
+                .data(orderCountByLoginIdStatus)
+                .build();
+    }
 
 }

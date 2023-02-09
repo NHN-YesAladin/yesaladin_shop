@@ -1,5 +1,7 @@
 package shop.yesaladin.shop.order.service.inter;
 
+import java.util.List;
+import java.util.Map;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
@@ -124,4 +126,12 @@ public interface QueryOrderService {
             OrderStatusCode code,
             Pageable pageable
     );
+
+    /**
+     * 주문상태에 따른 주문 개수 조회
+     *
+     * @param loginId 로그인 id
+     * @return 주문상태코드 & 그에 따른 주문 개수
+     */
+    Map<OrderStatusCode, Long> getOrderCountByLoginIdStatus( String loginId);
 }

@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -587,6 +588,49 @@ class QueryOrderServiceImplTest {
 
         Mockito.verify(repository, Mockito.never())
                 .findSuccessStatusResponsesByLoginIdAndStatus(any(), any(), any());
+        Mockito.verify(queryMemberService, Mockito.times(1)).existsLoginId(any());
+    }
+
+    @Test
+    @DisplayName("주문 상태에 맞는 주문 개수를 조회 성공")
+    void getOrderCountByLoginIdStatus() throws Exception {
+        // given
+        Member member = DummyMember.memberWithId();
+
+        Mockito.when(repository.getOrderCountByStatusCode(any(), any())).thenReturn(3L);
+        Mockito.when(queryMemberService.existsLoginId(any())).thenReturn(true);
+
+        // when
+        Map<OrderStatusCode, Long> statusCodeLongMap = service.getOrderCountByLoginIdStatus(
+                member.getLoginId());
+
+        // then
+        Assertions.assertThat(statusCodeLongMap).hasSize(6);
+        Assertions.assertThat(statusCodeLongMap).containsEntry(OrderStatusCode.ORDER, 3L);
+        Assertions.assertThat(statusCodeLongMap).doesNotContainEntry(OrderStatusCode.DEPOSIT, 3L);
+
+        Mockito.verify(repository, Mockito.times(6)).getOrderCountByStatusCode(any(), any());
+        Mockito.verify(queryMemberService, Mockito.times(1)).existsLoginId(any());
+    }
+
+    @Test
+    @DisplayName("주문 상태에 맞는 주문 개수를 조회 실패")
+    void getOrderCountByLoginIdStatus_notExistMember() throws Exception {
+        // given
+        Member member = DummyMember.memberWithId();
+
+        Mockito.when(repository.getOrderCountByStatusCode(any(), any())).thenReturn(3L);
+        Mockito.when(queryMemberService.existsLoginId(any())).thenReturn(false);
+
+        // when
+
+        // then
+        Assertions.assertThatCode(() -> service.getOrderCountByLoginIdStatus(
+                        member.getLoginId()))
+                .isInstanceOf(ClientException.class)
+                .hasMessageContaining("Member not found with loginId");
+
+        Mockito.verify(repository, Mockito.never()).getOrderCountByStatusCode(any(), any());
         Mockito.verify(queryMemberService, Mockito.times(1)).existsLoginId(any());
     }
 }

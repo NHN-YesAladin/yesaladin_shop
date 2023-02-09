@@ -3,6 +3,8 @@ package shop.yesaladin.shop.order.service.impl;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -22,7 +24,6 @@ import shop.yesaladin.shop.common.exception.PageOffsetOutOfBoundsException;
 import shop.yesaladin.shop.coupon.dto.MemberCouponSummaryDto;
 import shop.yesaladin.shop.coupon.service.inter.QueryMemberCouponService;
 import shop.yesaladin.shop.member.domain.model.Member;
-import shop.yesaladin.shop.member.dto.MemberAddressOrderSheetResponseDto;
 import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
 import shop.yesaladin.shop.member.dto.MemberOrderSheetResponseDto;
 import shop.yesaladin.shop.member.service.inter.QueryMemberAddressService;
@@ -219,6 +220,9 @@ public class QueryOrderServiceImpl implements QueryOrderService {
         );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional(readOnly = true)
     public OrderPaymentResponseDto getPaymentDtoByMemberOrderId(long orderId) {
@@ -226,6 +230,9 @@ public class QueryOrderServiceImpl implements QueryOrderService {
                 .orElseThrow(() -> new OrderNotFoundException(orderId));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional(readOnly = true)
     public Page<OrderStatusResponseDto> getStatusResponsesByLoginIdAndStatus(
@@ -239,6 +246,28 @@ public class QueryOrderServiceImpl implements QueryOrderService {
                 code,
                 pageable
         );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Map<OrderStatusCode, Long> getOrderCountByLoginIdStatus(String loginId) {
+        checkValidLoginId(loginId);
+
+        Map<OrderStatusCode, Long> map = new HashMap<>();
+        for (OrderStatusCode code :OrderStatusCode.values()) {
+            if (code.equals(OrderStatusCode.DEPOSIT)) {
+                continue;
+            }
+            long count = queryOrderRepository.getOrderCountByStatusCode(
+                    loginId,
+                    code
+            );
+            map.put(code, count);
+        }
+        return map;
     }
 
     private void checkRequestedOffsetInBounds(
