@@ -4,6 +4,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import javax.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.member.domain.model.querydsl.QMemberAddress;
 import shop.yesaladin.shop.member.domain.repository.CommandMemberAddressRepository;
@@ -33,16 +34,5 @@ public class QueryDslCommandMemberAddressRepository implements CommandMemberAddr
         queryFactory.delete(memberAddress)
                 .where(memberAddress.id.eq(id))
                 .execute();
-    }
-
-    @Override
-    public void updateIsDefaultToFalseByLoginId(String loginId) {
-        QMemberAddress memberAddress = QMemberAddress.memberAddress;
-
-        queryFactory.update(memberAddress)
-                .where(memberAddress.member.loginId.eq(loginId)
-                        .and(memberAddress.isDefault)
-                        .isTrue())
-                .set(memberAddress.isDefault, false);
     }
 }

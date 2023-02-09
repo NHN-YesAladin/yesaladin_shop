@@ -32,6 +32,8 @@ public class OrderSubscribeCreateRequestDto extends OrderMemberCreateRequestDto 
             long productTotalAmount,
             int shippingFee,
             int wrappingFee,
+            String recipientName,
+            String recipientPhoneNumber,
             Long ordererAddressId,
             List<String> orderCoupons,
             long orderPoint,
@@ -44,6 +46,8 @@ public class OrderSubscribeCreateRequestDto extends OrderMemberCreateRequestDto 
                 productTotalAmount,
                 shippingFee,
                 wrappingFee,
+                recipientName,
+                recipientPhoneNumber,
                 ordererAddressId,
                 orderCoupons,
                 orderPoint
@@ -86,6 +90,8 @@ public class OrderSubscribeCreateRequestDto extends OrderMemberCreateRequestDto 
                 .wrappingFee(wrappingFee)
                 .totalAmount(productTotalAmount)
                 .orderCode(OrderCode.MEMBER_SUBSCRIBE)
+                .recipientName(recipientName)
+                .recipientPhoneNumber(recipientPhoneNumber)
                 .member(member)
                 .memberAddress(address)
                 .expectedDay(expectedDay)

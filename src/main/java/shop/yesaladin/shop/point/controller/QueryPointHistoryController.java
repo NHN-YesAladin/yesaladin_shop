@@ -7,14 +7,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.common.dto.ResponseDto;
+import shop.yesaladin.shop.common.aspect.annotation.LoginId;
 import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
-import shop.yesaladin.shop.common.utils.AuthorityUtils;
 import shop.yesaladin.shop.point.domain.model.PointCode;
 import shop.yesaladin.shop.point.dto.PointHistoryResponseDto;
 import shop.yesaladin.shop.point.service.inter.QueryPointHistoryService;
@@ -34,19 +33,14 @@ public class QueryPointHistoryController {
     /**
      * 회원의 포인트를 조회합니다.
      *
-     * @param authentication 인증
+     * @param loginId 회원의 아이디
      * @return 회원의 포인트
      * @author 최예린
      * @since 1.0
      */
     @GetMapping("/v1/points")
     @CrossOrigin(origins = {"http://localhost:9090", "https://www.yesaladin.shop"})
-    public ResponseDto<Long> getMemberPoint(Authentication authentication) {
-        String loginId = AuthorityUtils.getAuthorizedUserName(
-                authentication,
-                "Only authorized user can get their own point."
-        );
-
+    public ResponseDto<Long> getMemberPoint(@LoginId(required = true) String loginId) {
         long memberPoint = queryPointHistoryService.getMemberPoint(loginId);
 
         return ResponseDto.<Long>builder()
@@ -59,9 +53,9 @@ public class QueryPointHistoryController {
     /**
      * 회원의 포인트 내역을 조회합니다.
      *
-     * @param code           사용/적립/전체 구분
-     * @param pageable       페이지와 사이즈
-     * @param authentication 인증
+     * @param code     사용/적립/전체 구분
+     * @param pageable 페이지와 사이즈
+     * @param loginId  회원의 아이디
      * @return 회원의 포인트 내역
      * @author 최예린
      * @since 1.0
@@ -70,13 +64,8 @@ public class QueryPointHistoryController {
     public ResponseDto<PaginatedResponseDto<PointHistoryResponseDto>> getPointHistories(
             @RequestParam(required = false) String code,
             @PageableDefault Pageable pageable,
-            Authentication authentication
+            @LoginId(required = true) String loginId
     ) {
-        String loginId = AuthorityUtils.getAuthorizedUserName(
-                authentication,
-                "Only authorized user can get their point history."
-        );
-
         Page<PointHistoryResponseDto> response = getPointHistoriesWith(
                 code,
                 pageable,

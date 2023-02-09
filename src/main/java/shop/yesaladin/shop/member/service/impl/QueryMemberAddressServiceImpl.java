@@ -9,6 +9,7 @@ import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberAddressRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
+import shop.yesaladin.shop.member.dto.MemberAddressOrderSheetResponseDto;
 import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
 import shop.yesaladin.shop.member.service.inter.QueryMemberAddressService;
 

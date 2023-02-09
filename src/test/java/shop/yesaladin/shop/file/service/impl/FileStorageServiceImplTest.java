@@ -9,7 +9,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import shop.yesaladin.shop.config.ClockConfiguration;
 import shop.yesaladin.shop.config.ObjectStorageProperties;
-import shop.yesaladin.shop.file.service.inter.FileStorageService;
+import shop.yesaladin.shop.file.service.inter.ObjectStorageService;
 import shop.yesaladin.shop.file.service.inter.StorageAuthService;
 
 import java.io.FileInputStream;
@@ -19,7 +19,7 @@ import static org.mockito.Mockito.mock;
 
 class FileStorageServiceImplTest {
 
-    private FileStorageService service;
+    private ObjectStorageService service;
     private StorageAuthService storageAuthService;
 
     private RestTemplate restTemplate;

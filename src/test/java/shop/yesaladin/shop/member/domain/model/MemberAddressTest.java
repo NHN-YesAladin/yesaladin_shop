@@ -14,7 +14,7 @@ class MemberAddressTest {
         //given
         MemberAddress memberAddress = MemberAddress.builder().isDefault(false).build();
         //when
-        memberAddress.markAsDefault();
+        memberAddress.markAsDefault(true);
 
         //then
         assertThat(memberAddress.isDefault()).isTrue();
