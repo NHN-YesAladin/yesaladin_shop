@@ -10,11 +10,13 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.LongSupplier;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
+import shop.yesaladin.shop.order.domain.model.MemberOrder;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
 import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
@@ -297,12 +299,32 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
 
         JPAQuery<Long> countQuery = queryFactory.select(memberOrder.count())
                 .from(memberOrder)
+                .leftJoin(orderStatusChangeLog)
+                .on(memberOrder.id.eq(orderStatusChangeLog.order.id))
                 .where(memberOrder.member.loginId.eq(loginId))
                 .groupBy(memberOrder.id)
                 .having(orderStatusChangeLog.orderStatusCode.count()
                         .eq((long) code.getStatusCode()));
 
         return PageableExecutionUtils.getPage(data, pageable, countQuery::fetchFirst);
+    }
+
+    @Override
+    public long getOrderCountByStatusCode(String loginId, OrderStatusCode code) {
+        QMemberOrder memberOrder = QMemberOrder.memberOrder;
+        QOrderStatusChangeLog orderStatusChangeLog = QOrderStatusChangeLog.orderStatusChangeLog;
+
+        return queryFactory.select(memberOrder.id)
+                .from(memberOrder)
+                .leftJoin(orderStatusChangeLog)
+                .on(memberOrder.id.eq(orderStatusChangeLog.order.id))
+                .where(memberOrder.member.loginId.eq(loginId))
+                .groupBy(memberOrder.id)
+                .having(orderStatusChangeLog.orderStatusCode.count()
+                        .eq((long) code.getStatusCode()))
+                .fetch()
+                .size();
+
     }
 
 }

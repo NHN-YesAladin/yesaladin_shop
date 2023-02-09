@@ -139,4 +139,6 @@ public interface QueryOrderRepository {
             OrderStatusCode code,
             Pageable pageable
     );
+
+    long getOrderCountByStatusCode(String loginId, OrderStatusCode code);
 }
