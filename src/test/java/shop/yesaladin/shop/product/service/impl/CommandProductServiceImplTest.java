@@ -380,7 +380,7 @@ class CommandProductServiceImplTest {
 
         // then
         assertThat(product).isNotNull();
-        assertThat(product.getQuantity()).isEqualTo(0);
+        assertThat(product.getQuantity()).isZero();
 
         verify(queryProductRepository, times(1)).findProductById(ID);
         verify(commandProductRepository, times(1)).save(product);
