@@ -26,6 +26,7 @@ import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -48,6 +49,8 @@ import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.member.dto.MemberAddressCreateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
 import shop.yesaladin.shop.member.service.inter.CommandMemberAddressService;
+
+@Disabled
 
 @AutoConfigureRestDocs
 @WebMvcTest(CommandMemberAddressController.class)

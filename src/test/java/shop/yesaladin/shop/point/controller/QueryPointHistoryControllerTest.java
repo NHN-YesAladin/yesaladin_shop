@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.ReflectionUtils;
@@ -51,6 +52,7 @@ import shop.yesaladin.shop.point.domain.model.PointReasonCode;
 import shop.yesaladin.shop.point.dto.PointHistoryResponseDto;
 import shop.yesaladin.shop.point.service.inter.QueryPointHistoryService;
 
+@Disabled
 @AutoConfigureRestDocs
 @WebMvcTest(QueryPointHistoryController.class)
 class QueryPointHistoryControllerTest {

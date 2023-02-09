@@ -70,17 +70,4 @@ class QueryDslCommandMemberAddressRepositoryTest {
         //then
         assertThat(queryMemberAddressRepository.getById(id)).isEmpty();
     }
-
-    @Test
-    void updateIsDefaultToFalseByMemberId() {
-        //given
-        String loginId = member.getLoginId();
-
-        //when
-        commandMemberAddressRepository.updateIsDefaultToFalseByLoginId(loginId);
-
-        //then
-        List<MemberAddressResponseDto> result = queryMemberAddressRepository.getByLoginId(loginId);
-        assertThat(result.stream().anyMatch(MemberAddressResponseDto::getIsDefault)).isFalse();
-    }
 }

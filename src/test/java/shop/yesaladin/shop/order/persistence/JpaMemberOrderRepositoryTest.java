@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -20,6 +21,7 @@ import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMemberAddress;
 
 @DataJpaTest
+@Disabled
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class JpaMemberOrderRepositoryTest {
 

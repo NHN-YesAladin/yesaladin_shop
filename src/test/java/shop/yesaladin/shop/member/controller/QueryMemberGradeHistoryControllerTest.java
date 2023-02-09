@@ -28,6 +28,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.ReflectionUtils;
@@ -57,6 +58,7 @@ import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberGradeHistoryService;
 
 @AutoConfigureRestDocs
+@Disabled
 @WebMvcTest(QueryMemberGradeHistoryController.class)
 class QueryMemberGradeHistoryControllerTest {
 

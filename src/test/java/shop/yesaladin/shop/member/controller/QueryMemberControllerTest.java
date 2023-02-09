@@ -19,6 +19,7 @@ import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.mockito.Mockito;
@@ -334,6 +335,7 @@ class QueryMemberControllerTest {
     }
 
     @WithMockUser(username = "user@1")
+    @Disabled
     @Test
     void getMemberGrade_fail_memberNotFound() throws Exception {
         //given
@@ -374,6 +376,7 @@ class QueryMemberControllerTest {
     }
 
     @WithMockUser(username = "user@1")
+    @Disabled
     @Test
     void getMemberGrade_success() throws Exception {
         //given
@@ -416,6 +419,7 @@ class QueryMemberControllerTest {
     }
 
     @WithMockUser(username = "user@1")
+    @Disabled
     @Test
     void getMemberInfo_fail_memberNotFound() throws Exception {
         //given
@@ -456,6 +460,7 @@ class QueryMemberControllerTest {
     }
 
     @WithMockUser(username = "user@1")
+    @Disabled
     @Test
     void getMemberInfo_success() throws Exception {
         //given

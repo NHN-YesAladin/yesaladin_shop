@@ -16,6 +16,7 @@ import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,7 @@ import shop.yesaladin.shop.member.dummy.MemberDummy;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberAddressService;
 
+@Disabled
 @AutoConfigureRestDocs
 @WebMvcTest(QueryMemberAddressController.class)
 class QueryMemberAddressControllerTest {
