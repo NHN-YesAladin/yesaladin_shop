@@ -1,28 +1,5 @@
 package shop.yesaladin.shop.product.controller;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentRequest;
-import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -42,16 +19,12 @@ import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
-import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
-import shop.yesaladin.shop.product.dto.ProductOnlyTitleDto;
-import shop.yesaladin.shop.product.dto.ProductsResponseDto;
-
-import shop.yesaladin.shop.product.dto.RelationsResponseDto;
-import shop.yesaladin.shop.product.dto.ViewCartDto;
+import shop.yesaladin.shop.product.dto.*;
 import shop.yesaladin.shop.product.dummy.DummyProductDetailResponseDto;
 import shop.yesaladin.shop.product.dummy.DummyProductsResponseDto;
 import shop.yesaladin.shop.product.service.inter.QueryProductService;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -170,7 +143,90 @@ class QueryProductControllerTest {
         ));
     }
 
-    // TODO: ResponseDto 수정
+    @WithMockUser
+    @Test
+    @DisplayName("상품 ID로 수량 조회 성공")
+    void findQuantityById_success() throws Exception {
+        // given
+        Long id = 1L;
+        Long quantity = 100L;
+        Mockito.when(service.findQuantityById(id)).thenReturn(quantity);
+
+        // when
+        ResultActions result = mockMvc.perform(get("/v1/products/quantity/{id}", id)
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(200)));
+
+        verify(service, times(1)).findQuantityById(id);
+
+        // docs
+        result.andDo(document(
+                "find-quantity-by-id",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                pathParameters(parameterWithName("id").description("ID")),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data").type(JsonFieldType.NUMBER)
+                                .description("수량")
+                                .optional(),
+                        fieldWithPath("errorMessages").type(JsonFieldType.NULL)
+                                .description("에러 메세지 NULL")
+                )
+        ));
+    }
+
+    @WithMockUser
+    @Test
+    @DisplayName("상품 ID로 수량 조회 실패_ID로 조회되는 상품이 없는 경우 예외 발생")
+    void findQuantityById_notExistId_throwProductNotFoundException() throws Exception {
+        // given
+        Long id = 1L;
+        Mockito.when(service.findQuantityById(id))
+                .thenThrow(new ClientException(
+                        ErrorCode.PRODUCT_NOT_FOUND,
+                        "Product not found with id : " + id
+                ));
+
+        // when
+        ResultActions result = mockMvc.perform(get("/v1/products/quantity/{id}", id)
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.NOT_FOUND.value())));
+
+        verify(service, times(1)).findQuantityById(id);
+
+        // docs
+        result.andDo(document(
+                "find-quantity-by-id-throw-not-found",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                pathParameters(parameterWithName("id").description("ID")),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data").type(JsonFieldType.NULL).description("NULL"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
+                )
+        ));
+    }
 
     @WithMockUser
     @Test
@@ -483,7 +539,7 @@ class QueryProductControllerTest {
         List<RelationsResponseDto> lists = new ArrayList<>();
         RelationsResponseDto dto = new RelationsResponseDto(
                 10L,
-                "file" ,
+                "file",
                 title,
                 List.of("author"),
                 "publisher",
