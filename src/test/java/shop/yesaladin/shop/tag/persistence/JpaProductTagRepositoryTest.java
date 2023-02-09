@@ -115,8 +115,7 @@ class JpaProductTagRepositoryTest {
         List<ProductTag> foundProductTags = repository.findByProduct(product);
 
         // then
-        assertThat(foundProductTags).isNotNull();
-        assertThat(foundProductTags.size()).isEqualTo(2);
+        assertThat(foundProductTags).hasSize(2);
         assertThat(foundProductTags.get(0).getTag().getName()).isEqualTo(name1);
         assertThat(foundProductTags.get(1).getTag().getName()).isEqualTo(name2);
         assertThat(foundProductTags.get(0).getProduct()).isEqualTo(product);
