@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.product.persistence;
 
+
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
@@ -17,10 +19,10 @@ import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.ProductTypeCode;
 import shop.yesaladin.shop.product.domain.model.querydsl.QProduct;
+import shop.yesaladin.shop.product.domain.model.querydsl.QRelation;
 import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
 import shop.yesaladin.shop.product.dto.ProductOnlyTitleDto;
 import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
-
 
 /**
  * 상품 조회를 위한 Repository QueryDsl 구현체 입니다.
@@ -257,6 +259,35 @@ public class QueryDslProductRepository implements QueryProductRepository {
                         .and(product.isForcedOutOfStock.isFalse())
                         .and(product.isSale.isTrue()))
                 .fetch();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Page<Product> findProductRelationByTitle(Long id, String title, Pageable pageable) {
+        QProduct product = QProduct.product;
+        QRelation relation = QRelation.relation;
+        
+        List<Product> reId = queryFactory.select(relation.productSub).from(relation).where(relation.productMain.id.eq(id)).fetch();
+        List<Product> products = queryFactory.selectFrom(product)
+                .where(product.title.contains(title)
+                        .and(product.isDeleted.isFalse())
+                        .and(product.id.ne(id))
+                        .and(product.notIn(reId)))
+                .offset((long) pageable.getPageNumber() * pageable.getPageSize())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        Long count = queryFactory.select(product.count())
+                .from(product)
+                .where(product.title.contains(title)
+                        .and(product.isDeleted.isFalse())
+                        .and(product.id.ne(id))
+                        .and(product.notIn(reId)))
+                .fetchFirst();
+
+        return new PageImpl<>(products, pageable, count);
     }
 }
 
