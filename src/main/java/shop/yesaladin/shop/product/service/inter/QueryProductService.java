@@ -1,18 +1,16 @@
 package shop.yesaladin.shop.product.service.inter;
 
-import org.springframework.data.domain.Pageable;
-import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
-import shop.yesaladin.shop.product.dto.*;
-
 import java.util.List;
 import java.util.Map;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
 import shop.yesaladin.shop.product.dto.ProductModifyDto;
 import shop.yesaladin.shop.product.dto.ProductOnlyTitleDto;
 import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
 import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
+import shop.yesaladin.shop.product.dto.ProductRecentResponseDto;
 import shop.yesaladin.shop.product.dto.ProductsResponseDto;
 import shop.yesaladin.shop.product.dto.RelationsResponseDto;
 import shop.yesaladin.shop.product.dto.SubscribeProductOrderResponseDto;
@@ -119,4 +117,25 @@ public interface QueryProductService {
      * @since 1.0
      */
     Page<RelationsResponseDto> findProductRelationByTitle(Long id, String title, Pageable pageable);
+
+    /**
+     * 최신 상품 조회 메서드
+     *
+     * @param pageable 페이지 정보
+     * @return 촤신 상품 리스트
+     * @author 김선홍
+     * @since 1,0
+     */
+    Page<ProductRecentResponseDto> findRecentProductByPublishedDate(Pageable pageable);
+
+    /**
+     * 최근 본 상품 메소드
+     *
+     * @param ids 본 상품들의 id 리스트
+     * @param pageable 페이지 정보
+     * @return 최근 본 상품 리스트
+     * @author 김선홍
+     * @since 1,0
+     */
+    Page<ProductRecentResponseDto> findRecentViewProductById(List<Long> ids, Pageable pageable);
 }

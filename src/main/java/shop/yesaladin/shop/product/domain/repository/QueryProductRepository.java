@@ -128,4 +128,25 @@ public interface QueryProductRepository {
      * @since 1,0
      */
     Page<Product> findProductRelationByTitle(Long id, String title, Pageable pageable);
+
+    /**
+     * 최신 상품 조회 메서드
+     *
+     * @param pageable 페이지 정보
+     * @return 촤신 상품 리스트
+     * @author 김선홍
+     * @since 1,0
+     */
+    Page<Product> findRecentProductByPublishedDate(Pageable pageable);
+
+    /**
+     * 최근 본 상품 메소드
+     *
+     * @param ids 본 상품들의 id 리스트
+     * @param pageable 페이지 정보
+     * @return 최근 본 상품 리스트
+     * @author 김선홍
+     * @since 1,0
+     */
+    Page<Product> findRecentViewProductById(List<Long> ids, Pageable pageable);
 }

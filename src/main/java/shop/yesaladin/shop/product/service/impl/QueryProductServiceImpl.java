@@ -22,6 +22,7 @@ import shop.yesaladin.shop.product.dto.ProductModifyDto;
 import shop.yesaladin.shop.product.dto.ProductOnlyTitleDto;
 import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
 import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
+import shop.yesaladin.shop.product.dto.ProductRecentResponseDto;
 import shop.yesaladin.shop.product.dto.ProductsResponseDto;
 import shop.yesaladin.shop.product.dto.RelationsResponseDto;
 import shop.yesaladin.shop.product.dto.SubscribeProductOrderResponseDto;
@@ -459,6 +460,55 @@ public class QueryProductServiceImpl implements QueryProductService {
                     rate
             ));
 
+        }
+        return new PageImpl<>(dtoList, pageable, products.getTotalElements());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ProductRecentResponseDto> findRecentProductByPublishedDate(Pageable pageable) {
+        return createProductRecentResponseDto(queryProductRepository.findRecentProductByPublishedDate(
+                pageable), pageable);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ProductRecentResponseDto> findRecentViewProductById(
+            List<Long> ids,
+            Pageable pageable
+    ) {
+        return createProductRecentResponseDto(queryProductRepository.findRecentViewProductById(
+                ids,
+                pageable
+        ), pageable);
+    }
+
+    private Page<ProductRecentResponseDto> createProductRecentResponseDto(
+            Page<Product> products,
+            Pageable pageable
+    ) {
+        List<ProductRecentResponseDto> dtoList = new ArrayList<>();
+        for (Product product : products) {
+            List<AuthorsResponseDto> author = findAuthorsByProduct(product);
+            PublishResponseDto publish = queryPublishService.findByProduct(product);
+
+            int rate = product.getTotalDiscountRate().getDiscountRate();
+            if (product.isSeparatelyDiscount()) {
+                rate = product.getDiscountRate();
+            }
+            dtoList.add(ProductRecentResponseDto.fromEntity(
+                    product,
+                    calcSellingPrice(product.getActualPrice(), rate),
+                    rate,
+                    publish.getPublisher().getName(),
+                    author.stream().map(AuthorsResponseDto::getName).collect(Collectors.toList())
+            ));
         }
         return new PageImpl<>(dtoList, pageable, products.getTotalElements());
     }

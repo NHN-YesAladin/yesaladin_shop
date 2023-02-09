@@ -37,6 +37,8 @@ import shop.yesaladin.shop.publish.exception.PublisherAlreadyExistsException;
 import shop.yesaladin.shop.publish.exception.PublisherNotFoundException;
 import shop.yesaladin.shop.tag.exception.TagAlreadyExistsException;
 import shop.yesaladin.shop.tag.exception.TagNotFoundException;
+import shop.yesaladin.shop.wishlist.exception.WishlistAlreadyExistsException;
+import shop.yesaladin.shop.wishlist.exception.WishlistNotFoundException;
 import shop.yesaladin.shop.writing.exception.AuthorNotFoundException;
 import shop.yesaladin.shop.writing.exception.WritingNotFoundException;
 
@@ -67,7 +69,8 @@ public class ControllerAdvice {
             AuthorNotFoundException.class,
             WritingNotFoundException.class,
             FileNotFoundException.class,
-            RelationNotFoundException.class
+            RelationNotFoundException.class,
+            WishlistNotFoundException.class
     })
     public ResponseEntity<ErrorResponseDto> handleNotFoundException(Exception ex) {
         log.error("[NOT_FOUND] handleNotFoundException", ex);
@@ -106,7 +109,8 @@ public class ControllerAdvice {
             ProductAlreadyExistsException.class,
             PublisherAlreadyExistsException.class,
             TagAlreadyExistsException.class,
-            RelationAlreadyExistsException.class
+            RelationAlreadyExistsException.class,
+            WishlistAlreadyExistsException.class
     })
     @ResponseStatus(HttpStatus.CONFLICT)
     public ResponseEntity<ErrorResponseDto> handleAlreadyExistException(Exception ex) {

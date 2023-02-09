@@ -10,6 +10,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,6 +20,7 @@ import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
 import shop.yesaladin.shop.product.dto.ProductModifyDto;
 import shop.yesaladin.shop.product.dto.ProductOnlyTitleDto;
+import shop.yesaladin.shop.product.dto.ProductRecentResponseDto;
 import shop.yesaladin.shop.product.dto.ProductsResponseDto;
 import shop.yesaladin.shop.product.dto.RelationsResponseDto;
 import shop.yesaladin.shop.product.dto.ViewCartDto;
@@ -150,7 +153,7 @@ public class QueryProductController {
     /**
      * 연관관계 등록을 위한 상품 검색 메서드
      *
-     * @param title 검색할 상품 제목
+     * @param title    검색할 상품 제목
      * @param pageable 페이지 정보
      * @return 검색된 상품 정보와 페이지 정보 그리고 응답 메시지
      */
@@ -170,6 +173,62 @@ public class QueryProductController {
                 .status(HttpStatus.OK)
                 .success(true)
                 .data(PaginatedResponseDto.<RelationsResponseDto>builder()
+                        .dataList(products.getContent())
+                        .totalPage(products.getTotalPages())
+                        .currentPage(products.getNumber())
+                        .totalDataCount(products.getTotalElements())
+                        .build())
+                .build();
+    }
+
+    /**
+     * 최신 상품 조회 메서드
+     *
+     * @param pageable 페이지 정보
+     * @return 촤신 상품 리스트
+     * @author 김선홍
+     * @since 1, 0
+     */
+    @GetMapping("recent")
+    public ResponseDto<PaginatedResponseDto<ProductRecentResponseDto>> findRecentProductByPublishedDate(
+            @PageableDefault Pageable pageable
+    ) {
+        Page<ProductRecentResponseDto> products = queryProductService.findRecentProductByPublishedDate(
+                pageable);
+
+        return ResponseDto.<PaginatedResponseDto<ProductRecentResponseDto>>builder()
+                .status(HttpStatus.OK)
+                .success(true)
+                .data(PaginatedResponseDto.<ProductRecentResponseDto>builder()
+                        .dataList(products.getContent())
+                        .totalPage(products.getTotalPages())
+                        .currentPage(products.getNumber())
+                        .totalDataCount(products.getTotalElements())
+                        .build())
+                .build();
+    }
+
+    /**
+     * 최근 본 상품 메서드
+     *
+     * @param ids      최근 본 상품들의 id 리스트
+     * @param pageable 페이지 정보
+     * @return 최근 본 상품 리스트
+     * @author 김선홍
+     * @since 1, 0
+     */
+    @PostMapping("/recentview")
+    public ResponseDto<PaginatedResponseDto<ProductRecentResponseDto>> findRecentViewProductById(
+            @RequestBody List<Long> ids,
+            @PageableDefault Pageable pageable
+    ) {
+        Page<ProductRecentResponseDto> products = queryProductService.findRecentViewProductById(ids,
+                pageable);
+
+        return ResponseDto.<PaginatedResponseDto<ProductRecentResponseDto>>builder()
+                .status(HttpStatus.OK)
+                .success(true)
+                .data(PaginatedResponseDto.<ProductRecentResponseDto>builder()
                         .dataList(products.getContent())
                         .totalPage(products.getTotalPages())
                         .currentPage(products.getNumber())

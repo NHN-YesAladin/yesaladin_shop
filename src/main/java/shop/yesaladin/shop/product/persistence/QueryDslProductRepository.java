@@ -23,6 +23,7 @@ import shop.yesaladin.shop.product.domain.model.querydsl.QRelation;
 import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
 import shop.yesaladin.shop.product.dto.ProductOnlyTitleDto;
 import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
+import shop.yesaladin.shop.publish.domain.model.querydsl.QPublish;
 
 /**
  * 상품 조회를 위한 Repository QueryDsl 구현체 입니다.
@@ -268,8 +269,11 @@ public class QueryDslProductRepository implements QueryProductRepository {
     public Page<Product> findProductRelationByTitle(Long id, String title, Pageable pageable) {
         QProduct product = QProduct.product;
         QRelation relation = QRelation.relation;
-        
-        List<Product> reId = queryFactory.select(relation.productSub).from(relation).where(relation.productMain.id.eq(id)).fetch();
+
+        List<Product> reId = queryFactory.select(relation.productSub)
+                .from(relation)
+                .where(relation.productMain.id.eq(id))
+                .fetch();
         List<Product> products = queryFactory.selectFrom(product)
                 .where(product.title.contains(title)
                         .and(product.isDeleted.isFalse())
@@ -285,6 +289,50 @@ public class QueryDslProductRepository implements QueryProductRepository {
                         .and(product.isDeleted.isFalse())
                         .and(product.id.ne(id))
                         .and(product.notIn(reId)))
+                .fetchFirst();
+
+        return new PageImpl<>(products, pageable, count);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Page<Product> findRecentProductByPublishedDate(Pageable pageable) {
+        QProduct product = QProduct.product;
+        QPublish publish = QPublish.publish;
+
+        List<Product> products = queryFactory.selectFrom(product)
+                .leftJoin(publish).on(publish.product.eq(product))
+                .where(product.isDeleted.isFalse())
+                .offset((long) pageable.getPageNumber() * pageable.getPageSize())
+                .limit(pageable.getPageSize())
+                .orderBy(publish.publishedDate.desc())
+                .fetch();
+
+        Long count = queryFactory.select(product.count())
+                .where(product.isDeleted.isFalse())
+                .from(product)
+                .fetchFirst();
+
+        return new PageImpl<>(products, pageable, count);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Page<Product> findRecentViewProductById(List<Long> ids, Pageable pageable) {
+        QProduct product = QProduct.product;
+        List<Product> products = queryFactory.selectFrom(product)
+                .where(product.id.in(ids).and(product.isDeleted.isFalse()))
+                .fetch();
+
+        Long count = queryFactory.select(product.count())
+                .where(product.id.in(ids).and(product.isDeleted.isFalse()))
+                .from(product)
+                .offset((long) pageable.getPageNumber() * pageable.getPageSize())
+                .limit(pageable.getPageSize())
                 .fetchFirst();
 
         return new PageImpl<>(products, pageable, count);
