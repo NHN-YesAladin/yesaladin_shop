@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,6 +35,14 @@ public class QueryMemberOrderController {
 
     private final QueryOrderService queryOrderService;
 
+    /**
+     * 회원 전체 주문 조회
+     *
+     * @param loginId  로그인 id
+     * @param queryDto 조회할 날짜가 있는 dto
+     * @param pageable 페이징 객체
+     * @return 페이징 된 주문 정보
+     */
     @GetMapping
     public ResponseDto<PaginatedResponseDto<OrderSummaryResponseDto>> getAllOrdersByMemberId(
             @LoginId(required = true) String loginId,
@@ -63,6 +70,14 @@ public class QueryMemberOrderController {
                 .build();
     }
 
+    /**
+     * 주문 상태에 따른 주문 조회
+     *
+     * @param loginId  로그인 id
+     * @param status   주문 상태
+     * @param pageable 페이징 객체
+     * @return 페이징된 주문 상태를 기반하는 주문 정보
+     */
     @GetMapping(params = "status")
     public ResponseDto<PaginatedResponseDto<OrderStatusResponseDto>> getOrdersByStatusAndLoginId(
             @LoginId(required = true) String loginId,
@@ -93,6 +108,12 @@ public class QueryMemberOrderController {
                 .build();
     }
 
+    /**
+     * 주문 상태에 따른 주문 개수를 조회
+     *
+     * @param loginId 로그인 id
+     * @return 주문 상태 코드 & 그에 기반한 주문 개수
+     */
     @GetMapping(params = "status-count")
     public ResponseDto<Map<OrderStatusCode, Long>> getOrderCountsByStatusAndLoginId(@LoginId(required = true) String loginId) {
 

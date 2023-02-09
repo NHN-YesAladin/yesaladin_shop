@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.order.service.inter;
 
-import java.util.List;
 import java.util.Map;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -116,8 +115,8 @@ public interface QueryOrderService {
     /**
      * 주문 상태와 로그인 아이디에 맞춰 주문을 조회합니다.
      *
-     * @param loginId 로그인 id
-     * @param code 주문 상태
+     * @param loginId  로그인 id
+     * @param code     주문 상태
      * @param pageable 페이징 처리
      * @return 페이징된 주문의 일부 정보
      */
@@ -133,5 +132,5 @@ public interface QueryOrderService {
      * @param loginId 로그인 id
      * @return 주문상태코드 & 그에 따른 주문 개수
      */
-    Map<OrderStatusCode, Long> getOrderCountByLoginIdStatus( String loginId);
+    Map<OrderStatusCode, Long> getOrderCountByLoginIdStatus(String loginId);
 }

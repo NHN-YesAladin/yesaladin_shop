@@ -482,7 +482,7 @@ class QueryDslOrderQueryRepositoryTest {
         Page<OrderStatusResponseDto> responses = queryRepository.findSuccessStatusResponsesByLoginIdAndStatus(
                 member.getLoginId(),
                 code,
-                PageRequest.of(0, 300)
+                PageRequest.of(2, 2)
         );
 
         // then

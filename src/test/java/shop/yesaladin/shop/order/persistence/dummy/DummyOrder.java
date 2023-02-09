@@ -58,7 +58,12 @@ public class DummyOrder {
                 .recipientPhoneNumber("수령인 폰번호")
                 .build();
     }
-    public static MemberOrder memberOrderWithOrderNumber(String orderNumber, Member member, MemberAddress memberAddress) {
+
+    public static MemberOrder memberOrderWithOrderNumber(
+            String orderNumber,
+            Member member,
+            MemberAddress memberAddress
+    ) {
         return MemberOrder.builder()
                 .orderNumber(orderNumber)
                 .name("memberOrder")
@@ -107,6 +112,7 @@ public class DummyOrder {
                 .recipientPhoneNumber("수령인 폰번호")
                 .build();
     }
+
     public static NonMemberOrder nonMemberOrderWithId() {
         return NonMemberOrder.builder()
                 .id(1L)

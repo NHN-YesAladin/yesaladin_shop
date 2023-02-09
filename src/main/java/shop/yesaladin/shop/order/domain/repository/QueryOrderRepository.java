@@ -127,8 +127,8 @@ public interface QueryOrderRepository {
     /**
      * OrderStatusCode에 따라 회원 주문을 조회합니다.
      *
-     * @param loginId 회원의 로그인 아이디
-     * @param code 주문 상태
+     * @param loginId  회원의 로그인 아이디
+     * @param code     주문 상태
      * @param pageable 페이징 처리 요소
      * @return 페이징 처리된 주문 정보
      * @author 배수한

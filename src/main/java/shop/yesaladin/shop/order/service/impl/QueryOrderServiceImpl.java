@@ -3,7 +3,6 @@ package shop.yesaladin.shop.order.service.impl;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -145,7 +144,8 @@ public class QueryOrderServiceImpl implements QueryOrderService {
             String loginId
     ) {
         MemberOrderSheetResponseDto member = queryMemberService.getMemberForOrder(loginId);
-        List<MemberAddressResponseDto> memberAddress = queryMemberAddressService.getByLoginId(loginId);
+        List<MemberAddressResponseDto> memberAddress = queryMemberAddressService.getByLoginId(
+                loginId);
         List<ProductOrderSheetResponseDto> orderProducts = getProductOrder(
                 request.getIsbn(),
                 request.getQuantity()
@@ -257,8 +257,9 @@ public class QueryOrderServiceImpl implements QueryOrderService {
         checkValidLoginId(loginId);
 
         Map<OrderStatusCode, Long> map = new HashMap<>();
-        for (OrderStatusCode code :OrderStatusCode.values()) {
-            if (code.equals(OrderStatusCode.DEPOSIT)) {
+        for (OrderStatusCode code : OrderStatusCode.values()) {
+            if (code.equals(OrderStatusCode.DEPOSIT) || code.equals(OrderStatusCode.REFUND)
+                    || code.equals(OrderStatusCode.CANCEL)) {
                 continue;
             }
             long count = queryOrderRepository.getOrderCountByStatusCode(

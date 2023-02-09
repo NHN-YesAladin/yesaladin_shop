@@ -19,6 +19,7 @@ import static shop.yesaladin.shop.docs.DocumentFormatGenerator.getDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
@@ -254,7 +255,7 @@ class QueryMemberOrderControllerTest {
                         equalTo(responseList.get(pagingStart).getReceiverName())
                 ))
                 .andExpect(jsonPath(
-                        "$.data.dataList.[0].orderAmount",
+                        "$.data.dataList.[0].totalAmount",
                         equalTo(responseList.get(pagingStart).getTotalAmount().intValue())
                 ));
 
@@ -307,7 +308,7 @@ class QueryMemberOrderControllerTest {
                                 .description("주문 일시"),
                         fieldWithPath("data.dataList.[].orderName").type(JsonFieldType.STRING)
                                 .description("주문 이름"),
-                        fieldWithPath("data.dataList.[].orderAmount").type(JsonFieldType.NUMBER)
+                        fieldWithPath("data.dataList.[].totalAmount").type(JsonFieldType.NUMBER)
                                 .description("주문 총 금액"),
                         fieldWithPath("data.dataList.[].loginId").type(JsonFieldType.STRING)
                                 .description("주문자 로그인 아이디"),
@@ -315,6 +316,61 @@ class QueryMemberOrderControllerTest {
                                 .description("주문자가 지정한 수령인 이름"),
                         fieldWithPath("data.dataList.[].orderCode").type(JsonFieldType.STRING)
                                 .description("주문 구분")
+                )
+        ));
+    }
+
+    @WithMockUser(username = "loginId")
+    @Test
+    @DisplayName("주문 상태에 따른 주문 개수 조회")
+    void getOrderCountsByStatusAndLoginId() throws Exception {
+        // given
+        Map<OrderStatusCode, Long> map = new HashMap<>();
+        for (OrderStatusCode code : OrderStatusCode.values()) {
+            if (code.equals(OrderStatusCode.DEPOSIT) || code.equals(OrderStatusCode.REFUND)
+                    || code.equals(OrderStatusCode.CANCEL)) {
+                continue;
+            }
+            map.put(code, 4L);
+        }
+
+        Mockito.when(queryOrderService.getOrderCountByLoginIdStatus(any())).thenReturn(map);
+
+        // when
+        ResultActions result = mockMvc.perform(get("/v1/member-orders")
+                .param("status-count", ""));
+
+        // then
+        ResultActions resultActions = result.andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())))
+                .andExpect(jsonPath("$.data.DELIVERY", equalTo(4)))
+                .andExpect(jsonPath("$.data.COMPLETE", equalTo(4)));
+
+        Mockito.verify(queryOrderService, Mockito.times(1)).getOrderCountByLoginIdStatus(any());
+
+        // docs
+        resultActions.andDo(document(
+                "get-order-count-by-status",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("HTTP 상태 코드"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .optional()
+                                .description("에러 메세지"),
+                        fieldWithPath("data.ORDER").type(JsonFieldType.NUMBER)
+                                .description("주문완료 상태의 주문 개수"),
+                        fieldWithPath("data.DELIVERY").type(JsonFieldType.NUMBER)
+                                .description("배달중 상태의 주문 개수"),
+                        fieldWithPath("data.READY").type(JsonFieldType.NUMBER)
+                                .description("배송대기 상태의 주문 개수"),
+                        fieldWithPath("data.COMPLETE").type(JsonFieldType.NUMBER)
+                                .description("배송완료 상태의 주문 개수")
                 )
         ));
     }
