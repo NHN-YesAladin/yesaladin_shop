@@ -34,6 +34,15 @@ public interface QueryMemberAddressRepository {
     Optional<MemberAddress> findById(long id);
 
     /**
+     * 회원의 배송지 리스트를 조회 합니다.
+     *
+     * @param loginId 회원의 아이디
+     * @return 회원의 배송지 목록
+     * @author 최예린
+     */
+    List<MemberAddress> findByLoginId(String loginId);
+
+    /**
      * 회원의 특정한 배송지를 조회합니다.
      *
      * @param loginId         회원 아이디

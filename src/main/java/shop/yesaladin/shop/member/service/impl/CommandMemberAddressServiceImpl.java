@@ -52,7 +52,8 @@ public class CommandMemberAddressServiceImpl implements CommandMemberAddressServ
 
     private void checkNewAddressSetAsDefault(String loginId, MemberAddress newMemberAddress) {
         if (newMemberAddress.isDefault()) {
-            commandMemberAddressRepository.updateIsDefaultToFalseByLoginId(loginId);
+            queryMemberAddressRepository.findByLoginId(loginId)
+                    .forEach(address -> address.markAsDefault(false));
         }
     }
 
@@ -75,9 +76,10 @@ public class CommandMemberAddressServiceImpl implements CommandMemberAddressServ
                 loginId,
                 addressId
         );
-        commandMemberAddressRepository.updateIsDefaultToFalseByLoginId(loginId);
+        queryMemberAddressRepository.findByLoginId(loginId)
+                .forEach(address -> address.markAsDefault(false));
 
-        memberAddress.markAsDefault();
+        memberAddress.markAsDefault(true);
 
         return MemberAddressResponseDto.fromEntity(memberAddress);
     }

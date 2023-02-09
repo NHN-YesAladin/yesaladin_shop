@@ -54,8 +54,8 @@ public class MemberAddress {
      * @author 최예린
      * @since 1.0
      */
-    public void markAsDefault() {
-        this.isDefault = true;
+    public void markAsDefault(boolean isDefault) {
+        this.isDefault = isDefault;
     }
 
     /**

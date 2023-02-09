@@ -1,10 +1,11 @@
 package shop.yesaladin.shop.order.controller;
 
+import java.util.Objects;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.common.exception.ClientException;
-import shop.yesaladin.shop.common.utils.AuthorityUtils;
+import shop.yesaladin.shop.common.aspect.annotation.LoginId;
 import shop.yesaladin.shop.order.dto.OrderCreateResponseDto;
 import shop.yesaladin.shop.order.dto.OrderMemberCreateRequestDto;
 import shop.yesaladin.shop.order.dto.OrderNonMemberCreateRequestDto;
@@ -40,20 +41,23 @@ public class CommandOrderController {
     /**
      * 비회원 주문을 생성합니다.
      *
-     * @param bindingResult  유효성 검사
-     * @param authentication 인증
+     * @param bindingResult 유효성 검사
+     * @param loginId       회원의 아이디
      * @return 생성된 주문 정보
      */
+    @CrossOrigin(origins = {"http://localhost:9090", "https://www.yesaladin.shop"})
     @PostMapping("/non-member")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<OrderCreateResponseDto> createNonMemberOrder(
             @Valid @RequestBody OrderNonMemberCreateRequestDto request,
             BindingResult bindingResult,
-            Authentication authentication
+            @LoginId String loginId
     ) {
         checkRequestValidation(bindingResult, "NonMemberOrder");
 
-        AuthorityUtils.checkAnonymousClient(authentication);
+        if (Objects.nonNull(loginId)) {
+            throw new ClientException(ErrorCode.UNAUTHORIZED, "Only unauthorized user can access.");
+        }
 
         OrderCreateResponseDto response = commandOrderService.createNonMemberOrders(request);
 
@@ -68,24 +72,20 @@ public class CommandOrderController {
     /**
      * 회원 주문을 생성합니다.
      *
-     * @param request        주문 생성 요청 데이터
-     * @param bindingResult  유효성 검사
-     * @param authentication 인증
+     * @param request       주문 생성 요청 데이터
+     * @param bindingResult 유효성 검사
+     * @param loginId       회원의 아이디
      * @return 생성된 주문 정보
      */
+    @CrossOrigin(origins = {"http://localhost:9090", "https://www.yesaladin.shop"})
     @PostMapping("/member")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<OrderCreateResponseDto> createMemberOrder(
             @Valid @RequestBody OrderMemberCreateRequestDto request,
             BindingResult bindingResult,
-            Authentication authentication
+            @LoginId(required = true) String loginId
     ) {
         checkRequestValidation(bindingResult, "MemberOrder");
-
-        String loginId = AuthorityUtils.getAuthorizedUserName(
-                authentication,
-                "Only authorized user can create order."
-        );
 
         OrderCreateResponseDto response = commandOrderService.createMemberOrders(request, loginId);
 
@@ -99,24 +99,20 @@ public class CommandOrderController {
     /**
      * 정기구독 주문을 생성합니다.
      *
-     * @param request        주문 생성 요청 데이터
-     * @param bindingResult  유효성 검사
-     * @param authentication 인증
+     * @param request       주문 생성 요청 데이터
+     * @param bindingResult 유효성 검사
+     * @param loginId       회원의 아이디
      * @return 생성된 주문 정보
      */
+    @CrossOrigin(origins = {"http://localhost:9090", "https://www.yesaladin.shop"})
     @PostMapping("/subscribe")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<OrderCreateResponseDto> createSubscribeOrder(
             @Valid @RequestBody OrderSubscribeCreateRequestDto request,
             BindingResult bindingResult,
-            Authentication authentication
+            @LoginId(required = true) String loginId
     ) {
         checkRequestValidation(bindingResult, "SubscribeOrder");
-
-        String loginId = AuthorityUtils.getAuthorizedUserName(
-                authentication,
-                "Only authorized user can create subscribe order."
-        );
 
         OrderCreateResponseDto response = commandOrderService.createSubscribeOrders(
                 request,
@@ -130,17 +126,22 @@ public class CommandOrderController {
                 .build();
     }
 
+    /**
+     * 주문을 숨김 또는 숨김해제 합니다.
+     *
+     * @param orderId 주문 pk
+     * @param hide    숨김여부
+     * @param loginId 회원의 아이디
+     * @return 숨김또는 숨김해제한 주문
+     * @author 최예린
+     * @since 1.0
+     */
     @PutMapping(path = "/{orderId}", params = "hide")
     public ResponseDto<OrderUpdateResponseDto> hide(
             @PathVariable Long orderId,
             @RequestParam Boolean hide,
-            Authentication authentication
+            @LoginId(required = true) String loginId
     ) {
-        String loginId = AuthorityUtils.getAuthorizedUserName(
-                authentication,
-                "Only authorized user can hide their order."
-        );
-
         OrderUpdateResponseDto response = commandOrderService.hideOnOrder(loginId, orderId, hide);
 
         return ResponseDto.<OrderUpdateResponseDto>builder()

@@ -20,15 +20,20 @@ import org.junit.platform.commons.util.ReflectionUtils;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.common.exception.InvalidPeriodConditionException;
 import shop.yesaladin.shop.common.exception.PageOffsetOutOfBoundsException;
+import shop.yesaladin.shop.coupon.service.inter.QueryMemberCouponService;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.member.dto.MemberOrderSheetResponseDto;
+import shop.yesaladin.shop.member.exception.MemberNotFoundException;
+import shop.yesaladin.shop.member.service.inter.QueryMemberAddressService;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.order.domain.model.MemberOrder;
 import shop.yesaladin.shop.order.domain.model.Order;
@@ -37,6 +42,7 @@ import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
 import shop.yesaladin.shop.order.dto.OrderSheetRequestDto;
 import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
+import shop.yesaladin.shop.order.dto.OrderStatusResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryResponseDto;
 import shop.yesaladin.shop.order.exception.OrderNotFoundException;
@@ -51,8 +57,10 @@ class QueryOrderServiceImplTest {
     private QueryOrderServiceImpl service;
     private QueryOrderRepository repository;
     private QueryMemberService queryMemberService;
+    private QueryMemberAddressService queryMemberAddressService;
     private QueryPointHistoryService queryPointHistoryService;
     private QueryProductService queryProductService;
+    private QueryMemberCouponService queryMemberCouponService;
 
     private final Clock clock = Clock.fixed(
             Instant.parse("2023-01-10T00:00:00.000Z"),
@@ -67,12 +75,17 @@ class QueryOrderServiceImplTest {
         queryPointHistoryService = Mockito.mock(QueryPointHistoryService.class);
         queryProductService = Mockito.mock(QueryProductService.class);
         repository = Mockito.mock(QueryOrderRepository.class);
+        queryMemberAddressService = Mockito.mock(QueryMemberAddressService.class);
         queryMemberService = Mockito.mock(QueryMemberService.class);
+        queryMemberCouponService = Mockito.mock(QueryMemberCouponService.class);
+
         service = new QueryOrderServiceImpl(
                 repository,
                 queryMemberService,
+                queryMemberAddressService,
                 queryPointHistoryService,
                 queryProductService,
+                queryMemberCouponService,
                 clock
         );
     }
@@ -352,7 +365,7 @@ class QueryOrderServiceImplTest {
         List<String> isbn = new ArrayList<>();
         List<Integer> quantity = new ArrayList<>();
         OrderSheetRequestDto request = new OrderSheetRequestDto(isbn, quantity);
-        MemberOrderSheetResponseDto response = new MemberOrderSheetResponseDto(name, phoneNumber, address);
+        MemberOrderSheetResponseDto response = new MemberOrderSheetResponseDto(name, phoneNumber, 7);
 
         Mockito.when(queryPointHistoryService.getMemberPoint(loginId)).thenReturn(amount);
         Mockito.when(queryProductService.getByOrderProducts(any())).thenReturn(new ArrayList<>());
@@ -364,7 +377,6 @@ class QueryOrderServiceImplTest {
         //then
         Assertions.assertThat(result.getName()).isEqualTo(name);
         Assertions.assertThat(result.getPhoneNumber()).isEqualTo(phoneNumber);
-        Assertions.assertThat(result.getAddress()).isEqualTo(address);
         Assertions.assertThat(result.getPoint()).isEqualTo(amount);
         Assertions.assertThat(result.getOrderProducts()).hasSize(0);
     }
@@ -490,5 +502,92 @@ class QueryOrderServiceImplTest {
                         pageable
                 ))
                 .isInstanceOf(PageOffsetOutOfBoundsException.class);
+    }
+
+    @Test
+    @DisplayName("주문 상태에 따른 주문 조회 성공")
+    void getStatusResponsesByLoginIdAndStatus() throws Exception {
+        // given
+        Member member = DummyMember.memberWithId();
+
+        List<OrderStatusResponseDto> responseList = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            OrderStatusResponseDto responseDto = OrderStatusResponseDto.builder()
+                    .orderId((long) i)
+                    .orderAmount((long) (10000 * i))
+                    .orderName("orderName" + i)
+                    .orderCode(OrderCode.MEMBER_ORDER)
+                    .orderNumber("number" + i)
+                    .receiverName("김김김" + i)
+                    .orderDateTime(LocalDateTime.now().plusHours(i))
+                    .loginId("loginId" + i)
+                    .build();
+            responseList.add(responseDto);
+        }
+        PageRequest pageRequest = PageRequest.of(1, 3);
+        Mockito.when(repository.findSuccessStatusResponsesByLoginIdAndStatus(any(), any(), any()))
+                .thenReturn(new PageImpl<>(responseList, pageRequest, responseList.size()));
+
+        Mockito.when(queryMemberService.existsLoginId(any())).thenReturn(true);
+
+        // when
+        Page<OrderStatusResponseDto> responses = service.getStatusResponsesByLoginIdAndStatus(
+                member.getLoginId(),
+                OrderStatusCode.ORDER,
+                pageRequest
+        );
+
+        // then
+        Assertions.assertThat(responses).hasSize(10);
+        Assertions.assertThat(responses.getContent().get(0).getOrderId())
+                .isEqualTo(responseList.get(0).getOrderId());
+        Assertions.assertThat(responses.getContent().get(0).getOrderName())
+                .isEqualTo(responseList.get(0).getOrderName());
+        Assertions.assertThat(responses.getContent().get(1).getOrderId())
+                .isEqualTo(responseList.get(1).getOrderId());
+        Assertions.assertThat(responses.getNumber()).isEqualTo(pageRequest.getPageNumber());
+
+        Mockito.verify(repository, Mockito.times(1))
+                .findSuccessStatusResponsesByLoginIdAndStatus(any(), any(), any());
+        Mockito.verify(queryMemberService, Mockito.times(1)).existsLoginId(any());
+    }
+
+    @Test
+    @DisplayName("주문 상태에 따른 주문 조회 실패 - 없는 회원 아이디")
+    void getStatusResponsesByLoginIdAndStatus_notExistMember() throws Exception {
+        // given
+        Member member = DummyMember.memberWithId();
+
+        List<OrderStatusResponseDto> responseList = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            OrderStatusResponseDto responseDto = OrderStatusResponseDto.builder()
+                    .orderId((long) i)
+                    .orderAmount((long) (10000 * i))
+                    .orderName("orderName" + i)
+                    .orderCode(OrderCode.MEMBER_ORDER)
+                    .orderNumber("number" + i)
+                    .receiverName("김김김" + i)
+                    .orderDateTime(LocalDateTime.now().plusHours(i))
+                    .loginId("loginId" + i)
+                    .build();
+            responseList.add(responseDto);
+        }
+        PageRequest pageRequest = PageRequest.of(0, 5);
+        Mockito.when(repository.findSuccessStatusResponsesByLoginIdAndStatus(any(), any(), any()))
+                .thenReturn(new PageImpl<>(responseList, pageRequest, responseList.size()));
+
+        Mockito.when(queryMemberService.existsLoginId(any())).thenReturn(false);
+
+        // when
+        // then
+        Assertions.assertThatCode(() -> service.getStatusResponsesByLoginIdAndStatus(
+                member.getLoginId(),
+                OrderStatusCode.ORDER,
+                pageRequest
+        )).isInstanceOf(ClientException.class).hasMessageContaining("Member not found with loginId");
+
+        Mockito.verify(repository, Mockito.never())
+                .findSuccessStatusResponsesByLoginIdAndStatus(any(), any(), any());
+        Mockito.verify(queryMemberService, Mockito.times(1)).existsLoginId(any());
     }
 }
