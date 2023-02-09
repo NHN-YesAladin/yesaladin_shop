@@ -1,5 +1,28 @@
 package shop.yesaladin.shop.product.controller;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentRequest;
+import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -22,6 +45,8 @@ import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
 import shop.yesaladin.shop.product.dto.ProductOnlyTitleDto;
 import shop.yesaladin.shop.product.dto.ProductsResponseDto;
+
+import shop.yesaladin.shop.product.dto.RelationsResponseDto;
 import shop.yesaladin.shop.product.dto.ViewCartDto;
 import shop.yesaladin.shop.product.dummy.DummyProductDetailResponseDto;
 import shop.yesaladin.shop.product.dummy.DummyProductsResponseDto;
@@ -51,6 +76,7 @@ import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
 @AutoConfigureRestDocs
 @WebMvcTest(QueryProductController.class)
 class QueryProductControllerTest {
+
     private final Long ID = 1L;
 
     @Autowired
@@ -89,10 +115,14 @@ class QueryProductControllerTest {
                 getDocumentResponse(),
                 pathParameters(parameterWithName("isbn").description("ISBN")),
                 responseFields(
-                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("동작 성공 여부"),
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
                         fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
-                        fieldWithPath("data.title").type(JsonFieldType.STRING).description("제목").optional(),
-                        fieldWithPath("errorMessages").type(JsonFieldType.NULL).description("에러 메세지 NULL")
+                        fieldWithPath("data.title").type(JsonFieldType.STRING)
+                                .description("제목")
+                                .optional(),
+                        fieldWithPath("errorMessages").type(JsonFieldType.NULL)
+                                .description("에러 메세지 NULL")
                 )
         ));
     }
@@ -104,7 +134,10 @@ class QueryProductControllerTest {
         // given
         String isbn = "0000000000001";
         Mockito.when(service.findTitleByIsbn(isbn))
-                .thenThrow(new ClientException(ErrorCode.PRODUCT_NOT_FOUND, "Product not found with isbn : " + isbn));
+                .thenThrow(new ClientException(
+                        ErrorCode.PRODUCT_NOT_FOUND,
+                        "Product not found with isbn : " + isbn
+                ));
 
         // when
         ResultActions result = mockMvc.perform(get("/v1/products/info/{isbn}", isbn)
@@ -127,10 +160,12 @@ class QueryProductControllerTest {
                 getDocumentResponse(),
                 pathParameters(parameterWithName("isbn").description("ISBN")),
                 responseFields(
-                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("동작 성공 여부"),
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
                         fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
                         fieldWithPath("data").type(JsonFieldType.NULL).description("NULL"),
-                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY).description("에러 메세지")
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
                 )
         ));
     }
@@ -434,7 +469,41 @@ class QueryProductControllerTest {
                         fieldWithPath("data.[].isEbook").type(JsonFieldType.BOOLEAN).description("E-Book 여부"),
                         fieldWithPath("data.[].isSubscribeProduct").type(JsonFieldType.BOOLEAN).description("구독 가능여부"),
                         fieldWithPath("errorMessages").type(JsonFieldType.NULL).description("에러 메세지 NULL")
+
                 )
         ));
+    }
+
+    @WithMockUser
+    @Test
+    @DisplayName("연관 상품 등록을 위한 상품 검색 성공")
+    void findProductRelationByTitle() throws Exception {
+        //given
+        String title = "title";
+        List<RelationsResponseDto> lists = new ArrayList<>();
+        RelationsResponseDto dto = new RelationsResponseDto(
+                10L,
+                "file" ,
+                title,
+                List.of("author"),
+                "publisher",
+                LocalDate.now().toString(),
+                1000000000,
+                100
+        );
+
+        lists.add(dto);
+
+        Mockito.when(service.findProductRelationByTitle(0L, title, PageRequest.of(0, 10)))
+                .thenReturn(new PageImpl<>(lists, PageRequest.of(0, 5), 5));
+
+        ResultActions result = mockMvc.perform(get("/v1/products/{id}/relation", "0").queryParam(
+                "title",
+                title
+        ).with(csrf()));
+
+        result.andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andDo(print());
     }
 }
