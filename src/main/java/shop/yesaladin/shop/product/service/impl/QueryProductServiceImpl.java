@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -439,7 +440,7 @@ public class QueryProductServiceImpl implements QueryProductService {
         );
         List<RelationsResponseDto> dtoList = new ArrayList<>();
         for (Product product : products) {
-            List<String> author = findAuthorsByProduct(product);
+            List<AuthorsResponseDto> author = findAuthorsByProduct(product);
             PublishResponseDto publish = queryPublishService.findByProduct(product);
 
             int rate = product.getTotalDiscountRate().getDiscountRate();
@@ -451,10 +452,10 @@ public class QueryProductServiceImpl implements QueryProductService {
                     product.getId(),
                     product.getThumbnailFile().getUrl(),
                     product.getTitle(),
-                    author,
+                    author.stream().map(AuthorsResponseDto::getName).collect(Collectors.toList()),
                     publish.getPublisher().getName(),
                     publish.getPublishedDate().toString(),
-                    calcSellingPrice(product, rate),
+                    calcSellingPrice(product.getActualPrice(), rate),
                     rate
             ));
 

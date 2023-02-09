@@ -116,7 +116,7 @@ public interface QueryProductRepository {
      * @author 최예린
      * @since 1.0
      */
-    List<Product> findByIsbnList(List<String> isbnList, Map<String, Integer> quantities);
+    List<Product> findByIsbnList(List<String> isbnList);
 
     /**
      * 연관 상품 등록을 위한 상품 검색
@@ -128,7 +128,4 @@ public interface QueryProductRepository {
      * @since 1,0
      */
     Page<Product> findProductRelationByTitle(Long id, String title, Pageable pageable);
-  
-    List<Product> findByIsbnList(List<String> isbnList);
-
 }
