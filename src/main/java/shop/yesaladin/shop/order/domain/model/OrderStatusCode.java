@@ -4,11 +4,14 @@ import java.util.Arrays;
 import java.util.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import shop.yesaladin.common.code.ErrorCode;
+import shop.yesaladin.common.exception.ClientException;
 
 /**
  * 주문 상태 코드입니다.
  *
  * @author 최예린
+ * @author 배수한
  * @since 1.0
  */
 @Getter
@@ -36,5 +39,21 @@ public enum OrderStatusCode {
         return Arrays.stream(OrderStatusCode.values())
                 .filter(code -> status.equals(code.name()))
                 .findFirst();
+    }
+
+    /**
+     * 상태 코드를 통해 주문상태 코드를 찾아냅니다.
+     *
+     * @param status status 상태 숫자값
+     * @return 주문상태코드
+     * @author 배수한
+     * @since 1.0
+     */
+    public static OrderStatusCode getOrderStatusCodeByNumber(Long status) {
+        return Arrays.stream(OrderStatusCode.values())
+                .filter(c -> c.getStatusCode() == status)
+                .findFirst()
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.BAD_REQUEST, ErrorCode.BAD_REQUEST.getDisplayName()));
     }
 }

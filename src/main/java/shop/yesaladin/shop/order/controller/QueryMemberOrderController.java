@@ -72,7 +72,7 @@ public class QueryMemberOrderController {
     ) {
         String loginId = "id0"; //TODO 테스트용
 
-        OrderStatusCode code = getOrderStatusCode(status);
+        OrderStatusCode code = OrderStatusCode.getOrderStatusCodeByNumber(status);
 
         Page<OrderStatusResponseDto> data = queryOrderService.getStatusResponsesByLoginIdAndStatus(
                 loginId,
@@ -94,11 +94,5 @@ public class QueryMemberOrderController {
                 .build();
     }
 
-    private static OrderStatusCode getOrderStatusCode(Long status) {
-        return Arrays.stream(OrderStatusCode.values())
-                .filter(c -> c.getStatusCode() == status)
-                .findFirst()
-                .orElseThrow(() -> new ClientException(
-                        ErrorCode.BAD_REQUEST, ErrorCode.BAD_REQUEST.getDisplayName()));
-    }
+
 }
