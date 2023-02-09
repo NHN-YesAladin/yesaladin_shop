@@ -86,6 +86,8 @@ class JpaMemberOrderRepositoryTest {
                 .orderCode(orderCode)
                 .memberAddress(memberAddress)
                 .member(member)
+                .recipientName("수령인 이름")
+                .recipientPhoneNumber("수령인 폰번호")
                 .build();
     }
 }

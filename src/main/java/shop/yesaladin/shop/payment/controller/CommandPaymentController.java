@@ -51,23 +51,23 @@ public class CommandPaymentController {
             @Valid @RequestBody PaymentRequestDto requestDto
     ) {
         // TODO Order create 구현 될 경우, 삭제 필요
-        return getTestDto();
-//        try {
-//            PaymentCompleteSimpleResponseDto response = paymentService.confirmTossRequest(requestDto);
-//            return ResponseDto.<PaymentCompleteSimpleResponseDto>builder()
-//                    .status(HttpStatus.OK)
-//                    .success(true)
-//                    .data(response)
-//                    .build();
-//        } catch (PaymentFailException e) {
-//            // exception ignore
-//            return ResponseDto.<PaymentCompleteSimpleResponseDto>builder()
-//                    .status(HttpStatus.OK)
-//                    .success(false)
-//                    .data(PaymentCompleteSimpleResponseDto.fromRequestDto(requestDto))
-//                    .errorMessages(List.of(e.getMessage(), e.getCode()))
-//                    .build();
-//        }
+//        return getTestDto();
+        try {
+            PaymentCompleteSimpleResponseDto response = paymentService.confirmTossRequest(requestDto);
+            return ResponseDto.<PaymentCompleteSimpleResponseDto>builder()
+                    .status(HttpStatus.OK)
+                    .success(true)
+                    .data(response)
+                    .build();
+        } catch (PaymentFailException e) {
+            // exception ignore
+            return ResponseDto.<PaymentCompleteSimpleResponseDto>builder()
+                    .status(HttpStatus.OK)
+                    .success(false)
+                    .data(PaymentCompleteSimpleResponseDto.fromRequestDto(requestDto))
+                    .errorMessages(List.of(e.getMessage(), e.getCode()))
+                    .build();
+        }
 
     }
     private static ResponseDto<PaymentCompleteSimpleResponseDto> getTestDto() {

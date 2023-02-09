@@ -112,6 +112,8 @@ class QueryDslOrderQueryRepositoryTest {
                     .address("address" + i)
                     .nonMemberName("nonMember" + i)
                     .phoneNumber("0101234567" + i)
+                    .recipientName("수령인 이름")
+                    .recipientPhoneNumber("수령인 폰번호")
                     .build();
             nonMemberOrderList.add(nonMemberOrder);
             entityManager.persist(nonMemberOrder);
@@ -132,6 +134,8 @@ class QueryDslOrderQueryRepositoryTest {
                     .orderCode(OrderCode.MEMBER_ORDER)
                     .member(member)
                     .memberAddress(memberAddressList.get(index))
+                    .recipientName("수령인 이름")
+                    .recipientPhoneNumber("수령인 폰번호")
                     .build();
             memberOrderList.add(memberOrder);
             entityManager.persist(memberOrder);
@@ -156,6 +160,8 @@ class QueryDslOrderQueryRepositoryTest {
                     .shippingFee(0)
                     .wrappingFee(0)
                     .orderCode(OrderCode.MEMBER_SUBSCRIBE)
+                    .recipientName("수령인 이름")
+                    .recipientPhoneNumber("수령인 폰번호")
                     .build();
             SubscribeOrderList subscribeOrder = SubscribeOrderList.builder()
                     .isTransported(true)
