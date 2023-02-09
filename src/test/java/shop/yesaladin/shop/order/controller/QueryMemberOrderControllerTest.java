@@ -206,7 +206,7 @@ class QueryMemberOrderControllerTest {
         for (int i = 0; i < 10; i++) {
             OrderStatusResponseDto responseDto = OrderStatusResponseDto.builder()
                     .orderId((long) i)
-                    .orderAmount((long) (10000 * i))
+                    .totalAmount((long) (10000 * i))
                     .orderName("orderName" + i)
                     .orderCode(OrderCode.MEMBER_ORDER)
                     .orderNumber("number" + i)
@@ -255,7 +255,7 @@ class QueryMemberOrderControllerTest {
                 ))
                 .andExpect(jsonPath(
                         "$.data.dataList.[0].orderAmount",
-                        equalTo(responseList.get(pagingStart).getOrderAmount().intValue())
+                        equalTo(responseList.get(pagingStart).getTotalAmount().intValue())
                 ));
 
         Mockito.verify(queryOrderService, Mockito.times(1))

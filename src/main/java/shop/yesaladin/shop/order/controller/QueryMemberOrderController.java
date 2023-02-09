@@ -66,11 +66,11 @@ public class QueryMemberOrderController {
 
     @GetMapping(params = "status")
     public ResponseDto<PaginatedResponseDto<OrderStatusResponseDto>> getOrdersByStatusAndLoginId(
-            @LoginId(required = true) String loginId,
+//            @LoginId(required = true) String loginId,
             @RequestParam("status") Long status,
             Pageable pageable
     ) {
-        //String loginId = "id0"; //TODO 테스트용
+        String loginId = "id0"; //TODO 테스트용
 
         OrderStatusCode code = getOrderStatusCode(status);
 

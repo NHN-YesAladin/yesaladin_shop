@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
-import org.elasticsearch.monitor.os.OsStats.Mem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -31,7 +30,6 @@ import shop.yesaladin.shop.common.exception.PageOffsetOutOfBoundsException;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.member.dto.MemberOrderSheetResponseDto;
-import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.order.domain.model.MemberOrder;
 import shop.yesaladin.shop.order.domain.model.Order;
@@ -506,7 +504,7 @@ class QueryOrderServiceImplTest {
         for (int i = 0; i < 10; i++) {
             OrderStatusResponseDto responseDto = OrderStatusResponseDto.builder()
                     .orderId((long) i)
-                    .orderAmount((long) (10000 * i))
+                    .totalAmount((long) (10000 * i))
                     .orderName("orderName" + i)
                     .orderCode(OrderCode.MEMBER_ORDER)
                     .orderNumber("number" + i)
@@ -554,7 +552,7 @@ class QueryOrderServiceImplTest {
         for (int i = 0; i < 10; i++) {
             OrderStatusResponseDto responseDto = OrderStatusResponseDto.builder()
                     .orderId((long) i)
-                    .orderAmount((long) (10000 * i))
+                    .totalAmount((long) (10000 * i))
                     .orderName("orderName" + i)
                     .orderCode(OrderCode.MEMBER_ORDER)
                     .orderNumber("number" + i)
