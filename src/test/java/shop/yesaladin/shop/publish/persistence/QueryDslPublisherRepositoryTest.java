@@ -59,8 +59,8 @@ class QueryDslPublisherRepositoryTest {
         List<Publisher> publishers = repository.findAll();
 
         // then
-        assertThat(publishers.contains(publisher1)).isTrue();
-        assertThat(publishers.contains(publisher2)).isTrue();
+        assertThat(publishers).contains(publisher1);
+        assertThat(publishers).contains(publisher2);
     }
 
     @Test

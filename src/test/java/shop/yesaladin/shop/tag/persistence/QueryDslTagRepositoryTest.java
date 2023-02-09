@@ -58,8 +58,8 @@ class QueryDslTagRepositoryTest {
         List<Tag> tags = repository.findAll();
 
         // then
-        assertThat(tags.contains(tag1)).isTrue();
-        assertThat(tags.contains(tag2)).isTrue();
+        assertThat(tags).contains(tag1);
+        assertThat(tags).contains(tag2);
     }
 
     @Test
