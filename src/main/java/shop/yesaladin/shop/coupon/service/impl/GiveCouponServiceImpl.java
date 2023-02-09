@@ -87,13 +87,13 @@ public class GiveCouponServiceImpl implements GiveCouponService {
     @Override
     @Transactional
     public void giveCouponToMember(CouponGiveRequestResponseMessage responseMessage) {
-        CouponCodesAndResultMessageBuilder resultBuilder = CouponCodesAndResultMessage.builder()
-                .couponCodes(responseMessage.getCoupons()
-                        .stream()
-                        .flatMap(coupon -> coupon.getCouponCodes().stream())
-                        .collect(Collectors.toList()));
+        CouponCodesAndResultMessageBuilder resultBuilder = CouponCodesAndResultMessage.builder();
         try {
             checkRequestSucceeded(responseMessage);
+            resultBuilder.couponCodes(responseMessage.getCoupons()
+                    .stream()
+                    .flatMap(coupon -> coupon.getCouponCodes().stream())
+                    .collect(Collectors.toList()));
             String memberId = getMemberIdFromRequestId(responseMessage.getRequestId());
             tryGiveCouponToMember(responseMessage, memberId);
             couponProducer.produceGivenResultMessage(resultBuilder.success(true).build());
