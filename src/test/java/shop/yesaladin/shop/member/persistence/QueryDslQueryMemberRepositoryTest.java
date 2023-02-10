@@ -228,7 +228,6 @@ class QueryDslQueryMemberRepositoryTest {
     }
 
     @Test
-    @Disabled
     void getMemberOrderData() {
         for (int i = 0; i < 5; i++) {
             String uuid = UUID.randomUUID().toString();
@@ -237,6 +236,7 @@ class QueryDslQueryMemberRepositoryTest {
                     .member(memberWithLoginId)
                     .couponCode(uuid)
                     .couponGroupCode(guuid)
+                    .expirationDate(LocalDate.now().plusMonths(1))
                     .build();
             entityManager.persist(memberCoupon);
         }

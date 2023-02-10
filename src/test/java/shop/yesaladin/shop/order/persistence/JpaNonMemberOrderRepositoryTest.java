@@ -16,7 +16,6 @@ import shop.yesaladin.shop.order.domain.model.NonMemberOrder;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
 
 @DataJpaTest
-@Disabled
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class JpaNonMemberOrderRepositoryTest {
 
@@ -38,6 +37,8 @@ class JpaNonMemberOrderRepositoryTest {
     private String address = "Gwang-ju";
     private String name = "yerin";
     private String phoneNumber = "01012341234";
+    private String recipientName = "김몽대";
+    private String recipientPhoneNumber = "01012341234";
 
     private NonMemberOrder nonMemberOrder = createNonMemberOrder();
 
@@ -70,6 +71,8 @@ class JpaNonMemberOrderRepositoryTest {
                 .shippingFee(shippingFee)
                 .wrappingFee(wrappingFee)
                 .totalAmount(totalAmount)
+                .recipientName(recipientName)
+                .recipientPhoneNumber(recipientPhoneNumber)
                 .orderCode(orderCode)
                 .address(address)
                 .name("비회원 주문")

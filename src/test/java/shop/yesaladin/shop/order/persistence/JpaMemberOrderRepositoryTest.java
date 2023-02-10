@@ -21,7 +21,6 @@ import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMemberAddress;
 
 @DataJpaTest
-@Disabled
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class JpaMemberOrderRepositoryTest {
 
@@ -41,7 +40,8 @@ class JpaMemberOrderRepositoryTest {
     private OrderCode orderCode = OrderCode.NON_MEMBER_ORDER;
     private Member member;
     private MemberAddress memberAddress;
-
+    private String recipientName = "김몽대";
+    private String recipientPhoneNumber = "01012341234";
     private MemberOrder memberOrder;
 
     @BeforeEach
@@ -85,6 +85,8 @@ class JpaMemberOrderRepositoryTest {
                 .shippingFee(shippingFee)
                 .wrappingFee(wrappingFee)
                 .totalAmount(totalAmount)
+                .recipientName(recipientName)
+                .recipientPhoneNumber(recipientPhoneNumber)
                 .orderCode(orderCode)
                 .memberAddress(memberAddress)
                 .member(member)

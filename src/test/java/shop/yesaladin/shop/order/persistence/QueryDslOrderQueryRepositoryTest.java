@@ -9,7 +9,6 @@ import java.util.Optional;
 import javax.persistence.EntityManager;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -45,7 +44,6 @@ import shop.yesaladin.shop.product.dummy.DummyProduct;
 import shop.yesaladin.shop.product.dummy.DummySubscribeProduct;
 import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
 
-@Disabled
 
 @Transactional
 @SpringBootTest
@@ -115,6 +113,8 @@ class QueryDslOrderQueryRepositoryTest {
                     .address("address" + i)
                     .nonMemberName("nonMember" + i)
                     .phoneNumber("0101234567" + i)
+                    .recipientName("friend")
+                    .recipientPhoneNumber("01011111111")
                     .build();
             nonMemberOrderList.add(nonMemberOrder);
             entityManager.persist(nonMemberOrder);
@@ -133,6 +133,8 @@ class QueryDslOrderQueryRepositoryTest {
                     .shippingFee(0)
                     .wrappingFee(0)
                     .orderCode(OrderCode.MEMBER_ORDER)
+                    .recipientName("friend")
+                    .recipientPhoneNumber("01011111111")
                     .member(member)
                     .memberAddress(memberAddressList.get(index))
                     .build();
@@ -159,6 +161,8 @@ class QueryDslOrderQueryRepositoryTest {
                     .shippingFee(0)
                     .wrappingFee(0)
                     .orderCode(OrderCode.MEMBER_SUBSCRIBE)
+                    .recipientName("friend")
+                    .recipientPhoneNumber("01011111111")
                     .build();
             SubscribeOrderList subscribeOrder = SubscribeOrderList.builder()
                     .isTransported(true)

@@ -4,8 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.startsWith;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -42,6 +40,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -52,7 +51,6 @@ import shop.yesaladin.shop.point.domain.model.PointReasonCode;
 import shop.yesaladin.shop.point.dto.PointHistoryResponseDto;
 import shop.yesaladin.shop.point.service.inter.QueryPointHistoryService;
 
-@Disabled
 @AutoConfigureRestDocs
 @WebMvcTest(QueryPointHistoryController.class)
 class QueryPointHistoryControllerTest {
@@ -72,8 +70,9 @@ class QueryPointHistoryControllerTest {
     Page<PointHistoryResponseDto> response = getPageableData(5, pointCode, pointReasonCode);
 
     @Test
+    @Disabled
     @DisplayName("회원의 포인트내역 조회 실패 - 유효하지 않는 권한")
-    @WithMockUser(username = "user@1", authorities = "ROLE_ANONYMOUS")
+    @WithAnonymousUser
     void getPointHistoriesByLoginId_fail_InvalidAuthority() throws Exception {
         //when
         ResultActions result = mockMvc.perform(get("/v1/point-histories")
@@ -92,7 +91,7 @@ class QueryPointHistoryControllerTest {
 
         //docs
         result.andDo(document(
-                "get-point-histories-by-loginId-fail-unathorized",
+                "get-point-histories-by-loginId-fail-unauthorized",
                 getDocumentRequest(),
                 getDocumentResponse(),
                 requestParameters(
@@ -174,7 +173,7 @@ class QueryPointHistoryControllerTest {
     @WithMockUser(username = "user@1", authorities = "ROLE_USER")
     void getPointHistoriesByLoginId_all() throws Exception {
         //given
-        Mockito.when(pointHistoryService.getPointHistoriesWithLoginId(eq(loginId), any()))
+        Mockito.when(pointHistoryService.getPointHistoriesWithLoginId(any(), any()))
                 .thenReturn(response);
 
         //when
@@ -198,7 +197,7 @@ class QueryPointHistoryControllerTest {
 
         ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
         verify(pointHistoryService, times(1)).getPointHistoriesWithLoginId(
-                anyString(),
+                any(),
                 captor.capture()
         );
 
@@ -253,7 +252,7 @@ class QueryPointHistoryControllerTest {
     void getPointHistoriesByLoginId() throws Exception {
         //given
         Mockito.when(pointHistoryService.getPointHistoriesWithLoginIdAndCode(
-                eq(loginId),
+                any(),
                 any(),
                 any()
         )).thenReturn(response);
@@ -279,7 +278,7 @@ class QueryPointHistoryControllerTest {
 
         ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
         verify(pointHistoryService, times(1)).getPointHistoriesWithLoginIdAndCode(
-                anyString(),
+                any(),
                 any(),
                 captor.capture()
         );
@@ -331,17 +330,12 @@ class QueryPointHistoryControllerTest {
 
     }
 
-
-    @Test
-    void getPointHistories() {
-    }
-
     @Test
     @DisplayName("회원의 포인트 조회 실패 - 탈퇴한 회원")
     @WithMockUser(username = "user@1", authorities = "ROLE_ADMIN")
     void getMemberPoint_fail_memberNotFound() throws Exception {
         //given
-        Mockito.when(pointHistoryService.getMemberPoint(loginId))
+        Mockito.when(pointHistoryService.getMemberPoint(any()))
                 .thenThrow(new MemberNotFoundException("Member loginId : " + loginId));
 
         //when
@@ -370,7 +364,7 @@ class QueryPointHistoryControllerTest {
         //given
         long amount = 1000;
 
-        Mockito.when(pointHistoryService.getMemberPoint(loginId)).thenReturn(amount);
+        Mockito.when(pointHistoryService.getMemberPoint(any())).thenReturn(amount);
 
         //when
         ResultActions result = mockMvc.perform(get("/v1/points").with(csrf()));

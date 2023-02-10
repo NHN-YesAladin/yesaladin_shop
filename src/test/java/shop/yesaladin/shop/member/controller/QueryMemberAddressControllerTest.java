@@ -1,8 +1,7 @@
 package shop.yesaladin.shop.member.controller;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.startsWith;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -35,10 +34,8 @@ import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
-import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberAddressService;
 
-@Disabled
 @AutoConfigureRestDocs
 @WebMvcTest(QueryMemberAddressController.class)
 class QueryMemberAddressControllerTest {
@@ -55,11 +52,11 @@ class QueryMemberAddressControllerTest {
     String address = "Gwang Ju";
     Boolean isDefault = false;
 
-    @WithMockUser(username = "user@1")
+    @WithMockUser
     @Test
     void getMemberAddressByMemberId_fail_MemberNotFound() throws Exception {
         //given
-        Mockito.when(queryMemberAddressService.getByLoginId(anyString()))
+        Mockito.when(queryMemberAddressService.getByLoginId(any()))
                 .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, ""));
 
         //when
@@ -93,12 +90,12 @@ class QueryMemberAddressControllerTest {
         ));
     }
 
-    @WithMockUser(username = "user@1")
+    @WithMockUser
     @Test
     void getMemberAddressByMemberId() throws Exception {
         //given
-        String loginId= "user@1";
-        Mockito.when(queryMemberAddressService.getByLoginId(anyString()))
+        String loginId = "user@1";
+        Mockito.when(queryMemberAddressService.getByLoginId(any()))
                 .thenReturn(getMemberAddressList(10, loginId));
 
         //when
@@ -122,7 +119,8 @@ class QueryMemberAddressControllerTest {
                         fieldWithPath("success").type(JsonFieldType.BOOLEAN)
                                 .description("동작 성공 여부"),
                         fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
-                        fieldWithPath("data.[].id").type(JsonFieldType.NUMBER).description("등록된 배송지 Pk"),
+                        fieldWithPath("data.[].id").type(JsonFieldType.NUMBER)
+                                .description("등록된 배송지 Pk"),
                         fieldWithPath("data.[].address").type(JsonFieldType.STRING)
                                 .description("등록된 배송지 주소"),
                         fieldWithPath("data.[].isDefault").type(JsonFieldType.BOOLEAN)

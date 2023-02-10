@@ -14,6 +14,7 @@ import org.mockito.Mockito;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberGrade;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
@@ -24,7 +25,6 @@ import shop.yesaladin.shop.member.dto.MemberLoginResponseDto;
 import shop.yesaladin.shop.member.dto.MemberManagerResponseDto;
 import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
-import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 
 class QueryMemberServiceImplTest {
 
@@ -56,7 +56,7 @@ class QueryMemberServiceImplTest {
 
         //when then
         assertThatThrownBy(() -> service.findMemberById(id))
-                .isInstanceOf(MemberNotFoundException.class);
+                .isInstanceOf(ClientException.class);
     }
 
     @Test
@@ -85,7 +85,7 @@ class QueryMemberServiceImplTest {
 
         //when then
         assertThatThrownBy(() -> service.findMemberByNickname(nickname))
-                .isInstanceOf(MemberNotFoundException.class);
+                .isInstanceOf(ClientException.class);
     }
 
     @Test
@@ -114,7 +114,7 @@ class QueryMemberServiceImplTest {
 
         //when then
         assertThatThrownBy(() -> service.findMemberByLoginId(loginId))
-                .isInstanceOf(MemberNotFoundException.class);
+                .isInstanceOf(ClientException.class);
     }
 
     @Test
@@ -143,7 +143,7 @@ class QueryMemberServiceImplTest {
 
         //when, then
         assertThatThrownBy(() -> service.findMemberLoginInfoByLoginId(loginId))
-                .isInstanceOf(MemberNotFoundException.class);
+                .isInstanceOf(ClientException.class);
     }
 
     @Test
@@ -180,7 +180,7 @@ class QueryMemberServiceImplTest {
 
         //when, then
         assertThatThrownBy(() -> service.findMemberLoginInfoByEmail(email))
-                .isInstanceOf(MemberNotFoundException.class);
+                .isInstanceOf(ClientException.class);
     }
 
     @Test
@@ -439,11 +439,11 @@ class QueryMemberServiceImplTest {
         String loginId = "user@1";
 
         Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
-                .thenThrow(MemberNotFoundException.class);
+                .thenThrow(ClientException.class);
 
         //when, then
         assertThatThrownBy(() -> service.getMemberGradeByLoginId(loginId)).isInstanceOf(
-                MemberNotFoundException.class);
+                ClientException.class);
     }
 
     @Test
@@ -470,11 +470,11 @@ class QueryMemberServiceImplTest {
         String loginId = "user@1";
 
         Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
-                .thenThrow(MemberNotFoundException.class);
+                .thenThrow(ClientException.class);
 
         //when, then
         assertThatThrownBy(() -> service.getByLoginId(loginId)).isInstanceOf(
-                MemberNotFoundException.class);
+                ClientException.class);
     }
 
     @Test
