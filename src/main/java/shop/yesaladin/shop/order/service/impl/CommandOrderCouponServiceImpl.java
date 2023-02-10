@@ -43,7 +43,7 @@ public class CommandOrderCouponServiceImpl implements CommandOrderCouponService 
 
         List<MemberCoupon> memberCoupons = queryMemberCouponService.findByCouponCodes(couponCodes);
 
-        List<OrderCoupon> orderCoupons =  memberCoupons.stream().map(memberCoupon -> {
+        List<OrderCoupon> orderCoupons = memberCoupons.stream().map(memberCoupon -> {
             OrderCoupon orderCoupon = OrderCoupon.create(memberOrder, memberCoupon);
             return commandOrderCouponRepository.save(orderCoupon);
         }).collect(Collectors.toList());

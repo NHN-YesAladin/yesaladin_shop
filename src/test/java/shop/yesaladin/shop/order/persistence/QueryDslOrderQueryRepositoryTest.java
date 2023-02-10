@@ -112,6 +112,8 @@ class QueryDslOrderQueryRepositoryTest {
                     .address("address" + i)
                     .nonMemberName("nonMember" + i)
                     .phoneNumber("0101234567" + i)
+                    .recipientName("수령인 이름")
+                    .recipientPhoneNumber("수령인 폰번호")
                     .build();
             nonMemberOrderList.add(nonMemberOrder);
             entityManager.persist(nonMemberOrder);
@@ -132,6 +134,8 @@ class QueryDslOrderQueryRepositoryTest {
                     .orderCode(OrderCode.MEMBER_ORDER)
                     .member(member)
                     .memberAddress(memberAddressList.get(index))
+                    .recipientName("수령인 이름")
+                    .recipientPhoneNumber("수령인 폰번호")
                     .build();
             memberOrderList.add(memberOrder);
             entityManager.persist(memberOrder);
@@ -156,6 +160,8 @@ class QueryDslOrderQueryRepositoryTest {
                     .shippingFee(0)
                     .wrappingFee(0)
                     .orderCode(OrderCode.MEMBER_SUBSCRIBE)
+                    .recipientName("수령인 이름")
+                    .recipientPhoneNumber("수령인 폰번호")
                     .build();
             SubscribeOrderList subscribeOrder = SubscribeOrderList.builder()
                     .isTransported(true)
@@ -462,7 +468,7 @@ class QueryDslOrderQueryRepositoryTest {
 
     @ParameterizedTest
     @ValueSource(ints = {0, 1, 2, 3, 4})
-    @DisplayName("주문상태조회 dto를 조회 성공 - ready상태가 가장 최근")
+    @DisplayName("주문상태조회 dto를 조회 성공 ")
     void findStatusResponsesByLoginIdAndStatusCode_ready(int index) throws Exception {
         // given
         Member member = memberList.get(index);
@@ -476,11 +482,11 @@ class QueryDslOrderQueryRepositoryTest {
         Page<OrderStatusResponseDto> responses = queryRepository.findSuccessStatusResponsesByLoginIdAndStatus(
                 member.getLoginId(),
                 code,
-                PageRequest.of(0, 300)
+                PageRequest.of(2, 2)
         );
 
         // then
-        Assertions.assertThat(responses).hasSize(6);
+        Assertions.assertThat(responses).hasSize(2);
     }
 
     @ParameterizedTest
@@ -517,6 +523,46 @@ class QueryDslOrderQueryRepositoryTest {
 
         // then
         Assertions.assertThat(responses).isEmpty();
+    }
+
+
+    @ParameterizedTest
+    @ValueSource(ints = {0, 1, 2, 3, 4})
+    @DisplayName("주문 상태에 해당 하는 주문 개수 조회")
+    void getOrderCountByStatusCode(int index) throws Exception {
+        // given
+        Member member = memberList.get(index);
+
+        // when
+        OrderStatusCode code = Arrays.stream(OrderStatusCode.values())
+                .filter(c -> c.getStatusCode() == (index + 1))
+                .findFirst()
+                .get();
+
+        long orderCountByStatusCode = queryRepository.getOrderCountByStatusCode(
+                member.getLoginId(),
+                code
+        );
+
+        // then
+        Assertions.assertThat(orderCountByStatusCode).isEqualTo(6);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {0, 1, 2, 3})
+    @DisplayName("주문 상태에 해당 하는 주문 개수 조회 실패 - COMPLETE 일 때, 맞지않는 코드 값 ")
+    void getOrderCountByStatusCode_notMatchDecrease(int index) throws Exception {
+        // given
+        Member member = memberList.get(index);
+
+        // when
+        long orderCountByStatusCode = queryRepository.getOrderCountByStatusCode(
+                member.getLoginId(),
+                OrderStatusCode.COMPLETE
+        );
+
+        // then
+        Assertions.assertThat(orderCountByStatusCode).isZero();
     }
 
 }

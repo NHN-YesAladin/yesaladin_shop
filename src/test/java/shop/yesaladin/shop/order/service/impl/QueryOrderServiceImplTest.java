@@ -9,9 +9,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
-import org.elasticsearch.monitor.os.OsStats.Mem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -32,7 +32,6 @@ import shop.yesaladin.shop.coupon.service.inter.QueryMemberCouponService;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.member.dto.MemberOrderSheetResponseDto;
-import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberAddressService;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.order.domain.model.MemberOrder;
@@ -54,6 +53,11 @@ import shop.yesaladin.shop.product.service.inter.QueryProductService;
 
 class QueryOrderServiceImplTest {
 
+    private final Clock clock = Clock.fixed(
+            Instant.parse("2023-01-10T00:00:00.000Z"),
+            ZoneId.of("UTC")
+    );
+    long expectedMemberId = 1L;
     private QueryOrderServiceImpl service;
     private QueryOrderRepository repository;
     private QueryMemberService queryMemberService;
@@ -61,14 +65,6 @@ class QueryOrderServiceImplTest {
     private QueryPointHistoryService queryPointHistoryService;
     private QueryProductService queryProductService;
     private QueryMemberCouponService queryMemberCouponService;
-
-    private final Clock clock = Clock.fixed(
-            Instant.parse("2023-01-10T00:00:00.000Z"),
-            ZoneId.of("UTC")
-    );
-
-    long expectedMemberId = 1L;
-
 
     @BeforeEach
     void setUp() {
@@ -365,7 +361,11 @@ class QueryOrderServiceImplTest {
         List<String> isbn = new ArrayList<>();
         List<Integer> quantity = new ArrayList<>();
         OrderSheetRequestDto request = new OrderSheetRequestDto(isbn, quantity);
-        MemberOrderSheetResponseDto response = new MemberOrderSheetResponseDto(name, phoneNumber, 7);
+        MemberOrderSheetResponseDto response = new MemberOrderSheetResponseDto(
+                name,
+                phoneNumber,
+                7
+        );
 
         Mockito.when(queryPointHistoryService.getMemberPoint(loginId)).thenReturn(amount);
         Mockito.when(queryProductService.getByOrderProducts(any())).thenReturn(new ArrayList<>());
@@ -514,7 +514,7 @@ class QueryOrderServiceImplTest {
         for (int i = 0; i < 10; i++) {
             OrderStatusResponseDto responseDto = OrderStatusResponseDto.builder()
                     .orderId((long) i)
-                    .orderAmount((long) (10000 * i))
+                    .totalAmount((long) (10000 * i))
                     .orderName("orderName" + i)
                     .orderCode(OrderCode.MEMBER_ORDER)
                     .orderNumber("number" + i)
@@ -562,7 +562,7 @@ class QueryOrderServiceImplTest {
         for (int i = 0; i < 10; i++) {
             OrderStatusResponseDto responseDto = OrderStatusResponseDto.builder()
                     .orderId((long) i)
-                    .orderAmount((long) (10000 * i))
+                    .totalAmount((long) (10000 * i))
                     .orderName("orderName" + i)
                     .orderCode(OrderCode.MEMBER_ORDER)
                     .orderNumber("number" + i)
@@ -581,13 +581,58 @@ class QueryOrderServiceImplTest {
         // when
         // then
         Assertions.assertThatCode(() -> service.getStatusResponsesByLoginIdAndStatus(
-                member.getLoginId(),
-                OrderStatusCode.ORDER,
-                pageRequest
-        )).isInstanceOf(ClientException.class).hasMessageContaining("Member not found with loginId");
+                        member.getLoginId(),
+                        OrderStatusCode.ORDER,
+                        pageRequest
+                ))
+                .isInstanceOf(ClientException.class)
+                .hasMessageContaining("Member not found with loginId");
 
         Mockito.verify(repository, Mockito.never())
                 .findSuccessStatusResponsesByLoginIdAndStatus(any(), any(), any());
+        Mockito.verify(queryMemberService, Mockito.times(1)).existsLoginId(any());
+    }
+
+    @Test
+    @DisplayName("주문 상태에 맞는 주문 개수를 조회 성공")
+    void getOrderCountByLoginIdStatus() throws Exception {
+        // given
+        Member member = DummyMember.memberWithId();
+
+        Mockito.when(repository.getOrderCountByStatusCode(any(), any())).thenReturn(3L);
+        Mockito.when(queryMemberService.existsLoginId(any())).thenReturn(true);
+
+        // when
+        Map<OrderStatusCode, Long> statusCodeLongMap = service.getOrderCountByLoginIdStatus(
+                member.getLoginId());
+
+        // then
+        Assertions.assertThat(statusCodeLongMap).hasSize(4);
+        Assertions.assertThat(statusCodeLongMap).containsEntry(OrderStatusCode.ORDER, 3L);
+        Assertions.assertThat(statusCodeLongMap).doesNotContainEntry(OrderStatusCode.DEPOSIT, 3L);
+
+        Mockito.verify(repository, Mockito.times(4)).getOrderCountByStatusCode(any(), any());
+        Mockito.verify(queryMemberService, Mockito.times(1)).existsLoginId(any());
+    }
+
+    @Test
+    @DisplayName("주문 상태에 맞는 주문 개수를 조회 실패")
+    void getOrderCountByLoginIdStatus_notExistMember() throws Exception {
+        // given
+        Member member = DummyMember.memberWithId();
+
+        Mockito.when(repository.getOrderCountByStatusCode(any(), any())).thenReturn(3L);
+        Mockito.when(queryMemberService.existsLoginId(any())).thenReturn(false);
+
+        // when
+
+        // then
+        Assertions.assertThatCode(() -> service.getOrderCountByLoginIdStatus(
+                        member.getLoginId()))
+                .isInstanceOf(ClientException.class)
+                .hasMessageContaining("Member not found with loginId");
+
+        Mockito.verify(repository, Mockito.never()).getOrderCountByStatusCode(any(), any());
         Mockito.verify(queryMemberService, Mockito.times(1)).existsLoginId(any());
     }
 }
