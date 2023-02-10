@@ -77,6 +77,7 @@ yesaladin:
     base: http://localhost:8072
     auth: http://localhost:8072/auth
     coupon: http://localhost:8072/coupon
+    delivery: http://localhost:8072/delivery
 
 # 테스트용 스토리지
 storage-token:
