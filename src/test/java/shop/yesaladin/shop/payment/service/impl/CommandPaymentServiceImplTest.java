@@ -19,6 +19,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -33,10 +34,12 @@ import shop.yesaladin.shop.order.persistence.dummy.DummyMemberAddress;
 import shop.yesaladin.shop.order.service.inter.QueryOrderService;
 import shop.yesaladin.shop.payment.domain.model.Payment;
 import shop.yesaladin.shop.payment.domain.repository.CommandPaymentRepository;
+import shop.yesaladin.shop.payment.domain.repository.QueryPaymentRepository;
 import shop.yesaladin.shop.payment.dto.PaymentCompleteSimpleResponseDto;
 import shop.yesaladin.shop.payment.dto.PaymentRequestDto;
 import shop.yesaladin.shop.payment.exception.PaymentFailException;
 import shop.yesaladin.shop.payment.service.inter.CommandPaymentService;
+import shop.yesaladin.shop.payment.service.inter.QueryPaymentService;
 
 /**
  * @author 배수한
@@ -46,8 +49,10 @@ class CommandPaymentServiceImplTest {
 
     private CommandPaymentService paymentService;
     private CommandPaymentRepository paymentRepository;
+    private QueryPaymentRepository queryPaymentRepository;
     private QueryOrderService orderService;
     private RestTemplate restTemplate;
+    private ApplicationEventPublisher applicationEventPublisher;
     private ObjectMapper mapper = new ObjectMapper();
 
     private MemberOrder memberOrder;
@@ -61,11 +66,15 @@ class CommandPaymentServiceImplTest {
         paymentRepository = mock(CommandPaymentRepository.class);
         orderService = mock(QueryOrderService.class);
         restTemplate = mock(RestTemplate.class);
+        applicationEventPublisher = mock(ApplicationEventPublisher.class);
+        queryPaymentRepository = mock(QueryPaymentRepository.class);
 
         paymentService = new CommandPaymentServiceImpl(
                 restTemplate,
                 paymentRepository,
-                orderService
+                queryPaymentRepository,
+                orderService,
+                applicationEventPublisher
         );
 
         Member member = DummyMember.member();
