@@ -4,17 +4,23 @@ spring:
       enabled: false
   application:
     name: yesaladin-shop
+#  datasource:
+#    url: jdbc:h2:mem:/test
+#    username: sa
+#    password:
   datasource:
-    url: jdbc:h2:mem:/test
-    username: sa
-    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/yesaladin2?serverTimezone=Asia/Seoul
+    username: root
+    password: 123456789
   jpa:
     properties:
       hibernate:
         show_sql: true
         format_sql: true
     hibernate:
-      ddl-auto: create
+#      ddl-auto: create
+      ddl-auto: none
   kafka:
     bootstrap-servers: localhost:9092
   redis:
