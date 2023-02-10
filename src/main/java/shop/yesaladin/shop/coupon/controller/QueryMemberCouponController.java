@@ -49,7 +49,7 @@ public class QueryMemberCouponController {
     }
 
     @GetMapping(value = "/issuance", params = {"type", "couponId"})
-    public ResponseDto<CouponIssueResponseDto> issueCoupon(
+    public ResponseDto<CouponIssueResponseDto> processCouponGiveRequest(
             @LoginId(required = true) String loginId,
             @RequestParam("type") String type,
             @RequestParam("couponId") Long couponId
@@ -73,6 +73,8 @@ public class QueryMemberCouponController {
                         .build();
             }
         }
+
+        // 메시지를 발행하게 되면 redis 의 쿠폰 수량 감소
 
         return ResponseDto.<CouponIssueResponseDto>builder()
                 .status(HttpStatus.OK)
