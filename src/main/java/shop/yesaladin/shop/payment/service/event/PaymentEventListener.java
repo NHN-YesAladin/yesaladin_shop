@@ -34,6 +34,12 @@ public class PaymentEventListener {
     private static final String TOSS_SECRET_KEY = "test_sk_MGjLJoQ1aVZPoLzaRvg8w6KYe2RN:";
     private final RestTemplate restTemplate;
 
+    /**
+     * 결제 service가 rollback 될 경우 동작하는 메서드,
+     *  결제 취소 api를 통해 결제가 취소 됨. (DB저장 안함)
+     *
+     * @param eventDto
+     */
     @TransactionalEventListener(phase = TransactionPhase.AFTER_ROLLBACK)
     public void handleCancelPayment(PaymentEventDto eventDto) {
         String paymentKey = eventDto.getPaymentKey();
