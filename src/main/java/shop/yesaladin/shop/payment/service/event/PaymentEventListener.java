@@ -1,4 +1,4 @@
-package shop.yesaladin.shop.payment.service.impl;
+package shop.yesaladin.shop.payment.service.event;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Base64;
@@ -37,7 +37,7 @@ public class PaymentEventListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_ROLLBACK)
     public void handleCancelPayment(PaymentEventDto eventDto) {
         String paymentKey = eventDto.getPaymentKey();
-        log.error("TransactionalEventListener : {}", paymentKey);
+        log.warn("TransactionalEventListener : {}", paymentKey);
 
         UriComponents uriComponents = UriComponentsBuilder.newInstance()
                 .scheme("https").host("api.tosspayments.com")

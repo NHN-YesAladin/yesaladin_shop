@@ -1,6 +1,7 @@
 package shop.yesaladin.shop.payment.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -20,10 +21,13 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.exception.ClientException;
+import shop.yesaladin.shop.delivery.dto.DeliveryEventDto;
 import shop.yesaladin.shop.order.domain.model.NonMemberOrder;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
+import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
 import shop.yesaladin.shop.order.dto.OrderPaymentResponseDto;
+import shop.yesaladin.shop.order.service.inter.CommandOrderStatusChangeLogService;
 import shop.yesaladin.shop.order.service.inter.QueryOrderService;
 import shop.yesaladin.shop.payment.domain.model.Payment;
 import shop.yesaladin.shop.payment.domain.model.PaymentCancel;
@@ -35,7 +39,6 @@ import shop.yesaladin.shop.payment.dto.PaymentEventDto;
 import shop.yesaladin.shop.payment.dto.PaymentRequestDto;
 import shop.yesaladin.shop.payment.exception.PaymentFailException;
 import shop.yesaladin.shop.payment.service.inter.CommandPaymentService;
-import shop.yesaladin.shop.payment.service.inter.QueryPaymentService;
 
 /**
  * 결제 정보, 카드정보, 취소정보를 생성,수정,삭제 할 수 있는 기능을 가진 서비스 구현체
@@ -54,6 +57,7 @@ public class CommandPaymentServiceImpl implements CommandPaymentService {
     private final CommandPaymentRepository commandPaymentRepository;
     private final QueryPaymentRepository queryPaymentRepository;
     private final QueryOrderService queryOrderService;
+    private final CommandOrderStatusChangeLogService commandOrderStatusChangeLogService;
     private final ApplicationEventPublisher applicationEventPublisher;
 
     /**
@@ -69,10 +73,20 @@ public class CommandPaymentServiceImpl implements CommandPaymentService {
         JsonNode responseFromToss = getResponseFromToss(requestDto);
         log.info("{}", responseFromToss);
 
-        //database에 저장
+        // 결제 정보 insert
         Payment payment = commandPaymentRepository.save(Payment.toEntity(responseFromToss, order));
         PaymentCompleteSimpleResponseDto responseDto = PaymentCompleteSimpleResponseDto.fromEntity(
                 payment);
+
+        // 주문 상태 로그 추가 - 입금 완료 상태
+        commandOrderStatusChangeLogService.appendOrderStatusChangeLog(
+                LocalDateTime.now(),
+                order,
+                OrderStatusCode.DEPOSIT
+        );
+
+        // TODO 결제 :  배송 서버에 배송 요청 - 게이트웨이 오픈 필요
+        //applicationEventPublisher.publishEvent(new DeliveryEventDto(order.getId()));
 
         return getPaymentResponseDto(order, responseDto);
     }
@@ -83,6 +97,7 @@ public class CommandPaymentServiceImpl implements CommandPaymentService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void cancelPayment(String paymentKey, String cancelReason) {
+        //TODO 미완성 - 테스트도 작성 필요
         Payment payment = queryPaymentRepository.findById(paymentKey, null)
                 .orElseThrow(() -> new ClientException(
                         ErrorCode.PAYMENT_NOT_FOUND, ErrorCode.PAYMENT_NOT_FOUND.getDisplayName()));
@@ -155,8 +170,7 @@ public class CommandPaymentServiceImpl implements CommandPaymentService {
      * @param requestDto 결제 정보가 담겨있는 dto
      * @return 토스에서 전송한 정보들이 JsonNode 타입으로 저장되어있음
      */
-    private JsonNode getResponseFromToss(PaymentRequestDto requestDto)
-    {
+    private JsonNode getResponseFromToss(PaymentRequestDto requestDto) {
         UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(
                 "https://api.tosspayments.com/v1/payments/confirm").build();
 
