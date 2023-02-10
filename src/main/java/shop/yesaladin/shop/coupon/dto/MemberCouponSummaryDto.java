@@ -5,11 +5,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import shop.yesaladin.coupon.code.CouponBoundCode;
 import shop.yesaladin.coupon.code.CouponTypeCode;
 
 @Getter
 @Builder
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class MemberCouponSummaryDto {
@@ -19,7 +21,7 @@ public class MemberCouponSummaryDto {
     private int amount;
     private CouponTypeCode couponTypeCode;
     private LocalDate expireDate;
-    private Boolean isUsed;
+    private Boolean Used;
     private String couponBound;
     private CouponBoundCode couponBoundCode;
 }

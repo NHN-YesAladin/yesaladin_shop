@@ -44,6 +44,7 @@ import shop.yesaladin.shop.product.dummy.DummyProduct;
 import shop.yesaladin.shop.product.dummy.DummySubscribeProduct;
 import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
 
+
 @Transactional
 @SpringBootTest
 class QueryDslOrderQueryRepositoryTest {
@@ -134,6 +135,8 @@ class QueryDslOrderQueryRepositoryTest {
                     .wrappingFee(3000)
                     .totalAmount(16000)
                     .orderCode(OrderCode.MEMBER_ORDER)
+                    .recipientName("friend")
+                    .recipientPhoneNumber("01011111111")
                     .member(member)
                     .memberAddress(memberAddressList.get(index))
                     .recipientName("수령인 이름")

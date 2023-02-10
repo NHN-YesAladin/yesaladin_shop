@@ -1,6 +1,7 @@
 package shop.yesaladin.shop.member.controller;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -337,9 +338,7 @@ class QueryMemberControllerTest {
     @Test
     void getMemberGrade_fail_memberNotFound() throws Exception {
         //given
-        String loginId = "user@1";
-
-        Mockito.when(queryMemberService.getMemberGradeByLoginId(loginId))
+        Mockito.when(queryMemberService.getMemberGradeByLoginId(any()))
                 .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, ""));
 
         //when
@@ -377,13 +376,12 @@ class QueryMemberControllerTest {
     @Test
     void getMemberGrade_success() throws Exception {
         //given
-        String loginId = "user@1";
         MemberGrade memberGrade = MemberGrade.WHITE;
 
         MemberGradeQueryResponseDto response = ReflectionUtils.newInstance(
                 MemberGradeQueryResponseDto.class, memberGrade.name(), memberGrade.getName());
 
-        Mockito.when(queryMemberService.getMemberGradeByLoginId(loginId)).thenReturn(response);
+        Mockito.when(queryMemberService.getMemberGradeByLoginId(any())).thenReturn(response);
 
         //when
         ResultActions result = mockMvc.perform(get("/v1/members").param("type", "grade"));
@@ -421,7 +419,7 @@ class QueryMemberControllerTest {
         //given
         String loginId = "user@1";
 
-        Mockito.when(queryMemberService.getByLoginId(loginId))
+        Mockito.when(queryMemberService.getByLoginId(any()))
                 .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, ""));
 
         //when
@@ -464,7 +462,7 @@ class QueryMemberControllerTest {
 
         MemberQueryResponseDto response = MemberQueryResponseDto.fromEntity(member);
 
-        Mockito.when(queryMemberService.getByLoginId(loginId)).thenReturn(response);
+        Mockito.when(queryMemberService.getByLoginId(any())).thenReturn(response);
 
         //when
         ResultActions result = mockMvc.perform(get("/v1/members"));
@@ -546,7 +544,6 @@ class QueryMemberControllerTest {
                 loginId
         ));
 
-
         resultActions.andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.data.dataList[0].id", equalTo(1)))
@@ -560,7 +557,10 @@ class QueryMemberControllerTest {
                         equalTo(member.getSignUpDate().toString())
                 ))
                 .andExpect(jsonPath("$.data.dataList[0].withdrawalDate", equalTo(null)))
-                .andExpect(jsonPath("$.data.dataList[0].isWithdrawal", equalTo(member.isWithdrawal())))
+                .andExpect(jsonPath(
+                        "$.data.dataList[0].isWithdrawal",
+                        equalTo(member.isWithdrawal())
+                ))
                 .andExpect(jsonPath("$.data.dataList[0].isBlocked", equalTo(member.isBlocked())))
                 .andExpect(jsonPath("$.data.dataList[0].blockedReason", equalTo(null)))
                 .andExpect(jsonPath("$.data.dataList[0].blockedDate", equalTo(null)))
@@ -586,7 +586,6 @@ class QueryMemberControllerTest {
                 member.getNickname()
         ));
 
-
         resultActions.andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.data.dataList[0].id", equalTo(1)))
@@ -600,7 +599,10 @@ class QueryMemberControllerTest {
                         equalTo(member.getSignUpDate().toString())
                 ))
                 .andExpect(jsonPath("$.data.dataList[0].withdrawalDate", equalTo(null)))
-                .andExpect(jsonPath("$.data.dataList[0].isWithdrawal", equalTo(member.isWithdrawal())))
+                .andExpect(jsonPath(
+                        "$.data.dataList[0].isWithdrawal",
+                        equalTo(member.isWithdrawal())
+                ))
                 .andExpect(jsonPath("$.data.dataList[0].isBlocked", equalTo(member.isBlocked())))
                 .andExpect(jsonPath("$.data.dataList[0].blockedReason", equalTo(null)))
                 .andExpect(jsonPath("$.data.dataList[0].blockedDate", equalTo(null)))
@@ -623,7 +625,6 @@ class QueryMemberControllerTest {
                 phone
         ));
 
-
         resultActions.andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.data.dataList[0].id", equalTo(1)))
@@ -637,7 +638,10 @@ class QueryMemberControllerTest {
                         equalTo(member.getSignUpDate().toString())
                 ))
                 .andExpect(jsonPath("$.data.dataList[0].withdrawalDate", equalTo(null)))
-                .andExpect(jsonPath("$.data.dataList[0].isWithdrawal", equalTo(member.isWithdrawal())))
+                .andExpect(jsonPath(
+                        "$.data.dataList[0].isWithdrawal",
+                        equalTo(member.isWithdrawal())
+                ))
                 .andExpect(jsonPath("$.data.dataList[0].isBlocked", equalTo(member.isBlocked())))
                 .andExpect(jsonPath("$.data.dataList[0].blockedReason", equalTo(null)))
                 .andExpect(jsonPath("$.data.dataList[0].blockedDate", equalTo(null)))
@@ -661,7 +665,6 @@ class QueryMemberControllerTest {
                 name
         ));
 
-
         resultActions.andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.data.dataList[0].id", equalTo(1)))
@@ -675,7 +678,10 @@ class QueryMemberControllerTest {
                         equalTo(member.getSignUpDate().toString())
                 ))
                 .andExpect(jsonPath("$.data.dataList[0].withdrawalDate", equalTo(null)))
-                .andExpect(jsonPath("$.data.dataList[0].isWithdrawal", equalTo(member.isWithdrawal())))
+                .andExpect(jsonPath(
+                        "$.data.dataList[0].isWithdrawal",
+                        equalTo(member.isWithdrawal())
+                ))
                 .andExpect(jsonPath("$.data.dataList[0].isBlocked", equalTo(member.isBlocked())))
                 .andExpect(jsonPath("$.data.dataList[0].blockedReason", equalTo(null)))
                 .andExpect(jsonPath("$.data.dataList[0].blockedDate", equalTo(null)))
@@ -712,7 +718,10 @@ class QueryMemberControllerTest {
                         equalTo(member.getSignUpDate().toString())
                 ))
                 .andExpect(jsonPath("$.data.dataList[0].withdrawalDate", equalTo(null)))
-                .andExpect(jsonPath("$.data.dataList[0].isWithdrawal", equalTo(member.isWithdrawal())))
+                .andExpect(jsonPath(
+                        "$.data.dataList[0].isWithdrawal",
+                        equalTo(member.isWithdrawal())
+                ))
                 .andExpect(jsonPath("$.data.dataList[0].isBlocked", equalTo(member.isBlocked())))
                 .andExpect(jsonPath("$.data.dataList[0].blockedReason", equalTo(null)))
                 .andExpect(jsonPath("$.data.dataList[0].blockedDate", equalTo(null)))

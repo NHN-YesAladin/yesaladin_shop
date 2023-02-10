@@ -70,6 +70,7 @@ public class CommandPaymentController {
         }
 
     }
+
     private static ResponseDto<PaymentCompleteSimpleResponseDto> getTestDto() {
         PaymentCompleteSimpleResponseDto testDto = PaymentCompleteSimpleResponseDto.builder()
                 .paymentId("dummy paymentId")

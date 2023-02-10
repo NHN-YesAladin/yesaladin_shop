@@ -77,7 +77,6 @@ public class CommandOrderController {
      * @param loginId       회원의 아이디
      * @return 생성된 주문 정보
      */
-    @CrossOrigin(origins = {"http://localhost:9090", "https://www.yesaladin.shop"})
     @PostMapping("/member")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<OrderCreateResponseDto> createMemberOrder(
@@ -104,7 +103,6 @@ public class CommandOrderController {
      * @param loginId       회원의 아이디
      * @return 생성된 주문 정보
      */
-    @CrossOrigin(origins = {"http://localhost:9090", "https://www.yesaladin.shop"})
     @PostMapping("/subscribe")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<OrderCreateResponseDto> createSubscribeOrder(

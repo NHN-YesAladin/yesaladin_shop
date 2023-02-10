@@ -304,6 +304,6 @@ public class CommandOrderServiceImpl implements CommandOrderService {
     }
 
     private String generateOrderNumber(LocalDateTime orderDateTime) {
-        return orderDateTime.toLocalDate() + "-" + UUID.randomUUID().toString().substring(0, 8);
+        return orderDateTime.toLocalDate().toString().replace("-", "") + "-" + UUID.randomUUID().toString().substring(0, 8);
     }
 }
