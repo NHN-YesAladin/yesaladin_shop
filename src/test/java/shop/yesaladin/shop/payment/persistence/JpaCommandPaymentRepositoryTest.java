@@ -21,9 +21,11 @@ import shop.yesaladin.shop.payment.domain.model.Payment;
 import shop.yesaladin.shop.payment.domain.model.PaymentCancel;
 import shop.yesaladin.shop.payment.domain.model.PaymentCard;
 import shop.yesaladin.shop.payment.domain.model.PaymentCode;
+import shop.yesaladin.shop.payment.domain.model.PaymentEasyPay;
 import shop.yesaladin.shop.payment.dummy.DummyPayment;
 import shop.yesaladin.shop.payment.dummy.DummyPaymentCancel;
 import shop.yesaladin.shop.payment.dummy.DummyPaymentCard;
+import shop.yesaladin.shop.payment.dummy.DummyPaymentEasyPay;
 
 
 @DataJpaTest
@@ -40,6 +42,7 @@ class JpaCommandPaymentRepositoryTest {
     private MemberAddress memberAddress;
     private MemberOrder memberOrder;
     private PaymentCard paymentCard;
+    private PaymentEasyPay paymentEasyPay;
     private Payment payment;
     private String paymentId = "000000000001";
 
@@ -56,13 +59,16 @@ class JpaCommandPaymentRepositoryTest {
         entityManager.persist(memberOrder);
 
         payment = DummyPayment.payment(paymentId, memberOrder);
-        paymentCard = DummyPaymentCard.paymentCard(payment);
-        payment.setPaymentCard(paymentCard);
+
     }
 
     @Test
     @DisplayName(" 결제 완료 이후 상황 - payment에 card 정보를 set 한 상태로 insert")
     void save_insertPayment_withCard() throws Exception {
+        // given
+        paymentCard = DummyPaymentCard.paymentCard(payment);
+        payment.setPaymentCard(paymentCard);
+
         // when
         Payment save = jpaCommandPaymentRepository.save(payment);
 
@@ -73,6 +79,27 @@ class JpaCommandPaymentRepositoryTest {
         assertThat(save.getStatus()).isEqualTo(payment.getStatus());
         assertThat(save.getOrderName()).isEqualTo(payment.getOrderName());
     }
+
+    @Test
+    @DisplayName(" 결제 완료 이후 상황 - payment에 간편결제 정보를 set한 상태로 insert")
+    void save_insertPayment_withEasyPay() throws Exception {
+        // given
+        paymentEasyPay = DummyPaymentEasyPay.paymentEasyPay(payment);
+        payment.setPaymentEasyPay(paymentEasyPay);
+
+        // when
+        Payment save = jpaCommandPaymentRepository.save(payment);
+
+        // then
+        assertThat(save.getOrder()).isEqualTo(memberOrder);
+        assertThat(save.getPaymentEasyPay().getAmount()).isEqualTo(paymentEasyPay.getAmount());
+        assertThat(save.getPaymentEasyPay().getProvider()).isEqualTo(paymentEasyPay.getProvider());
+        assertThat(save.getPaymentEasyPay().getDiscountAmount()).isEqualTo(paymentEasyPay.getDiscountAmount());
+        assertThat(save.getId()).isEqualTo(payment.getId());
+        assertThat(save.getStatus()).isEqualTo(payment.getStatus());
+        assertThat(save.getOrderName()).isEqualTo(payment.getOrderName());
+    }
+
 
     @Test
     @DisplayName(" 결제 취소 신청시 - payment를 불러와 cancel 을 set 하고 save")
@@ -100,10 +127,14 @@ class JpaCommandPaymentRepositoryTest {
                 .getCancelReason()).isEqualTo(paymentCancel.getCancelReason());
     }
 
+
     @Test
     @DisplayName("카드정보만 삭제 - CascadeType.persist와 merge가 영향을 주지 않는 것을 확인")
     void delete_onlyPaymentCard() throws Exception {
         // given
+        paymentCard = DummyPaymentCard.paymentCard(payment);
+        payment.setPaymentCard(paymentCard);
+
         entityManager.persist(payment);
         entityManager.flush();
         entityManager.clear();
