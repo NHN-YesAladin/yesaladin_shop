@@ -12,8 +12,8 @@ import lombok.Getter;
 @Getter
 public class PaymentFailException extends RuntimeException {
 
-    private String code;
-    private String message;
+    private final String code;
+    private final String message;
 
     public PaymentFailException(String message, String code) {
         super("Payment is fail : " + message);

@@ -1,9 +1,5 @@
 package shop.yesaladin.shop.payment.service.impl;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.util.UUID;
-import org.apache.kafka.common.protocol.types.Field;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;

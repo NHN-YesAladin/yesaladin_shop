@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -22,6 +23,7 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
@@ -40,7 +42,6 @@ import shop.yesaladin.shop.payment.dto.PaymentCompleteSimpleResponseDto;
 import shop.yesaladin.shop.payment.dto.PaymentRequestDto;
 import shop.yesaladin.shop.payment.exception.PaymentFailException;
 import shop.yesaladin.shop.payment.service.inter.CommandPaymentService;
-import shop.yesaladin.shop.payment.service.inter.QueryPaymentService;
 
 /**
  * @author 배수한
@@ -60,7 +61,8 @@ class CommandPaymentServiceImplTest {
     private MemberOrder memberOrder;
     private NonMemberOrder nonMemberOrder;
 
-    private String jsonBody = "{\"mId\":\"tvivarepublica\",\"lastTransactionKey\":\"CB523BC9E9942CB203A0958ECE82A2FF\",\"paymentKey\":\"dJv2eBNjG0Poxy1XQL8RJqpXm9gkOk87nO5Wmlg96RKwZz4Y\",\"orderId\":\"zaIkFmBcYW4k_J9rOl0M2b7\",\"orderName\":\"토스 티셔츠 외 2건\",\"taxExemptionAmount\":0,\"status\":\"DONE\",\"requestedAt\":\"2023-01-23T23:59:11+09:00\",\"approvedAt\":\"2023-01-23T23:59:46+09:00\",\"useEscrow\":false,\"cultureExpense\":false,\"card\":{\"issuerCode\":\"24\",\"acquirerCode\":\"21\",\"number\":\"53275080****562*\",\"installmentPlanMonths\":0,\"isInterestFree\":false,\"interestPayer\":null,\"approveNo\":\"00000000\",\"useCardPoint\":false,\"cardType\":\"신용\",\"ownerType\":\"개인\",\"acquireStatus\":\"READY\",\"amount\":15000},\"virtualAccount\":null,\"transfer\":null,\"mobilePhone\":null,\"giftCertificate\":null,\"cashReceipt\":null,\"discount\":null,\"cancels\":null,\"secret\":\"ps_Gv6LjeKD8aa1PB5wXk0e8wYxAdXy\",\"type\":\"NORMAL\",\"easyPay\":{\"provider\":\"토스페이\",\"amount\":0,\"discountAmount\":0},\"country\":\"KR\",\"failure\":null,\"isPartialCancelable\":true,\"receipt\":{\"url\":\"https://dashboard.tosspayments.com/sales-slip?transactionId=t2PBzrTfEmg349R5W6nkrow%2BUzDofNfXtzOl46Bf9T6DwV8hRWVYUIkPBiT4to%2Bg&ref=PX\"},\"checkout\":{\"url\":\"https://api.tosspayments.com/v1/payments/dJv2eBNjG0Poxy1XQL8RJqpXm9gkOk87nO5Wmlg96RKwZz4Y/checkout\"},\"currency\":\"KRW\",\"totalAmount\":15000,\"balanceAmount\":15000,\"suppliedAmount\":13636,\"vat\":1364,\"taxFreeAmount\":0,\"method\":\"간편결제\",\"version\":\"2022-11-16\"}";
+    private String jsonBodyEasyPay = "{\"mId\":\"tvivarepublica\",\"lastTransactionKey\":\"CB523BC9E9942CB203A0958ECE82A2FF\",\"paymentKey\":\"dJv2eBNjG0Poxy1XQL8RJqpXm9gkOk87nO5Wmlg96RKwZz4Y\",\"orderId\":\"zaIkFmBcYW4k_J9rOl0M2b7\",\"orderName\":\"토스 티셔츠 외 2건\",\"taxExemptionAmount\":0,\"status\":\"DONE\",\"requestedAt\":\"2023-01-23T23:59:11+09:00\",\"approvedAt\":\"2023-01-23T23:59:46+09:00\",\"useEscrow\":false,\"cultureExpense\":false,\"card\":{\"issuerCode\":\"24\",\"acquirerCode\":\"21\",\"number\":\"53275080****562*\",\"installmentPlanMonths\":0,\"isInterestFree\":false,\"interestPayer\":null,\"approveNo\":\"00000000\",\"useCardPoint\":false,\"cardType\":\"신용\",\"ownerType\":\"개인\",\"acquireStatus\":\"READY\",\"amount\":15000},\"virtualAccount\":null,\"transfer\":null,\"mobilePhone\":null,\"giftCertificate\":null,\"cashReceipt\":null,\"discount\":null,\"cancels\":null,\"secret\":\"ps_Gv6LjeKD8aa1PB5wXk0e8wYxAdXy\",\"type\":\"NORMAL\",\"easyPay\":{\"provider\":\"토스페이\",\"amount\":0,\"discountAmount\":0},\"country\":\"KR\",\"failure\":null,\"isPartialCancelable\":true,\"receipt\":{\"url\":\"https://dashboard.tosspayments.com/sales-slip?transactionId=t2PBzrTfEmg349R5W6nkrow%2BUzDofNfXtzOl46Bf9T6DwV8hRWVYUIkPBiT4to%2Bg&ref=PX\"},\"checkout\":{\"url\":\"https://api.tosspayments.com/v1/payments/dJv2eBNjG0Poxy1XQL8RJqpXm9gkOk87nO5Wmlg96RKwZz4Y/checkout\"},\"currency\":\"KRW\",\"totalAmount\":15000,\"balanceAmount\":15000,\"suppliedAmount\":13636,\"vat\":1364,\"taxFreeAmount\":0,\"method\":\"간편결제\",\"version\":\"2022-11-16\"}";
+    private String jsonBodyCard = "{\"mId\":\"tvivarepublica4\",\"lastTransactionKey\":\"CDDE9497C9D712D36283B59CBB240CB2\",\"paymentKey\":\"Kl56WYb7w4vZnjEJeQVxyjydXgknOYrPmOoBN0k12dzgRG9p\",\"orderId\":\"v0AmjbyGWFc82lZWRYef3AWzz\",\"orderName\":\"토스티셔츠 외 2건\",\"taxExemptionAmount\":0,\"status\":\"DONE\",\"requestedAt\":\"2023-02-10T23:18:22+09:00\",\"approvedAt\":\"2023-02-10T23:18:22+09:00\",\"useEscrow\":false,\"cultureExpense\":false,\"card\":{\"issuerCode\":\"4V\",\"acquirerCode\":\"21\",\"number\":\"43301234****123*\",\"installmentPlanMonths\":0,\"isInterestFree\":false,\"interestPayer\":null,\"approveNo\":\"00000000\",\"useCardPoint\":false,\"cardType\":\"신용\",\"ownerType\":\"개인\",\"acquireStatus\":\"READY\",\"amount\":15000},\"virtualAccount\":null,\"transfer\":null,\"mobilePhone\":null,\"giftCertificate\":null,\"cashReceipt\":null,\"discount\":null,\"cancels\":null,\"secret\":null,\"type\":\"NORMAL\",\"easyPay\":null,\"country\":\"KR\",\"failure\":null,\"isPartialCancelable\":false,\"receipt\":{\"url\":\"https://dashboard.tosspayments.com/sales-slip?transactionId=sYdhdtKe4uBOItIzdbE5DvcJU1OiNuvPPXxBA7YDam82qaaQr%2BpNgjZYFgtXO6Bs&ref=PX\"},\"checkout\":{\"url\":\"https://api.tosspayments.com/v1/payments/Kl56WYb7w4vZnjEJeQVxyjydXgknOYrPmOoBN0k12dzgRG9p/checkout\"},\"currency\":\"KRW\",\"totalAmount\":15000,\"balanceAmount\":15000,\"suppliedAmount\":13636,\"vat\":1364,\"taxFreeAmount\":0,\"method\":\"카드\",\"version\":\"2022-11-16\"}";
     private String jsonBodyFail = "{\"message\":\"결제실패\",\"code\":\"CANCELED\"}";
 
     @BeforeEach
@@ -126,12 +128,12 @@ class CommandPaymentServiceImplTest {
         ArgumentCaptor<Long> longArgumentCaptor = ArgumentCaptor.forClass(Long.class);
 
         PaymentRequestDto requestDto = new PaymentRequestDto(
-                "dJv2eBNjG0Poxy1XQL8RJqpXm9gkOk87nO5Wmlg96RKwZz4Y",
-                "zaIkFmBcYW4k_J9rOl0M2b7",
+                "Kl56WYb7w4vZnjEJeQVxyjydXgknOYrPmOoBN0k12dzgRG9p",
+                "v0AmjbyGWFc82lZWRYef3AWzz",
                 15000L
         );
 
-        JsonNode jsonNode = mapper.readTree(jsonBody);
+        JsonNode jsonNode = mapper.readTree(jsonBodyCard);
         ResponseEntity<JsonNode> exchange = new ResponseEntity<>(jsonNode, HttpStatus.OK);
         when(restTemplate.exchange(
                 any(),
@@ -180,15 +182,14 @@ class CommandPaymentServiceImplTest {
         // given
         ArgumentCaptor<String> stringArgumentCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<Payment> paymentArgumentCaptor = ArgumentCaptor.forClass(Payment.class);
-        ArgumentCaptor<Long> longArgumentCaptor = ArgumentCaptor.forClass(Long.class);
 
         PaymentRequestDto requestDto = new PaymentRequestDto(
-                "dJv2eBNjG0Poxy1XQL8RJqpXm9gkOk87nO5Wmlg96RKwZz4Y",
-                "zaIkFmBcYW4k_J9rOl0M2b7",
+                "Kl56WYb7w4vZnjEJeQVxyjydXgknOYrPmOoBN0k12dzgRG9p",
+                "v0AmjbyGWFc82lZWRYef3AWzz",
                 15000L
         );
 
-        JsonNode jsonNode = mapper.readTree(jsonBody);
+        JsonNode jsonNode = mapper.readTree(jsonBodyCard);
         ResponseEntity<JsonNode> exchange = new ResponseEntity<>(jsonNode, HttpStatus.OK);
         when(restTemplate.exchange(
                 any(),
@@ -202,6 +203,10 @@ class CommandPaymentServiceImplTest {
 
         Payment payment = Payment.toEntity(exchange.getBody(), nonMemberOrder);
         when(paymentRepository.save(any())).thenReturn(payment);
+
+        doNothing().when(applicationEventPublisher).publishEvent(any());
+        doNothing().when(commandOrderStatusChangeLogService)
+                .appendOrderStatusChangeLog(any(), any(), any());
 
         // when
         PaymentCompleteSimpleResponseDto responseDto = paymentService.confirmTossRequest(requestDto);
@@ -223,11 +228,124 @@ class CommandPaymentServiceImplTest {
     }
 
     @Test
+    @DisplayName("회원 & 구독 주문시, 간편 결제 성공하여 특정 정보 반환 성공")
+    void confirmTossRequest_easyPay_memberOrder() throws Exception {
+        // given
+        ArgumentCaptor<String> stringArgumentCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<Payment> paymentArgumentCaptor = ArgumentCaptor.forClass(Payment.class);
+        ArgumentCaptor<Long> longArgumentCaptor = ArgumentCaptor.forClass(Long.class);
+
+        PaymentRequestDto requestDto = new PaymentRequestDto(
+                "dJv2eBNjG0Poxy1XQL8RJqpXm9gkOk87nO5Wmlg96RKwZz4Y",
+                "zaIkFmBcYW4k_J9rOl0M2b7",
+                15000L
+        );
+
+        JsonNode jsonNode = mapper.readTree(jsonBodyEasyPay);
+        ResponseEntity<JsonNode> exchange = new ResponseEntity<>(jsonNode, HttpStatus.OK);
+        when(restTemplate.exchange(
+                any(),
+                any(),
+                any(),
+                eq(JsonNode.class)
+        )).thenReturn(
+                exchange);
+
+        when(orderService.getOrderByNumber(any())).thenReturn(memberOrder);
+
+        Payment payment = Payment.toEntity(exchange.getBody(), memberOrder);
+        when(paymentRepository.save(any())).thenReturn(payment);
+
+        OrderPaymentResponseDto orderPaymentResponseDto = new OrderPaymentResponseDto(memberOrder.getMember()
+                .getName(), memberOrder.getMemberAddress().getAddress());
+        when(orderService.getPaymentDtoByMemberOrderId(anyLong())).thenReturn(
+                orderPaymentResponseDto);
+
+        doNothing().when(applicationEventPublisher).publishEvent(any());
+        doNothing().when(commandOrderStatusChangeLogService)
+                .appendOrderStatusChangeLog(any(), any(), any());
+
+        // when
+        PaymentCompleteSimpleResponseDto responseDto = paymentService.confirmTossRequest(requestDto);
+
+        // then
+        assertThat(responseDto.getPaymentId()).isEqualTo(payment.getId());
+        assertThat(responseDto.getEasyPayProvider()).isEqualTo(payment.getPaymentEasyPay()
+                .getProvider());
+        assertThat(responseDto.getOrderNumber()).isEqualTo(payment.getOrder().getOrderNumber());
+        assertThat(responseDto.getOrdererName()).isEqualTo(memberOrder.getMember().getName());
+        assertThat(responseDto.getOrderAddress()).isEqualTo(memberOrder.getMemberAddress()
+                .getAddress());
+
+        verify(orderService, times(1)).getOrderByNumber(stringArgumentCaptor.capture());
+        assertThat(stringArgumentCaptor.getValue()).isEqualTo(exchange.getBody()
+                .get("orderId")
+                .asText());
+
+        verify(paymentRepository, times(1)).save(paymentArgumentCaptor.capture());
+        assertThat(paymentArgumentCaptor.getValue().getId()).isEqualTo(payment.getId());
+
+        verify(orderService, times(1)).getPaymentDtoByMemberOrderId(longArgumentCaptor.capture());
+        assertThat(longArgumentCaptor.getValue()).isEqualTo(memberOrder.getId());
+    }
+
+    @Test
+    @DisplayName("비회원 주문시, 간편결제 성공하여 특정 정보 반환 성공")
+    void confirmTossRequest_easyPay_noneMemberOrder() throws Exception {
+        // given
+        ArgumentCaptor<String> stringArgumentCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<Payment> paymentArgumentCaptor = ArgumentCaptor.forClass(Payment.class);
+
+        PaymentRequestDto requestDto = new PaymentRequestDto(
+                "dJv2eBNjG0Poxy1XQL8RJqpXm9gkOk87nO5Wmlg96RKwZz4Y",
+                "zaIkFmBcYW4k_J9rOl0M2b7",
+                15000L
+        );
+
+        JsonNode jsonNode = mapper.readTree(jsonBodyEasyPay);
+        ResponseEntity<JsonNode> exchange = new ResponseEntity<>(jsonNode, HttpStatus.OK);
+        when(restTemplate.exchange(
+                any(),
+                any(),
+                any(),
+                eq(JsonNode.class)
+        )).thenReturn(
+                exchange);
+
+        when(orderService.getOrderByNumber(any())).thenReturn(nonMemberOrder);
+
+        Payment payment = Payment.toEntity(exchange.getBody(), nonMemberOrder);
+        when(paymentRepository.save(any())).thenReturn(payment);
+
+        doNothing().when(applicationEventPublisher).publishEvent(any());
+        doNothing().when(commandOrderStatusChangeLogService)
+                .appendOrderStatusChangeLog(any(), any(), any());
+
+        // when
+        PaymentCompleteSimpleResponseDto responseDto = paymentService.confirmTossRequest(requestDto);
+
+        // then
+        assertThat(responseDto.getPaymentId()).isEqualTo(payment.getId());
+        assertThat(responseDto.getEasyPayProvider()).isEqualTo(payment.getPaymentEasyPay()
+                .getProvider());
+        assertThat(responseDto.getOrderNumber()).isEqualTo(payment.getOrder().getOrderNumber());
+        assertThat(responseDto.getOrdererName()).isEqualTo(nonMemberOrder.getNonMemberName());
+        assertThat(responseDto.getOrderAddress()).isEqualTo(nonMemberOrder.getAddress());
+
+        verify(orderService, times(1)).getOrderByNumber(stringArgumentCaptor.capture());
+        assertThat(stringArgumentCaptor.getValue()).isEqualTo(exchange.getBody()
+                .get("orderId")
+                .asText());
+
+        verify(paymentRepository, times(1)).save(paymentArgumentCaptor.capture());
+        assertThat(paymentArgumentCaptor.getValue().getId()).isEqualTo(payment.getId());
+    }
+
+    @Test
     @DisplayName("토스측 에러로 결제 실패")
     void confirmTossRequest_notOk_fail() throws Exception {
         // given
         ArgumentCaptor<String> stringArgumentCaptor = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<Payment> paymentArgumentCaptor = ArgumentCaptor.forClass(Payment.class);
 
         PaymentRequestDto requestDto = new PaymentRequestDto(
                 "dJv2eBNjG0Poxy1XQL8RJqpXm9gkOk87nO5Wmlg96RKwZz4Y",
@@ -248,6 +366,50 @@ class CommandPaymentServiceImplTest {
         when(orderService.getOrderByNumber(any())).thenReturn(memberOrder);
 
         when(paymentRepository.save(any())).thenReturn(Payment.builder().build());
+
+        doNothing().when(applicationEventPublisher).publishEvent(any());
+        doNothing().when(commandOrderStatusChangeLogService)
+                .appendOrderStatusChangeLog(any(), any(), any());
+
+        // when
+        // then
+        assertThatThrownBy(() -> paymentService.confirmTossRequest(requestDto)).isInstanceOf(
+                PaymentFailException.class);
+
+        verify(orderService, times(1)).getOrderByNumber(stringArgumentCaptor.capture());
+        assertThat(stringArgumentCaptor.getValue()).isEqualTo(requestDto.getOrderId());
+
+        verify(paymentRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("사용자측 요청 에러로 토스 결제 실패")
+    void confirmTossRequest_userFailure_fail() throws Exception {
+        // given
+        ArgumentCaptor<String> stringArgumentCaptor = ArgumentCaptor.forClass(String.class);
+
+        PaymentRequestDto requestDto = new PaymentRequestDto(
+                "dJv2eBNjG0Poxy1XQL8RJqpXm9gkOk87nO5Wmlg96RKwZz4Y",
+                "zaIkFmBcYW4k_J9rOl0M2b7",
+                15000L
+        );
+
+        JsonNode jsonNode = mapper.readTree(jsonBodyFail);
+        ResponseEntity<JsonNode> exchange = new ResponseEntity<>(jsonNode, HttpStatus.NOT_FOUND);
+        when(restTemplate.exchange(
+                any(),
+                any(),
+                any(),
+                eq(JsonNode.class)
+        )).thenThrow(RestClientException.class);
+
+        when(orderService.getOrderByNumber(any())).thenReturn(memberOrder);
+
+        when(paymentRepository.save(any())).thenReturn(Payment.builder().build());
+
+        doNothing().when(applicationEventPublisher).publishEvent(any());
+        doNothing().when(commandOrderStatusChangeLogService)
+                .appendOrderStatusChangeLog(any(), any(), any());
 
         // when
         // then

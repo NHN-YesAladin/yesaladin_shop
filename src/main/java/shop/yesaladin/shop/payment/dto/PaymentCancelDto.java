@@ -17,6 +17,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PaymentCancelDto {
+
     private String cancelReason;
 
 }

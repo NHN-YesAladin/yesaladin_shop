@@ -94,7 +94,8 @@ class JpaCommandPaymentRepositoryTest {
         assertThat(save.getOrder()).isEqualTo(memberOrder);
         assertThat(save.getPaymentEasyPay().getAmount()).isEqualTo(paymentEasyPay.getAmount());
         assertThat(save.getPaymentEasyPay().getProvider()).isEqualTo(paymentEasyPay.getProvider());
-        assertThat(save.getPaymentEasyPay().getDiscountAmount()).isEqualTo(paymentEasyPay.getDiscountAmount());
+        assertThat(save.getPaymentEasyPay()
+                .getDiscountAmount()).isEqualTo(paymentEasyPay.getDiscountAmount());
         assertThat(save.getId()).isEqualTo(payment.getId());
         assertThat(save.getStatus()).isEqualTo(payment.getStatus());
         assertThat(save.getOrderName()).isEqualTo(payment.getOrderName());

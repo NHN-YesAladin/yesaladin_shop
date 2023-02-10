@@ -21,7 +21,6 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.exception.ClientException;
-import shop.yesaladin.shop.delivery.dto.DeliveryEventDto;
 import shop.yesaladin.shop.order.domain.model.NonMemberOrder;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
@@ -31,6 +30,7 @@ import shop.yesaladin.shop.order.service.inter.CommandOrderStatusChangeLogServic
 import shop.yesaladin.shop.order.service.inter.QueryOrderService;
 import shop.yesaladin.shop.payment.domain.model.Payment;
 import shop.yesaladin.shop.payment.domain.model.PaymentCancel;
+import shop.yesaladin.shop.payment.domain.model.PaymentCode;
 import shop.yesaladin.shop.payment.domain.repository.CommandPaymentRepository;
 import shop.yesaladin.shop.payment.domain.repository.QueryPaymentRepository;
 import shop.yesaladin.shop.payment.dto.PaymentCancelDto;
@@ -60,6 +60,14 @@ public class CommandPaymentServiceImpl implements CommandPaymentService {
     private final CommandOrderStatusChangeLogService commandOrderStatusChangeLogService;
     private final ApplicationEventPublisher applicationEventPublisher;
 
+    private static HttpHeaders getHttpHeaders() {
+        String base64SecretKey = Base64.getEncoder().encodeToString(TOSS_SECRET_KEY.getBytes());
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBasicAuth(base64SecretKey);
+        return headers;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -71,12 +79,16 @@ public class CommandPaymentServiceImpl implements CommandPaymentService {
 
         applicationEventPublisher.publishEvent(new PaymentEventDto(requestDto.getPaymentKey()));
         JsonNode responseFromToss = getResponseFromToss(requestDto);
-        log.info("{}", responseFromToss);
 
         // 결제 정보 insert
         Payment payment = commandPaymentRepository.save(Payment.toEntity(responseFromToss, order));
-        PaymentCompleteSimpleResponseDto responseDto = PaymentCompleteSimpleResponseDto.fromEntity(
-                payment);
+
+        PaymentCompleteSimpleResponseDto responseDto;
+        if (payment.getMethod().equals(PaymentCode.EASY_PAY)) {
+            responseDto = PaymentCompleteSimpleResponseDto.fromEntityByEasyPay(payment);
+        } else {
+            responseDto = PaymentCompleteSimpleResponseDto.fromEntityByCard(payment);
+        }
 
         // 주문 상태 로그 추가 - 입금 완료 상태
         commandOrderStatusChangeLogService.appendOrderStatusChangeLog(
@@ -102,6 +114,13 @@ public class CommandPaymentServiceImpl implements CommandPaymentService {
                 .orElseThrow(() -> new ClientException(
                         ErrorCode.PAYMENT_NOT_FOUND, ErrorCode.PAYMENT_NOT_FOUND.getDisplayName()));
 
+        // 주문 상태 로그 추가 - 취소 (주문 findByOrderNumber 해야함)
+
+        // Payment에서 status CANCELED 로 변경
+
+        // 주문 상품 is_canceled true로 변경
+
+        // 토스 취소 통신
         UriComponents uriComponents = UriComponentsBuilder.newInstance()
                 .scheme("https").host("api.tosspayments.com")
                 .path("/v1/payments/{paymentKey}/cancel").buildAndExpand(paymentKey);
@@ -201,14 +220,6 @@ public class CommandPaymentServiceImpl implements CommandPaymentService {
         }
 
         return responseFromToss;
-    }
-
-    private static HttpHeaders getHttpHeaders() {
-        String base64SecretKey = Base64.getEncoder().encodeToString(TOSS_SECRET_KEY.getBytes());
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBasicAuth(base64SecretKey);
-        return headers;
     }
 
 }
