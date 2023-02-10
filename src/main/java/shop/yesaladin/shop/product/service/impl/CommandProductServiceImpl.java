@@ -378,7 +378,8 @@ public class CommandProductServiceImpl implements CommandProductService {
 
         List<Product> productList = getAvailableProducts(quantities);
 
-        productList.forEach(product -> product.changeQuantity(quantities.get(product.getIsbn())));
+        productList.forEach(product -> product.changeQuantity(
+                product.getQuantity() - quantities.get(product.getIsbn())));
 
         return productList
                 .stream()
@@ -413,12 +414,5 @@ public class CommandProductServiceImpl implements CommandProductService {
                 );
             }
         });
-    }
-
-    private static List<String> getIsbnList(List<ProductOrderRequestDto> products) {
-        return products
-                .stream()
-                .map(ProductOrderRequestDto::getIsbn)
-                .collect(Collectors.toList());
     }
 }

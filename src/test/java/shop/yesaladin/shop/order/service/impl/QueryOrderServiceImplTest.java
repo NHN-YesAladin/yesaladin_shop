@@ -1,6 +1,11 @@
 package shop.yesaladin.shop.order.service.impl;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -12,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
+import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -24,10 +30,13 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
+import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.exception.ClientException;
+import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.common.exception.InvalidPeriodConditionException;
 import shop.yesaladin.shop.common.exception.PageOffsetOutOfBoundsException;
+import shop.yesaladin.shop.coupon.dto.MemberCouponSummaryDto;
 import shop.yesaladin.shop.coupon.service.inter.QueryMemberCouponService;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
@@ -104,7 +113,7 @@ class QueryOrderServiceImplTest {
         Page<OrderSummaryDto> actual = service.getAllOrderListInPeriod(queryDto, pageable);
 
         // then
-        Assertions.assertThat(actual).isEqualTo(expectedValue);
+        assertThat(actual).isEqualTo(expectedValue);
 
     }
 
@@ -137,7 +146,7 @@ class QueryOrderServiceImplTest {
         );
 
         // then
-        Assertions.assertThat(actual).isEqualTo(expectedValue);
+        assertThat(actual).isEqualTo(expectedValue);
         Mockito.verify(repository, Mockito.times(1))
                 .findAllOrdersInPeriodByMemberId(
                         queryDto.getStartDateOrDefaultValue(clock),
@@ -203,7 +212,7 @@ class QueryOrderServiceImplTest {
         );
 
         // then
-        Assertions.assertThat(actual).isEqualTo(expectedValue);
+        assertThat(actual).isEqualTo(expectedValue);
         Mockito.verify(repository, Mockito.times(1))
                 .findOrdersInPeriodByMemberId(
                         queryDto.getStartDateOrDefaultValue(clock),
@@ -228,7 +237,7 @@ class QueryOrderServiceImplTest {
 
         // when
         // then
-        Assertions.assertThatThrownBy(() -> service.getAllOrderListInPeriod(queryDto, pageable))
+        assertThatThrownBy(() -> service.getAllOrderListInPeriod(queryDto, pageable))
                 .isInstanceOf(InvalidPeriodConditionException.class);
     }
 
@@ -246,7 +255,7 @@ class QueryOrderServiceImplTest {
 
         // when
         // then
-        Assertions.assertThatThrownBy(() -> service.getAllOrderListInPeriod(queryDto, pageable))
+        assertThatThrownBy(() -> service.getAllOrderListInPeriod(queryDto, pageable))
                 .isInstanceOf(InvalidPeriodConditionException.class);
     }
 
@@ -264,7 +273,7 @@ class QueryOrderServiceImplTest {
 
         // when
         // then
-        Assertions.assertThatThrownBy(() -> service.getAllOrderListInPeriod(queryDto, pageable))
+        assertThatThrownBy(() -> service.getAllOrderListInPeriod(queryDto, pageable))
                 .isInstanceOf(InvalidPeriodConditionException.class);
     }
 
@@ -282,7 +291,7 @@ class QueryOrderServiceImplTest {
 
         // when
         // then
-        Assertions.assertThatThrownBy(() -> service.getAllOrderListInPeriod(queryDto, pageable))
+        assertThatThrownBy(() -> service.getAllOrderListInPeriod(queryDto, pageable))
                 .isInstanceOf(InvalidPeriodConditionException.class);
     }
 
@@ -298,7 +307,7 @@ class QueryOrderServiceImplTest {
 
         // when
         // then
-        Assertions.assertThatThrownBy(() -> service.getAllOrderListInPeriod(queryDto, pageable))
+        assertThatThrownBy(() -> service.getAllOrderListInPeriod(queryDto, pageable))
                 .isInstanceOf(PageOffsetOutOfBoundsException.class);
     }
 
@@ -318,12 +327,12 @@ class QueryOrderServiceImplTest {
         Order order = service.getOrderByNumber(memberOrder.getOrderNumber());
 
         // then
-        Assertions.assertThat(order.getOrderNumber()).isEqualTo(memberOrder.getOrderNumber());
-        Assertions.assertThat(order.getName()).isEqualTo(memberOrder.getName());
+        assertThat(order.getOrderNumber()).isEqualTo(memberOrder.getOrderNumber());
+        assertThat(order.getName()).isEqualTo(memberOrder.getName());
 
         Mockito.verify(repository, Mockito.times(1))
                 .findByOrderNumber(stringArgumentCaptor.capture());
-        Assertions.assertThat(stringArgumentCaptor.getValue())
+        assertThat(stringArgumentCaptor.getValue())
                 .isEqualTo(memberOrder.getOrderNumber());
 
     }
@@ -337,19 +346,185 @@ class QueryOrderServiceImplTest {
 
         // when
         // then
-        Assertions.assertThatThrownBy(() -> service.getOrderByNumber(wrongData))
+        assertThatThrownBy(() -> service.getOrderByNumber(wrongData))
                 .isInstanceOf(OrderNotFoundException.class);
 
         Mockito.verify(repository, Mockito.times(1))
                 .findByOrderNumber(stringArgumentCaptor.capture());
-        Assertions.assertThat(stringArgumentCaptor.getValue())
+        assertThat(stringArgumentCaptor.getValue())
                 .isEqualTo(wrongData);
 
     }
 
     @Test
-    @Disabled
-    @DisplayName("주문서에 필요한 데이터 조회한다.")
+    @DisplayName("주문서에 필요한 데이터 조회 실패 - 존재하지 않는 회원")
+    void getMemberOrderSheetData_fail_member_not_found() {
+        //given
+        String loginId = "user@1";
+
+        List<String> isbn = new ArrayList<>();
+        List<Integer> quantity = new ArrayList<>();
+        OrderSheetRequestDto request = new OrderSheetRequestDto(isbn, quantity);
+
+        Mockito.when(queryMemberService.existsLoginId(anyString())).thenReturn(false);
+
+        //when, then
+        assertThatThrownBy(() ->
+                service.getMemberOrderSheetData(request, loginId)
+        ).isInstanceOf(ClientException.class);
+    }
+
+    @Test
+    @DisplayName("주문서에 필요한 데이터 조회 실패 - 존재하지않는 회원")
+    void getMemberOrderSheetData_failInGetMemberForOrder_memberNotFound() {
+        //given
+        String loginId = "user@1";
+        String name = "test";
+        String phoneNumber = "01012341234";
+
+        List<String> isbn = new ArrayList<>();
+        List<Integer> quantity = new ArrayList<>();
+        OrderSheetRequestDto request = new OrderSheetRequestDto(isbn, quantity);
+        MemberOrderSheetResponseDto response = new MemberOrderSheetResponseDto(
+                name,
+                phoneNumber,
+                7
+        );
+
+        Mockito.when(queryMemberService.existsLoginId(anyString())).thenReturn(true);
+        Mockito.when(queryMemberService.getMemberForOrder(any())).thenThrow(new ClientException(
+                ErrorCode.MEMBER_NOT_FOUND, ""));
+
+        //when, then
+        assertThatThrownBy(() ->
+                service.getMemberOrderSheetData(request, loginId)
+        ).isInstanceOf(ClientException.class);
+    }
+
+    @Test
+    @DisplayName("주문서에 필요한 데이터 조회 실패 - 존재하지않는 회원")
+    void getMemberOrderSheetData_failInGetMemberAddressByLoginId_memberNotFound() {
+        //given
+        String loginId = "user@1";
+        String name = "test";
+        String phoneNumber = "01012341234";
+
+        List<String> isbn = new ArrayList<>();
+        List<Integer> quantity = new ArrayList<>();
+        OrderSheetRequestDto request = new OrderSheetRequestDto(isbn, quantity);
+        MemberOrderSheetResponseDto response = new MemberOrderSheetResponseDto(
+                name,
+                phoneNumber,
+                7
+        );
+
+        Mockito.when(queryMemberService.existsLoginId(anyString())).thenReturn(true);
+        Mockito.when(queryMemberService.getMemberForOrder(any())).thenReturn(response);
+        Mockito.when(queryMemberAddressService.getByLoginId(loginId))
+                .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, ""));
+
+        //when, then
+        assertThatThrownBy(() ->
+                service.getMemberOrderSheetData(request, loginId)
+        ).isInstanceOf(ClientException.class);
+    }
+
+    @Test
+    @DisplayName("주문서에 필요한 데이터 조회 실패 - 구매 불가능한 상품")
+    void getMemberOrderSheetData_fail_notAvailableToOrder() {
+        //given
+        String loginId = "user@1";
+        String name = "test";
+        String phoneNumber = "01012341234";
+
+        List<String> isbn = new ArrayList<>();
+        List<Integer> quantity = new ArrayList<>();
+        OrderSheetRequestDto request = new OrderSheetRequestDto(isbn, quantity);
+        MemberOrderSheetResponseDto response = new MemberOrderSheetResponseDto(
+                name,
+                phoneNumber,
+                7
+        );
+
+        Mockito.when(queryMemberService.existsLoginId(anyString())).thenReturn(true);
+        Mockito.when(queryMemberService.getMemberForOrder(any())).thenReturn(response);
+        Mockito.when(queryMemberAddressService.getByLoginId(loginId))
+                .thenReturn(Lists.newArrayList());
+        Mockito.when(queryProductService.getByOrderProducts(any()))
+                .thenThrow(new ClientException(ErrorCode.BAD_REQUEST, ""));
+
+        //when, then
+        assertThatThrownBy(() ->
+                service.getMemberOrderSheetData(request, loginId)
+        ).isInstanceOf(ClientException.class);
+    }
+
+    @Test
+    @DisplayName("주문서에 필요한 데이터 조회 실패 - 상품 재고 부족")
+    void getMemberOrderSheetData_fail_lackOfProduct() {
+        //given
+        String loginId = "user@1";
+        String name = "test";
+        String phoneNumber = "01012341234";
+
+        List<String> isbn = new ArrayList<>();
+        List<Integer> quantity = new ArrayList<>();
+        OrderSheetRequestDto request = new OrderSheetRequestDto(isbn, quantity);
+        MemberOrderSheetResponseDto response = new MemberOrderSheetResponseDto(
+                name,
+                phoneNumber,
+                7
+        );
+
+        Mockito.when(queryMemberService.existsLoginId(anyString())).thenReturn(true);
+        Mockito.when(queryMemberService.getMemberForOrder(any())).thenReturn(response);
+        Mockito.when(queryMemberAddressService.getByLoginId(loginId))
+                .thenReturn(Lists.newArrayList());
+        Mockito.when(queryProductService.getByOrderProducts(any()))
+                .thenThrow(new ClientException(ErrorCode.PRODUCT_NOT_AVAILABLE_TO_ORDER, ""));
+
+        //when, then
+        assertThatThrownBy(() ->
+                service.getMemberOrderSheetData(request, loginId)
+        ).isInstanceOf(ClientException.class);
+    }
+
+    @Test
+    @DisplayName("주문서에 필요한 데이터 조회 실패 - 존재하지않는 회원")
+    void getMemberOrderSheetData_fail_getMemberPoint_memberNotFound() {
+        //given
+        String loginId = "user@1";
+        String name = "test";
+        String phoneNumber = "01012341234";
+
+        List<String> isbn = new ArrayList<>();
+        List<Integer> quantity = new ArrayList<>();
+        OrderSheetRequestDto request = new OrderSheetRequestDto(isbn, quantity);
+        MemberOrderSheetResponseDto response = new MemberOrderSheetResponseDto(
+                name,
+                phoneNumber,
+                7
+        );
+
+        Mockito.when(queryMemberService.existsLoginId(anyString())).thenReturn(true);
+        Mockito.when(queryMemberService.getMemberForOrder(any())).thenReturn(response);
+        Mockito.when(queryMemberAddressService.getByLoginId(loginId))
+                .thenReturn(Lists.newArrayList());
+        Mockito.when(queryProductService.getByOrderProducts(any())).thenReturn(new ArrayList<>());
+        Mockito.when(queryMemberCouponService.getMemberCouponSummaryList(any(), any(), eq(true)))
+                .thenReturn(PaginatedResponseDto.<MemberCouponSummaryDto>builder()
+                        .dataList(Lists.newArrayList()).build());
+        Mockito.when(queryPointHistoryService.getMemberPoint(any()))
+                .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, ""));
+
+        //when, then
+        assertThatThrownBy(() ->
+                service.getMemberOrderSheetData(request, loginId)
+        ).isInstanceOf(ClientException.class);
+    }
+
+    @Test
+    @DisplayName("주문서에 필요한 데이터 조회 성공")
     void getMemberOrderSheetData() {
         //given
         String loginId = "user@1";
@@ -367,18 +542,24 @@ class QueryOrderServiceImplTest {
                 7
         );
 
-        Mockito.when(queryPointHistoryService.getMemberPoint(loginId)).thenReturn(amount);
+        Mockito.when(queryMemberService.existsLoginId(anyString())).thenReturn(true);
+        Mockito.when(queryMemberService.getMemberForOrder(any())).thenReturn(response);
+        Mockito.when(queryMemberAddressService.getByLoginId(loginId))
+                .thenReturn(Lists.newArrayList());
         Mockito.when(queryProductService.getByOrderProducts(any())).thenReturn(new ArrayList<>());
-        Mockito.when(queryMemberService.getMemberForOrder(loginId)).thenReturn(response);
+        Mockito.when(queryMemberCouponService.getMemberCouponSummaryList(any(), any(), eq(true)))
+                .thenReturn(PaginatedResponseDto.<MemberCouponSummaryDto>builder()
+                        .dataList(Lists.newArrayList()).build());
+        Mockito.when(queryPointHistoryService.getMemberPoint(any())).thenReturn(amount);
 
         //when
         OrderSheetResponseDto result = service.getMemberOrderSheetData(request, loginId);
 
         //then
-        Assertions.assertThat(result.getName()).isEqualTo(name);
-        Assertions.assertThat(result.getPhoneNumber()).isEqualTo(phoneNumber);
-        Assertions.assertThat(result.getPoint()).isEqualTo(amount);
-        Assertions.assertThat(result.getOrderProducts()).hasSize(0);
+        assertThat(result.getName()).isEqualTo(name);
+        assertThat(result.getPhoneNumber()).isEqualTo(phoneNumber);
+        assertThat(result.getPoint()).isEqualTo(amount);
+        assertThat(result.getOrderProducts()).hasSize(0);
     }
 
     @Test
@@ -398,11 +579,11 @@ class QueryOrderServiceImplTest {
 
         // when
         // then
-        Assertions.assertThatThrownBy(() -> service.getOrderListInPeriodByMemberId(
-                        queryDto,
-                        member.getLoginId(),
-                        pageable
-                ))
+        assertThatThrownBy(() -> service.getOrderListInPeriodByMemberId(
+                queryDto,
+                member.getLoginId(),
+                pageable
+        ))
                 .isInstanceOf(InvalidPeriodConditionException.class);
     }
 
@@ -423,11 +604,11 @@ class QueryOrderServiceImplTest {
 
         // when
         // then
-        Assertions.assertThatThrownBy(() -> service.getOrderListInPeriodByMemberId(
-                        queryDto,
-                        member.getLoginId(),
-                        pageable
-                ))
+        assertThatThrownBy(() -> service.getOrderListInPeriodByMemberId(
+                queryDto,
+                member.getLoginId(),
+                pageable
+        ))
                 .isInstanceOf(InvalidPeriodConditionException.class);
     }
 
@@ -448,11 +629,11 @@ class QueryOrderServiceImplTest {
 
         // when
         // then
-        Assertions.assertThatThrownBy(() -> service.getOrderListInPeriodByMemberId(
-                        queryDto,
-                        member.getLoginId(),
-                        pageable
-                ))
+        assertThatThrownBy(() -> service.getOrderListInPeriodByMemberId(
+                queryDto,
+                member.getLoginId(),
+                pageable
+        ))
                 .isInstanceOf(InvalidPeriodConditionException.class);
     }
 
@@ -473,11 +654,11 @@ class QueryOrderServiceImplTest {
 
         // when
         // then
-        Assertions.assertThatThrownBy(() -> service.getOrderListInPeriodByMemberId(
-                        queryDto,
-                        member.getLoginId(),
-                        pageable
-                ))
+        assertThatThrownBy(() -> service.getOrderListInPeriodByMemberId(
+                queryDto,
+                member.getLoginId(),
+                pageable
+        ))
                 .isInstanceOf(InvalidPeriodConditionException.class);
     }
 
@@ -496,11 +677,11 @@ class QueryOrderServiceImplTest {
 
         // when
         // then
-        Assertions.assertThatThrownBy(() -> service.getOrderListInPeriodByMemberId(
-                        queryDto,
-                        member.getLoginId(),
-                        pageable
-                ))
+        assertThatThrownBy(() -> service.getOrderListInPeriodByMemberId(
+                queryDto,
+                member.getLoginId(),
+                pageable
+        ))
                 .isInstanceOf(PageOffsetOutOfBoundsException.class);
     }
 
@@ -538,14 +719,14 @@ class QueryOrderServiceImplTest {
         );
 
         // then
-        Assertions.assertThat(responses).hasSize(10);
-        Assertions.assertThat(responses.getContent().get(0).getOrderId())
+        assertThat(responses).hasSize(10);
+        assertThat(responses.getContent().get(0).getOrderId())
                 .isEqualTo(responseList.get(0).getOrderId());
-        Assertions.assertThat(responses.getContent().get(0).getOrderName())
+        assertThat(responses.getContent().get(0).getOrderName())
                 .isEqualTo(responseList.get(0).getOrderName());
-        Assertions.assertThat(responses.getContent().get(1).getOrderId())
+        assertThat(responses.getContent().get(1).getOrderId())
                 .isEqualTo(responseList.get(1).getOrderId());
-        Assertions.assertThat(responses.getNumber()).isEqualTo(pageRequest.getPageNumber());
+        assertThat(responses.getNumber()).isEqualTo(pageRequest.getPageNumber());
 
         Mockito.verify(repository, Mockito.times(1))
                 .findSuccessStatusResponsesByLoginIdAndStatus(any(), any(), any());
@@ -580,11 +761,11 @@ class QueryOrderServiceImplTest {
 
         // when
         // then
-        Assertions.assertThatCode(() -> service.getStatusResponsesByLoginIdAndStatus(
-                        member.getLoginId(),
-                        OrderStatusCode.ORDER,
-                        pageRequest
-                ))
+        assertThatCode(() -> service.getStatusResponsesByLoginIdAndStatus(
+                member.getLoginId(),
+                OrderStatusCode.ORDER,
+                pageRequest
+        ))
                 .isInstanceOf(ClientException.class)
                 .hasMessageContaining("Member not found with loginId");
 
