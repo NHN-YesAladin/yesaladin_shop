@@ -729,46 +729,6 @@ class CommandOrderServiceImplTest {
         verify(commandOrderStatusChangeLogRepository, times(1)).save(any());
     }
 
-    @Test
-    @DisplayName("주문 상태 변경 이력 추가 성공")
-    void appendOrderStatusChangeLog() throws Exception {
-        // given
-        OrderStatusCode code = OrderStatusCode.DEPOSIT;
-        OrderStatusChangeLog log = DummyOrderStatusChangeLog.orderStatusChangeLog(
-                memberOrder,
-                code
-        );
-        Mockito.when(commandOrderStatusChangeLogRepository.save(any())).thenReturn(log);
-
-        // when
-        // then
-        assertThatCode(() -> commandOrderService.appendOrderStatusChangeLog(
-                LocalDateTime.now(),
-                memberOrder,
-                code
-        )).doesNotThrowAnyException();
-    }
-
-    @Test
-    @DisplayName("주문 상태 변경 이력 추가 실패 - 다른 status code 요청")
-    void appendOrderStatusChangeLog_notMatchCode_fail() throws Exception {
-        // given
-        OrderStatusCode wrongCode = OrderStatusCode.COMPLETE;
-        OrderStatusChangeLog log = DummyOrderStatusChangeLog.orderStatusChangeLog(
-                memberOrder,
-                wrongCode
-        );
-        Mockito.when(commandOrderStatusChangeLogRepository.save(any())).thenReturn(log);
-
-        // when
-        // then
-        assertThatCode(() -> commandOrderService.appendOrderStatusChangeLog(
-                LocalDateTime.now(),
-                memberOrder,
-                OrderStatusCode.DEPOSIT
-        )).isInstanceOf(ClientException.class).hasMessageContaining("잘못된 주문 상태 변경 요청입니다.");
-
-    }
 
     private OrderNonMemberCreateRequestDto getNonMemberOrderRequest() {
         return new OrderNonMemberCreateRequestDto(

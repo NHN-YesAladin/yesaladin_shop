@@ -31,6 +31,7 @@ import shop.yesaladin.shop.order.domain.model.OrderCode;
 import shop.yesaladin.shop.order.dto.OrderPaymentResponseDto;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMemberAddress;
+import shop.yesaladin.shop.order.service.inter.CommandOrderStatusChangeLogService;
 import shop.yesaladin.shop.order.service.inter.QueryOrderService;
 import shop.yesaladin.shop.payment.domain.model.Payment;
 import shop.yesaladin.shop.payment.domain.repository.CommandPaymentRepository;
@@ -51,6 +52,7 @@ class CommandPaymentServiceImplTest {
     private CommandPaymentRepository paymentRepository;
     private QueryPaymentRepository queryPaymentRepository;
     private QueryOrderService orderService;
+    private CommandOrderStatusChangeLogService commandOrderStatusChangeLogService;
     private RestTemplate restTemplate;
     private ApplicationEventPublisher applicationEventPublisher;
     private ObjectMapper mapper = new ObjectMapper();
@@ -68,12 +70,14 @@ class CommandPaymentServiceImplTest {
         restTemplate = mock(RestTemplate.class);
         applicationEventPublisher = mock(ApplicationEventPublisher.class);
         queryPaymentRepository = mock(QueryPaymentRepository.class);
+        commandOrderStatusChangeLogService = mock(CommandOrderStatusChangeLogService.class);
 
         paymentService = new CommandPaymentServiceImpl(
                 restTemplate,
                 paymentRepository,
                 queryPaymentRepository,
                 orderService,
+                commandOrderStatusChangeLogService,
                 applicationEventPublisher
         );
 
