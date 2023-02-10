@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -102,7 +101,7 @@ class CommandOrderServiceImplTest {
     int shippingFee = 3000;
     int wrappingFee = 0;
     Long ordererAddressId = 1L;
-    List<String> orderCoupons;
+    List<String> orderCoupons = List.of("0001", "0002");
     long orderPoint = 1000L;
     Integer expectedDay = 10;
     Integer intervalMonth = 6;
@@ -324,7 +323,6 @@ class CommandOrderServiceImplTest {
     }
 
     @Test
-    @Disabled
     @DisplayName("회원 주문 생성 실패 - [포인트] 존재하지 않는 회원인 경우")
     void createMemberOrders_fail_point_memberNotFound() {
         //given
@@ -344,10 +342,8 @@ class CommandOrderServiceImplTest {
                 memberOrder
         ).get(0);
         Mockito.when(commandOrderProductRepository.save(any())).thenReturn(orderProduct);
-
-        String errorMessage = "Member not found with loginId : " + loginId;
         Mockito.when(commandPointHistoryService.use(any()))
-                .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, errorMessage));
+                .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, ""));
 
         //when
         ClientException result = assertThrows(
@@ -358,11 +354,11 @@ class CommandOrderServiceImplTest {
         //then
         assertThat(result.getResponseStatus()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(result.getErrorCode()).isEqualTo(ErrorCode.MEMBER_NOT_FOUND);
-        assertThat(result.getMessage()).isEqualTo(errorMessage);
 
         verify(commandProductService, times(1)).orderProducts(any());
         verify(queryMemberService, times(1)).findByLoginId(loginId);
         verify(queryMemberAddressService, times(1)).findById(addressId);
+        verify(commandOrderCouponService, times(1)).createOrderCoupons(any(), any());
         verify(memberOrderCommandOrderRepository, times(1)).save(any());
         verify(commandOrderProductRepository, times(5)).save(any());
         verify(commandPointHistoryService, times(1)).use(any());
@@ -370,7 +366,6 @@ class CommandOrderServiceImplTest {
     }
 
     @Test
-    @Disabled
     @DisplayName("회원 주문 생성 실패 - [포인트] 소지한 포인트보다 더 많이 사용한 경우")
     void createMemberOrders_fail_pointOverUse() {
         //given
@@ -408,6 +403,7 @@ class CommandOrderServiceImplTest {
         verify(commandProductService, times(1)).orderProducts(any());
         verify(queryMemberService, times(1)).findByLoginId(loginId);
         verify(queryMemberAddressService, times(1)).findById(addressId);
+        verify(commandOrderCouponService, times(1)).createOrderCoupons(any(), any());
         verify(memberOrderCommandOrderRepository, times(1)).save(any());
         verify(commandOrderProductRepository, times(5)).save(any());
         verify(commandPointHistoryService, times(1)).use(any());
@@ -415,7 +411,6 @@ class CommandOrderServiceImplTest {
     }
 
     @Test
-    @Disabled
     @DisplayName("회원 주문 생성 성공")
     void createMemberOrders_success() {
         //given
@@ -425,7 +420,7 @@ class CommandOrderServiceImplTest {
 
         Map<String, Product> mapProduct = getMapProducts(nonSubscribeProducts);
         Mockito.when(commandProductService.orderProducts(any())).thenReturn(mapProduct);
-        Mockito.when(queryMemberService.findByLoginId(loginId)).thenReturn(member);
+        Mockito.when(queryMemberService.findByLoginId(any())).thenReturn(member);
         Mockito.when(queryMemberAddressService.findById(addressId)).thenReturn(memberAddress);
         Mockito.when(memberOrderCommandOrderRepository.save(any())).thenReturn(memberOrder);
         OrderProduct orderProduct = getMemberOrderProducts(
@@ -459,6 +454,7 @@ class CommandOrderServiceImplTest {
         verify(commandProductService, times(1)).orderProducts(any());
         verify(queryMemberService, times(1)).findByLoginId(loginId);
         verify(queryMemberAddressService, times(1)).findById(addressId);
+        verify(commandOrderCouponService, times(1)).createOrderCoupons(any(), any());
         verify(memberOrderCommandOrderRepository, times(1)).save(any());
         verify(commandOrderProductRepository, times(5)).save(any());
         verify(commandPointHistoryService, times(1)).use(any());
@@ -473,7 +469,7 @@ class CommandOrderServiceImplTest {
         String loginId = member.getLoginId();
         OrderSubscribeCreateRequestDto request = getSubscribeRequest();
 
-        Mockito.when(queryMemberService.findByLoginId(anyString())).thenReturn(member);
+        Mockito.when(queryMemberService.findByLoginId(any())).thenReturn(member);
         Mockito.when(queryMemberAddressService.findById(anyLong())).thenReturn(memberAddress);
 
         String isbn = subscribeProducts.get(0).getIsbn();
@@ -526,6 +522,7 @@ class CommandOrderServiceImplTest {
         verify(queryProductService, times(1)).getIssnByOrderProduct(any());
         verify(queryMemberService, never()).findByLoginId(loginId);
         verify(queryMemberAddressService, never()).findById(addressId);
+        verify(commandOrderCouponService, never()).createOrderCoupons(any(), any());
         verify(subscribeCommandOrderRepository, never()).save(any());
         verify(commandPointHistoryService, never()).use(any());
         verify(commandOrderStatusChangeLogRepository, never()).save(any());
@@ -563,6 +560,7 @@ class CommandOrderServiceImplTest {
         verify(queryProductService, times(1)).getIssnByOrderProduct(any());
         verify(queryMemberService, times(1)).findByLoginId(loginId);
         verify(queryMemberAddressService, never()).findById(addressId);
+        verify(commandOrderCouponService, never()).createOrderCoupons(any(), any());
         verify(subscribeCommandOrderRepository, never()).save(any());
         verify(commandPointHistoryService, never()).use(any());
         verify(commandOrderStatusChangeLogRepository, never()).save(any());
@@ -602,6 +600,7 @@ class CommandOrderServiceImplTest {
         verify(queryProductService, times(1)).getIssnByOrderProduct(any());
         verify(queryMemberService, times(1)).findByLoginId(loginId);
         verify(queryMemberAddressService, times(1)).findById(addressId);
+        verify(commandOrderCouponService, times(0)).createOrderCoupons(any(), any());
         verify(subscribeCommandOrderRepository, never()).save(any());
         verify(commandPointHistoryService, never()).use(any());
         verify(commandOrderStatusChangeLogRepository, never()).save(any());
@@ -639,6 +638,7 @@ class CommandOrderServiceImplTest {
         verify(queryProductService, times(1)).getIssnByOrderProduct(any());
         verify(queryMemberService, times(1)).findByLoginId(loginId);
         verify(queryMemberAddressService, times(1)).findById(addressId);
+        verify(commandOrderCouponService, times(0)).createOrderCoupons(any(), any());
         verify(subscribeCommandOrderRepository, times(1)).save(any());
         verify(commandPointHistoryService, times(1)).use(any());
         verify(commandOrderStatusChangeLogRepository, never()).save(any());
@@ -676,13 +676,13 @@ class CommandOrderServiceImplTest {
         verify(queryProductService, times(1)).getIssnByOrderProduct(any());
         verify(queryMemberService, times(1)).findByLoginId(loginId);
         verify(queryMemberAddressService, times(1)).findById(addressId);
+        verify(commandOrderCouponService, times(0)).createOrderCoupons(any(), any());
         verify(subscribeCommandOrderRepository, times(1)).save(any());
         verify(commandPointHistoryService, times(1)).use(any());
         verify(commandOrderStatusChangeLogRepository, never()).save(any());
     }
 
     @Test
-    @Disabled
     @DisplayName("정기구독 생성 성공")
     void createSubscribeOrders_success() {
         //given
@@ -692,7 +692,7 @@ class CommandOrderServiceImplTest {
 
         Mockito.when(queryProductService.getIssnByOrderProduct(any()))
                 .thenReturn(subscribeProductOrder);
-        Mockito.when(queryMemberService.findByLoginId(anyString())).thenReturn(member);
+        Mockito.when(queryMemberService.findByLoginId(any())).thenReturn(member);
         Mockito.when(queryMemberAddressService.findById(anyLong())).thenReturn(memberAddress);
         Mockito.when(subscribeCommandOrderRepository.save(any())).thenReturn(subscribe);
 
@@ -721,6 +721,7 @@ class CommandOrderServiceImplTest {
         verify(queryProductService, times(1)).getIssnByOrderProduct(any());
         verify(queryMemberService, times(1)).findByLoginId(loginId);
         verify(queryMemberAddressService, times(1)).findById(addressId);
+        verify(commandOrderCouponService, times(1)).createOrderCoupons(any(), any());
         verify(subscribeCommandOrderRepository, times(1)).save(any());
         verify(commandPointHistoryService, times(1)).use(any());
         verify(commandOrderStatusChangeLogRepository, times(1)).save(any());

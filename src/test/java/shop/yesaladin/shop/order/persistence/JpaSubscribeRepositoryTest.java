@@ -45,6 +45,8 @@ class JpaSubscribeRepositoryTest {
     private String phoneNumber = "010-1234-1234";
     private int expectedDay = 15;
     private int intervalMonth = 6;
+    private String recipientName = "김몽대";
+    private String recipientPhoneNumber = "01012341234";
     private LocalDate nextRenewalDate = LocalDate.now();
     private MemberAddress memberAddress;
     private Member member;
@@ -89,6 +91,8 @@ class JpaSubscribeRepositoryTest {
                 .usedPoint(usedPoint)
                 .shippingFee(shippingFee)
                 .wrappingFee(wrappingFee)
+                .recipientName(recipientName)
+                .recipientPhoneNumber(recipientPhoneNumber)
                 .totalAmount(totalAmount)
                 .orderCode(orderCode)
                 .memberAddress(memberAddress)
