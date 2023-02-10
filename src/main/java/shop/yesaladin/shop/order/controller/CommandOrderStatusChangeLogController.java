@@ -3,7 +3,6 @@ package shop.yesaladin.shop.order.controller;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.common.exception.ClientException;
-import shop.yesaladin.shop.common.utils.AuthorityUtils;
+import shop.yesaladin.shop.common.aspect.annotation.LoginId;
 import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
 import shop.yesaladin.shop.order.dto.NonMemberRequestDto;
 import shop.yesaladin.shop.order.dto.OrderStatusChangeLogResponseDto;
@@ -37,9 +36,9 @@ public class CommandOrderStatusChangeLogController {
     /**
      * 회원의 주문 상태 변경 내역을 생성합니다.
      *
-     * @param orderId        주문 pk
-     * @param status         주문 상태
-     * @param authentication 인증
+     * @param orderId 주문 pk
+     * @param status  주문 상태
+     * @param loginId 회원의 아이디
      * @return 생성된 주문 상태 변경 내역
      */
     @PostMapping(params = "status")
@@ -47,14 +46,9 @@ public class CommandOrderStatusChangeLogController {
     public ResponseDto<OrderStatusChangeLogResponseDto> changeMemberOrderStatus(
             @PathVariable Long orderId,
             @RequestParam String status,
-            Authentication authentication
+            @LoginId String loginId
     ) {
         OrderStatusCode orderStatus = getValidOrderStatus(status);
-
-        String loginId = AuthorityUtils.getAuthorizedUserName(
-                authentication,
-                "Only authorized user can change their order."
-        );
 
         OrderStatusChangeLogResponseDto response = commandOrderStatusChangeLogService.createMemberOrderStatusChangeLog(
                 orderId,
@@ -72,11 +66,10 @@ public class CommandOrderStatusChangeLogController {
     /**
      * 비회원의 주문 상태 변경 내역을 생성합니다.
      *
-     * @param orderId        주문 pk
-     * @param status         주문 상태
-     * @param request        비회원 데이터
-     * @param bindingResult  유효성 검사
-     * @param authentication 인증
+     * @param orderId       주문 pk
+     * @param status        주문 상태
+     * @param request       비회원 데이터
+     * @param bindingResult 유효성 검사
      * @return 생성된 주문 상태 변경 내역
      */
     @PostMapping(path = "/non-member", params = "status")
@@ -85,14 +78,11 @@ public class CommandOrderStatusChangeLogController {
             @PathVariable Long orderId,
             @RequestParam String status,
             @Valid @RequestBody NonMemberRequestDto request,
-            BindingResult bindingResult,
-            Authentication authentication
+            BindingResult bindingResult
     ) {
         checkRequestValidation(bindingResult);
 
         OrderStatusCode orderStatus = getValidOrderStatus(status);
-
-        AuthorityUtils.checkAnonymousClient(authentication);
 
         OrderStatusChangeLogResponseDto response = commandOrderStatusChangeLogService.createNonMemberOrderStatusChangeLog(
                 orderId,

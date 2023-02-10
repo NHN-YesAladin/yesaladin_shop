@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import javax.validation.constraints.Size;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Range;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
@@ -20,11 +21,12 @@ import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
  * @since 1.0
  */
 @Getter
+@NoArgsConstructor
 public class OrderSubscribeCreateRequestDto extends OrderMemberCreateRequestDto {
 
     @Range(min = 1, max = 31)
-    private final int expectedDay;
-    private final int intervalMonth;
+    private int expectedDay;
+    private int intervalMonth;
 
     public OrderSubscribeCreateRequestDto(
             LocalDate expectedShippingDate,
@@ -32,6 +34,8 @@ public class OrderSubscribeCreateRequestDto extends OrderMemberCreateRequestDto 
             long productTotalAmount,
             int shippingFee,
             int wrappingFee,
+            String recipientName,
+            String recipientPhoneNumber,
             Long ordererAddressId,
             List<String> orderCoupons,
             long orderPoint,
@@ -44,6 +48,8 @@ public class OrderSubscribeCreateRequestDto extends OrderMemberCreateRequestDto 
                 productTotalAmount,
                 shippingFee,
                 wrappingFee,
+                recipientName,
+                recipientPhoneNumber,
                 ordererAddressId,
                 orderCoupons,
                 orderPoint
@@ -86,6 +92,8 @@ public class OrderSubscribeCreateRequestDto extends OrderMemberCreateRequestDto 
                 .wrappingFee(wrappingFee)
                 .totalAmount(productTotalAmount)
                 .orderCode(OrderCode.MEMBER_SUBSCRIBE)
+                .recipientName(recipientName)
+                .recipientPhoneNumber(recipientPhoneNumber)
                 .member(member)
                 .memberAddress(address)
                 .expectedDay(expectedDay)

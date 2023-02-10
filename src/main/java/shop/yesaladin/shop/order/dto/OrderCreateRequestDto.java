@@ -5,11 +5,15 @@ import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import java.time.LocalDate;
 import java.util.List;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
 
 /**
@@ -20,6 +24,7 @@ import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
  */
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public abstract class OrderCreateRequestDto {
 
     @JsonFormat(pattern = "yyyy-MM-dd", shape = Shape.STRING)
@@ -33,4 +38,10 @@ public abstract class OrderCreateRequestDto {
     protected int shippingFee;
     @Min(value = 0)
     protected int wrappingFee;
+    @NotBlank
+    @Length(min = 1, max = 20)
+    protected String recipientName;
+    @NotBlank
+    @Pattern(regexp = "^01([0|1])([0-9]{8})$")
+    protected String recipientPhoneNumber;
 }

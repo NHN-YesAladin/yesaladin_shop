@@ -28,15 +28,19 @@ public class DummyOrder {
                 .wrappingFee(0)
                 .totalAmount(10000L)
                 .orderCode(OrderCode.NON_MEMBER_ORDER)
+                .recipientName("김홍대")
+                .recipientPhoneNumber("01023942744")
                 .address("서울특별시 구로구 디지털로26길 72 (구로동, NHN KCP)")
                 .nonMemberName("김몽머")
                 .phoneNumber("01012341234")
+                .recipientName("수령인 이름")
+                .recipientPhoneNumber("수령인 폰번호")
                 .build();
     }
 
     public static MemberOrder memberOrder(Member member, MemberAddress memberAddress) {
         return MemberOrder.builder()
-                .orderNumber(orderNumber + "m")
+                .orderNumber(orderNumber + "a")
                 .name("memberOrder")
                 .orderDateTime(orderDateTime)
                 .expectedTransportDate(expectedTransportDate)
@@ -45,9 +49,38 @@ public class DummyOrder {
                 .shippingFee(3000)
                 .wrappingFee(0)
                 .totalAmount(9000L)
+                .recipientName("김홍대")
+                .recipientPhoneNumber("01023942744")
                 .orderCode(OrderCode.MEMBER_ORDER)
                 .memberAddress(memberAddress)
                 .member(member)
+                .recipientName("수령인 이름")
+                .recipientPhoneNumber("수령인 폰번호")
+                .build();
+    }
+
+    public static MemberOrder memberOrderWithOrderNumber(
+            String orderNumber,
+            Member member,
+            MemberAddress memberAddress
+    ) {
+        return MemberOrder.builder()
+                .orderNumber(orderNumber)
+                .name("memberOrder")
+                .orderDateTime(orderDateTime)
+                .expectedTransportDate(expectedTransportDate)
+                .isHidden(false)
+                .usedPoint(1000L)
+                .shippingFee(3000)
+                .wrappingFee(0)
+                .totalAmount(9000L)
+                .recipientName("김홍대")
+                .recipientPhoneNumber("01023942744")
+                .orderCode(OrderCode.MEMBER_ORDER)
+                .memberAddress(memberAddress)
+                .member(member)
+                .recipientName("수령인 이름")
+                .recipientPhoneNumber("수령인 폰번호")
                 .build();
     }
 
@@ -66,6 +99,8 @@ public class DummyOrder {
                 .shippingFee(3000)
                 .wrappingFee(0)
                 .totalAmount(9000L)
+                .recipientName("김홍대")
+                .recipientPhoneNumber("01023942744")
                 .orderCode(OrderCode.MEMBER_SUBSCRIBE)
                 .memberAddress(memberAddress)
                 .member(member)
@@ -73,8 +108,11 @@ public class DummyOrder {
                 .intervalMonth(6)
                 .nextRenewalDate(orderDateTime.withDayOfMonth(5).toLocalDate().plusMonths(6))
                 .subscribeProduct(subscribeProduct)
+                .recipientName("수령인 이름")
+                .recipientPhoneNumber("수령인 폰번호")
                 .build();
     }
+
     public static NonMemberOrder nonMemberOrderWithId() {
         return NonMemberOrder.builder()
                 .id(1L)
@@ -91,6 +129,8 @@ public class DummyOrder {
                 .address("서울특별시 구로구 디지털로26길 72 (구로동, NHN KCP)")
                 .nonMemberName("김몽머")
                 .phoneNumber("01012341234")
+                .recipientName("수령인 이름")
+                .recipientPhoneNumber("수령인 폰번호")
                 .build();
     }
 
@@ -109,6 +149,8 @@ public class DummyOrder {
                 .orderCode(OrderCode.MEMBER_ORDER)
                 .memberAddress(memberAddress)
                 .member(member)
+                .recipientName("수령인 이름")
+                .recipientPhoneNumber("수령인 폰번호")
                 .build();
     }
 
@@ -135,6 +177,8 @@ public class DummyOrder {
                 .intervalMonth(6)
                 .nextRenewalDate(orderDateTime.withDayOfMonth(5).toLocalDate().plusMonths(6))
                 .subscribeProduct(subscribeProduct)
+                .recipientName("수령인 이름")
+                .recipientPhoneNumber("수령인 폰번호")
                 .build();
     }
 }

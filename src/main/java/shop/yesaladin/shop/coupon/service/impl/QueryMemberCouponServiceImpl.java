@@ -33,6 +33,7 @@ import shop.yesaladin.shop.coupon.service.inter.QueryMemberCouponService;
  * 회원 쿠폰 조회와 관련한 서비스 구현체 입니다.
  *
  * @author 최예린
+ * @author 김홍대
  * @since 1.0
  */
 @Slf4j
@@ -44,6 +45,9 @@ public class QueryMemberCouponServiceImpl implements QueryMemberCouponService {
     private final GatewayProperties gatewayProperties;
     private final RestTemplate restTemplate;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PaginatedResponseDto<MemberCouponSummaryDto> getMemberCouponSummaryList(
             Pageable pageable, String memberId,
@@ -87,6 +91,8 @@ public class QueryMemberCouponServiceImpl implements QueryMemberCouponService {
         return new PageImpl<>(couponCodes, pageable, memberCouponList.getTotalElements());
     }
 
+    private static final ParameterizedTypeReference<ResponseDto<List<MemberCouponSummaryDto>>> COUPON_SUMMARY = new ParameterizedTypeReference<>() {};
+
     private ResponseDto<List<MemberCouponSummaryDto>> tryGetCouponSummary(List<String> memberCouponCodeList) {
 
         try {
@@ -98,8 +104,7 @@ public class QueryMemberCouponServiceImpl implements QueryMemberCouponService {
                     couponSummaryRequestUrl,
                     HttpMethod.GET,
                     null,
-                    new ParameterizedTypeReference<ResponseDto<List<MemberCouponSummaryDto>>>() {
-                    }
+                    COUPON_SUMMARY
             ).getBody();
             return Optional.ofNullable(response)
                     .orElseThrow(() -> new ServerException(

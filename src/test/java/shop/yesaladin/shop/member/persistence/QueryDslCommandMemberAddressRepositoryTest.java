@@ -2,7 +2,6 @@ package shop.yesaladin.shop.member.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberAddressRepository;
-import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
 
 @Transactional
@@ -69,18 +67,5 @@ class QueryDslCommandMemberAddressRepositoryTest {
         commandMemberAddressRepository.deleteById(id);
         //then
         assertThat(queryMemberAddressRepository.getById(id)).isEmpty();
-    }
-
-    @Test
-    void updateIsDefaultToFalseByMemberId() {
-        //given
-        String loginId = member.getLoginId();
-
-        //when
-        commandMemberAddressRepository.updateIsDefaultToFalseByLoginId(loginId);
-
-        //then
-        List<MemberAddressResponseDto> result = queryMemberAddressRepository.getByLoginId(loginId);
-        assertThat(result.stream().anyMatch(MemberAddressResponseDto::getIsDefault)).isFalse();
     }
 }

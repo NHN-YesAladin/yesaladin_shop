@@ -65,7 +65,7 @@ class QueryWritingServiceImplTest {
         List<WritingResponseDto> response = service.findByProduct(product);
 
         // then
-        assertThat(response.size()).isEqualTo(2);
+        assertThat(response).hasSize(2);
         assertThat(response.get(0).getProduct()).isEqualTo(product);
         assertThat(response.get(1).getProduct()).isEqualTo(product);
         assertThat(response.get(0).getAuthor().getName()).isEqualTo("저자1");

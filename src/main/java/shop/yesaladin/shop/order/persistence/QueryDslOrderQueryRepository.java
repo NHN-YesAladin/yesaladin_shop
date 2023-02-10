@@ -12,17 +12,20 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
+import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
 import shop.yesaladin.shop.order.domain.model.querydsl.QMemberOrder;
 import shop.yesaladin.shop.order.domain.model.querydsl.QOrder;
 import shop.yesaladin.shop.order.domain.model.querydsl.QOrderProduct;
 import shop.yesaladin.shop.order.domain.model.querydsl.QOrderStatusChangeLog;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
 import shop.yesaladin.shop.order.dto.OrderPaymentResponseDto;
+import shop.yesaladin.shop.order.dto.OrderStatusResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryResponseDto;
 
@@ -257,5 +260,71 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
 
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Page<OrderStatusResponseDto> findSuccessStatusResponsesByLoginIdAndStatus(
+            String loginId,
+            OrderStatusCode code,
+            Pageable pageable
+    ) {
+        QMemberOrder memberOrder = QMemberOrder.memberOrder;
+        QOrderStatusChangeLog orderStatusChangeLog = QOrderStatusChangeLog.orderStatusChangeLog;
+
+        List<OrderStatusResponseDto> data = queryFactory.select(Projections.constructor(
+                        OrderStatusResponseDto.class,
+                        memberOrder.id,
+                        memberOrder.orderNumber,
+                        memberOrder.orderDateTime,
+                        memberOrder.name,
+                        memberOrder.totalAmount,
+                        memberOrder.member.loginId,
+                        memberOrder.member.name, //TODO order 엔티티 수정 후, recipientName으로 변경할 예정
+                        memberOrder.orderCode
+                ))
+                .from(memberOrder)
+                .leftJoin(orderStatusChangeLog)
+                .on(memberOrder.id.eq(orderStatusChangeLog.order.id))
+                .where(memberOrder.member.loginId.eq(loginId))
+                .groupBy(memberOrder.id)
+                .having(orderStatusChangeLog.orderStatusCode.count()
+                        .eq((long) code.getStatusCode()))
+                .orderBy(memberOrder.orderDateTime.asc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        int size = queryFactory.select(memberOrder.count())
+                .from(memberOrder)
+                .leftJoin(orderStatusChangeLog)
+                .on(memberOrder.id.eq(orderStatusChangeLog.order.id))
+                .where(memberOrder.member.loginId.eq(loginId))
+                .groupBy(memberOrder.id)
+                .having(orderStatusChangeLog.orderStatusCode.count()
+                        .eq((long) code.getStatusCode())).fetch().size();
+
+        return new PageImpl(data, pageable, size);
+        //TODO Total count 를 계산하기 위해서는 list의 사이즈가 필요해서 PageImpl 사용
+    }
+
+    @Override
+    public long getOrderCountByStatusCode(String loginId, OrderStatusCode code) {
+        QMemberOrder memberOrder = QMemberOrder.memberOrder;
+        QOrderStatusChangeLog orderStatusChangeLog = QOrderStatusChangeLog.orderStatusChangeLog;
+
+        return queryFactory.select(memberOrder.id)
+                .from(memberOrder)
+                .leftJoin(orderStatusChangeLog)
+                .on(memberOrder.id.eq(orderStatusChangeLog.order.id))
+                .where(memberOrder.member.loginId.eq(loginId))
+                .groupBy(memberOrder.id)
+                .having(orderStatusChangeLog.orderStatusCode.count()
+                        .eq((long) code.getStatusCode()))
+                .fetch()
+                .size();
+
+    }
 
 }

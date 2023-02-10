@@ -39,7 +39,8 @@ class JpaMemberOrderRepositoryTest {
     private OrderCode orderCode = OrderCode.NON_MEMBER_ORDER;
     private Member member;
     private MemberAddress memberAddress;
-
+    private String recipientName = "김몽대";
+    private String recipientPhoneNumber = "01012341234";
     private MemberOrder memberOrder;
 
     @BeforeEach
@@ -83,9 +84,13 @@ class JpaMemberOrderRepositoryTest {
                 .shippingFee(shippingFee)
                 .wrappingFee(wrappingFee)
                 .totalAmount(totalAmount)
+                .recipientName(recipientName)
+                .recipientPhoneNumber(recipientPhoneNumber)
                 .orderCode(orderCode)
                 .memberAddress(memberAddress)
                 .member(member)
+                .recipientName("수령인 이름")
+                .recipientPhoneNumber("수령인 폰번호")
                 .build();
     }
 }

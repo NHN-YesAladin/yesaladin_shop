@@ -2,7 +2,6 @@ package shop.yesaladin.shop.order.controller;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -60,6 +59,8 @@ class CommandOrderControllerTest {
     String ordererPhoneNumber = "01012341234";
     String ordererAddress = "서울특별시 구로구 디지털로26길 72 (구로동, NHN KCP)";
     LocalDate expectedShippingDate = LocalDate.of(2023, 1, 5);
+    String recipientName = "김몽대";
+    String recipientPhoneNumber = "01029482743";
     List<ProductOrderRequestDto> orderProducts;
     List<ProductOrderRequestDto> subscribeOrderProducts;
     long nonMemberProductTotalAmount = 10000L;
@@ -131,67 +132,10 @@ class CommandOrderControllerTest {
                                 .description("총 상품 금액"),
                         fieldWithPath("shippingFee").type(JsonFieldType.NUMBER).description("배송비"),
                         fieldWithPath("wrappingFee").type(JsonFieldType.NUMBER).description("포장비"),
-                        fieldWithPath("ordererName").type(JsonFieldType.STRING).description("주문자명"),
-                        fieldWithPath("ordererPhoneNumber").type(JsonFieldType.STRING)
-                                .description("주문자 연락처"),
-                        fieldWithPath("ordererAddress").type(JsonFieldType.STRING)
-                                .description("주문자 주소")
-                ),
-                responseFields(
-                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
-                                .description("동작 성공 여부"),
-                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
-                        fieldWithPath("data").type(JsonFieldType.NUMBER)
-                                .description("null")
-                                .optional(),
-                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
-                                .description("에러 메세지")
-                )
-        ));
-    }
-
-    @Test
-    @WithMockUser(username = "user@1", authorities = "ROLE_USER")
-    @DisplayName("비회원 주문 실패 - [권한] 비회원이 아닌 경우")
-    void createNonMemberOrders_fail_unauthorized() throws Exception {
-        //given
-        OrderNonMemberCreateRequestDto request = getNonMemberOrderRequest();
-
-        //when
-        ResultActions result = mockMvc.perform(post("/v1/orders/non-member")
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)));
-
-        //then
-        result.andExpect(status().isUnauthorized())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.success", equalTo(false)))
-                .andExpect(jsonPath("$.status", equalTo(HttpStatus.UNAUTHORIZED.value())))
-                .andExpect(jsonPath(
-                        "$.errorMessages[0]",
-                        equalTo(ErrorCode.UNAUTHORIZED.getDisplayName())
-                ));
-
-        //docs
-        result.andDo(document(
-                "create-non-member-order-fail-unauthorized",
-                getDocumentRequest(),
-                getDocumentResponse(),
-                requestFields(
-                        fieldWithPath("expectedShippingDate").type(JsonFieldType.STRING)
-                                .description("희망 배송 일자")
-                                .optional(),
-                        fieldWithPath("orderProducts").type(JsonFieldType.ARRAY)
-                                .description("주문 상품 목록"),
-                        fieldWithPath("orderProducts.[].isbn").type(JsonFieldType.STRING)
-                                .description("주문 상품"),
-                        fieldWithPath("orderProducts.[].quantity").type(JsonFieldType.NUMBER)
-                                .description("주문 상품 수량"),
-                        fieldWithPath("productTotalAmount").type(JsonFieldType.NUMBER)
-                                .description("총 상품 금액"),
-                        fieldWithPath("shippingFee").type(JsonFieldType.NUMBER).description("배송비"),
-                        fieldWithPath("wrappingFee").type(JsonFieldType.NUMBER).description("포장비"),
+                        fieldWithPath("recipientName").type(JsonFieldType.STRING)
+                                .description("수령인명"),
+                        fieldWithPath("recipientPhoneNumber").type(JsonFieldType.STRING)
+                                .description("수령인 연락처"),
                         fieldWithPath("ordererName").type(JsonFieldType.STRING).description("주문자명"),
                         fieldWithPath("ordererPhoneNumber").type(JsonFieldType.STRING)
                                 .description("주문자 연락처"),
@@ -256,6 +200,10 @@ class CommandOrderControllerTest {
                                 .description("총 상품 금액"),
                         fieldWithPath("shippingFee").type(JsonFieldType.NUMBER).description("배송비"),
                         fieldWithPath("wrappingFee").type(JsonFieldType.NUMBER).description("포장비"),
+                        fieldWithPath("recipientName").type(JsonFieldType.STRING)
+                                .description("수령인명"),
+                        fieldWithPath("recipientPhoneNumber").type(JsonFieldType.STRING)
+                                .description("수령인 연락처"),
                         fieldWithPath("ordererName").type(JsonFieldType.STRING).description("주문자명"),
                         fieldWithPath("ordererPhoneNumber").type(JsonFieldType.STRING)
                                 .description("주문자 연락처"),
@@ -325,6 +273,10 @@ class CommandOrderControllerTest {
                                 .description("총 상품 금액"),
                         fieldWithPath("shippingFee").type(JsonFieldType.NUMBER).description("배송비"),
                         fieldWithPath("wrappingFee").type(JsonFieldType.NUMBER).description("포장비"),
+                        fieldWithPath("recipientName").type(JsonFieldType.STRING)
+                                .description("수령인명"),
+                        fieldWithPath("recipientPhoneNumber").type(JsonFieldType.STRING)
+                                .description("수령인 연락처"),
                         fieldWithPath("ordererName").type(JsonFieldType.STRING).description("주문자명"),
                         fieldWithPath("ordererPhoneNumber").type(JsonFieldType.STRING)
                                 .description("주문자 연락처"),
@@ -397,70 +349,10 @@ class CommandOrderControllerTest {
                                 .description("총 상품 금액"),
                         fieldWithPath("shippingFee").type(JsonFieldType.NUMBER).description("배송비"),
                         fieldWithPath("wrappingFee").type(JsonFieldType.NUMBER).description("포장비"),
-                        fieldWithPath("ordererAddressId").type(JsonFieldType.NUMBER)
-                                .description("회원 배송지 Pk"),
-                        fieldWithPath("orderCoupons").type(JsonFieldType.ARRAY)
-                                .description("주문에 사용한 쿠폰")
-                                .optional(),
-                        fieldWithPath("orderPoint").type(JsonFieldType.NUMBER)
-                                .description("주문에 사용한 포인트")
-
-                ),
-                responseFields(
-                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
-                                .description("동작 성공 여부"),
-                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
-                        fieldWithPath("data").type(JsonFieldType.NUMBER)
-                                .description("null")
-                                .optional(),
-                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
-                                .description("에러 메세지")
-                )
-        ));
-    }
-
-    @Test
-    @WithMockUser(username = "anonymous", authorities = "ROLE_ANONYMOUS")
-    @DisplayName("회원 주문 실패 - [권한] 인증이 안된 경우")
-    void createMemberOrders_fail_unauthorized() throws Exception {
-        //given
-        OrderMemberCreateRequestDto request = getMemberOrderRequest();
-
-        //when
-        ResultActions result = mockMvc.perform(post("/v1/orders/member")
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)));
-
-        //then
-        result.andExpect(status().isUnauthorized())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.success", equalTo(false)))
-                .andExpect(jsonPath("$.status", equalTo(HttpStatus.UNAUTHORIZED.value())))
-                .andExpect(jsonPath(
-                        "$.errorMessages[0]",
-                        equalTo(ErrorCode.UNAUTHORIZED.getDisplayName())
-                ));
-
-        //docs
-        result.andDo(document(
-                "create-member-order-fail-unauthorized",
-                getDocumentRequest(),
-                getDocumentResponse(),
-                requestFields(
-                        fieldWithPath("expectedShippingDate").type(JsonFieldType.STRING)
-                                .description("희망 배송 일자")
-                                .optional(),
-                        fieldWithPath("orderProducts").type(JsonFieldType.ARRAY)
-                                .description("주문 상품 목록"),
-                        fieldWithPath("orderProducts.[].isbn").type(JsonFieldType.STRING)
-                                .description("주문 상품"),
-                        fieldWithPath("orderProducts.[].quantity").type(JsonFieldType.NUMBER)
-                                .description("주문 상품 수량"),
-                        fieldWithPath("productTotalAmount").type(JsonFieldType.NUMBER)
-                                .description("총 상품 금액"),
-                        fieldWithPath("shippingFee").type(JsonFieldType.NUMBER).description("배송비"),
-                        fieldWithPath("wrappingFee").type(JsonFieldType.NUMBER).description("포장비"),
+                        fieldWithPath("recipientName").type(JsonFieldType.STRING)
+                                .description("수령인명"),
+                        fieldWithPath("recipientPhoneNumber").type(JsonFieldType.STRING)
+                                .description("수령인 연락처"),
                         fieldWithPath("ordererAddressId").type(JsonFieldType.NUMBER)
                                 .description("회원 배송지 Pk"),
                         fieldWithPath("orderCoupons").type(JsonFieldType.ARRAY)
@@ -490,7 +382,7 @@ class CommandOrderControllerTest {
         //given
         OrderMemberCreateRequestDto request = getMemberOrderRequest();
 
-        Mockito.when(commandOrderService.createMemberOrders(any(), anyString()))
+        Mockito.when(commandOrderService.createMemberOrders(any(), any()))
                 .thenThrow(new ClientException(ErrorCode.BAD_REQUEST, ""));
 
         //when
@@ -528,6 +420,10 @@ class CommandOrderControllerTest {
                                 .description("총 상품 금액"),
                         fieldWithPath("shippingFee").type(JsonFieldType.NUMBER).description("배송비"),
                         fieldWithPath("wrappingFee").type(JsonFieldType.NUMBER).description("포장비"),
+                        fieldWithPath("recipientName").type(JsonFieldType.STRING)
+                                .description("수령인명"),
+                        fieldWithPath("recipientPhoneNumber").type(JsonFieldType.STRING)
+                                .description("수령인 연락처"),
                         fieldWithPath("ordererAddressId").type(JsonFieldType.NUMBER)
                                 .description("회원 배송지 Pk"),
                         fieldWithPath("orderCoupons").type(JsonFieldType.ARRAY)
@@ -557,7 +453,7 @@ class CommandOrderControllerTest {
         //given
         OrderMemberCreateRequestDto request = getMemberOrderRequest();
 
-        Mockito.when(commandOrderService.createMemberOrders(any(), anyString()))
+        Mockito.when(commandOrderService.createMemberOrders(any(), any()))
                 .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, ""));
 
         //when
@@ -595,6 +491,10 @@ class CommandOrderControllerTest {
                                 .description("총 상품 금액"),
                         fieldWithPath("shippingFee").type(JsonFieldType.NUMBER).description("배송비"),
                         fieldWithPath("wrappingFee").type(JsonFieldType.NUMBER).description("포장비"),
+                        fieldWithPath("recipientName").type(JsonFieldType.STRING)
+                                .description("수령인명"),
+                        fieldWithPath("recipientPhoneNumber").type(JsonFieldType.STRING)
+                                .description("수령인 연락처"),
                         fieldWithPath("ordererAddressId").type(JsonFieldType.NUMBER)
                                 .description("회원 배송지 Pk"),
                         fieldWithPath("orderCoupons").type(JsonFieldType.ARRAY)
@@ -624,7 +524,7 @@ class CommandOrderControllerTest {
         //given
         OrderMemberCreateRequestDto request = getMemberOrderRequest();
 
-        Mockito.when(commandOrderService.createMemberOrders(any(), anyString()))
+        Mockito.when(commandOrderService.createMemberOrders(any(), any()))
                 .thenThrow(new ClientException(ErrorCode.ADDRESS_NOT_FOUND, ""));
 
         //when
@@ -662,6 +562,10 @@ class CommandOrderControllerTest {
                                 .description("총 상품 금액"),
                         fieldWithPath("shippingFee").type(JsonFieldType.NUMBER).description("배송비"),
                         fieldWithPath("wrappingFee").type(JsonFieldType.NUMBER).description("포장비"),
+                        fieldWithPath("recipientName").type(JsonFieldType.STRING)
+                                .description("수령인명"),
+                        fieldWithPath("recipientPhoneNumber").type(JsonFieldType.STRING)
+                                .description("수령인 연락처"),
                         fieldWithPath("ordererAddressId").type(JsonFieldType.NUMBER)
                                 .description("회원 배송지 Pk"),
                         fieldWithPath("orderCoupons").type(JsonFieldType.ARRAY)
@@ -691,7 +595,7 @@ class CommandOrderControllerTest {
         //given
         OrderMemberCreateRequestDto request = getMemberOrderRequest();
 
-        Mockito.when(commandOrderService.createMemberOrders(any(), anyString()))
+        Mockito.when(commandOrderService.createMemberOrders(any(), any()))
                 .thenThrow(new ClientException(ErrorCode.POINT_OVER_USE, ""));
 
         //when
@@ -729,6 +633,10 @@ class CommandOrderControllerTest {
                                 .description("총 상품 금액"),
                         fieldWithPath("shippingFee").type(JsonFieldType.NUMBER).description("배송비"),
                         fieldWithPath("wrappingFee").type(JsonFieldType.NUMBER).description("포장비"),
+                        fieldWithPath("recipientName").type(JsonFieldType.STRING)
+                                .description("수령인명"),
+                        fieldWithPath("recipientPhoneNumber").type(JsonFieldType.STRING)
+                                .description("수령인 연락처"),
                         fieldWithPath("ordererAddressId").type(JsonFieldType.NUMBER)
                                 .description("회원 배송지 Pk"),
                         fieldWithPath("orderCoupons").type(JsonFieldType.ARRAY)
@@ -759,7 +667,7 @@ class CommandOrderControllerTest {
         OrderMemberCreateRequestDto request = getMemberOrderRequest();
         OrderCreateResponseDto response = getMemberResponse();
 
-        Mockito.when(commandOrderService.createMemberOrders(any(), anyString()))
+        Mockito.when(commandOrderService.createMemberOrders(any(), any()))
                 .thenReturn(response);
 
         //when
@@ -799,6 +707,10 @@ class CommandOrderControllerTest {
                                 .description("총 상품 금액"),
                         fieldWithPath("shippingFee").type(JsonFieldType.NUMBER).description("배송비"),
                         fieldWithPath("wrappingFee").type(JsonFieldType.NUMBER).description("포장비"),
+                        fieldWithPath("recipientName").type(JsonFieldType.STRING)
+                                .description("수령인명"),
+                        fieldWithPath("recipientPhoneNumber").type(JsonFieldType.STRING)
+                                .description("수령인 연락처"),
                         fieldWithPath("ordererAddressId").type(JsonFieldType.NUMBER)
                                 .description("회원 배송지 Pk"),
                         fieldWithPath("orderCoupons").type(JsonFieldType.ARRAY)
@@ -874,74 +786,10 @@ class CommandOrderControllerTest {
                                 .description("총 상품 금액"),
                         fieldWithPath("shippingFee").type(JsonFieldType.NUMBER).description("배송비"),
                         fieldWithPath("wrappingFee").type(JsonFieldType.NUMBER).description("포장비"),
-                        fieldWithPath("ordererAddressId").type(JsonFieldType.NUMBER)
-                                .description("회원 배송지 Pk"),
-                        fieldWithPath("orderCoupons").type(JsonFieldType.ARRAY)
-                                .description("주문에 사용한 쿠폰")
-                                .optional(),
-                        fieldWithPath("orderPoint").type(JsonFieldType.NUMBER)
-                                .description("주문에 사용한 포인트"),
-                        fieldWithPath("expectedDay").type(JsonFieldType.NUMBER)
-                                .description("희망 정기 배송 일자"),
-                        fieldWithPath("intervalMonth").type(JsonFieldType.NUMBER)
-                                .description("구독 기간")
-
-                ),
-                responseFields(
-                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
-                                .description("동작 성공 여부"),
-                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
-                        fieldWithPath("data").type(JsonFieldType.NUMBER)
-                                .description("null")
-                                .optional(),
-                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
-                                .description("에러 메세지")
-                )
-        ));
-    }
-
-    @Test
-    @WithMockUser(authorities = "ROLE_ANONYMOUS")
-    @DisplayName("정기구독 주문 실패 - [권한] 인증이 안된 경우")
-    void createSubscribeOrders_fail_unauthorized() throws Exception {
-        //given
-        OrderMemberCreateRequestDto request = getSubscribeRequest();
-
-        //when
-        ResultActions result = mockMvc.perform(post("/v1/orders/subscribe")
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)));
-
-        //then
-        result.andExpect(status().isUnauthorized())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.success", equalTo(false)))
-                .andExpect(jsonPath("$.status", equalTo(HttpStatus.UNAUTHORIZED.value())))
-                .andExpect(jsonPath(
-                        "$.errorMessages[0]",
-                        equalTo(ErrorCode.UNAUTHORIZED.getDisplayName())
-                ));
-
-        //docs
-        result.andDo(document(
-                "create-subscribe-order-fail-unauthorized",
-                getDocumentRequest(),
-                getDocumentResponse(),
-                requestFields(
-                        fieldWithPath("expectedShippingDate").type(JsonFieldType.STRING)
-                                .description("희망 배송 일자")
-                                .optional(),
-                        fieldWithPath("orderProducts").type(JsonFieldType.ARRAY)
-                                .description("주문 상품 목록"),
-                        fieldWithPath("orderProducts.[].isbn").type(JsonFieldType.STRING)
-                                .description("주문 상품"),
-                        fieldWithPath("orderProducts.[].quantity").type(JsonFieldType.NUMBER)
-                                .description("주문 상품 수량"),
-                        fieldWithPath("productTotalAmount").type(JsonFieldType.NUMBER)
-                                .description("총 상품 금액"),
-                        fieldWithPath("shippingFee").type(JsonFieldType.NUMBER).description("배송비"),
-                        fieldWithPath("wrappingFee").type(JsonFieldType.NUMBER).description("포장비"),
+                        fieldWithPath("recipientName").type(JsonFieldType.STRING)
+                                .description("수령인명"),
+                        fieldWithPath("recipientPhoneNumber").type(JsonFieldType.STRING)
+                                .description("수령인 연락처"),
                         fieldWithPath("ordererAddressId").type(JsonFieldType.NUMBER)
                                 .description("회원 배송지 Pk"),
                         fieldWithPath("orderCoupons").type(JsonFieldType.ARRAY)
@@ -975,7 +823,7 @@ class CommandOrderControllerTest {
         //given
         OrderMemberCreateRequestDto request = getSubscribeRequest();
 
-        Mockito.when(commandOrderService.createSubscribeOrders(any(), anyString()))
+        Mockito.when(commandOrderService.createSubscribeOrders(any(), any()))
                 .thenThrow(new ClientException(ErrorCode.PRODUCT_NOT_FOUND, ""));
 
         //when
@@ -1013,6 +861,10 @@ class CommandOrderControllerTest {
                                 .description("총 상품 금액"),
                         fieldWithPath("shippingFee").type(JsonFieldType.NUMBER).description("배송비"),
                         fieldWithPath("wrappingFee").type(JsonFieldType.NUMBER).description("포장비"),
+                        fieldWithPath("recipientName").type(JsonFieldType.STRING)
+                                .description("수령인명"),
+                        fieldWithPath("recipientPhoneNumber").type(JsonFieldType.STRING)
+                                .description("수령인 연락처"),
                         fieldWithPath("ordererAddressId").type(JsonFieldType.NUMBER)
                                 .description("회원 배송지 Pk"),
                         fieldWithPath("orderCoupons").type(JsonFieldType.ARRAY)
@@ -1046,7 +898,7 @@ class CommandOrderControllerTest {
         //given
         OrderMemberCreateRequestDto request = getSubscribeRequest();
 
-        Mockito.when(commandOrderService.createSubscribeOrders(any(), anyString()))
+        Mockito.when(commandOrderService.createSubscribeOrders(any(), any()))
                 .thenThrow(new ClientException(ErrorCode.PRODUCT_NOT_SUBSCRIBE_PRODUCT, ""));
 
         //when
@@ -1084,6 +936,10 @@ class CommandOrderControllerTest {
                                 .description("총 상품 금액"),
                         fieldWithPath("shippingFee").type(JsonFieldType.NUMBER).description("배송비"),
                         fieldWithPath("wrappingFee").type(JsonFieldType.NUMBER).description("포장비"),
+                        fieldWithPath("recipientName").type(JsonFieldType.STRING)
+                                .description("수령인명"),
+                        fieldWithPath("recipientPhoneNumber").type(JsonFieldType.STRING)
+                                .description("수령인 연락처"),
                         fieldWithPath("ordererAddressId").type(JsonFieldType.NUMBER)
                                 .description("회원 배송지 Pk"),
                         fieldWithPath("orderCoupons").type(JsonFieldType.ARRAY)
@@ -1117,7 +973,7 @@ class CommandOrderControllerTest {
         //given
         OrderMemberCreateRequestDto request = getSubscribeRequest();
 
-        Mockito.when(commandOrderService.createSubscribeOrders(any(), anyString()))
+        Mockito.when(commandOrderService.createSubscribeOrders(any(), any()))
                 .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, ""));
 
         //when
@@ -1155,6 +1011,10 @@ class CommandOrderControllerTest {
                                 .description("총 상품 금액"),
                         fieldWithPath("shippingFee").type(JsonFieldType.NUMBER).description("배송비"),
                         fieldWithPath("wrappingFee").type(JsonFieldType.NUMBER).description("포장비"),
+                        fieldWithPath("recipientName").type(JsonFieldType.STRING)
+                                .description("수령인명"),
+                        fieldWithPath("recipientPhoneNumber").type(JsonFieldType.STRING)
+                                .description("수령인 연락처"),
                         fieldWithPath("ordererAddressId").type(JsonFieldType.NUMBER)
                                 .description("회원 배송지 Pk"),
                         fieldWithPath("orderCoupons").type(JsonFieldType.ARRAY)
@@ -1188,7 +1048,7 @@ class CommandOrderControllerTest {
         //given
         OrderMemberCreateRequestDto request = getSubscribeRequest();
 
-        Mockito.when(commandOrderService.createSubscribeOrders(any(), anyString()))
+        Mockito.when(commandOrderService.createSubscribeOrders(any(), any()))
                 .thenThrow(new ClientException(ErrorCode.ADDRESS_NOT_FOUND, ""));
 
         //when
@@ -1226,6 +1086,10 @@ class CommandOrderControllerTest {
                                 .description("총 상품 금액"),
                         fieldWithPath("shippingFee").type(JsonFieldType.NUMBER).description("배송비"),
                         fieldWithPath("wrappingFee").type(JsonFieldType.NUMBER).description("포장비"),
+                        fieldWithPath("recipientName").type(JsonFieldType.STRING)
+                                .description("수령인명"),
+                        fieldWithPath("recipientPhoneNumber").type(JsonFieldType.STRING)
+                                .description("수령인 연락처"),
                         fieldWithPath("ordererAddressId").type(JsonFieldType.NUMBER)
                                 .description("회원 배송지 Pk"),
                         fieldWithPath("orderCoupons").type(JsonFieldType.ARRAY)
@@ -1259,7 +1123,7 @@ class CommandOrderControllerTest {
         //given
         OrderMemberCreateRequestDto request = getSubscribeRequest();
 
-        Mockito.when(commandOrderService.createSubscribeOrders(any(), anyString()))
+        Mockito.when(commandOrderService.createSubscribeOrders(any(), any()))
                 .thenThrow(new ClientException(ErrorCode.POINT_OVER_USE, ""));
 
         //when
@@ -1297,6 +1161,10 @@ class CommandOrderControllerTest {
                                 .description("총 상품 금액"),
                         fieldWithPath("shippingFee").type(JsonFieldType.NUMBER).description("배송비"),
                         fieldWithPath("wrappingFee").type(JsonFieldType.NUMBER).description("포장비"),
+                        fieldWithPath("recipientName").type(JsonFieldType.STRING)
+                                .description("수령인명"),
+                        fieldWithPath("recipientPhoneNumber").type(JsonFieldType.STRING)
+                                .description("수령인 연락처"),
                         fieldWithPath("ordererAddressId").type(JsonFieldType.NUMBER)
                                 .description("회원 배송지 Pk"),
                         fieldWithPath("orderCoupons").type(JsonFieldType.ARRAY)
@@ -1331,7 +1199,7 @@ class CommandOrderControllerTest {
         OrderMemberCreateRequestDto request = getSubscribeRequest();
         OrderCreateResponseDto response = getMemberResponse();
 
-        Mockito.when(commandOrderService.createSubscribeOrders(any(), anyString()))
+        Mockito.when(commandOrderService.createSubscribeOrders(any(), any()))
                 .thenReturn(response);
 
         //when
@@ -1371,6 +1239,10 @@ class CommandOrderControllerTest {
                                 .description("총 상품 금액"),
                         fieldWithPath("shippingFee").type(JsonFieldType.NUMBER).description("배송비"),
                         fieldWithPath("wrappingFee").type(JsonFieldType.NUMBER).description("포장비"),
+                        fieldWithPath("recipientName").type(JsonFieldType.STRING)
+                                .description("수령인명"),
+                        fieldWithPath("recipientPhoneNumber").type(JsonFieldType.STRING)
+                                .description("수령인 연락처"),
                         fieldWithPath("ordererAddressId").type(JsonFieldType.NUMBER)
                                 .description("회원 배송지 Pk"),
                         fieldWithPath("orderCoupons").type(JsonFieldType.ARRAY)
@@ -1415,6 +1287,8 @@ class CommandOrderControllerTest {
                 nonMemberProductTotalAmount,
                 shippingFee,
                 wrappingFee,
+                recipientName,
+                recipientPhoneNumber,
                 ordererName,
                 ordererPhoneNumber,
                 ordererAddress
@@ -1428,6 +1302,8 @@ class CommandOrderControllerTest {
                 nonMemberProductTotalAmount,
                 shippingFee,
                 wrappingFee,
+                recipientName,
+                recipientPhoneNumber,
                 "  ",
                 "675",
                 "d"
@@ -1441,6 +1317,8 @@ class CommandOrderControllerTest {
                 productTotalAmount,
                 shippingFee,
                 wrappingFee,
+                recipientName,
+                recipientPhoneNumber,
                 ordererAddressId,
                 orderCoupons,
                 orderPoint
@@ -1454,6 +1332,8 @@ class CommandOrderControllerTest {
                 productTotalAmount,
                 shippingFee,
                 wrappingFee,
+                recipientName,
+                recipientPhoneNumber,
                 -7L,
                 orderCoupons,
                 -1000
@@ -1467,6 +1347,8 @@ class CommandOrderControllerTest {
                 productTotalAmount,
                 shippingFee,
                 wrappingFee,
+                recipientName,
+                recipientPhoneNumber,
                 ordererAddressId,
                 orderCoupons,
                 orderPoint,
@@ -1482,6 +1364,8 @@ class CommandOrderControllerTest {
                 productTotalAmount,
                 shippingFee,
                 wrappingFee,
+                recipientName,
+                recipientPhoneNumber,
                 ordererAddressId,
                 orderCoupons,
                 orderPoint,

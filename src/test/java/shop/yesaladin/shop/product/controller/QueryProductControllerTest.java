@@ -19,14 +19,12 @@ import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
-import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
-import shop.yesaladin.shop.product.dto.ProductOnlyTitleDto;
-import shop.yesaladin.shop.product.dto.ProductsResponseDto;
-import shop.yesaladin.shop.product.dto.ViewCartDto;
+import shop.yesaladin.shop.product.dto.*;
 import shop.yesaladin.shop.product.dummy.DummyProductDetailResponseDto;
 import shop.yesaladin.shop.product.dummy.DummyProductsResponseDto;
 import shop.yesaladin.shop.product.service.inter.QueryProductService;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +49,7 @@ import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
 @AutoConfigureRestDocs
 @WebMvcTest(QueryProductController.class)
 class QueryProductControllerTest {
+
     private final Long ID = 1L;
 
     @Autowired
@@ -89,10 +88,14 @@ class QueryProductControllerTest {
                 getDocumentResponse(),
                 pathParameters(parameterWithName("isbn").description("ISBN")),
                 responseFields(
-                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("동작 성공 여부"),
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
                         fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
-                        fieldWithPath("data.title").type(JsonFieldType.STRING).description("제목").optional(),
-                        fieldWithPath("errorMessages").type(JsonFieldType.NULL).description("에러 메세지 NULL")
+                        fieldWithPath("data.title").type(JsonFieldType.STRING)
+                                .description("제목")
+                                .optional(),
+                        fieldWithPath("errorMessages").type(JsonFieldType.NULL)
+                                .description("에러 메세지 NULL")
                 )
         ));
     }
@@ -104,7 +107,10 @@ class QueryProductControllerTest {
         // given
         String isbn = "0000000000001";
         Mockito.when(service.findTitleByIsbn(isbn))
-                .thenThrow(new ClientException(ErrorCode.PRODUCT_NOT_FOUND, "Product not found with isbn : " + isbn));
+                .thenThrow(new ClientException(
+                        ErrorCode.PRODUCT_NOT_FOUND,
+                        "Product not found with isbn : " + isbn
+                ));
 
         // when
         ResultActions result = mockMvc.perform(get("/v1/products/info/{isbn}", isbn)
@@ -127,15 +133,100 @@ class QueryProductControllerTest {
                 getDocumentResponse(),
                 pathParameters(parameterWithName("isbn").description("ISBN")),
                 responseFields(
-                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("동작 성공 여부"),
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
                         fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
                         fieldWithPath("data").type(JsonFieldType.NULL).description("NULL"),
-                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY).description("에러 메세지")
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
                 )
         ));
     }
 
-    // TODO: ResponseDto 수정
+    @WithMockUser
+    @Test
+    @DisplayName("상품 ID로 수량 조회 성공")
+    void findQuantityById_success() throws Exception {
+        // given
+        Long id = 1L;
+        Long quantity = 100L;
+        Mockito.when(service.findQuantityById(id)).thenReturn(quantity);
+
+        // when
+        ResultActions result = mockMvc.perform(get("/v1/products/quantity/{id}", id)
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(200)));
+
+        verify(service, times(1)).findQuantityById(id);
+
+        // docs
+        result.andDo(document(
+                "find-quantity-by-id",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                pathParameters(parameterWithName("id").description("ID")),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data").type(JsonFieldType.NUMBER)
+                                .description("수량")
+                                .optional(),
+                        fieldWithPath("errorMessages").type(JsonFieldType.NULL)
+                                .description("에러 메세지 NULL")
+                )
+        ));
+    }
+
+    @WithMockUser
+    @Test
+    @DisplayName("상품 ID로 수량 조회 실패_ID로 조회되는 상품이 없는 경우 예외 발생")
+    void findQuantityById_notExistId_throwProductNotFoundException() throws Exception {
+        // given
+        Long id = 1L;
+        Mockito.when(service.findQuantityById(id))
+                .thenThrow(new ClientException(
+                        ErrorCode.PRODUCT_NOT_FOUND,
+                        "Product not found with id : " + id
+                ));
+
+        // when
+        ResultActions result = mockMvc.perform(get("/v1/products/quantity/{id}", id)
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.NOT_FOUND.value())));
+
+        verify(service, times(1)).findQuantityById(id);
+
+        // docs
+        result.andDo(document(
+                "find-quantity-by-id-throw-not-found",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                pathParameters(parameterWithName("id").description("ID")),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data").type(JsonFieldType.NULL).description("NULL"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
+                )
+        ));
+    }
 
     @WithMockUser
     @Test
@@ -434,7 +525,41 @@ class QueryProductControllerTest {
                         fieldWithPath("data.[].isEbook").type(JsonFieldType.BOOLEAN).description("E-Book 여부"),
                         fieldWithPath("data.[].isSubscribeProduct").type(JsonFieldType.BOOLEAN).description("구독 가능여부"),
                         fieldWithPath("errorMessages").type(JsonFieldType.NULL).description("에러 메세지 NULL")
+
                 )
         ));
+    }
+
+    @WithMockUser
+    @Test
+    @DisplayName("연관 상품 등록을 위한 상품 검색 성공")
+    void findProductRelationByTitle() throws Exception {
+        //given
+        String title = "title";
+        List<RelationsResponseDto> lists = new ArrayList<>();
+        RelationsResponseDto dto = new RelationsResponseDto(
+                10L,
+                "file",
+                title,
+                List.of("author"),
+                "publisher",
+                LocalDate.now().toString(),
+                1000000000,
+                100
+        );
+
+        lists.add(dto);
+
+        Mockito.when(service.findProductRelationByTitle(0L, title, PageRequest.of(0, 10)))
+                .thenReturn(new PageImpl<>(lists, PageRequest.of(0, 5), 5));
+
+        ResultActions result = mockMvc.perform(get("/v1/products/{id}/relation", "0").queryParam(
+                "title",
+                title
+        ).with(csrf()));
+
+        result.andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andDo(print());
     }
 }

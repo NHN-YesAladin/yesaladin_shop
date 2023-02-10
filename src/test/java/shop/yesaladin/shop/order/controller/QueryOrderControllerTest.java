@@ -166,8 +166,9 @@ class QueryOrderControllerTest {
                     titles.get(i),
                     10000L,
                     10,
-                    10L,
-                    1
+                    true,
+                    10,
+                    10L
             ));
         }
 
@@ -179,7 +180,6 @@ class QueryOrderControllerTest {
                 .param("page", "1"));
 
         //then
-
 
         //docs
     }

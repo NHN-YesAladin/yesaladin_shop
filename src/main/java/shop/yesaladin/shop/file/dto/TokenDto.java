@@ -20,5 +20,6 @@ import lombok.Setter;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TokenDto {
 
+    private String expires;
     private String id;
 }

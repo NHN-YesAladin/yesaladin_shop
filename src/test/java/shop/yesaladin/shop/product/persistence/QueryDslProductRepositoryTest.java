@@ -1,7 +1,6 @@
 package shop.yesaladin.shop.product.persistence;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.ReflectionUtils;
@@ -104,6 +103,19 @@ class QueryDslProductRepositoryTest {
     }
 
     @Test
+    @DisplayName("상품 ID로 상품 수량 조회")
+    void findQuantityById() {
+        // given
+        entityManager.persist(product1);
+
+        // when
+        Long response = repository.findQuantityById(product1.getId());
+
+        // then
+        assertThat(response).isEqualTo(product1.getQuantity());
+    }
+
+    @Test
     @DisplayName("ID로 상품 조회")
     void findById() {
         // given
@@ -118,11 +130,11 @@ class QueryDslProductRepositoryTest {
         assertThat(optionalProduct.get().getIsbn()).isEqualTo(ISBN1);
         assertThat(optionalProduct.get().getThumbnailFile()).isEqualTo(thumbnailFile1);
         assertThat(optionalProduct.get().getEbookFile()).isEqualTo(ebookFile1);
-        assertThat(optionalProduct.get().getProductTypeCode()).isEqualTo(ProductTypeCode.BESTSELLER);
+        assertThat(optionalProduct.get()
+                .getProductTypeCode()).isEqualTo(ProductTypeCode.BESTSELLER);
     }
 
     @Test
-    @Disabled
     @DisplayName("ISBN으로 상품 조회")
     void findByIsbn() {
         // given
@@ -136,7 +148,8 @@ class QueryDslProductRepositoryTest {
         assertThat(optionalProduct.get().getIsbn()).isEqualTo(ISBN1);
         assertThat(optionalProduct.get().getThumbnailFile()).isEqualTo(thumbnailFile1);
         assertThat(optionalProduct.get().getEbookFile()).isEqualTo(ebookFile1);
-        assertThat(optionalProduct.get().getProductTypeCode()).isEqualTo(ProductTypeCode.BESTSELLER);
+        assertThat(optionalProduct.get()
+                .getProductTypeCode()).isEqualTo(ProductTypeCode.BESTSELLER);
     }
 
     @Test
@@ -156,7 +169,9 @@ class QueryDslProductRepositoryTest {
         assertThat(products.getContent().get(0).getIsbn()).isEqualTo(ISBN1);
         assertThat(products.getContent().get(0).getThumbnailFile()).isEqualTo(thumbnailFile1);
         assertThat(products.getContent().get(0).getEbookFile()).isEqualTo(ebookFile1);
-        assertThat(products.getContent().get(0).getProductTypeCode()).isEqualTo(ProductTypeCode.BESTSELLER);
+        assertThat(products.getContent()
+                .get(0)
+                .getProductTypeCode()).isEqualTo(ProductTypeCode.BESTSELLER);
     }
 
     @Test
@@ -176,7 +191,9 @@ class QueryDslProductRepositoryTest {
         assertThat(products.getContent().get(0).getIsbn()).isEqualTo(ISBN1);
         assertThat(products.getContent().get(0).getThumbnailFile()).isEqualTo(thumbnailFile1);
         assertThat(products.getContent().get(0).getEbookFile()).isEqualTo(ebookFile1);
-        assertThat(products.getContent().get(0).getProductTypeCode()).isEqualTo(ProductTypeCode.BESTSELLER);
+        assertThat(products.getContent()
+                .get(0)
+                .getProductTypeCode()).isEqualTo(ProductTypeCode.BESTSELLER);
     }
 
     @Test
@@ -187,7 +204,10 @@ class QueryDslProductRepositoryTest {
         entityManager.persist(product2);
 
         // when
-        Page<Product> products = repository.findAllByTypeId(PageRequest.of(0, 5), ProductTypeCode.NEWBOOK.getId());
+        Page<Product> products = repository.findAllByTypeId(
+                PageRequest.of(0, 5),
+                ProductTypeCode.NEWBOOK.getId()
+        );
 
         // then
         assertThat(products).isNotNull();
@@ -195,7 +215,9 @@ class QueryDslProductRepositoryTest {
         assertThat(products.getContent().get(0).getIsbn()).isEqualTo(ISBN2);
         assertThat(products.getContent().get(0).getThumbnailFile()).isEqualTo(thumbnailFile2);
         assertThat(products.getContent().get(0).getEbookFile()).isEqualTo(ebookFile2);
-        assertThat(products.getContent().get(0).getProductTypeCode()).isEqualTo(ProductTypeCode.NEWBOOK);
+        assertThat(products.getContent()
+                .get(0)
+                .getProductTypeCode()).isEqualTo(ProductTypeCode.NEWBOOK);
     }
 
     @Test
@@ -251,6 +273,29 @@ class QueryDslProductRepositoryTest {
 //
 //
 //        //then
+    }
+
+    @Test
+    @DisplayName("상품의 연관 상품 등록을 위한 검색 성공")
+    void findProductRelationByTitle() {
+        //given
+        entityManager.persist(product1);
+        entityManager.persist(product2);
+
+        //when
+        Page<Product> products = repository.findProductRelationByTitle(
+                product1.getId(),
+                product1.getTitle().substring(0, 1),
+                PageRequest.of(0, 10)
+        );
+
+        //then
+        assertThat(products.getTotalElements()).isEqualTo(1);
+        assertThat(products.getContent()
+                .get(0)
+                .getTitle()
+                .contains(product1.getTitle().substring(0, 1))).isTrue();
+
     }
 
     private List<ProductOrderRequestDto> getOrderProductRequestData() {

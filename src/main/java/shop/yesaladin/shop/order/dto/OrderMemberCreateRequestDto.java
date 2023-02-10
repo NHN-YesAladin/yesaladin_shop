@@ -4,9 +4,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.order.domain.model.MemberOrder;
@@ -20,6 +22,7 @@ import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
  * @since 1.0
  */
 @Getter
+@NoArgsConstructor
 public class OrderMemberCreateRequestDto extends OrderCreateRequestDto {
 
     @NotNull
@@ -34,11 +37,21 @@ public class OrderMemberCreateRequestDto extends OrderCreateRequestDto {
             @Min(value = 0) long productTotalAmount,
             @Min(value = 0) int shippingFee,
             @Min(value = 0) int wrappingFee,
+            @NotBlank String recipientName,
+            @NotBlank String recipientPhoneNumber,
             Long ordererAddressId,
             List<String> orderCoupons,
             long orderPoint
     ) {
-        super(expectedShippingDate, orderProducts, productTotalAmount, shippingFee, wrappingFee);
+        super(
+                expectedShippingDate,
+                orderProducts,
+                productTotalAmount,
+                shippingFee,
+                wrappingFee,
+                recipientName,
+                recipientPhoneNumber
+        );
         this.ordererAddressId = ordererAddressId;
         this.orderCoupons = orderCoupons;
         this.orderPoint = orderPoint;
@@ -74,6 +87,8 @@ public class OrderMemberCreateRequestDto extends OrderCreateRequestDto {
                 .wrappingFee(wrappingFee)
                 .totalAmount(productTotalAmount)
                 .orderCode(OrderCode.MEMBER_ORDER)
+                .recipientName(recipientName)
+                .recipientPhoneNumber(recipientPhoneNumber)
                 .member(member)
                 .memberAddress(address)
                 .build();

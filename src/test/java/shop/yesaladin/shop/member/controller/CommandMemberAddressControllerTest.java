@@ -3,7 +3,6 @@ package shop.yesaladin.shop.member.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -48,6 +47,7 @@ import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.member.dto.MemberAddressCreateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
 import shop.yesaladin.shop.member.service.inter.CommandMemberAddressService;
+
 
 @AutoConfigureRestDocs
 @WebMvcTest(CommandMemberAddressController.class)
@@ -151,11 +151,9 @@ class CommandMemberAddressControllerTest {
     @DisplayName("회원 배송지 생성 실패-존재하지 않는 회원")
     void createMemberAddress_failByNotFoundMember() throws Exception {
         //given
-        String loginId = "user@1";
-
         Map<String, Object> request = Map.of("address", address, "isDefault", false);
 
-        Mockito.when(commandMemberAddressService.save(eq(loginId), any()))
+        Mockito.when(commandMemberAddressService.save(any(), any()))
                 .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, ""));
 
         //when
@@ -175,7 +173,7 @@ class CommandMemberAddressControllerTest {
 
         ArgumentCaptor<MemberAddressCreateRequestDto> captor = ArgumentCaptor.forClass(
                 MemberAddressCreateRequestDto.class);
-        verify(commandMemberAddressService, times(1)).save(anyString(), captor.capture());
+        verify(commandMemberAddressService, times(1)).save(any(), captor.capture());
 
         assertThat(captor.getValue().getAddress()).isEqualTo(address);
         assertThat(captor.getValue().getIsDefault()).isEqualTo(isDefault);
@@ -208,11 +206,9 @@ class CommandMemberAddressControllerTest {
     @DisplayName("회원 배송지 생성 실패-최대 배송지 등록 개수 초과")
     void createMemberAddress_failByAddressRegistrationRestriction() throws Exception {
         //given
-        String loginId = "user@1";
-
         Map<String, Object> request = Map.of("address", address, "isDefault", false);
 
-        Mockito.when(commandMemberAddressService.save(eq(loginId), any()))
+        Mockito.when(commandMemberAddressService.save(any(), any()))
                 .thenThrow(new ClientException(ErrorCode.ADDRESS_REGISTERED_UP_TO_LIMIT, ""));
 
         //when
@@ -232,7 +228,7 @@ class CommandMemberAddressControllerTest {
 
         ArgumentCaptor<MemberAddressCreateRequestDto> captor = ArgumentCaptor.forClass(
                 MemberAddressCreateRequestDto.class);
-        verify(commandMemberAddressService, times(1)).save(anyString(), captor.capture());
+        verify(commandMemberAddressService, times(1)).save(any(), captor.capture());
 
         assertThat(captor.getValue().getAddress()).isEqualTo(address);
         assertThat(captor.getValue().getIsDefault()).isEqualTo(isDefault);
@@ -265,14 +261,13 @@ class CommandMemberAddressControllerTest {
     @DisplayName("회원 배송지 등록 성공")
     void createMemberAddress() throws Exception {
         //given
-        String loginId = "user@1";
         long addressId = 1L;
 
         Map<String, Object> request = Map.of("address", address, "isDefault", isDefault);
 
         MemberAddressResponseDto response = getMemberAddressResponseDto(addressId);
 
-        Mockito.when(commandMemberAddressService.save(eq(loginId), any())).thenReturn(response);
+        Mockito.when(commandMemberAddressService.save(any(), any())).thenReturn(response);
 
         //when
         ResultActions result = mockMvc.perform(post("/v1/member-addresses")
@@ -293,7 +288,7 @@ class CommandMemberAddressControllerTest {
                 MemberAddressCreateRequestDto.class);
 
         verify(commandMemberAddressService, Mockito.times(1))
-                .save(anyString(), captor.capture());
+                .save(any(), captor.capture());
 
         MemberAddressCreateRequestDto actual = captor.getValue();
         assertThat(actual.getAddress()).isEqualTo(address);
@@ -340,9 +335,8 @@ class CommandMemberAddressControllerTest {
     void markAsDefaultAddress_fail_memberAddressNotFoundException() throws Exception {
         //given
         long addressId = 1L;
-        String loginId = "user@1";
 
-        Mockito.when(commandMemberAddressService.markAsDefault(loginId, addressId))
+        Mockito.when(commandMemberAddressService.markAsDefault(any(), eq(addressId)))
                 .thenThrow(new ClientException(ErrorCode.ADDRESS_NOT_FOUND, ""));
 
         //when
@@ -388,7 +382,6 @@ class CommandMemberAddressControllerTest {
     void markAsDefaultAddress_success() throws Exception {
         //given
         long addressId = 1L;
-        String loginId = "user@1";
 
         MemberAddressResponseDto response = ReflectionUtils.newInstance(
                 MemberAddressResponseDto.class,
@@ -396,7 +389,7 @@ class CommandMemberAddressControllerTest {
                 address,
                 true
         );
-        Mockito.when(commandMemberAddressService.markAsDefault(loginId, addressId))
+        Mockito.when(commandMemberAddressService.markAsDefault(any(), eq(addressId)))
                 .thenReturn(response);
 
         //when
@@ -444,9 +437,8 @@ class CommandMemberAddressControllerTest {
     void deleteMemberAddress_fail_MemberAddressNotFound() throws Exception {
         //given
         long addressId = 1L;
-        String loginId = "user@1";
 
-        Mockito.when(commandMemberAddressService.delete(loginId, addressId))
+        Mockito.when(commandMemberAddressService.delete(any(), eq(addressId)))
                 .thenThrow(new ClientException(ErrorCode.ADDRESS_NOT_FOUND, ""));
         //when
         ResultActions result = mockMvc.perform(delete(
@@ -492,9 +484,8 @@ class CommandMemberAddressControllerTest {
     void deleteMemberAddress_fail_AlreadyDeletedAddress() throws Exception {
         //given
         long addressId = 1L;
-        String loginId = "user@1";
 
-        Mockito.when(commandMemberAddressService.delete(loginId, addressId))
+        Mockito.when(commandMemberAddressService.delete(any(), eq(addressId)))
                 .thenThrow(new ClientException(ErrorCode.ADDRESS_ALREADY_DELETED, ""));
         //when
         ResultActions result = mockMvc.perform(delete(

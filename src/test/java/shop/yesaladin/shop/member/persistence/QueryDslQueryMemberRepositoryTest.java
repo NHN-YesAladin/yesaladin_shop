@@ -5,15 +5,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
+import shop.yesaladin.shop.coupon.domain.model.MemberCoupon;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.member.dto.MemberIdDto;
@@ -226,6 +229,17 @@ class QueryDslQueryMemberRepositoryTest {
 
     @Test
     void getMemberOrderData() {
+        for (int i = 0; i < 5; i++) {
+            String uuid = UUID.randomUUID().toString();
+            String guuid = UUID.randomUUID().toString();
+            MemberCoupon memberCoupon = MemberCoupon.builder()
+                    .member(memberWithLoginId)
+                    .couponCode(uuid)
+                    .couponGroupCode(guuid)
+                    .expirationDate(LocalDate.now().plusMonths(1))
+                    .build();
+            entityManager.persist(memberCoupon);
+        }
         //when
         Optional<MemberOrderSheetResponseDto> response = queryMemberRepository.getMemberOrderData(
                 loginId);
@@ -234,6 +248,6 @@ class QueryDslQueryMemberRepositoryTest {
         assertThat(response).isPresent();
         assertThat(response.get().getName()).isEqualTo(memberWithLoginId.getName());
         assertThat(response.get().getPhoneNumber()).isEqualTo(memberWithLoginId.getPhone());
-        assertThat(response.get().getAddress()).isEqualTo(defaultMemberAddress.getAddress());
+        assertThat(response.get().getCouponCount()).isEqualTo(5);
     }
 }

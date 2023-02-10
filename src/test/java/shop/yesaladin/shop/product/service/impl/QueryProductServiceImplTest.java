@@ -53,7 +53,6 @@ class QueryProductServiceImplTest {
     private QueryPublishService queryPublishService;
     private QueryProductTagService queryProductTagService;
     private QueryProductCategoryService queryProductCategoryService;
-    ;
 
     private final Clock clock = Clock.fixed(
             Instant.parse("2023-01-10T00:00:00.000Z"),
@@ -105,7 +104,32 @@ class QueryProductServiceImplTest {
         assertThatThrownBy(() -> service.findTitleByIsbn(isbn)).isInstanceOf(ClientException.class);
     }
 
-    // TODO: ResponseDto 수정
+    @Test
+    @DisplayName("상품 ID로 수량 조회 성공")
+    void findQuantityById_success() {
+        // given
+        Long id = 1L;
+        Long quantity = 100L;
+        Mockito.when(queryProductRepository.findQuantityById(id))
+                .thenReturn(quantity);
+
+        // when
+        Long response = service.findQuantityById(id);
+
+        // then
+        assertThat(response).isEqualTo(quantity);
+    }
+
+    @Test
+    @DisplayName("상품 ISBN으로 제목 조회 실패_ISBN로 조회되는 상품이 없는 경우 예외 발생")
+    void findQuantityById_notExistId_throwProductNotFoundException() {
+        // given
+        Long id = 1L;
+        Mockito.when(queryProductRepository.findQuantityById(id)).thenReturn(null);
+
+        // when then
+        assertThatThrownBy(() -> service.findQuantityById(id)).isInstanceOf(ClientException.class);
+    }
 
     @Test
     @DisplayName("상품 상세 조회 성공")
@@ -115,15 +139,27 @@ class QueryProductServiceImplTest {
 
         File thumbnailFile = DummyFile.dummy(URL + "/image1.png");
         File ebookFile = DummyFile.dummy(URL + "/ebook1.pdf");
-        SubscribeProduct subscribeProduct = SubscribeProduct.builder().id(1L).ISSN("00000001").build();
+        SubscribeProduct subscribeProduct = SubscribeProduct.builder()
+                .id(1L)
+                .ISSN("00000001")
+                .build();
         TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
 
         Product product = DummyProduct.dummy(1L, isbn, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate);
         Mockito.when(queryProductRepository.findProductById(anyLong())).thenReturn(Optional.ofNullable(product));
 
-        Publish publish = Publish.create(product, Publisher.builder().id(1L).name("출판사").build(), LocalDateTime.now(clock).toLocalDate().toString());
+        Publish publish = Publish.create(
+                product,
+                Publisher.builder().id(1L).name("출판사").build(),
+                LocalDateTime.now(clock).toLocalDate().toString()
+        );
         Mockito.when(queryPublishService.findByProduct(any()))
-                .thenReturn(new PublishResponseDto(publish.getPk(), publish.getPublishedDate(), publish.getProduct(), publish.getPublisher()));
+                .thenReturn(new PublishResponseDto(
+                        publish.getPk(),
+                        publish.getPublishedDate(),
+                        publish.getProduct(),
+                        publish.getPublisher()
+                ));
 
         // when
         ProductDetailResponseDto response = service.findDetailProductById(1L);
@@ -256,19 +292,38 @@ class QueryProductServiceImplTest {
 
             File thumbnailFile = DummyFile.dummy(URL + "/image" + i + ".png");
             File ebookFile = DummyFile.dummy(URL + "/ebook" + i + ".pdf");
-            SubscribeProduct subscribeProduct = SubscribeProduct.builder().id(1L).ISSN("00000001").build();
+            SubscribeProduct subscribeProduct = SubscribeProduct.builder()
+                    .id(1L)
+                    .ISSN("00000001")
+                    .build();
             TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
 
-            Product product = DummyProduct.dummy(i, isbn, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate);
+            Product product = DummyProduct.dummy(
+                    i,
+                    isbn,
+                    subscribeProduct,
+                    thumbnailFile,
+                    ebookFile,
+                    totalDiscountRate
+            );
             if (i < 5L) {
                 product.deleteProduct();
                 continue;
             }
             products.add(product);
 
-            Publish publish = Publish.create(product, Publisher.builder().id(1L).name("출판사").build(), LocalDateTime.now(clock).toLocalDate().toString());
+            Publish publish = Publish.create(
+                    product,
+                    Publisher.builder().id(1L).name("출판사").build(),
+                    LocalDateTime.now(clock).toLocalDate().toString()
+            );
             Mockito.when(queryPublishService.findByProduct(any()))
-                    .thenReturn(new PublishResponseDto(publish.getPk(), publish.getPublishedDate(), publish.getProduct(), publish.getPublisher()));
+                    .thenReturn(new PublishResponseDto(
+                            publish.getPk(),
+                            publish.getPublishedDate(),
+                            publish.getProduct(),
+                            publish.getPublisher()
+                    ));
         }
 
         Page<Product> page = new PageImpl<>(
@@ -339,18 +394,37 @@ class QueryProductServiceImplTest {
 
             File thumbnailFile = DummyFile.dummy(URL + "/image" + i + ".png");
             File ebookFile = DummyFile.dummy(URL + "/ebook" + i + ".pdf");
-            SubscribeProduct subscribeProduct = SubscribeProduct.builder().id(1L).ISSN("00000001").build();
+            SubscribeProduct subscribeProduct = SubscribeProduct.builder()
+                    .id(1L)
+                    .ISSN("00000001")
+                    .build();
             TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
 
-            Product product = DummyProduct.dummy(i, isbn, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate);
+            Product product = DummyProduct.dummy(
+                    i,
+                    isbn,
+                    subscribeProduct,
+                    thumbnailFile,
+                    ebookFile,
+                    totalDiscountRate
+            );
             if (i < 5L) {
                 product.deleteProduct();
             }
             products.add(product);
 
-            Publish publish = Publish.create(product, Publisher.builder().id(1L).name("출판사").build(), LocalDateTime.now(clock).toLocalDate().toString());
+            Publish publish = Publish.create(
+                    product,
+                    Publisher.builder().id(1L).name("출판사").build(),
+                    LocalDateTime.now(clock).toLocalDate().toString()
+            );
             Mockito.when(queryPublishService.findByProduct(any()))
-                    .thenReturn(new PublishResponseDto(publish.getPk(), publish.getPublishedDate(), publish.getProduct(), publish.getPublisher()));
+                    .thenReturn(new PublishResponseDto(
+                            publish.getPk(),
+                            publish.getPublishedDate(),
+                            publish.getProduct(),
+                            publish.getPublisher()
+                    ));
         }
 
         Page<Product> page = new PageImpl<>(
@@ -368,5 +442,53 @@ class QueryProductServiceImplTest {
         assertThat(response.getTotalDataCount()).isEqualTo(9);
         assertThat(response.getDataList().get(0).getId()).isEqualTo(1L);
         assertThat(response.getDataList().get(8).getId()).isEqualTo(9L);
+    }
+
+    @Test
+    @DisplayName("상품의 연관 상품 등록을 위한 검색 성공")
+    void findProductRelationByTitle() {
+        //given
+        List<Product> products = new ArrayList<>();
+        String isbn = "0000000000001";
+
+        File thumbnailFile = DummyFile.dummy(URL + "/image.png");
+        File ebookFile = DummyFile.dummy(URL + "/ebook.pdf");
+        SubscribeProduct subscribeProduct = SubscribeProduct.builder()
+                .id(1L)
+                .ISSN("00000001")
+                .build();
+        TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
+
+        Product product = DummyProduct.dummy(
+                isbn,
+                subscribeProduct,
+                thumbnailFile,
+                ebookFile,
+                totalDiscountRate
+        );
+        products.add(product);
+        Mockito.when(queryProductRepository.findProductRelationByTitle(
+                2L,
+                "ex",
+                PageRequest.of(0, 1)
+        )).thenReturn(new PageImpl<>(products, PageRequest.of(0, 1), 1L));
+        Publish publish = Publish.create(
+                product,
+                Publisher.builder().id(1L).name("출판사").build(),
+                LocalDateTime.now(clock).toLocalDate().toString()
+        );
+        Mockito.when(queryPublishService.findByProduct(any()))
+                .thenReturn(new PublishResponseDto(
+                        publish.getPk(),
+                        publish.getPublishedDate(),
+                        publish.getProduct(),
+                        publish.getPublisher()
+                ));
+
+
+        Page<RelationsResponseDto> result = service.findProductRelationByTitle(2L, "ex", PageRequest.of(0, 1));
+
+        assertThat(result.getTotalElements()).isEqualTo(1);
+        assertThat(result.getContent().get(0).getTitle()).contains("ex");
     }
 }
