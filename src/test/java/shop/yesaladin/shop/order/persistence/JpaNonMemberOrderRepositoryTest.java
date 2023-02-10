@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -78,6 +77,8 @@ class JpaNonMemberOrderRepositoryTest {
                 .name("비회원 주문")
                 .nonMemberName(name)
                 .phoneNumber(phoneNumber)
+                .recipientName("수령인 이름")
+                .recipientPhoneNumber("수령인 폰번호")
                 .build();
     }
 }

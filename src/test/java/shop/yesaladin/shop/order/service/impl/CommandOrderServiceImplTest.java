@@ -64,12 +64,15 @@ import shop.yesaladin.shop.product.service.inter.QueryProductService;
 
 class CommandOrderServiceImplTest {
 
+    private final Clock clock = Clock.fixed(
+            Instant.parse("2023-01-10T00:00:00.000Z"),
+            ZoneId.of("UTC")
+    );
     CommandOrderService commandOrderService;
     CommandOrderRepository<NonMemberOrder> nonMemberOrderCommandOrderRepository;
     CommandOrderRepository<MemberOrder> memberOrderCommandOrderRepository;
     CommandOrderRepository<Subscribe> subscribeCommandOrderRepository;
     QueryOrderRepository queryOrderRepository;
-
     CommandOrderStatusChangeLogRepository commandOrderStatusChangeLogRepository;
     CommandOrderProductRepository commandOrderProductRepository;
     CommandPointHistoryService commandPointHistoryService;
@@ -78,11 +81,6 @@ class CommandOrderServiceImplTest {
     QueryMemberAddressService queryMemberAddressService;
     QueryProductService queryProductService;
     QueryMemberService queryMemberService;
-
-    private final Clock clock = Clock.fixed(
-            Instant.parse("2023-01-10T00:00:00.000Z"),
-            ZoneId.of("UTC")
-    );
     Member member;
     MemberAddress memberAddress;
     NonMemberOrder nonMemberOrder;
