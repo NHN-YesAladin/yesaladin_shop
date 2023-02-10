@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.coupon.controller;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.common.dto.ResponseDto;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.coupon.code.TriggerTypeCode;
 import shop.yesaladin.shop.common.aspect.annotation.LoginId;
 import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
@@ -34,8 +36,7 @@ public class QueryMemberCouponController {
             @RequestParam(defaultValue = "true") boolean usable
     ) {
 
-        PaginatedResponseDto<MemberCouponSummaryDto> memberCouponSummaryList = queryMemberCouponService.getMemberCouponSummaryList(
-                pageable,
+        PaginatedResponseDto<MemberCouponSummaryDto> memberCouponSummaryList = queryMemberCouponService.getMemberCouponSummaryList(pageable,
                 loginId,
                 usable
         );
@@ -47,20 +48,35 @@ public class QueryMemberCouponController {
                 .build();
     }
 
-    @GetMapping(value = "/issuance", params = {"type", "couponid"})
+    @GetMapping(value = "/issuance", params = {"type", "couponId"})
     public ResponseDto<CouponIssueResponseDto> issueCoupon(
             @LoginId(required = true) String loginId,
             @RequestParam("type") String type,
-            @RequestParam("couponid") Long couponId
+            @RequestParam("couponId") Long couponId
     ) {
-        log.info("==== [COUPON] issue coupon request is arrived with {}, {} ===", loginId, type);
+        log.info("==== [COUPON] issue coupon request is arrived with id {} and type {} ===",
+                loginId,
+                type
+        );
         TriggerTypeCode couponOfTheMonth = TriggerTypeCode.COUPON_OF_THE_MONTH;
 
         if (couponOfTheMonth.toString().equalsIgnoreCase(type)) {
             log.info("==== [COUPON] coupon of the month requested. ====");
-            giveCouponService.sendCouponGiveRequest(loginId, couponOfTheMonth, couponId);
+            try {
+                giveCouponService.sendCouponGiveRequest(loginId, couponOfTheMonth, couponId);
+            } catch (ClientException e) {
+                // ignore
+                return ResponseDto.<CouponIssueResponseDto>builder()
+                        .status(HttpStatus.OK)
+                        .success(false)
+                        .errorMessages(List.of(e.getMessage()))
+                        .build();
+            }
         }
 
-        return null;
+        return ResponseDto.<CouponIssueResponseDto>builder()
+                .status(HttpStatus.OK)
+                .success(true)
+                .build();
     }
 }
