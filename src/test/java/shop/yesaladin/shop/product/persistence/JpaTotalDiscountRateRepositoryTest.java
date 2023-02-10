@@ -1,7 +1,6 @@
 package shop.yesaladin.shop.product.persistence;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +35,6 @@ class JpaTotalDiscountRateRepositoryTest {
     }
 
     @Test
-    @Disabled
     @DisplayName("전체 할인율 저장")
     void save() {
         // when

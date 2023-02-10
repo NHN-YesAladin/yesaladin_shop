@@ -117,8 +117,7 @@ class JpaWritingRepositoryTest {
         List<Writing> foundWritings = repository.findByProduct(product);
 
         // then
-        assertThat(foundWritings).isNotNull();
-        assertThat(foundWritings.size()).isEqualTo(2);
+        assertThat(foundWritings).hasSize(2);
         assertThat(foundWritings.get(0).getAuthor().getName()).isEqualTo(name1);
         assertThat(foundWritings.get(1).getAuthor().getName()).isEqualTo(name2);
         assertThat(foundWritings.get(0).getProduct()).isEqualTo(product);
