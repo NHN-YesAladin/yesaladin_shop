@@ -5,15 +5,17 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class PaginatedResponseDto<T> {
 
-    private final long totalPage;
-    private final long currentPage;
-    private final long totalDataCount;
-    private final List<T> dataList;
+    private long totalPage;
+    private long currentPage;
+    private long totalDataCount;
+    private List<T> dataList;
 
 }

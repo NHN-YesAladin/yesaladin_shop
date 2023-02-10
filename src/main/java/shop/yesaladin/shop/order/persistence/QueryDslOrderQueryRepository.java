@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
@@ -295,14 +296,35 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        JPAQuery<Long> countQuery = queryFactory.select(memberOrder.count())
+        int size = queryFactory.select(memberOrder.count())
                 .from(memberOrder)
+                .leftJoin(orderStatusChangeLog)
+                .on(memberOrder.id.eq(orderStatusChangeLog.order.id))
                 .where(memberOrder.member.loginId.eq(loginId))
                 .groupBy(memberOrder.id)
                 .having(orderStatusChangeLog.orderStatusCode.count()
-                        .eq((long) code.getStatusCode()));
+                        .eq((long) code.getStatusCode())).fetch().size();
 
-        return PageableExecutionUtils.getPage(data, pageable, countQuery::fetchFirst);
+        return new PageImpl(data, pageable, size);
+        //TODO Total count 를 계산하기 위해서는 list의 사이즈가 필요해서 PageImpl 사용
+    }
+
+    @Override
+    public long getOrderCountByStatusCode(String loginId, OrderStatusCode code) {
+        QMemberOrder memberOrder = QMemberOrder.memberOrder;
+        QOrderStatusChangeLog orderStatusChangeLog = QOrderStatusChangeLog.orderStatusChangeLog;
+
+        return queryFactory.select(memberOrder.id)
+                .from(memberOrder)
+                .leftJoin(orderStatusChangeLog)
+                .on(memberOrder.id.eq(orderStatusChangeLog.order.id))
+                .where(memberOrder.member.loginId.eq(loginId))
+                .groupBy(memberOrder.id)
+                .having(orderStatusChangeLog.orderStatusCode.count()
+                        .eq((long) code.getStatusCode()))
+                .fetch()
+                .size();
+
     }
 
 }

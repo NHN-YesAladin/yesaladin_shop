@@ -9,6 +9,7 @@ import java.util.UUID;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -235,6 +236,7 @@ class QueryDslQueryMemberRepositoryTest {
                     .member(memberWithLoginId)
                     .couponCode(uuid)
                     .couponGroupCode(guuid)
+                    .expirationDate(LocalDate.now().plusMonths(1))
                     .build();
             entityManager.persist(memberCoupon);
         }

@@ -1,11 +1,5 @@
 package shop.yesaladin.shop.product.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,11 +16,7 @@ import shop.yesaladin.shop.file.service.inter.CommandFileService;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
-import shop.yesaladin.shop.product.domain.repository.CommandProductRepository;
-import shop.yesaladin.shop.product.domain.repository.CommandSubscribeProductRepository;
-import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
-import shop.yesaladin.shop.product.domain.repository.QuerySubscribeProductRepository;
-import shop.yesaladin.shop.product.domain.repository.QueryTotalDiscountRateRepository;
+import shop.yesaladin.shop.product.domain.repository.*;
 import shop.yesaladin.shop.product.dto.ProductCreateDto;
 import shop.yesaladin.shop.product.dto.ProductOnlyIdDto;
 import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
@@ -44,6 +34,13 @@ import shop.yesaladin.shop.writing.domain.model.Author;
 import shop.yesaladin.shop.writing.domain.model.Writing;
 import shop.yesaladin.shop.writing.service.inter.CommandWritingService;
 import shop.yesaladin.shop.writing.service.inter.QueryAuthorService;
+
+import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * 상품 생성을 위한 Service 구현체 입니다.
@@ -381,7 +378,8 @@ public class CommandProductServiceImpl implements CommandProductService {
 
         List<Product> productList = getAvailableProducts(quantities);
 
-        productList.forEach(product -> product.changeQuantity(quantities.get(product.getIsbn())));
+        productList.forEach(product -> product.changeQuantity(
+                product.getQuantity() - quantities.get(product.getIsbn())));
 
         return productList
                 .stream()
@@ -416,12 +414,5 @@ public class CommandProductServiceImpl implements CommandProductService {
                 );
             }
         });
-    }
-
-    private static List<String> getIsbnList(List<ProductOrderRequestDto> products) {
-        return products
-                .stream()
-                .map(ProductOrderRequestDto::getIsbn)
-                .collect(Collectors.toList());
     }
 }

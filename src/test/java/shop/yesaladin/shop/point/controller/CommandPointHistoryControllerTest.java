@@ -185,7 +185,6 @@ class CommandPointHistoryControllerTest {
 
     @WithMockUser(username = "user@1")
     @Test
-    @Disabled
     @DisplayName("포인트 사용 실패 - 존재하지 않는 회원 아이디인 경우")
     void createPointHistory_use_fail_NotFoundMember() throws Exception {
         //given
@@ -213,7 +212,7 @@ class CommandPointHistoryControllerTest {
                 .andExpect(jsonPath("$.data", equalTo(null)))
                 .andExpect(jsonPath(
                         "$.errorMessages[0]",
-                        equalTo(ErrorCode.NOT_FOUND.getDisplayName())
+                        equalTo(ErrorCode.MEMBER_NOT_FOUND.getDisplayName())
                 ));
 
         ArgumentCaptor<PointHistoryRequestDto> captor = ArgumentCaptor.forClass(
@@ -396,7 +395,7 @@ class CommandPointHistoryControllerTest {
                                 .description("포인트내역 등록 코드: 사용"),
                         fieldWithPath("data.pointReasonCode").type(JsonFieldType.STRING)
                                 .description("포인트 사유 코드"),
-                        fieldWithPath("errorMessages").type(JsonFieldType.STRING)
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
                                 .description("에러 메세지")
                                 .optional()
                 )
@@ -405,7 +404,6 @@ class CommandPointHistoryControllerTest {
 
     @WithMockUser(username = "user@1")
     @Test
-    @Disabled
     @DisplayName("포인트 적립 실패 - 존재하지 않는 회원 아이디인 경우")
     void createPointHistory_save_fail_MemberNotFound() throws Exception {
         //given
@@ -416,7 +414,7 @@ class CommandPointHistoryControllerTest {
         PointHistoryRequestDto request = getPointHistoryRequest(loginId, amount, pointReasonCode);
 
         Mockito.when(commandPointHistoryService.save(any())).thenThrow(
-                new MemberNotFoundException("Member Id: " + loginId));
+                new ClientException(ErrorCode.MEMBER_NOT_FOUND, ""));
 
         //when
         ResultActions result = mockMvc.perform(post("/v1/points")
@@ -549,7 +547,7 @@ class CommandPointHistoryControllerTest {
                                 .description("포인트내역 등록 코드: 적립"),
                         fieldWithPath("data.pointReasonCode").type(JsonFieldType.STRING)
                                 .description("포인트 사유 코드"),
-                        fieldWithPath("errorMessages").type(JsonFieldType.STRING)
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
                                 .description("에러 메세지")
                                 .optional()
                 )
@@ -558,7 +556,6 @@ class CommandPointHistoryControllerTest {
 
     @WithMockUser(username = "user@1")
     @Test
-    @Disabled
     @DisplayName("포인트 적립 실패 - 존재하지 않는 회원 아이디인 경우")
     void createPointHistory_sum_fail_MemberNotFound() throws Exception {
         //given
@@ -581,7 +578,13 @@ class CommandPointHistoryControllerTest {
         //then
         result.andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message", startsWith("Member not found")));
+                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.NOT_FOUND.value())))
+                .andExpect(jsonPath("$.data", equalTo(null)))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.MEMBER_NOT_FOUND.getDisplayName())
+                ));
 
         ArgumentCaptor<PointHistoryRequestDto> captor = ArgumentCaptor.forClass(
                 PointHistoryRequestDto.class);
@@ -607,7 +610,14 @@ class CommandPointHistoryControllerTest {
                                 .description("포인트 집계 사유")
                 ),
                 responseFields(
-                        fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("HTTP 상태 코드"),
+                        fieldWithPath("data").type(JsonFieldType.STRING)
+                                .description("null").optional(),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
                 )
 
         ));

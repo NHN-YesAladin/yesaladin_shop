@@ -33,6 +33,7 @@ import shop.yesaladin.shop.coupon.service.inter.QueryMemberCouponService;
  * 회원 쿠폰 조회와 관련한 서비스 구현체 입니다.
  *
  * @author 최예린
+ * @author 김홍대
  * @since 1.0
  */
 @Slf4j
@@ -44,6 +45,9 @@ public class QueryMemberCouponServiceImpl implements QueryMemberCouponService {
     private final GatewayProperties gatewayProperties;
     private final RestTemplate restTemplate;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PaginatedResponseDto<MemberCouponSummaryDto> getMemberCouponSummaryList(
             Pageable pageable, String memberId,
@@ -60,15 +64,10 @@ public class QueryMemberCouponServiceImpl implements QueryMemberCouponService {
                     .build();
         }
 
-        ResponseDto<List<MemberCouponSummaryDto>> response = tryGetCouponSummary(
+        ResponseDto<PaginatedResponseDto<MemberCouponSummaryDto>> response = tryGetCouponSummary(
                 memberCouponCodeList.getContent());
 
-        return PaginatedResponseDto.<MemberCouponSummaryDto>builder()
-                .currentPage(pageable.getPageNumber())
-                .totalPage(memberCouponCodeList.getTotalPages())
-                .totalDataCount(memberCouponCodeList.getTotalElements())
-                .dataList(response.getData())
-                .build();
+        return response.getData();
     }
 
     private Page<String> getMemberCouponCodeList(
@@ -87,19 +86,20 @@ public class QueryMemberCouponServiceImpl implements QueryMemberCouponService {
         return new PageImpl<>(couponCodes, pageable, memberCouponList.getTotalElements());
     }
 
-    private ResponseDto<List<MemberCouponSummaryDto>> tryGetCouponSummary(List<String> memberCouponCodeList) {
+    private static final ParameterizedTypeReference<ResponseDto<PaginatedResponseDto<MemberCouponSummaryDto>>> COUPON_SUMMARY = new ParameterizedTypeReference<>() {};
+
+    private ResponseDto<PaginatedResponseDto<MemberCouponSummaryDto>> tryGetCouponSummary(List<String> memberCouponCodeList) {
 
         try {
             String couponSummaryRequestUrl = UriComponentsBuilder.fromUriString(gatewayProperties.getCouponUrl())
                     .pathSegment("v1", "coupons")
                     .queryParam("couponCodes", memberCouponCodeList)
                     .toUriString();
-            ResponseDto<List<MemberCouponSummaryDto>> response = restTemplate.exchange(
+            ResponseDto<PaginatedResponseDto<MemberCouponSummaryDto>> response = restTemplate.exchange(
                     couponSummaryRequestUrl,
                     HttpMethod.GET,
                     null,
-                    new ParameterizedTypeReference<ResponseDto<List<MemberCouponSummaryDto>>>() {
-                    }
+                    COUPON_SUMMARY
             ).getBody();
             return Optional.ofNullable(response)
                     .orElseThrow(() -> new ServerException(

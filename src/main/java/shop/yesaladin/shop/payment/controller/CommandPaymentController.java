@@ -70,6 +70,7 @@ public class CommandPaymentController {
         }
 
     }
+
     private static ResponseDto<PaymentCompleteSimpleResponseDto> getTestDto() {
         PaymentCompleteSimpleResponseDto testDto = PaymentCompleteSimpleResponseDto.builder()
                 .paymentId("dummy paymentId")
@@ -90,7 +91,7 @@ public class CommandPaymentController {
                 .build();
         return ResponseDto.<PaymentCompleteSimpleResponseDto>builder()
                 .status(HttpStatus.OK)
-                .success(false)
+                .success(true)
                 .data(testDto)
                 .build();
     }

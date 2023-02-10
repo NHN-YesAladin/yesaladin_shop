@@ -27,7 +27,7 @@ class QueryProductTypeServiceImplTest {
         List<ProductTypeResponseDto> response = service.findAll();
 
         // then
-        assertThat(response.size()).isEqualTo(6);
+        assertThat(response).hasSize(6);
         assertThat(response.get(0).getType()).isEqualTo(ProductTypeCode.NONE.toString());
     }
 }

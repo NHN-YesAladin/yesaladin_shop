@@ -5,10 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.category.exception.CategoryNotFoundException;
@@ -144,6 +146,17 @@ public class ControllerAdvice {
                 .build();
 
         return ResponseEntity.status(e.getErrorCode().getResponseStatus()).body(response);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ResponseDto<Object>> handleAccessDeniedException(Exception e) {
+        ResponseDto<Object> response = ResponseDto.builder()
+                .success(false)
+                .status(HttpStatus.FORBIDDEN)
+                .errorMessages(
+                        List.of(ErrorCode.FORBIDDEN.getDisplayName()))
+                .build();
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
 
     @ExceptionHandler(ClientException.class)

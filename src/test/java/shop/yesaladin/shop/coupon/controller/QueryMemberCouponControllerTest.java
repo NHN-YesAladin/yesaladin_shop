@@ -28,6 +28,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.coupon.code.CouponBoundCode;
@@ -123,7 +124,7 @@ class QueryMemberCouponControllerTest {
                                 .description("쿠폰 유형 코드"),
                         fieldWithPath("dataList.[].expireDate").type(JsonFieldType.STRING)
                                 .description("쿠폰 만료일"),
-                        fieldWithPath("dataList.[].isUsed").type(JsonFieldType.BOOLEAN)
+                        fieldWithPath("dataList.[].used").type(JsonFieldType.BOOLEAN)
                                 .description("쿠폰 사용 여부"),
                         fieldWithPath("dataList.[].couponBound").type(JsonFieldType.STRING)
                                 .description("쿠폰 사용 가능 범위(카테고리 ID / ISBN / 빈값)"),

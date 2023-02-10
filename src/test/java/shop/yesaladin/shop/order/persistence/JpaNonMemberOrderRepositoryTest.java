@@ -36,6 +36,8 @@ class JpaNonMemberOrderRepositoryTest {
     private String address = "Gwang-ju";
     private String name = "yerin";
     private String phoneNumber = "01012341234";
+    private String recipientName = "김몽대";
+    private String recipientPhoneNumber = "01012341234";
 
     private NonMemberOrder nonMemberOrder = createNonMemberOrder();
 
@@ -68,11 +70,15 @@ class JpaNonMemberOrderRepositoryTest {
                 .shippingFee(shippingFee)
                 .wrappingFee(wrappingFee)
                 .totalAmount(totalAmount)
+                .recipientName(recipientName)
+                .recipientPhoneNumber(recipientPhoneNumber)
                 .orderCode(orderCode)
                 .address(address)
                 .name("비회원 주문")
                 .nonMemberName(name)
                 .phoneNumber(phoneNumber)
+                .recipientName("수령인 이름")
+                .recipientPhoneNumber("수령인 폰번호")
                 .build();
     }
 }
