@@ -9,6 +9,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 import shop.yesaladin.shop.order.domain.model.NonMemberOrder;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
@@ -21,18 +22,19 @@ import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
  * @since 1.0
  */
 @Getter
+@NoArgsConstructor
 public class OrderNonMemberCreateRequestDto extends OrderCreateRequestDto {
 
     @NotBlank
     @Length(min = 1, max = 20)
-    private final String ordererName;
+    private String ordererName;
     @NotNull
     @Pattern(regexp = "^01([0|1])([0-9]{8})$")
-    private final String ordererPhoneNumber;
+    private String ordererPhoneNumber;
 
     @NotBlank
     @Length(min = 2, max = 255)
-    private final String ordererAddress;
+    private String ordererAddress;
 
     public OrderNonMemberCreateRequestDto(
             LocalDate expectedShippingDate,
