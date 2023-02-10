@@ -1,5 +1,8 @@
 package shop.yesaladin.shop.order.service.inter;
 
+import java.time.LocalDateTime;
+import shop.yesaladin.shop.order.domain.model.Order;
+import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
 import shop.yesaladin.shop.order.dto.OrderCreateResponseDto;
 import shop.yesaladin.shop.order.dto.OrderMemberCreateRequestDto;
 import shop.yesaladin.shop.order.dto.OrderNonMemberCreateRequestDto;
@@ -63,4 +66,17 @@ public interface CommandOrderService {
      * @since 1.0
      */
     OrderUpdateResponseDto hideOnOrder(String loginId, Long orderId, boolean hide);
+
+    /**
+     * 주문 상태 변경 로그를 추가합니다.
+     *
+     * @param orderChangeDateTime 변경 이력 시간
+     * @param order 상태 변경을 할 주문
+     * @param code 주문 상태
+     */
+    void appendOrderStatusChangeLog(
+            LocalDateTime orderChangeDateTime,
+            Order order,
+            OrderStatusCode code
+    );
 }
