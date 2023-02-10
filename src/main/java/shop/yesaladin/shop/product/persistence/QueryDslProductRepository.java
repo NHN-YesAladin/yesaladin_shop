@@ -5,9 +5,6 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -23,6 +20,10 @@ import shop.yesaladin.shop.product.domain.model.querydsl.QRelation;
 import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
 import shop.yesaladin.shop.product.dto.ProductOnlyTitleDto;
 import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * 상품 조회를 위한 Repository QueryDsl 구현체 입니다.
@@ -50,6 +51,19 @@ public class QueryDslProductRepository implements QueryProductRepository {
                 ))
                 .from(product)
                 .where(product.isbn.eq(isbn))
+                .fetchFirst();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Long findQuantityById(Long id) {
+        QProduct product = QProduct.product;
+
+        return queryFactory.select(product.quantity)
+                .from(product)
+                .where(product.id.eq(id))
                 .fetchFirst();
     }
 
@@ -268,7 +282,7 @@ public class QueryDslProductRepository implements QueryProductRepository {
     public Page<Product> findProductRelationByTitle(Long id, String title, Pageable pageable) {
         QProduct product = QProduct.product;
         QRelation relation = QRelation.relation;
-        
+
         List<Product> reId = queryFactory.select(relation.productSub).from(relation).where(relation.productMain.id.eq(id)).fetch();
         List<Product> products = queryFactory.selectFrom(product)
                 .where(product.title.contains(title)

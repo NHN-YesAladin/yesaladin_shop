@@ -73,6 +73,8 @@ class JpaNonMemberOrderRepositoryTest {
                 .name("비회원 주문")
                 .nonMemberName(name)
                 .phoneNumber(phoneNumber)
+                .recipientName("수령인 이름")
+                .recipientPhoneNumber("수령인 폰번호")
                 .build();
     }
 }

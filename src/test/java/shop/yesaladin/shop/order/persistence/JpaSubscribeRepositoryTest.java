@@ -97,6 +97,8 @@ class JpaSubscribeRepositoryTest {
                 .intervalMonth(intervalMonth)
                 .nextRenewalDate(nextRenewalDate)
                 .subscribeProduct(subscribeProduct)
+                .recipientName("수령인 이름")
+                .recipientPhoneNumber("수령인 폰번호")
                 .build();
     }
 }

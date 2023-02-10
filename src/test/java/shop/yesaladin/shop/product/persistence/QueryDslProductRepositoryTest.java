@@ -1,15 +1,6 @@
 package shop.yesaladin.shop.product.persistence;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.ReflectionUtils;
@@ -30,6 +21,15 @@ import shop.yesaladin.shop.product.dummy.DummyFile;
 import shop.yesaladin.shop.product.dummy.DummyProduct;
 import shop.yesaladin.shop.product.dummy.DummySubscribeProduct;
 import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Transactional
 @SpringBootTest
@@ -103,6 +103,19 @@ class QueryDslProductRepositoryTest {
     }
 
     @Test
+    @DisplayName("상품 ID로 상품 수량 조회")
+    void findQuantityById() {
+        // given
+        entityManager.persist(product1);
+
+        // when
+        Long response = repository.findQuantityById(product1.getId());
+
+        // then
+        assertThat(response).isEqualTo(product1.getQuantity());
+    }
+
+    @Test
     @DisplayName("ID로 상품 조회")
     void findById() {
         // given
@@ -122,7 +135,6 @@ class QueryDslProductRepositoryTest {
     }
 
     @Test
-    @Disabled
     @DisplayName("ISBN으로 상품 조회")
     void findByIsbn() {
         // given
