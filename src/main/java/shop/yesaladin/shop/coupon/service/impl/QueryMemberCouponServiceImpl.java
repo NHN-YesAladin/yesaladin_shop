@@ -64,10 +64,15 @@ public class QueryMemberCouponServiceImpl implements QueryMemberCouponService {
                     .build();
         }
 
-        ResponseDto<PaginatedResponseDto<MemberCouponSummaryDto>> response = tryGetCouponSummary(
+        ResponseDto<List<MemberCouponSummaryDto>> response = tryGetCouponSummary(
                 memberCouponCodeList.getContent());
 
-        return response.getData();
+        return PaginatedResponseDto.<MemberCouponSummaryDto>builder()
+                .currentPage(pageable.getPageNumber())
+                .totalPage(memberCouponCodeList.getTotalPages())
+                .totalDataCount(memberCouponCodeList.getTotalElements())
+                .dataList(response.getData())
+                .build();
     }
 
     private Page<String> getMemberCouponCodeList(
@@ -86,16 +91,16 @@ public class QueryMemberCouponServiceImpl implements QueryMemberCouponService {
         return new PageImpl<>(couponCodes, pageable, memberCouponList.getTotalElements());
     }
 
-    private static final ParameterizedTypeReference<ResponseDto<PaginatedResponseDto<MemberCouponSummaryDto>>> COUPON_SUMMARY = new ParameterizedTypeReference<>() {};
+    private static final ParameterizedTypeReference<ResponseDto<List<MemberCouponSummaryDto>>> COUPON_SUMMARY = new ParameterizedTypeReference<>() {};
 
-    private ResponseDto<PaginatedResponseDto<MemberCouponSummaryDto>> tryGetCouponSummary(List<String> memberCouponCodeList) {
+    private ResponseDto<List<MemberCouponSummaryDto>> tryGetCouponSummary(List<String> memberCouponCodeList) {
 
         try {
             String couponSummaryRequestUrl = UriComponentsBuilder.fromUriString(gatewayProperties.getCouponUrl())
                     .pathSegment("v1", "coupons")
                     .queryParam("couponCodes", memberCouponCodeList)
                     .toUriString();
-            ResponseDto<PaginatedResponseDto<MemberCouponSummaryDto>> response = restTemplate.exchange(
+            ResponseDto<List<MemberCouponSummaryDto>> response = restTemplate.exchange(
                     couponSummaryRequestUrl,
                     HttpMethod.GET,
                     null,
