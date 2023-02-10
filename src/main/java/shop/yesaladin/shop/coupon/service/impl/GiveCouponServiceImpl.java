@@ -2,6 +2,7 @@ package shop.yesaladin.shop.coupon.service.impl;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -81,17 +82,24 @@ public class GiveCouponServiceImpl implements GiveCouponService {
 
         checkMemberAlreadyHasCoupon(memberId, triggerTypeCode, couponId, couponGroupCodeList);
 
-        couponGroupAndLimitList.forEach(couponGroupAndLimit -> {
-            String requestId = generateRequestId(memberId);
-
-            sendGiveRequestMessage(
+        if (Objects.isNull(couponId)) {
+            generateRequestIdAndSendMessage(
+                    memberId,
                     triggerTypeCode,
-                    couponId,
-                    couponGroupAndLimit.getIsLimited(),
-                    requestId
+                    null,
+                    couponGroupAndLimitList.get(0)
             );
-            log.info("==== [COUPON] give request message {}, {} ====", triggerTypeCode, couponId);
-        });
+            return;
+        }
+
+        couponGroupAndLimitList.forEach(couponGroupAndLimit ->
+                generateRequestIdAndSendMessage(
+                        memberId,
+                        triggerTypeCode,
+                        couponId,
+                        couponGroupAndLimit
+                )
+        );
 
     }
 
@@ -181,6 +189,21 @@ public class GiveCouponServiceImpl implements GiveCouponService {
         }
     }
 
+    private void generateRequestIdAndSendMessage(
+            String memberId,
+            TriggerTypeCode triggerTypeCode,
+            Long couponId,
+            CouponGroupAndLimitDto couponGroupAndLimit
+    ) {
+        String requestId = generateRequestId(memberId);
+        sendGiveRequestMessage(
+                triggerTypeCode,
+                couponId,
+                couponGroupAndLimit.getIsLimited(),
+                requestId
+        );
+    }
+
     private String generateRequestId(String memberId) {
         String requestId = UUID.randomUUID().toString();
         redisTemplate.opsForValue().set(requestId, memberId, Duration.ofMinutes(30));
@@ -221,8 +244,8 @@ public class GiveCouponServiceImpl implements GiveCouponService {
             CouponGiveRequestResponseMessage responseMessage, String memberId
     ) {
         Member member = queryMemberService.findMemberByLoginId(memberId).toEntity();
-        responseMessage.getCoupons().forEach(coupon ->
-                coupon.getCouponCodes()
+        responseMessage.getCoupons()
+                .forEach(coupon -> coupon.getCouponCodes()
                         .stream()
                         .map(code -> MemberCoupon.builder()
                                 .member(member)
@@ -232,6 +255,6 @@ public class GiveCouponServiceImpl implements GiveCouponService {
                                 .build())
                         .forEach(commandMemberCouponRepository::save)
 
-        );
+                );
     }
 }
