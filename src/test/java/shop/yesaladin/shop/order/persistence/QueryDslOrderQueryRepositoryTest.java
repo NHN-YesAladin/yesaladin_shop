@@ -58,7 +58,6 @@ class QueryDslOrderQueryRepositoryTest {
     private List<Subscribe> subscribeList;
     private List<Member> memberList;
     private List<MemberAddress> memberAddressList;
-
     private List<OrderStatusChangeLog> logList = new ArrayList<>();
 
 
@@ -123,7 +122,6 @@ class QueryDslOrderQueryRepositoryTest {
         for (int i = 0; i < 30; i++) {
             int index = i % 5;
             Member member = memberList.get(index);
-            System.out.println("member = " + member.getLoginId());
             MemberOrder memberOrder = MemberOrder.builder()
                     .orderNumber("Member-order-" + i)
                     .name("member-order" + i)
