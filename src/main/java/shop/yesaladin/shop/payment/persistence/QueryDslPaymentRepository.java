@@ -14,6 +14,7 @@ import shop.yesaladin.shop.payment.domain.model.Payment;
 import shop.yesaladin.shop.payment.domain.model.querydsl.QPayment;
 import shop.yesaladin.shop.payment.domain.model.querydsl.QPaymentCancel;
 import shop.yesaladin.shop.payment.domain.model.querydsl.QPaymentCard;
+import shop.yesaladin.shop.payment.domain.model.querydsl.QPaymentEasyPay;
 import shop.yesaladin.shop.payment.domain.repository.QueryPaymentRepository;
 import shop.yesaladin.shop.payment.dto.PaymentCompleteSimpleResponseDto;
 
@@ -43,14 +44,16 @@ public class QueryDslPaymentRepository implements QueryPaymentRepository {
         QPayment payment = QPayment.payment;
         QPaymentCard paymentCard = QPaymentCard.paymentCard;
         QPaymentCancel paymentCancel = QPaymentCancel.paymentCancel;
+        QPaymentEasyPay paymentEasyPay = QPaymentEasyPay.paymentEasyPay;
         QOrder order = QOrder.order;
-
         return Optional.ofNullable(queryFactory.selectFrom(payment)
-                .innerJoin(payment.order, order)
-                .fetchJoin()
-                .innerJoin(payment.paymentCard, paymentCard)
+//                .innerJoin(payment.order, order)
+//                .fetchJoin()
+                .leftJoin(payment.paymentCard, paymentCard)
                 .fetchJoin()
                 .leftJoin(payment.paymentCancel, paymentCancel)
+                .fetchJoin()
+                .leftJoin(payment.paymentEasyPay, paymentEasyPay)
                 .fetchJoin()
                 .where(paymentIdEq(payment, id), orderIdEq(payment, orderId))
                 .fetchFirst());

@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
+import shop.yesaladin.shop.order.dto.OrderDetailsResponseDto;
 import shop.yesaladin.shop.order.dto.OrderPaymentResponseDto;
 import shop.yesaladin.shop.order.dto.OrderStatusResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
@@ -150,4 +151,5 @@ public interface QueryOrderRepository {
      * @since 1.0
      */
     long getOrderCountByStatusCode(String loginId, OrderStatusCode code);
+
 }

@@ -47,6 +47,7 @@ import shop.yesaladin.shop.order.domain.model.MemberOrder;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
 import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
+import shop.yesaladin.shop.order.domain.repository.QueryOrderProductRepository;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
 import shop.yesaladin.shop.order.dto.OrderSheetRequestDto;
 import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
@@ -57,6 +58,7 @@ import shop.yesaladin.shop.order.exception.OrderNotFoundException;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMemberAddress;
 import shop.yesaladin.shop.order.persistence.dummy.DummyOrder;
+import shop.yesaladin.shop.payment.service.inter.QueryPaymentService;
 import shop.yesaladin.shop.point.service.inter.QueryPointHistoryService;
 import shop.yesaladin.shop.product.service.inter.QueryProductService;
 
@@ -69,28 +71,34 @@ class QueryOrderServiceImplTest {
     long expectedMemberId = 1L;
     private QueryOrderServiceImpl service;
     private QueryOrderRepository repository;
+    private QueryOrderProductRepository queryOrderProductRepository;
     private QueryMemberService queryMemberService;
     private QueryMemberAddressService queryMemberAddressService;
     private QueryPointHistoryService queryPointHistoryService;
     private QueryProductService queryProductService;
     private QueryMemberCouponService queryMemberCouponService;
+    private QueryPaymentService queryPaymentService;
 
     @BeforeEach
     void setUp() {
         queryPointHistoryService = Mockito.mock(QueryPointHistoryService.class);
         queryProductService = Mockito.mock(QueryProductService.class);
         repository = Mockito.mock(QueryOrderRepository.class);
+        queryOrderProductRepository = Mockito.mock(QueryOrderProductRepository.class);
         queryMemberAddressService = Mockito.mock(QueryMemberAddressService.class);
         queryMemberService = Mockito.mock(QueryMemberService.class);
         queryMemberCouponService = Mockito.mock(QueryMemberCouponService.class);
+        queryPaymentService = Mockito.mock(QueryPaymentService.class);
 
         service = new QueryOrderServiceImpl(
                 repository,
+                queryOrderProductRepository,
                 queryMemberService,
                 queryMemberAddressService,
                 queryPointHistoryService,
                 queryProductService,
                 queryMemberCouponService,
+                queryPaymentService,
                 clock
         );
     }

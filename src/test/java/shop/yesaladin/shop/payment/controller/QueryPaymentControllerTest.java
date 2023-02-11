@@ -96,7 +96,7 @@ class QueryPaymentControllerTest {
 
         PaymentCompleteSimpleResponseDto responseDto = PaymentCompleteSimpleResponseDto.fromEntityByCard(
                 payment);
-        when(queryPaymentService.findByOrderId(any())).thenReturn(responseDto);
+        when(queryPaymentService.findSimpleDtoByOrderId(any())).thenReturn(responseDto);
 
         // when
         ResultActions perform = mockMvc.perform(get(
@@ -113,7 +113,7 @@ class QueryPaymentControllerTest {
                 .andExpect(jsonPath("$.data.orderNumber", equalTo(responseDto.getOrderNumber())))
                 .andExpect(jsonPath("$.data.paymentId", equalTo(responseDto.getPaymentId())));
 
-        verify(queryPaymentService, times(1)).findByOrderId(longArgumentCaptor.capture());
+        verify(queryPaymentService, times(1)).findSimpleDtoByOrderId(longArgumentCaptor.capture());
         assertThat(longArgumentCaptor.getValue()).isEqualTo(orderId);
 
         perform.andDo(document(

@@ -1,10 +1,7 @@
 package shop.yesaladin.shop.order.domain.repository;
 
 import java.util.List;
-import java.util.Optional;
-import shop.yesaladin.shop.order.domain.model.OrderProduct;
 import shop.yesaladin.shop.order.dto.OrderProductResponseDto;
-import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
 
 /**
  * 주문 상품의 조회 관련 repository interface 입니다.
