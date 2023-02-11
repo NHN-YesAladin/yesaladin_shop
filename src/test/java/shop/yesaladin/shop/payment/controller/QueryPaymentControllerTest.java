@@ -94,7 +94,7 @@ class QueryPaymentControllerTest {
         // given
         ArgumentCaptor<Long> longArgumentCaptor = ArgumentCaptor.forClass(Long.class);
 
-        PaymentCompleteSimpleResponseDto responseDto = PaymentCompleteSimpleResponseDto.fromEntity(
+        PaymentCompleteSimpleResponseDto responseDto = PaymentCompleteSimpleResponseDto.fromEntityByCard(
                 payment);
         when(queryPaymentService.findByOrderId(any())).thenReturn(responseDto);
 
@@ -129,11 +129,11 @@ class QueryPaymentControllerTest {
                         fieldWithPath("status").type(JsonFieldType.NUMBER)
                                 .description("HTTP 상태 코드"),
                         fieldWithPath("data.paymentId").type(JsonFieldType.STRING)
-                                .description("결제정보 아이디"),
+                                .description("결제정보 아이디").optional(),
                         fieldWithPath("data.totalAmount").type(JsonFieldType.NUMBER)
-                                .description("결제 총 금액"),
+                                .description("결제 총 금액").optional(),
                         fieldWithPath("data.orderNumber").type(JsonFieldType.STRING)
-                                .description("주문 번호"),
+                                .description("주문 번호").optional(),
                         fieldWithPath("data.method").type(JsonFieldType.STRING)
                                 .description("결제 방법").optional(),
                         fieldWithPath("data.currency").type(JsonFieldType.STRING)
@@ -158,6 +158,12 @@ class QueryPaymentControllerTest {
                                 .description("카드 결제 승인 번호").optional(),
                         fieldWithPath("data.cardAcquirerCode").type(JsonFieldType.STRING)
                                 .description("카드 매입사").optional(),
+                        fieldWithPath("data.easyPayProvider").type(JsonFieldType.STRING)
+                                .description("간편결제 제공").optional(),
+                        fieldWithPath("data.easyPayAmount").type(JsonFieldType.NUMBER)
+                                .description("간편결제 결제금액").optional(),
+                        fieldWithPath("data.easyPayDiscountAmount").type(JsonFieldType.NUMBER)
+                                .description("간편결제 즉시 할인 금액").optional(),
                         fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
                                 .description("에러 메세지").optional()
                 )

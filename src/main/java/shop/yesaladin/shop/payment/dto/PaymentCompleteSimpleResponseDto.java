@@ -37,12 +37,17 @@ public class PaymentCompleteSimpleResponseDto {
 
     private PaymentCode cardCode;
     private PaymentCode cardOwnerCode;
+
     private String cardNumber;
     private int cardInstallmentPlanMonths;
     private String cardApproveNumber;
     private PaymentCardAcquirerCode cardAcquirerCode;
 
-    public static PaymentCompleteSimpleResponseDto fromEntity(Payment payment) {
+    private String easyPayProvider;
+    private long easyPayAmount;
+    private long easyPayDiscountAmount;
+
+    public static PaymentCompleteSimpleResponseDto fromEntityByCard(Payment payment) {
         return PaymentCompleteSimpleResponseDto.builder()
                 .paymentId(payment.getId())
                 .method(payment.getMethod())
@@ -57,6 +62,21 @@ public class PaymentCompleteSimpleResponseDto {
                 .cardInstallmentPlanMonths(payment.getPaymentCard().getInstallmentPlanMonths())
                 .cardApproveNumber(payment.getPaymentCard().getApproveNo())
                 .cardAcquirerCode(payment.getPaymentCard().getAcquirerCode())
+                .build();
+    }
+
+    public static PaymentCompleteSimpleResponseDto fromEntityByEasyPay(Payment payment) {
+        return PaymentCompleteSimpleResponseDto.builder()
+                .paymentId(payment.getId())
+                .method(payment.getMethod())
+                .currency(payment.getCurrency())
+                .totalAmount(payment.getTotalAmount())
+                .approvedDateTime(payment.getApprovedDatetime())
+                .orderNumber(payment.getOrder().getOrderNumber())
+                .orderName(payment.getOrder().getName())
+                .easyPayProvider(payment.getPaymentEasyPay().getProvider())
+                .easyPayAmount(payment.getPaymentEasyPay().getAmount())
+                .easyPayDiscountAmount(payment.getPaymentEasyPay().getDiscountAmount())
                 .build();
     }
 

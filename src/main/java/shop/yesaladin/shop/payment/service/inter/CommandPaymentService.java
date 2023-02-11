@@ -19,4 +19,11 @@ public interface CommandPaymentService {
      */
     PaymentCompleteSimpleResponseDto confirmTossRequest(PaymentRequestDto requestDto);
 
+    /**
+     * 결제 취소 메서드
+     *
+     * @param paymentKey 결제 취소를 위한 key 값
+     */
+    void cancelPayment(String paymentKey, String cancelReason);
+
 }

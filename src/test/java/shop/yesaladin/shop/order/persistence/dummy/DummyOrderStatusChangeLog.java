@@ -11,4 +11,9 @@ public class DummyOrderStatusChangeLog {
         return OrderStatusChangeLog.create(order, LocalDateTime.now(), OrderStatusCode.ORDER);
     }
 
+    public static OrderStatusChangeLog orderStatusChangeLog(Order order, OrderStatusCode code) {
+        return OrderStatusChangeLog.create(order, LocalDateTime.now(), code);
+    }
+
+
 }
