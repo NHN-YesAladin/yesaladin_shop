@@ -22,6 +22,7 @@ import shop.yesaladin.shop.order.service.inter.CommandOrderStatusChangeLogServic
  * 주문 상태 변경 내역 생성과 관련한 service 구현체 입니다.
  *
  * @author 최예린
+ * @author 배수한
  * @since 1.0
  */
 @RequiredArgsConstructor
