@@ -6,8 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.exception.ClientException;
-import shop.yesaladin.shop.order.dto.OrderPaymentResponseDto;
-import shop.yesaladin.shop.order.service.inter.QueryOrderService;
 import shop.yesaladin.shop.payment.domain.model.Payment;
 import shop.yesaladin.shop.payment.domain.repository.QueryPaymentRepository;
 import shop.yesaladin.shop.payment.dto.PaymentCompleteSimpleResponseDto;

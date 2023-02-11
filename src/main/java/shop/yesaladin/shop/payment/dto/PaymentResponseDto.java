@@ -4,10 +4,8 @@ import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.yesaladin.shop.payment.domain.model.Payment;
-import shop.yesaladin.shop.payment.domain.model.PaymentCard;
 import shop.yesaladin.shop.payment.domain.model.PaymentCardAcquirerCode;
 import shop.yesaladin.shop.payment.domain.model.PaymentCode;
-import shop.yesaladin.shop.payment.domain.model.PaymentEasyPay;
 
 /**
  * 결제정보의 대부분을 지니고있는 dto
