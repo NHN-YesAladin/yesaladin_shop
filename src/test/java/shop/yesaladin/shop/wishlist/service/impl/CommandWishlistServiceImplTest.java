@@ -136,5 +136,24 @@ class CommandWishlistServiceImplTest {
         verify(commandWishlistRepository, atLeastOnce()).deleteByMemberIdAndProductId(1L, 1L);
     }
 
+    @Test
+    @DisplayName("isExists 에서 MemberNotFound 발생")
+    void isExists_MemberNotFound() {
+        Mockito.when(queryMemberService.findByLoginId("loginId"))
+                .thenThrow(new MemberNotFoundException("loginId"));
+        assertThatThrownBy(() -> commandWishlistService.isExists("loginId", 1L)).isInstanceOf(
+                MemberNotFoundException.class);
+    }
 
+    @Test
+    @DisplayName("isExists 성공")
+    void isExists_success() {
+        Mockito.when(queryMemberService.findByLoginId("loginId"))
+                .thenReturn(Member.builder().id(1L).build());
+        Mockito.when(commandWishlistRepository.existsByMemberIdAndProductId(1L, 1L))
+                .thenReturn(true);
+
+        Boolean exists = commandWishlistService.isExists("loginId", 1L);
+        assertThat(exists).isTrue();
+    }
 }

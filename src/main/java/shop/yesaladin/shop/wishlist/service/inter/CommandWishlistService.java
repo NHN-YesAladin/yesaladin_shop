@@ -25,4 +25,13 @@ public interface CommandWishlistService {
      * @param productId 위시리스트에 삭제할 상품의 id
      */
     void delete(String loginId, Long productId);
+
+    /**
+     * 위시리스트 등록 유무 확인 등록 되어 있다면 true or false
+     *
+     * @param loginId 확인할 유저의 loginId
+     * @param productId 상품 Id
+     * @return 등록되어 있다면 true or false
+     */
+    Boolean isExists(String loginId, Long productId);
 }

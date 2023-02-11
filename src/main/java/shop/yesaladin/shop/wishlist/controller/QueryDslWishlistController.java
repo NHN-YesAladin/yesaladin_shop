@@ -34,7 +34,7 @@ public class QueryDslWishlistController {
      * @return 조회된 위시리스트와 상태 및 페이지 정보
      */
     @PostMapping
-    ResponseDto<PaginatedResponseDto<WishlistResponseDto>> findWishlistByMemberId(
+    public ResponseDto<PaginatedResponseDto<WishlistResponseDto>> findWishlistByMemberId(
             @LoginId(required = true) String loginId,
             @PageableDefault Pageable pageable
     ) {

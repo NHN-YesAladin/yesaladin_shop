@@ -32,7 +32,7 @@ public class QueryDslWishlistRepository implements QueryWishlistRepository {
 
         List<Wishlist> wishlists = queryFactory.select(wishlist)
                 .from(wishlist)
-                .where(wishlist.pk.memberId.eq(memberId))
+                .where(wishlist.pk.memberId.eq(memberId).and(wishlist.product.isDeleted.isFalse()))
                 .offset((long) pageable.getPageSize() * pageable.getPageNumber())
                 .limit(pageable.getPageSize())
                 .fetch();

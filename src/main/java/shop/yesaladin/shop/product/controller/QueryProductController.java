@@ -189,7 +189,7 @@ public class QueryProductController {
      * @author 김선홍
      * @since 1, 0
      */
-    @GetMapping("recent")
+    @GetMapping("/recent")
     public ResponseDto<PaginatedResponseDto<ProductRecentResponseDto>> findRecentProductByPublishedDate(
             @PageableDefault Pageable pageable
     ) {

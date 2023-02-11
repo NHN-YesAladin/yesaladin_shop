@@ -2,6 +2,7 @@ package shop.yesaladin.shop.wishlist.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.product.domain.model.Product;
@@ -32,12 +33,16 @@ public class CommandWishlistServiceImpl implements CommandWishlistService {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     public WishlistSaveResponseDto save(String loginId, Long productId) {
         Product product = queryProductRepository.findProductById(productId).orElseThrow(() -> {
             throw new ProductNotFoundException(productId);
         });
         Member member = queryMemberService.findByLoginId(loginId);
-        if(commandWishlistRepository.existsByMemberIdAndProductId(member.getId(), productId)) {
+        if (Boolean.TRUE.equals(commandWishlistRepository.existsByMemberIdAndProductId(
+                member.getId(),
+                productId
+        ))) {
             throw new WishlistAlreadyExistsException(loginId, productId);
         }
         Wishlist wishlist = commandWishlistRepository.save(Wishlist.create(
@@ -51,11 +56,24 @@ public class CommandWishlistServiceImpl implements CommandWishlistService {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     public void delete(String loginId, Long productId) {
         Member member = queryMemberService.findByLoginId(loginId);
-        if(!commandWishlistRepository.existsByMemberIdAndProductId(member.getId(), productId)) {
+        if (Boolean.FALSE.equals(commandWishlistRepository.existsByMemberIdAndProductId(
+                member.getId(),
+                productId
+        ))) {
             throw new WishlistNotFoundException(loginId, productId);
         }
         commandWishlistRepository.deleteByMemberIdAndProductId(member.getId(), productId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Boolean isExists(String loginId, Long productId) {
+        Member member = queryMemberService.findByLoginId(loginId);
+        return commandWishlistRepository.existsByMemberIdAndProductId(member.getId(), productId);
     }
 }

@@ -21,6 +21,7 @@ import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
 import shop.yesaladin.shop.publish.domain.model.Publish.Pk;
 import shop.yesaladin.shop.publish.domain.model.Publisher;
 import shop.yesaladin.shop.publish.dto.PublishResponseDto;
+import shop.yesaladin.shop.publish.exception.PublisherNotFoundException;
 import shop.yesaladin.shop.publish.service.inter.QueryPublishService;
 import shop.yesaladin.shop.wishlist.domain.model.Wishlist;
 import shop.yesaladin.shop.wishlist.domain.repository.QueryWishlistRepository;
@@ -36,6 +37,8 @@ class QueryDslWishlistServiceImplTest {
     private QueryMemberService queryMemberService;
     private QueryPublishService queryPublishService;
     private QueryWritingService queryWritingService;
+    private Product product;
+    private Member member;
 
     @BeforeEach
     void setUp() {
@@ -49,6 +52,16 @@ class QueryDslWishlistServiceImplTest {
                 queryPublishService,
                 queryWritingService
         );
+
+        product = Product.builder()
+                .id(1L)
+                .isSeparatelyDiscount(true)
+                .discountRate(10)
+                .thumbnailFile(File.builder().url("url").build())
+                .totalDiscountRate(TotalDiscountRate.builder().discountRate(10).build())
+                .build();
+
+        member = Member.builder().id(1L).build();
     }
 
     @Test
@@ -66,17 +79,27 @@ class QueryDslWishlistServiceImplTest {
     }
 
     @Test
+    @DisplayName("findWishlistByMemberId에서 PublisherNotFound 발생")
+    void findWishlistByMemberId_PublisherNotFound() {
+        //given
+        Mockito.when(queryMemberService.findByLoginId("loginId")).thenReturn(member);
+        Mockito.when(queryPublishService.findByProduct(product))
+                .thenThrow(new PublisherNotFoundException(product.getId()));
+        Mockito.when(queryWishlistRepository.findWishlistByMemberId(1L, PageRequest.of(0, 10)))
+                .thenReturn(new PageImpl<>(List.of(Wishlist.create(member, product)), PageRequest.of(0, 10), 1L));
+
+        //when then
+        assertThatThrownBy(() -> queryDslWishlistService.findWishlistByMemberId(
+                "loginId",
+                PageRequest.of(0, 10)
+        )).isInstanceOf(PublisherNotFoundException.class);
+    }
+
+    @Test
     @DisplayName("findWishlistByMemberId 성공")
     void findWishlistByMemberId_save() {
         //given
         Member member = Member.builder().id(1L).build();
-        Product product = Product.builder()
-                .id(1L)
-                .isSeparatelyDiscount(true)
-                .discountRate(10)
-                .thumbnailFile(File.builder().url("url").build())
-                .totalDiscountRate(TotalDiscountRate.builder().discountRate(10).build())
-                .build();
         Author author = Author.builder().id(1L).name("author").build();
 
         Publisher publisher = Publisher.builder().id(1L).name("publisher").build();
@@ -98,7 +121,10 @@ class QueryDslWishlistServiceImplTest {
                         .publisherId(1L)
                         .build(), publishedDate, product, publisher));
         //when
-        Page<WishlistResponseDto> dtoPage = queryDslWishlistService.findWishlistByMemberId("loginId", PageRequest.of(0, 10));
+        Page<WishlistResponseDto> dtoPage = queryDslWishlistService.findWishlistByMemberId(
+                "loginId",
+                PageRequest.of(0, 10)
+        );
         //then
         assertThat(dtoPage.getTotalElements()).isEqualTo(1L);
         assertThat(dtoPage.getContent().get(0).getId()).isEqualTo(1L);
@@ -107,15 +133,6 @@ class QueryDslWishlistServiceImplTest {
     @Test
     @DisplayName("findWishlistByMemberId 성공")
     void findWishlistByMemberId_save_rate_less_than_0() {
-        //given
-        Member member = Member.builder().id(1L).build();
-        Product product = Product.builder()
-                .id(1L)
-                .isSeparatelyDiscount(true)
-                .discountRate(0)
-                .thumbnailFile(File.builder().url("url").build())
-                .totalDiscountRate(TotalDiscountRate.builder().discountRate(10).build())
-                .build();
         Author author = Author.builder().id(1L).name("author").build();
 
         Publisher publisher = Publisher.builder().id(1L).name("publisher").build();
@@ -137,7 +154,10 @@ class QueryDslWishlistServiceImplTest {
                         .publisherId(1L)
                         .build(), publishedDate, product, publisher));
         //when
-        Page<WishlistResponseDto> dtoPage = queryDslWishlistService.findWishlistByMemberId("loginId", PageRequest.of(0, 10));
+        Page<WishlistResponseDto> dtoPage = queryDslWishlistService.findWishlistByMemberId(
+                "loginId",
+                PageRequest.of(0, 10)
+        );
         //then
         assertThat(dtoPage.getTotalElements()).isEqualTo(1L);
         assertThat(dtoPage.getContent().get(0).getId()).isEqualTo(1L);

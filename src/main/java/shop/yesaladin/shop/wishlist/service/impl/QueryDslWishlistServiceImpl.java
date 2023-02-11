@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.product.domain.model.Product;
@@ -40,6 +41,7 @@ public class QueryDslWishlistServiceImpl implements QueryDslWishlistService {
      *{@inheritDoc}
      */
     @Override
+    @Transactional(readOnly = true)
     public Page<WishlistResponseDto> findWishlistByMemberId(String loginId, Pageable pageable) {
         Member member = queryMemberService.findByLoginId(loginId);
 
