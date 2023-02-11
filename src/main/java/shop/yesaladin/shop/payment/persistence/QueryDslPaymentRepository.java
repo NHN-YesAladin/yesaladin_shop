@@ -81,6 +81,8 @@ public class QueryDslPaymentRepository implements QueryPaymentRepository {
                                 Expressions.asString("ordererName"),
                                 payment.order.orderNumber,
                                 payment.order.name,
+                                payment.order.recipientName,
+                                payment.order.recipientPhoneNumber,
                                 Expressions.asString("orderAddress"),
                                 payment.paymentCard.cardCode,
                                 payment.paymentCard.ownerCode,

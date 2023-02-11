@@ -38,10 +38,13 @@ public class QueryPaymentServiceImpl implements QueryPaymentService {
         ).orElseThrow(() -> new PaymentNotFoundException(orderId));
         OrderPaymentResponseDto nameAndAddress = queryOrderService.getPaymentDtoByMemberOrderId(
                 orderId);
-        responseDto.setOrdererNameAndAddress(
+        responseDto.setUserInfo(
                 nameAndAddress.getOrdererName(),
-                nameAndAddress.getAddress()
+                nameAndAddress.getAddress(),
+                null,
+                null
         );
+
         return responseDto;
     }
 }

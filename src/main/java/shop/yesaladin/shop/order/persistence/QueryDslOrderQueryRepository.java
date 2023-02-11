@@ -257,7 +257,6 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
                 .from(memberOrder)
                 .where(memberOrder.id.eq(orderId))
                 .fetchFirst());
-
     }
 
 
@@ -281,7 +280,7 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
                         memberOrder.name,
                         memberOrder.totalAmount,
                         memberOrder.member.loginId,
-                        memberOrder.member.name, //TODO order 엔티티 수정 후, recipientName으로 변경할 예정
+                        memberOrder.recipientName,
                         memberOrder.orderCode
                 ))
                 .from(memberOrder)
@@ -309,6 +308,9 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
         //TODO Total count 를 계산하기 위해서는 list의 사이즈가 필요해서 PageImpl 사용
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public long getOrderCountByStatusCode(String loginId, OrderStatusCode code) {
         QMemberOrder memberOrder = QMemberOrder.memberOrder;
@@ -324,7 +326,6 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
                         .eq((long) code.getStatusCode()))
                 .fetch()
                 .size();
-
     }
 
 }

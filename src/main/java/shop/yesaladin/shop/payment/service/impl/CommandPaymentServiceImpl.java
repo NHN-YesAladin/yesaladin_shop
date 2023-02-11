@@ -168,17 +168,21 @@ public class CommandPaymentServiceImpl implements CommandPaymentService {
     ) {
         if (order.getOrderCode().equals(OrderCode.NON_MEMBER_ORDER)) {
             NonMemberOrder nonMemberOrder = (NonMemberOrder) order;
-            responseDto.setOrdererNameAndAddress(
+            responseDto.setUserInfo(
                     nonMemberOrder.getNonMemberName(),
-                    nonMemberOrder.getAddress()
+                    nonMemberOrder.getAddress(),
+                    nonMemberOrder.getRecipientName(),
+                    nonMemberOrder.getRecipientPhoneNumber()
             );
             return responseDto;
         }
         OrderPaymentResponseDto nameAndAddress = queryOrderService.getPaymentDtoByMemberOrderId(
                 order.getId());
-        responseDto.setOrdererNameAndAddress(
+        responseDto.setUserInfo(
                 nameAndAddress.getOrdererName(),
-                nameAndAddress.getAddress()
+                nameAndAddress.getAddress(),
+                order.getRecipientName(),
+                order.getRecipientPhoneNumber()
         );
         return responseDto;
     }

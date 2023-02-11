@@ -142,6 +142,10 @@ class QueryPaymentControllerTest {
                                 .description("결제 승인 일시").optional(),
                         fieldWithPath("data.ordererName").type(JsonFieldType.STRING)
                                 .description("주문자 이름").optional(),
+                        fieldWithPath("data.recipientName").type(JsonFieldType.STRING)
+                                .description("수령인 이름").optional(),
+                        fieldWithPath("data.recipientPhoneNumber").type(JsonFieldType.STRING)
+                                .description("수령인 전화번호").optional(),
                         fieldWithPath("data.orderAddress").type(JsonFieldType.STRING)
                                 .description("주문 배송지").optional(),
                         fieldWithPath("data.orderName").type(JsonFieldType.STRING)
