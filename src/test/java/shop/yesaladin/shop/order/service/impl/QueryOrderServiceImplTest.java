@@ -140,13 +140,13 @@ class QueryOrderServiceImplTest {
         nonMemberOrder = DummyOrder.nonMemberOrderWithId();
         memberOrder = DummyOrder.memberOrderWithId(member, memberAddress);
         subscribe = DummyOrder.subscribeWithId(member, memberAddress, subscribeProduct);
+
         String isbn = "000000000000";
         String url = "https://api-storage.cloud.toast.com/v1/AUTH/container/domain/type";
 
         File thumbnailFile = DummyFile.dummy(url + "/image.png");
         File ebookFile = DummyFile.dummy(url + "/ebook.pdf");
         TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
-
 
         products = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
@@ -1167,7 +1167,6 @@ class QueryOrderServiceImplTest {
         );
 
         Payment payment = DummyPayment.payment("paymentId", nonMemberOrder, PaymentCode.EASY_PAY);
-
 
         PaymentEasyPay paymentEasyPay = DummyPaymentEasyPay.paymentEasyPay(payment);
         payment.setPaymentEasyPay(paymentEasyPay);

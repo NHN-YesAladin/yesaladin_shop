@@ -95,7 +95,6 @@ public class QueryOrderController {
      */
     @GetMapping("/v1/orders/{orderNumber}")
     public ResponseDto<OrderDetailsResponseDto> getOrderDetails(@PathVariable String orderNumber) {
-        //TODO 컨트롤러 테스트
         OrderDetailsResponseDto response = queryOrderService.getDetailsDtoByOrderNumber(
                 orderNumber);
 
