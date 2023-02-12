@@ -9,6 +9,7 @@ import shop.yesaladin.shop.order.domain.model.MemberOrder;
 import shop.yesaladin.shop.order.domain.model.NonMemberOrder;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
+import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
 import shop.yesaladin.shop.order.domain.model.Subscribe;
 
 /**
@@ -37,6 +38,9 @@ public class OrderResponseDto {
     private int shippingFee;
     private int wrappingFee;
     private long totalAmount;
+
+    //주문 상태
+    private OrderStatusCode orderStatusCode;
 
     //구독 정보
     private int expectedDay;
@@ -77,5 +81,9 @@ public class OrderResponseDto {
         this.orderDateTime = order.getOrderDateTime();
         this.expectedTransportDate = order.getExpectedTransportDate();
         this.isHidden = order.isHidden();
+    }
+
+    public void setOrderStatusCode(OrderStatusCode orderStatusCode) {
+        this.orderStatusCode = orderStatusCode;
     }
 }

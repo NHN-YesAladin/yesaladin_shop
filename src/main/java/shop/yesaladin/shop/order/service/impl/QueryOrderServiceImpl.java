@@ -31,10 +31,12 @@ import shop.yesaladin.shop.order.domain.model.MemberOrder;
 import shop.yesaladin.shop.order.domain.model.NonMemberOrder;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
+import shop.yesaladin.shop.order.domain.model.OrderStatusChangeLog;
 import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
 import shop.yesaladin.shop.order.domain.model.Subscribe;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderProductRepository;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
+import shop.yesaladin.shop.order.domain.repository.QueryOrderStatusChangeLogRepository;
 import shop.yesaladin.shop.order.dto.OrderDetailsResponseDto;
 import shop.yesaladin.shop.order.dto.OrderPaymentResponseDto;
 import shop.yesaladin.shop.order.dto.OrderResponseDto;
@@ -72,6 +74,7 @@ public class QueryOrderServiceImpl implements QueryOrderService {
     private final QueryProductService queryProductService;
     private final QueryMemberCouponService queryMemberCouponService;
     private final QueryPaymentService queryPaymentService;
+    private final QueryOrderStatusChangeLogRepository queryOrderStatusChangeLogRepository;
 
     private final Clock clock;
 
@@ -339,6 +342,9 @@ public class QueryOrderServiceImpl implements QueryOrderService {
             Subscribe subscribe = (Subscribe) order;
             orderResponseDto.setOrderInfoFromSubscribe(subscribe);
         }
+        OrderStatusChangeLog latestChangeLog = queryOrderStatusChangeLogRepository.findAllByOrder_IdOrderByOrderStatusCodeDesc(
+                order.getId()).get(0);
+        orderResponseDto.setOrderStatusCode(latestChangeLog.getOrderStatusCode());
         responseDto.setOrder(orderResponseDto);
     }
 

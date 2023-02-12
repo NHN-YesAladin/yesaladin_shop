@@ -49,6 +49,7 @@ import shop.yesaladin.shop.order.domain.model.OrderCode;
 import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderProductRepository;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
+import shop.yesaladin.shop.order.domain.repository.QueryOrderStatusChangeLogRepository;
 import shop.yesaladin.shop.order.dto.OrderSheetRequestDto;
 import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
 import shop.yesaladin.shop.order.dto.OrderStatusResponseDto;
@@ -78,6 +79,7 @@ class QueryOrderServiceImplTest {
     private QueryProductService queryProductService;
     private QueryMemberCouponService queryMemberCouponService;
     private QueryPaymentService queryPaymentService;
+    private QueryOrderStatusChangeLogRepository queryOrderStatusChangeLogRepository;
 
     @BeforeEach
     void setUp() {
@@ -89,6 +91,7 @@ class QueryOrderServiceImplTest {
         queryMemberService = Mockito.mock(QueryMemberService.class);
         queryMemberCouponService = Mockito.mock(QueryMemberCouponService.class);
         queryPaymentService = Mockito.mock(QueryPaymentService.class);
+        queryOrderStatusChangeLogRepository = Mockito.mock(QueryOrderStatusChangeLogRepository.class);
 
         service = new QueryOrderServiceImpl(
                 repository,
@@ -99,6 +102,7 @@ class QueryOrderServiceImplTest {
                 queryProductService,
                 queryMemberCouponService,
                 queryPaymentService,
+                queryOrderStatusChangeLogRepository,
                 clock
         );
     }
