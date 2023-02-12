@@ -1,11 +1,13 @@
 package shop.yesaladin.shop.payment.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -25,11 +27,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import shop.yesaladin.common.code.ErrorCode;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.order.domain.model.MemberOrder;
 import shop.yesaladin.shop.order.domain.model.NonMemberOrder;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
+import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
 import shop.yesaladin.shop.order.dto.OrderPaymentResponseDto;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMemberAddress;
@@ -74,8 +79,7 @@ class CommandPaymentServiceImplTest {
         queryPaymentRepository = mock(QueryPaymentRepository.class);
         commandOrderStatusChangeLogService = mock(CommandOrderStatusChangeLogService.class);
 
-        paymentService = new CommandPaymentServiceImpl(
-                restTemplate,
+        paymentService = new CommandPaymentServiceImpl(restTemplate,
                 paymentRepository,
                 queryPaymentRepository,
                 orderService,
@@ -135,13 +139,7 @@ class CommandPaymentServiceImplTest {
 
         JsonNode jsonNode = mapper.readTree(jsonBodyCard);
         ResponseEntity<JsonNode> exchange = new ResponseEntity<>(jsonNode, HttpStatus.OK);
-        when(restTemplate.exchange(
-                any(),
-                any(),
-                any(),
-                eq(JsonNode.class)
-        )).thenReturn(
-                exchange);
+        when(restTemplate.exchange(any(), any(), any(), eq(JsonNode.class))).thenReturn(exchange);
 
         when(orderService.getOrderByNumber(any())).thenReturn(memberOrder);
 
@@ -152,6 +150,13 @@ class CommandPaymentServiceImplTest {
                 .getName(), memberOrder.getMemberAddress().getAddress());
         when(orderService.getPaymentDtoByMemberOrderId(anyLong())).thenReturn(
                 orderPaymentResponseDto);
+
+        doNothing().when(applicationEventPublisher).publishEvent(any());
+        doNothing().when(commandOrderStatusChangeLogService)
+                .appendOrderStatusChangeLog(any(), any(), eq(OrderStatusCode.DEPOSIT));
+
+        doNothing().when(commandOrderStatusChangeLogService)
+                .appendOrderStatusChangeLog(any(), any(), eq(OrderStatusCode.READY));
 
         // when
         PaymentCompleteSimpleResponseDto responseDto = paymentService.confirmTossRequest(requestDto);
@@ -191,13 +196,7 @@ class CommandPaymentServiceImplTest {
 
         JsonNode jsonNode = mapper.readTree(jsonBodyCard);
         ResponseEntity<JsonNode> exchange = new ResponseEntity<>(jsonNode, HttpStatus.OK);
-        when(restTemplate.exchange(
-                any(),
-                any(),
-                any(),
-                eq(JsonNode.class)
-        )).thenReturn(
-                exchange);
+        when(restTemplate.exchange(any(), any(), any(), eq(JsonNode.class))).thenReturn(exchange);
 
         when(orderService.getOrderByNumber(any())).thenReturn(nonMemberOrder);
 
@@ -206,8 +205,10 @@ class CommandPaymentServiceImplTest {
 
         doNothing().when(applicationEventPublisher).publishEvent(any());
         doNothing().when(commandOrderStatusChangeLogService)
-                .appendOrderStatusChangeLog(any(), any(), any());
+                .appendOrderStatusChangeLog(any(), any(), eq(OrderStatusCode.DEPOSIT));
 
+        doNothing().when(commandOrderStatusChangeLogService)
+                .appendOrderStatusChangeLog(any(), any(), eq(OrderStatusCode.READY));
         // when
         PaymentCompleteSimpleResponseDto responseDto = paymentService.confirmTossRequest(requestDto);
 
@@ -243,13 +244,7 @@ class CommandPaymentServiceImplTest {
 
         JsonNode jsonNode = mapper.readTree(jsonBodyEasyPay);
         ResponseEntity<JsonNode> exchange = new ResponseEntity<>(jsonNode, HttpStatus.OK);
-        when(restTemplate.exchange(
-                any(),
-                any(),
-                any(),
-                eq(JsonNode.class)
-        )).thenReturn(
-                exchange);
+        when(restTemplate.exchange(any(), any(), any(), eq(JsonNode.class))).thenReturn(exchange);
 
         when(orderService.getOrderByNumber(any())).thenReturn(memberOrder);
 
@@ -263,7 +258,10 @@ class CommandPaymentServiceImplTest {
 
         doNothing().when(applicationEventPublisher).publishEvent(any());
         doNothing().when(commandOrderStatusChangeLogService)
-                .appendOrderStatusChangeLog(any(), any(), any());
+                .appendOrderStatusChangeLog(any(), any(), eq(OrderStatusCode.DEPOSIT));
+
+        doNothing().when(commandOrderStatusChangeLogService)
+                .appendOrderStatusChangeLog(any(), any(), eq(OrderStatusCode.READY));
 
         // when
         PaymentCompleteSimpleResponseDto responseDto = paymentService.confirmTossRequest(requestDto);
@@ -304,13 +302,7 @@ class CommandPaymentServiceImplTest {
 
         JsonNode jsonNode = mapper.readTree(jsonBodyEasyPay);
         ResponseEntity<JsonNode> exchange = new ResponseEntity<>(jsonNode, HttpStatus.OK);
-        when(restTemplate.exchange(
-                any(),
-                any(),
-                any(),
-                eq(JsonNode.class)
-        )).thenReturn(
-                exchange);
+        when(restTemplate.exchange(any(), any(), any(), eq(JsonNode.class))).thenReturn(exchange);
 
         when(orderService.getOrderByNumber(any())).thenReturn(nonMemberOrder);
 
@@ -319,7 +311,10 @@ class CommandPaymentServiceImplTest {
 
         doNothing().when(applicationEventPublisher).publishEvent(any());
         doNothing().when(commandOrderStatusChangeLogService)
-                .appendOrderStatusChangeLog(any(), any(), any());
+                .appendOrderStatusChangeLog(any(), any(), eq(OrderStatusCode.DEPOSIT));
+
+        doNothing().when(commandOrderStatusChangeLogService)
+                .appendOrderStatusChangeLog(any(), any(), eq(OrderStatusCode.READY));
 
         // when
         PaymentCompleteSimpleResponseDto responseDto = paymentService.confirmTossRequest(requestDto);
@@ -355,13 +350,7 @@ class CommandPaymentServiceImplTest {
 
         JsonNode jsonNode = mapper.readTree(jsonBodyFail);
         ResponseEntity<JsonNode> exchange = new ResponseEntity<>(jsonNode, HttpStatus.NOT_FOUND);
-        when(restTemplate.exchange(
-                any(),
-                any(),
-                any(),
-                eq(JsonNode.class)
-        )).thenReturn(
-                exchange);
+        when(restTemplate.exchange(any(), any(), any(), eq(JsonNode.class))).thenReturn(exchange);
 
         when(orderService.getOrderByNumber(any())).thenReturn(memberOrder);
 
@@ -369,8 +358,10 @@ class CommandPaymentServiceImplTest {
 
         doNothing().when(applicationEventPublisher).publishEvent(any());
         doNothing().when(commandOrderStatusChangeLogService)
-                .appendOrderStatusChangeLog(any(), any(), any());
+                .appendOrderStatusChangeLog(any(), any(), eq(OrderStatusCode.DEPOSIT));
 
+        doNothing().when(commandOrderStatusChangeLogService)
+                .appendOrderStatusChangeLog(any(), any(), eq(OrderStatusCode.READY));
         // when
         // then
         assertThatThrownBy(() -> paymentService.confirmTossRequest(requestDto)).isInstanceOf(
@@ -396,12 +387,8 @@ class CommandPaymentServiceImplTest {
 
         JsonNode jsonNode = mapper.readTree(jsonBodyFail);
         ResponseEntity<JsonNode> exchange = new ResponseEntity<>(jsonNode, HttpStatus.NOT_FOUND);
-        when(restTemplate.exchange(
-                any(),
-                any(),
-                any(),
-                eq(JsonNode.class)
-        )).thenThrow(RestClientException.class);
+        when(restTemplate.exchange(any(), any(), any(), eq(JsonNode.class))).thenThrow(
+                RestClientException.class);
 
         when(orderService.getOrderByNumber(any())).thenReturn(memberOrder);
 
@@ -409,7 +396,10 @@ class CommandPaymentServiceImplTest {
 
         doNothing().when(applicationEventPublisher).publishEvent(any());
         doNothing().when(commandOrderStatusChangeLogService)
-                .appendOrderStatusChangeLog(any(), any(), any());
+                .appendOrderStatusChangeLog(any(), any(), eq(OrderStatusCode.DEPOSIT));
+
+        doNothing().when(commandOrderStatusChangeLogService)
+                .appendOrderStatusChangeLog(any(), any(), eq(OrderStatusCode.READY));
 
         // when
         // then
@@ -420,5 +410,49 @@ class CommandPaymentServiceImplTest {
         assertThat(stringArgumentCaptor.getValue()).isEqualTo(requestDto.getOrderId());
 
         verify(paymentRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("비회원 주문시, 간편결제 성공했지만 append에서 오류 발생")
+    void confirmTossRequest_easyPay_noneMemberOrder_appendLog_fail() throws Exception {
+        // given
+        ArgumentCaptor<String> stringArgumentCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<Payment> paymentArgumentCaptor = ArgumentCaptor.forClass(Payment.class);
+
+        PaymentRequestDto requestDto = new PaymentRequestDto(
+                "dJv2eBNjG0Poxy1XQL8RJqpXm9gkOk87nO5Wmlg96RKwZz4Y",
+                "zaIkFmBcYW4k_J9rOl0M2b7",
+                15000L
+        );
+
+        JsonNode jsonNode = mapper.readTree(jsonBodyEasyPay);
+        ResponseEntity<JsonNode> exchange = new ResponseEntity<>(jsonNode, HttpStatus.OK);
+        when(restTemplate.exchange(any(), any(), any(), eq(JsonNode.class))).thenReturn(exchange);
+
+        when(orderService.getOrderByNumber(any())).thenReturn(nonMemberOrder);
+
+        Payment payment = Payment.toEntity(exchange.getBody(), nonMemberOrder);
+        when(paymentRepository.save(any())).thenReturn(payment);
+
+        doNothing().when(applicationEventPublisher).publishEvent(any());
+        doThrow(new ClientException(ErrorCode.ORDER_BAD_REQUEST, "잘못된 주문 상태 변경 요청입니다.")).when(
+                        commandOrderStatusChangeLogService)
+                .appendOrderStatusChangeLog(any(), any(), eq(OrderStatusCode.DEPOSIT));
+
+        doNothing().when(commandOrderStatusChangeLogService)
+                .appendOrderStatusChangeLog(any(), any(), eq(OrderStatusCode.READY));
+
+        // when
+        assertThatCode(() -> paymentService.confirmTossRequest(requestDto)).isInstanceOf(
+                ClientException.class).hasMessageContaining("잘못된 주문 상태 변경 요청입니다.");
+
+        // then
+        verify(orderService, times(1)).getOrderByNumber(stringArgumentCaptor.capture());
+        assertThat(stringArgumentCaptor.getValue()).isEqualTo(exchange.getBody()
+                .get("orderId")
+                .asText());
+
+        verify(paymentRepository, times(1)).save(paymentArgumentCaptor.capture());
+        assertThat(paymentArgumentCaptor.getValue().getId()).isEqualTo(payment.getId());
     }
 }

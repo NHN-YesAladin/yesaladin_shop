@@ -141,6 +141,15 @@ public interface QueryOrderRepository {
             Pageable pageable
     );
 
+    /**
+     * status code에 따른 주문 개수를 조회합니다.
+     *
+     * @param loginId 회원의 로그인 아이디
+     * @param code    주문 상태
+     * @return 주문 개수
+     * @author 배수한
+     * @since 1.0
+     */
     long getOrderCountByStatusCode(String loginId, OrderStatusCode code);
 
     /**

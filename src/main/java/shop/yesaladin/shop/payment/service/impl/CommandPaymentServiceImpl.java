@@ -97,8 +97,13 @@ public class CommandPaymentServiceImpl implements CommandPaymentService {
                 OrderStatusCode.DEPOSIT
         );
 
-        // TODO 결제 :  배송 서버에 배송 요청 - 게이트웨이 오픈 필요
+        //TODO 결제 :  배송 서버에 배송 요청 - 게이트웨이 오픈 필요
         //applicationEventPublisher.publishEvent(new DeliveryEventDto(order.getId()));
+        commandOrderStatusChangeLogService.appendOrderStatusChangeLog(
+                LocalDateTime.now().plusSeconds(1L),
+                order,
+                OrderStatusCode.READY
+        );
 
         return getPaymentResponseDto(order, responseDto);
     }
@@ -168,17 +173,21 @@ public class CommandPaymentServiceImpl implements CommandPaymentService {
     ) {
         if (order.getOrderCode().equals(OrderCode.NON_MEMBER_ORDER)) {
             NonMemberOrder nonMemberOrder = (NonMemberOrder) order;
-            responseDto.setOrdererNameAndAddress(
+            responseDto.setUserInfo(
                     nonMemberOrder.getNonMemberName(),
-                    nonMemberOrder.getAddress()
+                    nonMemberOrder.getAddress(),
+                    nonMemberOrder.getRecipientName(),
+                    nonMemberOrder.getRecipientPhoneNumber()
             );
             return responseDto;
         }
         OrderPaymentResponseDto nameAndAddress = queryOrderService.getPaymentDtoByMemberOrderId(
                 order.getId());
-        responseDto.setOrdererNameAndAddress(
+        responseDto.setUserInfo(
                 nameAndAddress.getOrdererName(),
-                nameAndAddress.getAddress()
+                nameAndAddress.getAddress(),
+                order.getRecipientName(),
+                order.getRecipientPhoneNumber()
         );
         return responseDto;
     }

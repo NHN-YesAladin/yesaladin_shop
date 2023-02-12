@@ -1,8 +1,10 @@
 package shop.yesaladin.shop.payment.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -14,6 +16,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.order.domain.model.MemberOrder;
@@ -35,7 +38,6 @@ class QueryPaymentServiceImplTest {
 
     private QueryPaymentRepository queryPaymentRepository;
     private QueryPaymentService queryPaymentService;
-    private QueryOrderService queryOrderService;
 
     private Payment payment;
     private MemberOrder memberOrder;
@@ -45,11 +47,9 @@ class QueryPaymentServiceImplTest {
     @BeforeEach
     void setUp() {
         queryPaymentRepository = Mockito.mock(QueryPaymentRepository.class);
-        queryOrderService = Mockito.mock(QueryOrderService.class);
 
         queryPaymentService = new QueryPaymentServiceImpl(
-                queryPaymentRepository,
-                queryOrderService
+                queryPaymentRepository
         );
 
         Member member = DummyMember.member();
@@ -82,36 +82,22 @@ class QueryPaymentServiceImplTest {
     void findByOrderId() throws Exception {
         // given
         ArgumentCaptor<Long> longArgumentCaptor = ArgumentCaptor.forClass(Long.class);
-        ArgumentCaptor<String> stringArgumentCaptor = ArgumentCaptor.forClass(String.class);
 
-        PaymentCompleteSimpleResponseDto responseDto = PaymentCompleteSimpleResponseDto.fromEntityByCard(
-                payment);
-        when(queryPaymentRepository.findSimpleDtoById(any(), any())).thenReturn(Optional.of(
-                responseDto));
-        OrderPaymentResponseDto orderPaymentResponseDto = new OrderPaymentResponseDto(memberOrder.getMember()
-                .getName(), memberOrder.getMemberAddress().getAddress());
-        when(queryOrderService.getPaymentDtoByMemberOrderId(anyLong())).thenReturn(
-                orderPaymentResponseDto);
+        when(queryPaymentRepository.findById(any(), any())).thenReturn(Optional.of(payment));
 
         // when
-        PaymentCompleteSimpleResponseDto returnedDto = queryPaymentService.findByOrderId(memberOrder.getId());
+        Payment foundPayment = queryPaymentService.findByOrderId(
+                memberOrder.getId());
 
         // then
-        assertThat(returnedDto.getCardNumber()).isEqualTo(payment.getPaymentCard().getNumber());
-        assertThat(returnedDto.getPaymentId()).isEqualTo(payment.getId());
-        assertThat(returnedDto.getOrderNumber()).isEqualTo(payment.getOrder().getOrderNumber());
+        assertThat(foundPayment.getPaymentCard().getNumber()).isEqualTo(payment.getPaymentCard().getNumber());
+        assertThat(foundPayment.getId()).isEqualTo(payment.getId());
+        assertThat(foundPayment.getOrder().getOrderNumber()).isEqualTo(payment.getOrder().getOrderNumber());
 
-        verify(queryPaymentRepository, times(1)).findSimpleDtoById(
-                stringArgumentCaptor.capture(),
+        verify(queryPaymentRepository, times(1)).findById(
+                eq(null),
                 longArgumentCaptor.capture()
         );
-        assertThat(stringArgumentCaptor.getValue()).isNull();
-        assertThat(longArgumentCaptor.getValue()).isEqualTo(memberOrder.getId());
-
-        verify(
-                queryOrderService,
-                times(1)
-        ).getPaymentDtoByMemberOrderId(longArgumentCaptor.capture());
         assertThat(longArgumentCaptor.getValue()).isEqualTo(memberOrder.getId());
 
     }

@@ -50,7 +50,6 @@ public class QueryMemberOrderController {
             @ModelAttribute PeriodQueryRequestDto queryDto,
             Pageable pageable
     ) {
-//        String loginId = "id0"; //TODO 테스트용
         Page<OrderSummaryResponseDto> data = queryOrderService.getOrderListInPeriodByMemberId(
                 queryDto,
                 loginId,
@@ -85,7 +84,6 @@ public class QueryMemberOrderController {
             @RequestParam("status") Long status,
             Pageable pageable
     ) {
-//        String loginId = "id0"; //TODO 테스트용
 
         OrderStatusCode code = OrderStatusCode.getOrderStatusCodeByNumber(status);
 
