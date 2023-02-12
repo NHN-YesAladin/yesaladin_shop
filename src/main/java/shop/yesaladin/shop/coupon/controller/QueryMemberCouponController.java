@@ -20,6 +20,9 @@ import shop.yesaladin.shop.coupon.dto.MemberCouponSummaryDto;
 import shop.yesaladin.shop.coupon.service.inter.GiveCouponService;
 import shop.yesaladin.shop.coupon.service.inter.QueryMemberCouponService;
 
+/**
+ *
+ */
 @Slf4j
 @RequiredArgsConstructor
 @RestController
@@ -48,11 +51,11 @@ public class QueryMemberCouponController {
                 .build();
     }
 
-    @GetMapping(value = "/issuance", params = {"type", "couponId"})
+    @GetMapping(value = "/issuance", params = {"type", "coupon-id"})
     public ResponseDto<CouponIssueResponseDto> processCouponGiveRequest(
             @LoginId(required = true) String loginId,
             @RequestParam("type") String type,
-            @RequestParam("couponId") Long couponId
+            @RequestParam("coupon-id") Long couponId
     ) {
         log.info("==== [COUPON] issue coupon request is arrived with id {} and type {} ===",
                 loginId,
@@ -75,6 +78,7 @@ public class QueryMemberCouponController {
         }
 
         // 메시지를 발행하게 되면 redis 의 쿠폰 수량 감소
+
 
         return ResponseDto.<CouponIssueResponseDto>builder()
                 .status(HttpStatus.OK)
