@@ -1,5 +1,22 @@
 package shop.yesaladin.shop.product.service.impl;
 
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.mock;
+
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,18 +44,6 @@ import shop.yesaladin.shop.publish.dto.PublishResponseDto;
 import shop.yesaladin.shop.publish.service.inter.QueryPublishService;
 import shop.yesaladin.shop.tag.service.inter.QueryProductTagService;
 import shop.yesaladin.shop.writing.service.inter.QueryWritingService;
-
-import java.time.Clock;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.*;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.mock;
 
 class QueryProductServiceImplTest {
 
@@ -145,8 +150,16 @@ class QueryProductServiceImplTest {
                 .build();
         TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
 
-        Product product = DummyProduct.dummy(1L, isbn, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate);
-        Mockito.when(queryProductRepository.findProductById(anyLong())).thenReturn(Optional.ofNullable(product));
+        Product product = DummyProduct.dummy(
+                1L,
+                isbn,
+                subscribeProduct,
+                thumbnailFile,
+                ebookFile,
+                totalDiscountRate
+        );
+        Mockito.when(queryProductRepository.findProductById(anyLong()))
+                .thenReturn(Optional.ofNullable(product));
 
         Publish publish = Publish.create(
                 product,
@@ -181,15 +194,35 @@ class QueryProductServiceImplTest {
 
         File thumbnailFile = DummyFile.dummy(URL + "/image1.png");
         File ebookFile = DummyFile.dummy(URL + "/ebook1.pdf");
-        SubscribeProduct subscribeProduct = SubscribeProduct.builder().id(1L).ISSN("00000001").build();
+        SubscribeProduct subscribeProduct = SubscribeProduct.builder()
+                .id(1L)
+                .ISSN("00000001")
+                .build();
         TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
 
-        Product product = DummyProduct.dummy(1L, isbn, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate);
-        Mockito.when(queryProductRepository.findProductById(anyLong())).thenReturn(Optional.ofNullable(product));
+        Product product = DummyProduct.dummy(
+                1L,
+                isbn,
+                subscribeProduct,
+                thumbnailFile,
+                ebookFile,
+                totalDiscountRate
+        );
+        Mockito.when(queryProductRepository.findProductById(anyLong()))
+                .thenReturn(Optional.ofNullable(product));
 
-        Publish publish = Publish.create(product, Publisher.builder().id(1L).name("출판사").build(), LocalDateTime.now(clock).toLocalDate().toString());
+        Publish publish = Publish.create(
+                product,
+                Publisher.builder().id(1L).name("출판사").build(),
+                LocalDateTime.now(clock).toLocalDate().toString()
+        );
         Mockito.when(queryPublishService.findByProduct(any()))
-                .thenReturn(new PublishResponseDto(publish.getPk(), publish.getPublishedDate(), publish.getProduct(), publish.getPublisher()));
+                .thenReturn(new PublishResponseDto(
+                        publish.getPk(),
+                        publish.getPublishedDate(),
+                        publish.getProduct(),
+                        publish.getPublisher()
+                ));
 
         // when
         ProductModifyDto response = service.findProductByIdForForm(1L);
@@ -208,7 +241,8 @@ class QueryProductServiceImplTest {
         assertThat(response.getIsGivenPoint()).isEqualTo(product.isGivenPoint());
         assertThat(response.getGivenPointRate()).isEqualTo(product.getGivenPointRate());
         assertThat(response.getProductTypeCode()).isEqualTo(product.getProductTypeCode().name());
-        assertThat(response.getProductSavingMethodCode()).isEqualTo(product.getProductSavingMethodCode().name());
+        assertThat(response.getProductSavingMethodCode()).isEqualTo(product.getProductSavingMethodCode()
+                .name());
         assertThat(response.getIsSubscriptionAvailable()).isEqualTo(product.isSubscriptionAvailable());
         assertThat(response.getQuantity()).isEqualTo(product.getQuantity());
         assertThat(response.getPreferentialShowRanking()).isEqualTo(product.getPreferentialShowRanking());
@@ -224,11 +258,22 @@ class QueryProductServiceImplTest {
 
         File thumbnailFile = DummyFile.dummy(URL + "/image1.png");
         File ebookFile = DummyFile.dummy(URL + "/ebook1.pdf");
-        SubscribeProduct subscribeProduct = SubscribeProduct.builder().id(1L).ISSN("00000001").build();
+        SubscribeProduct subscribeProduct = SubscribeProduct.builder()
+                .id(1L)
+                .ISSN("00000001")
+                .build();
         TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
 
-        Product product = DummyProduct.dummy(1L, isbn, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate);
-        Mockito.when(queryProductRepository.findProductById(anyLong())).thenReturn(Optional.ofNullable(product));
+        Product product = DummyProduct.dummy(
+                1L,
+                isbn,
+                subscribeProduct,
+                thumbnailFile,
+                ebookFile,
+                totalDiscountRate
+        );
+        Mockito.when(queryProductRepository.findProductById(anyLong()))
+                .thenReturn(Optional.ofNullable(product));
 
         // when
         List<ViewCartDto> response = service.getCartProduct(cart);
@@ -250,19 +295,38 @@ class QueryProductServiceImplTest {
 
             File thumbnailFile = DummyFile.dummy(URL + "/image" + i + ".png");
             File ebookFile = DummyFile.dummy(URL + "/ebook" + i + ".pdf");
-            SubscribeProduct subscribeProduct = SubscribeProduct.builder().id(1L).ISSN("00000001").build();
+            SubscribeProduct subscribeProduct = SubscribeProduct.builder()
+                    .id(1L)
+                    .ISSN("00000001")
+                    .build();
             TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
 
-            Product product = DummyProduct.dummy(i, isbn, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate);
+            Product product = DummyProduct.dummy(
+                    i,
+                    isbn,
+                    subscribeProduct,
+                    thumbnailFile,
+                    ebookFile,
+                    totalDiscountRate
+            );
             if (i < 5L) {
                 product.deleteProduct();
                 continue;
             }
             products.add(product);
 
-            Publish publish = Publish.create(product, Publisher.builder().id(1L).name("출판사").build(), LocalDateTime.now(clock).toLocalDate().toString());
+            Publish publish = Publish.create(
+                    product,
+                    Publisher.builder().id(1L).name("출판사").build(),
+                    LocalDateTime.now(clock).toLocalDate().toString()
+            );
             Mockito.when(queryPublishService.findByProduct(any()))
-                    .thenReturn(new PublishResponseDto(publish.getPk(), publish.getPublishedDate(), publish.getProduct(), publish.getPublisher()));
+                    .thenReturn(new PublishResponseDto(
+                            publish.getPk(),
+                            publish.getPublishedDate(),
+                            publish.getProduct(),
+                            publish.getPublisher()
+                    ));
         }
 
         Page<Product> page = new PageImpl<>(
@@ -274,7 +338,10 @@ class QueryProductServiceImplTest {
         Mockito.when(queryProductRepository.findAllByTypeId(any(), any())).thenReturn(page);
 
         // when
-        PaginatedResponseDto<ProductsResponseDto> response = service.findAll(PageRequest.of(0, 5), ProductTypeCode.NONE.getId());
+        PaginatedResponseDto<ProductsResponseDto> response = service.findAll(
+                PageRequest.of(0, 5),
+                ProductTypeCode.NONE.getId()
+        );
 
         // then/
         assertThat(response.getTotalDataCount()).isEqualTo(5);
@@ -335,7 +402,10 @@ class QueryProductServiceImplTest {
         Mockito.when(queryProductRepository.findAll(any())).thenReturn(page);
 
         // when
-        PaginatedResponseDto<ProductsResponseDto> response = service.findAll(PageRequest.of(0, 5), null);
+        PaginatedResponseDto<ProductsResponseDto> response = service.findAll(
+                PageRequest.of(0, 5),
+                null
+        );
 
         // then/
         assertThat(response.getTotalDataCount()).isEqualTo(5);
@@ -353,18 +423,37 @@ class QueryProductServiceImplTest {
 
             File thumbnailFile = DummyFile.dummy(URL + "/image" + i + ".png");
             File ebookFile = DummyFile.dummy(URL + "/ebook" + i + ".pdf");
-            SubscribeProduct subscribeProduct = SubscribeProduct.builder().id(1L).ISSN("00000001").build();
+            SubscribeProduct subscribeProduct = SubscribeProduct.builder()
+                    .id(1L)
+                    .ISSN("00000001")
+                    .build();
             TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
 
-            Product product = DummyProduct.dummy(i, isbn, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate);
+            Product product = DummyProduct.dummy(
+                    i,
+                    isbn,
+                    subscribeProduct,
+                    thumbnailFile,
+                    ebookFile,
+                    totalDiscountRate
+            );
             if (i < 5L) {
                 product.deleteProduct();
             }
             products.add(product);
 
-            Publish publish = Publish.create(product, Publisher.builder().id(1L).name("출판사").build(), LocalDateTime.now(clock).toLocalDate().toString());
+            Publish publish = Publish.create(
+                    product,
+                    Publisher.builder().id(1L).name("출판사").build(),
+                    LocalDateTime.now(clock).toLocalDate().toString()
+            );
             Mockito.when(queryPublishService.findByProduct(any()))
-                    .thenReturn(new PublishResponseDto(publish.getPk(), publish.getPublishedDate(), publish.getProduct(), publish.getPublisher()));
+                    .thenReturn(new PublishResponseDto(
+                            publish.getPk(),
+                            publish.getPublishedDate(),
+                            publish.getProduct(),
+                            publish.getPublisher()
+                    ));
         }
 
         Page<Product> page = new PageImpl<>(
@@ -373,10 +462,14 @@ class QueryProductServiceImplTest {
                 products.size()
         );
 
-        Mockito.when(queryProductRepository.findAllByTypeIdForManager(any(), any())).thenReturn(page);
+        Mockito.when(queryProductRepository.findAllByTypeIdForManager(any(), any()))
+                .thenReturn(page);
 
         // when
-        PaginatedResponseDto<ProductsResponseDto> response = service.findAllForManager(PageRequest.of(0, 5), ProductTypeCode.NONE.getId());
+        PaginatedResponseDto<ProductsResponseDto> response = service.findAllForManager(PageRequest.of(
+                0,
+                5
+        ), ProductTypeCode.NONE.getId());
 
         // then
         assertThat(response.getTotalDataCount()).isEqualTo(9);
@@ -436,7 +529,10 @@ class QueryProductServiceImplTest {
         Mockito.when(queryProductRepository.findAllForManager(any())).thenReturn(page);
 
         // when
-        PaginatedResponseDto<ProductsResponseDto> response = service.findAllForManager(PageRequest.of(0, 5), null);
+        PaginatedResponseDto<ProductsResponseDto> response = service.findAllForManager(PageRequest.of(
+                0,
+                5
+        ), null);
 
         // then
         assertThat(response.getTotalDataCount()).isEqualTo(9);
@@ -485,10 +581,87 @@ class QueryProductServiceImplTest {
                         publish.getPublisher()
                 ));
 
-
-        Page<RelationsResponseDto> result = service.findProductRelationByTitle(2L, "ex", PageRequest.of(0, 1));
+        Page<RelationsResponseDto> result = service.findProductRelationByTitle(
+                2L,
+                "ex",
+                PageRequest.of(0, 1)
+        );
 
         assertThat(result.getTotalElements()).isEqualTo(1);
         assertThat(result.getContent().get(0).getTitle()).contains("ex");
+    }
+
+    @Test
+    @DisplayName("최신 상품 조회 성공")
+    void findRecentProductByPublishedDate() {
+        //given
+        List<Product> products = new ArrayList<>();
+        String isbn = "0000000000001";
+        File thumbnailFile = DummyFile.dummy(URL + "/image.png");
+        File ebookFile = DummyFile.dummy(URL + "/ebook.pdf");
+        SubscribeProduct subscribeProduct = SubscribeProduct.builder()
+                .id(1L)
+                .ISSN("00000001")
+                .build();
+        TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
+
+        Product product = DummyProduct.dummy(
+                isbn,
+                subscribeProduct,
+                thumbnailFile,
+                ebookFile,
+                totalDiscountRate
+        );
+        Publish publish = Publish.create(
+                product,
+                Publisher.builder().id(1L).name("출판사").build(),
+                LocalDate.of(2011, 11, 11).toString()
+        );
+        Mockito.when(queryPublishService.findByProduct(product))
+                .thenReturn(new PublishResponseDto(
+                        publish.getPk(),
+                        publish.getPublishedDate(),
+                        publish.getProduct(),
+                        publish.getPublisher()
+                ));
+
+        String isbn2 = "0000000000002";
+        File thumbnailFile2 = DummyFile.dummy(URL + "/image2.png");
+        File ebookFile2 = DummyFile.dummy(URL + "/ebook2.pdf");
+        SubscribeProduct subscribeProduct2 = SubscribeProduct.builder()
+                .id(2L)
+                .ISSN("0000000000002")
+                .build();
+
+        Product product2 = DummyProduct.dummy(
+                isbn2,
+                subscribeProduct2,
+                thumbnailFile2,
+                ebookFile2,
+                totalDiscountRate
+        );
+
+        products.add(product2);
+        products.add(product);
+
+        Mockito.when(queryProductRepository.findRecentProductByPublishedDate(PageRequest.of(0, 10)))
+                .thenReturn(new PageImpl<>(products, PageRequest.of(0, 2), 2L));
+        Publish publish2 = Publish.create(
+                product2,
+                Publisher.builder().id(1L).name("출판사").build(),
+                LocalDate.of(2011, 12, 12).toString()
+        );
+        Mockito.when(queryPublishService.findByProduct(product2))
+                .thenReturn(new PublishResponseDto(
+                        publish2.getPk(),
+                        publish2.getPublishedDate(),
+                        publish2.getProduct(),
+                        publish2.getPublisher()
+                ));
+
+        Page<ProductRecentResponseDto> dto = service.findRecentProductByPublishedDate(PageRequest.of(0, 10));
+        assertThat(dto.getTotalElements()).isEqualTo(2);
+        assertThat(dto.getContent().get(0).getId()).isEqualTo(product2.getId());
+        assertThat(dto.getContent().get(1).getId()).isEqualTo(product.getId());
     }
 }
