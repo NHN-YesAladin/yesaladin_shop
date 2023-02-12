@@ -97,7 +97,7 @@ public class CommandPaymentServiceImpl implements CommandPaymentService {
                 OrderStatusCode.DEPOSIT
         );
 
-        // TODO 결제 :  배송 서버에 배송 요청 - 게이트웨이 오픈 필요
+        //TODO 결제 :  배송 서버에 배송 요청 - 게이트웨이 오픈 필요
         //applicationEventPublisher.publishEvent(new DeliveryEventDto(order.getId()));
         commandOrderStatusChangeLogService.appendOrderStatusChangeLog(
                 LocalDateTime.now().plusSeconds(1L),

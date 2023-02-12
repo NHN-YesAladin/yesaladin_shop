@@ -87,6 +87,12 @@ public class QueryOrderController {
                 .build();
     }
 
+    /**
+     * 주문 상세 조회를 위한 컨트롤러 메서드
+     *
+     * @param orderNumber 조회할 주문 번호
+     * @return 주문 상세 조회 관련 정보
+     */
     @GetMapping("/v1/orders/{orderNumber}")
     public ResponseDto<OrderDetailsResponseDto> getOrderDetails(@PathVariable String orderNumber) {
         //TODO 컨트롤러 테스트
