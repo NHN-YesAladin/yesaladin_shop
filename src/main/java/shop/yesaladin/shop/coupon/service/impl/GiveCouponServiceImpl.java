@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +24,7 @@ import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.common.exception.ServerException;
 import shop.yesaladin.coupon.code.TriggerTypeCode;
+import shop.yesaladin.coupon.dto.CouponGiveDto;
 import shop.yesaladin.coupon.message.CouponCodesAndResultMessage;
 import shop.yesaladin.coupon.message.CouponCodesAndResultMessage.CouponCodesAndResultMessageBuilder;
 import shop.yesaladin.coupon.message.CouponGiveRequestMessage;
@@ -44,6 +46,7 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberService;
  * 회원에게 쿠폰을 지급하는 서비스 인터페이스의 구현체입니다.
  *
  * @author 김홍대
+ * @author 서민지
  * @since 1.0
  */
 @Slf4j
@@ -67,18 +70,11 @@ public class GiveCouponServiceImpl implements GiveCouponService {
     public RequestIdOnlyDto sendCouponGiveRequest(
             String memberId, TriggerTypeCode triggerTypeCode, Long couponId
     ) {
+        registerIssueRequest(memberId, triggerTypeCode.name(), couponId.toString());
         List<CouponGroupAndLimitDto> couponGroupAndLimitList = getCouponGroupAndLimit(
                 triggerTypeCode,
                 couponId
         );
-
-        for (int i = 0; i < couponGroupAndLimitList.size(); i++) {
-
-            log.info(
-                    "==== [COUPON] trigger type {} & coupon id {}'s coupon group code: {} ====",
-                    triggerTypeCode, couponId, couponGroupAndLimitList.get(i).getCouponGroupCode()
-            );
-        }
 
         List<String> couponGroupCodeList = couponGroupAndLimitList.stream()
                 .map(CouponGroupAndLimitDto::getCouponGroupCode)
@@ -116,11 +112,21 @@ public class GiveCouponServiceImpl implements GiveCouponService {
         CouponCodesAndResultMessageBuilder resultBuilder = CouponCodesAndResultMessage.builder();
         try {
             checkRequestSucceeded(responseMessage);
+            String memberId = getMemberIdFromRequestId(responseMessage.getRequestId());
+            checkMemberAlreadyHasCoupon(
+                    memberId,
+                    null,
+                    null,
+                    responseMessage.getCoupons()
+                            .stream()
+                            .map(CouponGiveDto::getCouponGroupCode)
+                            .collect(
+                                    Collectors.toList())
+            );
             resultBuilder.couponCodes(responseMessage.getCoupons()
                     .stream()
                     .flatMap(coupon -> coupon.getCouponCodes().stream())
                     .collect(Collectors.toList()));
-            String memberId = getMemberIdFromRequestId(responseMessage.getRequestId());
             tryGiveCouponToMember(responseMessage, memberId);
             couponProducer.produceGivenResultMessage(resultBuilder.success(true).build());
 
@@ -133,7 +139,23 @@ public class GiveCouponServiceImpl implements GiveCouponService {
             couponProducer.produceGivenResultMessage(resultBuilder.success(false).build());
             throw e;
         }
+    }
 
+    /**
+     * 쿠폰 발행 요청에 대한 정보를 10초 동안 redis 에 저장합니다. 10초 내에 같은 요청을 시도하는 경우 예외를 던집니다.
+     *
+     * @param memberId 발행 요청을 한 회원의 로그인 아이디
+     * @param triggerTypeCode 발행 요청을 한 쿠폰의 트리거 타입 코드
+     * @param couponId 발행 요청한 쿠폰의 아이디
+     */
+    public void registerIssueRequest(
+            String memberId, String triggerTypeCode, String couponId
+    ) {
+        String issueRequestKey = memberId.concat(triggerTypeCode).concat(couponId);
+        if (Boolean.TRUE.equals(redisTemplate.hasKey(issueRequestKey))) {
+            throw new ClientException(ErrorCode.BAD_REQUEST, "이미 처리된 요청입니다.");
+        }
+        redisTemplate.opsForValue().set(issueRequestKey, "", 10, TimeUnit.SECONDS);
     }
 
     private List<CouponGroupAndLimitDto> getCouponGroupAndLimit(
