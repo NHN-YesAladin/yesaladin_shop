@@ -41,4 +41,7 @@ public class CouponProducer {
         );
     }
 
+    public void produceUsedResultMessage(CouponCodesAndResultMessage message) {
+        kafkaTemplate.send(couponProperties.getCouponUsedTopic(), message);
+    }
 }
