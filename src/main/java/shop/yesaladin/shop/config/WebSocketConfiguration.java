@@ -1,16 +1,29 @@
 package shop.yesaladin.shop.config;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
-import org.springframework.web.socket.server.standard.ServerEndpointExporter;
+import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
+import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
+import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
-@Profile({"prod", "test", "dev", "default"})
 @Configuration
-public class WebSocketConfiguration {
+@EnableWebSocketMessageBroker
+public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer {
 
-    @Bean
-    public ServerEndpointExporter serverEndpointExporter() {
-        return new ServerEndpointExporter();
+    @Override
+    public void registerStompEndpoints(StompEndpointRegistry registry) {
+        registry.addEndpoint("/ws").setAllowedOriginPatterns(
+                "http://localhost:8080",
+                "http://localhost:9090",
+                "http://test.yesaladin.shop:9090",
+                "https://www.yesaladin.shop"
+        ).withSockJS();
+
+    }
+
+    @Override
+    public void configureMessageBroker(MessageBrokerRegistry registry) {
+        registry.setApplicationDestinationPrefixes("/ws/des");
+        registry.enableSimpleBroker("/ws/topic");
     }
 }

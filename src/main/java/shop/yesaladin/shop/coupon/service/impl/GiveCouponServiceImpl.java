@@ -29,7 +29,7 @@ import shop.yesaladin.coupon.message.CouponGiveRequestMessage;
 import shop.yesaladin.coupon.message.CouponGiveRequestResponseMessage;
 import shop.yesaladin.shop.config.GatewayProperties;
 import shop.yesaladin.shop.coupon.adapter.kafka.CouponProducer;
-import shop.yesaladin.shop.coupon.adapter.websocket.CouponGiveResultHandler;
+import shop.yesaladin.shop.coupon.adapter.websocket.CouponWebsocketMessageSender;
 import shop.yesaladin.shop.coupon.domain.model.MemberCoupon;
 import shop.yesaladin.shop.coupon.domain.repository.CommandMemberCouponRepository;
 import shop.yesaladin.shop.coupon.domain.repository.QueryMemberCouponRepository;
@@ -60,6 +60,7 @@ public class GiveCouponServiceImpl implements GiveCouponService {
     private final QueryMemberService queryMemberService;
     private final RestTemplate restTemplate;
     private final RedisTemplate<String, String> redisTemplate;
+    private final CouponWebsocketMessageSender couponWebsocketMessageSender;
 
     @Override
     @Transactional(readOnly = true)
@@ -123,10 +124,10 @@ public class GiveCouponServiceImpl implements GiveCouponService {
             tryGiveCouponToMember(responseMessage, memberId);
             couponProducer.produceGivenResultMessage(resultBuilder.success(true).build());
 
-            CouponGiveResultHandler.sendResultToClient(new CouponGiveResultDto(
+            couponWebsocketMessageSender.sendGiveCouponResultMessage(new CouponGiveResultDto(
                     responseMessage.getRequestId(),
                     responseMessage.isSuccess(),
-                    responseMessage.getErrorMessage()
+                    responseMessage.isSuccess() ? "발급이 완료되었습니다." : responseMessage.getErrorMessage()
             ));
         } catch (Exception e) {
             couponProducer.produceGivenResultMessage(resultBuilder.success(false).build());
@@ -199,21 +200,6 @@ public class GiveCouponServiceImpl implements GiveCouponService {
                             + ", trigger type : " + triggerTypeCode + ", coupon id : " + couponId
             );
         }
-    }
-
-    private void generateRequestIdAndSendMessage(
-            String memberId,
-            TriggerTypeCode triggerTypeCode,
-            Long couponId,
-            CouponGroupAndLimitDto couponGroupAndLimit
-    ) {
-        String requestId = generateRequestId(memberId);
-        sendGiveRequestMessage(
-                triggerTypeCode,
-                couponId,
-                couponGroupAndLimit.getIsLimited(),
-                requestId
-        );
     }
 
     private String generateRequestId(String memberId) {
