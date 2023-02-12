@@ -140,4 +140,37 @@ class UseCouponServiceImplTest {
         Assertions.assertThat(actual.get(3).getCouponCode()).isEqualTo("4");
 
     }
+
+    @Test
+    @DisplayName("쿠폰 사용 요청 결과가 실패라면 예외가 발생한다.")
+    void useCouponFailCauseByRequestNotSuccessTest() {
+        // given
+        CouponUseRequestResponseMessage responseMessage = new CouponUseRequestResponseMessage(
+                "1",
+                false,
+                "fail"
+        );
+
+        // when
+        // then
+        Assertions.assertThatThrownBy(() -> useCouponService.useCoupon(responseMessage))
+                .isInstanceOf(ClientException.class);
+    }
+
+    @Test
+    @DisplayName("requestId가 존재하지 않으면 예외가 발생한다.")
+    void useCouponFailCauseByRequestIdNotExistsTest() {
+        // given
+        CouponUseRequestResponseMessage responseMessage = new CouponUseRequestResponseMessage(
+                "1",
+                true,
+                null
+        );
+        Mockito.when(listOperations.range("1", 0, -1)).thenReturn(null);
+
+        // when
+        // then
+        Assertions.assertThatThrownBy(() -> useCouponService.useCoupon(responseMessage))
+                .isInstanceOf(ClientException.class);
+    }
 }
