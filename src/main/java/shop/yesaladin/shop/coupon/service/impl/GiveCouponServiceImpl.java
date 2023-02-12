@@ -29,10 +29,13 @@ import shop.yesaladin.coupon.message.CouponGiveRequestMessage;
 import shop.yesaladin.coupon.message.CouponGiveRequestResponseMessage;
 import shop.yesaladin.shop.config.GatewayProperties;
 import shop.yesaladin.shop.coupon.adapter.kafka.CouponProducer;
+import shop.yesaladin.shop.coupon.adapter.websocket.CouponGiveResultHandler;
 import shop.yesaladin.shop.coupon.domain.model.MemberCoupon;
 import shop.yesaladin.shop.coupon.domain.repository.CommandMemberCouponRepository;
 import shop.yesaladin.shop.coupon.domain.repository.QueryMemberCouponRepository;
+import shop.yesaladin.shop.coupon.dto.CouponGiveResultDto;
 import shop.yesaladin.shop.coupon.dto.CouponGroupAndLimitDto;
+import shop.yesaladin.shop.coupon.dto.RequestIdOnlyDto;
 import shop.yesaladin.shop.coupon.service.inter.GiveCouponService;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
@@ -60,7 +63,7 @@ public class GiveCouponServiceImpl implements GiveCouponService {
 
     @Override
     @Transactional(readOnly = true)
-    public void sendCouponGiveRequest(
+    public RequestIdOnlyDto sendCouponGiveRequest(
             String memberId, TriggerTypeCode triggerTypeCode, Long couponId
     ) {
         List<CouponGroupAndLimitDto> couponGroupAndLimitList = getCouponGroupAndLimit(
@@ -82,25 +85,28 @@ public class GiveCouponServiceImpl implements GiveCouponService {
 
         checkMemberAlreadyHasCoupon(memberId, triggerTypeCode, couponId, couponGroupCodeList);
 
+        String requestId = generateRequestId(memberId);
+        RequestIdOnlyDto response = new RequestIdOnlyDto(requestId);
+
         if (Objects.isNull(couponId)) {
-            generateRequestIdAndSendMessage(
-                    memberId,
+            sendGiveRequestMessage(
                     triggerTypeCode,
                     null,
-                    couponGroupAndLimitList.get(0)
+                    couponGroupAndLimitList.get(0).getIsLimited(),
+                    requestId
             );
-            return;
+            return response;
         }
 
         couponGroupAndLimitList.forEach(couponGroupAndLimit ->
-                generateRequestIdAndSendMessage(
-                        memberId,
+                sendGiveRequestMessage(
                         triggerTypeCode,
                         couponId,
-                        couponGroupAndLimit
+                        couponGroupAndLimit.getIsLimited(),
+                        requestId
                 )
         );
-
+        return response;
     }
 
     @Override
@@ -116,6 +122,12 @@ public class GiveCouponServiceImpl implements GiveCouponService {
             String memberId = getMemberIdFromRequestId(responseMessage.getRequestId());
             tryGiveCouponToMember(responseMessage, memberId);
             couponProducer.produceGivenResultMessage(resultBuilder.success(true).build());
+
+            CouponGiveResultHandler.sendResultToClient(new CouponGiveResultDto(
+                    responseMessage.getRequestId(),
+                    responseMessage.isSuccess(),
+                    responseMessage.getErrorMessage()
+            ));
         } catch (Exception e) {
             couponProducer.produceGivenResultMessage(resultBuilder.success(false).build());
             throw e;
