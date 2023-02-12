@@ -21,6 +21,7 @@ import shop.yesaladin.shop.member.dto.MemberLoginResponseDto;
 import shop.yesaladin.shop.member.dto.MemberManagerResponseDto;
 import shop.yesaladin.shop.member.dto.MemberOrderSheetResponseDto;
 import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
+import shop.yesaladin.shop.member.dto.MemberStatisticsResponseDto;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 
 /**
@@ -298,5 +299,23 @@ public class QueryMemberServiceImpl implements QueryMemberService {
                         ErrorCode.MEMBER_NOT_FOUND,
                         "Member not found with loginId : " + loginId
                 ));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public MemberStatisticsResponseDto getMemberStatistics() {
+        return MemberStatisticsResponseDto.builder()
+                .totalMembers(queryMemberRepository.countTotalMembers())
+                .totalBlockedMembers(queryMemberRepository.countBlockedMembers())
+                .totalWithdrawMembers(queryMemberRepository.countWithdrawMembers())
+                .totalWhiteGrades(queryMemberRepository.countWhiteMembers())
+                .totalBronzeGrades(queryMemberRepository.countBronzeMembers())
+                .totalSilverGrades(queryMemberRepository.countSilverMembers())
+                .totalGoldGrades(queryMemberRepository.countGoldMembers())
+                .totalPlatinumGrades(queryMemberRepository.countPlatinumMembers())
+                .build();
     }
 }
