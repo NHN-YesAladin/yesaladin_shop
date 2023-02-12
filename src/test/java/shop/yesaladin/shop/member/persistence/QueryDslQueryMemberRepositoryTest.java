@@ -9,7 +9,6 @@ import java.util.UUID;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -249,5 +248,77 @@ class QueryDslQueryMemberRepositoryTest {
         assertThat(response.get().getName()).isEqualTo(memberWithLoginId.getName());
         assertThat(response.get().getPhoneNumber()).isEqualTo(memberWithLoginId.getPhone());
         assertThat(response.get().getCouponCount()).isEqualTo(5);
+    }
+
+    @Test
+    void countTotalMembers() throws Exception {
+        //when
+        Long count = queryMemberRepository.countTotalMembers();
+
+        //then
+        assertThat(count).isEqualTo(2L);
+    }
+
+    @Test
+    void countBlockedMembers() throws Exception {
+        //when
+        Long count = queryMemberRepository.countBlockedMembers();
+
+        //then
+        assertThat(count).isZero();
+    }
+
+    @Test
+    void countWithdrawMembers() throws Exception {
+        //when
+        Long count = queryMemberRepository.countWithdrawMembers();
+
+        //then
+        assertThat(count).isZero();
+    }
+
+    @Test
+    void countWhiteMembers() throws Exception {
+        //when
+        Long count = queryMemberRepository.countWhiteMembers();
+
+        //then
+        assertThat(count).isEqualTo(2L);
+    }
+
+    @Test
+    void countBronzeMembers() throws Exception {
+        //when
+        Long count = queryMemberRepository.countBronzeMembers();
+
+        //then
+        assertThat(count).isZero();
+    }
+
+    @Test
+    void countSilverMembers() throws Exception {
+        //when
+        Long count = queryMemberRepository.countSilverMembers();
+
+        //then
+        assertThat(count).isZero();
+    }
+
+    @Test
+    void countGoldMembers() throws Exception {
+        //when
+        Long count = queryMemberRepository.countGoldMembers();
+
+        //then
+        assertThat(count).isZero();
+    }
+
+    @Test
+    void countPlatinumMembers() throws Exception {
+        //when
+        Long count = queryMemberRepository.countPlatinumMembers();
+
+        //then
+        assertThat(count).isZero();
     }
 }
