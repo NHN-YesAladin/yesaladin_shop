@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.coupon.controller;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -7,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.common.dto.ResponseDto;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.common.aspect.annotation.LoginId;
 import shop.yesaladin.shop.coupon.dto.CouponGiveRequestDto;
 import shop.yesaladin.shop.coupon.service.inter.GiveCouponService;
@@ -26,7 +28,8 @@ public class GiveMemberCouponController {
 
     /**
      * 쿠폰 지급 요청 메시지를 발행합니다.
-     * @param memberId 로그인한 회원의 로그인ID
+     *
+     * @param memberId   로그인한 회원의 로그인 아이디
      * @param requestDto 쿠폰 지급 요청 정보
      * @return 성공 여부를 담은 ResponseDto
      */
@@ -34,11 +37,18 @@ public class GiveMemberCouponController {
     public ResponseDto<Void> sendCouponGiveRequest(
             @LoginId(required = true) String memberId, @RequestBody CouponGiveRequestDto requestDto
     ) {
-        giveCouponService.sendCouponGiveRequest(
-                memberId,
-                requestDto.getTriggerTypeCode(),
-                requestDto.getCouponId()
-        );
+        try {
+            giveCouponService.sendCouponGiveRequest(memberId,
+                    requestDto.getTriggerTypeCode(),
+                    requestDto.getCouponId()
+            );
+        } catch (ClientException e) {
+            return ResponseDto.<Void>builder()
+                    .status(HttpStatus.OK)
+                    .success(false)
+                    .errorMessages(List.of(e.getMessage()))
+                    .build();
+        }
 
         return ResponseDto.<Void>builder().success(true).status(HttpStatus.OK).data(null).build();
     }
