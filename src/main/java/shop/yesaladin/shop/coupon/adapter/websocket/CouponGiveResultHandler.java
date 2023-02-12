@@ -48,6 +48,7 @@ public class CouponGiveResultHandler {
 
         if (Objects.isNull(handler)) {
             log.error("socket not exists for request id {}", requestId);
+            return;
         }
 
         try {
