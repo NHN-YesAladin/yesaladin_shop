@@ -224,7 +224,6 @@ public class QueryProductController {
     ) {
         Page<ProductRecentResponseDto> products = queryProductService.findRecentViewProductById(ids,
                 pageable);
-
         return ResponseDto.<PaginatedResponseDto<ProductRecentResponseDto>>builder()
                 .status(HttpStatus.OK)
                 .success(true)

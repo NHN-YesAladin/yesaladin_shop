@@ -52,6 +52,7 @@ public class Wishlist {
                 .pk(Pk.builder().memberId(member.getId()).productId(product.getId()).build())
                 .member(member)
                 .product(product)
+                .registeredDateTime(LocalDateTime.now())
                 .build();
     }
 

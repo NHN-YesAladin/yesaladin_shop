@@ -36,18 +36,14 @@ class QueryDslWishlistRepositoryTest {
     @Autowired
     private QueryWishlistRepository queryDslWishlistRepository;
     private Product product;
-    private SubscribeProduct subscribeProduct;
-    private File thumbnailFile;
-    private File ebookFile;
-    private TotalDiscountRate totalDiscountRate;
     private Member member;
 
     @BeforeEach
     void setUp() {
-        subscribeProduct = DummySubscribeProduct.dummy();
-        thumbnailFile = DummyFile.dummy("file1/image.png");
-        ebookFile = DummyFile.dummy("file2/ebook.pdf");
-        totalDiscountRate = DummyTotalDiscountRate.dummy();
+        SubscribeProduct subscribeProduct = DummySubscribeProduct.dummy();
+        File thumbnailFile = DummyFile.dummy("file1/image.png");
+        File ebookFile = DummyFile.dummy("file2/ebook.pdf");
+        TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
 
         entityManager.persist(subscribeProduct);
         entityManager.persist(thumbnailFile);
@@ -97,7 +93,7 @@ class QueryDslWishlistRepositoryTest {
                 member.getId(),
                 PageRequest.of(0, 10)
         );
-        assertThat(result.getTotalElements()).isEqualTo(1);
+        assertThat(result.getNumberOfElements()).isEqualTo(1);
         assertThat(result.getContent().get(0).getPk().getMemberId()).isEqualTo(member.getId());
         assertThat(result.getContent().get(0).getPk().getProductId()).isEqualTo(product.getId());
     }

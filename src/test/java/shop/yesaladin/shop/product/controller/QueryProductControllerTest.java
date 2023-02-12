@@ -7,6 +7,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -20,6 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentRequest;
 import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,6 +64,8 @@ class QueryProductControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+    @Autowired
+    private ObjectMapper objectMapper;
     @MockBean
     private QueryProductService service;
 
@@ -626,16 +630,18 @@ class QueryProductControllerTest {
                 .sellingPrice(10000L)
                 .author(List.of("author"))
                 .build();
-        Mockito.when(service.findRecentProductByPublishedDate(PageRequest.of(0, 10)))
+        Mockito.when(service.findRecentViewProductById(List.of(1L), PageRequest.of(0, 10)))
                 .thenReturn(new PageImpl<>(
                         List.of(productRecentResponseDto),
                         PageRequest.of(0, 1),
                         1L
                 ));
+        String body = objectMapper.writeValueAsString(List.of(1L));
 
         //when
-        ResultActions result = mockMvc.perform(get("/v1/products/recentview").with(csrf()));
-
+        ResultActions result = mockMvc.perform(post("/v1/products/recentview").with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body));
         //then
         result.andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
