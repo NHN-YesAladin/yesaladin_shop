@@ -28,6 +28,4 @@ public interface CommandWishlistRepository {
      * @since 1.0
      */
     void deleteByMemberIdAndProductId(Long memberId, Long productId);
-
-    Boolean existsByMemberIdAndProductId(Long memberId, Long productId);
 }

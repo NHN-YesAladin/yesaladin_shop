@@ -3,6 +3,7 @@ package shop.yesaladin.shop.wishlist.service.impl;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -24,6 +25,7 @@ import shop.yesaladin.shop.wishlist.domain.repository.CommandWishlistRepository;
 import shop.yesaladin.shop.wishlist.dto.WishlistSaveResponseDto;
 import shop.yesaladin.shop.wishlist.exception.WishlistAlreadyExistsException;
 import shop.yesaladin.shop.wishlist.exception.WishlistNotFoundException;
+import shop.yesaladin.shop.wishlist.service.inter.QueryWishlistService;
 
 class CommandWishlistServiceImplTest {
 
@@ -31,16 +33,19 @@ class CommandWishlistServiceImplTest {
     private CommandWishlistRepository commandWishlistRepository;
     private QueryMemberService queryMemberService;
     private QueryProductRepository queryProductRepository;
+    private QueryWishlistService queryWishlistService;
 
     @BeforeEach
     void setUp() {
         commandWishlistRepository = mock(CommandWishlistRepository.class);
         queryMemberService = mock(QueryMemberService.class);
         queryProductRepository = mock(QueryProductRepository.class);
+        queryWishlistService = mock(QueryWishlistService.class);
         commandWishlistService = new CommandWishlistServiceImpl(
                 commandWishlistRepository,
                 queryMemberService,
-                queryProductRepository
+                queryProductRepository,
+                queryWishlistService
         );
     }
 
@@ -74,7 +79,7 @@ class CommandWishlistServiceImplTest {
                 .thenReturn(Optional.of(Product.builder().id(1L).build()));
         Mockito.when(queryMemberService.findByLoginId("loginId"))
                 .thenReturn(Member.builder().id(1L).build());
-        Mockito.when(commandWishlistRepository.existsByMemberIdAndProductId(1L, 1L))
+        Mockito.when(queryWishlistService.isExists(any(), eq(1L)))
                 .thenReturn(true);
 
         //when then
@@ -91,7 +96,7 @@ class CommandWishlistServiceImplTest {
                 .thenReturn(Optional.of(Product.builder().id(1L).build()));
         Mockito.when(queryMemberService.findByLoginId("loginId"))
                 .thenReturn(Member.builder().id(1L).build());
-        Mockito.when(commandWishlistRepository.existsByMemberIdAndProductId(1L, 1L))
+        Mockito.when(queryWishlistService.isExists(any(), eq(1L)))
                 .thenReturn(false);
         Mockito.when(commandWishlistRepository.save(any()))
                 .thenReturn(Wishlist.builder()
@@ -119,7 +124,7 @@ class CommandWishlistServiceImplTest {
     void delete_WishlistAlreadyExistsException() {
         Mockito.when(queryMemberService.findByLoginId("loginId"))
                 .thenReturn(Member.builder().id(1L).build());
-        Mockito.when(commandWishlistRepository.existsByMemberIdAndProductId(1L, 1L))
+        Mockito.when(queryWishlistService.isExists(any(), eq(1L)))
                 .thenReturn(false);
         assertThatThrownBy(() -> commandWishlistService.delete("loginId", 1L)).isInstanceOf(
                 WishlistNotFoundException.class);
@@ -130,30 +135,9 @@ class CommandWishlistServiceImplTest {
     void delete_success() {
         Mockito.when(queryMemberService.findByLoginId("loginId"))
                 .thenReturn(Member.builder().id(1L).build());
-        Mockito.when(commandWishlistRepository.existsByMemberIdAndProductId(1L, 1L))
+        Mockito.when(queryWishlistService.isExists(any(), eq(1L)))
                 .thenReturn(true);
         commandWishlistService.delete("loginId", 1L);
         verify(commandWishlistRepository, atLeastOnce()).deleteByMemberIdAndProductId(1L, 1L);
-    }
-
-    @Test
-    @DisplayName("isExists 에서 MemberNotFound 발생")
-    void isExists_MemberNotFound() {
-        Mockito.when(queryMemberService.findByLoginId("loginId"))
-                .thenThrow(new MemberNotFoundException("loginId"));
-        assertThatThrownBy(() -> commandWishlistService.isExists("loginId", 1L)).isInstanceOf(
-                MemberNotFoundException.class);
-    }
-
-    @Test
-    @DisplayName("isExists 성공")
-    void isExists_success() {
-        Mockito.when(queryMemberService.findByLoginId("loginId"))
-                .thenReturn(Member.builder().id(1L).build());
-        Mockito.when(commandWishlistRepository.existsByMemberIdAndProductId(1L, 1L))
-                .thenReturn(true);
-
-        Boolean exists = commandWishlistService.isExists("loginId", 1L);
-        assertThat(exists).isTrue();
     }
 }

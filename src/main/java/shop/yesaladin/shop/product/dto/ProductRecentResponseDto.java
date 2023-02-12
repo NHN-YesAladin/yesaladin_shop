@@ -7,6 +7,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.yesaladin.shop.product.domain.model.Product;
 
+/**
+ * 최근 본 상품과 신간 상품 Response Dto
+ *
+ * @author 김선홍
+ * @since 1.0
+ */
 @Getter
 @Builder
 @NoArgsConstructor

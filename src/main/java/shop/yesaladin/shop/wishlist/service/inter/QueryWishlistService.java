@@ -10,7 +10,7 @@ import shop.yesaladin.shop.wishlist.dto.WishlistResponseDto;
  * @author 김선홍
  * @since 1.0
  */
-public interface QueryDslWishlistService {
+public interface QueryWishlistService {
 
     /**
      * 해당 유저의 위시리스트 조회
@@ -21,4 +21,13 @@ public interface QueryDslWishlistService {
      * @since 1.0
      */
     Page<WishlistResponseDto> findWishlistByMemberId(String loginId, Pageable pageable);
+
+    /**
+     * 위시리스트 등록 유무 확인 등록 되어 있다면 true or false
+     *
+     * @param loginId 확인할 유저의 loginId
+     * @param productId 상품 Id
+     * @return 등록되어 있다면 true or false
+     */
+    Boolean isExists(String loginId, Long productId);
 }

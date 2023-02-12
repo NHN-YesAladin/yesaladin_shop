@@ -49,25 +49,6 @@ public class CommandWishlistController {
     }
 
     /**
-     * 위시리스트 등록 유무 확인
-     *
-     * @param loginId 해당 위시리스트의 유저 loginId
-     * @param productId 확인할 상품의 id
-     * @return 등록되어 있다면 true 아니면 false
-     */
-    @GetMapping("/existence")
-    public ResponseDto<Boolean> isExist(
-            @LoginId(required = true) String loginId,
-            @RequestParam(name = "productid") Long productId
-    ) {
-        return ResponseDto.<Boolean>builder()
-                .status(HttpStatus.OK)
-                .success(true)
-                .data(commandWishlistService.isExists(loginId, productId))
-                .build();
-    }
-
-    /**
      * 위시리스트 삭제 메서드
      *
      * @param loginId   위시리스트의 회원 loginId

@@ -16,7 +16,7 @@ import shop.yesaladin.shop.publish.service.inter.QueryPublishService;
 import shop.yesaladin.shop.wishlist.domain.model.Wishlist;
 import shop.yesaladin.shop.wishlist.domain.repository.QueryWishlistRepository;
 import shop.yesaladin.shop.wishlist.dto.WishlistResponseDto;
-import shop.yesaladin.shop.wishlist.service.inter.QueryDslWishlistService;
+import shop.yesaladin.shop.wishlist.service.inter.QueryWishlistService;
 import shop.yesaladin.shop.writing.dto.AuthorsResponseDto;
 import shop.yesaladin.shop.writing.service.inter.QueryWritingService;
 
@@ -28,7 +28,7 @@ import shop.yesaladin.shop.writing.service.inter.QueryWritingService;
  */
 @RequiredArgsConstructor
 @Service
-public class QueryDslWishlistServiceImpl implements QueryDslWishlistService {
+public class QueryWishlistServiceImpl implements QueryWishlistService {
 
     private static final float PERCENT_DENOMINATOR_VALUE = 100;
     private static final long ROUND_OFF_VALUE = 10;
@@ -72,6 +72,25 @@ public class QueryDslWishlistServiceImpl implements QueryDslWishlistService {
         return new PageImpl<>(list, pageable, wishlists.getTotalElements());
     }
 
+    /**
+     *{@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Boolean isExists(String loginId, Long productId) {
+        Member member = queryMemberService.findByLoginId(loginId);
+        return queryWishlistRepository.existsByMemberIdAndProductId(member.getId(), productId);
+    }
+
+    /**
+     * 판매가 계산
+     *
+     * @param actualPrice 실 가격
+     * @param rate 할인율
+     * @return 판매가
+     * @author 김선홍
+     * @since 1.0
+     */
     private long calcSellingPrice(long actualPrice, int rate) {
         if (rate > 0) {
             return Math.round((actualPrice - actualPrice * rate / PERCENT_DENOMINATOR_VALUE)
@@ -80,6 +99,14 @@ public class QueryDslWishlistServiceImpl implements QueryDslWishlistService {
         return actualPrice;
     }
 
+    /**
+     * 저자 구하는 메서드
+     *
+     * @param product 상품 entity
+     * @return 해당 상품의 저자 리스트
+     * @author 김선홍
+     * @since 1.0
+     */
     private List<AuthorsResponseDto> findAuthorsByProduct(Product product) {
         return queryWritingService.findByProduct(product).stream()
                 .map(AuthorsResponseDto::getAuthorFromWriting)

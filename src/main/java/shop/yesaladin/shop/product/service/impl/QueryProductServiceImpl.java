@@ -498,6 +498,15 @@ public class QueryProductServiceImpl implements QueryProductService {
         ), pageable);
     }
 
+    /**
+     * 신간 상품과 최근 본 상품에서 Entity에서 Dto로 변환해주는 메서드
+     *
+     * @param products Entity 리스트
+     * @param pageable 페이지 정보
+     * @return Dto 리스트
+     * @author 김선홍
+     * @sinco 1.0
+     */
     private Page<ProductRecentResponseDto> createProductRecentResponseDto(
             Page<Product> products,
             Pageable pageable

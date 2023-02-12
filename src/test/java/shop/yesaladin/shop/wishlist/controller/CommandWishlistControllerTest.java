@@ -150,47 +150,4 @@ class CommandWishlistControllerTest {
         //then
         resultActions.andExpect(status().isNotFound());
     }
-
-    @WithMockUser
-    @Test
-    @DisplayName("isExist 시 MemberNotFound")
-    void isExist_MemberNotFound() throws Exception {
-        //given
-        Mockito.when(commandWishlistService.isExists(any(), eq(1L)))
-                .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, ""));
-        //then
-        ResultActions resultActions = mockMvc.perform(get("/v1/wishlist/existence").queryParam(
-                "productid",
-                "1"
-        ).with(csrf()));
-        //when
-        resultActions.andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.success", equalTo(false)))
-                .andExpect(jsonPath("$.status", equalTo(HttpStatus.NOT_FOUND.value())))
-                .andExpect(jsonPath(
-                        "$.errorMessages[0]",
-                        equalTo(ErrorCode.MEMBER_NOT_FOUND.getDisplayName())
-                ));
-    }
-
-    @WithMockUser
-    @Test
-    @DisplayName("isExist 성공")
-    void isExist_success() throws Exception {
-        //given
-        Mockito.when(commandWishlistService.isExists(any(), eq(1L)))
-                .thenReturn(Boolean.TRUE);
-        //when
-        ResultActions resultActions = mockMvc.perform(get("/v1/wishlist/existence").queryParam(
-                "productid",
-                "1"
-        ).with(csrf()));
-        //then
-        resultActions.andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.success", equalTo(true)))
-                .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())))
-                .andExpect(jsonPath("$.data", equalTo(true)));
-    }
 }

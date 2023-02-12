@@ -2,6 +2,8 @@ package shop.yesaladin.shop.wishlist.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -32,7 +34,7 @@ import shop.yesaladin.shop.writing.service.inter.QueryWritingService;
 
 class QueryDslWishlistServiceImplTest {
 
-    private QueryDslWishlistServiceImpl queryDslWishlistService;
+    private QueryWishlistServiceImpl queryDslWishlistService;
     private QueryWishlistRepository queryWishlistRepository;
     private QueryMemberService queryMemberService;
     private QueryPublishService queryPublishService;
@@ -46,7 +48,7 @@ class QueryDslWishlistServiceImplTest {
         queryPublishService = Mockito.mock(QueryPublishService.class);
         queryMemberService = Mockito.mock(QueryMemberService.class);
         queryWritingService = Mockito.mock(QueryWritingService.class);
-        queryDslWishlistService = new QueryDslWishlistServiceImpl(
+        queryDslWishlistService = new QueryWishlistServiceImpl(
                 queryWishlistRepository,
                 queryMemberService,
                 queryPublishService,
@@ -86,7 +88,11 @@ class QueryDslWishlistServiceImplTest {
         Mockito.when(queryPublishService.findByProduct(product))
                 .thenThrow(new PublisherNotFoundException(product.getId()));
         Mockito.when(queryWishlistRepository.findWishlistByMemberId(1L, PageRequest.of(0, 10)))
-                .thenReturn(new PageImpl<>(List.of(Wishlist.create(member, product)), PageRequest.of(0, 10), 1L));
+                .thenReturn(new PageImpl<>(
+                        List.of(Wishlist.create(member, product)),
+                        PageRequest.of(0, 10),
+                        1L
+                ));
 
         //when then
         assertThatThrownBy(() -> queryDslWishlistService.findWishlistByMemberId(
@@ -161,5 +167,31 @@ class QueryDslWishlistServiceImplTest {
         //then
         assertThat(dtoPage.getTotalElements()).isEqualTo(1L);
         assertThat(dtoPage.getContent().get(0).getId()).isEqualTo(1L);
+    }
+
+    @Test
+    @DisplayName("isExists에서 MemberNotFound 발생")
+    void isExists_MemberNotFound() {
+        //given
+        Mockito.when(queryMemberService.findByLoginId("loginId")).thenThrow(
+                new MemberNotFoundException("Member Login Id: loginId"));
+
+        //when then
+        assertThatThrownBy(() -> queryDslWishlistService.isExists(
+                "loginId",
+                1L
+        )).isInstanceOf(MemberNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("isExists에서 성공")
+    void isExists_success() {
+        Mockito.when(queryMemberService.findByLoginId("loginId"))
+                .thenReturn(member);
+        Mockito.when(queryWishlistRepository.existsByMemberIdAndProductId(any(), eq(1L)))
+                .thenReturn(true);
+
+        Boolean result = queryDslWishlistService.isExists("loginId", 1L);
+        assertThat(result).isTrue();
     }
 }

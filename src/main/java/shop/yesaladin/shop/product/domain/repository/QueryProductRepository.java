@@ -144,7 +144,7 @@ public interface QueryProductRepository {
      * 최신 상품 조회 메서드
      *
      * @param pageable 페이지 정보
-     * @return 촤신 상품 리스트
+     * @return 최신 상품 리스트
      * @author 김선홍
      * @since 1,0
      */

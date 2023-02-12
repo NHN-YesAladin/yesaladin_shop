@@ -3,6 +3,7 @@ package shop.yesaladin.shop.wishlist.controller;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -28,17 +29,17 @@ import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.wishlist.dto.WishlistResponseDto;
-import shop.yesaladin.shop.wishlist.service.inter.QueryDslWishlistService;
+import shop.yesaladin.shop.wishlist.service.inter.QueryWishlistService;
 
 @AutoConfigureRestDocs
-@WebMvcTest(QueryDslWishlistController.class)
+@WebMvcTest(QueryWishlistController.class)
 class QueryDslWishlistControllerTest {
 
     @Autowired
     MockMvc mockMvc;
 
     @MockBean
-    QueryDslWishlistService queryDslWishlistService;
+    QueryWishlistService queryDslWishlistService;
 
     @WithMockUser
     @Test
@@ -113,5 +114,56 @@ class QueryDslWishlistControllerTest {
         ResultActions resultActions = mockMvc.perform(post("/v1/wishlist").with(csrf()));
 
         resultActions.andExpect(status().isOk());
+    }
+
+    @WithMockUser
+    @Test
+    @DisplayName("isExists에서 MemberNotFound 발생")
+    void isExists_MemberNotFound() throws Exception {
+        //given
+        Mockito.when(queryDslWishlistService.isExists(
+                        any(),
+                        eq(1L)
+                ))
+                .thenThrow(new ClientException(ErrorCode.PUBLISH_NOT_FOUND, ""));
+        //when
+        ResultActions resultActions = mockMvc.perform(get("/v1/wishlist/existence").queryParam(
+                "productid",
+                "1"
+        ).with(csrf()));
+
+        //then
+        resultActions.andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.NOT_FOUND.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.PUBLISH_NOT_FOUND.getDisplayName())
+                ));
+    }
+
+    @WithMockUser
+    @Test
+    @DisplayName("isExists에서 성공")
+    void isExists_success() throws Exception {
+        //given
+        Mockito.when(queryDslWishlistService.isExists(
+                        any(),
+                        eq(1L)
+                ))
+                .thenReturn(true);
+        //when
+        ResultActions resultActions = mockMvc.perform(get("/v1/wishlist/existence").queryParam(
+                "productid",
+                "1"
+        ).with(csrf()));
+
+        //then
+        resultActions.andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())))
+                .andExpect(jsonPath("$.data", equalTo(true)));
     }
 }

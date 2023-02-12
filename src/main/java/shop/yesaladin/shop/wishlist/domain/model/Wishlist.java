@@ -34,18 +34,18 @@ import shop.yesaladin.shop.product.domain.model.Product;
 public class Wishlist {
 
     @EmbeddedId
-    Pk pk;
+    private Pk pk;
     @Column(name = "registered_datetime")
-    LocalDateTime registeredDateTime;
+    private LocalDateTime registeredDateTime;
 
     @MapsId(value = "memberId")
     @ManyToOne
     @JoinColumn(name = "member_id")
-    Member member;
+    private Member member;
     @MapsId(value = "productId")
     @ManyToOne
     @JoinColumn(name = "product_id")
-    Product product;
+    private Product product;
 
     public static Wishlist create(Member member, Product product) {
         return Wishlist.builder()

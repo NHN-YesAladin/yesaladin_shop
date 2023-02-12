@@ -89,12 +89,30 @@ class QueryDslWishlistRepositoryTest {
         Wishlist wishlist = Wishlist.create(member, product);
         entityManager.persist(wishlist);
 
+        //when
         Page<Wishlist> result = queryDslWishlistRepository.findWishlistByMemberId(
                 member.getId(),
                 PageRequest.of(0, 10)
         );
+        //then
         assertThat(result.getNumberOfElements()).isEqualTo(1);
         assertThat(result.getContent().get(0).getPk().getMemberId()).isEqualTo(member.getId());
         assertThat(result.getContent().get(0).getPk().getProductId()).isEqualTo(product.getId());
+    }
+
+    @Test
+    void isExist() {
+        //given
+        entityManager.persist(product);
+        entityManager.persist(member);
+
+        Wishlist wishlist = Wishlist.create(member, product);
+        entityManager.persist(wishlist);
+
+        Boolean result = queryDslWishlistRepository.existsByMemberIdAndProductId(
+                member.getId(),
+                product.getId()
+        );
+        assertThat(result).isTrue();
     }
 }

@@ -24,7 +24,7 @@ public class QueryDslWishlistRepository implements QueryWishlistRepository {
     private final JPAQueryFactory queryFactory;
 
     /**
-     *{@inheritDoc}
+     * {@inheritDoc}
      */
     @Override
     public Page<Wishlist> findWishlistByMemberId(Long memberId, Pageable pageable) {
@@ -41,5 +41,19 @@ public class QueryDslWishlistRepository implements QueryWishlistRepository {
                 .where(wishlist.pk.memberId.eq(memberId))
                 .fetchFirst();
         return new PageImpl<>(wishlists, pageable, count);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Boolean existsByMemberIdAndProductId(Long memberId, Long productId) {
+        QWishlist wishlist = QWishlist.wishlist;
+
+        return queryFactory.selectFrom(wishlist)
+                .where(wishlist.pk.memberId.eq(memberId)
+                        .and(wishlist.pk.productId.eq(productId))
+                        .and(wishlist.product.isDeleted.isFalse()))
+                .fetchFirst() != null;
     }
 }
