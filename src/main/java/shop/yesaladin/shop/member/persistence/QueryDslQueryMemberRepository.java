@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.member.persistence;
 
-import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDate;
@@ -14,9 +13,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import shop.yesaladin.shop.coupon.domain.model.querydsl.QMemberCoupon;
 import shop.yesaladin.shop.member.domain.model.Member;
-import shop.yesaladin.shop.member.domain.model.MemberAddress;
+import shop.yesaladin.shop.member.domain.model.MemberGrade;
 import shop.yesaladin.shop.member.domain.model.querydsl.QMember;
-import shop.yesaladin.shop.member.domain.model.querydsl.QMemberAddress;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
 import shop.yesaladin.shop.member.dto.MemberIdDto;
 import shop.yesaladin.shop.member.dto.MemberManagerResponseDto;
@@ -269,5 +267,108 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
                 .groupBy(member)
                 .where(member.loginId.eq(loginId))
                 .fetchFirst());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Long countTotalMembers() {
+        QMember member = QMember.member;
+
+        return queryFactory.select(member.count())
+                .from(member)
+                .fetchFirst();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Long countWithdrawMembers() {
+        QMember member = QMember.member;
+
+        return queryFactory.select(member.count())
+                .from(member)
+                .where(member.isWithdrawal.isTrue())
+                .fetchFirst();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Long countBlockedMembers() {
+        QMember member = QMember.member;
+
+        return queryFactory.select(member.count())
+                .from(member)
+                .where(member.isBlocked.isTrue())
+                .fetchFirst();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Long countWhiteMembers() {
+        QMember member = QMember.member;
+
+        return queryFactory.select(member.count())
+                .from(member)
+                .where(member.memberGrade.eq(MemberGrade.WHITE))
+                .fetchFirst();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Long countBronzeMembers() {
+        QMember member = QMember.member;
+
+        return queryFactory.select(member.count())
+                .from(member)
+                .where(member.memberGrade.eq(MemberGrade.BRONZE))
+                .fetchFirst();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Long countSilverMembers() {
+        QMember member = QMember.member;
+
+        return queryFactory.select(member.count())
+                .from(member)
+                .where(member.memberGrade.eq(MemberGrade.SILVER))
+                .fetchFirst();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Long countGoldMembers() {
+        QMember member = QMember.member;
+
+        return queryFactory.select(member.count())
+                .from(member)
+                .where(member.memberGrade.eq(MemberGrade.GOLD))
+                .fetchFirst();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Long countPlatinumMembers() {
+        QMember member = QMember.member;
+
+        return queryFactory.select(member.count())
+                .from(member)
+                .where(member.memberGrade.eq(MemberGrade.PLATINUM))
+                .fetchFirst();
     }
 }

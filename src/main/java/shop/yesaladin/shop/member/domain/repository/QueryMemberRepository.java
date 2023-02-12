@@ -176,4 +176,76 @@ public interface QueryMemberRepository {
      * @since 1.0
      */
     Optional<MemberOrderSheetResponseDto> getMemberOrderData(String loginId);
+
+    /**
+     * 전체 회원 수를 조회 합니다.
+     *
+     * @return 전체 회원 수
+     * @author 송학현
+     * @since 1.0
+     */
+    Long countTotalMembers();
+
+    /**
+     * 전체 탈퇴 회원 수를 조회 합니다.
+     *
+     * @return 전체 탈퇴 회원 수
+     * @author 송학현
+     * @since 1.0
+     */
+    Long countWithdrawMembers();
+
+    /**
+     * 전체 차단 회원 수를 조회 합니다.
+     *
+     * @return 전체 차단 회원 수
+     * @author 송학현
+     * @since 1.0
+     */
+    Long countBlockedMembers();
+
+    /**
+     * 화이트 등급에 해당 하는 전체 회원 수를 조회 합니다.
+     *
+     * @return 화이트 등급에 해당 하는 전체 회원 수
+     * @author 송학현
+     * @since 1.0
+     */
+    Long countWhiteMembers();
+
+    /**
+     * 브론즈 등급에 해당 하는 전체 회원 수를 조회 합니다.
+     *
+     * @return 브론즈 등급에 해당 하는 전체 회원 수
+     * @author 송학현
+     * @since 1.0
+     */
+    Long countBronzeMembers();
+
+    /**
+     * 실버 등급에 해당 하는 전체 회원 수를 조회 합니다.
+     *
+     * @return 실버 등급에 해당 하는 전체 회원 수
+     * @author 송학현
+     * @since 1.0
+     */
+    Long countSilverMembers();
+
+    /**
+     * 골드 등급에 해당 하는 전체 회원 수를 조회 합니다.
+     *
+     * @return 골드 등급에 해당 하는 전체 회원 수
+     * @author 송학현
+     * @since 1.0
+     */
+    Long countGoldMembers();
+
+    /**
+     * 플래티넘 등급에 해당 하는 전체 회원 수를 조회 합니다.
+     *
+     * @return 플래티넘 등급에 해당 하는 전체 회원 수
+     * @author 송학현
+     * @since 1.0
+     */
+    Long countPlatinumMembers();
 }
