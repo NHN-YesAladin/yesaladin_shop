@@ -33,7 +33,7 @@ import shop.yesaladin.shop.wishlist.service.inter.QueryWishlistService;
 
 @AutoConfigureRestDocs
 @WebMvcTest(QueryWishlistController.class)
-class QueryDslWishlistControllerTest {
+class QueryWishlistControllerTest {
 
     @Autowired
     MockMvc mockMvc;

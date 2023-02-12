@@ -26,7 +26,7 @@ import shop.yesaladin.shop.wishlist.service.inter.QueryWishlistService;
 @RestController
 @RequestMapping("/v1/wishlist")
 public class QueryWishlistController {
-    private final QueryWishlistService queryDslWishlistService;
+    private final QueryWishlistService queryWishlistService;
 
     /**
      * 위시리스트 조회 메서드
@@ -40,7 +40,7 @@ public class QueryWishlistController {
             @LoginId(required = true) String loginId,
             @PageableDefault Pageable pageable
     ) {
-        Page<WishlistResponseDto> wishlists = queryDslWishlistService.findWishlistByMemberId(
+        Page<WishlistResponseDto> wishlists = queryWishlistService.findWishlistByMemberId(
                 loginId,
                 pageable
         );
@@ -72,7 +72,7 @@ public class QueryWishlistController {
         return ResponseDto.<Boolean>builder()
                 .status(HttpStatus.OK)
                 .success(true)
-                .data(queryDslWishlistService.isExists(loginId, productId))
+                .data(queryWishlistService.isExists(loginId, productId))
                 .build();
     }
 }

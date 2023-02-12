@@ -32,7 +32,7 @@ import shop.yesaladin.shop.writing.domain.model.Author;
 import shop.yesaladin.shop.writing.dto.WritingResponseDto;
 import shop.yesaladin.shop.writing.service.inter.QueryWritingService;
 
-class QueryDslWishlistServiceImplTest {
+class QueryWishlistServiceImplTest {
 
     private QueryWishlistServiceImpl queryDslWishlistService;
     private QueryWishlistRepository queryWishlistRepository;
