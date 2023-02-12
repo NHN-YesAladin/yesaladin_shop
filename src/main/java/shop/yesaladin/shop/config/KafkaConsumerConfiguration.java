@@ -56,7 +56,7 @@ public class KafkaConsumerConfiguration {
                 List.of(CooperativeStickyAssignor.class)
         );
         props.put(JsonDeserializer.TRUSTED_PACKAGES, "shop.yesaladin.*");
-        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
         props.put(JsonDeserializer.VALUE_DEFAULT_TYPE, HashMap.class);
         return props;
     }

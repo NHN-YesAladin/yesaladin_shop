@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpMethod;
@@ -42,6 +43,7 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberService;
  * @author 김홍대
  * @since 1.0
  */
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class GiveCouponServiceImpl implements GiveCouponService {
@@ -65,6 +67,14 @@ public class GiveCouponServiceImpl implements GiveCouponService {
                 triggerTypeCode,
                 couponId
         );
+
+        for (int i = 0; i < couponGroupAndLimitList.size(); i++) {
+
+            log.info(
+                    "==== [COUPON] trigger type {} & coupon id {}'s coupon group code: {} ====",
+                    triggerTypeCode, couponId, couponGroupAndLimitList.get(i).getCouponGroupCode()
+            );
+        }
 
         List<String> couponGroupCodeList = couponGroupAndLimitList.stream()
                 .map(CouponGroupAndLimitDto::getCouponGroupCode)
@@ -96,13 +106,13 @@ public class GiveCouponServiceImpl implements GiveCouponService {
     @Override
     @Transactional
     public void giveCouponToMember(CouponGiveRequestResponseMessage responseMessage) {
-        CouponCodesAndResultMessageBuilder resultBuilder = CouponCodesAndResultMessage.builder()
-                .couponCodes(responseMessage.getCoupons()
-                        .stream()
-                        .flatMap(coupon -> coupon.getCouponCodes().stream())
-                        .collect(Collectors.toList()));
+        CouponCodesAndResultMessageBuilder resultBuilder = CouponCodesAndResultMessage.builder();
         try {
             checkRequestSucceeded(responseMessage);
+            resultBuilder.couponCodes(responseMessage.getCoupons()
+                    .stream()
+                    .flatMap(coupon -> coupon.getCouponCodes().stream())
+                    .collect(Collectors.toList()));
             String memberId = getMemberIdFromRequestId(responseMessage.getRequestId());
             tryGiveCouponToMember(responseMessage, memberId);
             couponProducer.produceGivenResultMessage(resultBuilder.success(true).build());
