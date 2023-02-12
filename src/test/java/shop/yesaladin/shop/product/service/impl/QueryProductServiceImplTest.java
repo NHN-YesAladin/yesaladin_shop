@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.product.service.impl;
 
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -16,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+\\
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,13 +34,7 @@ import shop.yesaladin.shop.product.domain.model.ProductTypeCode;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
 import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
-import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
-import shop.yesaladin.shop.product.dto.ProductModifyDto;
-import shop.yesaladin.shop.product.dto.ProductOnlyTitleDto;
-import shop.yesaladin.shop.product.dto.ProductRecentResponseDto;
-import shop.yesaladin.shop.product.dto.ProductsResponseDto;
-import shop.yesaladin.shop.product.dto.RelationsResponseDto;
-import shop.yesaladin.shop.product.dto.ViewCartDto;
+import shop.yesaladin.shop.product.dto.*;
 import shop.yesaladin.shop.product.dummy.DummyFile;
 import shop.yesaladin.shop.product.dummy.DummyProduct;
 import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
@@ -63,7 +59,6 @@ class QueryProductServiceImplTest {
     private QueryPublishService queryPublishService;
     private QueryProductTagService queryProductTagService;
     private QueryProductCategoryService queryProductCategoryService;
-    ;
 
     private final Clock clock = Clock.fixed(
             Instant.parse("2023-01-10T00:00:00.000Z"),
@@ -115,7 +110,32 @@ class QueryProductServiceImplTest {
         assertThatThrownBy(() -> service.findTitleByIsbn(isbn)).isInstanceOf(ClientException.class);
     }
 
-    // TODO: ResponseDto 수정
+    @Test
+    @DisplayName("상품 ID로 수량 조회 성공")
+    void findQuantityById_success() {
+        // given
+        Long id = 1L;
+        Long quantity = 100L;
+        Mockito.when(queryProductRepository.findQuantityById(id))
+                .thenReturn(quantity);
+
+        // when
+        Long response = service.findQuantityById(id);
+
+        // then
+        assertThat(response).isEqualTo(quantity);
+    }
+
+    @Test
+    @DisplayName("상품 ISBN으로 제목 조회 실패_ISBN로 조회되는 상품이 없는 경우 예외 발생")
+    void findQuantityById_notExistId_throwProductNotFoundException() {
+        // given
+        Long id = 1L;
+        Mockito.when(queryProductRepository.findQuantityById(id)).thenReturn(null);
+
+        // when then
+        assertThatThrownBy(() -> service.findQuantityById(id)).isInstanceOf(ClientException.class);
+    }
 
     @Test
     @DisplayName("상품 상세 조회 성공")
@@ -569,7 +589,7 @@ class QueryProductServiceImplTest {
         );
 
         assertThat(result.getTotalElements()).isEqualTo(1);
-        assertThat(result.getContent().get(0).getTitle().contains("ex")).isTrue();
+        assertThat(result.getContent().get(0).getTitle()).contains("ex");
     }
 
     @Test

@@ -44,6 +44,7 @@ import shop.yesaladin.shop.product.dummy.DummyProduct;
 import shop.yesaladin.shop.product.dummy.DummySubscribeProduct;
 import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
 
+
 @Transactional
 @SpringBootTest
 class QueryDslOrderQueryRepositoryTest {
@@ -100,18 +101,21 @@ class QueryDslOrderQueryRepositoryTest {
         }
         for (int i = 0; i < 10; i++) {
             NonMemberOrder nonMemberOrder = NonMemberOrder.builder()
-                    .orderNumber("NM-" + i)
+                    .orderNumber("NonMember-order-" + i)
                     .name("non-member-order" + i)
                     .orderDateTime(LocalDateTime.of(2023, 1, i + 1, 0, 0))
                     .expectedTransportDate(LocalDate.of(2023, 1, i + 2))
                     .isHidden(false)
                     .usedPoint(0)
-                    .shippingFee(0)
-                    .wrappingFee(0)
+                    .shippingFee(3000)
+                    .wrappingFee(3000)
+                    .totalAmount(16000)
                     .orderCode(OrderCode.NON_MEMBER_ORDER)
                     .address("address" + i)
                     .nonMemberName("nonMember" + i)
                     .phoneNumber("0101234567" + i)
+                    .recipientName("수령인 이름")
+                    .recipientPhoneNumber("수령인 폰번호")
                     .build();
             nonMemberOrderList.add(nonMemberOrder);
             entityManager.persist(nonMemberOrder);
@@ -121,17 +125,22 @@ class QueryDslOrderQueryRepositoryTest {
             Member member = memberList.get(index);
             System.out.println("member = " + member.getLoginId());
             MemberOrder memberOrder = MemberOrder.builder()
-                    .orderNumber("M-" + i)
+                    .orderNumber("Member-order-" + i)
                     .name("member-order" + i)
                     .orderDateTime(LocalDateTime.of(2023, 1, i + 1, 0, 0))
                     .expectedTransportDate(LocalDate.of(2023, 1, i + 2))
                     .isHidden(false)
                     .usedPoint(0)
-                    .shippingFee(0)
-                    .wrappingFee(0)
+                    .shippingFee(3000)
+                    .wrappingFee(3000)
+                    .totalAmount(16000)
                     .orderCode(OrderCode.MEMBER_ORDER)
+                    .recipientName("friend")
+                    .recipientPhoneNumber("01011111111")
                     .member(member)
                     .memberAddress(memberAddressList.get(index))
+                    .recipientName("수령인 이름")
+                    .recipientPhoneNumber("수령인 폰번호")
                     .build();
             memberOrderList.add(memberOrder);
             entityManager.persist(memberOrder);
@@ -148,14 +157,17 @@ class QueryDslOrderQueryRepositoryTest {
                     .memberAddress(memberAddressList.get(i % 5))
                     .nextRenewalDate(LocalDate.of(2023, i + 1, 1))
                     .subscribeProduct(subscribeProduct)
-                    .orderNumber("S-" + i)
+                    .orderNumber("Subscribe-order-" + i)
                     .orderDateTime(LocalDateTime.of(2023, 1, i + 1, 0, 0))
                     .expectedTransportDate(LocalDate.of(2023, 1, i + 2))
                     .isHidden(false)
                     .usedPoint(0)
-                    .shippingFee(0)
-                    .wrappingFee(0)
+                    .shippingFee(3000)
+                    .wrappingFee(3000)
+                    .totalAmount(16000)
                     .orderCode(OrderCode.MEMBER_SUBSCRIBE)
+                    .recipientName("수령인 이름")
+                    .recipientPhoneNumber("수령인 폰번호")
                     .build();
             SubscribeOrderList subscribeOrder = SubscribeOrderList.builder()
                     .isTransported(true)
@@ -462,7 +474,7 @@ class QueryDslOrderQueryRepositoryTest {
 
     @ParameterizedTest
     @ValueSource(ints = {0, 1, 2, 3, 4})
-    @DisplayName("주문상태조회 dto를 조회 성공 - ready상태가 가장 최근")
+    @DisplayName("주문상태조회 dto를 조회 성공 ")
     void findStatusResponsesByLoginIdAndStatusCode_ready(int index) throws Exception {
         // given
         Member member = memberList.get(index);
@@ -476,11 +488,11 @@ class QueryDslOrderQueryRepositoryTest {
         Page<OrderStatusResponseDto> responses = queryRepository.findSuccessStatusResponsesByLoginIdAndStatus(
                 member.getLoginId(),
                 code,
-                PageRequest.of(0, 300)
+                PageRequest.of(2, 2)
         );
 
         // then
-        Assertions.assertThat(responses).hasSize(6);
+        Assertions.assertThat(responses).hasSize(2);
     }
 
     @ParameterizedTest
@@ -517,6 +529,46 @@ class QueryDslOrderQueryRepositoryTest {
 
         // then
         Assertions.assertThat(responses).isEmpty();
+    }
+
+
+    @ParameterizedTest
+    @ValueSource(ints = {0, 1, 2, 3, 4})
+    @DisplayName("주문 상태에 해당 하는 주문 개수 조회")
+    void getOrderCountByStatusCode(int index) throws Exception {
+        // given
+        Member member = memberList.get(index);
+
+        // when
+        OrderStatusCode code = Arrays.stream(OrderStatusCode.values())
+                .filter(c -> c.getStatusCode() == (index + 1))
+                .findFirst()
+                .get();
+
+        long orderCountByStatusCode = queryRepository.getOrderCountByStatusCode(
+                member.getLoginId(),
+                code
+        );
+
+        // then
+        Assertions.assertThat(orderCountByStatusCode).isEqualTo(6);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {0, 1, 2, 3})
+    @DisplayName("주문 상태에 해당 하는 주문 개수 조회 실패 - COMPLETE 일 때, 맞지않는 코드 값 ")
+    void getOrderCountByStatusCode_notMatchDecrease(int index) throws Exception {
+        // given
+        Member member = memberList.get(index);
+
+        // when
+        long orderCountByStatusCode = queryRepository.getOrderCountByStatusCode(
+                member.getLoginId(),
+                OrderStatusCode.COMPLETE
+        );
+
+        // then
+        Assertions.assertThat(orderCountByStatusCode).isZero();
     }
 
 }

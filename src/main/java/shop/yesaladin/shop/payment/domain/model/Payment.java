@@ -36,6 +36,8 @@ import shop.yesaladin.shop.payment.persistence.converter.PaymentCodeConverter;
 public class Payment {
 
     public static final String CURRENCY_KRW = "KRW";
+    private static final String EASY_PAY = "easyPay";
+    private static final String CARD = "card";
     @Id
     @Column(length = 200)
     private String id;
@@ -94,9 +96,14 @@ public class Payment {
             CascadeType.MERGE})
     private PaymentCancel paymentCancel;
 
+    @OneToOne(mappedBy = "payment", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST,
+            CascadeType.MERGE})
+    private PaymentEasyPay paymentEasyPay;
+
     public static Payment toEntity(JsonNode jsonNode, Order order) {
         String paymentId = jsonNode.get("paymentKey").asText();
 
+        PaymentCode paymentMethod = PaymentCode.findByName(jsonNode.get("method").asText());
         Payment payment = Payment.builder()
                 .id(paymentId)
                 .lastTransactionKey(jsonNode.get("lastTransactionKey").asText())
@@ -116,28 +123,39 @@ public class Payment {
                         .toLocalDateTime())
                 .order(order)
                 .paymentCode(PaymentCode.valueOf(jsonNode.get("type").asText()))
-                .method(PaymentCode.findByName(jsonNode.get("method").asText()))
+                .method(paymentMethod)
                 .status(PaymentCode.valueOf(jsonNode.get("status").asText()))
                 .build();
+        if (paymentMethod.equals(PaymentCode.EASY_PAY)) {
+            PaymentEasyPay easyPay = PaymentEasyPay.builder()
+                    .id(paymentId)
+                    .payment(payment)
+                    .provider(jsonNode.get(EASY_PAY).get("provider").asText())
+                    .discountAmount(jsonNode.get(EASY_PAY).get("discountAmount").asLong())
+                    .amount(jsonNode.get(EASY_PAY).get("amount").asLong())
+                    .build();
+            payment.setPaymentEasyPay(easyPay);
+            return payment;
+        }
         PaymentCard paymentCard = PaymentCard.builder()
                 .id(paymentId)
                 .payment(payment)
-                .amount(jsonNode.get("card").get("amount").asLong())
-                .number(jsonNode.get("card").get("number").asText())
-                .installmentPlanMonths(jsonNode.get("card").get("installmentPlanMonths").asInt())
-                .approveNo(jsonNode.get("card").get("approveNo").asText())
-                .useCardPoint(jsonNode.get("card").get("useCardPoint").asBoolean())
-                .isInterestFree(jsonNode.get("card").get("isInterestFree").asBoolean())
-                .interestPayer(jsonNode.get("card").get("interestPayer").asText())
-                .cardCode(PaymentCode.findByName(jsonNode.get("card").get("cardType").asText()))
-                .ownerCode(PaymentCode.findByName(jsonNode.get("card").get("ownerType").asText()))
-                .acquireStatus(PaymentCode.valueOf(jsonNode.get("card")
+                .amount(jsonNode.get(CARD).get("amount").asLong())
+                .number(jsonNode.get(CARD).get("number").asText())
+                .installmentPlanMonths(jsonNode.get(CARD).get("installmentPlanMonths").asInt())
+                .approveNo(jsonNode.get(CARD).get("approveNo").asText())
+                .useCardPoint(jsonNode.get(CARD).get("useCardPoint").asBoolean())
+                .isInterestFree(jsonNode.get(CARD).get("isInterestFree").asBoolean())
+                .interestPayer(jsonNode.get(CARD).get("interestPayer").asText())
+                .cardCode(PaymentCode.findByName(jsonNode.get(CARD).get("cardType").asText()))
+                .ownerCode(PaymentCode.findByName(jsonNode.get(CARD).get("ownerType").asText()))
+                .acquireStatus(PaymentCode.valueOf(jsonNode.get(CARD)
                         .get("acquireStatus")
                         .asText()))
-                .issuerCode(PaymentCardAcquirerCode.findByName(jsonNode.get("card")
+                .issuerCode(PaymentCardAcquirerCode.findByName(jsonNode.get(CARD)
                         .get("issuerCode")
                         .asText()))
-                .acquirerCode(PaymentCardAcquirerCode.findByName(jsonNode.get("card")
+                .acquirerCode(PaymentCardAcquirerCode.findByName(jsonNode.get(CARD)
                         .get("acquirerCode")
                         .asText()))
                 .build();
@@ -151,6 +169,10 @@ public class Payment {
 
     public void setPaymentCancel(PaymentCancel paymentCancel) {
         this.paymentCancel = paymentCancel;
+    }
+
+    public void setPaymentEasyPay(PaymentEasyPay paymentEasyPay) {
+        this.paymentEasyPay = paymentEasyPay;
     }
 
     public void setStatus(PaymentCode status) {

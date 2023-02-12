@@ -14,6 +14,7 @@ import org.mockito.Mockito;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberGrade;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
@@ -23,8 +24,8 @@ import shop.yesaladin.shop.member.dto.MemberGradeQueryResponseDto;
 import shop.yesaladin.shop.member.dto.MemberLoginResponseDto;
 import shop.yesaladin.shop.member.dto.MemberManagerResponseDto;
 import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
+import shop.yesaladin.shop.member.dto.MemberStatisticsResponseDto;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
-import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 
 class QueryMemberServiceImplTest {
 
@@ -56,7 +57,7 @@ class QueryMemberServiceImplTest {
 
         //when then
         assertThatThrownBy(() -> service.findMemberById(id))
-                .isInstanceOf(MemberNotFoundException.class);
+                .isInstanceOf(ClientException.class);
     }
 
     @Test
@@ -85,7 +86,7 @@ class QueryMemberServiceImplTest {
 
         //when then
         assertThatThrownBy(() -> service.findMemberByNickname(nickname))
-                .isInstanceOf(MemberNotFoundException.class);
+                .isInstanceOf(ClientException.class);
     }
 
     @Test
@@ -114,7 +115,7 @@ class QueryMemberServiceImplTest {
 
         //when then
         assertThatThrownBy(() -> service.findMemberByLoginId(loginId))
-                .isInstanceOf(MemberNotFoundException.class);
+                .isInstanceOf(ClientException.class);
     }
 
     @Test
@@ -143,7 +144,7 @@ class QueryMemberServiceImplTest {
 
         //when, then
         assertThatThrownBy(() -> service.findMemberLoginInfoByLoginId(loginId))
-                .isInstanceOf(MemberNotFoundException.class);
+                .isInstanceOf(ClientException.class);
     }
 
     @Test
@@ -180,7 +181,7 @@ class QueryMemberServiceImplTest {
 
         //when, then
         assertThatThrownBy(() -> service.findMemberLoginInfoByEmail(email))
-                .isInstanceOf(MemberNotFoundException.class);
+                .isInstanceOf(ClientException.class);
     }
 
     @Test
@@ -439,11 +440,11 @@ class QueryMemberServiceImplTest {
         String loginId = "user@1";
 
         Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
-                .thenThrow(MemberNotFoundException.class);
+                .thenThrow(ClientException.class);
 
         //when, then
         assertThatThrownBy(() -> service.getMemberGradeByLoginId(loginId)).isInstanceOf(
-                MemberNotFoundException.class);
+                ClientException.class);
     }
 
     @Test
@@ -470,11 +471,11 @@ class QueryMemberServiceImplTest {
         String loginId = "user@1";
 
         Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
-                .thenThrow(MemberNotFoundException.class);
+                .thenThrow(ClientException.class);
 
         //when, then
         assertThatThrownBy(() -> service.getByLoginId(loginId)).isInstanceOf(
-                MemberNotFoundException.class);
+                ClientException.class);
     }
 
     @Test
@@ -503,5 +504,39 @@ class QueryMemberServiceImplTest {
         assertThat(result.getGrade()).isEqualTo(member.getMemberGrade().getName());
         assertThat(result.getGender()).isEqualTo(
                 member.getMemberGenderCode().getGender() == 1 ? "남" : "여");
+    }
+
+    @Test
+    void getMemberStatistics() throws Exception {
+        //given
+        long totalMembers = 10L;
+        long totalBlocked = 1L;
+        long totalWithdraws = 3L;
+        long totalWhite = 8L;
+        long theOthers = 0L;
+        long totalGold = 1L;
+        long totalPlatinum = 1L;
+
+        Mockito.when(queryMemberRepository.countTotalMembers()).thenReturn(totalMembers);
+        Mockito.when(queryMemberRepository.countBlockedMembers()).thenReturn(totalBlocked);
+        Mockito.when(queryMemberRepository.countWithdrawMembers()).thenReturn(totalWithdraws);
+        Mockito.when(queryMemberRepository.countWhiteMembers()).thenReturn(totalWhite);
+        Mockito.when(queryMemberRepository.countBronzeMembers()).thenReturn(theOthers);
+        Mockito.when(queryMemberRepository.countSilverMembers()).thenReturn(theOthers);
+        Mockito.when(queryMemberRepository.countGoldMembers()).thenReturn(totalGold);
+        Mockito.when(queryMemberRepository.countPlatinumMembers()).thenReturn(totalPlatinum);
+
+        //when
+        MemberStatisticsResponseDto response = service.getMemberStatistics();
+
+        //then
+        assertThat(response.getTotalMembers()).isEqualTo(totalMembers);
+        assertThat(response.getTotalBlockedMembers()).isEqualTo(totalBlocked);
+        assertThat(response.getTotalWithdrawMembers()).isEqualTo(totalWithdraws);
+        assertThat(response.getTotalWhiteGrades()).isEqualTo(totalWhite);
+        assertThat(response.getTotalBronzeGrades()).isEqualTo(theOthers);
+        assertThat(response.getTotalSilverGrades()).isEqualTo(theOthers);
+        assertThat(response.getTotalGoldGrades()).isEqualTo(totalGold);
+        assertThat(response.getTotalPlatinumGrades()).isEqualTo(totalPlatinum);
     }
 }

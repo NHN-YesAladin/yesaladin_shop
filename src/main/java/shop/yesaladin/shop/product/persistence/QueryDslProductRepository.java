@@ -26,6 +26,10 @@ import shop.yesaladin.shop.product.dto.ProductOnlyTitleDto;
 import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
 import shop.yesaladin.shop.publish.domain.model.querydsl.QPublish;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
 /**
  * 상품 조회를 위한 Repository QueryDsl 구현체 입니다.
  *
@@ -52,6 +56,19 @@ public class QueryDslProductRepository implements QueryProductRepository {
                 ))
                 .from(product)
                 .where(product.isbn.eq(isbn))
+                .fetchFirst();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Long findQuantityById(Long id) {
+        QProduct product = QProduct.product;
+
+        return queryFactory.select(product.quantity)
+                .from(product)
+                .where(product.id.eq(id))
                 .fetchFirst();
     }
 

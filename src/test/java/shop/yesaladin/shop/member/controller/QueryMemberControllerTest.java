@@ -1,6 +1,7 @@
 package shop.yesaladin.shop.member.controller;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -41,6 +42,7 @@ import shop.yesaladin.shop.member.domain.model.MemberGrade;
 import shop.yesaladin.shop.member.dto.MemberGradeQueryResponseDto;
 import shop.yesaladin.shop.member.dto.MemberManagerResponseDto;
 import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
+import shop.yesaladin.shop.member.dto.MemberStatisticsResponseDto;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 
@@ -337,9 +339,7 @@ class QueryMemberControllerTest {
     @Test
     void getMemberGrade_fail_memberNotFound() throws Exception {
         //given
-        String loginId = "user@1";
-
-        Mockito.when(queryMemberService.getMemberGradeByLoginId(loginId))
+        Mockito.when(queryMemberService.getMemberGradeByLoginId(any()))
                 .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, ""));
 
         //when
@@ -377,13 +377,12 @@ class QueryMemberControllerTest {
     @Test
     void getMemberGrade_success() throws Exception {
         //given
-        String loginId = "user@1";
         MemberGrade memberGrade = MemberGrade.WHITE;
 
         MemberGradeQueryResponseDto response = ReflectionUtils.newInstance(
                 MemberGradeQueryResponseDto.class, memberGrade.name(), memberGrade.getName());
 
-        Mockito.when(queryMemberService.getMemberGradeByLoginId(loginId)).thenReturn(response);
+        Mockito.when(queryMemberService.getMemberGradeByLoginId(any())).thenReturn(response);
 
         //when
         ResultActions result = mockMvc.perform(get("/v1/members").param("type", "grade"));
@@ -421,7 +420,7 @@ class QueryMemberControllerTest {
         //given
         String loginId = "user@1";
 
-        Mockito.when(queryMemberService.getByLoginId(loginId))
+        Mockito.when(queryMemberService.getByLoginId(any()))
                 .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, ""));
 
         //when
@@ -464,7 +463,7 @@ class QueryMemberControllerTest {
 
         MemberQueryResponseDto response = MemberQueryResponseDto.fromEntity(member);
 
-        Mockito.when(queryMemberService.getByLoginId(loginId)).thenReturn(response);
+        Mockito.when(queryMemberService.getByLoginId(any())).thenReturn(response);
 
         //when
         ResultActions result = mockMvc.perform(get("/v1/members"));
@@ -546,7 +545,6 @@ class QueryMemberControllerTest {
                 loginId
         ));
 
-
         resultActions.andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.data.dataList[0].id", equalTo(1)))
@@ -560,7 +558,10 @@ class QueryMemberControllerTest {
                         equalTo(member.getSignUpDate().toString())
                 ))
                 .andExpect(jsonPath("$.data.dataList[0].withdrawalDate", equalTo(null)))
-                .andExpect(jsonPath("$.data.dataList[0].isWithdrawal", equalTo(member.isWithdrawal())))
+                .andExpect(jsonPath(
+                        "$.data.dataList[0].isWithdrawal",
+                        equalTo(member.isWithdrawal())
+                ))
                 .andExpect(jsonPath("$.data.dataList[0].isBlocked", equalTo(member.isBlocked())))
                 .andExpect(jsonPath("$.data.dataList[0].blockedReason", equalTo(null)))
                 .andExpect(jsonPath("$.data.dataList[0].blockedDate", equalTo(null)))
@@ -586,7 +587,6 @@ class QueryMemberControllerTest {
                 member.getNickname()
         ));
 
-
         resultActions.andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.data.dataList[0].id", equalTo(1)))
@@ -600,7 +600,10 @@ class QueryMemberControllerTest {
                         equalTo(member.getSignUpDate().toString())
                 ))
                 .andExpect(jsonPath("$.data.dataList[0].withdrawalDate", equalTo(null)))
-                .andExpect(jsonPath("$.data.dataList[0].isWithdrawal", equalTo(member.isWithdrawal())))
+                .andExpect(jsonPath(
+                        "$.data.dataList[0].isWithdrawal",
+                        equalTo(member.isWithdrawal())
+                ))
                 .andExpect(jsonPath("$.data.dataList[0].isBlocked", equalTo(member.isBlocked())))
                 .andExpect(jsonPath("$.data.dataList[0].blockedReason", equalTo(null)))
                 .andExpect(jsonPath("$.data.dataList[0].blockedDate", equalTo(null)))
@@ -623,7 +626,6 @@ class QueryMemberControllerTest {
                 phone
         ));
 
-
         resultActions.andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.data.dataList[0].id", equalTo(1)))
@@ -637,7 +639,10 @@ class QueryMemberControllerTest {
                         equalTo(member.getSignUpDate().toString())
                 ))
                 .andExpect(jsonPath("$.data.dataList[0].withdrawalDate", equalTo(null)))
-                .andExpect(jsonPath("$.data.dataList[0].isWithdrawal", equalTo(member.isWithdrawal())))
+                .andExpect(jsonPath(
+                        "$.data.dataList[0].isWithdrawal",
+                        equalTo(member.isWithdrawal())
+                ))
                 .andExpect(jsonPath("$.data.dataList[0].isBlocked", equalTo(member.isBlocked())))
                 .andExpect(jsonPath("$.data.dataList[0].blockedReason", equalTo(null)))
                 .andExpect(jsonPath("$.data.dataList[0].blockedDate", equalTo(null)))
@@ -661,7 +666,6 @@ class QueryMemberControllerTest {
                 name
         ));
 
-
         resultActions.andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.data.dataList[0].id", equalTo(1)))
@@ -675,7 +679,10 @@ class QueryMemberControllerTest {
                         equalTo(member.getSignUpDate().toString())
                 ))
                 .andExpect(jsonPath("$.data.dataList[0].withdrawalDate", equalTo(null)))
-                .andExpect(jsonPath("$.data.dataList[0].isWithdrawal", equalTo(member.isWithdrawal())))
+                .andExpect(jsonPath(
+                        "$.data.dataList[0].isWithdrawal",
+                        equalTo(member.isWithdrawal())
+                ))
                 .andExpect(jsonPath("$.data.dataList[0].isBlocked", equalTo(member.isBlocked())))
                 .andExpect(jsonPath("$.data.dataList[0].blockedReason", equalTo(null)))
                 .andExpect(jsonPath("$.data.dataList[0].blockedDate", equalTo(null)))
@@ -712,10 +719,81 @@ class QueryMemberControllerTest {
                         equalTo(member.getSignUpDate().toString())
                 ))
                 .andExpect(jsonPath("$.data.dataList[0].withdrawalDate", equalTo(null)))
-                .andExpect(jsonPath("$.data.dataList[0].isWithdrawal", equalTo(member.isWithdrawal())))
+                .andExpect(jsonPath(
+                        "$.data.dataList[0].isWithdrawal",
+                        equalTo(member.isWithdrawal())
+                ))
                 .andExpect(jsonPath("$.data.dataList[0].isBlocked", equalTo(member.isBlocked())))
                 .andExpect(jsonPath("$.data.dataList[0].blockedReason", equalTo(null)))
                 .andExpect(jsonPath("$.data.dataList[0].blockedDate", equalTo(null)))
                 .andExpect(jsonPath("$.data.dataList[0].unblockedDate", equalTo(null)));
+    }
+
+    @WithMockUser
+    @Test
+    void getMemberStatistics() throws Exception {
+        //given
+        long totalCount = 10L;
+        long totalWithdraws = 1L;
+        long emptyCount = 0L;
+        MemberStatisticsResponseDto response = MemberStatisticsResponseDto.builder()
+                .totalMembers(totalCount)
+                .totalWithdrawMembers(totalWithdraws)
+                .totalBlockedMembers(emptyCount)
+                .totalWhiteGrades(totalCount)
+                .totalBronzeGrades(emptyCount)
+                .totalSilverGrades(emptyCount)
+                .totalGoldGrades(emptyCount)
+                .totalPlatinumGrades(emptyCount)
+                .build();
+
+        Mockito.when(queryMemberService.getMemberStatistics()).thenReturn(response);
+
+        //when
+        ResultActions resultActions = mockMvc.perform(get("/v1/members/statistics"));
+
+        //then
+        resultActions.andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())))
+                .andExpect(jsonPath("$.data.totalMembers", equalTo(response.getTotalMembers().intValue())))
+                .andExpect(jsonPath("$.data.totalWithdrawMembers", equalTo(response.getTotalWithdrawMembers().intValue())))
+                .andExpect(jsonPath("$.data.totalBlockedMembers", equalTo(response.getTotalBlockedMembers().intValue())))
+                .andExpect(jsonPath("$.data.totalWhiteGrades", equalTo(response.getTotalWhiteGrades().intValue())))
+                .andExpect(jsonPath("$.data.totalBronzeGrades", equalTo(response.getTotalBronzeGrades().intValue())))
+                .andExpect(jsonPath("$.data.totalSilverGrades", equalTo(response.getTotalSilverGrades().intValue())))
+                .andExpect(jsonPath("$.data.totalGoldGrades", equalTo(response.getTotalGoldGrades().intValue())))
+                .andExpect(jsonPath("$.data.totalPlatinumGrades", equalTo(response.getTotalPlatinumGrades().intValue())));
+
+        //docs
+        resultActions.andDo(document(
+                "get-member-statistics-success",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data.totalMembers").type(JsonFieldType.NUMBER)
+                                .description("전체 회원 수"),
+                        fieldWithPath("data.totalWithdrawMembers").type(JsonFieldType.NUMBER)
+                                .description("탈퇴 회원 수"),
+                        fieldWithPath("data.totalBlockedMembers").type(JsonFieldType.NUMBER)
+                                .description("차단된 회원 수"),
+                        fieldWithPath("data.totalWhiteGrades").type(JsonFieldType.NUMBER)
+                                .description("화이트 등급의 회원 수"),
+                        fieldWithPath("data.totalBronzeGrades").type(JsonFieldType.NUMBER)
+                                .description("브론즈 등급의 회원 수"),
+                        fieldWithPath("data.totalSilverGrades").type(JsonFieldType.NUMBER)
+                                .description("실버 등급의 회원 수"),
+                        fieldWithPath("data.totalGoldGrades").type(JsonFieldType.NUMBER)
+                                .description("골드 등급의 회원 수"),
+                        fieldWithPath("data.totalPlatinumGrades").type(JsonFieldType.NUMBER)
+                                .description("플래티넘 등급의 회원 수"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지").optional()
+                )
+        ));
     }
 }

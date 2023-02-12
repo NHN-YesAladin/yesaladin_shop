@@ -21,7 +21,7 @@ import shop.yesaladin.shop.member.dto.MemberLoginResponseDto;
 import shop.yesaladin.shop.member.dto.MemberManagerResponseDto;
 import shop.yesaladin.shop.member.dto.MemberOrderSheetResponseDto;
 import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
-import shop.yesaladin.shop.member.exception.MemberNotFoundException;
+import shop.yesaladin.shop.member.dto.MemberStatisticsResponseDto;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 
 /**
@@ -48,7 +48,10 @@ public class QueryMemberServiceImpl implements QueryMemberService {
     @Override
     public MemberDto findMemberById(long id) {
         Member member = queryMemberRepository.findById(id)
-                .orElseThrow(() -> new MemberNotFoundException("Member Id: " + id));
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.MEMBER_NOT_FOUND,
+                        "Member Id: " + id
+                ));
         return MemberDto.fromEntity(member);
     }
 
@@ -86,7 +89,10 @@ public class QueryMemberServiceImpl implements QueryMemberService {
     @Override
     public MemberDto findMemberByNickname(String nickname) {
         Member member = queryMemberRepository.findMemberByNickname(nickname)
-                .orElseThrow(() -> new MemberNotFoundException("Member Nickname: " + nickname));
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.MEMBER_NOT_FOUND,
+                        "Member Nickname: " + nickname
+                ));
         return MemberDto.fromEntity(member);
     }
 
@@ -122,7 +128,10 @@ public class QueryMemberServiceImpl implements QueryMemberService {
     @Override
     public MemberLoginResponseDto findMemberLoginInfoByEmail(String email) {
         Member member = queryMemberRepository.findMemberByEmail(email)
-                .orElseThrow(() -> new MemberNotFoundException("Member email: " + email));
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.MEMBER_NOT_FOUND,
+                        "Member email: " + email
+                ));
 
         List<String> roles = queryMemberRoleRepository.findMemberRolesByMemberId(member.getId());
 
@@ -142,7 +151,10 @@ public class QueryMemberServiceImpl implements QueryMemberService {
      */
     @Transactional(readOnly = true)
     @Override
-    public Page<MemberManagerResponseDto> findMemberManagesByLoginId(String loginId, Pageable pageable) {
+    public Page<MemberManagerResponseDto> findMemberManagesByLoginId(
+            String loginId,
+            Pageable pageable
+    ) {
         return queryMemberRepository.findMemberManagersByLoginId(loginId, pageable);
     }
 
@@ -151,7 +163,10 @@ public class QueryMemberServiceImpl implements QueryMemberService {
      */
     @Transactional(readOnly = true)
     @Override
-    public Page<MemberManagerResponseDto> findMemberManagesByNickName(String nickname, Pageable pageable) {
+    public Page<MemberManagerResponseDto> findMemberManagesByNickName(
+            String nickname,
+            Pageable pageable
+    ) {
         return queryMemberRepository.findMemberManagersByNickname(nickname, pageable);
     }
 
@@ -160,7 +175,10 @@ public class QueryMemberServiceImpl implements QueryMemberService {
      */
     @Transactional(readOnly = true)
     @Override
-    public Page<MemberManagerResponseDto> findMemberManagesByPhone(String phone, Pageable pageable) {
+    public Page<MemberManagerResponseDto> findMemberManagesByPhone(
+            String phone,
+            Pageable pageable
+    ) {
         return queryMemberRepository.findMemberManagersByPhone(phone, pageable);
     }
 
@@ -179,7 +197,10 @@ public class QueryMemberServiceImpl implements QueryMemberService {
      */
     @Transactional(readOnly = true)
     @Override
-    public Page<MemberManagerResponseDto> findMemberManagesBySignUpDate(LocalDate signUpDate, Pageable pageable) {
+    public Page<MemberManagerResponseDto> findMemberManagesBySignUpDate(
+            LocalDate signUpDate,
+            Pageable pageable
+    ) {
         return queryMemberRepository.findMemberManagersBySignUpDate(signUpDate, pageable);
     }
 
@@ -197,7 +218,10 @@ public class QueryMemberServiceImpl implements QueryMemberService {
     }
 
     private Member getMemberByLoginId(String loginId, Optional<Member> memberByLoginId, String s) {
-        return memberByLoginId.orElseThrow(() -> new MemberNotFoundException(s + loginId));
+        return memberByLoginId.orElseThrow(() -> new ClientException(
+                ErrorCode.MEMBER_NOT_FOUND,
+                s + loginId
+        ));
     }
 
     /**
@@ -275,5 +299,23 @@ public class QueryMemberServiceImpl implements QueryMemberService {
                         ErrorCode.MEMBER_NOT_FOUND,
                         "Member not found with loginId : " + loginId
                 ));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public MemberStatisticsResponseDto getMemberStatistics() {
+        return MemberStatisticsResponseDto.builder()
+                .totalMembers(queryMemberRepository.countTotalMembers())
+                .totalBlockedMembers(queryMemberRepository.countBlockedMembers())
+                .totalWithdrawMembers(queryMemberRepository.countWithdrawMembers())
+                .totalWhiteGrades(queryMemberRepository.countWhiteMembers())
+                .totalBronzeGrades(queryMemberRepository.countBronzeMembers())
+                .totalSilverGrades(queryMemberRepository.countSilverMembers())
+                .totalGoldGrades(queryMemberRepository.countGoldMembers())
+                .totalPlatinumGrades(queryMemberRepository.countPlatinumMembers())
+                .build();
     }
 }

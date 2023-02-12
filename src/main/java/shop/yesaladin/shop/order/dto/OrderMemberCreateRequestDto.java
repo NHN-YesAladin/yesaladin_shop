@@ -8,6 +8,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.order.domain.model.MemberOrder;
@@ -21,6 +22,7 @@ import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
  * @since 1.0
  */
 @Getter
+@NoArgsConstructor
 public class OrderMemberCreateRequestDto extends OrderCreateRequestDto {
 
     @NotNull

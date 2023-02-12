@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
  * @since 1.0
  */
 @Getter
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class MemberUpdateRequestDto {
 
