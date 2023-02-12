@@ -24,6 +24,7 @@ import shop.yesaladin.shop.member.dto.MemberGradeQueryResponseDto;
 import shop.yesaladin.shop.member.dto.MemberLoginResponseDto;
 import shop.yesaladin.shop.member.dto.MemberManagerResponseDto;
 import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
+import shop.yesaladin.shop.member.dto.MemberStatisticsResponseDto;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
 
 class QueryMemberServiceImplTest {
@@ -503,5 +504,39 @@ class QueryMemberServiceImplTest {
         assertThat(result.getGrade()).isEqualTo(member.getMemberGrade().getName());
         assertThat(result.getGender()).isEqualTo(
                 member.getMemberGenderCode().getGender() == 1 ? "남" : "여");
+    }
+
+    @Test
+    void getMemberStatistics() throws Exception {
+        //given
+        long totalMembers = 10L;
+        long totalBlocked = 1L;
+        long totalWithdraws = 3L;
+        long totalWhite = 8L;
+        long theOthers = 0L;
+        long totalGold = 1L;
+        long totalPlatinum = 1L;
+
+        Mockito.when(queryMemberRepository.countTotalMembers()).thenReturn(totalMembers);
+        Mockito.when(queryMemberRepository.countBlockedMembers()).thenReturn(totalBlocked);
+        Mockito.when(queryMemberRepository.countWithdrawMembers()).thenReturn(totalWithdraws);
+        Mockito.when(queryMemberRepository.countWhiteMembers()).thenReturn(totalWhite);
+        Mockito.when(queryMemberRepository.countBronzeMembers()).thenReturn(theOthers);
+        Mockito.when(queryMemberRepository.countSilverMembers()).thenReturn(theOthers);
+        Mockito.when(queryMemberRepository.countGoldMembers()).thenReturn(totalGold);
+        Mockito.when(queryMemberRepository.countPlatinumMembers()).thenReturn(totalPlatinum);
+
+        //when
+        MemberStatisticsResponseDto response = service.getMemberStatistics();
+
+        //then
+        assertThat(response.getTotalMembers()).isEqualTo(totalMembers);
+        assertThat(response.getTotalBlockedMembers()).isEqualTo(totalBlocked);
+        assertThat(response.getTotalWithdrawMembers()).isEqualTo(totalWithdraws);
+        assertThat(response.getTotalWhiteGrades()).isEqualTo(totalWhite);
+        assertThat(response.getTotalBronzeGrades()).isEqualTo(theOthers);
+        assertThat(response.getTotalSilverGrades()).isEqualTo(theOthers);
+        assertThat(response.getTotalGoldGrades()).isEqualTo(totalGold);
+        assertThat(response.getTotalPlatinumGrades()).isEqualTo(totalPlatinum);
     }
 }

@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.payment.service.inter;
 
+import shop.yesaladin.shop.payment.domain.model.Payment;
 import shop.yesaladin.shop.payment.dto.PaymentCompleteSimpleResponseDto;
 
 /**
@@ -10,11 +11,13 @@ import shop.yesaladin.shop.payment.dto.PaymentCompleteSimpleResponseDto;
  */
 public interface QueryPaymentService {
 
+
     /**
-     * 주문 id를 통해 결제 정보를 조회하는 서비스
+     * 주문 id를  통해 결제 정보 조회
      *
-     * @param orderId 찾고자하는 주문 id
-     * @return 결제 정보
+     * @param orderId 주문 id
+     * @return
      */
-    PaymentCompleteSimpleResponseDto findByOrderId(Long orderId);
+    Payment findByOrderId(long orderId);
+
 }

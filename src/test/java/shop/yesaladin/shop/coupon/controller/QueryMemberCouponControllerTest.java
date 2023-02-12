@@ -36,6 +36,7 @@ import shop.yesaladin.coupon.code.CouponTypeCode;
 import shop.yesaladin.shop.common.aspect.advice.LoginIdAspect;
 import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.coupon.dto.MemberCouponSummaryDto;
+import shop.yesaladin.shop.coupon.service.inter.GiveCouponService;
 import shop.yesaladin.shop.coupon.service.inter.QueryMemberCouponService;
 
 @Import({AopAutoConfiguration.class, LoginIdAspect.class})
@@ -48,6 +49,9 @@ class QueryMemberCouponControllerTest {
 
     @MockBean
     private QueryMemberCouponService queryMemberCouponService;
+
+    @MockBean
+    private GiveCouponService giveCouponService;
 
     @Test
     @WithMockUser(username = "loginId")

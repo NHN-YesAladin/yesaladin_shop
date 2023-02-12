@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,6 +16,7 @@ import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.shop.common.aspect.annotation.LoginId;
 import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
+import shop.yesaladin.shop.order.dto.OrderDetailsResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSheetRequestDto;
 import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
@@ -79,6 +81,24 @@ public class QueryOrderController {
         log.error("coupon list : : {}", response.getMemberCoupons());
 
         return ResponseDto.<OrderSheetResponseDto>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(response)
+                .build();
+    }
+
+    /**
+     * 주문 상세 조회를 위한 컨트롤러 메서드
+     *
+     * @param orderNumber 조회할 주문 번호
+     * @return 주문 상세 조회 관련 정보
+     */
+    @GetMapping("/v1/orders/{orderNumber}")
+    public ResponseDto<OrderDetailsResponseDto> getOrderDetails(@PathVariable String orderNumber) {
+        OrderDetailsResponseDto response = queryOrderService.getDetailsDtoByOrderNumber(
+                orderNumber);
+
+        return ResponseDto.<OrderDetailsResponseDto>builder()
                 .success(true)
                 .status(HttpStatus.OK)
                 .data(response)

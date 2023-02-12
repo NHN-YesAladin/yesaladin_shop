@@ -3,6 +3,7 @@ package shop.yesaladin.shop.order.persistence;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -73,5 +74,35 @@ class JpaOrderStatusChangeLogRepositoryTest {
         assertThat(foundOrderStatusChangeLog.get().getPk()).isEqualTo(pk);
         assertThat(foundOrderStatusChangeLog.get().getOrder()).isEqualTo(order);
         assertThat(foundOrderStatusChangeLog.get().getOrderStatusCode()).isEqualTo(orderStatusCode);
+    }
+
+    @Test
+    void findFirstByOrder_IdOrderByOrderStatusCodeDesc() {
+        //given
+        entityManager.persist(orderStatusChangeLog);
+        Long id = orderStatusChangeLog.getOrder().getId();
+
+        OrderStatusChangeLog changeLog1 = OrderStatusChangeLog.create(
+                order,
+                changeDateTime.plusMinutes(2),
+                OrderStatusCode.DEPOSIT
+        );
+        entityManager.persist(changeLog1);
+
+        OrderStatusChangeLog changeLog2 = OrderStatusChangeLog.create(
+                order,
+                changeDateTime.plusMinutes(3),
+                OrderStatusCode.READY
+        );
+        entityManager.persist(changeLog2);
+
+        //when
+        Optional<OrderStatusChangeLog> logOptional = orderStatusChangeLogRepository.findFirstByOrder_IdOrderByOrderStatusCodeDesc(
+                id);
+
+        //then
+        assertThat(logOptional.get().getOrder()).isEqualTo(order);
+        assertThat(logOptional.get()
+                .getOrderStatusCode()).isEqualTo(changeLog2.getOrderStatusCode());
     }
 }

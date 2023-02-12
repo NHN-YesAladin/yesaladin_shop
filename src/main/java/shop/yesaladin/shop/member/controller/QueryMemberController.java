@@ -26,6 +26,7 @@ import shop.yesaladin.shop.member.dto.MemberIdDto;
 import shop.yesaladin.shop.member.dto.MemberManagerResponseDto;
 import shop.yesaladin.shop.member.dto.MemberProfileExistResponseDto;
 import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
+import shop.yesaladin.shop.member.dto.MemberStatisticsResponseDto;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 
 /**
@@ -348,6 +349,24 @@ public class QueryMemberController {
         List<MemberIdDto> data = queryMemberService.findMemberIdsByBirthday(laterDays);
 
         return ResponseDto.<List<MemberIdDto>>builder()
+                .success(true)
+                .data(data)
+                .status(HttpStatus.OK)
+                .build();
+    }
+
+    /**
+     * 관리자가 요청한 회원 통계용 데이터를 조회합니다.
+     *
+     * @return 회원 통계용 데이터
+     * @author 송학현
+     * @since 1.0
+     */
+    @GetMapping("/statistics")
+    public ResponseDto<MemberStatisticsResponseDto> getMemberStatistics() {
+        MemberStatisticsResponseDto data = queryMemberService.getMemberStatistics();
+
+        return ResponseDto.<MemberStatisticsResponseDto>builder()
                 .success(true)
                 .data(data)
                 .status(HttpStatus.OK)

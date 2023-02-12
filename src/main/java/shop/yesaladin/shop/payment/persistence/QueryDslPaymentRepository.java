@@ -9,12 +9,12 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
-import shop.yesaladin.shop.order.domain.model.querydsl.QMemberOrder;
 import shop.yesaladin.shop.order.domain.model.querydsl.QOrder;
 import shop.yesaladin.shop.payment.domain.model.Payment;
 import shop.yesaladin.shop.payment.domain.model.querydsl.QPayment;
 import shop.yesaladin.shop.payment.domain.model.querydsl.QPaymentCancel;
 import shop.yesaladin.shop.payment.domain.model.querydsl.QPaymentCard;
+import shop.yesaladin.shop.payment.domain.model.querydsl.QPaymentEasyPay;
 import shop.yesaladin.shop.payment.domain.repository.QueryPaymentRepository;
 import shop.yesaladin.shop.payment.dto.PaymentCompleteSimpleResponseDto;
 
@@ -44,14 +44,16 @@ public class QueryDslPaymentRepository implements QueryPaymentRepository {
         QPayment payment = QPayment.payment;
         QPaymentCard paymentCard = QPaymentCard.paymentCard;
         QPaymentCancel paymentCancel = QPaymentCancel.paymentCancel;
+        QPaymentEasyPay paymentEasyPay = QPaymentEasyPay.paymentEasyPay;
         QOrder order = QOrder.order;
-
         return Optional.ofNullable(queryFactory.selectFrom(payment)
-                .innerJoin(payment.order, order)
-                .fetchJoin()
-                .innerJoin(payment.paymentCard, paymentCard)
+//                .innerJoin(payment.order, order)
+//                .fetchJoin()
+                .leftJoin(payment.paymentCard, paymentCard)
                 .fetchJoin()
                 .leftJoin(payment.paymentCancel, paymentCancel)
+                .fetchJoin()
+                .leftJoin(payment.paymentEasyPay, paymentEasyPay)
                 .fetchJoin()
                 .where(paymentIdEq(payment, id), orderIdEq(payment, orderId))
                 .fetchFirst());
@@ -70,7 +72,6 @@ public class QueryDslPaymentRepository implements QueryPaymentRepository {
         QPaymentCard paymentCard = QPaymentCard.paymentCard;
         QPaymentCancel paymentCancel = QPaymentCancel.paymentCancel;
         QOrder order = QOrder.order;
-        QMemberOrder memberOrder = QMemberOrder.memberOrder;
 
         return Optional.ofNullable(queryFactory.select(
                         Projections.constructor(
@@ -83,13 +84,18 @@ public class QueryDslPaymentRepository implements QueryPaymentRepository {
                                 Expressions.asString("ordererName"),
                                 payment.order.orderNumber,
                                 payment.order.name,
+                                payment.order.recipientName,
+                                payment.order.recipientPhoneNumber,
                                 Expressions.asString("orderAddress"),
                                 payment.paymentCard.cardCode,
                                 payment.paymentCard.ownerCode,
                                 payment.paymentCard.number,
                                 payment.paymentCard.installmentPlanMonths,
                                 payment.paymentCard.approveNo,
-                                payment.paymentCard.acquirerCode
+                                payment.paymentCard.acquirerCode,
+                                Expressions.asString("easyPayProvider"),
+                                Expressions.asNumber(0L),
+                                Expressions.asNumber(0L)
                         )
                 )
                 .from(payment)
