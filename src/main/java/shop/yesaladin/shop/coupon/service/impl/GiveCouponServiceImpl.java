@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +24,7 @@ import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.common.exception.ServerException;
 import shop.yesaladin.coupon.code.TriggerTypeCode;
+import shop.yesaladin.coupon.dto.CouponGiveDto;
 import shop.yesaladin.coupon.message.CouponCodesAndResultMessage;
 import shop.yesaladin.coupon.message.CouponCodesAndResultMessage.CouponCodesAndResultMessageBuilder;
 import shop.yesaladin.coupon.message.CouponGiveRequestMessage;
@@ -63,24 +65,18 @@ public class GiveCouponServiceImpl implements GiveCouponService {
     public void sendCouponGiveRequest(
             String memberId, TriggerTypeCode triggerTypeCode, Long couponId
     ) {
+        registerIssueRequest(memberId, triggerTypeCode.name(), couponId.toString());
         List<CouponGroupAndLimitDto> couponGroupAndLimitList = getCouponGroupAndLimit(
                 triggerTypeCode,
                 couponId
         );
-
-        for (int i = 0; i < couponGroupAndLimitList.size(); i++) {
-
-            log.info(
-                    "==== [COUPON] trigger type {} & coupon id {}'s coupon group code: {} ====",
-                    triggerTypeCode, couponId, couponGroupAndLimitList.get(i).getCouponGroupCode()
-            );
-        }
 
         List<String> couponGroupCodeList = couponGroupAndLimitList.stream()
                 .map(CouponGroupAndLimitDto::getCouponGroupCode)
                 .collect(Collectors.toList());
 
         checkMemberAlreadyHasCoupon(memberId, triggerTypeCode, couponId, couponGroupCodeList);
+
 
         if (Objects.isNull(couponId)) {
             generateRequestIdAndSendMessage(
@@ -92,14 +88,12 @@ public class GiveCouponServiceImpl implements GiveCouponService {
             return;
         }
 
-        couponGroupAndLimitList.forEach(couponGroupAndLimit ->
-                generateRequestIdAndSendMessage(
-                        memberId,
-                        triggerTypeCode,
-                        couponId,
-                        couponGroupAndLimit
-                )
-        );
+        couponGroupAndLimitList.forEach(couponGroupAndLimit -> generateRequestIdAndSendMessage(
+                memberId,
+                triggerTypeCode,
+                couponId,
+                couponGroupAndLimit
+        ));
 
     }
 
@@ -109,18 +103,37 @@ public class GiveCouponServiceImpl implements GiveCouponService {
         CouponCodesAndResultMessageBuilder resultBuilder = CouponCodesAndResultMessage.builder();
         try {
             checkRequestSucceeded(responseMessage);
+            String memberId = getMemberIdFromRequestId(responseMessage.getRequestId());
+            checkMemberAlreadyHasCoupon(
+                    memberId,
+                    null,
+                    null,
+                    responseMessage.getCoupons().stream().map(CouponGiveDto::getCouponGroupCode).collect(
+                            Collectors.toList())
+            );
             resultBuilder.couponCodes(responseMessage.getCoupons()
                     .stream()
                     .flatMap(coupon -> coupon.getCouponCodes().stream())
                     .collect(Collectors.toList()));
-            String memberId = getMemberIdFromRequestId(responseMessage.getRequestId());
             tryGiveCouponToMember(responseMessage, memberId);
             couponProducer.produceGivenResultMessage(resultBuilder.success(true).build());
         } catch (Exception e) {
             couponProducer.produceGivenResultMessage(resultBuilder.success(false).build());
             throw e;
         }
+    }
 
+    public void registerIssueRequest(
+            String memberId, String triggerTypeCode, String couponId
+    ) {
+        String issueRequestKey = memberId.concat(triggerTypeCode).concat(couponId);
+
+        if (Boolean.TRUE.equals(redisTemplate.hasKey(issueRequestKey))) {
+            // 요청을 등록하지 않는다.
+            throw new ClientException(ErrorCode.BAD_REQUEST, "이미 처리된 요청입니다.");
+        }
+
+        redisTemplate.opsForValue().set(issueRequestKey, "", 10, TimeUnit.SECONDS);
     }
 
     private List<CouponGroupAndLimitDto> getCouponGroupAndLimit(
