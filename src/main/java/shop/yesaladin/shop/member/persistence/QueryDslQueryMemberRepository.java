@@ -273,7 +273,7 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
      * {@inheritDoc}
      */
     @Override
-    public Long countTotalMembers() {
+    public long countTotalMembers() {
         QMember member = QMember.member;
 
         return queryFactory.select(member.count())
@@ -285,7 +285,7 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
      * {@inheritDoc}
      */
     @Override
-    public Long countWithdrawMembers() {
+    public long countWithdrawMembers() {
         QMember member = QMember.member;
 
         return queryFactory.select(member.count())
@@ -298,7 +298,7 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
      * {@inheritDoc}
      */
     @Override
-    public Long countBlockedMembers() {
+    public long countBlockedMembers() {
         QMember member = QMember.member;
 
         return queryFactory.select(member.count())
@@ -311,7 +311,7 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
      * {@inheritDoc}
      */
     @Override
-    public Long countWhiteMembers() {
+    public long countWhiteMembers() {
         QMember member = QMember.member;
 
         return queryFactory.select(member.count())
@@ -324,7 +324,7 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
      * {@inheritDoc}
      */
     @Override
-    public Long countBronzeMembers() {
+    public long countBronzeMembers() {
         QMember member = QMember.member;
 
         return queryFactory.select(member.count())
@@ -337,7 +337,7 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
      * {@inheritDoc}
      */
     @Override
-    public Long countSilverMembers() {
+    public long countSilverMembers() {
         QMember member = QMember.member;
 
         return queryFactory.select(member.count())
@@ -350,7 +350,7 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
      * {@inheritDoc}
      */
     @Override
-    public Long countGoldMembers() {
+    public long countGoldMembers() {
         QMember member = QMember.member;
 
         return queryFactory.select(member.count())
@@ -363,7 +363,7 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
      * {@inheritDoc}
      */
     @Override
-    public Long countPlatinumMembers() {
+    public long countPlatinumMembers() {
         QMember member = QMember.member;
 
         return queryFactory.select(member.count())

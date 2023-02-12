@@ -184,7 +184,7 @@ public interface QueryMemberRepository {
      * @author 송학현
      * @since 1.0
      */
-    Long countTotalMembers();
+    long countTotalMembers();
 
     /**
      * 전체 탈퇴 회원 수를 조회 합니다.
@@ -193,7 +193,7 @@ public interface QueryMemberRepository {
      * @author 송학현
      * @since 1.0
      */
-    Long countWithdrawMembers();
+    long countWithdrawMembers();
 
     /**
      * 전체 차단 회원 수를 조회 합니다.
@@ -202,7 +202,7 @@ public interface QueryMemberRepository {
      * @author 송학현
      * @since 1.0
      */
-    Long countBlockedMembers();
+    long countBlockedMembers();
 
     /**
      * 화이트 등급에 해당 하는 전체 회원 수를 조회 합니다.
@@ -211,7 +211,7 @@ public interface QueryMemberRepository {
      * @author 송학현
      * @since 1.0
      */
-    Long countWhiteMembers();
+    long countWhiteMembers();
 
     /**
      * 브론즈 등급에 해당 하는 전체 회원 수를 조회 합니다.
@@ -220,7 +220,7 @@ public interface QueryMemberRepository {
      * @author 송학현
      * @since 1.0
      */
-    Long countBronzeMembers();
+    long countBronzeMembers();
 
     /**
      * 실버 등급에 해당 하는 전체 회원 수를 조회 합니다.
@@ -229,7 +229,7 @@ public interface QueryMemberRepository {
      * @author 송학현
      * @since 1.0
      */
-    Long countSilverMembers();
+    long countSilverMembers();
 
     /**
      * 골드 등급에 해당 하는 전체 회원 수를 조회 합니다.
@@ -238,7 +238,7 @@ public interface QueryMemberRepository {
      * @author 송학현
      * @since 1.0
      */
-    Long countGoldMembers();
+    long countGoldMembers();
 
     /**
      * 플래티넘 등급에 해당 하는 전체 회원 수를 조회 합니다.
@@ -247,5 +247,5 @@ public interface QueryMemberRepository {
      * @author 송학현
      * @since 1.0
      */
-    Long countPlatinumMembers();
+    long countPlatinumMembers();
 }
