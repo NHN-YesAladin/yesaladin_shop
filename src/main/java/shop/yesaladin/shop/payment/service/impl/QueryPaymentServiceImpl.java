@@ -25,7 +25,6 @@ import shop.yesaladin.shop.payment.service.inter.QueryPaymentService;
 public class QueryPaymentServiceImpl implements QueryPaymentService {
 
     private final QueryPaymentRepository queryPaymentRepository;
-//    private final QueryOrderService queryOrderService;
 
     /**
      * {@inheritDoc}
@@ -37,25 +36,4 @@ public class QueryPaymentServiceImpl implements QueryPaymentService {
                 ErrorCode.PAYMENT_NOT_FOUND, ErrorCode.PAYMENT_NOT_FOUND.getDisplayName()));
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Transactional(readOnly = true)
-    @Override
-    public PaymentCompleteSimpleResponseDto findSimpleDtoByOrderId(Long orderId) {
-        PaymentCompleteSimpleResponseDto responseDto = queryPaymentRepository.findSimpleDtoById(
-                null,
-                orderId
-        ).orElseThrow(() -> new PaymentNotFoundException(orderId));
-//        OrderPaymentResponseDto nameAndAddress = queryOrderService.getPaymentDtoByMemberOrderId(
-//                orderId);
-//        responseDto.setUserInfo(
-//                nameAndAddress.getOrdererName(),
-//                nameAndAddress.getAddress(),
-//                null,
-//                null
-//        );
-
-        return responseDto;
-    }
 }

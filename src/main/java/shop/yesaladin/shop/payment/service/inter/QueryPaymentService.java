@@ -20,11 +20,4 @@ public interface QueryPaymentService {
      */
     Payment findByOrderId(long orderId);
 
-    /**
-     * 주문 id를 통해 결제 정보를 조회하는 서비스
-     *
-     * @param orderId 찾고자하는 주문 id
-     * @return 결제 정보
-     */
-    PaymentCompleteSimpleResponseDto findSimpleDtoByOrderId(Long orderId);
 }
