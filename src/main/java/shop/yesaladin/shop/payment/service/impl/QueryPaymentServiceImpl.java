@@ -31,7 +31,6 @@ public class QueryPaymentServiceImpl implements QueryPaymentService {
      */
     @Override
     public Payment findByOrderId(long orderId) {
-        //TODO 서비스 테스트 필요
         return queryPaymentRepository.findById(null, orderId).orElseThrow(() -> new ClientException(
                 ErrorCode.PAYMENT_NOT_FOUND, ErrorCode.PAYMENT_NOT_FOUND.getDisplayName()));
     }
