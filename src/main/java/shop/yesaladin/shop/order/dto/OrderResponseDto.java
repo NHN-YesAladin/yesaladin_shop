@@ -2,7 +2,6 @@ package shop.yesaladin.shop.order.dto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import javax.persistence.Column;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.yesaladin.shop.order.domain.model.MemberOrder;

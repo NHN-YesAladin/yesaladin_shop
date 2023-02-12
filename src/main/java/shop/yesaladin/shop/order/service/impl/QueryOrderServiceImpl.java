@@ -313,8 +313,10 @@ public class QueryOrderServiceImpl implements QueryOrderService {
             setPaymentToResponseByOrderId(responseDto, order);
         } catch (ClientException e) {
             if (!e.getErrorCode().equals(ErrorCode.PAYMENT_NOT_FOUND)) {
-                throw new ClientException(ErrorCode.BAD_REQUEST,
-                        ErrorCode.BAD_REQUEST.getDisplayName());
+                throw new ClientException(
+                        ErrorCode.BAD_REQUEST,
+                        ErrorCode.BAD_REQUEST.getDisplayName()
+                );
             }
             //ignore
             responseDto.setPayment(null);

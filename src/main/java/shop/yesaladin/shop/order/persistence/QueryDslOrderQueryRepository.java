@@ -305,7 +305,7 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
                         .eq((long) code.getStatusCode())).fetch().size();
 
         return new PageImpl(data, pageable, size);
-        //TODO Total count 를 계산하기 위해서는 list의 사이즈가 필요해서 PageImpl 사용
+        //Total count 를 계산하기 위해서는 list의 사이즈가 필요해서 PageImpl 사용
     }
 
     /**

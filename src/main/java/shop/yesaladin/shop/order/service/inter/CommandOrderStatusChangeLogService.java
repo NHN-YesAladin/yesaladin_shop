@@ -50,8 +50,8 @@ public interface CommandOrderStatusChangeLogService {
      * 주문 상태 변경 로그를 추가합니다.
      *
      * @param orderChangeDateTime 변경 이력 시간
-     * @param order 상태 변경을 할 주문
-     * @param code 주문 상태
+     * @param order               상태 변경을 할 주문
+     * @param code                주문 상태
      */
     void appendOrderStatusChangeLog(
             LocalDateTime orderChangeDateTime,

@@ -1,7 +1,5 @@
 package shop.yesaladin.shop.order.persistence;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -28,10 +26,8 @@ import shop.yesaladin.shop.order.dto.OrderProductResponseDto;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
-import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
 import shop.yesaladin.shop.product.dummy.DummyFile;
 import shop.yesaladin.shop.product.dummy.DummyProduct;
-import shop.yesaladin.shop.product.dummy.DummySubscribeProduct;
 import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
 
 
@@ -129,7 +125,7 @@ class QueryDslOrderProductRepositoryTest {
                 .memberAddress(memberAddress)
                 .nextRenewalDate(LocalDate.of(2023, 1, 1))
                 .subscribeProduct(subscribeProduct)
-                .orderNumber("Subscribe-order-" )
+                .orderNumber("Subscribe-order-")
                 .orderDateTime(LocalDateTime.of(2023, 1, 1, 0, 0))
                 .expectedTransportDate(LocalDate.of(2023, 1, 2))
                 .isHidden(false)

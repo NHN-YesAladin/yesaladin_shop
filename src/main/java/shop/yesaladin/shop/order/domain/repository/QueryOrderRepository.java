@@ -6,7 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
-import shop.yesaladin.shop.order.dto.OrderDetailsResponseDto;
 import shop.yesaladin.shop.order.dto.OrderPaymentResponseDto;
 import shop.yesaladin.shop.order.dto.OrderStatusResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
@@ -144,8 +143,8 @@ public interface QueryOrderRepository {
     /**
      * status code에 따른 주문 개수를 조회합니다.
      *
-     * @param loginId  회원의 로그인 아이디
-     * @param code     주문 상태
+     * @param loginId 회원의 로그인 아이디
+     * @param code    주문 상태
      * @return 주문 개수
      * @author 배수한
      * @since 1.0

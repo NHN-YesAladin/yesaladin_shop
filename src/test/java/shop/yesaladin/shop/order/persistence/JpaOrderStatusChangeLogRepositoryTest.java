@@ -102,6 +102,7 @@ class JpaOrderStatusChangeLogRepositoryTest {
 
         //then
         assertThat(foundOrderStatusChangeLogs.get(0).getOrder()).isEqualTo(order);
-        assertThat(foundOrderStatusChangeLogs.get(0).getOrderStatusCode()).isEqualTo(changeLog2.getOrderStatusCode());
+        assertThat(foundOrderStatusChangeLogs.get(0)
+                .getOrderStatusCode()).isEqualTo(changeLog2.getOrderStatusCode());
     }
 }

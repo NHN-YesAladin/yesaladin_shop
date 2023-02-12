@@ -47,7 +47,7 @@ class QueryPaymentServiceImplTest {
         queryPaymentRepository = Mockito.mock(QueryPaymentRepository.class);
         queryOrderService = Mockito.mock(QueryOrderService.class);
 
-        //TODO 순환참조로 인한 테스트 수정 : 서비스 수정필요
+        //TODO 순환참조로 인한 테스트 수정 : 서비스 수정필요 / 비즈니스로직에는 문제없음
         queryPaymentService = new QueryPaymentServiceImpl(
                 queryPaymentRepository
 //                queryOrderService
@@ -95,7 +95,8 @@ class QueryPaymentServiceImplTest {
                 orderPaymentResponseDto);
 
         // when
-        PaymentCompleteSimpleResponseDto returnedDto = queryPaymentService.findSimpleDtoByOrderId(memberOrder.getId());
+        PaymentCompleteSimpleResponseDto returnedDto = queryPaymentService.findSimpleDtoByOrderId(
+                memberOrder.getId());
 
         // then
         assertThat(returnedDto.getCardNumber()).isEqualTo(payment.getPaymentCard().getNumber());

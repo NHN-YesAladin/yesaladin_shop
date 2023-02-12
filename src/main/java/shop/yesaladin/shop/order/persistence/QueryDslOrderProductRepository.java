@@ -22,6 +22,7 @@ import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
 @RequiredArgsConstructor
 @Repository
 public class QueryDslOrderProductRepository implements QueryOrderProductRepository {
+
     private final JPAQueryFactory queryFactory;
 
     /**
