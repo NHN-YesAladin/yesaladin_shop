@@ -2,6 +2,7 @@ package shop.yesaladin.shop.order.domain.repository;
 
 import java.util.List;
 import java.util.Optional;
+import org.apache.kafka.common.quota.ClientQuotaAlteration.Op;
 import shop.yesaladin.shop.order.domain.model.OrderStatusChangeLog;
 import shop.yesaladin.shop.order.domain.model.OrderStatusChangeLog.Pk;
 
@@ -32,7 +33,7 @@ public interface QueryOrderStatusChangeLogRepository {
      * @author 배수한
      * @since 1.0
      */
-    List<OrderStatusChangeLog> findAllByOrder_IdOrderByOrderStatusCodeDesc(Long orderId);
+    Optional<OrderStatusChangeLog> findFirstByOrder_IdOrderByOrderStatusCodeDesc(Long orderId);
 
 
 }

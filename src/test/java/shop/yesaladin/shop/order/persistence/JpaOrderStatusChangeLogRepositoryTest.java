@@ -77,7 +77,7 @@ class JpaOrderStatusChangeLogRepositoryTest {
     }
 
     @Test
-    void findByOrderId() {
+    void findFirstByOrder_IdOrderByOrderStatusCodeDesc() {
         //given
         entityManager.persist(orderStatusChangeLog);
         Long id = orderStatusChangeLog.getOrder().getId();
@@ -97,12 +97,12 @@ class JpaOrderStatusChangeLogRepositoryTest {
         entityManager.persist(changeLog2);
 
         //when
-        List<OrderStatusChangeLog> foundOrderStatusChangeLogs = orderStatusChangeLogRepository.findAllByOrder_IdOrderByOrderStatusCodeDesc(
+        Optional<OrderStatusChangeLog> logOptional = orderStatusChangeLogRepository.findFirstByOrder_IdOrderByOrderStatusCodeDesc(
                 id);
 
         //then
-        assertThat(foundOrderStatusChangeLogs.get(0).getOrder()).isEqualTo(order);
-        assertThat(foundOrderStatusChangeLogs.get(0)
+        assertThat(logOptional.get().getOrder()).isEqualTo(order);
+        assertThat(logOptional.get()
                 .getOrderStatusCode()).isEqualTo(changeLog2.getOrderStatusCode());
     }
 }

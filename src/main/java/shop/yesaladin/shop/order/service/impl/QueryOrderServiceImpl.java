@@ -110,8 +110,7 @@ public class QueryOrderServiceImpl implements QueryOrderService {
         LocalDate endDate = queryDto.getEndDateOrDefaultValue(clock);
 
         checkRequestedOffsetInBounds(startDate, endDate, memberId, pageable);
-        return queryOrderRepository.findAllOrdersInPeriodByMemberId(
-                startDate,
+        return queryOrderRepository.findAllOrdersInPeriodByMemberId(startDate,
                 endDate,
                 memberId,
                 pageable
@@ -138,8 +137,7 @@ public class QueryOrderServiceImpl implements QueryOrderService {
     @Override
     @Transactional(readOnly = true)
     public OrderSheetResponseDto getNonMemberOrderSheetData(OrderSheetRequestDto request) {
-        List<ProductOrderSheetResponseDto> orderProducts = getProductOrder(
-                request.getIsbn(),
+        List<ProductOrderSheetResponseDto> orderProducts = getProductOrder(request.getIsbn(),
                 request.getQuantity()
         );
         return new OrderSheetResponseDto(orderProducts);
@@ -151,8 +149,7 @@ public class QueryOrderServiceImpl implements QueryOrderService {
     @Override
     @Transactional(readOnly = true)
     public OrderSheetResponseDto getMemberOrderSheetData(
-            OrderSheetRequestDto request,
-            String loginId
+            OrderSheetRequestDto request, String loginId
     ) {
         checkValidLoginId(loginId);
 
@@ -160,24 +157,20 @@ public class QueryOrderServiceImpl implements QueryOrderService {
     }
 
     private OrderSheetResponseDto getOrderSheetDataForMember(
-            OrderSheetRequestDto request,
-            String loginId
+            OrderSheetRequestDto request, String loginId
     ) {
         MemberOrderSheetResponseDto member = queryMemberService.getMemberForOrder(loginId);
         List<MemberAddressResponseDto> memberAddress = queryMemberAddressService.getByLoginId(
                 loginId);
-        List<ProductOrderSheetResponseDto> orderProducts = getProductOrder(
-                request.getIsbn(),
+        List<ProductOrderSheetResponseDto> orderProducts = getProductOrder(request.getIsbn(),
                 request.getQuantity()
         );
 
-        List<MemberCouponSummaryDto> memberCoupons = getMemberCoupons(
-                loginId,
+        List<MemberCouponSummaryDto> memberCoupons = getMemberCoupons(loginId,
                 member.getCouponCount()
         );
 
-        return new OrderSheetResponseDto(
-                member,
+        return new OrderSheetResponseDto(member,
                 queryPointHistoryService.getMemberPoint(loginId),
                 orderProducts,
                 memberAddress,
@@ -186,8 +179,7 @@ public class QueryOrderServiceImpl implements QueryOrderService {
     }
 
     private List<ProductOrderSheetResponseDto> getProductOrder(
-            List<String> isbnList,
-            List<Integer> quantityList
+            List<String> isbnList, List<Integer> quantityList
     ) {
         Map<String, Integer> products = IntStream.range(0, isbnList.size())
                 .boxed()
@@ -197,16 +189,14 @@ public class QueryOrderServiceImpl implements QueryOrderService {
     }
 
     private List<MemberCouponSummaryDto> getMemberCoupons(
-            String loginId,
-            int totalPage
+            String loginId, int totalPage
     ) {
         int offset = 20;
         List<MemberCouponSummaryDto> memberCoupons = new ArrayList<>();
 
         PaginatedResponseDto<MemberCouponSummaryDto> coupons;
         for (int i = 0; i < totalPage; i++) {
-            coupons = queryMemberCouponService.getMemberCouponSummaryList(
-                    PageRequest.of(i, offset),
+            coupons = queryMemberCouponService.getMemberCouponSummaryList(PageRequest.of(i, offset),
                     loginId,
                     true
             );
@@ -221,9 +211,7 @@ public class QueryOrderServiceImpl implements QueryOrderService {
     @Override
     @Transactional(readOnly = true)
     public Page<OrderSummaryResponseDto> getOrderListInPeriodByMemberId(
-            PeriodQueryRequestDto queryDto,
-            String loginId,
-            Pageable pageable
+            PeriodQueryRequestDto queryDto, String loginId, Pageable pageable
     ) {
         Member foundMember = queryMemberService.findByLoginId(loginId);
         queryDto.validate(clock);
@@ -232,8 +220,7 @@ public class QueryOrderServiceImpl implements QueryOrderService {
         LocalDate endDate = queryDto.getEndDateOrDefaultValue(clock);
 
         checkRequestedOffsetInBounds(startDate, endDate, foundMember.getId(), pageable);
-        return queryOrderRepository.findOrdersInPeriodByMemberId(
-                startDate,
+        return queryOrderRepository.findOrdersInPeriodByMemberId(startDate,
                 endDate,
                 foundMember.getId(),
                 pageable
@@ -256,13 +243,10 @@ public class QueryOrderServiceImpl implements QueryOrderService {
     @Override
     @Transactional(readOnly = true)
     public Page<OrderStatusResponseDto> getStatusResponsesByLoginIdAndStatus(
-            String loginId,
-            OrderStatusCode code,
-            Pageable pageable
+            String loginId, OrderStatusCode code, Pageable pageable
     ) {
         checkValidLoginId(loginId);
-        return queryOrderRepository.findSuccessStatusResponsesByLoginIdAndStatus(
-                loginId,
+        return queryOrderRepository.findSuccessStatusResponsesByLoginIdAndStatus(loginId,
                 code,
                 pageable
         );
@@ -282,10 +266,7 @@ public class QueryOrderServiceImpl implements QueryOrderService {
                     || code.equals(OrderStatusCode.CANCEL)) {
                 continue;
             }
-            long count = queryOrderRepository.getOrderCountByStatusCode(
-                    loginId,
-                    code
-            );
+            long count = queryOrderRepository.getOrderCountByStatusCode(loginId, code);
             map.put(code, count);
         }
         return map;
@@ -297,7 +278,6 @@ public class QueryOrderServiceImpl implements QueryOrderService {
     @Override
     @Transactional(readOnly = true)
     public OrderDetailsResponseDto getDetailsDtoByOrderNumber(String orderNumber) {
-        //TODO : 서비스 테스트 필요
         OrderDetailsResponseDto responseDto = new OrderDetailsResponseDto();
 
         //주문 정보 set : findByOrderNumber로 order 불러와서 code로 회원 , 비회원 캐스팅
@@ -305,16 +285,14 @@ public class QueryOrderServiceImpl implements QueryOrderService {
         setOrderToResponseByOrderCode(responseDto, order);
 
         //상품 정보 set : 주문 상품 레포에서 가져오기
-        responseDto.setOrderProducts(queryOrderProductRepository.findAllByOrderNumber(
-                orderNumber));
+        responseDto.setOrderProducts(queryOrderProductRepository.findAllByOrderNumber(orderNumber));
 
         //결제 정보 set : 결제 method 보고 맞춰서 set하기
         try {
             setPaymentToResponseByOrderId(responseDto, order);
         } catch (ClientException e) {
             if (!e.getErrorCode().equals(ErrorCode.PAYMENT_NOT_FOUND)) {
-                throw new ClientException(
-                        ErrorCode.BAD_REQUEST,
+                throw new ClientException(ErrorCode.BAD_REQUEST,
                         ErrorCode.BAD_REQUEST.getDisplayName()
                 );
             }
@@ -352,8 +330,10 @@ public class QueryOrderServiceImpl implements QueryOrderService {
             Subscribe subscribe = (Subscribe) order;
             orderResponseDto.setOrderInfoFromSubscribe(subscribe);
         }
-        OrderStatusChangeLog latestChangeLog = queryOrderStatusChangeLogRepository.findAllByOrder_IdOrderByOrderStatusCodeDesc(
-                order.getId()).get(0);
+        OrderStatusChangeLog latestChangeLog = queryOrderStatusChangeLogRepository.findFirstByOrder_IdOrderByOrderStatusCodeDesc(
+                        order.getId())
+                .orElseThrow(() -> new ClientException(ErrorCode.NOT_FOUND,
+                        "주문 상태 이력을 찾을 수 없습니다."));
         orderResponseDto.setOrderStatusCode(latestChangeLog.getOrderStatusCode());
         responseDto.setOrder(orderResponseDto);
     }
@@ -366,8 +346,7 @@ public class QueryOrderServiceImpl implements QueryOrderService {
         if (Objects.isNull(memberId)) {
             countOfOrder = queryOrderRepository.getCountOfOrdersInPeriod(startDate, endDate);
         } else {
-            countOfOrder = queryOrderRepository.getCountOfOrdersInPeriodByMemberId(
-                    startDate,
+            countOfOrder = queryOrderRepository.getCountOfOrdersInPeriodByMemberId(startDate,
                     endDate,
                     memberId
             );
@@ -380,8 +359,7 @@ public class QueryOrderServiceImpl implements QueryOrderService {
 
     private void checkValidLoginId(String loginId) {
         if (!queryMemberService.existsLoginId(loginId)) {
-            throw new ClientException(
-                    ErrorCode.MEMBER_NOT_FOUND,
+            throw new ClientException(ErrorCode.MEMBER_NOT_FOUND,
                     "Member not found with loginId : " + loginId
             );
         }
