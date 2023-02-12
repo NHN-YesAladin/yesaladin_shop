@@ -309,7 +309,16 @@ public class QueryOrderServiceImpl implements QueryOrderService {
                 orderNumber));
 
         //결제 정보 set : 결제 method 보고 맞춰서 set하기
-        setPaymentToResponseByOrderId(responseDto, order);
+        try {
+            setPaymentToResponseByOrderId(responseDto, order);
+        } catch (ClientException e) {
+            if (!e.getErrorCode().equals(ErrorCode.PAYMENT_NOT_FOUND)) {
+                throw new ClientException(ErrorCode.BAD_REQUEST,
+                        ErrorCode.BAD_REQUEST.getDisplayName());
+            }
+            //ignore
+            responseDto.setPayment(null);
+        }
 
         //가격 정보 set
         responseDto.calculateAmounts();
@@ -319,7 +328,6 @@ public class QueryOrderServiceImpl implements QueryOrderService {
 
     private void setPaymentToResponseByOrderId(OrderDetailsResponseDto responseDto, Order order) {
         PaymentResponseDto paymentResponseDto = new PaymentResponseDto();
-        System.out.println("order.getOrderNumber() = " + order.getOrderNumber());
         Payment payment = queryPaymentService.findByOrderId(order.getId());
         if (payment.getMethod().equals(PaymentCode.EASY_PAY)) {
             paymentResponseDto.setEasyPayInfo(payment);
