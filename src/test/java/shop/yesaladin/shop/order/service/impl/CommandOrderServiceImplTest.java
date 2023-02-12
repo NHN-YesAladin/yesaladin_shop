@@ -1,6 +1,7 @@
 package shop.yesaladin.shop.order.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -47,6 +48,7 @@ import shop.yesaladin.shop.order.dto.OrderSubscribeCreateRequestDto;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMemberAddress;
 import shop.yesaladin.shop.order.persistence.dummy.DummyOrder;
+import shop.yesaladin.shop.order.persistence.dummy.DummyOrderStatusChangeLog;
 import shop.yesaladin.shop.order.persistence.dummy.DummySubscribeProduct;
 import shop.yesaladin.shop.order.service.inter.CommandOrderCouponService;
 import shop.yesaladin.shop.order.service.inter.CommandOrderService;
@@ -726,6 +728,7 @@ class CommandOrderServiceImplTest {
         verify(commandPointHistoryService, times(1)).use(any());
         verify(commandOrderStatusChangeLogRepository, times(1)).save(any());
     }
+
 
     private OrderNonMemberCreateRequestDto getNonMemberOrderRequest() {
         return new OrderNonMemberCreateRequestDto(

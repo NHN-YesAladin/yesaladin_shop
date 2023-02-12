@@ -84,7 +84,7 @@ class QueryPaymentServiceImplTest {
         ArgumentCaptor<Long> longArgumentCaptor = ArgumentCaptor.forClass(Long.class);
         ArgumentCaptor<String> stringArgumentCaptor = ArgumentCaptor.forClass(String.class);
 
-        PaymentCompleteSimpleResponseDto responseDto = PaymentCompleteSimpleResponseDto.fromEntity(
+        PaymentCompleteSimpleResponseDto responseDto = PaymentCompleteSimpleResponseDto.fromEntityByCard(
                 payment);
         when(queryPaymentRepository.findSimpleDtoById(any(), any())).thenReturn(Optional.of(
                 responseDto));

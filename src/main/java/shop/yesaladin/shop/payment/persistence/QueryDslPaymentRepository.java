@@ -9,7 +9,6 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
-import shop.yesaladin.shop.order.domain.model.querydsl.QMemberOrder;
 import shop.yesaladin.shop.order.domain.model.querydsl.QOrder;
 import shop.yesaladin.shop.payment.domain.model.Payment;
 import shop.yesaladin.shop.payment.domain.model.querydsl.QPayment;
@@ -70,7 +69,6 @@ public class QueryDslPaymentRepository implements QueryPaymentRepository {
         QPaymentCard paymentCard = QPaymentCard.paymentCard;
         QPaymentCancel paymentCancel = QPaymentCancel.paymentCancel;
         QOrder order = QOrder.order;
-        QMemberOrder memberOrder = QMemberOrder.memberOrder;
 
         return Optional.ofNullable(queryFactory.select(
                         Projections.constructor(
@@ -89,7 +87,10 @@ public class QueryDslPaymentRepository implements QueryPaymentRepository {
                                 payment.paymentCard.number,
                                 payment.paymentCard.installmentPlanMonths,
                                 payment.paymentCard.approveNo,
-                                payment.paymentCard.acquirerCode
+                                payment.paymentCard.acquirerCode,
+                                Expressions.asString("easyPayProvider"),
+                                Expressions.asNumber(0L),
+                                Expressions.asNumber(0L)
                         )
                 )
                 .from(payment)

@@ -22,4 +22,7 @@ public class GatewayProperties {
 
     @Value("${yesaladin.gateway.coupon}")
     private String couponUrl;
+
+    @Value("${yesaladin.gateway.delivery}")
+    private String deliveryUrl;
 }
