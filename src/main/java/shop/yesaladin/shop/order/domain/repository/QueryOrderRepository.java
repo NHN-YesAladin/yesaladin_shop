@@ -16,6 +16,7 @@ import shop.yesaladin.shop.order.dto.OrderSummaryResponseDto;
  *
  * @author 김홍대
  * @author 배수한
+ * @author 최예한
  * @since 1.0
  */
 public interface QueryOrderRepository {
@@ -141,4 +142,15 @@ public interface QueryOrderRepository {
     );
 
     long getOrderCountByStatusCode(String loginId, OrderStatusCode code);
+
+    /**
+     * 회원의 아이디를 통해 해당 회원의 숨김처리된 주문을 페이징처리하여 조회합니다.
+     *
+     * @param loginId 회원의 아이디
+     * @param pageable 페이지와 사이즈
+     * @return 페이징과 숨김처리가 된 주문 목록
+     * @author 최예린
+     * @since 1.0
+     */
+    Page<OrderSummaryResponseDto> getHiddenOrderByLoginId(String loginId, Pageable pageable);
 }

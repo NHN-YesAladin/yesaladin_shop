@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -126,4 +127,36 @@ public class QueryMemberOrderController {
                 .build();
     }
 
+    /**
+     * 숨김처리된 주문 내역을 조회합니다.
+     *
+     * @param pageable 페이지와 사이즈
+     * @param hidden 숨김여부
+     * @param loginId 회원의 아이디
+     * @return 회원의 숨김처리된 주문 목록
+     * @author 최예린
+     * @since 1.0
+     */
+    @GetMapping(params = "hidden")
+    public ResponseDto<PaginatedResponseDto<OrderSummaryResponseDto>> getHiddenOrderByLoginId(
+            @PageableDefault Pageable pageable,
+            @RequestParam Boolean hidden,
+            @LoginId(required = true) String loginId
+    ) {
+        Page<OrderSummaryResponseDto> response = queryOrderService.getHiddenOrderByLoginId(
+                loginId,
+                pageable
+        );
+
+        return ResponseDto.<PaginatedResponseDto<OrderSummaryResponseDto>>builder()
+                .status(HttpStatus.OK)
+                .success(true)
+                .data(PaginatedResponseDto.<OrderSummaryResponseDto>builder()
+                        .currentPage(response.getNumber())
+                        .totalPage(response.getTotalPages())
+                        .totalDataCount(response.getTotalElements())
+                        .dataList(response.getContent())
+                        .build())
+                .build();
+    }
 }

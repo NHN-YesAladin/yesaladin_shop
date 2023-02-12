@@ -133,4 +133,15 @@ public interface QueryOrderService {
      * @return 주문상태코드 & 그에 따른 주문 개수
      */
     Map<OrderStatusCode, Long> getOrderCountByLoginIdStatus(String loginId);
+
+    /**
+     * 회원의 숨김처리된 주문 내역 반환합니다.
+     *
+     * @param loginId  회원의 아이디
+     * @param pageable 페이지와 사이즈
+     * @return 회원의 숨김처리된 주문 내역
+     * @author 최예린
+     * @since 1.0
+     */
+    Page<OrderSummaryResponseDto> getHiddenOrderByLoginId(String loginId, Pageable pageable);
 }

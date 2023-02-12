@@ -253,7 +253,7 @@ public class CommandOrderServiceImpl implements CommandOrderService {
     }
 
     private void createOrderCoupon(OrderMemberCreateRequestDto request, Order savedOrder) {
-        if (!request.getOrderCoupons().isEmpty()) {
+        if (Objects.nonNull(request.getOrderCoupons())) {
             commandOrderCouponService.createOrderCoupons(
                     savedOrder.getId(),
                     request.getOrderCoupons()
