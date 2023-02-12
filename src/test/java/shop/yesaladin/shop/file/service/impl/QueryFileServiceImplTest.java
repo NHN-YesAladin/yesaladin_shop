@@ -1,5 +1,13 @@
 package shop.yesaladin.shop.file.service.impl;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,13 +18,6 @@ import shop.yesaladin.shop.file.domain.repository.QueryFileRepository;
 import shop.yesaladin.shop.file.dto.FileResponseDto;
 import shop.yesaladin.shop.file.service.inter.QueryFileService;
 import shop.yesaladin.shop.product.dummy.DummyFile;
-
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 class QueryFileServiceImplTest {
 
