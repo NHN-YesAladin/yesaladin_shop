@@ -2,6 +2,7 @@ package shop.yesaladin.shop.coupon.adapter.websocket;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.websocket.EncodeException;
 import javax.websocket.OnClose;
@@ -44,6 +45,11 @@ public class CouponGiveResultHandler {
     public static void sendResultToClient(CouponGiveResultDto resultDto) {
         String requestId = resultDto.getRequestId();
         CouponGiveResultHandler handler = requestIdMap.get(resultDto.getRequestId());
+
+        if (Objects.isNull(handler)) {
+            log.error("socket not exists for request id {}", requestId);
+        }
+
         try {
             handler.session.getBasicRemote().sendObject(resultDto);
         } catch (IOException | EncodeException e) {
