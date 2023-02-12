@@ -1,0 +1,23 @@
+= Member Coupon
+
+=== 쿠폰 지급 요청 메시지 발행
+
+==== curl
+
+include::{snippets}/send-coupon-give-message/curl-request.adoc[]
+
+==== request
+
+===== Body
+
+include::{snippets}/send-coupon-give-message/request-fields.adoc[]
+
+===== Example
+
+include::{snippets}/send-coupon-give-message/http-request.adoc[]
+
+==== response
+
+===== Example
+
+include::{snippets}/send-coupon-give-message/http-response.adoc[]
