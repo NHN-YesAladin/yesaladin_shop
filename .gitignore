@@ -36,7 +36,8 @@ build/
 .DS_Store
 
 ### DEV ###
-application-dev.yml
+application-dev*.yml
 src/test/resources/application.yml
 
 Log
+src/main/resources/application-dev-coupon-1.yml

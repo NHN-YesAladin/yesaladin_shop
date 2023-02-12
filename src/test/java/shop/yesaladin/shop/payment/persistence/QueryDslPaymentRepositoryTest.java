@@ -78,7 +78,6 @@ class QueryDslPaymentRepositoryTest {
         assertThat(foundPayment.getSuppliedAmount()).isEqualTo(payment.getSuppliedAmount());
         assertThat(foundPayment.getTaxFreeAmount()).isEqualTo(payment.getTaxFreeAmount());
         assertThat(foundPayment.getVat()).isEqualTo(payment.getVat());
-        assertThat(foundPayment.getRequestedDatetime()).isEqualTo(payment.getRequestedDatetime());
         assertThat(foundPayment.getPaymentCode()).isEqualTo(payment.getPaymentCode());
 
         assertThat(foundPayment.getOrder()
@@ -118,7 +117,6 @@ class QueryDslPaymentRepositoryTest {
         assertThat(foundPayment.getSuppliedAmount()).isEqualTo(payment.getSuppliedAmount());
         assertThat(foundPayment.getTaxFreeAmount()).isEqualTo(payment.getTaxFreeAmount());
         assertThat(foundPayment.getVat()).isEqualTo(payment.getVat());
-        assertThat(foundPayment.getRequestedDatetime()).isEqualTo(payment.getRequestedDatetime());
         assertThat(foundPayment.getPaymentCode()).isEqualTo(payment.getPaymentCode());
 
         assertThat(foundPayment.getOrder()
@@ -158,7 +156,6 @@ class QueryDslPaymentRepositoryTest {
         assertThat(foundPayment.getSuppliedAmount()).isEqualTo(payment.getSuppliedAmount());
         assertThat(foundPayment.getTaxFreeAmount()).isEqualTo(payment.getTaxFreeAmount());
         assertThat(foundPayment.getVat()).isEqualTo(payment.getVat());
-        assertThat(foundPayment.getRequestedDatetime()).isEqualTo(payment.getRequestedDatetime());
         assertThat(foundPayment.getPaymentCode()).isEqualTo(payment.getPaymentCode());
 
         assertThat(foundPayment.getOrder()

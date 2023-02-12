@@ -29,7 +29,8 @@ public class MemberCreateRequestDto {
 
     @NotBlank
     @Size(min = 2, max = 15)
-    @Pattern(regexp = "^[가-힣a-zA-Z]{2,15}$", message = "한글과 영문만 가능 합니다")
+    @Pattern(regexp = "^[가-힣ㄱ-ㅎa-zA-Z0-9._-]{2,15}$",
+            message = "숫자, 영어, 한국어와 언더스코어, 공백을 허용하며 최소 2자 이상의 15자 이하의 닉네임만 가능합니다.")
     private String nickname;
 
     @NotBlank

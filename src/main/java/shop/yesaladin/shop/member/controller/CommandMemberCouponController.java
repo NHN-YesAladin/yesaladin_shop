@@ -3,6 +3,7 @@ package shop.yesaladin.shop.member.controller;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +21,7 @@ import shop.yesaladin.shop.member.service.inter.CommandMemberCouponService;
  * @author 서민지
  * @since 1.0
  */
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/v1/coupons")
@@ -36,6 +38,14 @@ public class CommandMemberCouponController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<MemberCouponResponseDto> createMemberCoupon(@Valid @RequestBody List<MemberCouponRequestDto> requestDtoList) {
+        for (int i = 0; i < requestDtoList.size(); i++) {
+            for (int j = 0; j < requestDtoList.get(i).getCouponCodes().size(); j++) {
+                log.info(
+                        "==== [COUPON] register member coupon {} to {} ====",
+                        requestDtoList.get(i).getCouponCodes().get(j), requestDtoList.get(i).getMemberId()
+                );
+            }
+        }
         MemberCouponResponseDto memberCoupons = commandMemberCouponService.createMemberCoupons(
                 requestDtoList);
 
