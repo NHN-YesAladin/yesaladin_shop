@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.product.service.inter;
 
-import shop.yesaladin.shop.product.dto.SearchedProductManagerResponseDto;
 import shop.yesaladin.shop.product.dto.SearchedProductResponseDto;
 
 /**
@@ -21,7 +20,7 @@ public interface SearchProductService {
      * @author : 김선홍
      * @since : 1.0
      */
-    SearchedProductManagerResponseDto searchProductsByCategoryId(Long id, int offset, int size);
+    SearchedProductResponseDto searchProductsByCategoryId(Long id, int offset, int size);
 
     /**
      * 카테고리 이름으로 상품을 검색하는 메서드
@@ -33,7 +32,7 @@ public interface SearchProductService {
      * @author : 김선홍
      * @since : 1.0
      */
-    SearchedProductManagerResponseDto searchProductsByCategoryName(
+    SearchedProductResponseDto searchProductsByCategoryName(
             String name,
             int offset,
             int size
