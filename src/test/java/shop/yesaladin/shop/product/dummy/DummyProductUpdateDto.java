@@ -1,8 +1,7 @@
 package shop.yesaladin.shop.product.dummy;
 
-import shop.yesaladin.shop.product.dto.ProductUpdateDto;
-
 import java.util.List;
+import shop.yesaladin.shop.product.dto.ProductUpdateDto;
 
 public class DummyProductUpdateDto {
 

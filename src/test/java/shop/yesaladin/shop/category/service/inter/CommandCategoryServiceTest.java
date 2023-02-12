@@ -23,7 +23,6 @@ import shop.yesaladin.shop.category.dto.CategoryOnlyIdDto;
 import shop.yesaladin.shop.category.dto.CategoryRequestDto;
 import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 import shop.yesaladin.shop.category.dummy.CategoryDummy;
-import shop.yesaladin.shop.category.exception.CategoryNotFoundException;
 import shop.yesaladin.shop.category.service.impl.CommandCategoryServiceImpl;
 
 class CommandCategoryServiceTest {

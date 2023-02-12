@@ -1,5 +1,32 @@
 package shop.yesaladin.shop.product.controller;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentRequest;
+import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -19,32 +46,15 @@ import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
-import shop.yesaladin.shop.product.dto.*;
+import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
+import shop.yesaladin.shop.product.dto.ProductOnlyTitleDto;
+import shop.yesaladin.shop.product.dto.ProductRecentResponseDto;
+import shop.yesaladin.shop.product.dto.ProductsResponseDto;
+import shop.yesaladin.shop.product.dto.RelationsResponseDto;
+import shop.yesaladin.shop.product.dto.ViewCartDto;
 import shop.yesaladin.shop.product.dummy.DummyProductDetailResponseDto;
 import shop.yesaladin.shop.product.dummy.DummyProductsResponseDto;
 import shop.yesaladin.shop.product.service.inter.QueryProductService;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.request.RequestDocumentation.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentRequest;
-import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
 
 @AutoConfigureRestDocs
 @WebMvcTest(QueryProductController.class)
@@ -54,6 +64,8 @@ class QueryProductControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+    @Autowired
+    private ObjectMapper objectMapper;
     @MockBean
     private QueryProductService service;
 
@@ -256,38 +268,65 @@ class QueryProductControllerTest {
                 getDocumentResponse(),
                 pathParameters(parameterWithName("productId").description("조회할 상품의 아이디")),
                 responseFields(
-                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("동작 성공 여부"),
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
                         fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
                         fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("상품 아이디"),
-                        fieldWithPath("data.isEbook").type(JsonFieldType.BOOLEAN).description("E-Book 여부"),
+                        fieldWithPath("data.isEbook").type(JsonFieldType.BOOLEAN)
+                                .description("E-Book 여부"),
                         fieldWithPath("data.title").type(JsonFieldType.STRING).description("제목"),
-                        fieldWithPath("data.authors.[].id").type(JsonFieldType.NUMBER).description("작가 아이디"),
-                        fieldWithPath("data.authors.[].name").type(JsonFieldType.STRING).description("작가 이름"),
-                        fieldWithPath("data.authors.[].loginId").type(JsonFieldType.STRING).description("작가 로그인 아이디"),
-                        fieldWithPath("data.publisher.id").type(JsonFieldType.NUMBER).description("출판사 아이디"),
-                        fieldWithPath("data.publisher.name").type(JsonFieldType.STRING).description("출판사 이름"),
-                        fieldWithPath("data.thumbnailFileUrl").type(JsonFieldType.STRING).description("썸네일 파일 URL"),
-                        fieldWithPath("data.actualPrice").type(JsonFieldType.NUMBER).description("정가"),
-                        fieldWithPath("data.sellingPrice").type(JsonFieldType.NUMBER).description("판매가"),
-                        fieldWithPath("data.discountRate").type(JsonFieldType.NUMBER).description("할인율"),
-                        fieldWithPath("data.pointPrice").type(JsonFieldType.NUMBER).description("포인트 적립금"),
-                        fieldWithPath("data.pointRate").type(JsonFieldType.NUMBER).description("포인트 적립율"),
-                        fieldWithPath("data.publishedDate").type(JsonFieldType.STRING).description("출간일"),
+                        fieldWithPath("data.authors.[].id").type(JsonFieldType.NUMBER)
+                                .description("작가 아이디"),
+                        fieldWithPath("data.authors.[].name").type(JsonFieldType.STRING)
+                                .description("작가 이름"),
+                        fieldWithPath("data.authors.[].loginId").type(JsonFieldType.STRING)
+                                .description("작가 로그인 아이디"),
+                        fieldWithPath("data.publisher.id").type(JsonFieldType.NUMBER)
+                                .description("출판사 아이디"),
+                        fieldWithPath("data.publisher.name").type(JsonFieldType.STRING)
+                                .description("출판사 이름"),
+                        fieldWithPath("data.thumbnailFileUrl").type(JsonFieldType.STRING)
+                                .description("썸네일 파일 URL"),
+                        fieldWithPath("data.actualPrice").type(JsonFieldType.NUMBER)
+                                .description("정가"),
+                        fieldWithPath("data.sellingPrice").type(JsonFieldType.NUMBER)
+                                .description("판매가"),
+                        fieldWithPath("data.discountRate").type(JsonFieldType.NUMBER)
+                                .description("할인율"),
+                        fieldWithPath("data.pointPrice").type(JsonFieldType.NUMBER)
+                                .description("포인트 적립금"),
+                        fieldWithPath("data.pointRate").type(JsonFieldType.NUMBER)
+                                .description("포인트 적립율"),
+                        fieldWithPath("data.publishedDate").type(JsonFieldType.STRING)
+                                .description("출간일"),
                         fieldWithPath("data.isbn").type(JsonFieldType.STRING).description("ISBN"),
-                        fieldWithPath("data.isSubscriptionAvailable").type(JsonFieldType.BOOLEAN).description("구독 가능여부"),
+                        fieldWithPath("data.isSubscriptionAvailable").type(JsonFieldType.BOOLEAN)
+                                .description("구독 가능여부"),
                         fieldWithPath("data.issn").type(JsonFieldType.STRING).description("ISSN"),
                         fieldWithPath("data.contents").type(JsonFieldType.STRING).description("목차"),
-                        fieldWithPath("data.description").type(JsonFieldType.STRING).description("설명"),
-                        fieldWithPath("data.onSale").type(JsonFieldType.BOOLEAN).description("판매여부"),
-                        fieldWithPath("data.tags.[].id").type(JsonFieldType.NUMBER).description("태그 아이디"),
-                        fieldWithPath("data.tags.[].name").type(JsonFieldType.STRING).description("태그 이름"),
-                        fieldWithPath("data.categories.[].id").type(JsonFieldType.NUMBER).description("연관된 카테고리 Id"),
-                        fieldWithPath("data.categories.[].name").type(JsonFieldType.STRING).description("연관된 카테고리 이름"),
-                        fieldWithPath("data.categories.[].isShown").type(JsonFieldType.BOOLEAN).description("연관된 카테고리 노출여부"),
-                        fieldWithPath("data.categories.[].order").type(JsonFieldType.NUMBER).description("연관된 카테고리 노출순서"),
-                        fieldWithPath("data.categories.[].parentId").type(JsonFieldType.NUMBER).description("연관된 카테고리의 부모카테고리 Id"),
-                        fieldWithPath("data.categories.[].parentName").type(JsonFieldType.STRING).description("연관된 카테고리의 부모카테고리 이름 "),
-                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY).description("에러 메세지").optional()
+                        fieldWithPath("data.description").type(JsonFieldType.STRING)
+                                .description("설명"),
+                        fieldWithPath("data.onSale").type(JsonFieldType.BOOLEAN)
+                                .description("판매여부"),
+                        fieldWithPath("data.tags.[].id").type(JsonFieldType.NUMBER)
+                                .description("태그 아이디"),
+                        fieldWithPath("data.tags.[].name").type(JsonFieldType.STRING)
+                                .description("태그 이름"),
+                        fieldWithPath("data.categories.[].id").type(JsonFieldType.NUMBER)
+                                .description("연관된 카테고리 Id"),
+                        fieldWithPath("data.categories.[].name").type(JsonFieldType.STRING)
+                                .description("연관된 카테고리 이름"),
+                        fieldWithPath("data.categories.[].isShown").type(JsonFieldType.BOOLEAN)
+                                .description("연관된 카테고리 노출여부"),
+                        fieldWithPath("data.categories.[].order").type(JsonFieldType.NUMBER)
+                                .description("연관된 카테고리 노출순서"),
+                        fieldWithPath("data.categories.[].parentId").type(JsonFieldType.NUMBER)
+                                .description("연관된 카테고리의 부모카테고리 Id"),
+                        fieldWithPath("data.categories.[].parentName").type(JsonFieldType.STRING)
+                                .description("연관된 카테고리의 부모카테고리 이름 "),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
+                                .optional()
                 )
         ));
     }
@@ -343,33 +382,59 @@ class QueryProductControllerTest {
                         parameterWithName("_csrf").description("csrf")
                 ),
                 responseFields(
-                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("동작 성공 여부"),
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
                         fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
-                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER).description("전체 페이지"),
-                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER).description("현재 페이지"),
-                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER).description("데이터 개수"),
-                        fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER).description("상품 아이디"),
-                        fieldWithPath("data.dataList.[].title").type(JsonFieldType.STRING).description("제목"),
-                        fieldWithPath("data.dataList.[].authors.[].id").type(JsonFieldType.NUMBER).description("작가 아이디"),
-                        fieldWithPath("data.dataList.[].authors.[].name").type(JsonFieldType.STRING).description("작가 이름"),
-                        fieldWithPath("data.dataList.[].authors.[].loginId").type(JsonFieldType.STRING).description("작가 로그인 아이디"),
-                        fieldWithPath("data.dataList.[].publisher.id").type(JsonFieldType.NUMBER).description("출판사 아이디"),
-                        fieldWithPath("data.dataList.[].publisher.name").type(JsonFieldType.STRING).description("출판사 이름"),
-                        fieldWithPath("data.dataList.[].publishedDate").type(JsonFieldType.STRING).description("출간일"),
-                        fieldWithPath("data.dataList.[].sellingPrice").type(JsonFieldType.NUMBER).description("판매가"),
-                        fieldWithPath("data.dataList.[].discountRate").type(JsonFieldType.NUMBER).description("할인율"),
-                        fieldWithPath("data.dataList.[].quantity").type(JsonFieldType.NUMBER).description("수량"),
-                        fieldWithPath("data.dataList.[].isSale").type(JsonFieldType.BOOLEAN).description("판매여부"),
-                        fieldWithPath("data.dataList.[].isForcedOutOfStock").type(JsonFieldType.BOOLEAN).description("강제품절여부"),
-                        fieldWithPath("data.dataList.[].isShown").type(JsonFieldType.BOOLEAN).description("노출여부"),
-                        fieldWithPath("data.dataList.[].isDeleted").type(JsonFieldType.BOOLEAN).description("삭제여부"),
-                        fieldWithPath("data.dataList.[].thumbnailFileUrl").type(JsonFieldType.STRING).description("썸네일 파일 URL"),
-                        fieldWithPath("data.dataList.[].tags.[].id").type(JsonFieldType.NUMBER).description("태그 아이디"),
-                        fieldWithPath("data.dataList.[].tags.[].name").type(JsonFieldType.STRING).description("태그 이름"),
+                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER)
+                                .description("전체 페이지"),
+                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER)
+                                .description("현재 페이지"),
+                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER)
+                                .description("데이터 개수"),
+                        fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER)
+                                .description("상품 아이디"),
+                        fieldWithPath("data.dataList.[].title").type(JsonFieldType.STRING)
+                                .description("제목"),
+                        fieldWithPath("data.dataList.[].authors.[].id").type(JsonFieldType.NUMBER)
+                                .description("작가 아이디"),
+                        fieldWithPath("data.dataList.[].authors.[].name").type(JsonFieldType.STRING)
+                                .description("작가 이름"),
+                        fieldWithPath("data.dataList.[].authors.[].loginId").type(JsonFieldType.STRING)
+                                .description("작가 로그인 아이디"),
+                        fieldWithPath("data.dataList.[].publisher.id").type(JsonFieldType.NUMBER)
+                                .description("출판사 아이디"),
+                        fieldWithPath("data.dataList.[].publisher.name").type(JsonFieldType.STRING)
+                                .description("출판사 이름"),
+                        fieldWithPath("data.dataList.[].publishedDate").type(JsonFieldType.STRING)
+                                .description("출간일"),
+                        fieldWithPath("data.dataList.[].sellingPrice").type(JsonFieldType.NUMBER)
+                                .description("판매가"),
+                        fieldWithPath("data.dataList.[].discountRate").type(JsonFieldType.NUMBER)
+                                .description("할인율"),
+                        fieldWithPath("data.dataList.[].quantity").type(JsonFieldType.NUMBER)
+                                .description("수량"),
+                        fieldWithPath("data.dataList.[].isSale").type(JsonFieldType.BOOLEAN)
+                                .description("판매여부"),
+                        fieldWithPath("data.dataList.[].isForcedOutOfStock").type(JsonFieldType.BOOLEAN)
+                                .description("강제품절여부"),
+                        fieldWithPath("data.dataList.[].isShown").type(JsonFieldType.BOOLEAN)
+                                .description("노출여부"),
+                        fieldWithPath("data.dataList.[].isDeleted").type(JsonFieldType.BOOLEAN)
+                                .description("삭제여부"),
+                        fieldWithPath("data.dataList.[].thumbnailFileUrl").type(JsonFieldType.STRING)
+                                .description("썸네일 파일 URL"),
+                        fieldWithPath("data.dataList.[].tags.[].id").type(JsonFieldType.NUMBER)
+                                .description("태그 아이디"),
+                        fieldWithPath("data.dataList.[].tags.[].name").type(JsonFieldType.STRING)
+                                .description("태그 이름"),
                         fieldWithPath("data.dataList.[].ebookFileUrl").description("E-book 파일 URL"),
-                        fieldWithPath("data.dataList.[].isEbook").type(JsonFieldType.BOOLEAN).description("E-book 여부"),
-                        fieldWithPath("data.dataList.[].isSubscribeProduct").type(JsonFieldType.BOOLEAN).description("구독상품 여부"),
-                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY).description("에러 메세지").optional()
+                        fieldWithPath("data.dataList.[].isEbook").type(JsonFieldType.BOOLEAN)
+                                .description("E-book 여부"),
+                        fieldWithPath("data.dataList.[].isSubscribeProduct").type(JsonFieldType.BOOLEAN)
+                                .description("구독상품 여부"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
+                                .optional()
                 )
         ));
     }
@@ -425,33 +490,59 @@ class QueryProductControllerTest {
                         parameterWithName("_csrf").description("csrf")
                 ),
                 responseFields(
-                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("동작 성공 여부"),
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
                         fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
-                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER).description("전체 페이지"),
-                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER).description("현재 페이지"),
-                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER).description("데이터 개수"),
-                        fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER).description("상품 아이디"),
-                        fieldWithPath("data.dataList.[].title").type(JsonFieldType.STRING).description("제목"),
-                        fieldWithPath("data.dataList.[].authors.[].id").type(JsonFieldType.NUMBER).description("작가 아이디"),
-                        fieldWithPath("data.dataList.[].authors.[].name").type(JsonFieldType.STRING).description("작가 이름"),
-                        fieldWithPath("data.dataList.[].authors.[].loginId").type(JsonFieldType.STRING).description("작가 로그인 아이디"),
-                        fieldWithPath("data.dataList.[].publisher.id").type(JsonFieldType.NUMBER).description("출판사 아이디"),
-                        fieldWithPath("data.dataList.[].publisher.name").type(JsonFieldType.STRING).description("출판사 이름"),
-                        fieldWithPath("data.dataList.[].publishedDate").type(JsonFieldType.STRING).description("출간일"),
-                        fieldWithPath("data.dataList.[].sellingPrice").type(JsonFieldType.NUMBER).description("판매가"),
-                        fieldWithPath("data.dataList.[].discountRate").type(JsonFieldType.NUMBER).description("할인율"),
-                        fieldWithPath("data.dataList.[].quantity").type(JsonFieldType.NUMBER).description("수량"),
-                        fieldWithPath("data.dataList.[].isSale").type(JsonFieldType.BOOLEAN).description("판매여부"),
-                        fieldWithPath("data.dataList.[].isForcedOutOfStock").type(JsonFieldType.BOOLEAN).description("강제품절여부"),
-                        fieldWithPath("data.dataList.[].isShown").type(JsonFieldType.BOOLEAN).description("노출여부"),
-                        fieldWithPath("data.dataList.[].isDeleted").type(JsonFieldType.BOOLEAN).description("삭제여부"),
-                        fieldWithPath("data.dataList.[].thumbnailFileUrl").type(JsonFieldType.STRING).description("썸네일 파일 URL"),
-                        fieldWithPath("data.dataList.[].tags.[].id").type(JsonFieldType.NUMBER).description("태그 아이디"),
-                        fieldWithPath("data.dataList.[].tags.[].name").type(JsonFieldType.STRING).description("태그 이름"),
+                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER)
+                                .description("전체 페이지"),
+                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER)
+                                .description("현재 페이지"),
+                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER)
+                                .description("데이터 개수"),
+                        fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER)
+                                .description("상품 아이디"),
+                        fieldWithPath("data.dataList.[].title").type(JsonFieldType.STRING)
+                                .description("제목"),
+                        fieldWithPath("data.dataList.[].authors.[].id").type(JsonFieldType.NUMBER)
+                                .description("작가 아이디"),
+                        fieldWithPath("data.dataList.[].authors.[].name").type(JsonFieldType.STRING)
+                                .description("작가 이름"),
+                        fieldWithPath("data.dataList.[].authors.[].loginId").type(JsonFieldType.STRING)
+                                .description("작가 로그인 아이디"),
+                        fieldWithPath("data.dataList.[].publisher.id").type(JsonFieldType.NUMBER)
+                                .description("출판사 아이디"),
+                        fieldWithPath("data.dataList.[].publisher.name").type(JsonFieldType.STRING)
+                                .description("출판사 이름"),
+                        fieldWithPath("data.dataList.[].publishedDate").type(JsonFieldType.STRING)
+                                .description("출간일"),
+                        fieldWithPath("data.dataList.[].sellingPrice").type(JsonFieldType.NUMBER)
+                                .description("판매가"),
+                        fieldWithPath("data.dataList.[].discountRate").type(JsonFieldType.NUMBER)
+                                .description("할인율"),
+                        fieldWithPath("data.dataList.[].quantity").type(JsonFieldType.NUMBER)
+                                .description("수량"),
+                        fieldWithPath("data.dataList.[].isSale").type(JsonFieldType.BOOLEAN)
+                                .description("판매여부"),
+                        fieldWithPath("data.dataList.[].isForcedOutOfStock").type(JsonFieldType.BOOLEAN)
+                                .description("강제품절여부"),
+                        fieldWithPath("data.dataList.[].isShown").type(JsonFieldType.BOOLEAN)
+                                .description("노출여부"),
+                        fieldWithPath("data.dataList.[].isDeleted").type(JsonFieldType.BOOLEAN)
+                                .description("삭제여부"),
+                        fieldWithPath("data.dataList.[].thumbnailFileUrl").type(JsonFieldType.STRING)
+                                .description("썸네일 파일 URL"),
+                        fieldWithPath("data.dataList.[].tags.[].id").type(JsonFieldType.NUMBER)
+                                .description("태그 아이디"),
+                        fieldWithPath("data.dataList.[].tags.[].name").type(JsonFieldType.STRING)
+                                .description("태그 이름"),
                         fieldWithPath("data.dataList.[].ebookFileUrl").description("E-book 파일 URL"),
-                        fieldWithPath("data.dataList.[].isEbook").type(JsonFieldType.BOOLEAN).description("E-book 여부"),
-                        fieldWithPath("data.dataList.[].isSubscribeProduct").type(JsonFieldType.BOOLEAN).description("구독상품 여부"),
-                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY).description("에러 메세지").optional()
+                        fieldWithPath("data.dataList.[].isEbook").type(JsonFieldType.BOOLEAN)
+                                .description("E-book 여부"),
+                        fieldWithPath("data.dataList.[].isSubscribeProduct").type(JsonFieldType.BOOLEAN)
+                                .description("구독상품 여부"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
+                                .optional()
                 )
         ));
     }
@@ -508,23 +599,38 @@ class QueryProductControllerTest {
 
                 ),
                 responseFields(
-                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("동작 성공 여부"),
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
                         fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
-                        fieldWithPath("data.[].id").type(JsonFieldType.NUMBER).description("상품 아이디"),
-                        fieldWithPath("data.[].quantity").type(JsonFieldType.NUMBER).description("상품 개수"),
-                        fieldWithPath("data.[].isbn").type(JsonFieldType.STRING).description("ISBN"),
-                        fieldWithPath("data.[].thumbnailFileUrl").type(JsonFieldType.STRING).description("썸네일 파일 URL"),
+                        fieldWithPath("data.[].id").type(JsonFieldType.NUMBER)
+                                .description("상품 아이디"),
+                        fieldWithPath("data.[].quantity").type(JsonFieldType.NUMBER)
+                                .description("상품 개수"),
+                        fieldWithPath("data.[].isbn").type(JsonFieldType.STRING)
+                                .description("ISBN"),
+                        fieldWithPath("data.[].thumbnailFileUrl").type(JsonFieldType.STRING)
+                                .description("썸네일 파일 URL"),
                         fieldWithPath("data.[].title").type(JsonFieldType.STRING).description("제목"),
-                        fieldWithPath("data.[].actualPrice").type(JsonFieldType.NUMBER).description("정가"),
-                        fieldWithPath("data.[].sellingPrice").type(JsonFieldType.NUMBER).description("판매가"),
-                        fieldWithPath("data.[].discountRate").type(JsonFieldType.NUMBER).description("할인율"),
-                        fieldWithPath("data.[].pointPrice").type(JsonFieldType.NUMBER).description("포인트 적립금"),
-                        fieldWithPath("data.[].isOutOfStack").type(JsonFieldType.BOOLEAN).description("품절 여부"),
-                        fieldWithPath("data.[].isSale").type(JsonFieldType.BOOLEAN).description("판매 여부"),
-                        fieldWithPath("data.[].isDeleted").type(JsonFieldType.BOOLEAN).description("삭제 여부"),
-                        fieldWithPath("data.[].isEbook").type(JsonFieldType.BOOLEAN).description("E-Book 여부"),
-                        fieldWithPath("data.[].isSubscribeProduct").type(JsonFieldType.BOOLEAN).description("구독 가능여부"),
-                        fieldWithPath("errorMessages").type(JsonFieldType.NULL).description("에러 메세지 NULL")
+                        fieldWithPath("data.[].actualPrice").type(JsonFieldType.NUMBER)
+                                .description("정가"),
+                        fieldWithPath("data.[].sellingPrice").type(JsonFieldType.NUMBER)
+                                .description("판매가"),
+                        fieldWithPath("data.[].discountRate").type(JsonFieldType.NUMBER)
+                                .description("할인율"),
+                        fieldWithPath("data.[].pointPrice").type(JsonFieldType.NUMBER)
+                                .description("포인트 적립금"),
+                        fieldWithPath("data.[].isOutOfStack").type(JsonFieldType.BOOLEAN)
+                                .description("품절 여부"),
+                        fieldWithPath("data.[].isSale").type(JsonFieldType.BOOLEAN)
+                                .description("판매 여부"),
+                        fieldWithPath("data.[].isDeleted").type(JsonFieldType.BOOLEAN)
+                                .description("삭제 여부"),
+                        fieldWithPath("data.[].isEbook").type(JsonFieldType.BOOLEAN)
+                                .description("E-Book 여부"),
+                        fieldWithPath("data.[].isSubscribeProduct").type(JsonFieldType.BOOLEAN)
+                                .description("구독 가능여부"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.NULL)
+                                .description("에러 메세지 NULL")
 
                 )
         ));
@@ -558,6 +664,68 @@ class QueryProductControllerTest {
                 title
         ).with(csrf()));
 
+        result.andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andDo(print());
+    }
+
+    @WithMockUser
+    @Test
+    @DisplayName("최신 상품 검색 성공")
+    void findRecentProductByPublishedDate() throws Exception {
+        //given
+        ProductRecentResponseDto productRecentResponseDto = ProductRecentResponseDto.builder()
+                .id(1L)
+                .title("title")
+                .thumbnailFileUrl("file")
+                .publisher("publisher")
+                .rate(10)
+                .sellingPrice(10000L)
+                .author(List.of("author"))
+                .build();
+        Mockito.when(service.findRecentProductByPublishedDate(PageRequest.of(0, 10)))
+                .thenReturn(new PageImpl<>(
+                        List.of(productRecentResponseDto),
+                        PageRequest.of(0, 1),
+                        1L
+                ));
+
+        //when
+        ResultActions result = mockMvc.perform(get("/v1/products/recent").with(csrf()));
+
+        //then
+        result.andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andDo(print());
+    }
+
+    @WithMockUser
+    @Test
+    @DisplayName("최근 본 상품 검색 성공")
+    void findRecentViewProductById() throws Exception {
+        //given
+        ProductRecentResponseDto productRecentResponseDto = ProductRecentResponseDto.builder()
+                .id(1L)
+                .title("title")
+                .thumbnailFileUrl("file")
+                .publisher("publisher")
+                .rate(10)
+                .sellingPrice(10000L)
+                .author(List.of("author"))
+                .build();
+        Mockito.when(service.findRecentViewProductById(List.of(1L), PageRequest.of(0, 10)))
+                .thenReturn(new PageImpl<>(
+                        List.of(productRecentResponseDto),
+                        PageRequest.of(0, 1),
+                        1L
+                ));
+        String body = objectMapper.writeValueAsString(List.of(1L));
+
+        //when
+        ResultActions result = mockMvc.perform(post("/v1/products/recentview").with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body));
+        //then
         result.andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andDo(print());

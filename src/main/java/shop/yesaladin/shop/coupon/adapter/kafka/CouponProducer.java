@@ -5,7 +5,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import shop.yesaladin.coupon.message.CouponCodesAndResultMessage;
 import shop.yesaladin.coupon.message.CouponGiveRequestMessage;
-import shop.yesaladin.coupon.message.MessageKey;
+import shop.yesaladin.coupon.message.CouponUseRequestMessage;
 import shop.yesaladin.shop.config.CouponProperties;
 
 /**
@@ -21,28 +21,58 @@ public class CouponProducer {
     private final CouponProperties couponProperties;
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
+    /**
+     * 쿠폰 지급 요청 메시지를 발행합니다.
+     *
+     * @param message 발행할 지급 요청 메시지
+     */
     public void produceGiveRequestMessage(CouponGiveRequestMessage message) {
         kafkaTemplate.send(
                 couponProperties.getCouponGiveRequestTopic(),
-                MessageKey.GIVE_REQUEST.name(),
                 message
         );
     }
 
+    /**
+     * 수량 제한 쿠폰 지급 요청 메시지를 발행합니다.
+     *
+     * @param message 발행할 지급 요청 메시지
+     */
     public void produceGiveRequestLimitMessage(CouponGiveRequestMessage message) {
         kafkaTemplate.send(
                 couponProperties.getCouponGiveRequestLimitTopic(),
-                MessageKey.GIVE_REQUEST.name(),
                 message
         );
     }
 
+    /**
+     * 지급 완료 메시지를 발행합니다.
+     *
+     * @param message 발행할 쿠폰 지급 결과 메시지
+     */
     public void produceGivenResultMessage(CouponCodesAndResultMessage message) {
         kafkaTemplate.send(
                 couponProperties.getCouponGivenTopic(),
-                MessageKey.GIVEN.name(),
                 message
         );
     }
 
+    /**
+     * 사용 결과 메시지를 발행합니다.
+     *
+     * @param message 발행할 사용 결과 메시지
+     */
+
+    public void produceUsedResultMessage(CouponCodesAndResultMessage message) {
+        kafkaTemplate.send(couponProperties.getCouponUsedTopic(), message);
+    }
+
+    /**
+     * 사용 요청 메시지를 발행합니다.
+     *
+     * @param message 발행할 사용 요청 메시지
+     */
+    public void produceUseRequestMessage(CouponUseRequestMessage message) {
+        kafkaTemplate.send(couponProperties.getCouponUseRequestTopic(), message);
+    }
 }
