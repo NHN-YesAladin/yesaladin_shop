@@ -43,6 +43,7 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberService;
  * 회원에게 쿠폰을 지급하는 서비스 인터페이스의 구현체입니다.
  *
  * @author 김홍대
+ * @author 서민지
  * @since 1.0
  */
 @Slf4j
@@ -77,7 +78,6 @@ public class GiveCouponServiceImpl implements GiveCouponService {
 
         checkMemberAlreadyHasCoupon(memberId, triggerTypeCode, couponId, couponGroupCodeList);
 
-
         if (Objects.isNull(couponId)) {
             generateRequestIdAndSendMessage(
                     memberId,
@@ -108,8 +108,11 @@ public class GiveCouponServiceImpl implements GiveCouponService {
                     memberId,
                     null,
                     null,
-                    responseMessage.getCoupons().stream().map(CouponGiveDto::getCouponGroupCode).collect(
-                            Collectors.toList())
+                    responseMessage.getCoupons()
+                            .stream()
+                            .map(CouponGiveDto::getCouponGroupCode)
+                            .collect(
+                                    Collectors.toList())
             );
             resultBuilder.couponCodes(responseMessage.getCoupons()
                     .stream()
@@ -123,16 +126,20 @@ public class GiveCouponServiceImpl implements GiveCouponService {
         }
     }
 
+    /**
+     * 쿠폰 발행 요청에 대한 정보를 10초 동안 redis 에 저장합니다. 10초 내에 같은 요청을 시도하는 경우 예외를 던집니다.
+     *
+     * @param memberId 발행 요청을 한 회원의 로그인 아이디
+     * @param triggerTypeCode 발행 요청을 한 쿠폰의 트리거 타입 코드
+     * @param couponId 발행 요청한 쿠폰의 아이디
+     */
     public void registerIssueRequest(
             String memberId, String triggerTypeCode, String couponId
     ) {
         String issueRequestKey = memberId.concat(triggerTypeCode).concat(couponId);
-
         if (Boolean.TRUE.equals(redisTemplate.hasKey(issueRequestKey))) {
-            // 요청을 등록하지 않는다.
             throw new ClientException(ErrorCode.BAD_REQUEST, "이미 처리된 요청입니다.");
         }
-
         redisTemplate.opsForValue().set(issueRequestKey, "", 10, TimeUnit.SECONDS);
     }
 

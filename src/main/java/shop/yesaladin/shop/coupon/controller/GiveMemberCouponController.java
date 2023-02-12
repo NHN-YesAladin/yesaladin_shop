@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.coupon.controller;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -8,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.common.dto.ResponseDto;
-import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.common.aspect.annotation.LoginId;
 import shop.yesaladin.shop.coupon.dto.CouponGiveRequestDto;
 import shop.yesaladin.shop.coupon.service.inter.GiveCouponService;
@@ -37,18 +35,11 @@ public class GiveMemberCouponController {
     public ResponseDto<Void> sendCouponGiveRequest(
             @LoginId(required = true) String memberId, @RequestBody CouponGiveRequestDto requestDto
     ) {
-        try {
-            giveCouponService.sendCouponGiveRequest(memberId,
-                    requestDto.getTriggerTypeCode(),
-                    requestDto.getCouponId()
-            );
-        } catch (ClientException e) {
-            return ResponseDto.<Void>builder()
-                    .status(HttpStatus.OK)
-                    .success(false)
-                    .errorMessages(List.of(e.getMessage()))
-                    .build();
-        }
+        giveCouponService.sendCouponGiveRequest(
+                memberId,
+                requestDto.getTriggerTypeCode(),
+                requestDto.getCouponId()
+        );
 
         return ResponseDto.<Void>builder().success(true).status(HttpStatus.OK).data(null).build();
     }
