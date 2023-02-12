@@ -35,8 +35,7 @@ public class PaymentEventListener {
     private final RestTemplate restTemplate;
 
     /**
-     * 결제 service가 rollback 될 경우 동작하는 메서드,
-     *  결제 취소 api를 통해 결제가 취소 됨. (DB저장 안함)
+     * 결제 service가 rollback 될 경우 동작하는 메서드, 결제 취소 api를 통해 결제가 취소 됨. (DB저장 안함)
      *
      * @param eventDto
      */

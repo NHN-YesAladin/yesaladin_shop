@@ -96,7 +96,7 @@ class QueryPaymentControllerTest {
 
         PaymentCompleteSimpleResponseDto responseDto = PaymentCompleteSimpleResponseDto.fromEntityByCard(
                 payment);
-        when(queryPaymentService.findByOrderId(any())).thenReturn(responseDto);
+        when(queryPaymentService.findSimpleDtoByOrderId(any())).thenReturn(responseDto);
 
         // when
         ResultActions perform = mockMvc.perform(get(
@@ -113,7 +113,7 @@ class QueryPaymentControllerTest {
                 .andExpect(jsonPath("$.data.orderNumber", equalTo(responseDto.getOrderNumber())))
                 .andExpect(jsonPath("$.data.paymentId", equalTo(responseDto.getPaymentId())));
 
-        verify(queryPaymentService, times(1)).findByOrderId(longArgumentCaptor.capture());
+        verify(queryPaymentService, times(1)).findSimpleDtoByOrderId(longArgumentCaptor.capture());
         assertThat(longArgumentCaptor.getValue()).isEqualTo(orderId);
 
         perform.andDo(document(
@@ -142,6 +142,10 @@ class QueryPaymentControllerTest {
                                 .description("결제 승인 일시").optional(),
                         fieldWithPath("data.ordererName").type(JsonFieldType.STRING)
                                 .description("주문자 이름").optional(),
+                        fieldWithPath("data.recipientName").type(JsonFieldType.STRING)
+                                .description("수령인 이름").optional(),
+                        fieldWithPath("data.recipientPhoneNumber").type(JsonFieldType.STRING)
+                                .description("수령인 전화번호").optional(),
                         fieldWithPath("data.orderAddress").type(JsonFieldType.STRING)
                                 .description("주문 배송지").optional(),
                         fieldWithPath("data.orderName").type(JsonFieldType.STRING)
