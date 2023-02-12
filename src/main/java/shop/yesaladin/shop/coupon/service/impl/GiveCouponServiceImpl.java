@@ -31,10 +31,13 @@ import shop.yesaladin.coupon.message.CouponGiveRequestMessage;
 import shop.yesaladin.coupon.message.CouponGiveRequestResponseMessage;
 import shop.yesaladin.shop.config.GatewayProperties;
 import shop.yesaladin.shop.coupon.adapter.kafka.CouponProducer;
+import shop.yesaladin.shop.coupon.adapter.websocket.CouponWebsocketMessageSender;
 import shop.yesaladin.shop.coupon.domain.model.MemberCoupon;
 import shop.yesaladin.shop.coupon.domain.repository.CommandMemberCouponRepository;
 import shop.yesaladin.shop.coupon.domain.repository.QueryMemberCouponRepository;
+import shop.yesaladin.shop.coupon.dto.CouponGiveResultDto;
 import shop.yesaladin.shop.coupon.dto.CouponGroupAndLimitDto;
+import shop.yesaladin.shop.coupon.dto.RequestIdOnlyDto;
 import shop.yesaladin.shop.coupon.service.inter.GiveCouponService;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
@@ -60,10 +63,11 @@ public class GiveCouponServiceImpl implements GiveCouponService {
     private final QueryMemberService queryMemberService;
     private final RestTemplate restTemplate;
     private final RedisTemplate<String, String> redisTemplate;
+    private final CouponWebsocketMessageSender couponWebsocketMessageSender;
 
     @Override
     @Transactional(readOnly = true)
-    public void sendCouponGiveRequest(
+    public RequestIdOnlyDto sendCouponGiveRequest(
             String memberId, TriggerTypeCode triggerTypeCode, Long couponId
     ) {
         registerIssueRequest(memberId, triggerTypeCode.name(), couponId.toString());
@@ -78,23 +82,28 @@ public class GiveCouponServiceImpl implements GiveCouponService {
 
         checkMemberAlreadyHasCoupon(memberId, triggerTypeCode, couponId, couponGroupCodeList);
 
+        String requestId = generateRequestId(memberId);
+        RequestIdOnlyDto response = new RequestIdOnlyDto(requestId);
+
         if (Objects.isNull(couponId)) {
-            generateRequestIdAndSendMessage(
-                    memberId,
+            sendGiveRequestMessage(
                     triggerTypeCode,
                     null,
-                    couponGroupAndLimitList.get(0)
+                    couponGroupAndLimitList.get(0).getIsLimited(),
+                    requestId
             );
-            return;
+            return response;
         }
 
-        couponGroupAndLimitList.forEach(couponGroupAndLimit -> generateRequestIdAndSendMessage(
-                memberId,
-                triggerTypeCode,
-                couponId,
-                couponGroupAndLimit
-        ));
-
+        couponGroupAndLimitList.forEach(couponGroupAndLimit ->
+                sendGiveRequestMessage(
+                        triggerTypeCode,
+                        couponId,
+                        couponGroupAndLimit.getIsLimited(),
+                        requestId
+                )
+        );
+        return response;
     }
 
     @Override
@@ -120,6 +129,12 @@ public class GiveCouponServiceImpl implements GiveCouponService {
                     .collect(Collectors.toList()));
             tryGiveCouponToMember(responseMessage, memberId);
             couponProducer.produceGivenResultMessage(resultBuilder.success(true).build());
+
+            couponWebsocketMessageSender.sendGiveCouponResultMessage(new CouponGiveResultDto(
+                    responseMessage.getRequestId(),
+                    responseMessage.isSuccess(),
+                    responseMessage.isSuccess() ? "발급이 완료되었습니다." : responseMessage.getErrorMessage()
+            ));
         } catch (Exception e) {
             couponProducer.produceGivenResultMessage(resultBuilder.success(false).build());
             throw e;
@@ -207,21 +222,6 @@ public class GiveCouponServiceImpl implements GiveCouponService {
                             + ", trigger type : " + triggerTypeCode + ", coupon id : " + couponId
             );
         }
-    }
-
-    private void generateRequestIdAndSendMessage(
-            String memberId,
-            TriggerTypeCode triggerTypeCode,
-            Long couponId,
-            CouponGroupAndLimitDto couponGroupAndLimit
-    ) {
-        String requestId = generateRequestId(memberId);
-        sendGiveRequestMessage(
-                triggerTypeCode,
-                couponId,
-                couponGroupAndLimit.getIsLimited(),
-                requestId
-        );
     }
 
     private String generateRequestId(String memberId) {

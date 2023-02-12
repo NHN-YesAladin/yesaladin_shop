@@ -153,7 +153,8 @@ public class CommandOrderStatusChangeLogServiceImpl implements CommandOrderStatu
                 orderChangeDateTime,
                 code
         );
-        OrderStatusChangeLog changeLog = commandOrderStatusChangeLogRepository.save(orderStatusChangeLog);
+        OrderStatusChangeLog changeLog = commandOrderStatusChangeLogRepository.save(
+                orderStatusChangeLog);
         if (!changeLog.getOrderStatusCode().equals(code)) {
             throw new ClientException(ErrorCode.ORDER_BAD_REQUEST, "잘못된 주문 상태 변경 요청입니다.");
         }

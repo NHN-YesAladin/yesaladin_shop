@@ -27,10 +27,19 @@ import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
 import shop.yesaladin.shop.member.dto.MemberOrderSheetResponseDto;
 import shop.yesaladin.shop.member.service.inter.QueryMemberAddressService;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
+import shop.yesaladin.shop.order.domain.model.MemberOrder;
+import shop.yesaladin.shop.order.domain.model.NonMemberOrder;
 import shop.yesaladin.shop.order.domain.model.Order;
+import shop.yesaladin.shop.order.domain.model.OrderCode;
+import shop.yesaladin.shop.order.domain.model.OrderStatusChangeLog;
 import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
+import shop.yesaladin.shop.order.domain.model.Subscribe;
+import shop.yesaladin.shop.order.domain.repository.QueryOrderProductRepository;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
+import shop.yesaladin.shop.order.domain.repository.QueryOrderStatusChangeLogRepository;
+import shop.yesaladin.shop.order.dto.OrderDetailsResponseDto;
 import shop.yesaladin.shop.order.dto.OrderPaymentResponseDto;
+import shop.yesaladin.shop.order.dto.OrderResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSheetRequestDto;
 import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
 import shop.yesaladin.shop.order.dto.OrderStatusResponseDto;
@@ -38,6 +47,10 @@ import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryResponseDto;
 import shop.yesaladin.shop.order.exception.OrderNotFoundException;
 import shop.yesaladin.shop.order.service.inter.QueryOrderService;
+import shop.yesaladin.shop.payment.domain.model.Payment;
+import shop.yesaladin.shop.payment.domain.model.PaymentCode;
+import shop.yesaladin.shop.payment.dto.PaymentResponseDto;
+import shop.yesaladin.shop.payment.service.inter.QueryPaymentService;
 import shop.yesaladin.shop.point.service.inter.QueryPointHistoryService;
 import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
 import shop.yesaladin.shop.product.service.inter.QueryProductService;
@@ -54,11 +67,14 @@ import shop.yesaladin.shop.product.service.inter.QueryProductService;
 public class QueryOrderServiceImpl implements QueryOrderService {
 
     private final QueryOrderRepository queryOrderRepository;
+    private final QueryOrderProductRepository queryOrderProductRepository;
     private final QueryMemberService queryMemberService;
     private final QueryMemberAddressService queryMemberAddressService;
     private final QueryPointHistoryService queryPointHistoryService;
     private final QueryProductService queryProductService;
     private final QueryMemberCouponService queryMemberCouponService;
+    private final QueryPaymentService queryPaymentService;
+    private final QueryOrderStatusChangeLogRepository queryOrderStatusChangeLogRepository;
 
     private final Clock clock;
 
@@ -108,6 +124,10 @@ public class QueryOrderServiceImpl implements QueryOrderService {
     @Override
     @Transactional(readOnly = true)
     public Order getOrderByNumber(String number) {
+        return tryGetOrder(number);
+    }
+
+    private Order tryGetOrder(String number) {
         return queryOrderRepository.findByOrderNumber(number)
                 .orElseThrow(() -> new OrderNotFoundException(number));
     }
@@ -269,6 +289,73 @@ public class QueryOrderServiceImpl implements QueryOrderService {
             map.put(code, count);
         }
         return map;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public OrderDetailsResponseDto getDetailsDtoByOrderNumber(String orderNumber) {
+        //TODO : 서비스 테스트 필요
+        OrderDetailsResponseDto responseDto = new OrderDetailsResponseDto();
+
+        //주문 정보 set : findByOrderNumber로 order 불러와서 code로 회원 , 비회원 캐스팅
+        Order order = tryGetOrder(orderNumber);
+        setOrderToResponseByOrderCode(responseDto, order);
+
+        //상품 정보 set : 주문 상품 레포에서 가져오기
+        responseDto.setOrderProducts(queryOrderProductRepository.findAllByOrderNumber(
+                orderNumber));
+
+        //결제 정보 set : 결제 method 보고 맞춰서 set하기
+        try {
+            setPaymentToResponseByOrderId(responseDto, order);
+        } catch (ClientException e) {
+            if (!e.getErrorCode().equals(ErrorCode.PAYMENT_NOT_FOUND)) {
+                throw new ClientException(
+                        ErrorCode.BAD_REQUEST,
+                        ErrorCode.BAD_REQUEST.getDisplayName()
+                );
+            }
+            //ignore
+            responseDto.setPayment(null);
+        }
+
+        //가격 정보 set
+        responseDto.calculateAmounts();
+
+        return responseDto;
+    }
+
+    private void setPaymentToResponseByOrderId(OrderDetailsResponseDto responseDto, Order order) {
+        PaymentResponseDto paymentResponseDto = new PaymentResponseDto();
+        Payment payment = queryPaymentService.findByOrderId(order.getId());
+        if (payment.getMethod().equals(PaymentCode.EASY_PAY)) {
+            paymentResponseDto.setEasyPayInfo(payment);
+        } else {
+            paymentResponseDto.setCardPayInfo(payment);
+        }
+        responseDto.setPayment(paymentResponseDto);
+    }
+
+    private void setOrderToResponseByOrderCode(OrderDetailsResponseDto responseDto, Order order) {
+        OrderCode orderCode = order.getOrderCode();
+        OrderResponseDto orderResponseDto = new OrderResponseDto();
+        if (orderCode.equals(OrderCode.NON_MEMBER_ORDER)) {
+            NonMemberOrder nonMemberOrder = (NonMemberOrder) order;
+            orderResponseDto.setOrderInfoFromNonMemberOrder(nonMemberOrder);
+        } else if (orderCode.equals(OrderCode.MEMBER_ORDER)) {
+            MemberOrder memberOrder = (MemberOrder) order;
+            orderResponseDto.setOrderInfoFromMemberOrder(memberOrder);
+        } else {
+            Subscribe subscribe = (Subscribe) order;
+            orderResponseDto.setOrderInfoFromSubscribe(subscribe);
+        }
+        OrderStatusChangeLog latestChangeLog = queryOrderStatusChangeLogRepository.findAllByOrder_IdOrderByOrderStatusCodeDesc(
+                order.getId()).get(0);
+        orderResponseDto.setOrderStatusCode(latestChangeLog.getOrderStatusCode());
+        responseDto.setOrder(orderResponseDto);
     }
 
     private void checkRequestedOffsetInBounds(

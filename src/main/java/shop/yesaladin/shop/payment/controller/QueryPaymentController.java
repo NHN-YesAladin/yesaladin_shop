@@ -34,7 +34,8 @@ public class QueryPaymentController {
      */
     @GetMapping(value = "/{orderId}", params = "id=order")
     public ResponseDto<PaymentCompleteSimpleResponseDto> getPaymentByOrderId(@PathVariable Long orderId) {
-        PaymentCompleteSimpleResponseDto responseDto = queryPaymentService.findByOrderId(orderId);
+        PaymentCompleteSimpleResponseDto responseDto = queryPaymentService.findSimpleDtoByOrderId(
+                orderId);
 
         return ResponseDto.<PaymentCompleteSimpleResponseDto>builder()
                 .status(HttpStatus.OK)
