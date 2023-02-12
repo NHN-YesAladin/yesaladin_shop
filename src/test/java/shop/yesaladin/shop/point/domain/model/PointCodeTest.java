@@ -4,7 +4,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import shop.yesaladin.common.exception.ClientException;
-import shop.yesaladin.shop.point.exception.InvalidCodeParameterException;
 
 class PointCodeTest {
 

@@ -20,6 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.coupon.domain.model.MemberCoupon;
 import shop.yesaladin.shop.member.domain.model.Member;
@@ -27,6 +28,7 @@ import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
 
 @Transactional
 @SpringBootTest
+@ActiveProfiles("local-test")
 class QueryDslQueryMemberCouponRepositoryTest {
 
     @Autowired

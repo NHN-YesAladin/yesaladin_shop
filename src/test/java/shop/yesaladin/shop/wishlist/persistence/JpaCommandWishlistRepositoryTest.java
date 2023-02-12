@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
 import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberGenderCode;
@@ -26,6 +27,7 @@ import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
 import shop.yesaladin.shop.wishlist.domain.model.Wishlist;
 
 @DataJpaTest
+@ActiveProfiles("local-test")
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class JpaCommandWishlistRepositoryTest {
 

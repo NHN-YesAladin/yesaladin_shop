@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.repository.QueryCategoryRepository;
@@ -23,6 +24,7 @@ import shop.yesaladin.shop.category.exception.CategoryNotFoundException;
 @Slf4j
 @Transactional
 @SpringBootTest
+@ActiveProfiles("local-test")
 class QueryDslCategoryRepositoryTest {
 
     @PersistenceContext

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.member.domain.model.Member;
@@ -29,6 +30,7 @@ import shop.yesaladin.shop.wishlist.domain.repository.QueryWishlistRepository;
 
 @Transactional
 @SpringBootTest
+@ActiveProfiles("local-test")
 class QueryDslWishlistRepositoryTest {
 
     @PersistenceContext

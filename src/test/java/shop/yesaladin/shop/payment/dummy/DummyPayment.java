@@ -4,7 +4,6 @@ package shop.yesaladin.shop.payment.dummy;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import shop.yesaladin.shop.order.domain.model.Order;
-import shop.yesaladin.shop.order.domain.model.OrderCode;
 import shop.yesaladin.shop.payment.domain.model.Payment;
 import shop.yesaladin.shop.payment.domain.model.PaymentCode;
 

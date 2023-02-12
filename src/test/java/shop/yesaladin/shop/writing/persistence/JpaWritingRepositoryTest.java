@@ -1,5 +1,8 @@
 package shop.yesaladin.shop.writing.persistence;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -8,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.test.context.ActiveProfiles;
 import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
@@ -20,11 +24,8 @@ import shop.yesaladin.shop.writing.domain.model.Author;
 import shop.yesaladin.shop.writing.domain.model.Writing;
 import shop.yesaladin.shop.writing.dummy.DummyAuthor;
 
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 @DataJpaTest
+@ActiveProfiles("local-test")
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class JpaWritingRepositoryTest {
 
