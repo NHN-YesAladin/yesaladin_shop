@@ -5,6 +5,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import shop.yesaladin.coupon.message.CouponCodesAndResultMessage;
 import shop.yesaladin.coupon.message.CouponGiveRequestMessage;
+import shop.yesaladin.coupon.message.CouponUseRequestMessage;
 import shop.yesaladin.shop.config.CouponProperties;
 
 /**
@@ -43,5 +44,9 @@ public class CouponProducer {
 
     public void produceUsedResultMessage(CouponCodesAndResultMessage message) {
         kafkaTemplate.send(couponProperties.getCouponUsedTopic(), message);
+    }
+
+    public void produceUseRequestMessage(CouponUseRequestMessage message) {
+        kafkaTemplate.send(couponProperties.getCouponUseRequestTopic(), message);
     }
 }
