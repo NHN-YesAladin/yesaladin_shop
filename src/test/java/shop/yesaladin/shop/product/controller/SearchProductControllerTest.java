@@ -967,7 +967,7 @@ class SearchProductControllerTest {
         Mockito.when(searchProductService.searchProductsByCategoryId(dummySearchedProductManagerDto.getCategories()
                         .get(0)
                         .getId(), 0, 1))
-                .thenReturn(dummySearchedProductManagerResponseDto);
+                .thenReturn(dummySearchedProductResponseDto);
 
         //when
         ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
@@ -982,112 +982,57 @@ class SearchProductControllerTest {
                 .andExpect(jsonPath("$.data.products[0].id", equalTo(INT_MIN)))
                 .andExpect(jsonPath(
                         "$.data.products[0].title",
-                        equalTo(dummySearchedProductManagerDto.getTitle())
+                        equalTo(dummySearchedProductDto.getTitle())
                 ))
                 .andExpect(jsonPath(
-                        "$.data.products[0].isbn",
-                        equalTo(dummySearchedProductManagerDto.getIsbn())
+                        "$.data.products[0].quantity",
+                        equalTo(dummySearchedProductDto.getQuantity())
                 ))
-                .andExpect(jsonPath("$.data.products[0].actualPrice", equalTo(1000)))
                 .andExpect(jsonPath(
                         "$.data.products[0].discountRate",
-                        equalTo(dummySearchedProductManagerDto.getDiscountRate())
+                        equalTo(dummySearchedProductDto.getDiscountRate())
+                ))
+                .andExpect(jsonPath("$.data.products[0].sellingPrice", equalTo(1000)))
+                .andExpect(jsonPath(
+                        "$.data.products[0].isForcedOutOfStock",
+                        equalTo(dummySearchedProductDto.getIsForcedOutOfStock())
                 ))
                 .andExpect(jsonPath(
-                        "$.data.products[0].separatelyDiscount",
-                        equalTo(dummySearchedProductManagerDto.isSeparatelyDiscount())
+                        "$.data.products[0].thumbnailFileUrl",
+                        equalTo(dummySearchedProductDto.getThumbnailFileUrl())
                 ))
                 .andExpect(jsonPath(
-                        "$.data.products[0].givenPointRate",
-                        equalTo(dummySearchedProductManagerDto.getGivenPointRate())
-                ))
-                .andExpect(jsonPath(
-                        "$.data.products[0].isGivenPoint",
-                        equalTo(dummySearchedProductManagerDto.getIsGivenPoint())
-                ))
-                .andExpect(jsonPath(
-                        "$.data.products[0].isSale",
-                        equalTo(dummySearchedProductManagerDto.getIsSale())
-                ))
-                .andExpect(jsonPath("$.data.products[0].quantity", equalTo(1000)))
-                .andExpect(jsonPath("$.data.products[0].productType.id", equalTo(1)))
-                .andExpect(jsonPath(
-                        "$.data.products[0].productType.name",
-                        equalTo(dummySearchedProductManagerDto.getProductType().getName())
-                ))
-                .andExpect(jsonPath(
-                        "$.data.products[0].searchedTotalDiscountRate.id",
-                        equalTo(dummySearchedProductManagerDto.getSearchedTotalDiscountRate()
-                                .getId())
-                ))
-                .andExpect(jsonPath(
-                        "$.data.products[0].searchedTotalDiscountRate.discountRate",
-                        equalTo(dummySearchedProductManagerDto.getSearchedTotalDiscountRate()
-                                .getDiscountRate())
-                ))
-                .andExpect(jsonPath("$.data.products[0].thumbnailFile.id", equalTo(1)))
-                .andExpect(jsonPath(
-                        "$.data.products[0].thumbnailFile.name",
-                        equalTo(dummySearchedProductManagerDto.getThumbnailFile().getName())
-                ))
-                .andExpect(jsonPath(
-                        "$.data.products[0].thumbnailFile.uploadDateTime",
-                        equalTo(dummySearchedProductManagerDto.getThumbnailFile()
-                                .getUploadDateTime()
-                                .toString())
-                ))
-                .andExpect(jsonPath("$.data.products[0].ebookFile.id", equalTo(2)))
-                .andExpect(jsonPath(
-                        "$.data.products[0].ebookFile.name",
-                        equalTo(dummySearchedProductManagerDto.getEbookFile().getName())
-                ))
-                .andExpect(jsonPath(
-                        "$.data.products[0].ebookFile.uploadDateTime",
-                        equalTo(dummySearchedProductManagerDto.getEbookFile()
-                                .getUploadDateTime()
-                                .toString())
+                        "$.data.products[0].publisher",
+                        equalTo(dummySearchedProductDto.getPublisher())
                 ))
                 .andExpect(jsonPath(
                         "$.data.products[0].publishedDate",
-                        equalTo(dummySearchedProductManagerDto.getPublishedDate().toString())
+                        equalTo(dummySearchedProductDto.getPublishedDate())
                 ))
-                .andExpect(jsonPath(
-                        "$.data.products[0].savingMethod",
-                        equalTo(dummySearchedProductManagerDto.getSavingMethod())
-                ))
-                .andExpect(jsonPath("$.data.products[0].categories[0].id", equalTo(INT_ONE)))
+                .andExpect(jsonPath("$.data.products[0].categories[0].id", equalTo(12)))
                 .andExpect(jsonPath(
                         "$.data.products[0].categories[0].parent",
-                        equalTo(dummySearchedProductManagerDto.getCategories().get(0).getParent())
+                        equalTo(dummySearchedProductDto.getCategories().get(0).getParent())
                 ))
                 .andExpect(jsonPath(
                         "$.data.products[0].categories[0].name",
-                        equalTo(dummySearchedProductManagerDto.getCategories().get(0).getName())
+                        equalTo(dummySearchedProductDto.getCategories().get(0).getName())
                 ))
                 .andExpect(jsonPath(
                         "$.data.products[0].categories[0].isShown",
-                        equalTo(dummySearchedProductManagerDto.getCategories().get(0).getIsShown())
+                        equalTo(dummySearchedProductDto.getCategories().get(0).getIsShown())
                 ))
                 .andExpect(jsonPath(
                         "$.data.products[0].categories[0].disable",
-                        equalTo(dummySearchedProductManagerDto.getCategories().get(0).getDisable())
+                        equalTo(dummySearchedProductDto.getCategories().get(0).getDisable())
                 ))
-                .andExpect(jsonPath("$.data.products[0].authors[0].id", equalTo(INT_ONE)))
                 .andExpect(jsonPath(
-                        "$.data.products[0].authors[0].name",
-                        equalTo(dummySearchedProductManagerDto.getAuthors().get(0).getName())
+                        "$.data.products[0].authors[0]",
+                        equalTo(dummySearchedProductDto.getAuthors().get(0))
                 ))
-                .andExpect(jsonPath("$.data.products[0].tags[0].id", equalTo(INT_ONE)))
                 .andExpect(jsonPath(
-                        "$.data.products[0].tags[0].name",
-                        equalTo(dummySearchedProductManagerDto.getTags().get(0).getName())
-                ))
-                .andExpect(jsonPath("$.data.products[0].subscribeProducts[0].id", equalTo(INT_ONE)))
-                .andExpect(jsonPath(
-                        "$.data.products[0].subscribeProducts[0].issn",
-                        equalTo(dummySearchedProductManagerDto.getSubscribeProducts()
-                                .get(0)
-                                .getIssn())
+                        "$.data.products[0].tags[0]",
+                        equalTo(dummySearchedProductDto.getTags().get(0))
                 ))
                 .andDo(print());
 
@@ -1163,7 +1108,7 @@ class SearchProductControllerTest {
     void testSearchProductByCategoryNameSuccess() throws Exception {
         //given
         Mockito.when(searchProductService.searchProductsByCategoryName(CATEGORY_NAME, 0, 1))
-                .thenReturn(dummySearchedProductManagerResponseDto);
+                .thenReturn(dummySearchedProductResponseDto);
 
         //when
         ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
@@ -1179,112 +1124,57 @@ class SearchProductControllerTest {
                 .andExpect(jsonPath("$.data.products[0].id", equalTo(INT_MIN)))
                 .andExpect(jsonPath(
                         "$.data.products[0].title",
-                        equalTo(dummySearchedProductManagerDto.getTitle())
+                        equalTo(dummySearchedProductDto.getTitle())
                 ))
                 .andExpect(jsonPath(
-                        "$.data.products[0].isbn",
-                        equalTo(dummySearchedProductManagerDto.getIsbn())
+                        "$.data.products[0].quantity",
+                        equalTo(dummySearchedProductDto.getQuantity())
                 ))
-                .andExpect(jsonPath("$.data.products[0].actualPrice", equalTo(1000)))
                 .andExpect(jsonPath(
                         "$.data.products[0].discountRate",
-                        equalTo(dummySearchedProductManagerDto.getDiscountRate())
+                        equalTo(dummySearchedProductDto.getDiscountRate())
+                ))
+                .andExpect(jsonPath("$.data.products[0].sellingPrice", equalTo(1000)))
+                .andExpect(jsonPath(
+                        "$.data.products[0].isForcedOutOfStock",
+                        equalTo(dummySearchedProductDto.getIsForcedOutOfStock())
                 ))
                 .andExpect(jsonPath(
-                        "$.data.products[0].separatelyDiscount",
-                        equalTo(dummySearchedProductManagerDto.isSeparatelyDiscount())
+                        "$.data.products[0].thumbnailFileUrl",
+                        equalTo(dummySearchedProductDto.getThumbnailFileUrl())
                 ))
                 .andExpect(jsonPath(
-                        "$.data.products[0].givenPointRate",
-                        equalTo(dummySearchedProductManagerDto.getGivenPointRate())
-                ))
-                .andExpect(jsonPath(
-                        "$.data.products[0].isGivenPoint",
-                        equalTo(dummySearchedProductManagerDto.getIsGivenPoint())
-                ))
-                .andExpect(jsonPath(
-                        "$.data.products[0].isSale",
-                        equalTo(dummySearchedProductManagerDto.getIsSale())
-                ))
-                .andExpect(jsonPath("$.data.products[0].quantity", equalTo(1000)))
-                .andExpect(jsonPath("$.data.products[0].productType.id", equalTo(1)))
-                .andExpect(jsonPath(
-                        "$.data.products[0].productType.name",
-                        equalTo(dummySearchedProductManagerDto.getProductType().getName())
-                ))
-                .andExpect(jsonPath(
-                        "$.data.products[0].searchedTotalDiscountRate.id",
-                        equalTo(dummySearchedProductManagerDto.getSearchedTotalDiscountRate()
-                                .getId())
-                ))
-                .andExpect(jsonPath(
-                        "$.data.products[0].searchedTotalDiscountRate.discountRate",
-                        equalTo(dummySearchedProductManagerDto.getSearchedTotalDiscountRate()
-                                .getDiscountRate())
-                ))
-                .andExpect(jsonPath("$.data.products[0].thumbnailFile.id", equalTo(1)))
-                .andExpect(jsonPath(
-                        "$.data.products[0].thumbnailFile.name",
-                        equalTo(dummySearchedProductManagerDto.getThumbnailFile().getName())
-                ))
-                .andExpect(jsonPath(
-                        "$.data.products[0].thumbnailFile.uploadDateTime",
-                        equalTo(dummySearchedProductManagerDto.getThumbnailFile()
-                                .getUploadDateTime()
-                                .toString())
-                ))
-                .andExpect(jsonPath("$.data.products[0].ebookFile.id", equalTo(2)))
-                .andExpect(jsonPath(
-                        "$.data.products[0].ebookFile.name",
-                        equalTo(dummySearchedProductManagerDto.getEbookFile().getName())
-                ))
-                .andExpect(jsonPath(
-                        "$.data.products[0].ebookFile.uploadDateTime",
-                        equalTo(dummySearchedProductManagerDto.getEbookFile()
-                                .getUploadDateTime()
-                                .toString())
+                        "$.data.products[0].publisher",
+                        equalTo(dummySearchedProductDto.getPublisher())
                 ))
                 .andExpect(jsonPath(
                         "$.data.products[0].publishedDate",
-                        equalTo(dummySearchedProductManagerDto.getPublishedDate().toString())
+                        equalTo(dummySearchedProductDto.getPublishedDate())
                 ))
-                .andExpect(jsonPath(
-                        "$.data.products[0].savingMethod",
-                        equalTo(dummySearchedProductManagerDto.getSavingMethod())
-                ))
-                .andExpect(jsonPath("$.data.products[0].categories[0].id", equalTo(INT_ONE)))
+                .andExpect(jsonPath("$.data.products[0].categories[0].id", equalTo(12)))
                 .andExpect(jsonPath(
                         "$.data.products[0].categories[0].parent",
-                        equalTo(dummySearchedProductManagerDto.getCategories().get(0).getParent())
+                        equalTo(dummySearchedProductDto.getCategories().get(0).getParent())
                 ))
                 .andExpect(jsonPath(
                         "$.data.products[0].categories[0].name",
-                        equalTo(dummySearchedProductManagerDto.getCategories().get(0).getName())
+                        equalTo(dummySearchedProductDto.getCategories().get(0).getName())
                 ))
                 .andExpect(jsonPath(
                         "$.data.products[0].categories[0].isShown",
-                        equalTo(dummySearchedProductManagerDto.getCategories().get(0).getIsShown())
+                        equalTo(dummySearchedProductDto.getCategories().get(0).getIsShown())
                 ))
                 .andExpect(jsonPath(
                         "$.data.products[0].categories[0].disable",
-                        equalTo(dummySearchedProductManagerDto.getCategories().get(0).getDisable())
+                        equalTo(dummySearchedProductDto.getCategories().get(0).getDisable())
                 ))
-                .andExpect(jsonPath("$.data.products[0].authors[0].id", equalTo(INT_ONE)))
                 .andExpect(jsonPath(
-                        "$.data.products[0].authors[0].name",
-                        equalTo(dummySearchedProductManagerDto.getAuthors().get(0).getName())
+                        "$.data.products[0].authors[0]",
+                        equalTo(dummySearchedProductDto.getAuthors().get(0))
                 ))
-                .andExpect(jsonPath("$.data.products[0].tags[0].id", equalTo(INT_ONE)))
                 .andExpect(jsonPath(
-                        "$.data.products[0].tags[0].name",
-                        equalTo(dummySearchedProductManagerDto.getTags().get(0).getName())
-                ))
-                .andExpect(jsonPath("$.data.products[0].subscribeProducts[0].id", equalTo(INT_ONE)))
-                .andExpect(jsonPath(
-                        "$.data.products[0].subscribeProducts[0].issn",
-                        equalTo(dummySearchedProductManagerDto.getSubscribeProducts()
-                                .get(0)
-                                .getIssn())
+                        "$.data.products[0].tags[0]",
+                        equalTo(dummySearchedProductDto.getTags().get(0))
                 ))
                 .andDo(print());
 
