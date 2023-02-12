@@ -66,7 +66,8 @@ public class CommandOrderControllerSecurityTest {
     int wrappingFee = 0;
     Long ordererAddressId = 1L;
     List<String> orderCoupons;
-    long orderPoint = 1000L;
+    long usePoint = 1000L;
+    long savePoint = 500L;
     int expectedDay = 10;
     int intervalMonth = 6;
 
@@ -317,7 +318,8 @@ public class CommandOrderControllerSecurityTest {
                 recipientPhoneNumber,
                 ordererAddressId,
                 orderCoupons,
-                orderPoint
+                usePoint,
+                savePoint
         );
     }
 
@@ -332,7 +334,8 @@ public class CommandOrderControllerSecurityTest {
                 recipientPhoneNumber,
                 ordererAddressId,
                 orderCoupons,
-                orderPoint,
+                usePoint,
+                savePoint,
                 expectedDay,
                 intervalMonth
         );

@@ -29,7 +29,10 @@ public class OrderMemberCreateRequestDto extends OrderCreateRequestDto {
     protected Long ordererAddressId;
     protected List<String> orderCoupons;
     @Min(value = 0)
-    protected long orderPoint;
+    protected long usePoint;
+
+    @Min(value = 0)
+    protected long savePoint;
 
     public OrderMemberCreateRequestDto(
             LocalDate expectedShippingDate,
@@ -41,7 +44,8 @@ public class OrderMemberCreateRequestDto extends OrderCreateRequestDto {
             @NotBlank String recipientPhoneNumber,
             Long ordererAddressId,
             List<String> orderCoupons,
-            long orderPoint
+            long usePoint,
+            long savePoint
     ) {
         super(
                 expectedShippingDate,
@@ -54,7 +58,8 @@ public class OrderMemberCreateRequestDto extends OrderCreateRequestDto {
         );
         this.ordererAddressId = ordererAddressId;
         this.orderCoupons = orderCoupons;
-        this.orderPoint = orderPoint;
+        this.usePoint = usePoint;
+        this.savePoint = savePoint;
     }
 
     /**
@@ -82,7 +87,7 @@ public class OrderMemberCreateRequestDto extends OrderCreateRequestDto {
                 .orderDateTime(orderDateTime)
                 .expectedTransportDate(expectedShippingDate)
                 .isHidden(false)
-                .usedPoint(orderPoint)
+                .usedPoint(usePoint)
                 .shippingFee(shippingFee)
                 .wrappingFee(wrappingFee)
                 .totalAmount(productTotalAmount)
