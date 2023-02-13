@@ -5,12 +5,7 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -28,6 +23,7 @@ import shop.yesaladin.shop.product.dto.ProductOnlyTitleDto;
 import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
 import shop.yesaladin.shop.publish.domain.model.querydsl.QPublish;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -67,14 +63,14 @@ public class QueryDslProductRepository implements QueryProductRepository {
      */
     @Override
     public Boolean existsByIsbn(String isbn) {
-         QProduct product = QProduct.product;
+        QProduct product = QProduct.product;
 
-         String foundIsbn = queryFactory.select(product.isbn)
-                 .from(product)
-                 .where(product.isbn.eq(isbn))
-                 .fetchFirst();
+        String foundIsbn = queryFactory.select(product.isbn)
+                .from(product)
+                .where(product.isbn.eq(isbn))
+                .fetchFirst();
 
-         return foundIsbn != null;
+        return foundIsbn != null;
     }
 
     /**
