@@ -12,6 +12,7 @@ import shop.yesaladin.shop.member.dto.MemberLoginResponseDto;
 import shop.yesaladin.shop.member.dto.MemberManagerResponseDto;
 import shop.yesaladin.shop.member.dto.MemberOrderSheetResponseDto;
 import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
+import shop.yesaladin.shop.member.dto.MemberStatisticsResponseDto;
 
 
 /**
@@ -217,4 +218,13 @@ public interface QueryMemberService {
      * @since 1.0
      */
     MemberOrderSheetResponseDto getMemberForOrder(String loginId);
+
+    /**
+     * 관리자의 회원 통계에 필요한 회원 통계 데이터를 가져옵니다.
+     *
+     * @return 회원 통계 데이터
+     * @author 송학현
+     * @since 1.0
+     */
+    MemberStatisticsResponseDto getMemberStatistics();
 }

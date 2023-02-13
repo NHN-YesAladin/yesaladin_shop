@@ -14,6 +14,12 @@ import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.coupon.dto.MemberCouponSummaryDto;
 import shop.yesaladin.shop.coupon.service.inter.QueryMemberCouponService;
 
+/**
+ * 회원 쿠폰 조회 관련 요청을 처리하는 controller 입니다.
+ *
+ * @author 김홍대
+ * @since 1.0
+ */
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/v1/member-coupons")
@@ -28,8 +34,7 @@ public class QueryMemberCouponController {
             @RequestParam(defaultValue = "true") boolean usable
     ) {
 
-        PaginatedResponseDto<MemberCouponSummaryDto> memberCouponSummaryList = queryMemberCouponService.getMemberCouponSummaryList(
-                pageable,
+        PaginatedResponseDto<MemberCouponSummaryDto> memberCouponSummaryList = queryMemberCouponService.getMemberCouponSummaryList(pageable,
                 loginId,
                 usable
         );

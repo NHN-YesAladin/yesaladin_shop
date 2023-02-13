@@ -1,16 +1,17 @@
 package shop.yesaladin.shop.product.persistence;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import shop.yesaladin.shop.product.domain.repository.SearchProductRepository;
-import shop.yesaladin.shop.product.dto.SearchedProductManagerResponseDto;
 import shop.yesaladin.shop.product.dto.SearchedProductResponseDto;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 @SpringBootTest
+@ActiveProfiles("local-test")
 class ElasticProductRepositoryTest {
 
     @Autowired
@@ -19,7 +20,7 @@ class ElasticProductRepositoryTest {
     @Test
     @DisplayName("카테고라 id로 검색 테스트")
     void testSearchProductsByCategoryId() {
-        SearchedProductManagerResponseDto result = searchProductRepository.searchProductsByCategoryId(-1L, 0, 1);
+        SearchedProductResponseDto result = searchProductRepository.searchProductsByCategoryId(-1L, 0, 1);
         assertThat(result.getProducts()).isEmpty();
         assertThat(result.getCount()).isZero();
     }
@@ -27,7 +28,7 @@ class ElasticProductRepositoryTest {
     @Test
     @DisplayName("카테고라 이름으로 검색 테스트")
     void testSearchProductsByCategoryName() {
-        SearchedProductManagerResponseDto result = searchProductRepository.searchProductsByCategoryName("카테고리이름", 0, 1);
+        SearchedProductResponseDto result = searchProductRepository.searchProductsByCategoryName("카테고리이름", 0, 1);
         assertThat(result.getProducts()).isEmpty();
         assertThat(result.getCount()).isZero();
     }

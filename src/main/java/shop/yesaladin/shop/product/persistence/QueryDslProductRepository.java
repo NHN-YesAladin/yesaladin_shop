@@ -5,6 +5,10 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -20,6 +24,7 @@ import shop.yesaladin.shop.product.domain.model.querydsl.QRelation;
 import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
 import shop.yesaladin.shop.product.dto.ProductOnlyTitleDto;
 import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
+import shop.yesaladin.shop.publish.domain.model.querydsl.QPublish;
 
 import java.util.Arrays;
 import java.util.List;
@@ -283,7 +288,10 @@ public class QueryDslProductRepository implements QueryProductRepository {
         QProduct product = QProduct.product;
         QRelation relation = QRelation.relation;
 
-        List<Product> reId = queryFactory.select(relation.productSub).from(relation).where(relation.productMain.id.eq(id)).fetch();
+        List<Product> reId = queryFactory.select(relation.productSub)
+                .from(relation)
+                .where(relation.productMain.id.eq(id))
+                .fetch();
         List<Product> products = queryFactory.selectFrom(product)
                 .where(product.title.contains(title)
                         .and(product.isDeleted.isFalse())
@@ -299,6 +307,54 @@ public class QueryDslProductRepository implements QueryProductRepository {
                         .and(product.isDeleted.isFalse())
                         .and(product.id.ne(id))
                         .and(product.notIn(reId)))
+                .fetchFirst();
+
+        return new PageImpl<>(products, pageable, count);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Page<Product> findRecentProductByPublishedDate(Pageable pageable) {
+        QProduct product = QProduct.product;
+        QPublish publish = QPublish.publish;
+
+        List<Product> products = queryFactory.selectFrom(product)
+                .leftJoin(publish).on(publish.product.eq(product))
+                .where(product.isDeleted.isFalse())
+                .offset((long) pageable.getPageNumber() * pageable.getPageSize())
+                .limit(pageable.getPageSize())
+                .orderBy(publish.publishedDate.desc())
+                .fetch();
+
+        Long count = queryFactory.select(product.count())
+                .where(product.isDeleted.isFalse())
+                .from(product)
+                .fetchFirst();
+
+        return new PageImpl<>(products, pageable, count);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Page<Product> findRecentViewProductById(List<Long> ids, Pageable pageable) {
+        QProduct product = QProduct.product;
+
+        List<Product> products = new ArrayList<>();
+        for (Long id : ids) {
+            products.add(queryFactory.selectFrom(product)
+                    .where(product.id.eq(id).and(product.isDeleted.isFalse()))
+                    .offset((long) pageable.getPageNumber() * pageable.getPageSize())
+                    .limit(pageable.getPageSize())
+                    .fetchFirst());
+        }
+
+        Long count = queryFactory.select(product.count())
+                .where(product.id.in(ids).and(product.isDeleted.isFalse()))
+                .from(product)
                 .fetchFirst();
 
         return new PageImpl<>(products, pageable, count);

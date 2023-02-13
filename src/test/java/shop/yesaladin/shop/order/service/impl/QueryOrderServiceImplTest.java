@@ -38,16 +38,26 @@ import shop.yesaladin.shop.common.exception.InvalidPeriodConditionException;
 import shop.yesaladin.shop.common.exception.PageOffsetOutOfBoundsException;
 import shop.yesaladin.shop.coupon.dto.MemberCouponSummaryDto;
 import shop.yesaladin.shop.coupon.service.inter.QueryMemberCouponService;
+import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.member.dto.MemberOrderSheetResponseDto;
 import shop.yesaladin.shop.member.service.inter.QueryMemberAddressService;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.order.domain.model.MemberOrder;
+import shop.yesaladin.shop.order.domain.model.NonMemberOrder;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
+import shop.yesaladin.shop.order.domain.model.OrderProduct;
+import shop.yesaladin.shop.order.domain.model.OrderStatusChangeLog;
 import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
+import shop.yesaladin.shop.order.domain.model.Subscribe;
+import shop.yesaladin.shop.order.domain.repository.QueryOrderProductRepository;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
+import shop.yesaladin.shop.order.domain.repository.QueryOrderStatusChangeLogRepository;
+import shop.yesaladin.shop.order.dto.OrderDetailsResponseDto;
+import shop.yesaladin.shop.order.dto.OrderPaymentResponseDto;
+import shop.yesaladin.shop.order.dto.OrderProductResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSheetRequestDto;
 import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
 import shop.yesaladin.shop.order.dto.OrderStatusResponseDto;
@@ -57,7 +67,21 @@ import shop.yesaladin.shop.order.exception.OrderNotFoundException;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMemberAddress;
 import shop.yesaladin.shop.order.persistence.dummy.DummyOrder;
+import shop.yesaladin.shop.payment.domain.model.Payment;
+import shop.yesaladin.shop.payment.domain.model.PaymentCard;
+import shop.yesaladin.shop.payment.domain.model.PaymentCode;
+import shop.yesaladin.shop.payment.domain.model.PaymentEasyPay;
+import shop.yesaladin.shop.payment.dummy.DummyPayment;
+import shop.yesaladin.shop.payment.dummy.DummyPaymentCard;
+import shop.yesaladin.shop.payment.dummy.DummyPaymentEasyPay;
+import shop.yesaladin.shop.payment.service.inter.QueryPaymentService;
 import shop.yesaladin.shop.point.service.inter.QueryPointHistoryService;
+import shop.yesaladin.shop.product.domain.model.Product;
+import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
+import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
+import shop.yesaladin.shop.product.dummy.DummyFile;
+import shop.yesaladin.shop.product.dummy.DummyProduct;
+import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
 import shop.yesaladin.shop.product.service.inter.QueryProductService;
 
 class QueryOrderServiceImplTest {
@@ -69,30 +93,72 @@ class QueryOrderServiceImplTest {
     long expectedMemberId = 1L;
     private QueryOrderServiceImpl service;
     private QueryOrderRepository repository;
+    private QueryOrderProductRepository queryOrderProductRepository;
     private QueryMemberService queryMemberService;
     private QueryMemberAddressService queryMemberAddressService;
     private QueryPointHistoryService queryPointHistoryService;
     private QueryProductService queryProductService;
     private QueryMemberCouponService queryMemberCouponService;
+    private QueryPaymentService queryPaymentService;
+    private QueryOrderStatusChangeLogRepository queryOrderStatusChangeLogRepository;
 
+    private MemberOrder memberOrder;
+    private NonMemberOrder nonMemberOrder;
+    private Subscribe subscribe;
+    private List<Product> products;
     @BeforeEach
     void setUp() {
         queryPointHistoryService = Mockito.mock(QueryPointHistoryService.class);
         queryProductService = Mockito.mock(QueryProductService.class);
         repository = Mockito.mock(QueryOrderRepository.class);
+        queryOrderProductRepository = Mockito.mock(QueryOrderProductRepository.class);
         queryMemberAddressService = Mockito.mock(QueryMemberAddressService.class);
         queryMemberService = Mockito.mock(QueryMemberService.class);
         queryMemberCouponService = Mockito.mock(QueryMemberCouponService.class);
+        queryPaymentService = Mockito.mock(QueryPaymentService.class);
+        queryOrderStatusChangeLogRepository = Mockito.mock(QueryOrderStatusChangeLogRepository.class);
 
         service = new QueryOrderServiceImpl(
                 repository,
+                queryOrderProductRepository,
                 queryMemberService,
                 queryMemberAddressService,
                 queryPointHistoryService,
                 queryProductService,
                 queryMemberCouponService,
+                queryPaymentService,
+                queryOrderStatusChangeLogRepository,
                 clock
         );
+
+        Member member = DummyMember.memberWithId();
+        MemberAddress memberAddress = DummyMemberAddress.address(member);
+        SubscribeProduct subscribeProduct = SubscribeProduct.builder()
+                .ISSN("12345")
+                .build();
+
+        nonMemberOrder = DummyOrder.nonMemberOrderWithId();
+        memberOrder = DummyOrder.memberOrderWithId(member, memberAddress);
+        subscribe = DummyOrder.subscribeWithId(member, memberAddress, subscribeProduct);
+
+        String isbn = "000000000000";
+        String url = "https://api-storage.cloud.toast.com/v1/AUTH/container/domain/type";
+
+        File thumbnailFile = DummyFile.dummy(url + "/image.png");
+        File ebookFile = DummyFile.dummy(url + "/ebook.pdf");
+        TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
+
+        products = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            Product product = DummyProduct.dummy(
+                    isbn + i,
+                    subscribeProduct,
+                    thumbnailFile,
+                    ebookFile,
+                    totalDiscountRate
+            );
+            products.add(product);
+        }
     }
 
     @Test
@@ -686,6 +752,46 @@ class QueryOrderServiceImplTest {
     }
 
     @Test
+    @DisplayName("주문 id 를 통해 결제 정보 조회 성공")
+    void getPaymentDtoByMemberOrderId() throws Exception {
+        // given
+        OrderPaymentResponseDto orderPaymentResponseDto = new OrderPaymentResponseDto(
+                memberOrder.getMember().getName(),
+                memberOrder.getMemberAddress().getAddress()
+        );
+        Mockito.when(repository.findPaymentDtoByMemberOrderId(memberOrder.getId()))
+                .thenReturn(Optional.of(orderPaymentResponseDto));
+
+        // when
+        OrderPaymentResponseDto responseDto = service.getPaymentDtoByMemberOrderId(
+                memberOrder.getId());
+
+        // then
+        assertThat(responseDto.getOrdererName()).isEqualTo(orderPaymentResponseDto.getOrdererName());
+        assertThat(responseDto.getAddress()).isEqualTo(orderPaymentResponseDto.getAddress());
+
+        Mockito.verify(repository, Mockito.times(1))
+                .findPaymentDtoByMemberOrderId(memberOrder.getId());
+    }
+
+    @Test
+    @DisplayName("주문 id 를 통해 결제 정보 조회 실패 - 결제 정보 없음")
+    void getPaymentDtoByMemberOrderId_notFound_fail() throws Exception {
+        // given
+
+        Mockito.when(repository.findPaymentDtoByMemberOrderId(memberOrder.getId()))
+                .thenReturn(Optional.empty());
+
+        // when
+        assertThatCode(() -> service.getPaymentDtoByMemberOrderId(
+                memberOrder.getId())).isInstanceOf(OrderNotFoundException.class);
+
+        // then
+        Mockito.verify(repository, Mockito.times(1))
+                .findPaymentDtoByMemberOrderId(memberOrder.getId());
+    }
+
+    @Test
     @DisplayName("주문 상태에 따른 주문 조회 성공")
     void getStatusResponsesByLoginIdAndStatus() throws Exception {
         // given
@@ -788,9 +894,9 @@ class QueryOrderServiceImplTest {
                 member.getLoginId());
 
         // then
-        Assertions.assertThat(statusCodeLongMap).hasSize(4);
-        Assertions.assertThat(statusCodeLongMap).containsEntry(OrderStatusCode.ORDER, 3L);
-        Assertions.assertThat(statusCodeLongMap).doesNotContainEntry(OrderStatusCode.DEPOSIT, 3L);
+        assertThat(statusCodeLongMap).hasSize(4);
+        assertThat(statusCodeLongMap).containsEntry(OrderStatusCode.ORDER, 3L);
+        assertThat(statusCodeLongMap).doesNotContainEntry(OrderStatusCode.DEPOSIT, 3L);
 
         Mockito.verify(repository, Mockito.times(4)).getOrderCountByStatusCode(any(), any());
         Mockito.verify(queryMemberService, Mockito.times(1)).existsLoginId(any());
@@ -815,5 +921,369 @@ class QueryOrderServiceImplTest {
 
         Mockito.verify(repository, Mockito.never()).getOrderCountByStatusCode(any(), any());
         Mockito.verify(queryMemberService, Mockito.times(1)).existsLoginId(any());
+    }
+
+    @Test
+    @DisplayName("회원/카드/상품있음 : 주문 번호를 통해 주문 상세 조회 성공")
+    void getDetailsDtoByOrderNumber_1() throws Exception {
+        // given
+        OrderStatusChangeLog changeLog = OrderStatusChangeLog.create(
+                memberOrder,
+                LocalDateTime.now(),
+                OrderStatusCode.READY
+        );
+
+        Payment payment = DummyPayment.payment("paymentId", memberOrder);
+
+        PaymentCard paymentCard = DummyPaymentCard.paymentCard(payment);
+        payment.setPaymentCard(paymentCard);
+
+        List<OrderProductResponseDto> orderProducts = new ArrayList<>();
+        int count = 0;
+        for (Product product : products) {
+            OrderProduct orderProduct = OrderProduct.builder()
+                    .product(product)
+                    .order(memberOrder)
+                    .quantity(count++)
+                    .isCanceled(false)
+                    .build();
+            orderProducts.add(OrderProductResponseDto.fromEntity(orderProduct, count));
+        }
+
+
+        Mockito.when(repository.findByOrderNumber(any())).thenReturn(Optional.of(memberOrder));
+        Mockito.when(queryOrderStatusChangeLogRepository.findFirstByOrder_IdOrderByOrderStatusCodeDesc(
+                any())).thenReturn(Optional.of(changeLog));
+        Mockito.when(queryOrderProductRepository.findAllByOrderNumber(any()))
+                .thenReturn(orderProducts);
+        Mockito.when(queryPaymentService.findByOrderId(memberOrder.getId())).thenReturn(payment);
+
+        // when
+        OrderDetailsResponseDto responseDto = service.getDetailsDtoByOrderNumber(
+                memberOrder.getOrderNumber());
+
+        // then
+        assertThat(responseDto.getOrder().getOrderNumber()).isEqualTo(memberOrder.getOrderNumber());
+        assertThat(responseDto.getOrder().getTotalAmount()).isEqualTo(memberOrder.getTotalAmount());
+        assertThat(responseDto.getOrderProducts().get(0).getProductDto().getProductId()).isEqualTo(
+                orderProducts.get(0).getProductDto().getProductId());
+        assertThat(responseDto.getOrderProducts().get(0).getProductDto().getIsbn()).isEqualTo(
+                orderProducts.get(0).getProductDto().getIsbn());
+        assertThat(responseDto.getOrderProducts().get(0).getQuantity()).isEqualTo(
+                orderProducts.get(0).getQuantity());
+        assertThat(responseDto.getPayment().getPaymentId()).isEqualTo(payment.getId());
+        assertThat(responseDto.getPayment().getCardNumber()).isEqualTo(payment.getPaymentCard().getNumber());
+        assertThat(responseDto.getPayment().getMethod()).isEqualTo(payment.getMethod());
+
+        Mockito.verify(repository, Mockito.times(1)).findByOrderNumber(any());
+        Mockito.verify(queryOrderStatusChangeLogRepository, Mockito.times(1)).findFirstByOrder_IdOrderByOrderStatusCodeDesc(any());
+        Mockito.verify(queryOrderProductRepository, Mockito.times(1)).findAllByOrderNumber(any());
+        Mockito.verify(queryPaymentService, Mockito.times(1)).findByOrderId(memberOrder.getId());
+    }
+    @Test
+    @DisplayName("비회원/카드/상품있음 : 주문 번호를 통해 주문 상세 조회 성공")
+    void getDetailsDtoByOrderNumber_2() throws Exception {
+        // given
+        OrderStatusChangeLog changeLog = OrderStatusChangeLog.create(
+                nonMemberOrder,
+                LocalDateTime.now(),
+                OrderStatusCode.READY
+        );
+
+        Payment payment = DummyPayment.payment("paymentId", nonMemberOrder);
+
+        PaymentCard paymentCard = DummyPaymentCard.paymentCard(payment);
+        payment.setPaymentCard(paymentCard);
+
+        List<OrderProductResponseDto> orderProducts = new ArrayList<>();
+        int count = 0;
+        for (Product product : products) {
+            OrderProduct orderProduct = OrderProduct.builder()
+                    .product(product)
+                    .order(nonMemberOrder)
+                    .quantity(count++)
+                    .isCanceled(false)
+                    .build();
+            orderProducts.add(OrderProductResponseDto.fromEntity(orderProduct, count));
+        }
+
+
+        Mockito.when(repository.findByOrderNumber(any())).thenReturn(Optional.of(nonMemberOrder));
+        Mockito.when(queryOrderStatusChangeLogRepository.findFirstByOrder_IdOrderByOrderStatusCodeDesc(
+                any())).thenReturn(Optional.of(changeLog));
+        Mockito.when(queryOrderProductRepository.findAllByOrderNumber(any()))
+                .thenReturn(orderProducts);
+        Mockito.when(queryPaymentService.findByOrderId(nonMemberOrder.getId())).thenReturn(payment);
+
+        // when
+        OrderDetailsResponseDto responseDto = service.getDetailsDtoByOrderNumber(
+                nonMemberOrder.getOrderNumber());
+
+        // then
+        assertThat(responseDto.getOrder().getOrderNumber()).isEqualTo(nonMemberOrder.getOrderNumber());
+        assertThat(responseDto.getOrder().getTotalAmount()).isEqualTo(nonMemberOrder.getTotalAmount());
+        assertThat(responseDto.getOrderProducts().get(0).getProductDto().getProductId()).isEqualTo(
+                orderProducts.get(0).getProductDto().getProductId());
+        assertThat(responseDto.getOrderProducts().get(0).getProductDto().getIsbn()).isEqualTo(
+                orderProducts.get(0).getProductDto().getIsbn());
+        assertThat(responseDto.getOrderProducts().get(0).getQuantity()).isEqualTo(
+                orderProducts.get(0).getQuantity());
+        assertThat(responseDto.getPayment().getPaymentId()).isEqualTo(payment.getId());
+        assertThat(responseDto.getPayment().getCardNumber()).isEqualTo(payment.getPaymentCard().getNumber());
+        assertThat(responseDto.getPayment().getMethod()).isEqualTo(payment.getMethod());
+
+        Mockito.verify(repository, Mockito.times(1)).findByOrderNumber(any());
+        Mockito.verify(queryOrderStatusChangeLogRepository, Mockito.times(1)).findFirstByOrder_IdOrderByOrderStatusCodeDesc(any());
+        Mockito.verify(queryOrderProductRepository, Mockito.times(1)).findAllByOrderNumber(any());
+        Mockito.verify(queryPaymentService, Mockito.times(1)).findByOrderId(nonMemberOrder.getId());
+    }
+
+    @Test
+    @DisplayName("회원/간편결제/상품있음 : 주문 번호를 통해 주문 상세 조회 성공")
+    void getDetailsDtoByOrderNumber_3() throws Exception {
+        // given
+        OrderStatusChangeLog changeLog = OrderStatusChangeLog.create(
+                memberOrder,
+                LocalDateTime.now(),
+                OrderStatusCode.READY
+        );
+
+        Payment payment = DummyPayment.payment("paymentId", memberOrder, PaymentCode.EASY_PAY);
+
+
+        PaymentEasyPay paymentEasyPay = DummyPaymentEasyPay.paymentEasyPay(payment);
+        payment.setPaymentEasyPay(paymentEasyPay);
+
+        List<OrderProductResponseDto> orderProducts = new ArrayList<>();
+        int count = 0;
+        for (Product product : products) {
+            OrderProduct orderProduct = OrderProduct.builder()
+                    .product(product)
+                    .order(memberOrder)
+                    .quantity(count++)
+                    .isCanceled(false)
+                    .build();
+            orderProducts.add(OrderProductResponseDto.fromEntity(orderProduct, count));
+        }
+
+
+        Mockito.when(repository.findByOrderNumber(any())).thenReturn(Optional.of(memberOrder));
+        Mockito.when(queryOrderStatusChangeLogRepository.findFirstByOrder_IdOrderByOrderStatusCodeDesc(
+                any())).thenReturn(Optional.of(changeLog));
+        Mockito.when(queryOrderProductRepository.findAllByOrderNumber(any()))
+                .thenReturn(orderProducts);
+        Mockito.when(queryPaymentService.findByOrderId(nonMemberOrder.getId())).thenReturn(payment);
+
+        // when
+        OrderDetailsResponseDto responseDto = service.getDetailsDtoByOrderNumber(
+                memberOrder.getOrderNumber());
+
+        // then
+        assertThat(responseDto.getOrder().getOrderNumber()).isEqualTo(memberOrder.getOrderNumber());
+        assertThat(responseDto.getOrder().getTotalAmount()).isEqualTo(memberOrder.getTotalAmount());
+        assertThat(responseDto.getOrderProducts().get(0).getProductDto().getProductId()).isEqualTo(
+                orderProducts.get(0).getProductDto().getProductId());
+        assertThat(responseDto.getOrderProducts().get(0).getProductDto().getIsbn()).isEqualTo(
+                orderProducts.get(0).getProductDto().getIsbn());
+        assertThat(responseDto.getOrderProducts().get(0).getQuantity()).isEqualTo(
+                orderProducts.get(0).getQuantity());
+        assertThat(responseDto.getPayment().getPaymentId()).isEqualTo(payment.getId());
+        assertThat(responseDto.getPayment().getEasyPayProvider()).isEqualTo(payment.getPaymentEasyPay().getProvider());
+        assertThat(responseDto.getPayment().getEasyPayAmount()).isEqualTo(payment.getPaymentEasyPay().getAmount());
+
+        Mockito.verify(repository, Mockito.times(1)).findByOrderNumber(any());
+        Mockito.verify(queryOrderStatusChangeLogRepository, Mockito.times(1)).findFirstByOrder_IdOrderByOrderStatusCodeDesc(any());
+        Mockito.verify(queryOrderProductRepository, Mockito.times(1)).findAllByOrderNumber(any());
+        Mockito.verify(queryPaymentService, Mockito.times(1)).findByOrderId(memberOrder.getId());
+    }
+
+    @Test
+    @DisplayName("구독/간편결제/상품있음 : 주문 번호를 통해 주문 상세 조회 성공")
+    void getDetailsDtoByOrderNumber_4() throws Exception {
+        // given
+        OrderStatusChangeLog changeLog = OrderStatusChangeLog.create(
+                subscribe,
+                LocalDateTime.now(),
+                OrderStatusCode.READY
+        );
+
+        Payment payment = DummyPayment.payment("paymentId", subscribe, PaymentCode.EASY_PAY);
+
+
+        PaymentEasyPay paymentEasyPay = DummyPaymentEasyPay.paymentEasyPay(payment);
+        payment.setPaymentEasyPay(paymentEasyPay);
+
+        List<OrderProductResponseDto> orderProducts = new ArrayList<>();
+        int count = 0;
+        for (Product product : products) {
+            OrderProduct orderProduct = OrderProduct.builder()
+                    .product(product)
+                    .order(subscribe)
+                    .quantity(count++)
+                    .isCanceled(false)
+                    .build();
+            orderProducts.add(OrderProductResponseDto.fromEntity(orderProduct, count));
+        }
+
+
+        Mockito.when(repository.findByOrderNumber(any())).thenReturn(Optional.of(subscribe));
+        Mockito.when(queryOrderStatusChangeLogRepository.findFirstByOrder_IdOrderByOrderStatusCodeDesc(
+                any())).thenReturn(Optional.of(changeLog));
+        Mockito.when(queryOrderProductRepository.findAllByOrderNumber(any()))
+                .thenReturn(orderProducts);
+        Mockito.when(queryPaymentService.findByOrderId(subscribe.getId())).thenReturn(payment);
+
+        // when
+        OrderDetailsResponseDto responseDto = service.getDetailsDtoByOrderNumber(
+                subscribe.getOrderNumber());
+
+        // then
+        assertThat(responseDto.getOrder().getOrderNumber()).isEqualTo(subscribe.getOrderNumber());
+        assertThat(responseDto.getOrder().getTotalAmount()).isEqualTo(subscribe.getTotalAmount());
+        assertThat(responseDto.getOrderProducts().get(0).getProductDto().getProductId()).isEqualTo(
+                orderProducts.get(0).getProductDto().getProductId());
+        assertThat(responseDto.getOrderProducts().get(0).getProductDto().getIsbn()).isEqualTo(
+                orderProducts.get(0).getProductDto().getIsbn());
+        assertThat(responseDto.getOrderProducts().get(0).getQuantity()).isEqualTo(
+                orderProducts.get(0).getQuantity());
+        assertThat(responseDto.getPayment().getPaymentId()).isEqualTo(payment.getId());
+        assertThat(responseDto.getPayment().getEasyPayProvider()).isEqualTo(payment.getPaymentEasyPay().getProvider());
+        assertThat(responseDto.getPayment().getEasyPayAmount()).isEqualTo(payment.getPaymentEasyPay().getAmount());
+
+        Mockito.verify(repository, Mockito.times(1)).findByOrderNumber(any());
+        Mockito.verify(queryOrderStatusChangeLogRepository, Mockito.times(1)).findFirstByOrder_IdOrderByOrderStatusCodeDesc(any());
+        Mockito.verify(queryOrderProductRepository, Mockito.times(1)).findAllByOrderNumber(any());
+        Mockito.verify(queryPaymentService, Mockito.times(1)).findByOrderId(nonMemberOrder.getId());
+    }
+
+    @Test
+    @DisplayName("비회원/간편결제/상품없음 : 주문 번호를 통해 주문 상세 조회 성공")
+    void getDetailsDtoByOrderNumber_5() throws Exception {
+        // given
+        OrderStatusChangeLog changeLog = OrderStatusChangeLog.create(
+                nonMemberOrder,
+                LocalDateTime.now(),
+                OrderStatusCode.READY
+        );
+
+        Payment payment = DummyPayment.payment("paymentId", nonMemberOrder, PaymentCode.EASY_PAY);
+
+        PaymentEasyPay paymentEasyPay = DummyPaymentEasyPay.paymentEasyPay(payment);
+        payment.setPaymentEasyPay(paymentEasyPay);
+
+        List<OrderProductResponseDto> orderProducts = new ArrayList<>();
+
+
+
+        Mockito.when(repository.findByOrderNumber(any())).thenReturn(Optional.of(nonMemberOrder));
+        Mockito.when(queryOrderStatusChangeLogRepository.findFirstByOrder_IdOrderByOrderStatusCodeDesc(
+                any())).thenReturn(Optional.of(changeLog));
+        Mockito.when(queryOrderProductRepository.findAllByOrderNumber(any()))
+                .thenReturn(orderProducts);
+        Mockito.when(queryPaymentService.findByOrderId(nonMemberOrder.getId())).thenReturn(payment);
+
+        // when
+        OrderDetailsResponseDto responseDto = service.getDetailsDtoByOrderNumber(
+                nonMemberOrder.getOrderNumber());
+
+        // then
+        assertThat(responseDto.getOrder().getOrderNumber()).isEqualTo(nonMemberOrder.getOrderNumber());
+        assertThat(responseDto.getOrder().getTotalAmount()).isEqualTo(nonMemberOrder.getTotalAmount());
+        assertThat(responseDto.getOrderProducts()).isEmpty();
+        assertThat(responseDto.getPayment().getPaymentId()).isEqualTo(payment.getId());
+        assertThat(responseDto.getPayment().getEasyPayProvider()).isEqualTo(payment.getPaymentEasyPay().getProvider());
+        assertThat(responseDto.getPayment().getEasyPayAmount()).isEqualTo(payment.getPaymentEasyPay().getAmount());
+
+        Mockito.verify(repository, Mockito.times(1)).findByOrderNumber(any());
+        Mockito.verify(queryOrderStatusChangeLogRepository, Mockito.times(1)).findFirstByOrder_IdOrderByOrderStatusCodeDesc(any());
+        Mockito.verify(queryOrderProductRepository, Mockito.times(1)).findAllByOrderNumber(any());
+        Mockito.verify(queryPaymentService, Mockito.times(1)).findByOrderId(nonMemberOrder.getId());
+    }
+
+    @Test
+    @DisplayName("비회원/결제정보없음/상품없음 : 주문 번호를 통해 주문 상세 조회 성공")
+    void getDetailsDtoByOrderNumber_6() throws Exception {
+        // given
+        OrderStatusChangeLog changeLog = OrderStatusChangeLog.create(
+                nonMemberOrder,
+                LocalDateTime.now(),
+                OrderStatusCode.ORDER
+        );
+
+        List<OrderProductResponseDto> orderProducts = new ArrayList<>();
+
+        Mockito.when(repository.findByOrderNumber(any())).thenReturn(Optional.of(nonMemberOrder));
+        Mockito.when(queryOrderStatusChangeLogRepository.findFirstByOrder_IdOrderByOrderStatusCodeDesc(
+                any())).thenReturn(Optional.of(changeLog));
+        Mockito.when(queryOrderProductRepository.findAllByOrderNumber(any()))
+                .thenReturn(orderProducts);
+        Mockito.when(queryPaymentService.findByOrderId(nonMemberOrder.getId()))
+                .thenThrow(new ClientException(ErrorCode.PAYMENT_NOT_FOUND,
+                        ErrorCode.PAYMENT_NOT_FOUND.getDisplayName()));
+
+        // when
+        OrderDetailsResponseDto responseDto = service.getDetailsDtoByOrderNumber(
+                nonMemberOrder.getOrderNumber());
+
+        // then
+        assertThat(responseDto.getOrder().getOrderNumber()).isEqualTo(nonMemberOrder.getOrderNumber());
+        assertThat(responseDto.getOrder().getTotalAmount()).isEqualTo(nonMemberOrder.getTotalAmount());
+        assertThat(responseDto.getOrderProducts()).isEmpty();
+        assertThat(responseDto.getPayment()).isNull();
+
+
+        Mockito.verify(repository, Mockito.times(1)).findByOrderNumber(any());
+        Mockito.verify(queryOrderStatusChangeLogRepository, Mockito.times(1)).findFirstByOrder_IdOrderByOrderStatusCodeDesc(any());
+        Mockito.verify(queryOrderProductRepository, Mockito.times(1)).findAllByOrderNumber(any());
+        Mockito.verify(queryPaymentService, Mockito.times(1)).findByOrderId(nonMemberOrder.getId());
+    }
+
+    @Test
+    @DisplayName("예상치 못한 예외 발생 : 주문 번호를 통해 주문 상세 조회 실패")
+    void getDetailsDtoByOrderNumber_7_fail() throws Exception {
+        // given
+        OrderStatusChangeLog changeLog = OrderStatusChangeLog.create(
+                memberOrder,
+                LocalDateTime.now(),
+                OrderStatusCode.READY
+        );
+
+        Payment payment = DummyPayment.payment("paymentId", memberOrder, PaymentCode.EASY_PAY);
+
+
+        PaymentEasyPay paymentEasyPay = DummyPaymentEasyPay.paymentEasyPay(payment);
+        payment.setPaymentEasyPay(paymentEasyPay);
+
+        List<OrderProductResponseDto> orderProducts = new ArrayList<>();
+        int count = 0;
+        for (Product product : products) {
+            OrderProduct orderProduct = OrderProduct.builder()
+                    .product(product)
+                    .order(memberOrder)
+                    .quantity(count++)
+                    .isCanceled(false)
+                    .build();
+            orderProducts.add(OrderProductResponseDto.fromEntity(orderProduct, count));
+        }
+
+
+        Mockito.when(repository.findByOrderNumber(any())).thenReturn(Optional.of(memberOrder));
+        Mockito.when(queryOrderStatusChangeLogRepository.findFirstByOrder_IdOrderByOrderStatusCodeDesc(
+                any())).thenReturn(Optional.of(changeLog));
+        Mockito.when(queryOrderProductRepository.findAllByOrderNumber(any()))
+                .thenReturn(orderProducts);
+        Mockito.when(queryPaymentService.findByOrderId(nonMemberOrder.getId()))
+                .thenThrow(new ClientException(ErrorCode.FORBIDDEN,
+                        ErrorCode.FORBIDDEN.getDisplayName()));
+
+        // when
+        assertThatCode(() -> service.getDetailsDtoByOrderNumber(memberOrder.getOrderNumber())).isInstanceOf(
+                ClientException.class).hasMessageContaining(ErrorCode.BAD_REQUEST.getDisplayName());
+
+        // then
+        Mockito.verify(repository, Mockito.times(1)).findByOrderNumber(any());
+        Mockito.verify(queryOrderStatusChangeLogRepository, Mockito.times(1)).findFirstByOrder_IdOrderByOrderStatusCodeDesc(any());
+        Mockito.verify(queryOrderProductRepository, Mockito.times(1)).findAllByOrderNumber(any());
+        Mockito.verify(queryPaymentService, Mockito.times(1)).findByOrderId(memberOrder.getId());
     }
 }

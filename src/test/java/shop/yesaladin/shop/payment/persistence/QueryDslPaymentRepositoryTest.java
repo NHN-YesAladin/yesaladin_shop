@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
@@ -29,6 +30,7 @@ import shop.yesaladin.shop.payment.exception.PaymentNotFoundException;
 @Slf4j
 @Transactional
 @SpringBootTest
+@ActiveProfiles("local-test")
 class QueryDslPaymentRepositoryTest {
 
     @Autowired
@@ -78,7 +80,6 @@ class QueryDslPaymentRepositoryTest {
         assertThat(foundPayment.getSuppliedAmount()).isEqualTo(payment.getSuppliedAmount());
         assertThat(foundPayment.getTaxFreeAmount()).isEqualTo(payment.getTaxFreeAmount());
         assertThat(foundPayment.getVat()).isEqualTo(payment.getVat());
-        assertThat(foundPayment.getRequestedDatetime()).isEqualTo(payment.getRequestedDatetime());
         assertThat(foundPayment.getPaymentCode()).isEqualTo(payment.getPaymentCode());
 
         assertThat(foundPayment.getOrder()
@@ -118,7 +119,6 @@ class QueryDslPaymentRepositoryTest {
         assertThat(foundPayment.getSuppliedAmount()).isEqualTo(payment.getSuppliedAmount());
         assertThat(foundPayment.getTaxFreeAmount()).isEqualTo(payment.getTaxFreeAmount());
         assertThat(foundPayment.getVat()).isEqualTo(payment.getVat());
-        assertThat(foundPayment.getRequestedDatetime()).isEqualTo(payment.getRequestedDatetime());
         assertThat(foundPayment.getPaymentCode()).isEqualTo(payment.getPaymentCode());
 
         assertThat(foundPayment.getOrder()
@@ -158,7 +158,6 @@ class QueryDslPaymentRepositoryTest {
         assertThat(foundPayment.getSuppliedAmount()).isEqualTo(payment.getSuppliedAmount());
         assertThat(foundPayment.getTaxFreeAmount()).isEqualTo(payment.getTaxFreeAmount());
         assertThat(foundPayment.getVat()).isEqualTo(payment.getVat());
-        assertThat(foundPayment.getRequestedDatetime()).isEqualTo(payment.getRequestedDatetime());
         assertThat(foundPayment.getPaymentCode()).isEqualTo(payment.getPaymentCode());
 
         assertThat(foundPayment.getOrder()

@@ -1,5 +1,13 @@
 package shop.yesaladin.shop.product.persistence;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -8,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.file.domain.model.File;
@@ -21,18 +30,12 @@ import shop.yesaladin.shop.product.dummy.DummyFile;
 import shop.yesaladin.shop.product.dummy.DummyProduct;
 import shop.yesaladin.shop.product.dummy.DummySubscribeProduct;
 import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import shop.yesaladin.shop.publish.domain.model.Publish;
+import shop.yesaladin.shop.publish.domain.model.Publisher;
 
 @Transactional
 @SpringBootTest
+@ActiveProfiles("local-test")
 class QueryDslProductRepositoryTest {
 
     private final String ISBN1 = "0000000000001";
@@ -296,6 +299,26 @@ class QueryDslProductRepositoryTest {
                 .getTitle()
                 .contains(product1.getTitle().substring(0, 1))).isTrue();
 
+    }
+
+    @Test
+    @DisplayName("최신 상품 조회 성공")
+    public void findRecentProductByPublishedDate() {
+        //given
+        Publisher publisher = Publisher.builder().id(1L).name("name1").build();
+        Publish publish1 = Publish.create(product1, publisher, "2011-01-01");
+        Publish publish2 = Publish.create(product2, publisher, "2011-02-02");
+
+        entityManager.persist(product2);
+        entityManager.persist(product1);
+
+        //when
+        Page<Product> products = repository.findRecentProductByPublishedDate(PageRequest.of(0, 10));
+
+        //then
+        assertThat(products.getTotalElements()).isEqualTo(2);
+        assertThat(products.getContent().get(0).getId()).isEqualTo(product2.getId());
+        assertThat(products.getContent().get(1).getId()).isEqualTo(product1.getId());
     }
 
     private List<ProductOrderRequestDto> getOrderProductRequestData() {

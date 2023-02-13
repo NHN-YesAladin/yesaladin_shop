@@ -1,22 +1,27 @@
 package shop.yesaladin.shop.product.service.impl;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.verify;
+
+import java.time.LocalDate;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import shop.yesaladin.shop.product.domain.model.*;
+import shop.yesaladin.shop.product.domain.model.SearchedProductAuthor;
+import shop.yesaladin.shop.product.domain.model.SearchedProductCategory;
+import shop.yesaladin.shop.product.domain.model.SearchedProductFile;
+import shop.yesaladin.shop.product.domain.model.SearchedProductProductType;
+import shop.yesaladin.shop.product.domain.model.SearchedProductSubscribProduct;
+import shop.yesaladin.shop.product.domain.model.SearchedProductTag;
+import shop.yesaladin.shop.product.domain.model.SearchedProductTotalDiscountRate;
 import shop.yesaladin.shop.product.domain.repository.SearchProductRepository;
 import shop.yesaladin.shop.product.dto.SearchedProductDto;
 import shop.yesaladin.shop.product.dto.SearchedProductManagerDto;
 import shop.yesaladin.shop.product.dto.SearchedProductManagerResponseDto;
 import shop.yesaladin.shop.product.dto.SearchedProductResponseDto;
-
-import java.time.LocalDate;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.verify;
 
 class SearchProductServiceImplTest {
 
@@ -90,107 +95,79 @@ class SearchProductServiceImplTest {
     void testSearchProductsByCategoryId() {
         //given
         Mockito.when(searchProductRepository.searchProductsByCategoryId(1L, OFFSET, SIZE))
-                .thenReturn(dummySearchedProductManagerResponseDto);
+                .thenReturn(dummySearchedProductResponseDto);
 
         //when
-        SearchedProductManagerResponseDto result = searchProductService.searchProductsByCategoryId(
+        SearchedProductResponseDto result = searchProductService.searchProductsByCategoryId(
                 1L,
                 OFFSET,
                 SIZE
         );
 
         //then
-        assertThat(result.getCount()).isEqualTo(COUNT);
-        assertThat(result.getProducts()).hasSize(ONE);
+        assertThat(result.getCount()).isEqualTo(1);
+        assertThat(result.getProducts()).hasSize(1);
+        assertThat(result.getProducts().get(0).getId()).isEqualTo(dummySearchedProductDto.getId());
         assertThat(result.getProducts()
-                .get(ZERO)
-                .getId()).isEqualTo(dummySearchedProductManagerDto.getId());
+                .get(0)
+                .getTitle()).isEqualTo(dummySearchedProductDto.getTitle());
         assertThat(result.getProducts()
-                .get(ZERO)
-                .getIsbn()).isEqualTo(dummySearchedProductManagerDto.getIsbn());
+                .get(0)
+                .getDiscountRate()).isEqualTo(dummySearchedProductDto.getDiscountRate());
         assertThat(result.getProducts()
-                .get(ZERO)
-                .getTitle()).isEqualTo(dummySearchedProductManagerDto.getTitle());
-        assertThat(result.getProducts().get(ZERO).getActualPrice()).isEqualTo(
-                dummySearchedProductManagerDto.getActualPrice());
-        assertThat(result.getProducts().get(ZERO).getDiscountRate()).isEqualTo(
-                dummySearchedProductManagerDto.getDiscountRate());
-        assertThat(result.getProducts().get(ZERO).isSeparatelyDiscount()).isEqualTo(
-                dummySearchedProductManagerDto.isSeparatelyDiscount());
-        assertThat(result.getProducts().get(ZERO).getIsGivenPoint()).isEqualTo(
-                dummySearchedProductManagerDto.getIsGivenPoint());
-        assertThat(result.getProducts().get(ZERO).getGivenPointRate()).isEqualTo(
-                dummySearchedProductManagerDto.getGivenPointRate());
+                .get(0)
+                .getSellingPrice()).isEqualTo(dummySearchedProductDto.getSellingPrice());
         assertThat(result.getProducts()
-                .get(ZERO)
-                .getIsSale()).isEqualTo(dummySearchedProductManagerDto.getIsSale());
-        assertThat(result.getProducts().get(ZERO).getQuantity()).isEqualTo(
-                dummySearchedProductManagerDto.getQuantity());
-        assertThat(result.getProducts().get(ZERO).getPreferentialShowRanking()).isEqualTo(
-                dummySearchedProductManagerDto.getPreferentialShowRanking());
-        assertThat(result.getProducts().get(ZERO).getProductType().getId()).isEqualTo(
-                dummySearchedProductManagerDto.getProductType().getId());
-        assertThat(result.getProducts().get(ZERO).getProductType().getName()).isEqualTo(
-                dummySearchedProductManagerDto.getProductType().getName());
-        assertThat(result.getProducts().get(ZERO).getSearchedTotalDiscountRate().getId()).isEqualTo(
-                dummySearchedProductManagerDto.getSearchedTotalDiscountRate().getId());
+                .get(0)
+                .getPublishedDate()).isEqualTo(dummySearchedProductDto.getPublishedDate());
         assertThat(result.getProducts()
-                .get(ZERO)
-                .getSearchedTotalDiscountRate()
-                .getDiscountRate()).isEqualTo(dummySearchedProductManagerDto.getSearchedTotalDiscountRate()
-                .getDiscountRate());
-        assertThat(result.getProducts().get(ZERO).getThumbnailFile().getId()).isEqualTo(
-                dummySearchedProductManagerDto.getThumbnailFile().getId());
-        assertThat(result.getProducts().get(ZERO).getThumbnailFile().getName()).isEqualTo(
-                dummySearchedProductManagerDto.getThumbnailFile().getName());
-        assertThat(result.getProducts().get(ZERO).getThumbnailFile().getUploadDateTime()).isEqualTo(
-                dummySearchedProductManagerDto.getThumbnailFile().getUploadDateTime());
-        assertThat(result.getProducts().get(ZERO).getEbookFile().getId()).isEqualTo(
-                dummySearchedProductManagerDto.getEbookFile().getId());
-        assertThat(result.getProducts().get(ZERO).getEbookFile().getName()).isEqualTo(
-                dummySearchedProductManagerDto.getEbookFile().getName());
-        assertThat(result.getProducts().get(ZERO).getEbookFile().getUploadDateTime()).isEqualTo(
-                dummySearchedProductManagerDto.getEbookFile().getUploadDateTime());
-        assertThat(result.getProducts().get(ZERO).getPublishedDate()).isEqualTo(
-                dummySearchedProductManagerDto.getPublishedDate());
-        assertThat(result.getProducts().get(ZERO).getSavingMethod()).isEqualTo(
-                dummySearchedProductManagerDto.getSavingMethod());
-        assertThat(result.getProducts().get(ZERO).getCategories()).hasSameSizeAs(
-                dummySearchedProductManagerDto.getCategories());
-        assertThat(result.getProducts().get(ZERO).getCategories().get(ZERO).getId()).isEqualTo(
-                dummySearchedProductManagerDto.getCategories().get(ZERO).getId());
-        assertThat(result.getProducts().get(ZERO).getCategories().get(ZERO).getName()).isEqualTo(
-                dummySearchedProductManagerDto.getCategories().get(ZERO).getName());
-        assertThat(result.getProducts().get(ZERO).getCategories().get(ZERO).getParent()).isEqualTo(
-                dummySearchedProductManagerDto.getCategories().get(ZERO).getParent());
-        assertThat(result.getProducts().get(ZERO).getCategories().get(ZERO).getIsShown()).isEqualTo(
-                dummySearchedProductManagerDto.getCategories().get(ZERO).getIsShown());
-        assertThat(result.getProducts().get(ZERO).getCategories().get(ZERO).getDisable()).isEqualTo(
-                dummySearchedProductManagerDto.getCategories().get(ZERO).getDisable());
-        assertThat(result.getProducts().get(ZERO).getAuthors()).hasSameSizeAs(
-                dummySearchedProductManagerDto.getAuthors());
-        assertThat(result.getProducts().get(ZERO).getAuthors().get(ZERO).getId()).isEqualTo(
-                dummySearchedProductManagerDto.getAuthors()
-                        .get(ZERO)
-                        .getId());
-        assertThat(result.getProducts().get(ZERO).getAuthors().get(ZERO).getName()).isEqualTo(
-                dummySearchedProductManagerDto.getAuthors()
-                        .get(ZERO)
-                        .getName());
-        assertThat(result.getProducts().get(ZERO).getTags()).hasSameSizeAs(
-                dummySearchedProductManagerDto.getTags());
-        assertThat(result.getProducts().get(ZERO).getTags().get(ZERO).getId()).isEqualTo(
-                dummySearchedProductManagerDto.getTags().get(ZERO).getId());
-        assertThat(result.getProducts().get(ZERO).getTags().get(ZERO).getName()).isEqualTo(
-                dummySearchedProductManagerDto.getTags()
-                        .get(ZERO)
-                        .getName());
-        assertThat(result.getProducts().get(ZERO).getSubscribeProducts()).hasSameSizeAs(
-                dummySearchedProductManagerDto.getSubscribeProducts());
-        assertThat(result.getProducts().get(ZERO).getSubscribeProducts().get(ZERO).getId()).isEqualTo(
-                dummySearchedProductManagerDto.getSubscribeProducts().get(ZERO).getId());
-        assertThat(result.getProducts().get(ZERO).getSubscribeProducts().get(ZERO).getIssn()).isEqualTo(
-                dummySearchedProductManagerDto.getSubscribeProducts().get(ZERO).getIssn());
+                .get(0)
+                .getIsForcedOutOfStock()).isEqualTo(dummySearchedProductDto.getIsForcedOutOfStock());
+        assertThat(result.getProducts().get(0).getCategories()).hasSameSizeAs(
+                dummySearchedProductDto.getCategories());
+        assertThat(result.getProducts()
+                .get(0)
+                .getCategories()
+                .get(0)
+                .getId()).isEqualTo(dummySearchedProductDto.getCategories()
+                .get(0)
+                .getId());
+        assertThat(result.getProducts()
+                .get(0)
+                .getCategories()
+                .get(0)
+                .getName()).isEqualTo(dummySearchedProductDto.getCategories()
+                .get(0)
+                .getName());
+        assertThat(result.getProducts()
+                .get(0)
+                .getCategories()
+                .get(0)
+                .getParent()).isEqualTo(dummySearchedProductDto.getCategories()
+                .get(0)
+                .getParent());
+        assertThat(result.getProducts()
+                .get(0)
+                .getCategories()
+                .get(0)
+                .getIsShown()).isEqualTo(dummySearchedProductDto.getCategories()
+                .get(0)
+                .getIsShown());
+        assertThat(result.getProducts()
+                .get(0)
+                .getCategories()
+                .get(0)
+                .getDisable()).isEqualTo(dummySearchedProductDto.getCategories()
+                .get(0)
+                .getDisable());
+        assertThat(result.getProducts().get(0).getAuthors().get(0)).isEqualTo(
+                dummySearchedProductDto.getAuthors()
+                        .get(0));
+        assertThat(result.getProducts()
+                .get(0)
+                .getTags()
+                .get(0)).isEqualTo(dummySearchedProductDto.getTags()
+                .get(0));
 
         verify(searchProductRepository, atLeastOnce()).searchProductsByCategoryId(1L, OFFSET, SIZE);
     }
@@ -201,107 +178,79 @@ class SearchProductServiceImplTest {
         //given
         String name = "name";
         Mockito.when(searchProductRepository.searchProductsByCategoryName(name, OFFSET, SIZE))
-                .thenReturn(dummySearchedProductManagerResponseDto);
+                .thenReturn(dummySearchedProductResponseDto);
 
         //when
-        SearchedProductManagerResponseDto result = searchProductService.searchProductsByCategoryName(
+        SearchedProductResponseDto result = searchProductService.searchProductsByCategoryName(
                 name,
                 OFFSET,
                 SIZE
         );
 
         //then
-        assertThat(result.getCount()).isEqualTo(1L);
+        assertThat(result.getCount()).isEqualTo(1);
         assertThat(result.getProducts()).hasSize(1);
+        assertThat(result.getProducts().get(0).getId()).isEqualTo(dummySearchedProductDto.getId());
         assertThat(result.getProducts()
                 .get(0)
-                .getId()).isEqualTo(dummySearchedProductManagerDto.getId());
+                .getTitle()).isEqualTo(dummySearchedProductDto.getTitle());
         assertThat(result.getProducts()
                 .get(0)
-                .getIsbn()).isEqualTo(dummySearchedProductManagerDto.getIsbn());
+                .getDiscountRate()).isEqualTo(dummySearchedProductDto.getDiscountRate());
         assertThat(result.getProducts()
                 .get(0)
-                .getTitle()).isEqualTo(dummySearchedProductManagerDto.getTitle());
-        assertThat(result.getProducts().get(0).getActualPrice()).isEqualTo(
-                dummySearchedProductManagerDto.getActualPrice());
-        assertThat(result.getProducts().get(0).getDiscountRate()).isEqualTo(
-                dummySearchedProductManagerDto.getDiscountRate());
-        assertThat(result.getProducts().get(0).isSeparatelyDiscount()).isEqualTo(
-                dummySearchedProductManagerDto.isSeparatelyDiscount());
-        assertThat(result.getProducts().get(0).getIsGivenPoint()).isEqualTo(
-                dummySearchedProductManagerDto.getIsGivenPoint());
-        assertThat(result.getProducts().get(0).getGivenPointRate()).isEqualTo(
-                dummySearchedProductManagerDto.getGivenPointRate());
+                .getSellingPrice()).isEqualTo(dummySearchedProductDto.getSellingPrice());
         assertThat(result.getProducts()
                 .get(0)
-                .getIsSale()).isEqualTo(dummySearchedProductManagerDto.getIsSale());
-        assertThat(result.getProducts().get(0).getQuantity()).isEqualTo(
-                dummySearchedProductManagerDto.getQuantity());
-        assertThat(result.getProducts().get(0).getPreferentialShowRanking()).isEqualTo(
-                dummySearchedProductManagerDto.getPreferentialShowRanking());
-        assertThat(result.getProducts().get(0).getProductType().getId()).isEqualTo(
-                dummySearchedProductManagerDto.getProductType().getId());
-        assertThat(result.getProducts().get(0).getProductType().getName()).isEqualTo(
-                dummySearchedProductManagerDto.getProductType().getName());
-        assertThat(result.getProducts().get(0).getSearchedTotalDiscountRate().getId()).isEqualTo(
-                dummySearchedProductManagerDto.getSearchedTotalDiscountRate().getId());
+                .getPublishedDate()).isEqualTo(dummySearchedProductDto.getPublishedDate());
         assertThat(result.getProducts()
                 .get(0)
-                .getSearchedTotalDiscountRate()
-                .getDiscountRate()).isEqualTo(dummySearchedProductManagerDto.getSearchedTotalDiscountRate()
-                .getDiscountRate());
-        assertThat(result.getProducts().get(0).getThumbnailFile().getId()).isEqualTo(
-                dummySearchedProductManagerDto.getThumbnailFile().getId());
-        assertThat(result.getProducts().get(0).getThumbnailFile().getName()).isEqualTo(
-                dummySearchedProductManagerDto.getThumbnailFile().getName());
-        assertThat(result.getProducts().get(0).getThumbnailFile().getUploadDateTime()).isEqualTo(
-                dummySearchedProductManagerDto.getThumbnailFile().getUploadDateTime());
-        assertThat(result.getProducts().get(0).getEbookFile().getId()).isEqualTo(
-                dummySearchedProductManagerDto.getEbookFile().getId());
-        assertThat(result.getProducts().get(0).getEbookFile().getName()).isEqualTo(
-                dummySearchedProductManagerDto.getEbookFile().getName());
-        assertThat(result.getProducts().get(0).getEbookFile().getUploadDateTime()).isEqualTo(
-                dummySearchedProductManagerDto.getEbookFile().getUploadDateTime());
-        assertThat(result.getProducts().get(0).getPublishedDate()).isEqualTo(
-                dummySearchedProductManagerDto.getPublishedDate());
-        assertThat(result.getProducts().get(0).getSavingMethod()).isEqualTo(
-                dummySearchedProductManagerDto.getSavingMethod());
+                .getIsForcedOutOfStock()).isEqualTo(dummySearchedProductDto.getIsForcedOutOfStock());
         assertThat(result.getProducts().get(0).getCategories()).hasSameSizeAs(
-                dummySearchedProductManagerDto.getCategories());
-        assertThat(result.getProducts().get(0).getCategories().get(0).getId()).isEqualTo(
-                dummySearchedProductManagerDto.getCategories().get(0).getId());
-        assertThat(result.getProducts().get(0).getCategories().get(0).getName()).isEqualTo(
-                dummySearchedProductManagerDto.getCategories().get(0).getName());
-        assertThat(result.getProducts().get(0).getCategories().get(0).getParent()).isEqualTo(
-                dummySearchedProductManagerDto.getCategories().get(0).getParent());
-        assertThat(result.getProducts().get(0).getCategories().get(0).getIsShown()).isEqualTo(
-                dummySearchedProductManagerDto.getCategories().get(0).getIsShown());
-        assertThat(result.getProducts().get(0).getCategories().get(0).getDisable()).isEqualTo(
-                dummySearchedProductManagerDto.getCategories().get(0).getDisable());
-        assertThat(result.getProducts().get(0).getAuthors()).hasSameSizeAs(
-                dummySearchedProductManagerDto.getAuthors());
-        assertThat(result.getProducts().get(0).getAuthors().get(0).getId()).isEqualTo(
-                dummySearchedProductManagerDto.getAuthors()
-                        .get(0)
-                        .getId());
-        assertThat(result.getProducts().get(0).getAuthors().get(0).getName()).isEqualTo(
-                dummySearchedProductManagerDto.getAuthors()
-                        .get(0)
-                        .getName());
-        assertThat(result.getProducts().get(0).getTags()).hasSameSizeAs(
-                dummySearchedProductManagerDto.getTags());
-        assertThat(result.getProducts().get(0).getTags().get(0).getId()).isEqualTo(
-                dummySearchedProductManagerDto.getTags().get(0).getId());
-        assertThat(result.getProducts().get(0).getTags().get(0).getName()).isEqualTo(
-                dummySearchedProductManagerDto.getTags()
-                        .get(0)
-                        .getName());
-        assertThat(result.getProducts().get(0).getSubscribeProducts()).hasSameSizeAs(
-                dummySearchedProductManagerDto.getSubscribeProducts());
-        assertThat(result.getProducts().get(0).getSubscribeProducts().get(0).getId()).isEqualTo(
-                dummySearchedProductManagerDto.getSubscribeProducts().get(0).getId());
-        assertThat(result.getProducts().get(0).getSubscribeProducts().get(0).getIssn()).isEqualTo(
-                dummySearchedProductManagerDto.getSubscribeProducts().get(0).getIssn());
+                dummySearchedProductDto.getCategories());
+        assertThat(result.getProducts()
+                .get(0)
+                .getCategories()
+                .get(0)
+                .getId()).isEqualTo(dummySearchedProductDto.getCategories()
+                .get(0)
+                .getId());
+        assertThat(result.getProducts()
+                .get(0)
+                .getCategories()
+                .get(0)
+                .getName()).isEqualTo(dummySearchedProductDto.getCategories()
+                .get(0)
+                .getName());
+        assertThat(result.getProducts()
+                .get(0)
+                .getCategories()
+                .get(0)
+                .getParent()).isEqualTo(dummySearchedProductDto.getCategories()
+                .get(0)
+                .getParent());
+        assertThat(result.getProducts()
+                .get(0)
+                .getCategories()
+                .get(0)
+                .getIsShown()).isEqualTo(dummySearchedProductDto.getCategories()
+                .get(0)
+                .getIsShown());
+        assertThat(result.getProducts()
+                .get(0)
+                .getCategories()
+                .get(0)
+                .getDisable()).isEqualTo(dummySearchedProductDto.getCategories()
+                .get(0)
+                .getDisable());
+        assertThat(result.getProducts().get(0).getAuthors().get(0)).isEqualTo(
+                dummySearchedProductDto.getAuthors()
+                        .get(0));
+        assertThat(result.getProducts()
+                .get(0)
+                .getTags()
+                .get(0)).isEqualTo(dummySearchedProductDto.getTags()
+                .get(0));
 
         verify(searchProductRepository, atLeastOnce()).searchProductsByCategoryName(
                 name,

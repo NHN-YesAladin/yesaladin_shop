@@ -21,7 +21,7 @@ public class MemberCouponSummaryDto {
     private int amount;
     private CouponTypeCode couponTypeCode;
     private LocalDate expireDate;
-    private Boolean Used;
+    private Boolean used;
     private String couponBound;
     private CouponBoundCode couponBoundCode;
 }

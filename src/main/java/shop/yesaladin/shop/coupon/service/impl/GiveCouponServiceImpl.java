@@ -5,8 +5,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpMethod;
@@ -22,16 +24,20 @@ import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.common.exception.ServerException;
 import shop.yesaladin.coupon.code.TriggerTypeCode;
+import shop.yesaladin.coupon.dto.CouponGiveDto;
 import shop.yesaladin.coupon.message.CouponCodesAndResultMessage;
 import shop.yesaladin.coupon.message.CouponCodesAndResultMessage.CouponCodesAndResultMessageBuilder;
 import shop.yesaladin.coupon.message.CouponGiveRequestMessage;
 import shop.yesaladin.coupon.message.CouponGiveRequestResponseMessage;
 import shop.yesaladin.shop.config.GatewayProperties;
 import shop.yesaladin.shop.coupon.adapter.kafka.CouponProducer;
+import shop.yesaladin.shop.coupon.adapter.websocket.CouponWebsocketMessageSender;
 import shop.yesaladin.shop.coupon.domain.model.MemberCoupon;
 import shop.yesaladin.shop.coupon.domain.repository.CommandMemberCouponRepository;
 import shop.yesaladin.shop.coupon.domain.repository.QueryMemberCouponRepository;
+import shop.yesaladin.shop.coupon.dto.CouponGiveResultDto;
 import shop.yesaladin.shop.coupon.dto.CouponGroupAndLimitDto;
+import shop.yesaladin.shop.coupon.dto.RequestIdOnlyDto;
 import shop.yesaladin.shop.coupon.service.inter.GiveCouponService;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
@@ -40,8 +46,10 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberService;
  * 회원에게 쿠폰을 지급하는 서비스 인터페이스의 구현체입니다.
  *
  * @author 김홍대
+ * @author 서민지
  * @since 1.0
  */
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class GiveCouponServiceImpl implements GiveCouponService {
@@ -55,12 +63,14 @@ public class GiveCouponServiceImpl implements GiveCouponService {
     private final QueryMemberService queryMemberService;
     private final RestTemplate restTemplate;
     private final RedisTemplate<String, String> redisTemplate;
+    private final CouponWebsocketMessageSender couponWebsocketMessageSender;
 
     @Override
     @Transactional(readOnly = true)
-    public void sendCouponGiveRequest(
+    public RequestIdOnlyDto sendCouponGiveRequest(
             String memberId, TriggerTypeCode triggerTypeCode, Long couponId
     ) {
+        registerIssueRequest(memberId, triggerTypeCode.name(), couponId.toString());
         List<CouponGroupAndLimitDto> couponGroupAndLimitList = getCouponGroupAndLimit(
                 triggerTypeCode,
                 couponId
@@ -72,45 +82,80 @@ public class GiveCouponServiceImpl implements GiveCouponService {
 
         checkMemberAlreadyHasCoupon(memberId, triggerTypeCode, couponId, couponGroupCodeList);
 
+        String requestId = generateRequestId(memberId);
+        RequestIdOnlyDto response = new RequestIdOnlyDto(requestId);
+
         if (Objects.isNull(couponId)) {
-            generateRequestIdAndSendMessage(
-                    memberId,
+            sendGiveRequestMessage(
                     triggerTypeCode,
                     null,
-                    couponGroupAndLimitList.get(0)
+                    couponGroupAndLimitList.get(0).getIsLimited(),
+                    requestId
             );
-            return;
+            return response;
         }
 
         couponGroupAndLimitList.forEach(couponGroupAndLimit ->
-                generateRequestIdAndSendMessage(
-                        memberId,
+                sendGiveRequestMessage(
                         triggerTypeCode,
                         couponId,
-                        couponGroupAndLimit
+                        couponGroupAndLimit.getIsLimited(),
+                        requestId
                 )
         );
-
+        return response;
     }
 
     @Override
     @Transactional
     public void giveCouponToMember(CouponGiveRequestResponseMessage responseMessage) {
-        CouponCodesAndResultMessageBuilder resultBuilder = CouponCodesAndResultMessage.builder()
-                .couponCodes(responseMessage.getCoupons()
-                        .stream()
-                        .flatMap(coupon -> coupon.getCouponCodes().stream())
-                        .collect(Collectors.toList()));
+        CouponCodesAndResultMessageBuilder resultBuilder = CouponCodesAndResultMessage.builder();
         try {
             checkRequestSucceeded(responseMessage);
             String memberId = getMemberIdFromRequestId(responseMessage.getRequestId());
+            checkMemberAlreadyHasCoupon(
+                    memberId,
+                    null,
+                    null,
+                    responseMessage.getCoupons()
+                            .stream()
+                            .map(CouponGiveDto::getCouponGroupCode)
+                            .collect(
+                                    Collectors.toList())
+            );
+            resultBuilder.couponCodes(responseMessage.getCoupons()
+                    .stream()
+                    .flatMap(coupon -> coupon.getCouponCodes().stream())
+                    .collect(Collectors.toList()));
             tryGiveCouponToMember(responseMessage, memberId);
             couponProducer.produceGivenResultMessage(resultBuilder.success(true).build());
+
+            couponWebsocketMessageSender.sendGiveCouponResultMessage(new CouponGiveResultDto(
+                    responseMessage.getRequestId(),
+                    responseMessage.isSuccess(),
+                    responseMessage.isSuccess() ? "발급이 완료되었습니다." : responseMessage.getErrorMessage()
+            ));
         } catch (Exception e) {
             couponProducer.produceGivenResultMessage(resultBuilder.success(false).build());
             throw e;
         }
+    }
 
+    /**
+     * 쿠폰 발행 요청에 대한 정보를 10초 동안 redis 에 저장합니다. 10초 내에 같은 요청을 시도하는 경우 예외를 던집니다.
+     *
+     * @param memberId 발행 요청을 한 회원의 로그인 아이디
+     * @param triggerTypeCode 발행 요청을 한 쿠폰의 트리거 타입 코드
+     * @param couponId 발행 요청한 쿠폰의 아이디
+     */
+    public void registerIssueRequest(
+            String memberId, String triggerTypeCode, String couponId
+    ) {
+        String issueRequestKey = memberId.concat(triggerTypeCode).concat(couponId);
+        if (Boolean.TRUE.equals(redisTemplate.hasKey(issueRequestKey))) {
+            throw new ClientException(ErrorCode.BAD_REQUEST, "이미 처리된 요청입니다.");
+        }
+        redisTemplate.opsForValue().set(issueRequestKey, "", 10, TimeUnit.SECONDS);
     }
 
     private List<CouponGroupAndLimitDto> getCouponGroupAndLimit(
@@ -177,21 +222,6 @@ public class GiveCouponServiceImpl implements GiveCouponService {
                             + ", trigger type : " + triggerTypeCode + ", coupon id : " + couponId
             );
         }
-    }
-
-    private void generateRequestIdAndSendMessage(
-            String memberId,
-            TriggerTypeCode triggerTypeCode,
-            Long couponId,
-            CouponGroupAndLimitDto couponGroupAndLimit
-    ) {
-        String requestId = generateRequestId(memberId);
-        sendGiveRequestMessage(
-                triggerTypeCode,
-                couponId,
-                couponGroupAndLimit.getIsLimited(),
-                requestId
-        );
     }
 
     private String generateRequestId(String memberId) {

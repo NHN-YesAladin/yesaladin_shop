@@ -42,6 +42,7 @@ import shop.yesaladin.shop.member.domain.model.MemberGrade;
 import shop.yesaladin.shop.member.dto.MemberGradeQueryResponseDto;
 import shop.yesaladin.shop.member.dto.MemberManagerResponseDto;
 import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
+import shop.yesaladin.shop.member.dto.MemberStatisticsResponseDto;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 
@@ -726,5 +727,73 @@ class QueryMemberControllerTest {
                 .andExpect(jsonPath("$.data.dataList[0].blockedReason", equalTo(null)))
                 .andExpect(jsonPath("$.data.dataList[0].blockedDate", equalTo(null)))
                 .andExpect(jsonPath("$.data.dataList[0].unblockedDate", equalTo(null)));
+    }
+
+    @WithMockUser
+    @Test
+    void getMemberStatistics() throws Exception {
+        //given
+        long totalCount = 10L;
+        long totalWithdraws = 1L;
+        long emptyCount = 0L;
+        MemberStatisticsResponseDto response = MemberStatisticsResponseDto.builder()
+                .totalMembers(totalCount)
+                .totalWithdrawMembers(totalWithdraws)
+                .totalBlockedMembers(emptyCount)
+                .totalWhiteGrades(totalCount)
+                .totalBronzeGrades(emptyCount)
+                .totalSilverGrades(emptyCount)
+                .totalGoldGrades(emptyCount)
+                .totalPlatinumGrades(emptyCount)
+                .build();
+
+        Mockito.when(queryMemberService.getMemberStatistics()).thenReturn(response);
+
+        //when
+        ResultActions resultActions = mockMvc.perform(get("/v1/members/statistics"));
+
+        //then
+        resultActions.andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())))
+                .andExpect(jsonPath("$.data.totalMembers", equalTo(response.getTotalMembers().intValue())))
+                .andExpect(jsonPath("$.data.totalWithdrawMembers", equalTo(response.getTotalWithdrawMembers().intValue())))
+                .andExpect(jsonPath("$.data.totalBlockedMembers", equalTo(response.getTotalBlockedMembers().intValue())))
+                .andExpect(jsonPath("$.data.totalWhiteGrades", equalTo(response.getTotalWhiteGrades().intValue())))
+                .andExpect(jsonPath("$.data.totalBronzeGrades", equalTo(response.getTotalBronzeGrades().intValue())))
+                .andExpect(jsonPath("$.data.totalSilverGrades", equalTo(response.getTotalSilverGrades().intValue())))
+                .andExpect(jsonPath("$.data.totalGoldGrades", equalTo(response.getTotalGoldGrades().intValue())))
+                .andExpect(jsonPath("$.data.totalPlatinumGrades", equalTo(response.getTotalPlatinumGrades().intValue())));
+
+        //docs
+        resultActions.andDo(document(
+                "get-member-statistics-success",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data.totalMembers").type(JsonFieldType.NUMBER)
+                                .description("전체 회원 수"),
+                        fieldWithPath("data.totalWithdrawMembers").type(JsonFieldType.NUMBER)
+                                .description("탈퇴 회원 수"),
+                        fieldWithPath("data.totalBlockedMembers").type(JsonFieldType.NUMBER)
+                                .description("차단된 회원 수"),
+                        fieldWithPath("data.totalWhiteGrades").type(JsonFieldType.NUMBER)
+                                .description("화이트 등급의 회원 수"),
+                        fieldWithPath("data.totalBronzeGrades").type(JsonFieldType.NUMBER)
+                                .description("브론즈 등급의 회원 수"),
+                        fieldWithPath("data.totalSilverGrades").type(JsonFieldType.NUMBER)
+                                .description("실버 등급의 회원 수"),
+                        fieldWithPath("data.totalGoldGrades").type(JsonFieldType.NUMBER)
+                                .description("골드 등급의 회원 수"),
+                        fieldWithPath("data.totalPlatinumGrades").type(JsonFieldType.NUMBER)
+                                .description("플래티넘 등급의 회원 수"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지").optional()
+                )
+        ));
     }
 }

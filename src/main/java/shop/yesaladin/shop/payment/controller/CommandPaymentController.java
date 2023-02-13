@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.payment.controller;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -12,9 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.common.dto.ResponseDto;
-import shop.yesaladin.shop.payment.domain.model.Payment;
-import shop.yesaladin.shop.payment.domain.model.PaymentCardAcquirerCode;
-import shop.yesaladin.shop.payment.domain.model.PaymentCode;
 import shop.yesaladin.shop.payment.dto.PaymentCompleteSimpleResponseDto;
 import shop.yesaladin.shop.payment.dto.PaymentRequestDto;
 import shop.yesaladin.shop.payment.exception.PaymentFailException;
@@ -50,8 +46,6 @@ public class CommandPaymentController {
     public ResponseDto<PaymentCompleteSimpleResponseDto> confirmPayment(
             @Valid @RequestBody PaymentRequestDto requestDto
     ) {
-        // TODO Order create 구현 될 경우, 삭제 필요
-//        return getTestDto();
         try {
             PaymentCompleteSimpleResponseDto response = paymentService.confirmTossRequest(requestDto);
             return ResponseDto.<PaymentCompleteSimpleResponseDto>builder()
@@ -69,30 +63,5 @@ public class CommandPaymentController {
                     .build();
         }
 
-    }
-
-    private static ResponseDto<PaymentCompleteSimpleResponseDto> getTestDto() {
-        PaymentCompleteSimpleResponseDto testDto = PaymentCompleteSimpleResponseDto.builder()
-                .paymentId("dummy paymentId")
-                .method(PaymentCode.CARD)
-                .currency(Payment.CURRENCY_KRW)
-                .totalAmount(10000000L)
-                .approvedDateTime(LocalDateTime.now())
-                .ordererName("김김김")
-                .orderNumber("10101010010101010")
-                .orderName("dummy orderName")
-                .orderAddress("광주광역시")
-                .cardCode(PaymentCode.CREDIT)
-                .cardOwnerCode(PaymentCode.INDIVIDUAL)
-                .cardNumber("1111-xxxx-xxxx-1111")
-                .cardInstallmentPlanMonths(0)
-                .cardApproveNumber("010023289475832")
-                .cardAcquirerCode(PaymentCardAcquirerCode.BC)
-                .build();
-        return ResponseDto.<PaymentCompleteSimpleResponseDto>builder()
-                .status(HttpStatus.OK)
-                .success(true)
-                .data(testDto)
-                .build();
     }
 }

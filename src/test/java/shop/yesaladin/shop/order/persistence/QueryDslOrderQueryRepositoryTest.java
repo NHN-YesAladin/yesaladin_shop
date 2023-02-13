@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.member.domain.model.Member;
@@ -47,6 +48,7 @@ import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
 
 @Transactional
 @SpringBootTest
+@ActiveProfiles("local-test")
 class QueryDslOrderQueryRepositoryTest {
 
     @Autowired
@@ -58,7 +60,6 @@ class QueryDslOrderQueryRepositoryTest {
     private List<Subscribe> subscribeList;
     private List<Member> memberList;
     private List<MemberAddress> memberAddressList;
-
     private List<OrderStatusChangeLog> logList = new ArrayList<>();
 
 
@@ -101,14 +102,15 @@ class QueryDslOrderQueryRepositoryTest {
         }
         for (int i = 0; i < 10; i++) {
             NonMemberOrder nonMemberOrder = NonMemberOrder.builder()
-                    .orderNumber("NM-" + i)
+                    .orderNumber("NonMember-order-" + i)
                     .name("non-member-order" + i)
                     .orderDateTime(LocalDateTime.of(2023, 1, i + 1, 0, 0))
                     .expectedTransportDate(LocalDate.of(2023, 1, i + 2))
                     .isHidden(false)
                     .usedPoint(0)
-                    .shippingFee(0)
-                    .wrappingFee(0)
+                    .shippingFee(3000)
+                    .wrappingFee(3000)
+                    .totalAmount(16000)
                     .orderCode(OrderCode.NON_MEMBER_ORDER)
                     .address("address" + i)
                     .nonMemberName("nonMember" + i)
@@ -122,16 +124,16 @@ class QueryDslOrderQueryRepositoryTest {
         for (int i = 0; i < 30; i++) {
             int index = i % 5;
             Member member = memberList.get(index);
-            System.out.println("member = " + member.getLoginId());
             MemberOrder memberOrder = MemberOrder.builder()
-                    .orderNumber("M-" + i)
+                    .orderNumber("Member-order-" + i)
                     .name("member-order" + i)
                     .orderDateTime(LocalDateTime.of(2023, 1, i + 1, 0, 0))
                     .expectedTransportDate(LocalDate.of(2023, 1, i + 2))
                     .isHidden(false)
                     .usedPoint(0)
-                    .shippingFee(0)
-                    .wrappingFee(0)
+                    .shippingFee(3000)
+                    .wrappingFee(3000)
+                    .totalAmount(16000)
                     .orderCode(OrderCode.MEMBER_ORDER)
                     .recipientName("friend")
                     .recipientPhoneNumber("01011111111")
@@ -155,13 +157,14 @@ class QueryDslOrderQueryRepositoryTest {
                     .memberAddress(memberAddressList.get(i % 5))
                     .nextRenewalDate(LocalDate.of(2023, i + 1, 1))
                     .subscribeProduct(subscribeProduct)
-                    .orderNumber("S-" + i)
+                    .orderNumber("Subscribe-order-" + i)
                     .orderDateTime(LocalDateTime.of(2023, 1, i + 1, 0, 0))
                     .expectedTransportDate(LocalDate.of(2023, 1, i + 2))
                     .isHidden(false)
                     .usedPoint(0)
-                    .shippingFee(0)
-                    .wrappingFee(0)
+                    .shippingFee(3000)
+                    .wrappingFee(3000)
+                    .totalAmount(16000)
                     .orderCode(OrderCode.MEMBER_SUBSCRIBE)
                     .recipientName("수령인 이름")
                     .recipientPhoneNumber("수령인 폰번호")
