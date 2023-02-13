@@ -691,7 +691,7 @@ class QueryProductControllerTest {
                 ));
 
         //when
-        ResultActions result = mockMvc.perform(get("/v1/products/recent").with(csrf()));
+        ResultActions result = mockMvc.perform(get("/v1/products/recent/product").with(csrf()));
 
         //then
         result.andExpect(status().isOk())
@@ -722,7 +722,7 @@ class QueryProductControllerTest {
         String body = objectMapper.writeValueAsString(List.of(1L));
 
         //when
-        ResultActions result = mockMvc.perform(post("/v1/products/recentview").with(csrf())
+        ResultActions result = mockMvc.perform(post("/v1/products/recentview/product").with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body));
         //then
