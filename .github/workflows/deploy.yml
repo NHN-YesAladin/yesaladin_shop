@@ -26,7 +26,8 @@ jobs:
           java-version: "11"
           distribution: "temurin"
 
-      - run: "echo 'spring: \n  config: \n    import: configserver:${{ secrets.CONFIG_SERVER_URL }} '"/ > ./src/test/resources/application.yml
+      - name: set application.yml for test
+        run: "echo 'spring: \n  config: \n    import: configserver:${{ secrets.CONFIG_SERVER_URL }} '"/ > ./src/test/resources/application.yml
 
       - name: Build with Maven
         run: mvn -B package --file pom.xml
