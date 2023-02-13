@@ -8,6 +8,7 @@ import shop.yesaladin.shop.common.exception.PageOffsetOutOfBoundsException;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
+import shop.yesaladin.shop.order.dto.OrderDetailsResponseDto;
 import shop.yesaladin.shop.order.dto.OrderPaymentResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSheetRequestDto;
 import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
@@ -133,4 +134,13 @@ public interface QueryOrderService {
      * @return 주문상태코드 & 그에 따른 주문 개수
      */
     Map<OrderStatusCode, Long> getOrderCountByLoginIdStatus(String loginId);
+
+    /**
+     * 주문 상세 정보를 위한 조회
+     *
+     * @param orderNumber 상세 조회를 할 주문 번호
+     * @return 주문 상세 정보
+     */
+    OrderDetailsResponseDto getDetailsDtoByOrderNumber(String orderNumber);
+
 }

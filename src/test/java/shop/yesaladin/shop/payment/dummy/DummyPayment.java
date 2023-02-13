@@ -33,5 +33,28 @@ public class DummyPayment {
                 .paymentCode(PaymentCode.NORMAL)
                 .build();
     }
-
+    public static Payment payment(String id, Order order, PaymentCode paymentCode) {
+        long totalAmount = order.getShippingFee() + order.getWrappingFee();
+        return Payment.builder()
+                .id(id)
+                .lastTransactionKey("DummyLastTransactionKey")
+                .orderName(order.getName())
+                .method(paymentCode)
+                .currency(Payment.CURRENCY_KRW)
+                .totalAmount(totalAmount)
+                .balanceAmount(totalAmount)
+                .suppliedAmount(totalAmount)
+                .taxFreeAmount(0L)
+                .vat(0L)
+                .status(PaymentCode.DONE)
+                .requestedDatetime(ZonedDateTime.now().withZoneSameInstant(
+                                ZoneId.of("Asia/Seoul"))
+                        .toLocalDateTime())
+                .approvedDatetime(ZonedDateTime.now().withZoneSameInstant(
+                                ZoneId.of("Asia/Seoul"))
+                        .toLocalDateTime())
+                .order(order)
+                .paymentCode(PaymentCode.NORMAL)
+                .build();
+    }
 }

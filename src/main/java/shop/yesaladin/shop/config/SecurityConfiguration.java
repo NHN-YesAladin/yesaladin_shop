@@ -2,7 +2,6 @@ package shop.yesaladin.shop.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -43,17 +42,13 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain httpSecurity(HttpSecurity http) throws Exception {
 
-        http.authorizeHttpRequests(request -> request
-//                        .mvcMatchers(HttpMethod.GET, "/v1/categories/**").permitAll()
-//                        .mvcMatchers(HttpMethod.GET, "/v1/members/login/**").permitAll()
-                        .mvcMatchers("/**").permitAll())
+        http.authorizeHttpRequests(request -> request.mvcMatchers("/**").permitAll())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(
                         new JwtAuthorizationFilter(authenticationManager(http)),
                         UsernamePasswordAuthenticationFilter.class
                 )
-                .csrf(AbstractHttpConfigurer::disable)
-        ;
+                .csrf(AbstractHttpConfigurer::disable);
 
         return http.build();
     }

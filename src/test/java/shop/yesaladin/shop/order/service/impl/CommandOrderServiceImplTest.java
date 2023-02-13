@@ -727,6 +727,7 @@ class CommandOrderServiceImplTest {
         verify(commandOrderStatusChangeLogRepository, times(1)).save(any());
     }
 
+
     private OrderNonMemberCreateRequestDto getNonMemberOrderRequest() {
         return new OrderNonMemberCreateRequestDto(
                 expectedShippingDate,

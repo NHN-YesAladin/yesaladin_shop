@@ -6,7 +6,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import shop.yesaladin.coupon.message.CouponGiveRequestResponseMessage;
+import shop.yesaladin.coupon.message.CouponUseRequestResponseMessage;
 import shop.yesaladin.shop.coupon.service.inter.GiveCouponService;
+import shop.yesaladin.shop.coupon.service.inter.UseCouponService;
 
 /**
  * 쿠폰 서버에서 들어오는 메시지를 소비하는 Consumer 클래스입니다.
@@ -20,6 +22,7 @@ import shop.yesaladin.shop.coupon.service.inter.GiveCouponService;
 public class CouponConsumer {
 
     private final GiveCouponService giveCouponService;
+    private final UseCouponService useCouponService;
     private CountDownLatch latch = new CountDownLatch(1);
 
     /**
@@ -41,7 +44,8 @@ public class CouponConsumer {
      * @since 1.0
      */
     @KafkaListener(id = "${coupon.consumer-group.use-request-response}", topics = "${coupon.topic.use-request-response}")
-    public void consumeUseRequestResponseMessage() {
+    public void consumeUseRequestResponseMessage(CouponUseRequestResponseMessage message) {
+        useCouponService.useCoupon(message);
 
         markAsConsumed();
     }

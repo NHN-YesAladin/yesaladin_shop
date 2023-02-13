@@ -63,4 +63,5 @@ public interface CommandOrderService {
      * @since 1.0
      */
     OrderUpdateResponseDto hideOnOrder(String loginId, Long orderId, boolean hide);
+
 }

@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.model.ProductCategory;
@@ -30,6 +31,7 @@ import shop.yesaladin.shop.publish.domain.model.Publisher;
 
 @Transactional
 @SpringBootTest
+@ActiveProfiles("local-test")
 class QueryDslProductCategoryRepositoryTest {
 
     private final String ISBN = "000000000000";
