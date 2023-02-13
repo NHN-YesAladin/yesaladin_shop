@@ -23,6 +23,12 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
                 "http://localhost:9090",
                 "http://test.yesaladin.shop:9090",
                 "https://www.yesaladin.shop"
+        );
+        registry.addEndpoint("/ws").setAllowedOriginPatterns(
+                "http://localhost:8080",
+                "http://localhost:9090",
+                "http://test.yesaladin.shop:9090",
+                "https://www.yesaladin.shop"
         ).withSockJS();
 
     }
