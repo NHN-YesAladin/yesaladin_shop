@@ -2,7 +2,7 @@
 name: "Bug Fix request \U0001F41B"
 about: 버그 수정을 위한 템플릿
 title: "[Fix] : "
-labels: bug
+labels: ''
 assignees: ''
 
 ---

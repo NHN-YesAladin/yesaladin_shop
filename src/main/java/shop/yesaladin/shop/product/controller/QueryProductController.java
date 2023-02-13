@@ -187,4 +187,59 @@ public class QueryProductController {
                         .build())
                 .build();
     }
+
+    /**
+     * 최신 상품 조회 메서드
+     *
+     * @param pageable 페이지 정보
+     * @return 촤신 상품 리스트
+     * @author 김선홍
+     * @since 1, 0
+     */
+    @GetMapping("/recent")
+    public ResponseDto<PaginatedResponseDto<ProductRecentResponseDto>> findRecentProductByPublishedDate(
+            @PageableDefault Pageable pageable
+    ) {
+        Page<ProductRecentResponseDto> products = queryProductService.findRecentProductByPublishedDate(
+                pageable);
+
+        return ResponseDto.<PaginatedResponseDto<ProductRecentResponseDto>>builder()
+                .status(HttpStatus.OK)
+                .success(true)
+                .data(PaginatedResponseDto.<ProductRecentResponseDto>builder()
+                        .dataList(products.getContent())
+                        .totalPage(products.getTotalPages())
+                        .currentPage(products.getNumber())
+                        .totalDataCount(products.getTotalElements())
+                        .build())
+                .build();
+    }
+
+    /**
+     * 최근 본 상품 메서드
+     *
+     * @param ids      최근 본 상품들의 id 리스트
+     * @param pageable 페이지 정보
+     * @return 최근 본 상품 리스트
+     * @author 김선홍
+     * @since 1, 0
+     */
+    @PostMapping("/recentview")
+    public ResponseDto<PaginatedResponseDto<ProductRecentResponseDto>> findRecentViewProductById(
+            @RequestBody List<Long> ids,
+            @PageableDefault Pageable pageable
+    ) {
+        Page<ProductRecentResponseDto> products = queryProductService.findRecentViewProductById(ids,
+                pageable);
+        return ResponseDto.<PaginatedResponseDto<ProductRecentResponseDto>>builder()
+                .status(HttpStatus.OK)
+                .success(true)
+                .data(PaginatedResponseDto.<ProductRecentResponseDto>builder()
+                        .dataList(products.getContent())
+                        .totalPage(products.getTotalPages())
+                        .currentPage(products.getNumber())
+                        .totalDataCount(products.getTotalElements())
+                        .build())
+                .build();
+    }
 }

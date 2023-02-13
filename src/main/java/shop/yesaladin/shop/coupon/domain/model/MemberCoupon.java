@@ -15,6 +15,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import shop.yesaladin.common.code.ErrorCode;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.member.domain.model.Member;
 
 /**
@@ -50,4 +52,11 @@ public class MemberCoupon {
 
     @Column(nullable = false)
     private LocalDate expirationDate;
+
+    public void use() {
+        if (this.isUsed) {
+            throw new ClientException(ErrorCode.BAD_REQUEST, "Coupon already used. Coupon code : " + this.couponCode);
+        }
+        this.isUsed = true;
+    }
 }

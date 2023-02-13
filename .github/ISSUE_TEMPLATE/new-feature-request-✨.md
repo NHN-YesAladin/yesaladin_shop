@@ -2,7 +2,7 @@
 name: New Feature request ✨
 about: 새 기능 개발을 위한 템플릿
 title: "[Feat] : "
-labels: enhancement
+labels: ''
 assignees: ''
 
 ---
