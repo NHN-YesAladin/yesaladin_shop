@@ -359,8 +359,10 @@ class CommandOrderControllerTest {
                         fieldWithPath("orderCoupons").type(JsonFieldType.ARRAY)
                                 .description("주문에 사용한 쿠폰")
                                 .optional(),
-                        fieldWithPath("orderPoint").type(JsonFieldType.NUMBER)
-                                .description("주문에 사용한 포인트")
+                        fieldWithPath("usePoint").type(JsonFieldType.NUMBER)
+                                .description("사용 포인트"),
+                        fieldWithPath("savePoint").type(JsonFieldType.NUMBER)
+                                .description("적립 포인트")
 
                 ),
                 responseFields(
@@ -430,8 +432,10 @@ class CommandOrderControllerTest {
                         fieldWithPath("orderCoupons").type(JsonFieldType.ARRAY)
                                 .description("주문에 사용한 쿠폰")
                                 .optional(),
-                        fieldWithPath("orderPoint").type(JsonFieldType.NUMBER)
-                                .description("주문에 사용한 포인트")
+                        fieldWithPath("usePoint").type(JsonFieldType.NUMBER)
+                                .description("사용 포인트"),
+                        fieldWithPath("savePoint").type(JsonFieldType.NUMBER)
+                                .description("적립 포인트")
 
                 ),
                 responseFields(
@@ -501,8 +505,10 @@ class CommandOrderControllerTest {
                         fieldWithPath("orderCoupons").type(JsonFieldType.ARRAY)
                                 .description("주문에 사용한 쿠폰")
                                 .optional(),
-                        fieldWithPath("orderPoint").type(JsonFieldType.NUMBER)
-                                .description("주문에 사용한 포인트")
+                        fieldWithPath("usePoint").type(JsonFieldType.NUMBER)
+                                .description("사용 포인트"),
+                        fieldWithPath("savePoint").type(JsonFieldType.NUMBER)
+                                .description("적립 포인트")
 
                 ),
                 responseFields(
@@ -572,8 +578,10 @@ class CommandOrderControllerTest {
                         fieldWithPath("orderCoupons").type(JsonFieldType.ARRAY)
                                 .description("주문에 사용한 쿠폰")
                                 .optional(),
-                        fieldWithPath("orderPoint").type(JsonFieldType.NUMBER)
-                                .description("주문에 사용한 포인트")
+                        fieldWithPath("usePoint").type(JsonFieldType.NUMBER)
+                                .description("사용 포인트"),
+                        fieldWithPath("savePoint").type(JsonFieldType.NUMBER)
+                                .description("적립 포인트")
 
                 ),
                 responseFields(
@@ -643,8 +651,10 @@ class CommandOrderControllerTest {
                         fieldWithPath("orderCoupons").type(JsonFieldType.ARRAY)
                                 .description("주문에 사용한 쿠폰")
                                 .optional(),
-                        fieldWithPath("orderPoint").type(JsonFieldType.NUMBER)
-                                .description("주문에 사용한 포인트")
+                        fieldWithPath("usePoint").type(JsonFieldType.NUMBER)
+                                .description("사용 포인트"),
+                        fieldWithPath("savePoint").type(JsonFieldType.NUMBER)
+                                .description("적립 포인트")
 
                 ),
                 responseFields(
@@ -717,8 +727,10 @@ class CommandOrderControllerTest {
                         fieldWithPath("orderCoupons").type(JsonFieldType.ARRAY)
                                 .description("주문에 사용한 쿠폰")
                                 .optional(),
-                        fieldWithPath("orderPoint").type(JsonFieldType.NUMBER)
-                                .description("주문에 사용한 포인트")
+                        fieldWithPath("usePoint").type(JsonFieldType.NUMBER)
+                                .description("사용 포인트"),
+                        fieldWithPath("savePoint").type(JsonFieldType.NUMBER)
+                                .description("적립 포인트")
 
                 ),
                 responseFields(
@@ -796,8 +808,10 @@ class CommandOrderControllerTest {
                         fieldWithPath("orderCoupons").type(JsonFieldType.ARRAY)
                                 .description("주문에 사용한 쿠폰")
                                 .optional(),
-                        fieldWithPath("orderPoint").type(JsonFieldType.NUMBER)
-                                .description("주문에 사용한 포인트"),
+                        fieldWithPath("usePoint").type(JsonFieldType.NUMBER)
+                                .description("사용 포인트"),
+                        fieldWithPath("savePoint").type(JsonFieldType.NUMBER)
+                                .description("적립 포인트"),
                         fieldWithPath("expectedDay").type(JsonFieldType.NUMBER)
                                 .description("희망 정기 배송 일자"),
                         fieldWithPath("intervalMonth").type(JsonFieldType.NUMBER)
@@ -871,8 +885,10 @@ class CommandOrderControllerTest {
                         fieldWithPath("orderCoupons").type(JsonFieldType.ARRAY)
                                 .description("주문에 사용한 쿠폰")
                                 .optional(),
-                        fieldWithPath("orderPoint").type(JsonFieldType.NUMBER)
-                                .description("주문에 사용한 포인트"),
+                        fieldWithPath("usePoint").type(JsonFieldType.NUMBER)
+                                .description("사용 포인트"),
+                        fieldWithPath("savePoint").type(JsonFieldType.NUMBER)
+                                .description("적립 포인트"),
                         fieldWithPath("expectedDay").type(JsonFieldType.NUMBER)
                                 .description("희망 정기 배송 일자"),
                         fieldWithPath("intervalMonth").type(JsonFieldType.NUMBER)
@@ -946,8 +962,10 @@ class CommandOrderControllerTest {
                         fieldWithPath("orderCoupons").type(JsonFieldType.ARRAY)
                                 .description("주문에 사용한 쿠폰")
                                 .optional(),
-                        fieldWithPath("orderPoint").type(JsonFieldType.NUMBER)
-                                .description("주문에 사용한 포인트"),
+                        fieldWithPath("usePoint").type(JsonFieldType.NUMBER)
+                                .description("사용 포인트"),
+                        fieldWithPath("savePoint").type(JsonFieldType.NUMBER)
+                                .description("적립 포인트"),
                         fieldWithPath("expectedDay").type(JsonFieldType.NUMBER)
                                 .description("희망 정기 배송 일자"),
                         fieldWithPath("intervalMonth").type(JsonFieldType.NUMBER)
@@ -1021,8 +1039,10 @@ class CommandOrderControllerTest {
                         fieldWithPath("orderCoupons").type(JsonFieldType.ARRAY)
                                 .description("주문에 사용한 쿠폰")
                                 .optional(),
-                        fieldWithPath("orderPoint").type(JsonFieldType.NUMBER)
-                                .description("주문에 사용한 포인트"),
+                        fieldWithPath("usePoint").type(JsonFieldType.NUMBER)
+                                .description("사용 포인트"),
+                        fieldWithPath("savePoint").type(JsonFieldType.NUMBER)
+                                .description("적립 포인트"),
                         fieldWithPath("expectedDay").type(JsonFieldType.NUMBER)
                                 .description("희망 정기 배송 일자"),
                         fieldWithPath("intervalMonth").type(JsonFieldType.NUMBER)
@@ -1096,8 +1116,10 @@ class CommandOrderControllerTest {
                         fieldWithPath("orderCoupons").type(JsonFieldType.ARRAY)
                                 .description("주문에 사용한 쿠폰")
                                 .optional(),
-                        fieldWithPath("orderPoint").type(JsonFieldType.NUMBER)
-                                .description("주문에 사용한 포인트"),
+                        fieldWithPath("usePoint").type(JsonFieldType.NUMBER)
+                                .description("사용 포인트"),
+                        fieldWithPath("savePoint").type(JsonFieldType.NUMBER)
+                                .description("적립 포인트"),
                         fieldWithPath("expectedDay").type(JsonFieldType.NUMBER)
                                 .description("희망 정기 배송 일자"),
                         fieldWithPath("intervalMonth").type(JsonFieldType.NUMBER)
@@ -1171,8 +1193,10 @@ class CommandOrderControllerTest {
                         fieldWithPath("orderCoupons").type(JsonFieldType.ARRAY)
                                 .description("주문에 사용한 쿠폰")
                                 .optional(),
-                        fieldWithPath("orderPoint").type(JsonFieldType.NUMBER)
-                                .description("주문에 사용한 포인트"),
+                        fieldWithPath("usePoint").type(JsonFieldType.NUMBER)
+                                .description("사용 포인트"),
+                        fieldWithPath("savePoint").type(JsonFieldType.NUMBER)
+                                .description("적립 포인트"),
                         fieldWithPath("expectedDay").type(JsonFieldType.NUMBER)
                                 .description("희망 정기 배송 일자"),
                         fieldWithPath("intervalMonth").type(JsonFieldType.NUMBER)
@@ -1249,8 +1273,10 @@ class CommandOrderControllerTest {
                         fieldWithPath("orderCoupons").type(JsonFieldType.ARRAY)
                                 .description("주문에 사용한 쿠폰")
                                 .optional(),
-                        fieldWithPath("orderPoint").type(JsonFieldType.NUMBER)
-                                .description("주문에 사용한 포인트"),
+                        fieldWithPath("usePoint").type(JsonFieldType.NUMBER)
+                                .description("사용 포인트"),
+                        fieldWithPath("savePoint").type(JsonFieldType.NUMBER)
+                                .description("적립 포인트"),
                         fieldWithPath("expectedDay").type(JsonFieldType.NUMBER)
                                 .description("희망 정기 배송 일자"),
                         fieldWithPath("intervalMonth").type(JsonFieldType.NUMBER)
