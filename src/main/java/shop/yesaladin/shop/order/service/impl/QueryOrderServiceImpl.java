@@ -60,6 +60,7 @@ import shop.yesaladin.shop.product.service.inter.QueryProductService;
  *
  * @author 김홍대
  * @author 최예린
+ * @author 배수한
  * @since 1.0
  */
 @RequiredArgsConstructor
@@ -336,6 +337,18 @@ public class QueryOrderServiceImpl implements QueryOrderService {
                         "주문 상태 이력을 찾을 수 없습니다."));
         orderResponseDto.setOrderStatusCode(latestChangeLog.getOrderStatusCode());
         responseDto.setOrder(orderResponseDto);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Page<OrderSummaryResponseDto> getHiddenOrderByLoginId(
+            String loginId,
+            Pageable pageable
+    ) {
+        return queryOrderRepository.getHiddenOrderByLoginId(loginId, pageable);
     }
 
     private void checkRequestedOffsetInBounds(

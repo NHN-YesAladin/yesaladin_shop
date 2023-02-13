@@ -104,7 +104,7 @@ public class CommandOrderServiceImpl implements CommandOrderService {
         createOrderProduct(request, products, savedOrder);
         createOrderCoupon(request, savedOrder);
 
-        createUsePointHistory(request.getOrderPoint(), loginId);
+        createPointHistory(request.getUsePoint(), request.getSavePoint(), loginId);
 
         createOrderStatusChangeLog(orderDateTime, savedOrder);
 
@@ -124,7 +124,7 @@ public class CommandOrderServiceImpl implements CommandOrderService {
 
         Order savedOrder = creatSubscribe(request, orderDateTime, loginId);
 
-        createUsePointHistory(request.getOrderPoint(), loginId);
+        createPointHistory(request.getUsePoint(), request.getSavePoint(), loginId);
         createOrderCoupon(request, savedOrder);
 
         createOrderStatusChangeLog(orderDateTime, savedOrder);
@@ -235,18 +235,25 @@ public class CommandOrderServiceImpl implements CommandOrderService {
                 .forEach(commandOrderProductRepository::save);
     }
 
-    private void createUsePointHistory(long orderPoint, String loginId) {
-        if (orderPoint != 0) {
+    private void createPointHistory(long usePoint, long savePoint, String loginId) {
+        if (usePoint != 0) {
             commandPointHistoryService.use(new PointHistoryRequestDto(
                     loginId,
-                    orderPoint,
+                    usePoint,
                     PointReasonCode.USE_ORDER
+            ));
+        }
+        if(savePoint != 0) {
+            commandPointHistoryService.save(new PointHistoryRequestDto(
+                    loginId,
+                    savePoint,
+                    PointReasonCode.SAVE_ORDER
             ));
         }
     }
 
     private void createOrderCoupon(OrderMemberCreateRequestDto request, Order savedOrder) {
-        if (!request.getOrderCoupons().isEmpty()) {
+        if (Objects.nonNull(request.getOrderCoupons())) {
             commandOrderCouponService.createOrderCoupons(
                     savedOrder.getId(),
                     request.getOrderCoupons()

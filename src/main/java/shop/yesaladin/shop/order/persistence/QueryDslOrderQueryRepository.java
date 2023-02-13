@@ -94,7 +94,7 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
                 .from(order)
                 .where(order.orderDateTime.between(
                         LocalDateTime.of(startDate, LocalTime.MIDNIGHT),
-                        LocalDateTime.of(endDate, LocalTime.MIDNIGHT)
+                        LocalDateTime.of(endDate.plusDays(1), LocalTime.MIDNIGHT)
                 ));
 
         return PageableExecutionUtils.getPage(data, pageable, countQuery::fetchFirst);
@@ -127,7 +127,7 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
                 .from(memberOrder)
                 .where(memberOrder.member.id.eq(memberId).and(memberOrder.orderDateTime.between(
                         LocalDateTime.of(startDate, LocalTime.MIDNIGHT),
-                        LocalDateTime.of(endDate, LocalTime.MIDNIGHT)
+                        LocalDateTime.of(endDate.plusDays(1), LocalTime.MIDNIGHT)
                 )));
 
         return PageableExecutionUtils.getPage(data, pageable, countQuery::fetchFirst);
@@ -212,7 +212,9 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
                         memberOrder.totalAmount,
                         ExpressionUtils.as(queryFactory.select(orderStatusChangeLog.orderStatusCode.max())
                                 .from(orderStatusChangeLog)
-                                .where(memberOrder.id.eq(memberOrder.id)), "orderStatusCode"),
+                                .innerJoin(memberOrder)
+                                .on(orderStatusChangeLog.order.id.eq(memberOrder.id))
+                                .where(memberOrder.member.id.eq(memberId)), "orderStatusCode"),
                         memberOrder.member.id,
                         memberOrder.member.name,
                         orderProduct.count(),
@@ -224,7 +226,7 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
                 .on(memberOrder.id.eq(orderProduct.order.id))
                 .where(memberOrder.member.id.eq(memberId).and(memberOrder.orderDateTime.between(
                         LocalDateTime.of(startDate, LocalTime.MIDNIGHT),
-                        LocalDateTime.of(endDate, LocalTime.MIDNIGHT)
+                        LocalDateTime.of(endDate.plusDays(1), LocalTime.MIDNIGHT)
                 )))
                 .groupBy(memberOrder.id)
                 .orderBy(memberOrder.orderDateTime.asc())
@@ -326,6 +328,53 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
                         .eq((long) code.getStatusCode()))
                 .fetch()
                 .size();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Page<OrderSummaryResponseDto> getHiddenOrderByLoginId(
+            String loginId,
+            Pageable pageable
+    ) {
+        QMemberOrder memberOrder = QMemberOrder.memberOrder;
+        QOrderStatusChangeLog orderStatusChangeLog = QOrderStatusChangeLog.orderStatusChangeLog;
+        QOrderProduct orderProduct = QOrderProduct.orderProduct;
+
+        List<OrderSummaryResponseDto> data = queryFactory.select(Projections.constructor(
+                        OrderSummaryResponseDto.class,
+                        memberOrder.id,
+                        memberOrder.orderNumber,
+                        memberOrder.orderDateTime,
+                        memberOrder.name,
+                        memberOrder.totalAmount,
+                        ExpressionUtils.as(queryFactory.select(orderStatusChangeLog.orderStatusCode.max())
+                                .from(orderStatusChangeLog)
+                                .innerJoin(memberOrder)
+                                .on(orderStatusChangeLog.order.id.eq(memberOrder.id))
+                                .where(memberOrder.member.loginId.eq(loginId)), "orderStatusCode"),
+                        memberOrder.member.id,
+                        memberOrder.member.name,
+                        orderProduct.count(),
+                        orderProduct.quantity.sum(),
+                        memberOrder.orderCode
+                ))
+                .from(memberOrder)
+                .leftJoin(orderProduct)
+                .on(memberOrder.id.eq(orderProduct.order.id))
+                .where(memberOrder.member.loginId.eq(loginId).and(memberOrder.isHidden.isTrue()))
+                .groupBy(memberOrder.id)
+                .orderBy(memberOrder.orderDateTime.asc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        JPAQuery<Long> countQuery = queryFactory.select(memberOrder.count())
+                .from(memberOrder)
+                .where(memberOrder.member.loginId.eq(loginId).and(memberOrder.isHidden.isTrue()));
+
+        return PageableExecutionUtils.getPage(data, pageable, countQuery::fetchFirst);
     }
 
 }
