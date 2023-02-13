@@ -212,7 +212,9 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
                         memberOrder.totalAmount,
                         ExpressionUtils.as(queryFactory.select(orderStatusChangeLog.orderStatusCode.max())
                                 .from(orderStatusChangeLog)
-                                .where(memberOrder.id.eq(memberOrder.id)), "orderStatusCode"),
+                                .innerJoin(memberOrder)
+                                .on(orderStatusChangeLog.order.id.eq(memberOrder.id))
+                                .where(memberOrder.member.id.eq(memberId)), "orderStatusCode"),
                         memberOrder.member.id,
                         memberOrder.member.name,
                         orderProduct.count(),
@@ -349,7 +351,9 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
                         memberOrder.totalAmount,
                         ExpressionUtils.as(queryFactory.select(orderStatusChangeLog.orderStatusCode.max())
                                 .from(orderStatusChangeLog)
-                                .where(memberOrder.id.eq(memberOrder.id)), "orderStatusCode"),
+                                .innerJoin(memberOrder)
+                                .on(orderStatusChangeLog.order.id.eq(memberOrder.id))
+                                .where(memberOrder.member.loginId.eq(loginId)), "orderStatusCode"),
                         memberOrder.member.id,
                         memberOrder.member.name,
                         orderProduct.count(),
