@@ -33,6 +33,16 @@ public interface QueryProductService {
     ProductOnlyTitleDto findTitleByIsbn(String isbn);
 
     /**
+     * ISBN이 이미 존재하는지 조회하여 반환합니다.
+     *
+     * @param isbn 찾고자하는 isbn
+     * @return ISBN 존재여부
+     * @author 이수정
+     * @since 1.0
+     */
+    Boolean existsByIsbn(String isbn);
+
+    /**
      * 아이디가 id인 상품을 찾아 반환합니다.
      *
      * @param id 찾고자하는 상품의 id

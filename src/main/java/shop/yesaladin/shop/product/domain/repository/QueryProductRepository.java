@@ -19,7 +19,7 @@ import java.util.Optional;
 public interface QueryProductRepository {
 
     /**
-     * ISSN(Unique)기준으로 상품의 제목을 조회합니다.
+     * ISBN(Unique) 기준으로 상품의 제목을 조회합니다.
      *
      * @param isbn 상품의 isbn (Unique)
      * @return 조회된 상품의 제목을 담은 Dto
@@ -27,6 +27,16 @@ public interface QueryProductRepository {
      * @since 1.0
      */
     ProductOnlyTitleDto findTitleByIsbn(String isbn);
+
+    /**
+     * ISBN의 존재여부를 조회합니다.
+     *
+     * @param isbn 조회할 isbn (Unique)
+     * @return 조회된 상품의 존재여부
+     * @author 이수정
+     * @since 1.0
+     */
+    Boolean existsByIsbn(String isbn);
 
     /**
      * id(PK)기준으로 상품의 수량을 조회합니다.

@@ -71,6 +71,15 @@ public class QueryProductServiceImpl implements QueryProductService {
      */
     @Transactional(readOnly = true)
     @Override
+    public Boolean existsByIsbn(String isbn) {
+        return queryProductRepository.existsByIsbn(isbn);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
     public Long findQuantityById(Long id) {
         Long quantity = queryProductRepository.findQuantityById(id);
         if (Objects.isNull(quantity)) {
