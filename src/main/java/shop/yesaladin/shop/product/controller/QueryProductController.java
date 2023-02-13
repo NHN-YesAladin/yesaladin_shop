@@ -196,7 +196,7 @@ public class QueryProductController {
      * @author 김선홍
      * @since 1, 0
      */
-    @GetMapping("/recent")
+    @GetMapping("/recent/product")
     public ResponseDto<PaginatedResponseDto<ProductRecentResponseDto>> findRecentProductByPublishedDate(
             @PageableDefault Pageable pageable
     ) {
@@ -224,7 +224,7 @@ public class QueryProductController {
      * @author 김선홍
      * @since 1, 0
      */
-    @PostMapping("/recentview")
+    @PostMapping("/recentview/product")
     public ResponseDto<PaginatedResponseDto<ProductRecentResponseDto>> findRecentViewProductById(
             @RequestBody List<Long> ids,
             @PageableDefault Pageable pageable
