@@ -70,7 +70,9 @@ public class GiveCouponServiceImpl implements GiveCouponService {
     public RequestIdOnlyDto sendCouponGiveRequest(
             String memberId, TriggerTypeCode triggerTypeCode, Long couponId
     ) {
-        registerIssueRequest(memberId, triggerTypeCode.name(), couponId.toString());
+        if (Objects.nonNull(couponId)) {    // 자동 발행 타입 쿠폰을 요청하는 경우
+            registerIssueRequest(memberId, triggerTypeCode.name(), couponId.toString());
+        }
         List<CouponGroupAndLimitDto> couponGroupAndLimitList = getCouponGroupAndLimit(
                 triggerTypeCode,
                 couponId
@@ -144,9 +146,9 @@ public class GiveCouponServiceImpl implements GiveCouponService {
     /**
      * 쿠폰 발행 요청에 대한 정보를 10초 동안 redis 에 저장합니다. 10초 내에 같은 요청을 시도하는 경우 예외를 던집니다.
      *
-     * @param memberId 발행 요청을 한 회원의 로그인 아이디
+     * @param memberId        발행 요청을 한 회원의 로그인 아이디
      * @param triggerTypeCode 발행 요청을 한 쿠폰의 트리거 타입 코드
-     * @param couponId 발행 요청한 쿠폰의 아이디
+     * @param couponId        발행 요청한 쿠폰의 아이디
      */
     public void registerIssueRequest(
             String memberId, String triggerTypeCode, String couponId
