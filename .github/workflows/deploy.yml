@@ -26,6 +26,12 @@ jobs:
           java-version: "11"
           distribution: "temurin"
 
+      - uses: actions/checkout@v3
+      - run: "echo '
+spring: 
+  config: 
+    import: configserver:${{ secrets.CONFIG_SERVER_URL }} '"/ > ./src/test/resources/application.yml
+
       - name: Build with Maven
         run: mvn -B package --file pom.xml
 
@@ -45,7 +51,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           target: ${{ secrets.SCP_TARGET }}
           source: target/yesaladin-shop.jar
-          
+
       - name: SCP Command to Transfer Files
         uses: appleboy/scp-action@6d1fc191a822daa12faa45f3a985413f995ff5c5
         with:
@@ -62,7 +68,7 @@ jobs:
           key: ${{ secrets.KEY }}
           username: ${{ secrets.USERNAME }}
           script: ${{ secrets.STARTUP_SCRIPT }}
-          
+
       - name: SSH Remote Commands
         uses: appleboy/ssh-action@v0.1.6
         with:
