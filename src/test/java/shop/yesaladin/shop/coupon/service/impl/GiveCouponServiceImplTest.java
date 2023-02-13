@@ -50,7 +50,7 @@ class GiveCouponServiceImplTest {
     private RedisTemplate<String, String> redisTemplate;
     private GiveCouponServiceImpl giveCouponService;
     private CouponWebsocketMessageSender websocketMessageSender;
-    private ValueOperations<String, Object> valueOperations = Mockito.mock(ValueOperations.class);
+    private ValueOperations<String, String> valueOperations = Mockito.mock(ValueOperations.class);
 
     @BeforeEach
     @SuppressWarnings("unchecked")
