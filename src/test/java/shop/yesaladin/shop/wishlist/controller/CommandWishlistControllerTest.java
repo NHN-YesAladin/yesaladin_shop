@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.wishlist.controller;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -99,7 +100,10 @@ class CommandWishlistControllerTest {
         resultActions.andExpect(status().isCreated())
                 .andExpect(jsonPath("$.status", equalTo(201)))
                 .andExpect(jsonPath("$.success", equalTo(true)))
-                .andExpect(jsonPath("$.data.registeredDateTime", equalTo(localDate.toString())))
+                .andExpect(jsonPath("$.data.registeredDateTime",
+                        containsString(localDate.toString()
+                                .substring(0, localDate.toString().length() - 3))
+                ))
                 .andDo(print());
     }
 

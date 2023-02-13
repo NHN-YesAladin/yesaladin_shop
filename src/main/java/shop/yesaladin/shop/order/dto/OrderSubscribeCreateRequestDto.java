@@ -38,7 +38,8 @@ public class OrderSubscribeCreateRequestDto extends OrderMemberCreateRequestDto 
             String recipientPhoneNumber,
             Long ordererAddressId,
             List<String> orderCoupons,
-            long orderPoint,
+            long usePoint,
+            long savePoint,
             Integer expectedDay,
             Integer intervalMonth
     ) {
@@ -52,7 +53,8 @@ public class OrderSubscribeCreateRequestDto extends OrderMemberCreateRequestDto 
                 recipientPhoneNumber,
                 ordererAddressId,
                 orderCoupons,
-                orderPoint
+                usePoint,
+                savePoint
         );
         this.expectedDay = expectedDay;
         this.intervalMonth = intervalMonth;
@@ -87,7 +89,7 @@ public class OrderSubscribeCreateRequestDto extends OrderMemberCreateRequestDto 
                 .orderDateTime(orderDateTime)
                 .expectedTransportDate(null)
                 .isHidden(false)
-                .usedPoint(orderPoint)
+                .usedPoint(usePoint)
                 .shippingFee(shippingFee)
                 .wrappingFee(wrappingFee)
                 .totalAmount(productTotalAmount)

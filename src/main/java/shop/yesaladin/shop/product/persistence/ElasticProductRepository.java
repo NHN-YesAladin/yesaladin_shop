@@ -55,7 +55,7 @@ public class ElasticProductRepository implements SearchProductRepository {
             int offset,
             int size
     ) {
-        return searchResponseProductByTermQuery(CATEGORIES_ID, offset, size, String.valueOf(id));
+        return searchResponseProductByTermQuery(String.valueOf(id), offset, size, CATEGORIES_ID);
     }
 
     /**
