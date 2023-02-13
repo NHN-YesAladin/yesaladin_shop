@@ -69,7 +69,8 @@ class CommandOrderControllerTest {
     int wrappingFee = 0;
     Long ordererAddressId = 1L;
     List<String> orderCoupons;
-    long orderPoint = 1000L;
+    long usePoint = 1000L;
+    long savePoint = 500L;
     int expectedDay = 10;
     int intervalMonth = 6;
 
@@ -1321,7 +1322,8 @@ class CommandOrderControllerTest {
                 recipientPhoneNumber,
                 ordererAddressId,
                 orderCoupons,
-                orderPoint
+                usePoint,
+                savePoint
         );
     }
 
@@ -1336,7 +1338,8 @@ class CommandOrderControllerTest {
                 recipientPhoneNumber,
                 -7L,
                 orderCoupons,
-                -1000
+                -1000,
+                -400
         );
     }
 
@@ -1351,7 +1354,8 @@ class CommandOrderControllerTest {
                 recipientPhoneNumber,
                 ordererAddressId,
                 orderCoupons,
-                orderPoint,
+                usePoint,
+                savePoint,
                 expectedDay,
                 intervalMonth
         );
@@ -1368,7 +1372,8 @@ class CommandOrderControllerTest {
                 recipientPhoneNumber,
                 ordererAddressId,
                 orderCoupons,
-                orderPoint,
+                usePoint,
+                savePoint,
                 0,
                 intervalMonth
         );

@@ -102,7 +102,8 @@ class CommandOrderServiceImplTest {
     int wrappingFee = 0;
     Long ordererAddressId = 1L;
     List<String> orderCoupons = List.of("0001", "0002");
-    long orderPoint = 1000L;
+    long usePoint = 1000L;
+    long savePoint = 500L;
     Integer expectedDay = 10;
     Integer intervalMonth = 6;
 
@@ -385,7 +386,7 @@ class CommandOrderServiceImplTest {
         ).get(0);
         Mockito.when(commandOrderProductRepository.save(any())).thenReturn(orderProduct);
 
-        String errorMessage = "Use over point with point : " + orderPoint;
+        String errorMessage = "Use over point with point : " + usePoint;
         Mockito.when(commandPointHistoryService.use(any()))
                 .thenThrow(new ClientException(ErrorCode.POINT_OVER_USE, errorMessage));
 
@@ -431,7 +432,7 @@ class CommandOrderServiceImplTest {
         Mockito.when(commandOrderProductRepository.save(any())).thenReturn(orderProduct);
         PointHistoryResponseDto pointHistoryResponse = new PointHistoryResponseDto(
                 1L,
-                orderPoint,
+                usePoint,
                 LocalDateTime.now(),
                 PointCode.USE,
                 PointReasonCode.USE_ORDER
@@ -658,7 +659,7 @@ class CommandOrderServiceImplTest {
         Mockito.when(queryMemberAddressService.findById(anyLong())).thenReturn(memberAddress);
         Mockito.when(subscribeCommandOrderRepository.save(any())).thenReturn(subscribe);
 
-        String errorMessage = "Use over point with point : " + orderPoint;
+        String errorMessage = "Use over point with point : " + usePoint;
         Mockito.when(commandPointHistoryService.use(any()))
                 .thenThrow(new ClientException(ErrorCode.POINT_OVER_USE, errorMessage));
 
@@ -698,7 +699,7 @@ class CommandOrderServiceImplTest {
 
         PointHistoryResponseDto pointHistoryResponse = new PointHistoryResponseDto(
                 1L,
-                orderPoint,
+                usePoint,
                 LocalDateTime.now(),
                 PointCode.USE,
                 PointReasonCode.USE_ORDER
@@ -754,7 +755,8 @@ class CommandOrderServiceImplTest {
                 recipientPhoneNumber,
                 ordererAddressId,
                 orderCoupons,
-                orderPoint
+                usePoint,
+                savePoint
         );
     }
 
@@ -769,7 +771,8 @@ class CommandOrderServiceImplTest {
                 recipientPhoneNumber,
                 ordererAddressId,
                 orderCoupons,
-                orderPoint,
+                usePoint,
+                savePoint,
                 expectedDay,
                 intervalMonth
         );

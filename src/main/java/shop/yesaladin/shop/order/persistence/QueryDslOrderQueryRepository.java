@@ -328,4 +328,49 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
                 .size();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Page<OrderSummaryResponseDto> getHiddenOrderByLoginId(
+            String loginId,
+            Pageable pageable
+    ) {
+        QMemberOrder memberOrder = QMemberOrder.memberOrder;
+        QOrderStatusChangeLog orderStatusChangeLog = QOrderStatusChangeLog.orderStatusChangeLog;
+        QOrderProduct orderProduct = QOrderProduct.orderProduct;
+
+        List<OrderSummaryResponseDto> data = queryFactory.select(Projections.constructor(
+                        OrderSummaryResponseDto.class,
+                        memberOrder.id,
+                        memberOrder.orderNumber,
+                        memberOrder.orderDateTime,
+                        memberOrder.name,
+                        memberOrder.totalAmount,
+                        ExpressionUtils.as(queryFactory.select(orderStatusChangeLog.orderStatusCode.max())
+                                .from(orderStatusChangeLog)
+                                .where(memberOrder.id.eq(memberOrder.id)), "orderStatusCode"),
+                        memberOrder.member.id,
+                        memberOrder.member.name,
+                        orderProduct.count(),
+                        orderProduct.quantity.sum(),
+                        memberOrder.orderCode
+                ))
+                .from(memberOrder)
+                .leftJoin(orderProduct)
+                .on(memberOrder.id.eq(orderProduct.order.id))
+                .where(memberOrder.member.loginId.eq(loginId).and(memberOrder.isHidden.isTrue()))
+                .groupBy(memberOrder.id)
+                .orderBy(memberOrder.orderDateTime.asc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        JPAQuery<Long> countQuery = queryFactory.select(memberOrder.count())
+                .from(memberOrder)
+                .where(memberOrder.member.loginId.eq(loginId).and(memberOrder.isHidden.isTrue()));
+
+        return PageableExecutionUtils.getPage(data, pageable, countQuery::fetchFirst);
+    }
+
 }
