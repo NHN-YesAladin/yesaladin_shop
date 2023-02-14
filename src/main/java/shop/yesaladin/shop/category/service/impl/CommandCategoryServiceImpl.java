@@ -3,6 +3,7 @@ package shop.yesaladin.shop.category.service.impl;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.common.code.ErrorCode;
@@ -24,6 +25,7 @@ import shop.yesaladin.shop.category.service.inter.CommandCategoryService;
  * @since 1.0
  */
 
+@CacheEvict(cacheNames = {"parentCategories", "childCategories"}, allEntries = true)
 @RequiredArgsConstructor
 @Service
 public class CommandCategoryServiceImpl implements CommandCategoryService {
@@ -33,12 +35,12 @@ public class CommandCategoryServiceImpl implements CommandCategoryService {
 
 
     /**
-     *  {@inheritDoc}
-     *
+     * {@inheritDoc}
      */
     @Transactional
     @Override
     public CategoryResponseDto create(CategoryRequestDto createRequest) {
+
         if (Objects.nonNull(createRequest.getParentId())) {
             return saveCategoryByAddingChildId(createRequest);
         }
@@ -93,8 +95,7 @@ public class CommandCategoryServiceImpl implements CommandCategoryService {
 
 
     /**
-     *  {@inheritDoc}
-     *
+     * {@inheritDoc}
      */
     @Transactional
     @Override
@@ -115,10 +116,9 @@ public class CommandCategoryServiceImpl implements CommandCategoryService {
     }
 
     /**
-     * parentId에 수정이 필요한 경우 3가지 케이스에 대처한다
-     * CASE 1) 기존 parentId가 null이거나 달라지지 않았을 경우 , 이름 등 다른 필드만 변경
-     * CASE 2) 2차 카테고리이고 변경하고자하는 parentId가 null 인 경우, 1차 카테고리로 새로 생성
-     * CASE 3) 2차 카테고리이고 변경하고자 하는 parentId가 다른 1차 카테고리의 아이디 인경우, 다른 1차 카테고리 id를 부모 id로 가지는 2차 카테고리로 새로 생성
+     * parentId에 수정이 필요한 경우 3가지 케이스에 대처한다 CASE 1) 기존 parentId가 null이거나 달라지지 않았을 경우 , 이름 등 다른 필드만 변경
+     * CASE 2) 2차 카테고리이고 변경하고자하는 parentId가 null 인 경우, 1차 카테고리로 새로 생성 CASE 3) 2차 카테고리이고 변경하고자 하는
+     * parentId가 다른 1차 카테고리의 아이디 인경우, 다른 1차 카테고리 id를 부모 id로 가지는 2차 카테고리로 새로 생성
      * <p>
      * categoryById.disableCategory(nameBeforeChanging) : 새로 카테고리가 생성되고 기존의 카테고리의 이름을 다시 복구하고,
      * depth를 -1로 변경하여 해당 카테고리를 disable 한 것으로 활용한다.
@@ -152,8 +152,7 @@ public class CommandCategoryServiceImpl implements CommandCategoryService {
 
 
     /**
-     *  {@inheritDoc}
-     *
+     * {@inheritDoc}
      */
     @Transactional
     @Override
@@ -168,8 +167,7 @@ public class CommandCategoryServiceImpl implements CommandCategoryService {
 
 
     /**
-     *  {@inheritDoc}
-     *
+     * {@inheritDoc}
      */
     @Transactional
     @Override
@@ -177,8 +175,10 @@ public class CommandCategoryServiceImpl implements CommandCategoryService {
         //1차 카테고리 순서 변경
         Long parentId = requestList.get(0).getParentId();
         if (Objects.isNull(parentId)) {
-            List<Category> categories = queryCategoryRepository.findCategories(null,
-                    Category.DEPTH_PARENT);
+            List<Category> categories = queryCategoryRepository.findCategories(
+                    null,
+                    Category.DEPTH_PARENT
+            );
             for (CategoryModifyRequestDto request : requestList) {
                 Long id = request.getId();
                 Category category = categories.stream()

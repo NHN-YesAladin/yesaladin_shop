@@ -13,7 +13,7 @@ import shop.yesaladin.shop.member.domain.model.MemberGenderCode;
 import shop.yesaladin.shop.member.domain.model.MemberGrade;
 
 /**
- * 회원 등록을 위해 MemberController 에서 받는 요청 DTO 입니다.
+ * OAuth2 회원 등록을 위해 MemberController 에서 받는 요청 DTO 입니다.
  *
  * @author 송학현
  * @since 1.0
@@ -21,7 +21,7 @@ import shop.yesaladin.shop.member.domain.model.MemberGrade;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MemberCreateRequestDto {
+public class OauthMemberCreateRequestDto {
 
     @NotBlank
     @Size(min = 2, max = 50)
@@ -34,8 +34,7 @@ public class MemberCreateRequestDto {
     private String nickname;
 
     @NotBlank
-    @Size(min = 8, max = 15)
-    @Pattern(regexp = "^[a-zA-Z0-9]{8,15}$", message = "영문 또는 숫자로 8자 이상 15자 이하만 가능 합니다")
+    @Size(min = 1, max = 50)
     private String loginId;
 
     @Email
@@ -59,7 +58,7 @@ public class MemberCreateRequestDto {
     private String gender;
 
     /**
-     * MemberCreateRequest DTO를 Member Entity로 변한하기 위한 메서드 입니다.
+     * OauthMemberCreateRequestDto DTO를 Member Entity로 변한하기 위한 메서드 입니다.
      *
      * @return RequestDto를 Entity로 변환된 결과 입니다.
      * @author 송학현

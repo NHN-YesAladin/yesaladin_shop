@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -52,12 +53,13 @@ public class QueryCategoryServiceImpl implements QueryCategoryService {
     }
 
     /**
-     *  {@inheritDoc}
-     *
+     * {@inheritDoc}
      */
+    @Cacheable(cacheNames = "parentCategories")
     @Transactional(readOnly = true)
     @Override
     public List<CategoryResponseDto> findParentCategories() {
+        log.info("findParentCategories - caching is working soon");
         return getCategoryResponseDtos(null, Category.DEPTH_PARENT);
     }
 
@@ -82,12 +84,14 @@ public class QueryCategoryServiceImpl implements QueryCategoryService {
     }
 
     /**
-     *  {@inheritDoc}
-     *
+     * {@inheritDoc}
      */
+    @Cacheable(cacheNames = "childCategories", key = "'parentCategory:'+#parentId")
     @Transactional(readOnly = true)
     @Override
     public List<CategoryResponseDto> findChildCategoriesByParentId(Long parentId) {
+
+        log.info("findChildCategoriesByParentId - caching is working soon");
         return getCategoryResponseDtos(parentId, Category.DEPTH_CHILD);
     }
 

@@ -57,6 +57,8 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 public class GiveCouponServiceImpl implements GiveCouponService {
 
     private static final String COUPON_GROUP_CODE_REQUEST_URL_PREFIX = "coupon-groups";
+    private static final String MONTHLY_POLICY_KEY = "monthlyCouponPolicy";
+    private static final String MONTHLY_COUPON_ID_KEY = "monthlyCouponId";
     private static final String MONTHLY_COUPON_OPEN_DATE_TIME_KEY = "monthlyCouponOpenDateTime";
 
     private final GatewayProperties gatewayProperties;
@@ -80,7 +82,7 @@ public class GiveCouponServiceImpl implements GiveCouponService {
             checkMonthlyCouponIssueRequestTime(requestDateTime);
         }
 
-        if (Objects.nonNull(couponId)) {    // 자동 발행 타입 쿠폰을 요청하는 경우
+        if (Objects.nonNull(couponId)) {    // 수동 발행 타입 쿠폰을 요청하는 경우
             registerIssueRequest(memberId, triggerTypeCode.name(), couponId.toString());
         }
         List<CouponGroupAndLimitDto> couponGroupAndLimitList = getCouponGroupAndLimit(
@@ -139,13 +141,18 @@ public class GiveCouponServiceImpl implements GiveCouponService {
             tryGiveCouponToMember(responseMessage, memberId);
             couponProducer.produceGivenResultMessage(resultBuilder.success(true).build());
 
-            couponWebsocketMessageSendService.sendGiveCouponResultMessage(new CouponGiveResultDto(
+            couponWebsocketMessageSendService.trySendGiveCouponResultMessage(new CouponGiveResultDto(
                     responseMessage.getRequestId(),
                     responseMessage.isSuccess(),
                     responseMessage.isSuccess() ? "발급이 완료되었습니다." : responseMessage.getErrorMessage()
             ));
         } catch (Exception e) {
             couponProducer.produceGivenResultMessage(resultBuilder.success(false).build());
+            couponWebsocketMessageSendService.trySendGiveCouponResultMessage(new CouponGiveResultDto(
+                    responseMessage.getRequestId(),
+                    responseMessage.isSuccess(),
+                    responseMessage.getErrorMessage()
+            ));
             throw e;
         }
     }
@@ -293,18 +300,22 @@ public class GiveCouponServiceImpl implements GiveCouponService {
      * @param requestDateTime 이달의 쿠폰 발행 요청 시간
      */
     private void checkMonthlyCouponIssueRequestTime(LocalDateTime requestDateTime) {
-        if (Boolean.FALSE.equals(redisTemplate.hasKey(MONTHLY_COUPON_OPEN_DATE_TIME_KEY))) {
+        if (Boolean.FALSE.equals(redisTemplate.opsForHash().hasKey(MONTHLY_POLICY_KEY, MONTHLY_COUPON_OPEN_DATE_TIME_KEY))) {
             throw new ClientException(
                     ErrorCode.NOT_FOUND,
-                    "Not found monthly coupon's open date time."
+                    "Not found any monthly coupon open date time."
             );
         }
 
-        String dateTime = redisTemplate.opsForValue().get(MONTHLY_COUPON_OPEN_DATE_TIME_KEY);
+        String openDateTimeStr = redisTemplate.opsForHash().get(MONTHLY_POLICY_KEY, MONTHLY_COUPON_OPEN_DATE_TIME_KEY).toString();
 
-        assert dateTime != null;
-        LocalDateTime openDateTime = LocalDateTime.parse(dateTime, DateTimeFormatter.ISO_DATE_TIME);
-        log.info("==== monthly coupon open time : {} ====", dateTime);
+        requestDateTime = requestDateTime.plusHours(9);     // UTC to KST
+        LocalDateTime openDateTime = LocalDateTime.parse(openDateTimeStr,
+                DateTimeFormatter.ISO_LOCAL_DATE_TIME
+        );
+
+        log.info("==== monthly coupon open time : {} ====", openDateTime);
+        log.info("==== monthly coupon issue request time : {} ====", requestDateTime);
 
         if (requestDateTime.isAfter(LocalDateTime.now())
                 || requestDateTime.isBefore(openDateTime)) {

@@ -15,6 +15,7 @@ import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.common.exception.ServerException;
 import shop.yesaladin.coupon.message.CouponCodesAndResultMessage;
+import shop.yesaladin.coupon.message.CouponCodesMessage;
 import shop.yesaladin.coupon.message.CouponUseRequestMessage;
 import shop.yesaladin.coupon.message.CouponUseRequestResponseMessage;
 import shop.yesaladin.shop.coupon.adapter.kafka.CouponProducer;
@@ -100,6 +101,16 @@ public class UseCouponServiceImpl implements UseCouponService {
                     "Use coupon failed. Coupon codes : " + couponCodeList
             );
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<CouponCodeOnlyDto> cancelCouponUse(List<String> couponCodeList) {
+        couponProducer.produceUseRequestCancelMessage(new CouponCodesMessage(couponCodeList));
+
+        return couponCodeList.stream().map(CouponCodeOnlyDto::new).collect(Collectors.toList());
     }
 
     private boolean canUseAllCoupon(List<MemberCoupon> memberCouponList) {

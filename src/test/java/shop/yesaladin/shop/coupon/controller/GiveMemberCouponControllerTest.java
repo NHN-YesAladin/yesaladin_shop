@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentRequest;
 import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
 
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -54,7 +55,8 @@ class GiveMemberCouponControllerTest {
     void sendCouponGiveRequestTest() throws Exception {
         // when
         ResultActions actual = mockMvc.perform(post("/v1/member-coupons").contentType(MediaType.APPLICATION_JSON)
-                .content("{\"triggerTypeCode\": \"MEMBER_GRADE_BRONZE\", \"couponId\": 1}"));
+                .content(
+                        "{\"triggerTypeCode\": \"MEMBER_GRADE_BRONZE\", \"couponId\": 1, \"requestDateTime\":  \"2023-02-14T17:16:38.858927\"}"));
 
         // then
         actual.andExpect(status().isOk())
@@ -64,7 +66,7 @@ class GiveMemberCouponControllerTest {
                 .andExpect(jsonPath("$.errorMessages").isEmpty());
         Mockito.verify(giveCouponService, Mockito.times(1))
                 .sendCouponGiveRequest("mongmeo", TriggerTypeCode.MEMBER_GRADE_BRONZE, 1L,
-                        null
+                        LocalDateTime.parse("2023-02-14T17:16:38.858927")
                 );
 
         // docs
@@ -77,7 +79,9 @@ class GiveMemberCouponControllerTest {
                                 .description("발행을 요청할 쿠폰의 트리거 타입 코드"),
                         fieldWithPath("couponId").type(JsonFieldType.NUMBER)
                                 .description("발행을 요청할 쿠폰 ID")
-                                .optional()
+                                .optional(),
+                        fieldWithPath("requestDateTime").type(JsonFieldType.STRING)
+                                .description("발행을 요청한 시간")
                 )
         ));
     }

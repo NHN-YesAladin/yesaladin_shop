@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import shop.yesaladin.coupon.message.CouponCodesAndResultMessage;
+import shop.yesaladin.coupon.message.CouponCodesMessage;
 import shop.yesaladin.coupon.message.CouponGiveRequestMessage;
 import shop.yesaladin.coupon.message.CouponUseRequestMessage;
 import shop.yesaladin.shop.config.CouponProperties;
@@ -74,5 +75,14 @@ public class CouponProducer {
      */
     public void produceUseRequestMessage(CouponUseRequestMessage message) {
         kafkaTemplate.send(couponProperties.getCouponUseRequestTopic(), message);
+    }
+
+    /**
+     * 사용 취소 메시지를 발행합니다.
+     *
+     * @param message 바행할 사용 취소 메시지
+     */
+    public void produceUseRequestCancelMessage(CouponCodesMessage message) {
+        kafkaTemplate.send(couponProperties.getCouponUseRequestCancelTopic(), message);
     }
 }

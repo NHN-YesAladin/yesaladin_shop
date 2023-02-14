@@ -16,7 +16,7 @@ public interface UseCouponService {
     /**
      * 쿠폰 사용을 요청합니다.
      *
-     * @param memberId    로그인한 회원의 로그인 ID
+     * @param memberId       로그인한 회원의 로그인 ID
      * @param couponCodeList 사용할 쿠폰 코드 리스트
      * @return 사용 요청 id
      */
@@ -29,4 +29,12 @@ public interface UseCouponService {
      * @return 사용된 쿠폰 코드 리스트
      */
     List<CouponCodeOnlyDto> useCoupon(CouponUseRequestResponseMessage message);
+
+    /**
+     * 쿠폰 코드 리스트를 받아 해당 쿠폰의 사용을 취소합니다.
+     *
+     * @param couponCodeList 사용 취소할 쿠폰 리스트
+     * @return 취소된 쿠폰 코드 리스트
+     */
+    List<CouponCodeOnlyDto> cancelCouponUse(List<String> couponCodeList);
 }
