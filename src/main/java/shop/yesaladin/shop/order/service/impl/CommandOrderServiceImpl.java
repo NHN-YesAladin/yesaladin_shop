@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.common.code.ErrorCode;
@@ -67,6 +68,7 @@ public class CommandOrderServiceImpl implements CommandOrderService {
     private final QueryProductService queryProductService;
     private final QueryMemberService queryMemberService;
 
+    private final RedisTemplate redisTemplate;
     private final UseCouponService useCouponService;
     private final Clock clock;
 
@@ -107,14 +109,13 @@ public class CommandOrderServiceImpl implements CommandOrderService {
         Map<String, Product> products = commandProductService.orderProducts(request.getOrderProducts());
 
         Order savedOrder = createMemberOrder(request, orderDateTime, products, loginId);
-
         createOrderProduct(request, products, savedOrder);
 
         createUsePointHistory(request.getUsePoint(), loginId);
 
         createOrderStatusChangeLog(orderDateTime, savedOrder);
 
-        useCouponService.sendCouponUseRequest(loginId, request.getOrderCoupons());
+        requestUseCoupon(request, loginId, savedOrder);
 
         return OrderCreateResponseDto.fromEntity(savedOrder);
     }
@@ -141,7 +142,7 @@ public class CommandOrderServiceImpl implements CommandOrderService {
 
         createOrderStatusChangeLog(orderDateTime, savedOrder);
 
-        useCouponService.sendCouponUseRequest(loginId, request.getOrderCoupons());
+        requestUseCoupon(request, loginId, savedOrder);
 
         return OrderCreateResponseDto.fromEntity(savedOrder);
     }
@@ -266,6 +267,16 @@ public class CommandOrderServiceImpl implements CommandOrderService {
                 OrderStatusCode.ORDER
         );
         commandOrderStatusChangeLogRepository.save(orderStatusChangeLog);
+    }
+
+    private void requestUseCoupon(OrderMemberCreateRequestDto request, String loginId, Order savedOrder) {
+        String requestId = useCouponService.sendCouponUseRequest(loginId, request.getOrderCoupons())
+                .getRequestId();
+        putRequestIdForCouponsToRedis(savedOrder.getOrderNumber(), requestId);
+    }
+
+    private void putRequestIdForCouponsToRedis(String orderNumber, String requestId) {
+        redisTemplate.opsForHash().put("USE_COUPON_REQ_ID", orderNumber, requestId);
     }
 
     private LocalDate generateNextRenewalDate(
