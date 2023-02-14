@@ -35,7 +35,7 @@ public class MemberCreateRequestDto {
 
     @NotBlank
     @Size(min = 8, max = 15)
-    @Pattern(regexp = "^[a-zA-Z0-9]$", message = "영문 또는 숫자로 8자 이상 15자 이하만 가능 합니다")
+    @Pattern(regexp = "^[a-zA-Z0-9]{8,15}$", message = "영문 또는 숫자로 8자 이상 15자 이하만 가능 합니다")
     private String loginId;
 
     @Email
