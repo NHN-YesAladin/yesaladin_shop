@@ -22,6 +22,7 @@ import shop.yesaladin.shop.member.dto.MemberUnblockResponseDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateResponseDto;
 import shop.yesaladin.shop.member.dto.MemberWithdrawResponseDto;
+import shop.yesaladin.shop.member.dto.OauthMemberCreateRequestDto;
 import shop.yesaladin.shop.member.event.SignUpEvent;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.exception.MemberProfileAlreadyExistException;
@@ -56,7 +57,38 @@ public class CommandMemberServiceImpl implements CommandMemberService {
         Role roleMember = queryRoleRepository.findById(roleId).orElseThrow(
                 () -> new MemberRoleNotFoundException(roleId));
 
-        checkMemberProfileExist(createDto);
+        checkMemberProfileExist(createDto.getLoginId(), createDto.getNickname(),
+                createDto.getEmail(), createDto.getPhone());
+
+        Member member = createDto.toEntity();
+        Member savedMember = commandMemberRepository.save(member);
+
+        MemberRole memberRole = createMemberRole(
+                savedMember,
+                roleId,
+                roleMember
+        );
+
+        commandMemberRoleRepository.save(memberRole);
+
+        eventPublisher.publishEvent(new SignUpEvent(this, member.getLoginId()));
+
+        return MemberCreateResponseDto.fromEntity(savedMember, roleMember);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public MemberCreateResponseDto createOauth(OauthMemberCreateRequestDto createDto) {
+        int roleId = 1;
+
+        Role roleMember = queryRoleRepository.findById(roleId).orElseThrow(
+                () -> new MemberRoleNotFoundException(roleId));
+
+        checkMemberProfileExist(createDto.getLoginId(), createDto.getNickname(),
+                createDto.getEmail(), createDto.getPhone());
 
         Member member = createDto.toEntity();
         Member savedMember = commandMemberRepository.save(member);
@@ -77,26 +109,29 @@ public class CommandMemberServiceImpl implements CommandMemberService {
     /**
      * 중복 사항을 체크하는 메소드 입니다.
      *
-     * @param createDto 회원 등록 요청 dto
-     * @throws MemberProfileAlreadyExistException loginId, nickname, email이 기존에 있다면 발생하는 예외입니다.
+     * @param loginId 조회 대상
+     * @param nickname 조회 대상
+     * @param email 조회 대상
+     * @param phone 조회 대상
+     * @throws MemberProfileAlreadyExistException loginId, nickname, email, phone 이 기존에 있다면 발생하는 예외입니다.
      * @author 송학현
      * @since 1.0
      */
-    private void checkMemberProfileExist(MemberCreateRequestDto createDto) {
-        if (queryMemberRepository.existsMemberByLoginId(createDto.getLoginId())) {
-            throw new MemberProfileAlreadyExistException(createDto.getLoginId());
+    private void checkMemberProfileExist(String loginId, String nickname, String email, String phone) {
+        if (queryMemberRepository.existsMemberByLoginId(loginId)) {
+            throw new MemberProfileAlreadyExistException(loginId);
         }
 
-        if (queryMemberRepository.existsMemberByNickname(createDto.getNickname())) {
-            throw new MemberProfileAlreadyExistException(createDto.getNickname());
+        if (queryMemberRepository.existsMemberByNickname(nickname)) {
+            throw new MemberProfileAlreadyExistException(nickname);
         }
 
-        if (queryMemberRepository.existsMemberByEmail(createDto.getEmail())) {
-            throw new MemberProfileAlreadyExistException(createDto.getEmail());
+        if (queryMemberRepository.existsMemberByEmail(email)) {
+            throw new MemberProfileAlreadyExistException(email);
         }
 
-        if (queryMemberRepository.existsMemberByPhone(createDto.getPhone())) {
-            throw new MemberProfileAlreadyExistException(createDto.getPhone());
+        if (queryMemberRepository.existsMemberByPhone(phone)) {
+            throw new MemberProfileAlreadyExistException(phone);
         }
     }
 

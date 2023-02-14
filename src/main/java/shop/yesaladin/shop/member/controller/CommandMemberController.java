@@ -26,6 +26,7 @@ import shop.yesaladin.shop.member.dto.MemberUnblockResponseDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateResponseDto;
 import shop.yesaladin.shop.member.dto.MemberWithdrawResponseDto;
+import shop.yesaladin.shop.member.dto.OauthMemberCreateRequestDto;
 import shop.yesaladin.shop.member.service.inter.CommandMemberService;
 
 /**
@@ -55,6 +56,25 @@ public class CommandMemberController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<MemberCreateResponseDto> signUpMember(@Valid @RequestBody MemberCreateRequestDto createDto) {
         MemberCreateResponseDto response = commandMemberService.create(createDto);
+        return ResponseDto.<MemberCreateResponseDto>builder()
+                .status(HttpStatus.CREATED)
+                .success(true)
+                .data(response)
+                .build();
+    }
+
+    /**
+     * OAuth2 회원 가입을 위한 Post 요청을 처리 하는 기능 입니다.
+     *
+     * @param createDto OAuth2 회원 가입을 위한 요청 파라미터의 모음입니다.
+     * @return ResponseEntity로 회원 등록 성공 이후 등록된 일부 데이터들을 반환합니다.
+     * @author 송학현
+     * @since 1.0
+     */
+    @PostMapping("/oauth2")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseDto<MemberCreateResponseDto> signUpOauthMember(@Valid @RequestBody OauthMemberCreateRequestDto createDto) {
+        MemberCreateResponseDto response = commandMemberService.createOauth(createDto);
         return ResponseDto.<MemberCreateResponseDto>builder()
                 .status(HttpStatus.CREATED)
                 .success(true)

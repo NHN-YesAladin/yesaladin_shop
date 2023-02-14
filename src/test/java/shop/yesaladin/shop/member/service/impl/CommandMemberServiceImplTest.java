@@ -15,7 +15,6 @@ import org.junit.platform.commons.util.ReflectionUtils;
 import org.mockito.Mockito;
 import org.springframework.context.ApplicationEventPublisher;
 import shop.yesaladin.common.exception.ClientException;
-import shop.yesaladin.shop.coupon.service.inter.GiveCouponService;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberGrade;
 import shop.yesaladin.shop.member.domain.model.Role;
@@ -31,6 +30,7 @@ import shop.yesaladin.shop.member.dto.MemberUnblockResponseDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateResponseDto;
 import shop.yesaladin.shop.member.dto.MemberWithdrawResponseDto;
+import shop.yesaladin.shop.member.dto.OauthMemberCreateRequestDto;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
 import shop.yesaladin.shop.member.dummy.MemberRoleDummy;
 import shop.yesaladin.shop.member.dummy.RoleDummy;
@@ -229,6 +229,56 @@ class CommandMemberServiceImplTest {
 
         //when
         MemberCreateResponseDto actualMember = service.create(createDto);
+
+        //then
+        assertThat(actualMember.getLoginId()).isEqualTo(loginId);
+        assertThat(actualMember.getNickname()).isEqualTo(nickname);
+        assertThat(actualMember.getMemberGrade()).isEqualTo(MemberGrade.WHITE.getName());
+        assertThat(actualMember.getRole()).isEqualTo("ROLE_MEMBER");
+
+        verify(queryRoleRepository, times(1)).findById(roleId);
+        verify(commandMemberRoleRepository, times(1)).save(any());
+        verify(commandMemberRepository, times(1)).save(member);
+    }
+
+    @Test
+    @DisplayName("OAuth2 회원 등록 성공")
+    void createOauth() throws Exception {
+        //given
+        String loginId = "loginId";
+        String nickname = "nickname";
+        String email = "test@test.com";
+
+        int roleId = 1;
+
+        OauthMemberCreateRequestDto createDto = Mockito.mock(OauthMemberCreateRequestDto.class);
+        Member member = Member.builder()
+                .loginId(loginId)
+                .nickname(nickname)
+                .email(email)
+                .memberGrade(MemberGrade.WHITE)
+                .build();
+
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
+                .thenReturn(Optional.empty());
+        Mockito.when(queryMemberRepository.findMemberByNickname(nickname))
+                .thenReturn(Optional.empty());
+        Mockito.when(queryMemberRepository.findMemberByEmail(email))
+                .thenReturn(Optional.empty());
+        // 1번 Role 빼오기
+        Role role = RoleDummy.dummyWithId();
+
+        Mockito.when(queryRoleRepository.findById(roleId)).thenReturn(Optional.of(role));
+        // memberRole 등록
+        Mockito.when(commandMemberRoleRepository.save(any()))
+                .thenReturn(MemberRoleDummy.dummy(member, role));
+
+        Mockito.when(createDto.toEntity()).thenReturn(member);
+
+        Mockito.when(commandMemberRepository.save(member)).thenReturn(member);
+
+        //when
+        MemberCreateResponseDto actualMember = service.createOauth(createDto);
 
         //then
         assertThat(actualMember.getLoginId()).isEqualTo(loginId);
