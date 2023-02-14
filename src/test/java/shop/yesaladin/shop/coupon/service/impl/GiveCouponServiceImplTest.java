@@ -27,11 +27,11 @@ import shop.yesaladin.coupon.message.CouponGiveRequestMessage;
 import shop.yesaladin.coupon.message.CouponGiveRequestResponseMessage;
 import shop.yesaladin.shop.config.GatewayProperties;
 import shop.yesaladin.shop.coupon.adapter.kafka.CouponProducer;
-import shop.yesaladin.shop.coupon.adapter.websocket.CouponWebsocketMessageSender;
 import shop.yesaladin.shop.coupon.domain.model.MemberCoupon;
 import shop.yesaladin.shop.coupon.domain.repository.CommandMemberCouponRepository;
 import shop.yesaladin.shop.coupon.domain.repository.QueryMemberCouponRepository;
 import shop.yesaladin.shop.coupon.dto.CouponGroupAndLimitDto;
+import shop.yesaladin.shop.coupon.service.inter.CouponWebsocketMessageSendService;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.dto.MemberDto;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
@@ -48,7 +48,7 @@ class GiveCouponServiceImplTest {
     private RestTemplate restTemplate;
     private RedisTemplate<String, String> redisTemplate;
     private GiveCouponServiceImpl giveCouponService;
-    private CouponWebsocketMessageSender websocketMessageSender;
+    private CouponWebsocketMessageSendService websocketMessageSender;
     private ValueOperations<String, String> valueOperations = Mockito.mock(ValueOperations.class);
 
     @BeforeEach
@@ -61,7 +61,7 @@ class GiveCouponServiceImplTest {
         queryMemberService = Mockito.mock(QueryMemberService.class);
         restTemplate = Mockito.mock(RestTemplate.class);
         redisTemplate = Mockito.mock(RedisTemplate.class);
-        websocketMessageSender = Mockito.mock(CouponWebsocketMessageSender.class);
+        websocketMessageSender = Mockito.mock(CouponWebsocketMessageSendService.class);
         giveCouponService = new GiveCouponServiceImpl(
                 gatewayProperties,
                 couponProducer,

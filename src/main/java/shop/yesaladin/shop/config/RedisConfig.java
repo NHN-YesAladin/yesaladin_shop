@@ -9,9 +9,13 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.PatternTopic;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import shop.yesaladin.shop.coupon.adapter.websocket.CouponGiveResultRedisSubscriber;
 
 /**
  * Redis 설정 클래스 입니다.
@@ -25,6 +29,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 public class RedisConfig {
 
     private final ObjectMapper objectMapper;
+    private final SocketProperties socketProperties;
 
     @Value("${spring.redis.host}")
     private String host;
@@ -87,5 +92,35 @@ public class RedisConfig {
         return new GenericJackson2JsonRedisSerializer(objectMapper);
     }
 
+    /**
+     * 레디스의 pub/sub 기능을 이용하기 위해 sub 등록
+     *
+     * @param connectionFactory RedisConnectFactory
+     * @param subscriber        Subscriber
+     * @return RedisMessageListenerFactory
+     */
+    @Bean
+    public RedisMessageListenerContainer redisMessageListenerContainer(
+            RedisConnectionFactory connectionFactory, CouponGiveResultRedisSubscriber subscriber
+    ) {
+        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
+        container.addMessageListener(
+                listenerAdapter(subscriber),
+                new PatternTopic(socketProperties.getCouponGiveResultTopicPrefix())
+        );
+        container.setConnectionFactory(connectionFactory);
+        return container;
+    }
+
+    /**
+     * 레디스의 pub/sub 기능을 이용하기 위해 listenerAdapter 등록
+     *
+     * @param subscriber Subscriber
+     * @return RedisMessageListenerFactory
+     */
+    @Bean
+    public MessageListenerAdapter listenerAdapter(CouponGiveResultRedisSubscriber subscriber) {
+        return new MessageListenerAdapter(subscriber, "onMessage");
+    }
 
 }
