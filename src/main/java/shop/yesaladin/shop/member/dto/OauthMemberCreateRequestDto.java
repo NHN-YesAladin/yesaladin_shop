@@ -34,7 +34,7 @@ public class OauthMemberCreateRequestDto {
     private String nickname;
 
     @NotBlank
-    @Size(min = 1, max = 15)
+    @Size(min = 1, max = 50)
     private String loginId;
 
     @Email
