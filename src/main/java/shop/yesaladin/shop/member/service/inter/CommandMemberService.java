@@ -8,6 +8,7 @@ import shop.yesaladin.shop.member.dto.MemberUnblockResponseDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateResponseDto;
 import shop.yesaladin.shop.member.dto.MemberWithdrawResponseDto;
+import shop.yesaladin.shop.member.dto.OauthMemberCreateRequestDto;
 
 /**
  * Create, Update, Delete 를 Controller Layer에서 사용하기 위한 service interface
@@ -26,6 +27,16 @@ public interface CommandMemberService {
      * @since 1.0
      */
     MemberCreateResponseDto create(MemberCreateRequestDto createDto);
+
+    /**
+     * OAuth2 회원을 등록하기 위한 기능 입니다. 회원 등록 후 회원가입 쿠폰 요청 메시지를 발행합니다.
+     *
+     * @param createDto OAuth2 회원 등록 요청 dto
+     * @return 회원 등록 결과를 반환할 dto
+     * @author 송학현
+     * @since 1.0
+     */
+    MemberCreateResponseDto createOauth(OauthMemberCreateRequestDto createDto);
 
     /**
      * 회원 정보 수정을 위한 기능입니다.
