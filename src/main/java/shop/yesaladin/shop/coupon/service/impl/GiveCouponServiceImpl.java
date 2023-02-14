@@ -304,11 +304,13 @@ public class GiveCouponServiceImpl implements GiveCouponService {
 
         String openDateTimeStr = redisTemplate.opsForHash().get(MONTHLY_POLICY_KEY, MONTHLY_COUPON_OPEN_DATE_TIME_KEY).toString();
 
+        requestDateTime = requestDateTime.plusHours(9);     // UTC to KST
         LocalDateTime openDateTime = LocalDateTime.parse(openDateTimeStr,
                 DateTimeFormatter.ISO_LOCAL_DATE_TIME
         );
 
         log.info("==== monthly coupon open time : {} ====", openDateTime);
+        log.info("==== monthly coupon issue request time : {} ====", requestDateTime);
 
         if (requestDateTime.isAfter(LocalDateTime.now())
                 || requestDateTime.isBefore(openDateTime)) {
