@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
 import shop.yesaladin.coupon.code.TriggerTypeCode;
 
 /**
@@ -21,6 +22,6 @@ public class CouponGiveRequestDto {
 
     private TriggerTypeCode triggerTypeCode;
     private Long couponId;
-    @DateTimeFormat(pattern = "yy- MM-dd HH:mm")
+    @DateTimeFormat(iso = ISO.DATE_TIME)
     private LocalDateTime requestDateTime;
 }
