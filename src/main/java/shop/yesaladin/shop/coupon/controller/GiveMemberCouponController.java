@@ -39,7 +39,8 @@ public class GiveMemberCouponController {
         RequestIdOnlyDto response = giveCouponService.sendCouponGiveRequest(
                 memberId,
                 requestDto.getTriggerTypeCode(),
-                requestDto.getCouponId()
+                requestDto.getCouponId(),
+                requestDto.getRequestDateTime()
         );
 
         return ResponseDto.<RequestIdOnlyDto>builder()

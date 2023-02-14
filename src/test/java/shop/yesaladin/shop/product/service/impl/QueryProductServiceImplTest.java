@@ -116,6 +116,20 @@ class QueryProductServiceImplTest {
     }
 
     @Test
+    @DisplayName("상품 ISBN 존재여부 성공")
+    void existsByIsbn_success() {
+        // given
+        String isbn = "0000000000001";
+        Mockito.when(queryProductRepository.existsByIsbn(isbn)).thenReturn(false);
+
+        // when
+        Boolean response = service.existsByIsbn(isbn);
+
+        // then
+        assertThat(response).isFalse();
+    }
+
+    @Test
     @DisplayName("상품 ID로 수량 조회 성공")
     void findQuantityById_success() {
         // given

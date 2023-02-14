@@ -1,6 +1,7 @@
 package shop.yesaladin.shop.coupon.service.impl;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,11 +28,11 @@ import shop.yesaladin.coupon.message.CouponGiveRequestMessage;
 import shop.yesaladin.coupon.message.CouponGiveRequestResponseMessage;
 import shop.yesaladin.shop.config.GatewayProperties;
 import shop.yesaladin.shop.coupon.adapter.kafka.CouponProducer;
-import shop.yesaladin.shop.coupon.adapter.websocket.CouponWebsocketMessageSender;
 import shop.yesaladin.shop.coupon.domain.model.MemberCoupon;
 import shop.yesaladin.shop.coupon.domain.repository.CommandMemberCouponRepository;
 import shop.yesaladin.shop.coupon.domain.repository.QueryMemberCouponRepository;
 import shop.yesaladin.shop.coupon.dto.CouponGroupAndLimitDto;
+import shop.yesaladin.shop.coupon.service.inter.CouponWebsocketMessageSendService;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.dto.MemberDto;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
@@ -48,7 +49,7 @@ class GiveCouponServiceImplTest {
     private RestTemplate restTemplate;
     private RedisTemplate<String, String> redisTemplate;
     private GiveCouponServiceImpl giveCouponService;
-    private CouponWebsocketMessageSender websocketMessageSender;
+    private CouponWebsocketMessageSendService websocketMessageSender;
     private ValueOperations<String, String> valueOperations = Mockito.mock(ValueOperations.class);
 
     @BeforeEach
@@ -61,7 +62,7 @@ class GiveCouponServiceImplTest {
         queryMemberService = Mockito.mock(QueryMemberService.class);
         restTemplate = Mockito.mock(RestTemplate.class);
         redisTemplate = Mockito.mock(RedisTemplate.class);
-        websocketMessageSender = Mockito.mock(CouponWebsocketMessageSender.class);
+        websocketMessageSender = Mockito.mock(CouponWebsocketMessageSendService.class);
         giveCouponService = new GiveCouponServiceImpl(
                 gatewayProperties,
                 couponProducer,
@@ -104,7 +105,7 @@ class GiveCouponServiceImplTest {
         )).thenReturn(false);
 
         // when
-        giveCouponService.sendCouponGiveRequest(memberId, TriggerTypeCode.SIGN_UP, null);
+        giveCouponService.sendCouponGiveRequest(memberId, TriggerTypeCode.SIGN_UP, null, LocalDateTime.now());
 
         // then
         ArgumentCaptor<CouponGiveRequestMessage> requestMessageCaptor = ArgumentCaptor.forClass(
@@ -155,7 +156,7 @@ class GiveCouponServiceImplTest {
         )).thenReturn(false);
 
         // when
-        giveCouponService.sendCouponGiveRequest(memberId, TriggerTypeCode.SIGN_UP, null);
+        giveCouponService.sendCouponGiveRequest(memberId, TriggerTypeCode.SIGN_UP, null, LocalDateTime.now());
 
         // then
         ArgumentCaptor<CouponGiveRequestMessage> requestMessageCaptor = ArgumentCaptor.forClass(
@@ -210,7 +211,7 @@ class GiveCouponServiceImplTest {
         Assertions.assertThatThrownBy(() -> giveCouponService.sendCouponGiveRequest(
                 memberId,
                 TriggerTypeCode.SIGN_UP,
-                null
+                null, LocalDateTime.now()
         )).isInstanceOf(ClientException.class);
     }
 
@@ -232,7 +233,7 @@ class GiveCouponServiceImplTest {
         Assertions.assertThatThrownBy(() -> giveCouponService.sendCouponGiveRequest(
                 memberId,
                 TriggerTypeCode.SIGN_UP,
-                null
+                null, LocalDateTime.now()
         )).isInstanceOf(ClientException.class);
     }
 
@@ -254,7 +255,7 @@ class GiveCouponServiceImplTest {
         Assertions.assertThatThrownBy(() -> giveCouponService.sendCouponGiveRequest(
                 memberId,
                 TriggerTypeCode.SIGN_UP,
-                null
+                null, LocalDateTime.now()
         )).isInstanceOf(ServerException.class);
     }
 

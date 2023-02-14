@@ -157,6 +157,47 @@ class QueryProductControllerTest {
 
     @WithMockUser
     @Test
+    @DisplayName("상품 ISBN 중복 체크 성공")
+    void existsByIsbn_success() throws Exception {
+        // given
+        String isbn = "0000000000001";
+        Mockito.when(service.existsByIsbn(isbn)).thenReturn(false);
+
+        // when
+        ResultActions result = mockMvc.perform(get("/v1/products/check/{isbn}", isbn)
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(200)));
+
+        verify(service, times(1)).existsByIsbn(isbn);
+
+        // docs
+        result.andDo(document(
+                "exists-by-isbn",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                pathParameters(parameterWithName("isbn").description("ISBN")),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data").type(JsonFieldType.BOOLEAN)
+                                .description("ISBN 존재여부")
+                                .optional(),
+                        fieldWithPath("errorMessages").type(JsonFieldType.NULL)
+                                .description("에러 메세지 NULL")
+                )
+        ));
+    }
+
+    @WithMockUser
+    @Test
     @DisplayName("상품 ID로 수량 조회 성공")
     void findQuantityById_success() throws Exception {
         // given
