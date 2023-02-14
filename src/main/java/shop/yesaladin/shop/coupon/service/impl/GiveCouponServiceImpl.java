@@ -141,7 +141,7 @@ public class GiveCouponServiceImpl implements GiveCouponService {
             tryGiveCouponToMember(responseMessage, memberId);
             couponProducer.produceGivenResultMessage(resultBuilder.success(true).build());
 
-            couponWebsocketMessageSendService.sendGiveCouponResultMessage(new CouponGiveResultDto(
+            couponWebsocketMessageSendService.trySendGiveCouponResultMessage(new CouponGiveResultDto(
                     responseMessage.getRequestId(),
                     responseMessage.isSuccess(),
                     responseMessage.isSuccess() ? "발급이 완료되었습니다." : responseMessage.getErrorMessage()
