@@ -12,7 +12,6 @@ import shop.yesaladin.shop.category.service.inter.QueryProductCategoryService;
 import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
-
 import shop.yesaladin.shop.product.dto.*;
 import shop.yesaladin.shop.product.service.inter.QueryProductService;
 import shop.yesaladin.shop.publish.dto.PublishResponseDto;
@@ -64,6 +63,15 @@ public class QueryProductServiceImpl implements QueryProductService {
             );
         }
         return productOnlyTitleDto;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public Boolean existsByIsbn(String isbn) {
+        return queryProductRepository.existsByIsbn(isbn);
     }
 
     /**

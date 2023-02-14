@@ -9,6 +9,7 @@ import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.ReflectionUtils;
@@ -103,6 +104,20 @@ class QueryDslProductRepositoryTest {
         // then
         assertThat(response).isNotNull();
         assertThat(response.getTitle()).isEqualTo(product1.getTitle());
+    }
+
+    @Disabled
+    @Test
+    @DisplayName("상품 ISBN 존재 여부 조회")
+    void existsByIsbn() {
+        // given
+        entityManager.persist(product1);
+
+        // when
+        Boolean response = repository.existsByIsbn(ISBN1);
+
+        // then
+        assertThat(response).isFalse();
     }
 
     @Test
