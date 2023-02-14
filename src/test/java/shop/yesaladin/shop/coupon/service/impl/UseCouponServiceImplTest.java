@@ -173,4 +173,22 @@ class UseCouponServiceImplTest {
         Assertions.assertThatThrownBy(() -> useCouponService.useCoupon(responseMessage))
                 .isInstanceOf(ClientException.class);
     }
+
+    @Test
+    @DisplayName("쿠폰 사용 취소 메시지를 발행한다.")
+    void cancelUseCouponTest() {
+        // given
+        List<String> couponCodes = List.of("1", "2", "3");
+
+        // when
+        List<CouponCodeOnlyDto> actual = useCouponService.cancelCouponUse(couponCodes);
+
+        // then
+        Mockito.verify(couponProducer, Mockito.times(1))
+                .produceUseRequestCancelMessage(Mockito.argThat(arg -> arg.getCouponCodes()
+                        .equals(couponCodes)));
+        Assertions.assertThat(actual.get(0).getCouponCode()).isEqualTo(couponCodes.get(0));
+        Assertions.assertThat(actual.get(1).getCouponCode()).isEqualTo(couponCodes.get(1));
+        Assertions.assertThat(actual.get(2).getCouponCode()).isEqualTo(couponCodes.get(2));
+    }
 }
