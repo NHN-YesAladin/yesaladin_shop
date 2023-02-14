@@ -3,6 +3,7 @@ package shop.yesaladin.shop.category.service.impl;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.common.code.ErrorCode;
@@ -33,12 +34,12 @@ public class CommandCategoryServiceImpl implements CommandCategoryService {
 
 
     /**
-     *  {@inheritDoc}
-     *
+     * {@inheritDoc}
      */
     @Transactional
     @Override
     public CategoryResponseDto create(CategoryRequestDto createRequest) {
+
         if (Objects.nonNull(createRequest.getParentId())) {
             return saveCategoryByAddingChildId(createRequest);
         }
@@ -168,8 +169,7 @@ public class CommandCategoryServiceImpl implements CommandCategoryService {
 
 
     /**
-     *  {@inheritDoc}
-     *
+     * {@inheritDoc}
      */
     @Transactional
     @Override
@@ -177,8 +177,10 @@ public class CommandCategoryServiceImpl implements CommandCategoryService {
         //1차 카테고리 순서 변경
         Long parentId = requestList.get(0).getParentId();
         if (Objects.isNull(parentId)) {
-            List<Category> categories = queryCategoryRepository.findCategories(null,
-                    Category.DEPTH_PARENT);
+            List<Category> categories = queryCategoryRepository.findCategories(
+                    null,
+                    Category.DEPTH_PARENT
+            );
             for (CategoryModifyRequestDto request : requestList) {
                 Long id = request.getId();
                 Category category = categories.stream()
