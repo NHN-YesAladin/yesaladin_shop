@@ -9,11 +9,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.exception.ClientException;
+import shop.yesaladin.shop.coupon.service.inter.QueryMemberCouponService;
+import shop.yesaladin.shop.coupon.service.inter.UseCouponService;
 import shop.yesaladin.shop.member.service.inter.QueryMemberAddressService;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.order.domain.model.MemberOrder;
@@ -33,7 +34,6 @@ import shop.yesaladin.shop.order.dto.OrderMemberCreateRequestDto;
 import shop.yesaladin.shop.order.dto.OrderNonMemberCreateRequestDto;
 import shop.yesaladin.shop.order.dto.OrderSubscribeCreateRequestDto;
 import shop.yesaladin.shop.order.dto.OrderUpdateResponseDto;
-import shop.yesaladin.shop.order.service.inter.CommandOrderCouponService;
 import shop.yesaladin.shop.order.service.inter.CommandOrderService;
 import shop.yesaladin.shop.point.domain.model.PointReasonCode;
 import shop.yesaladin.shop.point.dto.PointHistoryRequestDto;
@@ -60,14 +60,14 @@ public class CommandOrderServiceImpl implements CommandOrderService {
 
     private final CommandOrderStatusChangeLogRepository commandOrderStatusChangeLogRepository;
     private final CommandOrderProductRepository commandOrderProductRepository;
-    private final CommandOrderCouponService commandOrderCouponService;
     private final CommandPointHistoryService commandPointHistoryService;
     private final CommandProductService commandProductService;
     private final QueryMemberAddressService queryMemberAddressService;
+    private final QueryMemberCouponService queryMemberCouponService;
     private final QueryProductService queryProductService;
     private final QueryMemberService queryMemberService;
 
-    private final KafkaTemplate<String, List<String>> kafkaTemplate;
+    private final UseCouponService useCouponService;
     private final Clock clock;
 
     /**
@@ -98,20 +98,23 @@ public class CommandOrderServiceImpl implements CommandOrderService {
             OrderMemberCreateRequestDto request,
             String loginId
     ) {
+        queryMemberCouponService.getMemberCouponSummaryListByCouponCodes(
+                loginId,
+                request.getOrderCoupons()
+        );
+
         LocalDateTime orderDateTime = LocalDateTime.now(clock);
         Map<String, Product> products = commandProductService.orderProducts(request.getOrderProducts());
 
         Order savedOrder = createMemberOrder(request, orderDateTime, products, loginId);
 
         createOrderProduct(request, products, savedOrder);
-//        createOrderCoupon(request, savedOrder);
 
-//        createPointHistory(request.getUsePoint(), request.getSavePoint(), loginId);
+        createUsePointHistory(request.getUsePoint(), loginId);
 
         createOrderStatusChangeLog(orderDateTime, savedOrder);
 
-
-//        kafkaTemplate.send(topic, loginId, request.getOrderCoupons());
+        useCouponService.sendCouponUseRequest(loginId, request.getOrderCoupons());
 
         return OrderCreateResponseDto.fromEntity(savedOrder);
     }
@@ -125,14 +128,20 @@ public class CommandOrderServiceImpl implements CommandOrderService {
             OrderSubscribeCreateRequestDto request,
             String loginId
     ) {
+        queryMemberCouponService.getMemberCouponSummaryListByCouponCodes(
+                loginId,
+                request.getOrderCoupons()
+        );
+
         LocalDateTime orderDateTime = LocalDateTime.now(clock);
 
         Order savedOrder = creatSubscribe(request, orderDateTime, loginId);
 
-        createPointHistory(request.getUsePoint(), request.getSavePoint(), loginId);
-//        createOrderCoupon(request, savedOrder);
+        createUsePointHistory(request.getUsePoint(), loginId);
 
         createOrderStatusChangeLog(orderDateTime, savedOrder);
+
+        useCouponService.sendCouponUseRequest(loginId, request.getOrderCoupons());
 
         return OrderCreateResponseDto.fromEntity(savedOrder);
     }
@@ -240,29 +249,13 @@ public class CommandOrderServiceImpl implements CommandOrderService {
                 .forEach(commandOrderProductRepository::save);
     }
 
-    private void createPointHistory(long usePoint, long savePoint, String loginId) {
+    private void createUsePointHistory(long usePoint, String loginId) {
         if (usePoint != 0) {
             commandPointHistoryService.use(new PointHistoryRequestDto(
                     loginId,
                     usePoint,
                     PointReasonCode.USE_ORDER
             ));
-        }
-        if(savePoint != 0) {
-            commandPointHistoryService.save(new PointHistoryRequestDto(
-                    loginId,
-                    savePoint,
-                    PointReasonCode.SAVE_ORDER
-            ));
-        }
-    }
-
-    private void createOrderCoupon(OrderMemberCreateRequestDto request, Order savedOrder) {
-        if (Objects.nonNull(request.getOrderCoupons())) {
-            commandOrderCouponService.createOrderCoupons(
-                    savedOrder.getId(),
-                    request.getOrderCoupons()
-            );
         }
     }
 

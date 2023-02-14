@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,8 +16,6 @@ import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.shop.common.aspect.annotation.LoginId;
 import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
-import shop.yesaladin.shop.coupon.dto.CouponOrderSheetRequestDto;
-import shop.yesaladin.shop.coupon.dto.CouponOrderSheetResponseDto;
 import shop.yesaladin.shop.order.dto.OrderDetailsResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSheetRequestDto;
 import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
@@ -81,8 +78,6 @@ public class QueryOrderController {
                 queryOrderService.getNonMemberOrderSheetData(products)
                 : queryOrderService.getMemberOrderSheetData(products, loginId);
 
-        log.error("coupon list : : {}", response.getMemberCoupons());
-
         return ResponseDto.<OrderSheetResponseDto>builder()
                 .success(true)
                 .status(HttpStatus.OK)
@@ -102,29 +97,6 @@ public class QueryOrderController {
                 orderNumber);
 
         return ResponseDto.<OrderDetailsResponseDto>builder()
-                .success(true)
-                .status(HttpStatus.OK)
-                .data(response)
-                .build();
-    }
-
-    /**
-     * 상품에 쿠폰을 적용합니다.
-     *
-     * @param loginId 회원의 아이디
-     * @param request 상품 및 쿠폰 정보
-     * @return 상품에 쿠폰을 적용한 정보
-     * @author 최예린
-     * @since 1.0
-     */
-    @PostMapping
-    public ResponseDto<CouponOrderSheetResponseDto> calculateCoupon(
-            @LoginId(required = true) String loginId,
-            @RequestBody CouponOrderSheetRequestDto request
-    ) {
-        CouponOrderSheetResponseDto response = queryOrderService.calculateCoupons(loginId, request);
-
-        return ResponseDto.<CouponOrderSheetResponseDto>builder()
                 .success(true)
                 .status(HttpStatus.OK)
                 .data(response)

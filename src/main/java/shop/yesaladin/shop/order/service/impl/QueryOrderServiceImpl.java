@@ -20,8 +20,6 @@ import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.common.exception.PageOffsetOutOfBoundsException;
-import shop.yesaladin.shop.coupon.dto.CouponOrderSheetRequestDto;
-import shop.yesaladin.shop.coupon.dto.CouponOrderSheetResponseDto;
 import shop.yesaladin.shop.coupon.dto.MemberCouponSummaryDto;
 import shop.yesaladin.shop.coupon.service.inter.QueryMemberCouponService;
 import shop.yesaladin.shop.member.domain.model.Member;
@@ -55,7 +53,6 @@ import shop.yesaladin.shop.payment.dto.PaymentResponseDto;
 import shop.yesaladin.shop.payment.service.inter.QueryPaymentService;
 import shop.yesaladin.shop.point.service.inter.QueryPointHistoryService;
 import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
-import shop.yesaladin.shop.product.dto.ProductWithCategoryResponseDto;
 import shop.yesaladin.shop.product.service.inter.QueryProductService;
 
 /**
@@ -198,13 +195,13 @@ public class QueryOrderServiceImpl implements QueryOrderService {
     }
 
     private List<MemberCouponSummaryDto> getMemberCoupons(
-            String loginId, int totalPage
+            String loginId, int totalCount
     ) {
         int offset = 20;
         List<MemberCouponSummaryDto> memberCoupons = new ArrayList<>();
 
         PaginatedResponseDto<MemberCouponSummaryDto> coupons;
-        for (int i = 0; i < totalPage; i++) {
+        for (int i = 0; i <= totalCount / 20; i++) {
             coupons = queryMemberCouponService.getMemberCouponSummaryList(
                     PageRequest.of(i, offset),
                     loginId,
@@ -317,97 +314,6 @@ public class QueryOrderServiceImpl implements QueryOrderService {
         responseDto.calculateAmounts();
 
         return responseDto;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public CouponOrderSheetResponseDto calculateCoupons(
-            String loginId,
-            CouponOrderSheetRequestDto request
-    ) {
-        //상품 불러오기
-        ProductWithCategoryResponseDto product = queryProductService.getByIsbn(request.getIsbn());
-
-        //쿠폰을 불러오기
-        List<String> couponCodes = request.getDuplicateCouponCode();
-        if (Objects.nonNull(request.getCouponCode())) {
-            couponCodes.add(request.getCouponCode());
-        }
-        //쿠폰 사용 가능 검증
-        List<MemberCouponSummaryDto> memberCoupons = tryGetAvailableMemberCoupons(
-                loginId,
-                couponCodes
-        );
-        //상품의 판매가
-        long saleAmount = product.getActualPrice() / ((product.isSeparatelyDiscount()
-                ? product.getDiscountRate() : product.getTotalDiscountRate().getDiscountRate()));
-
-        //상품의 실판매가
-        long couponAppliedAmount = getCouponAppliedAmount(
-                request.getCouponCode(),
-                product,
-                memberCoupons,
-                saleAmount
-        );
-        //적립 예정 포인트
-        long expectedPoint = getExpectedPoint(product, saleAmount, couponAppliedAmount);
-
-        return new CouponOrderSheetResponseDto(
-                product.getIsbn(),
-                couponCodes,
-                couponAppliedAmount,
-                expectedPoint
-        );
-    }
-
-    private long getExpectedPoint(
-            ProductWithCategoryResponseDto product,
-            long discountAmount,
-            long couponAppliedAmount
-    ) {
-        return (product.getProductSavingMethodCode().getId() == 2) ?
-                discountAmount / (100 - product.getGivenPointRate()) * 100 :
-                couponAppliedAmount / (100 - product.getGivenPointRate()) * 100;
-    }
-
-    private long getCouponAppliedAmount(
-            String couponCode,
-            ProductWithCategoryResponseDto product,
-            List<MemberCouponSummaryDto> memberCoupons,
-            long discountAmount
-    ) {
-        Map<String, MemberCouponSummaryDto> couponMap = memberCoupons.stream()
-                .collect(Collectors.toMap(MemberCouponSummaryDto::getCouponCode, coupon -> coupon));
-
-        long couponAppliedAmount = discountAmount;
-        //일반 쿠폰 적용
-        if (Objects.nonNull(couponCode)) {
-            couponAppliedAmount = couponMap.get(couponCode).discount(product, discountAmount);
-        }
-        //중복 쿠폰
-        for (MemberCouponSummaryDto memberCoupon : memberCoupons) {
-            couponAppliedAmount = memberCoupon.discount(product, couponAppliedAmount);
-        }
-        return couponAppliedAmount;
-    }
-
-    private List<MemberCouponSummaryDto> tryGetAvailableMemberCoupons(
-            String loginId,
-            List<String> couponCodes
-    ) {
-        List<MemberCouponSummaryDto> memberCoupons = queryMemberCouponService.getByCouponCodes(
-                loginId,
-                couponCodes
-        );
-
-        if (memberCoupons.size() != couponCodes.size()) {
-            throw new ClientException(ErrorCode.INVALID_COUPON_DATA, "Invalid coupon is used.");
-        }
-
-        return memberCoupons;
     }
 
     private void setPaymentToResponseByOrderId(OrderDetailsResponseDto responseDto, Order order) {

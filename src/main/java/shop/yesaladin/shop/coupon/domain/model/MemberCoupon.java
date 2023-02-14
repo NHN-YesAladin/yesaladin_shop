@@ -53,9 +53,18 @@ public class MemberCoupon {
     @Column(nullable = false)
     private LocalDate expirationDate;
 
+    /**
+     * 쿠폰을 사용합니다
+     *
+     * @author 김홍대
+     * @since 1.0
+     */
     public void use() {
         if (this.isUsed) {
-            throw new ClientException(ErrorCode.BAD_REQUEST, "Coupon already used. Coupon code : " + this.couponCode);
+            throw new ClientException(
+                    ErrorCode.BAD_REQUEST,
+                    "Coupon already used. Coupon code : " + this.couponCode
+            );
         }
         this.isUsed = true;
     }

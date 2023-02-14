@@ -35,14 +35,20 @@ public class CommandOrderCouponServiceImpl implements CommandOrderCouponService 
     @Override
     @Transactional
     public List<OrderCoupon> createOrderCoupons(Long orderId, List<String> couponCodes) {
+        //주문 확인
         MemberOrder memberOrder = (MemberOrder) queryOrderRepository.findById(orderId)
                 .orElseThrow(() -> new ClientException(
                         ErrorCode.ORDER_NOT_FOUND,
                         "Order not found with id : " + orderId
                 ));
+        //쿠폰 사용처리
+        List<MemberCoupon> memberCoupons = queryMemberCouponService.findByCouponCodes(couponCodes)
+                .stream().map(coupon -> {
+                    coupon.use();
+                    return coupon;
+                }).collect(Collectors.toList());
 
-        List<MemberCoupon> memberCoupons = queryMemberCouponService.findByCouponCodes(couponCodes);
-
+        //상품에 사용한 쿠폰 생성
         List<OrderCoupon> orderCoupons = memberCoupons.stream().map(memberCoupon -> {
             OrderCoupon orderCoupon = OrderCoupon.create(memberOrder, memberCoupon);
             return commandOrderCouponRepository.save(orderCoupon);
