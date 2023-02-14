@@ -21,7 +21,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(indexName = "products", writeTypeHint = WriteTypeHint.FALSE)
+@Document(indexName = "yesaladin_products", writeTypeHint = WriteTypeHint.FALSE)
 public class SearchedProduct {
 
     @Id

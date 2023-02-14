@@ -19,7 +19,7 @@ import org.springframework.data.elasticsearch.annotations.WriteTypeHint;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(indexName = "tag", writeTypeHint = WriteTypeHint.FALSE)
+@Document(indexName = "yesaladin_tag", writeTypeHint = WriteTypeHint.FALSE)
 public class SearchedTag {
     @Id
     @Field(name = "id")

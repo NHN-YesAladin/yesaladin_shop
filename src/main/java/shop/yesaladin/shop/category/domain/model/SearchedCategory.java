@@ -20,7 +20,7 @@ import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(indexName = "category", writeTypeHint = WriteTypeHint.FALSE)
+@Document(indexName = "yesaladin_category", writeTypeHint = WriteTypeHint.FALSE)
 public class SearchedCategory {
     @Id
     @Field(name = "id")
