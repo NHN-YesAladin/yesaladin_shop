@@ -57,6 +57,8 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 public class GiveCouponServiceImpl implements GiveCouponService {
 
     private static final String COUPON_GROUP_CODE_REQUEST_URL_PREFIX = "coupon-groups";
+    private static final String MONTHLY_POLICY_KEY = "monthlyCouponPolicy";
+    private static final String MONTHLY_COUPON_ID_KEY = "monthlyCouponId";
     private static final String MONTHLY_COUPON_OPEN_DATE_TIME_KEY = "monthlyCouponOpenDateTime";
 
     private final GatewayProperties gatewayProperties;
@@ -293,18 +295,20 @@ public class GiveCouponServiceImpl implements GiveCouponService {
      * @param requestDateTime 이달의 쿠폰 발행 요청 시간
      */
     private void checkMonthlyCouponIssueRequestTime(LocalDateTime requestDateTime) {
-        if (Boolean.FALSE.equals(redisTemplate.hasKey(MONTHLY_COUPON_OPEN_DATE_TIME_KEY))) {
+        if (Boolean.FALSE.equals(redisTemplate.opsForHash().hasKey(MONTHLY_POLICY_KEY, MONTHLY_COUPON_OPEN_DATE_TIME_KEY))) {
             throw new ClientException(
                     ErrorCode.NOT_FOUND,
-                    "Not found monthly coupon's open date time."
+                    "Not found any monthly coupon open date time."
             );
         }
 
-        String dateTime = redisTemplate.opsForValue().get(MONTHLY_COUPON_OPEN_DATE_TIME_KEY);
+        String openDateTimeStr = redisTemplate.opsForHash().get(MONTHLY_POLICY_KEY, MONTHLY_COUPON_OPEN_DATE_TIME_KEY).toString();
 
-        assert dateTime != null;
-        LocalDateTime openDateTime = LocalDateTime.parse(dateTime, DateTimeFormatter.ISO_DATE_TIME);
-        log.info("==== monthly coupon open time : {} ====", dateTime);
+        LocalDateTime openDateTime = LocalDateTime.parse(openDateTimeStr,
+                DateTimeFormatter.ISO_LOCAL_DATE_TIME
+        );
+
+        log.info("==== monthly coupon open time : {} ====", openDateTime);
 
         if (requestDateTime.isAfter(LocalDateTime.now())
                 || requestDateTime.isBefore(openDateTime)) {
