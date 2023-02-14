@@ -16,5 +16,12 @@ public interface CouponWebsocketMessageSendService {
      *
      * @param resultDto 전송할 메시지
      */
-    void sendGiveCouponResultMessage(CouponGiveResultDto resultDto);
+    void trySendGiveCouponResultMessage(CouponGiveResultDto resultDto);
+
+    /**
+     * 소켓 연결 정보를 등록합니다.
+     *
+     * @param requestId 연결된 클라이언트의 requestId
+     */
+    void registerConnection(String requestId);
 }
