@@ -5,6 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.common.exception.PageOffsetOutOfBoundsException;
+import shop.yesaladin.shop.coupon.dto.CouponOrderSheetRequestDto;
+import shop.yesaladin.shop.coupon.dto.CouponOrderSheetResponseDto;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
@@ -145,7 +147,7 @@ public interface QueryOrderService {
      * @since 1.0
      */
     Page<OrderSummaryResponseDto> getHiddenOrderByLoginId(String loginId, Pageable pageable);
-    
+
     /**
      * 주문 상세 정보를 위한 조회
      *
@@ -154,4 +156,14 @@ public interface QueryOrderService {
      */
     OrderDetailsResponseDto getDetailsDtoByOrderNumber(String orderNumber);
 
+    /**
+     * 주문 상품에 쿠폰을 적용합니다.
+     *
+     * @param loginId 회원의 아이디
+     * @param request 상품과 쿠폰
+     * @return 상품의 총 할인가
+     * @author 최예린
+     * @since 1.0
+     */
+    CouponOrderSheetResponseDto calculateCoupons(String loginId, CouponOrderSheetRequestDto request);
 }

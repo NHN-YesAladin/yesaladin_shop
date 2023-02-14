@@ -34,7 +34,8 @@ public class QueryMemberCouponController {
             @RequestParam(defaultValue = "true") boolean usable
     ) {
 
-        PaginatedResponseDto<MemberCouponSummaryDto> memberCouponSummaryList = queryMemberCouponService.getMemberCouponSummaryList(pageable,
+        PaginatedResponseDto<MemberCouponSummaryDto> memberCouponSummaryList = queryMemberCouponService.getMemberCouponSummaryList(
+                pageable,
                 loginId,
                 usable
         );

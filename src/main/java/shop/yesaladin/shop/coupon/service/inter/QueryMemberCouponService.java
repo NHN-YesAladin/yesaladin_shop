@@ -37,4 +37,13 @@ public interface QueryMemberCouponService {
      * @since 1.0
      */
     List<MemberCoupon> findByCouponCodes(List<String> couponCodes);
+
+    /**
+     * 쿠폰의 코드를 통해 쿠폰을 조회합니다.
+     *
+     * @param couponCodes 쿠폰 코드 리스트
+     * @author 최예린
+     * @since 1.0
+     */
+    List<MemberCouponSummaryDto> getByCouponCodes(String loginId, List<String> couponCodes);
 }

@@ -20,6 +20,8 @@ import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.common.exception.PageOffsetOutOfBoundsException;
+import shop.yesaladin.shop.coupon.dto.CouponOrderSheetRequestDto;
+import shop.yesaladin.shop.coupon.dto.CouponOrderSheetResponseDto;
 import shop.yesaladin.shop.coupon.dto.MemberCouponSummaryDto;
 import shop.yesaladin.shop.coupon.service.inter.QueryMemberCouponService;
 import shop.yesaladin.shop.member.domain.model.Member;
@@ -53,6 +55,7 @@ import shop.yesaladin.shop.payment.dto.PaymentResponseDto;
 import shop.yesaladin.shop.payment.service.inter.QueryPaymentService;
 import shop.yesaladin.shop.point.service.inter.QueryPointHistoryService;
 import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
+import shop.yesaladin.shop.product.dto.ProductWithCategoryResponseDto;
 import shop.yesaladin.shop.product.service.inter.QueryProductService;
 
 /**
@@ -111,7 +114,8 @@ public class QueryOrderServiceImpl implements QueryOrderService {
         LocalDate endDate = queryDto.getEndDateOrDefaultValue(clock);
 
         checkRequestedOffsetInBounds(startDate, endDate, memberId, pageable);
-        return queryOrderRepository.findAllOrdersInPeriodByMemberId(startDate,
+        return queryOrderRepository.findAllOrdersInPeriodByMemberId(
+                startDate,
                 endDate,
                 memberId,
                 pageable
@@ -138,7 +142,8 @@ public class QueryOrderServiceImpl implements QueryOrderService {
     @Override
     @Transactional(readOnly = true)
     public OrderSheetResponseDto getNonMemberOrderSheetData(OrderSheetRequestDto request) {
-        List<ProductOrderSheetResponseDto> orderProducts = getProductOrder(request.getIsbn(),
+        List<ProductOrderSheetResponseDto> orderProducts = getProductOrder(
+                request.getIsbn(),
                 request.getQuantity()
         );
         return new OrderSheetResponseDto(orderProducts);
@@ -163,15 +168,18 @@ public class QueryOrderServiceImpl implements QueryOrderService {
         MemberOrderSheetResponseDto member = queryMemberService.getMemberForOrder(loginId);
         List<MemberAddressResponseDto> memberAddress = queryMemberAddressService.getByLoginId(
                 loginId);
-        List<ProductOrderSheetResponseDto> orderProducts = getProductOrder(request.getIsbn(),
+        List<ProductOrderSheetResponseDto> orderProducts = getProductOrder(
+                request.getIsbn(),
                 request.getQuantity()
         );
 
-        List<MemberCouponSummaryDto> memberCoupons = getMemberCoupons(loginId,
+        List<MemberCouponSummaryDto> memberCoupons = getMemberCoupons(
+                loginId,
                 member.getCouponCount()
         );
 
-        return new OrderSheetResponseDto(member,
+        return new OrderSheetResponseDto(
+                member,
                 queryPointHistoryService.getMemberPoint(loginId),
                 orderProducts,
                 memberAddress,
@@ -197,7 +205,8 @@ public class QueryOrderServiceImpl implements QueryOrderService {
 
         PaginatedResponseDto<MemberCouponSummaryDto> coupons;
         for (int i = 0; i < totalPage; i++) {
-            coupons = queryMemberCouponService.getMemberCouponSummaryList(PageRequest.of(i, offset),
+            coupons = queryMemberCouponService.getMemberCouponSummaryList(
+                    PageRequest.of(i, offset),
                     loginId,
                     true
             );
@@ -221,7 +230,8 @@ public class QueryOrderServiceImpl implements QueryOrderService {
         LocalDate endDate = queryDto.getEndDateOrDefaultValue(clock);
 
         checkRequestedOffsetInBounds(startDate, endDate, foundMember.getId(), pageable);
-        return queryOrderRepository.findOrdersInPeriodByMemberId(startDate,
+        return queryOrderRepository.findOrdersInPeriodByMemberId(
+                startDate,
                 endDate,
                 foundMember.getId(),
                 pageable
@@ -247,7 +257,8 @@ public class QueryOrderServiceImpl implements QueryOrderService {
             String loginId, OrderStatusCode code, Pageable pageable
     ) {
         checkValidLoginId(loginId);
-        return queryOrderRepository.findSuccessStatusResponsesByLoginIdAndStatus(loginId,
+        return queryOrderRepository.findSuccessStatusResponsesByLoginIdAndStatus(
+                loginId,
                 code,
                 pageable
         );
@@ -293,7 +304,8 @@ public class QueryOrderServiceImpl implements QueryOrderService {
             setPaymentToResponseByOrderId(responseDto, order);
         } catch (ClientException e) {
             if (!e.getErrorCode().equals(ErrorCode.PAYMENT_NOT_FOUND)) {
-                throw new ClientException(ErrorCode.BAD_REQUEST,
+                throw new ClientException(
+                        ErrorCode.BAD_REQUEST,
                         ErrorCode.BAD_REQUEST.getDisplayName()
                 );
             }
@@ -305,6 +317,97 @@ public class QueryOrderServiceImpl implements QueryOrderService {
         responseDto.calculateAmounts();
 
         return responseDto;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public CouponOrderSheetResponseDto calculateCoupons(
+            String loginId,
+            CouponOrderSheetRequestDto request
+    ) {
+        //상품 불러오기
+        ProductWithCategoryResponseDto product = queryProductService.getByIsbn(request.getIsbn());
+
+        //쿠폰을 불러오기
+        List<String> couponCodes = request.getDuplicateCouponCode();
+        if (Objects.nonNull(request.getCouponCode())) {
+            couponCodes.add(request.getCouponCode());
+        }
+        //쿠폰 사용 가능 검증
+        List<MemberCouponSummaryDto> memberCoupons = tryGetAvailableMemberCoupons(
+                loginId,
+                couponCodes
+        );
+        //상품의 판매가
+        long saleAmount = product.getActualPrice() / ((product.isSeparatelyDiscount()
+                ? product.getDiscountRate() : product.getTotalDiscountRate().getDiscountRate()));
+
+        //상품의 실판매가
+        long couponAppliedAmount = getCouponAppliedAmount(
+                request.getCouponCode(),
+                product,
+                memberCoupons,
+                saleAmount
+        );
+        //적립 예정 포인트
+        long expectedPoint = getExpectedPoint(product, saleAmount, couponAppliedAmount);
+
+        return new CouponOrderSheetResponseDto(
+                product.getIsbn(),
+                couponCodes,
+                couponAppliedAmount,
+                expectedPoint
+        );
+    }
+
+    private long getExpectedPoint(
+            ProductWithCategoryResponseDto product,
+            long discountAmount,
+            long couponAppliedAmount
+    ) {
+        return (product.getProductSavingMethodCode().getId() == 2) ?
+                discountAmount / (100 - product.getGivenPointRate()) * 100 :
+                couponAppliedAmount / (100 - product.getGivenPointRate()) * 100;
+    }
+
+    private long getCouponAppliedAmount(
+            String couponCode,
+            ProductWithCategoryResponseDto product,
+            List<MemberCouponSummaryDto> memberCoupons,
+            long discountAmount
+    ) {
+        Map<String, MemberCouponSummaryDto> couponMap = memberCoupons.stream()
+                .collect(Collectors.toMap(MemberCouponSummaryDto::getCouponCode, coupon -> coupon));
+
+        long couponAppliedAmount = discountAmount;
+        //일반 쿠폰 적용
+        if (Objects.nonNull(couponCode)) {
+            couponAppliedAmount = couponMap.get(couponCode).discount(product, discountAmount);
+        }
+        //중복 쿠폰
+        for (MemberCouponSummaryDto memberCoupon : memberCoupons) {
+            couponAppliedAmount = memberCoupon.discount(product, couponAppliedAmount);
+        }
+        return couponAppliedAmount;
+    }
+
+    private List<MemberCouponSummaryDto> tryGetAvailableMemberCoupons(
+            String loginId,
+            List<String> couponCodes
+    ) {
+        List<MemberCouponSummaryDto> memberCoupons = queryMemberCouponService.getByCouponCodes(
+                loginId,
+                couponCodes
+        );
+
+        if (memberCoupons.size() != couponCodes.size()) {
+            throw new ClientException(ErrorCode.INVALID_COUPON_DATA, "Invalid coupon is used.");
+        }
+
+        return memberCoupons;
     }
 
     private void setPaymentToResponseByOrderId(OrderDetailsResponseDto responseDto, Order order) {
@@ -333,8 +436,10 @@ public class QueryOrderServiceImpl implements QueryOrderService {
         }
         OrderStatusChangeLog latestChangeLog = queryOrderStatusChangeLogRepository.findFirstByOrder_IdOrderByOrderStatusCodeDesc(
                         order.getId())
-                .orElseThrow(() -> new ClientException(ErrorCode.NOT_FOUND,
-                        "주문 상태 이력을 찾을 수 없습니다."));
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.NOT_FOUND,
+                        "주문 상태 이력을 찾을 수 없습니다."
+                ));
         orderResponseDto.setOrderStatusCode(latestChangeLog.getOrderStatusCode());
         responseDto.setOrder(orderResponseDto);
     }
@@ -359,7 +464,8 @@ public class QueryOrderServiceImpl implements QueryOrderService {
         if (Objects.isNull(memberId)) {
             countOfOrder = queryOrderRepository.getCountOfOrdersInPeriod(startDate, endDate);
         } else {
-            countOfOrder = queryOrderRepository.getCountOfOrdersInPeriodByMemberId(startDate,
+            countOfOrder = queryOrderRepository.getCountOfOrdersInPeriodByMemberId(
+                    startDate,
                     endDate,
                     memberId
             );
@@ -372,7 +478,8 @@ public class QueryOrderServiceImpl implements QueryOrderService {
 
     private void checkValidLoginId(String loginId) {
         if (!queryMemberService.existsLoginId(loginId)) {
-            throw new ClientException(ErrorCode.MEMBER_NOT_FOUND,
+            throw new ClientException(
+                    ErrorCode.MEMBER_NOT_FOUND,
                     "Member not found with loginId : " + loginId
             );
         }

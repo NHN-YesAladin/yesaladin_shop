@@ -137,6 +137,15 @@ public class QueryMemberCouponServiceImpl implements QueryMemberCouponService {
         return memberCoupons;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<MemberCouponSummaryDto> getByCouponCodes(String loginId, List<String> couponCodes) {
+        return tryGetCouponSummary(couponCodes).getData();
+    }
+
     private void checkAllCouponCodesAreAvailable(
             List<String> couponCodes,
             List<MemberCoupon> memberCoupons

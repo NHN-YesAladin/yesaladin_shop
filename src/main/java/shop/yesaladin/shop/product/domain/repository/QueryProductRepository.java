@@ -8,6 +8,7 @@ import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
 
 import java.util.List;
 import java.util.Optional;
+import shop.yesaladin.shop.product.dto.ProductWithCategoryResponseDto;
 
 /**
  * 상품 조회 관련 Repository Interface 입니다.
@@ -55,6 +56,16 @@ public interface QueryProductRepository {
      * @since 1.0
      */
     Optional<Product> findByIsbn(String isbn);
+
+    /**
+     * isbn으로 구매가능한 상품을 조회합니다.
+     *
+     * @param isbn 상품의 isbn
+     * @return 상품의 정보
+     * @author 최예린
+     * @since 1.0
+     */
+    Optional<ProductWithCategoryResponseDto> getByIsbn(String isbn);
 
     /**
      * 상품을 Paging하여 전체 사용자용 전체 조회합니다.
