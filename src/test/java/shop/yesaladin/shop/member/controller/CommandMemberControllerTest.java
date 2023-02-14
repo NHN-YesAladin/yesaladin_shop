@@ -46,6 +46,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -122,7 +123,7 @@ class CommandMemberControllerTest {
         updateResponse = MemberUpdateResponseDto.fromEntity(member);
     }
 
-    @WithMockUser
+    @WithAnonymousUser
     @Test
     @DisplayName("회원 등록 요청 시 입력 데이터가 null거나 @Valid 검증 조건에 맞지 않은 경우 요청에 실패 한다.")
     void signUpMember_withInvalidInputData() throws Exception {
@@ -142,7 +143,7 @@ class CommandMemberControllerTest {
         verify(commandMemberService, never()).create(any());
     }
 
-    @WithMockUser
+    @WithAnonymousUser
     @Test
     @DisplayName("회원 등록 요청 시 nickname, loginId, password에 걸려있는 정규 표현식에 부합하지 않는 경우 요청에 실패 한다.")
     void signUpMember_withInvalidInputData_invalidRegex() throws Exception {
@@ -171,7 +172,7 @@ class CommandMemberControllerTest {
         verify(commandMemberService, never()).create(any());
     }
 
-    @WithMockUser
+    @WithAnonymousUser
     @Test
     @DisplayName("회원 가입 성공")
     void signUpMember() throws Exception {
@@ -252,7 +253,7 @@ class CommandMemberControllerTest {
         ));
     }
 
-    @WithMockUser
+    @WithAnonymousUser
     @Test
     @DisplayName("OAuth2 회원 등록 요청 시 입력 데이터가 null거나 @Valid 검증 조건에 맞지 않은 경우 요청에 실패 한다.")
     void signUpOauthMember_withInvalidInputData_invalidRegex() throws Exception {
@@ -272,7 +273,7 @@ class CommandMemberControllerTest {
         verify(commandMemberService, never()).create(any());
     }
 
-    @WithMockUser
+    @WithAnonymousUser
     @Test
     @DisplayName("OAuth2 회원 등록 요청 시 nickname, loginId에 걸려있는 정규 표현식에 부합하지 않는 경우 요청에 실패 한다.")
     void signUpOauthMember_withInvalidInputData() throws Exception {
@@ -301,7 +302,7 @@ class CommandMemberControllerTest {
         verify(commandMemberService, never()).create(any());
     }
 
-    @WithMockUser
+    @WithAnonymousUser
     @Test
     @DisplayName("OAuth2 회원 가입 성공")
     void signUpOauthMember() throws Exception {
