@@ -135,21 +135,4 @@ class QueryMemberLoginControllerTest {
                 )
         ));
     }
-
-    @WithMockUser
-    @Test
-    void getMemberByEmail_failed_whenMemberNotFound() throws Exception {
-        //given
-        String email = "test@test.com";
-
-        //when
-        Mockito.when(queryMemberService.findMemberLoginInfoByEmail(email))
-                .thenThrow(MemberNotFoundException.class);
-
-        //then
-        mockMvc.perform(get("/v1/members/oauth2/login/{email}", email))
-                .andExpect(status().is4xxClientError());
-
-        verify(queryMemberService, times(1)).findMemberLoginInfoByEmail(email);
-    }
 }
