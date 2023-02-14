@@ -10,7 +10,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentRequest;
 import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
 
-import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -65,7 +64,7 @@ class GiveMemberCouponControllerTest {
                 .andExpect(jsonPath("$.errorMessages").isEmpty());
         Mockito.verify(giveCouponService, Mockito.times(1))
                 .sendCouponGiveRequest("mongmeo", TriggerTypeCode.MEMBER_GRADE_BRONZE, 1L,
-                        LocalDateTime.now()
+                        null
                 );
 
         // docs
