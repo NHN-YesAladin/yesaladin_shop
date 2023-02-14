@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.common.code.ErrorCode;
@@ -66,6 +67,7 @@ public class CommandOrderServiceImpl implements CommandOrderService {
     private final QueryProductService queryProductService;
     private final QueryMemberService queryMemberService;
 
+    private final KafkaTemplate<String, List<String>> kafkaTemplate;
     private final Clock clock;
 
     /**
@@ -102,11 +104,14 @@ public class CommandOrderServiceImpl implements CommandOrderService {
         Order savedOrder = createMemberOrder(request, orderDateTime, products, loginId);
 
         createOrderProduct(request, products, savedOrder);
-        createOrderCoupon(request, savedOrder);
+//        createOrderCoupon(request, savedOrder);
 
-        createPointHistory(request.getUsePoint(), request.getSavePoint(), loginId);
+//        createPointHistory(request.getUsePoint(), request.getSavePoint(), loginId);
 
         createOrderStatusChangeLog(orderDateTime, savedOrder);
+
+
+//        kafkaTemplate.send(topic, loginId, request.getOrderCoupons());
 
         return OrderCreateResponseDto.fromEntity(savedOrder);
     }
@@ -125,7 +130,7 @@ public class CommandOrderServiceImpl implements CommandOrderService {
         Order savedOrder = creatSubscribe(request, orderDateTime, loginId);
 
         createPointHistory(request.getUsePoint(), request.getSavePoint(), loginId);
-        createOrderCoupon(request, savedOrder);
+//        createOrderCoupon(request, savedOrder);
 
         createOrderStatusChangeLog(orderDateTime, savedOrder);
 
