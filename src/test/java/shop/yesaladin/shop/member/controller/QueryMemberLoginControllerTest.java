@@ -28,8 +28,9 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import shop.yesaladin.common.code.ErrorCode;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.member.dto.MemberLoginResponseDto;
-import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 
 @AutoConfigureRestDocs
@@ -53,7 +54,7 @@ class QueryMemberLoginControllerTest {
 
         //when
         Mockito.when(queryMemberService.findMemberLoginInfoByLoginId(loginId))
-                .thenThrow(MemberNotFoundException.class);
+                .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, ""));
 
         //then
         mockMvc.perform(get("/v1/members/login/{loginId}", loginId))
@@ -144,7 +145,7 @@ class QueryMemberLoginControllerTest {
 
         //when
         Mockito.when(queryMemberService.findMemberLoginInfoByEmail(email))
-                .thenThrow(MemberNotFoundException.class);
+                .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, ""));
 
         //then
         mockMvc.perform(get("/v1/members/oauth2/login/{email}", email))
@@ -180,7 +181,10 @@ class QueryMemberLoginControllerTest {
                 .thenReturn(response);
 
         //then
-        ResultActions resultActions = mockMvc.perform(get("/v1/members/oauth2/login/{email}", email))
+        ResultActions resultActions = mockMvc.perform(get(
+                        "/v1/members/oauth2/login/{email}",
+                        email
+                ))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.data.id", equalTo(memberId.intValue())))

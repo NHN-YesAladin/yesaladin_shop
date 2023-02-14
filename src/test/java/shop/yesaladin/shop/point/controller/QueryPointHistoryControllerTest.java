@@ -2,7 +2,6 @@ package shop.yesaladin.shop.point.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.startsWith;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -45,7 +44,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.common.code.ErrorCode;
-import shop.yesaladin.shop.member.exception.MemberNotFoundException;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.point.domain.model.PointCode;
 import shop.yesaladin.shop.point.domain.model.PointReasonCode;
 import shop.yesaladin.shop.point.dto.PointHistoryResponseDto;
@@ -336,7 +335,7 @@ class QueryPointHistoryControllerTest {
     void getMemberPoint_fail_memberNotFound() throws Exception {
         //given
         Mockito.when(pointHistoryService.getMemberPoint(any()))
-                .thenThrow(new MemberNotFoundException("Member loginId : " + loginId));
+                .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, ""));
 
         //when
         ResultActions result = mockMvc.perform(get("/v1/points").with(csrf()));
@@ -344,7 +343,12 @@ class QueryPointHistoryControllerTest {
         //then
         result.andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message", startsWith("Member not found")));
+                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.NOT_FOUND.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.MEMBER_NOT_FOUND.getDisplayName())
+                ));
 
         //docs
         result.andDo(document(
@@ -352,7 +356,15 @@ class QueryPointHistoryControllerTest {
                 getDocumentRequest(),
                 getDocumentResponse(),
                 responseFields(
-                        fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("HTTP 상태 코드"),
+                        fieldWithPath("data").type(JsonFieldType.OBJECT)
+                                .description("null")
+                                .optional(),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메시지")
                 )
         ));
     }

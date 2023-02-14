@@ -63,7 +63,6 @@ import shop.yesaladin.shop.member.dto.MemberUnblockResponseDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateResponseDto;
 import shop.yesaladin.shop.member.dto.MemberWithdrawResponseDto;
-import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.CommandMemberService;
 
 @AutoConfigureRestDocs
@@ -883,7 +882,10 @@ class CommandMemberControllerTest {
         String invalidLoginId = "invalidLoginId";
 
         Mockito.when(commandMemberService.withDraw(invalidLoginId))
-                .thenThrow(new MemberNotFoundException("Member loginId: " + invalidLoginId));
+                .thenThrow(new ClientException(
+                        ErrorCode.MEMBER_NOT_FOUND,
+                        "Member loginId: " + invalidLoginId
+                ));
 
         //when
         ResultActions perform = mockMvc.perform(delete(
@@ -903,7 +905,14 @@ class CommandMemberControllerTest {
                 getDocumentResponse(),
                 pathParameters(parameterWithName("loginId").description("탈퇴할 회원의 아이디")),
                 responseFields(
-                        fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data").type(JsonFieldType.NUMBER)
+                                .description("null")
+                                .optional(),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
                 )
         ));
     }

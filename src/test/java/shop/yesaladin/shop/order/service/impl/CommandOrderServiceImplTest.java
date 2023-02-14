@@ -23,9 +23,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
-import org.springframework.kafka.core.KafkaTemplate;
 import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.exception.ClientException;
+import shop.yesaladin.shop.coupon.service.inter.QueryMemberCouponService;
+import shop.yesaladin.shop.coupon.service.inter.UseCouponService;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.member.service.inter.QueryMemberAddressService;
@@ -80,9 +81,10 @@ class CommandOrderServiceImplTest {
     CommandOrderCouponService commandOrderCouponService;
     CommandProductService commandProductService;
     QueryMemberAddressService queryMemberAddressService;
+    QueryMemberCouponService queryMemberCouponService;
     QueryProductService queryProductService;
     QueryMemberService queryMemberService;
-    KafkaTemplate kafkaTemplate;
+    UseCouponService useCouponService;
     Member member;
     MemberAddress memberAddress;
     NonMemberOrder nonMemberOrder;
@@ -131,8 +133,10 @@ class CommandOrderServiceImplTest {
         commandOrderCouponService = Mockito.mock(CommandOrderCouponService.class);
         commandProductService = Mockito.mock(CommandProductService.class);
         queryMemberAddressService = Mockito.mock(QueryMemberAddressService.class);
+        queryMemberCouponService = Mockito.mock(QueryMemberCouponService.class);
         queryProductService = Mockito.mock(QueryProductService.class);
         queryMemberService = Mockito.mock(QueryMemberService.class);
+        useCouponService = Mockito.mock(UseCouponService.class);
 
         commandOrderService = new CommandOrderServiceImpl(
                 nonMemberOrderCommandOrderRepository,
@@ -141,13 +145,13 @@ class CommandOrderServiceImplTest {
                 queryOrderRepository,
                 commandOrderStatusChangeLogRepository,
                 commandOrderProductRepository,
-                commandOrderCouponService,
                 commandPointHistoryService,
                 commandProductService,
                 queryMemberAddressService,
+                queryMemberCouponService,
                 queryProductService,
                 queryMemberService,
-                kafkaTemplate,
+                useCouponService,
                 clock
         );
         member = DummyMember.memberWithId();
@@ -362,7 +366,6 @@ class CommandOrderServiceImplTest {
         verify(commandProductService, times(1)).orderProducts(any());
         verify(queryMemberService, times(1)).findByLoginId(loginId);
         verify(queryMemberAddressService, times(1)).findById(addressId);
-        verify(commandOrderCouponService, times(1)).createOrderCoupons(any(), any());
         verify(memberOrderCommandOrderRepository, times(1)).save(any());
         verify(commandOrderProductRepository, times(5)).save(any());
         verify(commandPointHistoryService, times(1)).use(any());
@@ -407,8 +410,6 @@ class CommandOrderServiceImplTest {
         verify(commandProductService, times(1)).orderProducts(any());
         verify(queryMemberService, times(1)).findByLoginId(loginId);
         verify(queryMemberAddressService, times(1)).findById(addressId);
-        verify(commandOrderCouponService, times(1)).createOrderCoupons(any(), any());
-        verify(memberOrderCommandOrderRepository, times(1)).save(any());
         verify(commandOrderProductRepository, times(5)).save(any());
         verify(commandPointHistoryService, times(1)).use(any());
         verify(commandOrderStatusChangeLogRepository, never()).save(any());
@@ -433,14 +434,14 @@ class CommandOrderServiceImplTest {
                 memberOrder
         ).get(0);
         Mockito.when(commandOrderProductRepository.save(any())).thenReturn(orderProduct);
-        PointHistoryResponseDto pointHistoryResponse = new PointHistoryResponseDto(
-                1L,
+
+        PointHistoryResponseDto pointResponse = new PointHistoryResponseDto(1L,
                 usePoint,
                 LocalDateTime.now(),
                 PointCode.USE,
                 PointReasonCode.USE_ORDER
         );
-        Mockito.when(commandPointHistoryService.use(any())).thenReturn(pointHistoryResponse);
+        Mockito.when(commandPointHistoryService.use(any())).thenReturn(pointResponse);
         OrderStatusChangeLog orderStatusChangeLog = getOrderStatusChangeLog(nonMemberOrder);
         Mockito.when(commandOrderStatusChangeLogRepository.save(any()))
                 .thenReturn(orderStatusChangeLog);
@@ -458,10 +459,8 @@ class CommandOrderServiceImplTest {
         verify(commandProductService, times(1)).orderProducts(any());
         verify(queryMemberService, times(1)).findByLoginId(loginId);
         verify(queryMemberAddressService, times(1)).findById(addressId);
-        verify(commandOrderCouponService, times(1)).createOrderCoupons(any(), any());
         verify(memberOrderCommandOrderRepository, times(1)).save(any());
         verify(commandOrderProductRepository, times(5)).save(any());
-        verify(commandPointHistoryService, times(1)).use(any());
         verify(commandOrderStatusChangeLogRepository, times(1)).save(any());
     }
 
@@ -699,15 +698,13 @@ class CommandOrderServiceImplTest {
         Mockito.when(queryMemberService.findByLoginId(any())).thenReturn(member);
         Mockito.when(queryMemberAddressService.findById(anyLong())).thenReturn(memberAddress);
         Mockito.when(subscribeCommandOrderRepository.save(any())).thenReturn(subscribe);
-
-        PointHistoryResponseDto pointHistoryResponse = new PointHistoryResponseDto(
-                1L,
+        PointHistoryResponseDto pointResponse = new PointHistoryResponseDto(1L,
                 usePoint,
                 LocalDateTime.now(),
                 PointCode.USE,
                 PointReasonCode.USE_ORDER
         );
-        Mockito.when(commandPointHistoryService.use(any())).thenReturn(pointHistoryResponse);
+        Mockito.when(commandPointHistoryService.use(any())).thenReturn(pointResponse);
         OrderStatusChangeLog orderStatusChangeLog = getOrderStatusChangeLog(nonMemberOrder);
         Mockito.when(commandOrderStatusChangeLogRepository.save(any()))
                 .thenReturn(orderStatusChangeLog);
@@ -725,9 +722,7 @@ class CommandOrderServiceImplTest {
         verify(queryProductService, times(1)).getIssnByOrderProduct(any());
         verify(queryMemberService, times(1)).findByLoginId(loginId);
         verify(queryMemberAddressService, times(1)).findById(addressId);
-        verify(commandOrderCouponService, times(1)).createOrderCoupons(any(), any());
         verify(subscribeCommandOrderRepository, times(1)).save(any());
-        verify(commandPointHistoryService, times(1)).use(any());
         verify(commandOrderStatusChangeLogRepository, times(1)).save(any());
     }
 

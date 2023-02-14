@@ -14,9 +14,10 @@ import org.mockito.Mockito;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import shop.yesaladin.common.code.ErrorCode;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.member.domain.model.Member;
-import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
@@ -71,13 +72,13 @@ class QueryWishlistServiceImplTest {
     void findWishlistByMemberId_MemberNotFound() {
         //given
         Mockito.when(queryMemberService.findByLoginId("loginId")).thenThrow(
-                new MemberNotFoundException("Member Login Id: loginId"));
+                new ClientException(ErrorCode.MEMBER_NOT_FOUND, "Member Login Id: loginId"));
 
         //when then
         assertThatThrownBy(() -> queryDslWishlistService.findWishlistByMemberId(
                 "loginId",
                 PageRequest.of(0, 10)
-        )).isInstanceOf(MemberNotFoundException.class);
+        )).isInstanceOf(ClientException.class);
     }
 
     @Test
@@ -174,13 +175,13 @@ class QueryWishlistServiceImplTest {
     void isExists_MemberNotFound() {
         //given
         Mockito.when(queryMemberService.findByLoginId("loginId")).thenThrow(
-                new MemberNotFoundException("Member Login Id: loginId"));
+                new ClientException(ErrorCode.MEMBER_NOT_FOUND, "Member Login Id: loginId"));
 
         //when then
         assertThatThrownBy(() -> queryDslWishlistService.isExists(
                 "loginId",
                 1L
-        )).isInstanceOf(MemberNotFoundException.class);
+        )).isInstanceOf(ClientException.class);
     }
 
     @Test
