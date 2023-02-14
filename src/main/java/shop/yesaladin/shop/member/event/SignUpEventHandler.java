@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.member.event;
 
+import java.time.LocalDateTime;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +22,7 @@ public class SignUpEventHandler implements ApplicationListener<SignUpEvent> {
             giveCouponService.sendCouponGiveRequest(
                     event.getMemberId(),
                     TriggerTypeCode.SIGN_UP,
-                    null
+                    null, LocalDateTime.now()
             );
             log.info(
                     "Sign up coupon give request message published. Member id : {}",

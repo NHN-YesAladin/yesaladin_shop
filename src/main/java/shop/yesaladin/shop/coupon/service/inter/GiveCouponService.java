@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.coupon.service.inter;
 
+import java.time.LocalDateTime;
 import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.coupon.code.TriggerTypeCode;
 import shop.yesaladin.coupon.message.CouponGiveRequestResponseMessage;
@@ -22,7 +23,10 @@ public interface GiveCouponService {
      * @throws ClientException 쿠폰이 이미 존재하는 경우
      */
     RequestIdOnlyDto sendCouponGiveRequest(
-            String memberId, TriggerTypeCode triggerTypeCode, Long couponId
+            String memberId,
+            TriggerTypeCode triggerTypeCode,
+            Long couponId,
+            LocalDateTime requestDateTime
     );
 
     /**

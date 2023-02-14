@@ -1,6 +1,7 @@
 package shop.yesaladin.shop.coupon.service.impl;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -104,7 +105,7 @@ class GiveCouponServiceImplTest {
         )).thenReturn(false);
 
         // when
-        giveCouponService.sendCouponGiveRequest(memberId, TriggerTypeCode.SIGN_UP, null);
+        giveCouponService.sendCouponGiveRequest(memberId, TriggerTypeCode.SIGN_UP, null, LocalDateTime.now());
 
         // then
         ArgumentCaptor<CouponGiveRequestMessage> requestMessageCaptor = ArgumentCaptor.forClass(
@@ -155,7 +156,7 @@ class GiveCouponServiceImplTest {
         )).thenReturn(false);
 
         // when
-        giveCouponService.sendCouponGiveRequest(memberId, TriggerTypeCode.SIGN_UP, null);
+        giveCouponService.sendCouponGiveRequest(memberId, TriggerTypeCode.SIGN_UP, null, LocalDateTime.now());
 
         // then
         ArgumentCaptor<CouponGiveRequestMessage> requestMessageCaptor = ArgumentCaptor.forClass(
@@ -210,7 +211,7 @@ class GiveCouponServiceImplTest {
         Assertions.assertThatThrownBy(() -> giveCouponService.sendCouponGiveRequest(
                 memberId,
                 TriggerTypeCode.SIGN_UP,
-                null
+                null, LocalDateTime.now()
         )).isInstanceOf(ClientException.class);
     }
 
@@ -232,7 +233,7 @@ class GiveCouponServiceImplTest {
         Assertions.assertThatThrownBy(() -> giveCouponService.sendCouponGiveRequest(
                 memberId,
                 TriggerTypeCode.SIGN_UP,
-                null
+                null, LocalDateTime.now()
         )).isInstanceOf(ClientException.class);
     }
 
@@ -254,7 +255,7 @@ class GiveCouponServiceImplTest {
         Assertions.assertThatThrownBy(() -> giveCouponService.sendCouponGiveRequest(
                 memberId,
                 TriggerTypeCode.SIGN_UP,
-                null
+                null, LocalDateTime.now()
         )).isInstanceOf(ServerException.class);
     }
 

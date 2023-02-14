@@ -1,6 +1,8 @@
 package shop.yesaladin.shop.coupon.service.impl;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -55,6 +57,7 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 public class GiveCouponServiceImpl implements GiveCouponService {
 
     private static final String COUPON_GROUP_CODE_REQUEST_URL_PREFIX = "coupon-groups";
+    private static final String MONTHLY_COUPON_OPEN_DATE_TIME_KEY = "monthlyCouponOpenDateTime";
 
     private final GatewayProperties gatewayProperties;
     private final CouponProducer couponProducer;
@@ -68,8 +71,15 @@ public class GiveCouponServiceImpl implements GiveCouponService {
     @Override
     @Transactional(readOnly = true)
     public RequestIdOnlyDto sendCouponGiveRequest(
-            String memberId, TriggerTypeCode triggerTypeCode, Long couponId
+            String memberId,
+            TriggerTypeCode triggerTypeCode,
+            Long couponId,
+            LocalDateTime requestDateTime
     ) {
+        if (isMonthlyCoupon(triggerTypeCode)) {
+            checkMonthlyCouponIssueRequestTime(requestDateTime);
+        }
+
         if (Objects.nonNull(couponId)) {    // 자동 발행 타입 쿠폰을 요청하는 경우
             registerIssueRequest(memberId, triggerTypeCode.name(), couponId.toString());
         }
@@ -97,14 +107,12 @@ public class GiveCouponServiceImpl implements GiveCouponService {
             return response;
         }
 
-        couponGroupAndLimitList.forEach(couponGroupAndLimit ->
-                sendGiveRequestMessage(
-                        triggerTypeCode,
-                        couponId,
-                        couponGroupAndLimit.getIsLimited(),
-                        requestId
-                )
-        );
+        couponGroupAndLimitList.forEach(couponGroupAndLimit -> sendGiveRequestMessage(
+                triggerTypeCode,
+                couponId,
+                couponGroupAndLimit.getIsLimited(),
+                requestId
+        ));
         return response;
     }
 
@@ -122,8 +130,7 @@ public class GiveCouponServiceImpl implements GiveCouponService {
                     responseMessage.getCoupons()
                             .stream()
                             .map(CouponGiveDto::getCouponGroupCode)
-                            .collect(
-                                    Collectors.toList())
+                            .collect(Collectors.toList())
             );
             resultBuilder.couponCodes(responseMessage.getCoupons()
                     .stream()
@@ -255,7 +262,7 @@ public class GiveCouponServiceImpl implements GiveCouponService {
     }
 
     private String getMemberIdFromRequestId(String requestId) {
-        return Optional.ofNullable(redisTemplate.opsForValue().get(requestId))
+        return Optional.of(Objects.requireNonNull(redisTemplate.opsForValue().get(requestId)))
                 .orElseThrow(() -> new ClientException(
                         ErrorCode.BAD_REQUEST,
                         "Request id not exists or expired. request id : " + requestId
@@ -278,5 +285,43 @@ public class GiveCouponServiceImpl implements GiveCouponService {
                         .forEach(commandMemberCouponRepository::save)
 
                 );
+    }
+
+    /**
+     * 이달의 쿠폰 오픈 시간을 확인하여 오픈 시간 전 발행 요청을 처리합니다.
+     *
+     * @param requestDateTime 이달의 쿠폰 발행 요청 시간
+     */
+    private void checkMonthlyCouponIssueRequestTime(LocalDateTime requestDateTime) {
+        if (Boolean.FALSE.equals(redisTemplate.hasKey(MONTHLY_COUPON_OPEN_DATE_TIME_KEY))) {
+            throw new ClientException(
+                    ErrorCode.NOT_FOUND,
+                    "Not found monthly coupon's open date time."
+            );
+        }
+
+        String dateTime = redisTemplate.opsForValue().get(MONTHLY_COUPON_OPEN_DATE_TIME_KEY);
+
+        assert dateTime != null;
+        LocalDateTime openDateTime = LocalDateTime.parse(dateTime, DateTimeFormatter.ISO_DATE_TIME);
+        log.info("==== monthly coupon open time : {} ====", dateTime);
+
+        if (requestDateTime.isAfter(LocalDateTime.now())
+                || requestDateTime.isBefore(openDateTime)) {
+            throw new ClientException(
+                    ErrorCode.BAD_REQUEST,
+                    "Cannot process monthly coupon issue request before open time."
+            );
+        }
+    }
+
+    /**
+     * 발행 요청의 쿠폰 타입이 이달의 쿠폰 타입인지 확인합니다.
+     *
+     * @param triggerTypeCode 요청한 쿠폰의 트리거 타입 코드
+     * @return boolean
+     */
+    private boolean isMonthlyCoupon(TriggerTypeCode triggerTypeCode) {
+        return triggerTypeCode.equals(TriggerTypeCode.COUPON_OF_THE_MONTH);
     }
 }
