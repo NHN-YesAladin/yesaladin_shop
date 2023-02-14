@@ -1,5 +1,13 @@
 package shop.yesaladin.shop.publish.service.impl;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,15 +22,6 @@ import shop.yesaladin.shop.publish.domain.model.Publisher;
 import shop.yesaladin.shop.publish.domain.repository.QueryPublisherRepository;
 import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
 import shop.yesaladin.shop.publish.service.inter.QueryPublisherService;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 
 class QueryPublisherServiceImplTest {
 

@@ -20,7 +20,7 @@ import shop.yesaladin.shop.product.dto.ProductWithCategoryResponseDto;
 public interface QueryProductRepository {
 
     /**
-     * ISSN(Unique)기준으로 상품의 제목을 조회합니다.
+     * ISBN(Unique) 기준으로 상품의 제목을 조회합니다.
      *
      * @param isbn 상품의 isbn (Unique)
      * @return 조회된 상품의 제목을 담은 Dto
@@ -28,6 +28,16 @@ public interface QueryProductRepository {
      * @since 1.0
      */
     ProductOnlyTitleDto findTitleByIsbn(String isbn);
+
+    /**
+     * ISBN의 존재여부를 조회합니다.
+     *
+     * @param isbn 조회할 isbn (Unique)
+     * @return 조회된 상품의 존재여부
+     * @author 이수정
+     * @since 1.0
+     */
+    Boolean existsByIsbn(String isbn);
 
     /**
      * id(PK)기준으로 상품의 수량을 조회합니다.
@@ -150,4 +160,25 @@ public interface QueryProductRepository {
      * @since 1, 0
      */
     Page<Product> findProductRelationByTitle(Long id, String title, Pageable pageable);
+
+    /**
+     * 최신 상품 조회 메서드
+     *
+     * @param pageable 페이지 정보
+     * @return 최신 상품 리스트
+     * @author 김선홍
+     * @since 1, 0
+     */
+    Page<Product> findRecentProductByPublishedDate(Pageable pageable);
+
+    /**
+     * 최근 본 상품 메소드
+     *
+     * @param ids      본 상품들의 id 리스트
+     * @param pageable 페이지 정보
+     * @return 최근 본 상품 리스트
+     * @author 김선홍
+     * @since 1, 0
+     */
+    Page<Product> findRecentViewProductById(List<Long> ids, Pageable pageable);
 }

@@ -3,7 +3,6 @@ package shop.yesaladin.shop.product.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import shop.yesaladin.shop.product.domain.repository.SearchProductRepository;
-import shop.yesaladin.shop.product.dto.SearchedProductManagerResponseDto;
 import shop.yesaladin.shop.product.dto.SearchedProductResponseDto;
 import shop.yesaladin.shop.product.service.inter.SearchProductService;
 
@@ -28,7 +27,7 @@ public class SearchProductServiceImpl implements SearchProductService {
      * @since : 1.0
      */
     @Override
-    public SearchedProductManagerResponseDto searchProductsByCategoryId(
+    public SearchedProductResponseDto searchProductsByCategoryId(
             Long id, int offset, int size
     ) {
         return searchProductRepository.searchProductsByCategoryId(id, offset, size);
@@ -43,7 +42,7 @@ public class SearchProductServiceImpl implements SearchProductService {
      * @since : 1.0
      */
     @Override
-    public SearchedProductManagerResponseDto searchProductsByCategoryName(
+    public SearchedProductResponseDto searchProductsByCategoryName(
             String name, int offset, int size
     ) {
         return searchProductRepository.searchProductsByCategoryName(name, offset, size);

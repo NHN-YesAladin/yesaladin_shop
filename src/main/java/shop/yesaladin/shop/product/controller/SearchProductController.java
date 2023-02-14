@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.shop.product.dto.SearchProductPageRequestDto;
-import shop.yesaladin.shop.product.dto.SearchedProductManagerResponseDto;
 import shop.yesaladin.shop.product.dto.SearchedProductResponseDto;
 import shop.yesaladin.shop.product.service.inter.SearchProductService;
 
@@ -186,11 +185,11 @@ public class SearchProductController {
      * @since : 1.0
      */
     @GetMapping(params = "categoryid")
-    public ResponseDto<SearchedProductManagerResponseDto> searchProductByCategoryId(
+    public ResponseDto<SearchedProductResponseDto> searchProductByCategoryId(
             @RequestParam(name = "categoryid") Long id,
             @ModelAttribute @Valid SearchProductPageRequestDto pageRequest
     ) {
-        return ResponseDto.<SearchedProductManagerResponseDto>builder()
+        return ResponseDto.<SearchedProductResponseDto>builder()
                 .success(true)
                 .data(searchProductService.searchProductsByCategoryId(
                         id,
@@ -211,11 +210,11 @@ public class SearchProductController {
      * @since : 1.0
      */
     @GetMapping(params = "categoryname")
-    public ResponseDto<SearchedProductManagerResponseDto> searchProductByCategoryName(
+    public ResponseDto<SearchedProductResponseDto> searchProductByCategoryName(
             @RequestParam(name = "categoryname") String name,
             @ModelAttribute @Valid SearchProductPageRequestDto pageRequest
     ) {
-        return ResponseDto.<SearchedProductManagerResponseDto>builder()
+        return ResponseDto.<SearchedProductResponseDto>builder()
                 .success(true)
                 .data(searchProductService.searchProductsByCategoryName(
                         name,

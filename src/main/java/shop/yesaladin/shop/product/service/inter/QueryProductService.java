@@ -10,11 +10,13 @@ import shop.yesaladin.shop.product.dto.ProductModifyDto;
 import shop.yesaladin.shop.product.dto.ProductOnlyTitleDto;
 import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
 import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
+import shop.yesaladin.shop.product.dto.ProductRecentResponseDto;
 import shop.yesaladin.shop.product.dto.ProductWithCategoryResponseDto;
 import shop.yesaladin.shop.product.dto.ProductsResponseDto;
 import shop.yesaladin.shop.product.dto.RelationsResponseDto;
 import shop.yesaladin.shop.product.dto.SubscribeProductOrderResponseDto;
 import shop.yesaladin.shop.product.dto.ViewCartDto;
+
 
 /**
  * 상품 조회를 위한 Service Interface 입니다.
@@ -35,6 +37,16 @@ public interface QueryProductService {
      * @since 1.0
      */
     ProductOnlyTitleDto findTitleByIsbn(String isbn);
+
+    /**
+     * ISBN이 이미 존재하는지 조회하여 반환합니다.
+     *
+     * @param isbn 찾고자하는 isbn
+     * @return ISBN 존재여부
+     * @author 이수정
+     * @since 1.0
+     */
+    Boolean existsByIsbn(String isbn);
 
     /**
      * 아이디가 id인 상품을 찾아 반환합니다.
@@ -137,4 +149,25 @@ public interface QueryProductService {
      * @since 1.0
      */
     ProductWithCategoryResponseDto getByIsbn(String isbn);
+
+    /**
+     * 최신 상품 조회 메서드
+     *
+     * @param pageable 페이지 정보
+     * @return 촤신 상품 리스트
+     * @author 김선홍
+     * @since 1, 0
+     */
+    Page<ProductRecentResponseDto> findRecentProductByPublishedDate(Pageable pageable);
+
+    /**
+     * 최근 본 상품 메소드
+     *
+     * @param ids      본 상품들의 id 리스트
+     * @param pageable 페이지 정보
+     * @return 최근 본 상품 리스트
+     * @author 김선홍
+     * @since 1, 0
+     */
+    Page<ProductRecentResponseDto> findRecentViewProductById(List<Long> ids, Pageable pageable);
 }

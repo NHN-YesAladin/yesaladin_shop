@@ -1,12 +1,11 @@
 package shop.yesaladin.shop.member.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.exception.ClientException;
-import shop.yesaladin.coupon.code.TriggerTypeCode;
-import shop.yesaladin.shop.coupon.service.inter.GiveCouponService;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberRole;
 import shop.yesaladin.shop.member.domain.model.MemberRole.Pk;
@@ -23,6 +22,7 @@ import shop.yesaladin.shop.member.dto.MemberUnblockResponseDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateResponseDto;
 import shop.yesaladin.shop.member.dto.MemberWithdrawResponseDto;
+import shop.yesaladin.shop.member.event.SignUpEvent;
 import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.exception.MemberProfileAlreadyExistException;
 import shop.yesaladin.shop.member.exception.MemberRoleNotFoundException;
@@ -43,7 +43,7 @@ public class CommandMemberServiceImpl implements CommandMemberService {
     private final QueryMemberRepository queryMemberRepository;
     private final QueryRoleRepository queryRoleRepository;
     private final CommandMemberRoleRepository commandMemberRoleRepository;
-    private final GiveCouponService giveCouponService;
+    private final ApplicationEventPublisher eventPublisher;
 
     /**
      * {@inheritDoc}
@@ -69,7 +69,7 @@ public class CommandMemberServiceImpl implements CommandMemberService {
 
         commandMemberRoleRepository.save(memberRole);
 
-        giveCouponService.sendCouponGiveRequest(member.getLoginId(), TriggerTypeCode.SIGN_UP, null);
+        eventPublisher.publishEvent(new SignUpEvent(this, member.getLoginId()));
 
         return MemberCreateResponseDto.fromEntity(savedMember, roleMember);
     }

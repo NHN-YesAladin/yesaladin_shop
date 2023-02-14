@@ -9,6 +9,7 @@ import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.ReflectionUtils;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.file.domain.model.File;
@@ -29,9 +31,12 @@ import shop.yesaladin.shop.product.dummy.DummyFile;
 import shop.yesaladin.shop.product.dummy.DummyProduct;
 import shop.yesaladin.shop.product.dummy.DummySubscribeProduct;
 import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
+import shop.yesaladin.shop.publish.domain.model.Publish;
+import shop.yesaladin.shop.publish.domain.model.Publisher;
 
 @Transactional
 @SpringBootTest
+@ActiveProfiles("local-test")
 class QueryDslProductRepositoryTest {
 
     private final String ISBN1 = "0000000000001";
@@ -99,6 +104,20 @@ class QueryDslProductRepositoryTest {
         // then
         assertThat(response).isNotNull();
         assertThat(response.getTitle()).isEqualTo(product1.getTitle());
+    }
+
+    @Disabled
+    @Test
+    @DisplayName("상품 ISBN 존재 여부 조회")
+    void existsByIsbn() {
+        // given
+        entityManager.persist(product1);
+
+        // when
+        Boolean response = repository.existsByIsbn(ISBN1);
+
+        // then
+        assertThat(response).isFalse();
     }
 
     @Test
@@ -238,7 +257,10 @@ class QueryDslProductRepositoryTest {
         entityManager.persist(product2);
 
         // when
-        Page<Product> products = repository.findAllByTypeIdForManager(PageRequest.of(0, 5), ProductTypeCode.NEWBOOK.getId());
+        Page<Product> products = repository.findAllByTypeIdForManager(
+                PageRequest.of(0, 5),
+                ProductTypeCode.NEWBOOK.getId()
+        );
 
         // then
         assertThat(products).isNotNull();
@@ -246,7 +268,9 @@ class QueryDslProductRepositoryTest {
         assertThat(products.getContent().get(0).getIsbn()).isEqualTo(ISBN2);
         assertThat(products.getContent().get(0).getThumbnailFile()).isEqualTo(thumbnailFile2);
         assertThat(products.getContent().get(0).getEbookFile()).isEqualTo(ebookFile2);
-        assertThat(products.getContent().get(0).getProductTypeCode()).isEqualTo(ProductTypeCode.NEWBOOK);
+        assertThat(products.getContent()
+                .get(0)
+                .getProductTypeCode()).isEqualTo(ProductTypeCode.NEWBOOK);
     }
 
     @Test
@@ -294,6 +318,26 @@ class QueryDslProductRepositoryTest {
                 .getTitle()
                 .contains(product1.getTitle().substring(0, 1))).isTrue();
 
+    }
+
+    @Test
+    @DisplayName("최신 상품 조회 성공")
+    public void findRecentProductByPublishedDate() {
+        //given
+        Publisher publisher = Publisher.builder().id(1L).name("name1").build();
+        Publish publish1 = Publish.create(product1, publisher, "2011-01-01");
+        Publish publish2 = Publish.create(product2, publisher, "2011-02-02");
+
+        entityManager.persist(product2);
+        entityManager.persist(product1);
+
+        //when
+        Page<Product> products = repository.findRecentProductByPublishedDate(PageRequest.of(0, 10));
+
+        //then
+        assertThat(products.getTotalElements()).isEqualTo(2);
+        assertThat(products.getContent().get(0).getId()).isEqualTo(product2.getId());
+        assertThat(products.getContent().get(1).getId()).isEqualTo(product1.getId());
     }
 
     private List<ProductOrderRequestDto> getOrderProductRequestData() {

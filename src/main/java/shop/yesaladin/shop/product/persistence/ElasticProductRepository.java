@@ -12,8 +12,6 @@ import org.springframework.stereotype.Repository;
 import shop.yesaladin.shop.product.domain.model.SearchedProduct;
 import shop.yesaladin.shop.product.domain.repository.SearchProductRepository;
 import shop.yesaladin.shop.product.dto.SearchedProductDto;
-import shop.yesaladin.shop.product.dto.SearchedProductManagerDto;
-import shop.yesaladin.shop.product.dto.SearchedProductManagerResponseDto;
 import shop.yesaladin.shop.product.dto.SearchedProductResponseDto;
 
 import java.util.List;
@@ -53,12 +51,12 @@ public class ElasticProductRepository implements SearchProductRepository {
      * @
      */
     @Override
-    public SearchedProductManagerResponseDto searchProductsByCategoryId(
+    public SearchedProductResponseDto searchProductsByCategoryId(
             Long id,
             int offset,
             int size
     ) {
-        return searchProductByCategory(CATEGORIES_ID, String.valueOf(id), offset, size);
+        return searchResponseProductByTermQuery(String.valueOf(id), offset, size, CATEGORIES_ID);
     }
 
     /**
@@ -72,12 +70,12 @@ public class ElasticProductRepository implements SearchProductRepository {
      * @since : 1.0
      */
     @Override
-    public SearchedProductManagerResponseDto searchProductsByCategoryName(
+    public SearchedProductResponseDto searchProductsByCategoryName(
             String name,
             int offset,
             int size
     ) {
-        return searchProductByCategory(CATEGORIES_NAME, name, offset, size);
+        return searchResponseProductByTermQuery(CATEGORIES_NAME, offset, size, name);
     }
 
     /**
@@ -255,38 +253,6 @@ public class ElasticProductRepository implements SearchProductRepository {
         return SearchedProductResponseDto.builder()
                 .products(result.stream()
                         .map(searchedProductSearchHit -> SearchedProductDto.fromIndex(
-                                searchedProductSearchHit.getContent()))
-                        .collect(Collectors.toList()))
-                .count(result.getTotalHits())
-                .build();
-    }
-
-    /**
-     * 카테고리를 기준으로 검색하는 메서드
-     *
-     * @param value  필드에 검색하고 싶은 값
-     * @param offset 검색하고 싶은 페이지 위치
-     * @param size   검색하고 싶은 상품 갯수
-     * @param field  검색할 필드
-     * @return 상품 리스트와 총 갯수
-     * @author : 김선홍
-     * @since : 1.0
-     */
-    public SearchedProductManagerResponseDto searchProductByCategory(
-            String field,
-            String value,
-            int offset,
-            int size
-    ) {
-        NativeQuery query = getDefaultSearchProductTermQuery(field, value, offset, size);
-        SearchHits<SearchedProduct> result = elasticsearchOperations.search(
-                query,
-                SearchedProduct.class
-        );
-
-        return SearchedProductManagerResponseDto.builder()
-                .products(result.stream()
-                        .map(searchedProductSearchHit -> SearchedProductManagerDto.fromIndex(
                                 searchedProductSearchHit.getContent()))
                         .collect(Collectors.toList()))
                 .count(result.getTotalHits())

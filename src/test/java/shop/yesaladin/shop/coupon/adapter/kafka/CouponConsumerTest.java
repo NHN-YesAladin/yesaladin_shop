@@ -21,6 +21,7 @@ import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
+import org.springframework.test.context.ActiveProfiles;
 import shop.yesaladin.coupon.message.CouponGiveRequestResponseMessage;
 import shop.yesaladin.shop.coupon.service.inter.GiveCouponService;
 
@@ -29,6 +30,7 @@ import shop.yesaladin.shop.coupon.service.inter.GiveCouponService;
         "${coupon.topic.give-request-limit}"}, brokerProperties = {
         "listeners=PLAINTEXT://localhost:9092", "port=9092"})
 @SpringBootTest
+@ActiveProfiles("local-test")
 class CouponConsumerTest {
 
     @Value("${coupon.topic.give-request-response}")

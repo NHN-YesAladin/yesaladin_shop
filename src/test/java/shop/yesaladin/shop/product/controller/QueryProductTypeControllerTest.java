@@ -1,5 +1,21 @@
 package shop.yesaladin.shop.product.controller;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentRequest;
+import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
+
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -16,21 +32,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.product.domain.model.ProductTypeCode;
 import shop.yesaladin.shop.product.dto.ProductTypeResponseDto;
 import shop.yesaladin.shop.product.service.inter.QueryProductTypeService;
-
-import java.util.List;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentRequest;
-import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
 
 @AutoConfigureRestDocs
 @WebMvcTest(QueryProductTypeController.class)

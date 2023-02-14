@@ -15,6 +15,7 @@ import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
+import org.springframework.test.context.ActiveProfiles;
 import shop.yesaladin.coupon.code.TriggerTypeCode;
 import shop.yesaladin.coupon.message.CouponCodesAndResultMessage;
 import shop.yesaladin.coupon.message.CouponGiveRequestMessage;
@@ -25,6 +26,7 @@ import shop.yesaladin.coupon.message.MessageKey;
         "${coupon.topic.give-request-limit}"}, brokerProperties = {
         "listeners=PLAINTEXT://localhost:9093", "port=9093"})
 @SpringBootTest
+@ActiveProfiles("local-test")
 class CouponProducerTest {
 
     @Value("${coupon.topic.give-request}")

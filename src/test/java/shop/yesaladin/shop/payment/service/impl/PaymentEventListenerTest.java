@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.service.inter.QueryOrderService;
@@ -15,6 +16,7 @@ import shop.yesaladin.shop.payment.service.inter.CommandPaymentService;
 
 @Disabled("실제 토스 api 테스트")
 @SpringBootTest
+@ActiveProfiles("local-test")
 @Transactional
 class PaymentEventListenerTest {
 

@@ -22,6 +22,7 @@ import shop.yesaladin.shop.product.dto.ProductModifyDto;
 import shop.yesaladin.shop.product.dto.ProductOnlyTitleDto;
 import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
 import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
+import shop.yesaladin.shop.product.dto.ProductRecentResponseDto;
 import shop.yesaladin.shop.product.dto.ProductWithCategoryResponseDto;
 import shop.yesaladin.shop.product.dto.ProductsResponseDto;
 import shop.yesaladin.shop.product.dto.RelationsResponseDto;
@@ -71,6 +72,15 @@ public class QueryProductServiceImpl implements QueryProductService {
             );
         }
         return productOnlyTitleDto;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public Boolean existsByIsbn(String isbn) {
+        return queryProductRepository.existsByIsbn(isbn);
     }
 
     /**
@@ -491,6 +501,64 @@ public class QueryProductServiceImpl implements QueryProductService {
                         ErrorCode.PRODUCT_NOT_FOUND,
                         "Product not found with isbn :" + isbn
                 ));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ProductRecentResponseDto> findRecentProductByPublishedDate(Pageable pageable) {
+        return createProductRecentResponseDto(queryProductRepository.findRecentProductByPublishedDate(
+                pageable), pageable);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ProductRecentResponseDto> findRecentViewProductById(
+            List<Long> ids,
+            Pageable pageable
+    ) {
+        return createProductRecentResponseDto(queryProductRepository.findRecentViewProductById(
+                ids,
+                pageable
+        ), pageable);
+    }
+
+    /**
+     * 신간 상품과 최근 본 상품에서 Entity에서 Dto로 변환해주는 메서드
+     *
+     * @param products Entity 리스트
+     * @param pageable 페이지 정보
+     * @return Dto 리스트
+     * @author 김선홍
+     * @sinco 1.0
+     */
+    private Page<ProductRecentResponseDto> createProductRecentResponseDto(
+            Page<Product> products,
+            Pageable pageable
+    ) {
+        List<ProductRecentResponseDto> dtoList = new ArrayList<>();
+        for (Product product : products) {
+            List<AuthorsResponseDto> author = findAuthorsByProduct(product);
+            PublishResponseDto publish = queryPublishService.findByProduct(product);
+
+            int rate = product.getTotalDiscountRate().getDiscountRate();
+            if (product.isSeparatelyDiscount()) {
+                rate = product.getDiscountRate();
+            }
+            dtoList.add(ProductRecentResponseDto.fromEntity(
+                    product,
+                    calcSellingPrice(product.getActualPrice(), rate),
+                    rate,
+                    publish.getPublisher().getName(),
+                    author.stream().map(AuthorsResponseDto::getName).collect(Collectors.toList())
+            ));
+        }
+        return new PageImpl<>(dtoList, pageable, products.getTotalElements());
     }
 
     private void checkValidSubscribeProducts(String isbn, Product product) {

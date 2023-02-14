@@ -1,27 +1,34 @@
 package shop.yesaladin.shop.publish.service.impl;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.product.domain.model.Product;
-import shop.yesaladin.shop.product.dummy.*;
+import shop.yesaladin.shop.product.dummy.DummyFile;
+import shop.yesaladin.shop.product.dummy.DummyProduct;
+import shop.yesaladin.shop.product.dummy.DummyPublisher;
+import shop.yesaladin.shop.product.dummy.DummySubscribeProduct;
+import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
 import shop.yesaladin.shop.publish.domain.model.Publish;
 import shop.yesaladin.shop.publish.domain.model.Publisher;
 import shop.yesaladin.shop.publish.domain.repository.CommandPublishRepository;
 import shop.yesaladin.shop.publish.domain.repository.QueryPublishRepository;
 import shop.yesaladin.shop.publish.dto.PublishResponseDto;
 import shop.yesaladin.shop.publish.service.inter.CommandPublishService;
-
-import java.time.Clock;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 class CommandPublishServiceImplTest {
 

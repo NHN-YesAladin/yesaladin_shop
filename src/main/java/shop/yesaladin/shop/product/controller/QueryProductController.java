@@ -48,6 +48,23 @@ public class QueryProductController {
     }
 
     /**
+     * [GET /products/check/{isbn}] 요청을 받아 ISBN 을 중복체크합니다.
+     *
+     * @param isbn 조회하고자 하는 Isbn
+     * @return 조회한 여부를 담은 ResponseDto
+     * @author 이수정
+     * @since 1.0
+     */
+    @GetMapping("/check/{isbn}")
+    public ResponseDto<Boolean> existsByIsbn(@PathVariable String isbn) {
+        return ResponseDto.<Boolean>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(queryProductService.existsByIsbn(isbn))
+                .build();
+    }
+
+    /**
      * [GET /products/quantity/{id}] 요청을 받아 상품의 수량을 반환합니다.
      *
      * @param id 조회하고자 하는 상품의 Id
@@ -180,6 +197,61 @@ public class QueryProductController {
                 .status(HttpStatus.OK)
                 .success(true)
                 .data(PaginatedResponseDto.<RelationsResponseDto>builder()
+                        .dataList(products.getContent())
+                        .totalPage(products.getTotalPages())
+                        .currentPage(products.getNumber())
+                        .totalDataCount(products.getTotalElements())
+                        .build())
+                .build();
+    }
+
+    /**
+     * 최신 상품 조회 메서드
+     *
+     * @param pageable 페이지 정보
+     * @return 촤신 상품 리스트
+     * @author 김선홍
+     * @since 1, 0
+     */
+    @GetMapping("/recent/product")
+    public ResponseDto<PaginatedResponseDto<ProductRecentResponseDto>> findRecentProductByPublishedDate(
+            @PageableDefault Pageable pageable
+    ) {
+        Page<ProductRecentResponseDto> products = queryProductService.findRecentProductByPublishedDate(
+                pageable);
+
+        return ResponseDto.<PaginatedResponseDto<ProductRecentResponseDto>>builder()
+                .status(HttpStatus.OK)
+                .success(true)
+                .data(PaginatedResponseDto.<ProductRecentResponseDto>builder()
+                        .dataList(products.getContent())
+                        .totalPage(products.getTotalPages())
+                        .currentPage(products.getNumber())
+                        .totalDataCount(products.getTotalElements())
+                        .build())
+                .build();
+    }
+
+    /**
+     * 최근 본 상품 메서드
+     *
+     * @param ids      최근 본 상품들의 id 리스트
+     * @param pageable 페이지 정보
+     * @return 최근 본 상품 리스트
+     * @author 김선홍
+     * @since 1, 0
+     */
+    @PostMapping("/recentview/product")
+    public ResponseDto<PaginatedResponseDto<ProductRecentResponseDto>> findRecentViewProductById(
+            @RequestBody List<Long> ids,
+            @PageableDefault Pageable pageable
+    ) {
+        Page<ProductRecentResponseDto> products = queryProductService.findRecentViewProductById(ids,
+                pageable);
+        return ResponseDto.<PaginatedResponseDto<ProductRecentResponseDto>>builder()
+                .status(HttpStatus.OK)
+                .success(true)
+                .data(PaginatedResponseDto.<ProductRecentResponseDto>builder()
                         .dataList(products.getContent())
                         .totalPage(products.getTotalPages())
                         .currentPage(products.getNumber())

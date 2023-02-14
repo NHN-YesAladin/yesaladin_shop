@@ -23,6 +23,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
+import org.springframework.kafka.core.KafkaTemplate;
 import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.member.domain.model.Member;
@@ -81,6 +82,7 @@ class CommandOrderServiceImplTest {
     QueryMemberAddressService queryMemberAddressService;
     QueryProductService queryProductService;
     QueryMemberService queryMemberService;
+    KafkaTemplate kafkaTemplate;
     Member member;
     MemberAddress memberAddress;
     NonMemberOrder nonMemberOrder;
@@ -145,6 +147,7 @@ class CommandOrderServiceImplTest {
                 queryMemberAddressService,
                 queryProductService,
                 queryMemberService,
+                kafkaTemplate,
                 clock
         );
         member = DummyMember.memberWithId();

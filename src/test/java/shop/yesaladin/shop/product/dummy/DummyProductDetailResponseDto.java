@@ -1,12 +1,11 @@
 package shop.yesaladin.shop.product.dummy;
 
+import java.util.List;
 import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
 import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
 import shop.yesaladin.shop.tag.dto.TagResponseDto;
 import shop.yesaladin.shop.writing.dto.AuthorsResponseDto;
-
-import java.util.List;
 
 public class DummyProductDetailResponseDto {
 

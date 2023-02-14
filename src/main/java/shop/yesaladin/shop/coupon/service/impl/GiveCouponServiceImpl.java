@@ -1,6 +1,8 @@
 package shop.yesaladin.shop.coupon.service.impl;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -31,13 +33,13 @@ import shop.yesaladin.coupon.message.CouponGiveRequestMessage;
 import shop.yesaladin.coupon.message.CouponGiveRequestResponseMessage;
 import shop.yesaladin.shop.config.GatewayProperties;
 import shop.yesaladin.shop.coupon.adapter.kafka.CouponProducer;
-import shop.yesaladin.shop.coupon.adapter.websocket.CouponWebsocketMessageSender;
 import shop.yesaladin.shop.coupon.domain.model.MemberCoupon;
 import shop.yesaladin.shop.coupon.domain.repository.CommandMemberCouponRepository;
 import shop.yesaladin.shop.coupon.domain.repository.QueryMemberCouponRepository;
 import shop.yesaladin.shop.coupon.dto.CouponGiveResultDto;
 import shop.yesaladin.shop.coupon.dto.CouponGroupAndLimitDto;
 import shop.yesaladin.shop.coupon.dto.RequestIdOnlyDto;
+import shop.yesaladin.shop.coupon.service.inter.CouponWebsocketMessageSendService;
 import shop.yesaladin.shop.coupon.service.inter.GiveCouponService;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
@@ -55,6 +57,7 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 public class GiveCouponServiceImpl implements GiveCouponService {
 
     private static final String COUPON_GROUP_CODE_REQUEST_URL_PREFIX = "coupon-groups";
+    private static final String MONTHLY_COUPON_OPEN_DATE_TIME_KEY = "monthlyCouponOpenDateTime";
 
     private final GatewayProperties gatewayProperties;
     private final CouponProducer couponProducer;
@@ -63,14 +66,23 @@ public class GiveCouponServiceImpl implements GiveCouponService {
     private final QueryMemberService queryMemberService;
     private final RestTemplate restTemplate;
     private final RedisTemplate<String, String> redisTemplate;
-    private final CouponWebsocketMessageSender couponWebsocketMessageSender;
+    private final CouponWebsocketMessageSendService couponWebsocketMessageSendService;
 
     @Override
     @Transactional(readOnly = true)
     public RequestIdOnlyDto sendCouponGiveRequest(
-            String memberId, TriggerTypeCode triggerTypeCode, Long couponId
+            String memberId,
+            TriggerTypeCode triggerTypeCode,
+            Long couponId,
+            LocalDateTime requestDateTime
     ) {
-        registerIssueRequest(memberId, triggerTypeCode.name(), couponId.toString());
+        if (isMonthlyCoupon(triggerTypeCode)) {
+            checkMonthlyCouponIssueRequestTime(requestDateTime);
+        }
+
+        if (Objects.nonNull(couponId)) {    // 자동 발행 타입 쿠폰을 요청하는 경우
+            registerIssueRequest(memberId, triggerTypeCode.name(), couponId.toString());
+        }
         List<CouponGroupAndLimitDto> couponGroupAndLimitList = getCouponGroupAndLimit(
                 triggerTypeCode,
                 couponId
@@ -95,14 +107,12 @@ public class GiveCouponServiceImpl implements GiveCouponService {
             return response;
         }
 
-        couponGroupAndLimitList.forEach(couponGroupAndLimit ->
-                sendGiveRequestMessage(
-                        triggerTypeCode,
-                        couponId,
-                        couponGroupAndLimit.getIsLimited(),
-                        requestId
-                )
-        );
+        couponGroupAndLimitList.forEach(couponGroupAndLimit -> sendGiveRequestMessage(
+                triggerTypeCode,
+                couponId,
+                couponGroupAndLimit.getIsLimited(),
+                requestId
+        ));
         return response;
     }
 
@@ -120,8 +130,7 @@ public class GiveCouponServiceImpl implements GiveCouponService {
                     responseMessage.getCoupons()
                             .stream()
                             .map(CouponGiveDto::getCouponGroupCode)
-                            .collect(
-                                    Collectors.toList())
+                            .collect(Collectors.toList())
             );
             resultBuilder.couponCodes(responseMessage.getCoupons()
                     .stream()
@@ -130,7 +139,7 @@ public class GiveCouponServiceImpl implements GiveCouponService {
             tryGiveCouponToMember(responseMessage, memberId);
             couponProducer.produceGivenResultMessage(resultBuilder.success(true).build());
 
-            couponWebsocketMessageSender.sendGiveCouponResultMessage(new CouponGiveResultDto(
+            couponWebsocketMessageSendService.sendGiveCouponResultMessage(new CouponGiveResultDto(
                     responseMessage.getRequestId(),
                     responseMessage.isSuccess(),
                     responseMessage.isSuccess() ? "발급이 완료되었습니다." : responseMessage.getErrorMessage()
@@ -144,9 +153,9 @@ public class GiveCouponServiceImpl implements GiveCouponService {
     /**
      * 쿠폰 발행 요청에 대한 정보를 10초 동안 redis 에 저장합니다. 10초 내에 같은 요청을 시도하는 경우 예외를 던집니다.
      *
-     * @param memberId 발행 요청을 한 회원의 로그인 아이디
+     * @param memberId        발행 요청을 한 회원의 로그인 아이디
      * @param triggerTypeCode 발행 요청을 한 쿠폰의 트리거 타입 코드
-     * @param couponId 발행 요청한 쿠폰의 아이디
+     * @param couponId        발행 요청한 쿠폰의 아이디
      */
     public void registerIssueRequest(
             String memberId, String triggerTypeCode, String couponId
@@ -253,7 +262,7 @@ public class GiveCouponServiceImpl implements GiveCouponService {
     }
 
     private String getMemberIdFromRequestId(String requestId) {
-        return Optional.ofNullable(redisTemplate.opsForValue().get(requestId))
+        return Optional.of(Objects.requireNonNull(redisTemplate.opsForValue().get(requestId)))
                 .orElseThrow(() -> new ClientException(
                         ErrorCode.BAD_REQUEST,
                         "Request id not exists or expired. request id : " + requestId
@@ -276,5 +285,43 @@ public class GiveCouponServiceImpl implements GiveCouponService {
                         .forEach(commandMemberCouponRepository::save)
 
                 );
+    }
+
+    /**
+     * 이달의 쿠폰 오픈 시간을 확인하여 오픈 시간 전 발행 요청을 처리합니다.
+     *
+     * @param requestDateTime 이달의 쿠폰 발행 요청 시간
+     */
+    private void checkMonthlyCouponIssueRequestTime(LocalDateTime requestDateTime) {
+        if (Boolean.FALSE.equals(redisTemplate.hasKey(MONTHLY_COUPON_OPEN_DATE_TIME_KEY))) {
+            throw new ClientException(
+                    ErrorCode.NOT_FOUND,
+                    "Not found monthly coupon's open date time."
+            );
+        }
+
+        String dateTime = redisTemplate.opsForValue().get(MONTHLY_COUPON_OPEN_DATE_TIME_KEY);
+
+        assert dateTime != null;
+        LocalDateTime openDateTime = LocalDateTime.parse(dateTime, DateTimeFormatter.ISO_DATE_TIME);
+        log.info("==== monthly coupon open time : {} ====", dateTime);
+
+        if (requestDateTime.isAfter(LocalDateTime.now())
+                || requestDateTime.isBefore(openDateTime)) {
+            throw new ClientException(
+                    ErrorCode.BAD_REQUEST,
+                    "Cannot process monthly coupon issue request before open time."
+            );
+        }
+    }
+
+    /**
+     * 발행 요청의 쿠폰 타입이 이달의 쿠폰 타입인지 확인합니다.
+     *
+     * @param triggerTypeCode 요청한 쿠폰의 트리거 타입 코드
+     * @return boolean
+     */
+    private boolean isMonthlyCoupon(TriggerTypeCode triggerTypeCode) {
+        return triggerTypeCode.equals(TriggerTypeCode.COUPON_OF_THE_MONTH);
     }
 }
