@@ -60,8 +60,8 @@ public class PaymentCouponEventListener {
         String orderNumber = eventDto.getOrderNumber();
         String useCouponReqId = getRequestIdForCouponsToRedis(orderNumber);
 
-        //TODO useCouponService.cancelCoupon()
-        List<String> usedCouponCode = getUsedCouponCode(orderNumber);
+        List<String> usedCouponCodes = getUsedCouponCode(orderNumber);
+        useCouponService.cancelCouponUse(usedCouponCodes);
 
         // 레디스에서 주문번호로 삭제
         deleteRequestIdForCouponsToRedis(useCouponReqId);
