@@ -228,6 +228,7 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
                         LocalDateTime.of(startDate, LocalTime.MIDNIGHT),
                         LocalDateTime.of(endDate.plusDays(1), LocalTime.MIDNIGHT)
                 )))
+                .where(memberOrder.isHidden.isFalse())
                 .groupBy(memberOrder.id)
                 .orderBy(memberOrder.orderDateTime.asc())
                 .offset(pageable.getOffset())
@@ -239,7 +240,8 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
                 .where(memberOrder.member.id.eq(memberId).and(memberOrder.orderDateTime.between(
                         LocalDateTime.of(startDate, LocalTime.MIDNIGHT),
                         LocalDateTime.of(endDate, LocalTime.MIDNIGHT)
-                )));
+                )))
+                .where(memberOrder.isHidden.isFalse());
 
         return PageableExecutionUtils.getPage(data, pageable, countQuery::fetchFirst);
     }
