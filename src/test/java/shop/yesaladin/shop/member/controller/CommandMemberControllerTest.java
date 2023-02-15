@@ -40,6 +40,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.aop.AopAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
@@ -70,6 +71,7 @@ import shop.yesaladin.shop.member.service.inter.CommandMemberService;
 
 @AutoConfigureRestDocs
 @Import({AopAutoConfiguration.class, LoginIdAspect.class})
+@AutoConfigureMockMvc(addFilters = false)
 @WebMvcTest(CommandMemberController.class)
 class CommandMemberControllerTest {
 
