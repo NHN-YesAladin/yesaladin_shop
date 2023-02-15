@@ -1,0 +1,44 @@
+= Member Signup
+
+=== 일반 회원 가입
+
+==== curl
+include::{snippets}/register-member-success/curl-request.adoc[]
+
+==== request
+
+===== Body
+
+include::{snippets}/register-member-success/request-fields.adoc[]
+
+===== Example
+include::{snippets}/register-member-success/http-request.adoc[]
+
+==== response
+
+===== Body
+include::{snippets}/register-member-success/response-fields.adoc[]
+
+===== Example
+include::{snippets}/register-member-success/http-response.adoc[]
+
+=== OAuth2 회원 가입
+
+==== curl
+include::{snippets}/register-oauth2-member-success/curl-request.adoc[]
+
+==== request
+
+===== Body
+include::{snippets}/register-oauth2-member-success/request-fields.adoc[]
+
+===== Example
+include::{snippets}/register-oauth2-member-success/http-request.adoc[]
+
+==== response
+
+===== Body
+include::{snippets}/register-oauth2-member-success/response-fields.adoc[]
+
+===== Example
+include::{snippets}/register-oauth2-member-success/http-response.adoc[]
