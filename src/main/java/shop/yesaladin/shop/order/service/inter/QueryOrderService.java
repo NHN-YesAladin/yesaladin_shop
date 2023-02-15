@@ -5,7 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.common.exception.PageOffsetOutOfBoundsException;
-import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
 import shop.yesaladin.shop.order.dto.OrderDetailsResponseDto;
@@ -45,8 +44,8 @@ public interface QueryOrderService {
      *
      * @param queryDto 검색 조건이 담겨있는 dto
      * @return 특정 회원의 기간 내에 생성된 모든 주문 데이터의 요약본
-     * @throws PageOffsetOutOfBoundsException 요청한 데이터 오프셋이 총 데이터 수보다 클 경우 예외
-     * @throws MemberNotFoundException        요청한 회원 ID가 존재하지 않을 경우 예외
+     * @throws PageOffsetOutOfBoundsException                  요청한 데이터 오프셋이 총 데이터 수보다 클 경우 예외
+     * @throws shop.yesaladin.common.exception.ClientException 요청한 회원 ID가 존재하지 않을 경우 예외
      * @author 김홍대
      * @since 1.0
      */
@@ -92,8 +91,8 @@ public interface QueryOrderService {
      *
      * @param queryDto 검색 조건이 담겨있는 dto
      * @return 특정 회원의 기간 내에 생성된 모든 주문 데이터의 요약본
-     * @throws PageOffsetOutOfBoundsException 요청한 데이터 오프셋이 총 데이터 수보다 클 경우 예외
-     * @throws MemberNotFoundException        요청한 회원 ID가 존재하지 않을 경우 예외
+     * @throws PageOffsetOutOfBoundsException                  요청한 데이터 오프셋이 총 데이터 수보다 클 경우 예외
+     * @throws shop.yesaladin.common.exception.ClientException 요청한 회원 ID가 존재하지 않을 경우 예외
      * @author 배수한
      * @since 1.0
      */
@@ -153,5 +152,4 @@ public interface QueryOrderService {
      * @return 주문 상세 정보
      */
     OrderDetailsResponseDto getDetailsDtoByOrderNumber(String orderNumber);
-
 }

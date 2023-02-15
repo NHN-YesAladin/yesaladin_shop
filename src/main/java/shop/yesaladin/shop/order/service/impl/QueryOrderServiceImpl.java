@@ -195,13 +195,14 @@ public class QueryOrderServiceImpl implements QueryOrderService {
     }
 
     private List<MemberCouponSummaryDto> getMemberCoupons(
-            String loginId, int totalPage
+            String loginId, int totalCount
     ) {
         int offset = 20;
         List<MemberCouponSummaryDto> memberCoupons = new ArrayList<>();
 
         PaginatedResponseDto<MemberCouponSummaryDto> coupons;
-        for (int i = 0; i < totalPage; i++) {
+
+        for (int i = 0; i <= totalCount / 20; i++) {
             coupons = queryMemberCouponService.getMemberCouponSummaryList(
                     PageRequest.of(i, offset),
                     loginId,
@@ -227,16 +228,13 @@ public class QueryOrderServiceImpl implements QueryOrderService {
         LocalDate endDate = queryDto.getEndDateOrDefaultValue(clock);
 
         checkRequestedOffsetInBounds(startDate, endDate, foundMember.getId(), pageable);
-        Page<OrderSummaryResponseDto> responseDtos = queryOrderRepository.findOrdersInPeriodByMemberId(
+
+        return queryOrderRepository.findOrdersInPeriodByMemberId(
                 startDate,
                 endDate,
                 foundMember.getId(),
                 pageable
         );
-        for (OrderSummaryResponseDto responseDto : responseDtos) {
-
-        }
-        return responseDtos;
     }
 
     /**

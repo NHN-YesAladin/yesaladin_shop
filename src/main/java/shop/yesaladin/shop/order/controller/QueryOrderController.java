@@ -78,8 +78,6 @@ public class QueryOrderController {
                 queryOrderService.getNonMemberOrderSheetData(products)
                 : queryOrderService.getMemberOrderSheetData(products, loginId);
 
-        log.error("coupon list : : {}", response.getMemberCoupons());
-
         return ResponseDto.<OrderSheetResponseDto>builder()
                 .success(true)
                 .status(HttpStatus.OK)

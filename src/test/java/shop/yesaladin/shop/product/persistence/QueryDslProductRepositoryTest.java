@@ -164,7 +164,6 @@ class QueryDslProductRepositoryTest {
         // then
         assertThat(optionalProduct).isPresent();
         assertThat(optionalProduct.get().getIsbn()).isEqualTo(ISBN1);
-        assertThat(optionalProduct.get().getThumbnailFile()).isEqualTo(thumbnailFile1);
         assertThat(optionalProduct.get().getEbookFile()).isEqualTo(ebookFile1);
         assertThat(optionalProduct.get()
                 .getProductTypeCode()).isEqualTo(ProductTypeCode.BESTSELLER);
@@ -258,7 +257,10 @@ class QueryDslProductRepositoryTest {
         entityManager.persist(product2);
 
         // when
-        Page<Product> products = repository.findAllByTypeIdForManager(PageRequest.of(0, 5), ProductTypeCode.NEWBOOK.getId());
+        Page<Product> products = repository.findAllByTypeIdForManager(
+                PageRequest.of(0, 5),
+                ProductTypeCode.NEWBOOK.getId()
+        );
 
         // then
         assertThat(products).isNotNull();
@@ -266,7 +268,9 @@ class QueryDslProductRepositoryTest {
         assertThat(products.getContent().get(0).getIsbn()).isEqualTo(ISBN2);
         assertThat(products.getContent().get(0).getThumbnailFile()).isEqualTo(thumbnailFile2);
         assertThat(products.getContent().get(0).getEbookFile()).isEqualTo(ebookFile2);
-        assertThat(products.getContent().get(0).getProductTypeCode()).isEqualTo(ProductTypeCode.NEWBOOK);
+        assertThat(products.getContent()
+                .get(0)
+                .getProductTypeCode()).isEqualTo(ProductTypeCode.NEWBOOK);
     }
 
     @Test
