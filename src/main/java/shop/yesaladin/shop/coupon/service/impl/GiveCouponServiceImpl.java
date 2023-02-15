@@ -148,6 +148,11 @@ public class GiveCouponServiceImpl implements GiveCouponService {
             ));
         } catch (Exception e) {
             couponProducer.produceGivenResultMessage(resultBuilder.success(false).build());
+            couponWebsocketMessageSendService.trySendGiveCouponResultMessage(new CouponGiveResultDto(
+                    responseMessage.getRequestId(),
+                    responseMessage.isSuccess(),
+                    responseMessage.getErrorMessage()
+            ));
             throw e;
         }
     }

@@ -1,8 +1,6 @@
 package shop.yesaladin.shop.order.domain.repository;
 
-import java.util.List;
 import java.util.Optional;
-import org.apache.kafka.common.quota.ClientQuotaAlteration.Op;
 import shop.yesaladin.shop.order.domain.model.OrderStatusChangeLog;
 import shop.yesaladin.shop.order.domain.model.OrderStatusChangeLog.Pk;
 

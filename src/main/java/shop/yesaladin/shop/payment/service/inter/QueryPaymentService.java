@@ -1,7 +1,6 @@
 package shop.yesaladin.shop.payment.service.inter;
 
 import shop.yesaladin.shop.payment.domain.model.Payment;
-import shop.yesaladin.shop.payment.dto.PaymentCompleteSimpleResponseDto;
 
 /**
  * 결제 정보에 관련한 정보를 조회하기 위한 서비스 인터페이스

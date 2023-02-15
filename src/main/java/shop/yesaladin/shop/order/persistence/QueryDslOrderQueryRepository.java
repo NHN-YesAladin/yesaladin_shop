@@ -2,6 +2,7 @@ package shop.yesaladin.shop.order.persistence;
 
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -200,8 +201,8 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
             Pageable pageable
     ) {
         QMemberOrder memberOrder = QMemberOrder.memberOrder;
-        QOrderStatusChangeLog orderStatusChangeLog = QOrderStatusChangeLog.orderStatusChangeLog;
         QOrderProduct orderProduct = QOrderProduct.orderProduct;
+        QOrderStatusChangeLog orderStatusChangeLog = QOrderStatusChangeLog.orderStatusChangeLog;
 
         List<OrderSummaryResponseDto> data = queryFactory.select(Projections.constructor(
                         OrderSummaryResponseDto.class,
@@ -210,11 +211,7 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
                         memberOrder.orderDateTime,
                         memberOrder.name,
                         memberOrder.totalAmount,
-                        ExpressionUtils.as(queryFactory.select(orderStatusChangeLog.orderStatusCode.max())
-                                .from(orderStatusChangeLog)
-                                .innerJoin(memberOrder)
-                                .on(orderStatusChangeLog.order.id.eq(memberOrder.id))
-                                .where(memberOrder.member.id.eq(memberId)), "orderStatusCode"),
+                        Expressions.asEnum(OrderStatusCode.ORDER),
                         memberOrder.member.id,
                         memberOrder.member.name,
                         orderProduct.count(),
@@ -228,18 +225,28 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
                         LocalDateTime.of(startDate, LocalTime.MIDNIGHT),
                         LocalDateTime.of(endDate.plusDays(1), LocalTime.MIDNIGHT)
                 )))
+                .where(memberOrder.isHidden.isFalse())
                 .groupBy(memberOrder.id)
                 .orderBy(memberOrder.orderDateTime.asc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
+        for (OrderSummaryResponseDto datum : data) {
+            OrderStatusCode code = queryFactory.select(orderStatusChangeLog.orderStatusCode.max())
+                    .from(orderStatusChangeLog)
+                    .where(orderStatusChangeLog.order.id.eq(datum.getOrderId()))
+                    .fetchFirst();
+            datum.setOrderStatusCode(code);
+        }
+
         JPAQuery<Long> countQuery = queryFactory.select(memberOrder.count())
                 .from(memberOrder)
                 .where(memberOrder.member.id.eq(memberId).and(memberOrder.orderDateTime.between(
                         LocalDateTime.of(startDate, LocalTime.MIDNIGHT),
                         LocalDateTime.of(endDate, LocalTime.MIDNIGHT)
-                )));
+                )))
+                .where(memberOrder.isHidden.isFalse());
 
         return PageableExecutionUtils.getPage(data, pageable, countQuery::fetchFirst);
     }

@@ -41,15 +41,4 @@ public class QueryMemberLoginController {
                 .data(response)
                 .build();
     }
-
-    @GetMapping("/oauth2/login/{email}")
-    public ResponseDto<MemberLoginResponseDto> getMemberByEmail(@PathVariable String email) {
-        MemberLoginResponseDto response = queryMemberService.findMemberLoginInfoByEmail(
-                email);
-        return ResponseDto.<MemberLoginResponseDto>builder()
-                .status(HttpStatus.OK)
-                .success(true)
-                .data(response)
-                .build();
-    }
 }

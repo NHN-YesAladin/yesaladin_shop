@@ -40,12 +40,14 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.aop.AopAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -63,17 +65,18 @@ import shop.yesaladin.shop.member.dto.MemberUnblockResponseDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateResponseDto;
 import shop.yesaladin.shop.member.dto.MemberWithdrawResponseDto;
-import shop.yesaladin.shop.member.exception.MemberNotFoundException;
+import shop.yesaladin.shop.member.dto.OauthMemberCreateRequestDto;
 import shop.yesaladin.shop.member.service.inter.CommandMemberService;
 
 @AutoConfigureRestDocs
 @Import({AopAutoConfiguration.class, LoginIdAspect.class})
+@AutoConfigureMockMvc(addFilters = false)
 @WebMvcTest(CommandMemberController.class)
 class CommandMemberControllerTest {
 
     private final String NAME = "Ramos";
     private final String NICKNAME = "Ramos";
-    private final String LOGIN_ID = "testloginid";
+    private final String LOGIN_ID = "testid1234";
     private final String PHONE = "01012345678";
     private final String INVALID_PASSWORD = "asdfasdf";
     private final String PASSWORD = "testPassword12@";
@@ -121,7 +124,7 @@ class CommandMemberControllerTest {
         updateResponse = MemberUpdateResponseDto.fromEntity(member);
     }
 
-    @WithMockUser
+    @WithAnonymousUser
     @Test
     @DisplayName("회원 등록 요청 시 입력 데이터가 null거나 @Valid 검증 조건에 맞지 않은 경우 요청에 실패 한다.")
     void signUpMember_withInvalidInputData() throws Exception {
@@ -141,7 +144,7 @@ class CommandMemberControllerTest {
         verify(commandMemberService, never()).create(any());
     }
 
-    @WithMockUser
+    @WithAnonymousUser
     @Test
     @DisplayName("회원 등록 요청 시 nickname, loginId, password에 걸려있는 정규 표현식에 부합하지 않는 경우 요청에 실패 한다.")
     void signUpMember_withInvalidInputData_invalidRegex() throws Exception {
@@ -170,7 +173,7 @@ class CommandMemberControllerTest {
         verify(commandMemberService, never()).create(any());
     }
 
-    @WithMockUser
+    @WithAnonymousUser
     @Test
     @DisplayName("회원 가입 성공")
     void signUpMember() throws Exception {
@@ -209,6 +212,136 @@ class CommandMemberControllerTest {
         //docs
         perform.andDo(document(
                 "register-member-success",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                requestFields(
+                        fieldWithPath("name").type(JsonFieldType.STRING)
+                                .description("회원의 이름"),
+                        fieldWithPath("nickname").type(JsonFieldType.STRING)
+                                .description("회원의 닉네임"),
+                        fieldWithPath("loginId").type(JsonFieldType.STRING)
+                                .description("회원의 아이디"),
+                        fieldWithPath("email").type(JsonFieldType.STRING)
+                                .description("회원의 이메일"),
+                        fieldWithPath("phone").type(JsonFieldType.STRING)
+                                .description("회원의 아이디"),
+                        fieldWithPath("password").type(JsonFieldType.STRING)
+                                .description("회원의 패스워드"),
+                        fieldWithPath("birth").type(JsonFieldType.STRING)
+                                .description("회원의 생년월일"),
+                        fieldWithPath("gender").type(JsonFieldType.STRING)
+                                .description("회원의 성별")
+                ),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("회원의 pk"),
+                        fieldWithPath("data.name").type(JsonFieldType.STRING).description("회원의 이름"),
+                        fieldWithPath("data.nickname").type(JsonFieldType.STRING)
+                                .description("회원의 닉네임"),
+                        fieldWithPath("data.loginId").type(JsonFieldType.STRING)
+                                .description("회원의 아이디"),
+                        fieldWithPath("data.memberGrade").type(JsonFieldType.STRING)
+                                .description("회원의 등급"),
+                        fieldWithPath("data.role").type(JsonFieldType.STRING)
+                                .description("회원의 권한"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("HTTP 상태 코드"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메시지")
+                                .optional()
+                )
+        ));
+    }
+
+    @WithAnonymousUser
+    @Test
+    @DisplayName("OAuth2 회원 등록 요청 시 입력 데이터가 null거나 @Valid 검증 조건에 맞지 않은 경우 요청에 실패 한다.")
+    void signUpOauthMember_withInvalidInputData_invalidRegex() throws Exception {
+        //given
+        OauthMemberCreateRequestDto request = new OauthMemberCreateRequestDto();
+        Mockito.when(commandMemberService.createOauth(any())).thenReturn(createResponse);
+
+        //when
+        ResultActions perform = mockMvc.perform(post("/v1/members/oauth2")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
+
+        //then
+        perform.andDo(print()).andExpect(status().isBadRequest());
+
+        verify(commandMemberService, never()).create(any());
+    }
+
+    @WithAnonymousUser
+    @Test
+    @DisplayName("OAuth2 회원 등록 요청 시 nickname, loginId에 걸려있는 정규 표현식에 부합하지 않는 경우 요청에 실패 한다.")
+    void signUpOauthMember_withInvalidInputData() throws Exception {
+        //given
+        OauthMemberCreateRequestDto request = new OauthMemberCreateRequestDto(
+                NAME,
+                NICKNAME,
+                LOGIN_ID,
+                INVALID_PASSWORD,
+                PHONE,
+                BIRTH,
+                EMAIL,
+                GENDER
+        );
+        Mockito.when(commandMemberService.createOauth(any())).thenReturn(createResponse);
+
+        //when
+        ResultActions perform = mockMvc.perform(post("/v1/members/oauth2")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
+
+        //then
+        perform.andDo(print()).andExpect(status().isBadRequest());
+
+        verify(commandMemberService, never()).create(any());
+    }
+
+    @WithAnonymousUser
+    @Test
+    @DisplayName("OAuth2 회원 가입 성공")
+    void signUpOauthMember() throws Exception {
+        //given
+        OauthMemberCreateRequestDto request = new OauthMemberCreateRequestDto(
+                NAME,
+                NICKNAME,
+                LOGIN_ID,
+                EMAIL,
+                PHONE,
+                PASSWORD,
+                BIRTH,
+                GENDER
+        );
+        Member member = request.toEntity();
+
+        Mockito.when(commandMemberService.createOauth(any())).thenReturn(createResponse);
+
+        //when
+        ResultActions perform = mockMvc.perform(post("/v1/members/oauth2")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
+
+        //then
+        perform.andDo(print()).andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.data.name", equalTo(member.getName())))
+                .andExpect(jsonPath("$.data.nickname", equalTo(member.getNickname())))
+                .andExpect(jsonPath("$.data.loginId", equalTo(member.getLoginId())))
+                .andExpect(jsonPath("$.data.role", equalTo(ROLE_MEMBER)))
+                .andExpect(jsonPath("$.data.memberGrade", equalTo(MemberGrade.WHITE.getName())));
+
+        verify(commandMemberService, times(1)).createOauth(any());
+
+        //docs
+        perform.andDo(document(
+                "register-oauth2-member-success",
                 getDocumentRequest(),
                 getDocumentResponse(),
                 requestFields(
@@ -883,7 +1016,10 @@ class CommandMemberControllerTest {
         String invalidLoginId = "invalidLoginId";
 
         Mockito.when(commandMemberService.withDraw(invalidLoginId))
-                .thenThrow(new MemberNotFoundException("Member loginId: " + invalidLoginId));
+                .thenThrow(new ClientException(
+                        ErrorCode.MEMBER_NOT_FOUND,
+                        "Member loginId: " + invalidLoginId
+                ));
 
         //when
         ResultActions perform = mockMvc.perform(delete(
@@ -903,7 +1039,14 @@ class CommandMemberControllerTest {
                 getDocumentResponse(),
                 pathParameters(parameterWithName("loginId").description("탈퇴할 회원의 아이디")),
                 responseFields(
-                        fieldWithPath("message").type(JsonFieldType.STRING).description("에러 메세지")
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data").type(JsonFieldType.NUMBER)
+                                .description("null")
+                                .optional(),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
                 )
         ));
     }

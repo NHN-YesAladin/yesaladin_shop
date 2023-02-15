@@ -148,6 +148,10 @@ public class CommandOrderStatusChangeLogServiceImpl implements CommandOrderStatu
             Order order,
             OrderStatusCode code
     ) {
+        appendLog(orderChangeDateTime, order, code);
+    }
+
+    private void appendLog(LocalDateTime orderChangeDateTime, Order order, OrderStatusCode code) {
         OrderStatusChangeLog orderStatusChangeLog = OrderStatusChangeLog.create(
                 order,
                 orderChangeDateTime,
@@ -158,5 +162,23 @@ public class CommandOrderStatusChangeLogServiceImpl implements CommandOrderStatu
         if (!changeLog.getOrderStatusCode().equals(code)) {
             throw new ClientException(ErrorCode.ORDER_BAD_REQUEST, "잘못된 주문 상태 변경 요청입니다.");
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public void appendOrderStatusChangeLogByOrderId(
+            LocalDateTime orderChangeDateTime,
+            Long orderId,
+            OrderStatusCode code
+    ) {
+        Order order = queryOrderRepository.findById(orderId)
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.ORDER_NOT_FOUND,
+                        "Order not found with id : " + orderId
+                ));
+        appendLog(orderChangeDateTime, order, code);
     }
 }

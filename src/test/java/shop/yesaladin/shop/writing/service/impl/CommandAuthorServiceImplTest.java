@@ -16,7 +16,7 @@ import org.mockito.Mockito;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.dto.MemberDto;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
-import shop.yesaladin.shop.member.exception.MemberNotFoundException;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
 import shop.yesaladin.shop.writing.domain.model.Author;
@@ -80,10 +80,10 @@ class CommandAuthorServiceImplTest {
         // given
         AuthorRequestDto createDto = new AuthorRequestDto(NAME, "loginId");
 
-        Mockito.when(queryMemberService.findMemberByLoginId(createDto.getLoginId())).thenThrow(MemberNotFoundException.class);
+        Mockito.when(queryMemberService.findMemberByLoginId(createDto.getLoginId())).thenThrow(ClientException.class);
 
         // when then
-        assertThatThrownBy(() -> service.create(createDto)).isInstanceOf(MemberNotFoundException.class);
+        assertThatThrownBy(() -> service.create(createDto)).isInstanceOf(ClientException.class);
 
         verify(queryMemberService, times(1)).findMemberByLoginId(createDto.getLoginId());
     }
@@ -130,10 +130,10 @@ class CommandAuthorServiceImplTest {
         Author author = DummyAuthor.dummy(NAME, null);
 
         Mockito.when(queryAuthorRepository.findById(id)).thenReturn(Optional.ofNullable(author));
-        Mockito.when(queryMemberService.findMemberByLoginId(modifyDto.getLoginId())).thenThrow(MemberNotFoundException.class);
+        Mockito.when(queryMemberService.findMemberByLoginId(modifyDto.getLoginId())).thenThrow(ClientException.class);
 
         // when then
-        assertThatThrownBy(() -> service.modify(id, modifyDto)).isInstanceOf(MemberNotFoundException.class);
+        assertThatThrownBy(() -> service.modify(id, modifyDto)).isInstanceOf(ClientException.class);
 
         verify(queryMemberService, times(1)).findMemberByLoginId(modifyDto.getLoginId());
     }

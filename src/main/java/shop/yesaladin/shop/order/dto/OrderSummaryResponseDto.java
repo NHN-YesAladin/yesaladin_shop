@@ -1,9 +1,9 @@
 package shop.yesaladin.shop.order.dto;
 
 import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.NoArgsConstructor;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
 import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
 
@@ -14,21 +14,24 @@ import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
  * @since 1.0
  */
 
-@ToString
 @Getter
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 public class OrderSummaryResponseDto {
 
-    private final Long orderId;
-    private final String orderNumber;
-    private final LocalDateTime orderDateTime;
-    private final String orderName;
-    private final Long orderAmount;
-    private final OrderStatusCode orderStatusCode;
-    private final Long memberId;
-    private final String memberName;
-    private final Long orderProductCount;
-    private final Integer productTotalCount;
-    private final OrderCode orderCode;
+    private Long orderId;
+    private String orderNumber;
+    private LocalDateTime orderDateTime;
+    private String orderName;
+    private Long orderAmount;
+    private OrderStatusCode orderStatusCode;
+    private Long memberId;
+    private String memberName;
+    private Long orderProductCount;
+    private Integer productTotalCount;
+    private OrderCode orderCode;
 
+    public void setOrderStatusCode(OrderStatusCode orderStatusCode) {
+        this.orderStatusCode = orderStatusCode;
+    }
 }

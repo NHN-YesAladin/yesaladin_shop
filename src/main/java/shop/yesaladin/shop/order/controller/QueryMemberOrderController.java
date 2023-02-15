@@ -129,8 +129,8 @@ public class QueryMemberOrderController {
      * 숨김처리된 주문 내역을 조회합니다.
      *
      * @param pageable 페이지와 사이즈
-     * @param hidden 숨김여부
-     * @param loginId 회원의 아이디
+     * @param hidden   숨김여부
+     * @param loginId  회원의 아이디
      * @return 회원의 숨김처리된 주문 목록
      * @author 최예린
      * @since 1.0

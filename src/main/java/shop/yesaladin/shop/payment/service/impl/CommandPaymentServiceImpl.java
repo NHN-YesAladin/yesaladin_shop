@@ -21,6 +21,7 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.exception.ClientException;
+import shop.yesaladin.shop.delivery.dto.DeliveryEventDto;
 import shop.yesaladin.shop.order.domain.model.NonMemberOrder;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
@@ -34,6 +35,7 @@ import shop.yesaladin.shop.payment.domain.model.PaymentCode;
 import shop.yesaladin.shop.payment.domain.repository.CommandPaymentRepository;
 import shop.yesaladin.shop.payment.domain.repository.QueryPaymentRepository;
 import shop.yesaladin.shop.payment.dto.PaymentCancelDto;
+import shop.yesaladin.shop.payment.dto.PaymentCommitCouponEventDto;
 import shop.yesaladin.shop.payment.dto.PaymentCompleteSimpleResponseDto;
 import shop.yesaladin.shop.payment.dto.PaymentEventDto;
 import shop.yesaladin.shop.payment.dto.PaymentRequestDto;
@@ -60,7 +62,7 @@ public class CommandPaymentServiceImpl implements CommandPaymentService {
     private final CommandOrderStatusChangeLogService commandOrderStatusChangeLogService;
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    private static HttpHeaders getHttpHeaders() {
+    private HttpHeaders getHttpHeaders() {
         String base64SecretKey = Base64.getEncoder().encodeToString(TOSS_SECRET_KEY.getBytes());
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -97,14 +99,18 @@ public class CommandPaymentServiceImpl implements CommandPaymentService {
                 OrderStatusCode.DEPOSIT
         );
 
-        //TODO 결제 :  배송 서버에 배송 요청 - 게이트웨이 오픈 필요
-        //applicationEventPublisher.publishEvent(new DeliveryEventDto(order.getId()));
+        // 배송 요청
+        applicationEventPublisher.publishEvent(new DeliveryEventDto(order.getId()));
+
+        // 주문 상태 로그 추가 - 배송 준비 상태
         commandOrderStatusChangeLogService.appendOrderStatusChangeLog(
                 LocalDateTime.now().plusSeconds(1L),
                 order,
                 OrderStatusCode.READY
         );
 
+        // 쿠폰 실제 사용하기
+        applicationEventPublisher.publishEvent(new PaymentCommitCouponEventDto(order.getOrderNumber()));
         return getPaymentResponseDto(order, responseDto);
     }
 
@@ -215,7 +221,7 @@ public class CommandPaymentServiceImpl implements CommandPaymentService {
                     JsonNode.class
             );
         } catch (RestClientException e) {
-            log.error("{}", e.getMessage());
+            log.error("{}", e);
             throw new PaymentFailException(e.getMessage(), "ERROR");
         }
 

@@ -1,10 +1,17 @@
 package shop.yesaladin.shop.product.persistence;
 
 
+import static com.querydsl.core.group.GroupBy.groupBy;
+import static com.querydsl.core.types.dsl.Expressions.list;
+
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -14,6 +21,7 @@ import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.exception.ClientException;
+import shop.yesaladin.shop.category.domain.model.querydsl.QProductCategory;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.ProductTypeCode;
 import shop.yesaladin.shop.product.domain.model.querydsl.QProduct;
@@ -21,12 +29,8 @@ import shop.yesaladin.shop.product.domain.model.querydsl.QRelation;
 import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
 import shop.yesaladin.shop.product.dto.ProductOnlyTitleDto;
 import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
+import shop.yesaladin.shop.product.dto.ProductWithCategoryResponseDto;
 import shop.yesaladin.shop.publish.domain.model.querydsl.QPublish;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 
 /**
  * 상품 조회를 위한 Repository QueryDsl 구현체 입니다.
@@ -106,11 +110,49 @@ public class QueryDslProductRepository implements QueryProductRepository {
     public Optional<Product> findByIsbn(String isbn) {
         QProduct product = QProduct.product;
 
+        return Optional.ofNullable(queryFactory.select(product)
+                .from(product)
+                .where(product.isbn.eq(isbn))
+                .fetchFirst());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Optional<ProductWithCategoryResponseDto> getByIsbn(String isbn) {
+        QProduct product = QProduct.product;
+        QProductCategory productCategory = QProductCategory.productCategory;
+
         return Optional.ofNullable(
-                queryFactory.select(product)
-                        .from(product)
-                        .where(product.isbn.eq(isbn))
-                        .fetchFirst()
+                queryFactory.from(product)
+                        .leftJoin(productCategory)
+                        .on(product.id.eq(productCategory.product.id))
+                        .where(productCategory.product.isbn.eq(isbn)
+                                .and(productCategory.product.isSale.isTrue())
+                                .and(productCategory.product.isForcedOutOfStock.isFalse())
+                                .and(productCategory.product.isDeleted.isFalse()))
+                        .transform(
+                                groupBy(product.id).list(
+                                        Projections.fields(
+                                                ProductWithCategoryResponseDto.class,
+                                                product.isbn,
+                                                product.actualPrice,
+                                                product.discountRate,
+                                                product.isSeparatelyDiscount,
+                                                product.givenPointRate,
+                                                product.isGivenPoint,
+                                                product.totalDiscountRate,
+                                                product.productSavingMethodCode,
+                                                list(
+                                                        Projections.fields(
+                                                                String.class,
+                                                                productCategory.category.id
+                                                        ).as("categoryList")
+                                                )
+                                        ))
+
+                        ).get(0)
         );
     }
 

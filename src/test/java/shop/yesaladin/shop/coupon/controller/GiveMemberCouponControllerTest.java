@@ -55,7 +55,8 @@ class GiveMemberCouponControllerTest {
     void sendCouponGiveRequestTest() throws Exception {
         // when
         ResultActions actual = mockMvc.perform(post("/v1/member-coupons").contentType(MediaType.APPLICATION_JSON)
-                .content("{\"triggerTypeCode\": \"MEMBER_GRADE_BRONZE\", \"couponId\": 1, \"requestDateTime\":  \"2023-02-14T17:16:38.858927\"}"));
+                .content(
+                        "{\"triggerTypeCode\": \"MEMBER_GRADE_BRONZE\", \"couponId\": 1, \"requestDateTime\":  \"2023-02-14T17:16:38.858927\"}"));
 
         // then
         actual.andExpect(status().isOk())

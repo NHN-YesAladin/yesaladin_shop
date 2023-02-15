@@ -2,6 +2,7 @@ package shop.yesaladin.shop.member.persistence;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -33,6 +34,7 @@ import shop.yesaladin.shop.member.dto.MemberOrderSheetResponseDto;
 public class QueryDslQueryMemberRepository implements QueryMemberRepository {
 
     private final JPAQueryFactory queryFactory;
+    private final Clock clock;
 
     /**
      * {@inheritDoc}
@@ -98,7 +100,7 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
                 .fetchFirst();
         return new PageImpl<>(list.stream()
                 .map(MemberManagerResponseDto::fromEntity)
-                .collect(Collectors.toList()),pageable, count);
+                .collect(Collectors.toList()), pageable, count);
     }
 
     /**
@@ -121,7 +123,7 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
                 .fetchFirst();
         return new PageImpl<>(list.stream()
                 .map(MemberManagerResponseDto::fromEntity)
-                .collect(Collectors.toList()),pageable, count);
+                .collect(Collectors.toList()), pageable, count);
     }
 
     /**
@@ -144,7 +146,7 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
                 .fetchFirst();
         return new PageImpl<>(list.stream()
                 .map(MemberManagerResponseDto::fromEntity)
-                .collect(Collectors.toList()),pageable, count);
+                .collect(Collectors.toList()), pageable, count);
     }
 
     /**
@@ -164,7 +166,7 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
                 .fetchFirst();
         return new PageImpl<>(list.stream()
                 .map(MemberManagerResponseDto::fromEntity)
-                .collect(Collectors.toList()),pageable, count);
+                .collect(Collectors.toList()), pageable, count);
     }
 
     /**
@@ -187,7 +189,7 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
                 .fetchFirst();
         return new PageImpl<>(list.stream()
                 .map(MemberManagerResponseDto::fromEntity)
-                .collect(Collectors.toList()),pageable, count);
+                .collect(Collectors.toList()), pageable, count);
     }
 
 
@@ -265,7 +267,9 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
                 .leftJoin(memberCoupon)
                 .on(member.id.eq(memberCoupon.member.id))
                 .groupBy(member)
-                .where(member.loginId.eq(loginId))
+                .where(member.loginId.eq(loginId)
+                        .and(memberCoupon.isUsed.isFalse())
+                        .and(memberCoupon.expirationDate.goe(LocalDate.now(clock))))
                 .fetchFirst());
     }
 
