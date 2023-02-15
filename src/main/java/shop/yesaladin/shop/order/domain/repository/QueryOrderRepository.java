@@ -155,11 +155,12 @@ public interface QueryOrderRepository {
     /**
      * 회원의 아이디를 통해 해당 회원의 숨김처리된 주문을 페이징처리하여 조회합니다.
      *
-     * @param loginId 회원의 아이디
+     * @param loginId  회원의 아이디
      * @param pageable 페이지와 사이즈
      * @return 페이징과 숨김처리가 된 주문 목록
      * @author 최예린
      * @since 1.0
      */
     Page<OrderSummaryResponseDto> getHiddenOrderByLoginId(String loginId, Pageable pageable);
+
 }

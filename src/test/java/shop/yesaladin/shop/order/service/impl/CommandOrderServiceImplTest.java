@@ -17,6 +17,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -90,7 +91,7 @@ class CommandOrderServiceImplTest {
     QueryProductService queryProductService;
     QueryMemberService queryMemberService;
     UseCouponService useCouponService;
-    RedisTemplate<String, Map<String, String>> redisTemplate;
+    RedisTemplate<String, Object> redisTemplate;
 
     Member member;
     MemberAddress memberAddress;

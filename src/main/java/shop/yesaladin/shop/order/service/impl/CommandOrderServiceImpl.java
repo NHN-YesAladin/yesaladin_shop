@@ -68,7 +68,7 @@ public class CommandOrderServiceImpl implements CommandOrderService {
     private final QueryProductService queryProductService;
     private final QueryMemberService queryMemberService;
 
-    private final RedisTemplate<String, Map<String, String>> redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
     private final UseCouponService useCouponService;
     private final Clock clock;
 

@@ -89,12 +89,14 @@ class QueryOrderControllerTest {
     void getAllOrdersTest() throws Exception {
         // given
         Mockito.when(queryOrderService.getAllOrderListInPeriod(any(), any()))
-                .thenReturn(new PageImpl<>(List.of(new OrderSummaryDto("123",
+                .thenReturn(new PageImpl<>(List.of(new OrderSummaryDto(
+                        "123",
                         LocalDateTime.of(2023, 1, 1, 0, 0),
                         OrderCode.MEMBER_ORDER
                 ))));
 
-        Map<String, Object> request = Map.of("startDate",
+        Map<String, Object> request = Map.of(
+                "startDate",
                 LocalDate.of(2023, 1, 1),
                 "endDate",
                 LocalDate.of(2023, 1, 2)
@@ -119,12 +121,14 @@ class QueryOrderControllerTest {
         PeriodQueryRequestDto actualDto = dtoCaptor.getValue();
         Pageable actualPageable = pageableCaptor.getValue();
 
-        Assertions.assertThat(ReflectionUtils.tryToReadFieldValue(PeriodQueryRequestDto.class,
+        Assertions.assertThat(ReflectionUtils.tryToReadFieldValue(
+                        PeriodQueryRequestDto.class,
                         "startDate",
                         actualDto
                 ).get())
                 .isEqualTo(request.get("startDate"));
-        Assertions.assertThat(ReflectionUtils.tryToReadFieldValue(PeriodQueryRequestDto.class,
+        Assertions.assertThat(ReflectionUtils.tryToReadFieldValue(
+                        PeriodQueryRequestDto.class,
                         "endDate",
                         actualDto
                 ).get())
@@ -133,10 +137,12 @@ class QueryOrderControllerTest {
         Assertions.assertThat(actualPageable.getPageNumber()).isEqualTo(1);
 
         // docs
-        resultActions.andDo(document("get-all-order-in-period",
+        resultActions.andDo(document(
+                "get-all-order-in-period",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                requestParameters(parameterWithName("size").description("페이지네이션 사이즈")
+                requestParameters(
+                        parameterWithName("size").description("페이지네이션 사이즈")
                                 .optional()
                                 .attributes(defaultValue(10)),
                         parameterWithName("page").description("페이지네이션 페이지 번호")
@@ -144,7 +150,8 @@ class QueryOrderControllerTest {
                                 .attributes(defaultValue(0)),
                         parameterWithName("_csrf").description("csrf")
                 ),
-                requestFields(fieldWithPath("startDate").type(JsonFieldType.STRING)
+                requestFields(
+                        fieldWithPath("startDate").type(JsonFieldType.STRING)
                                 .description("조회 시작 일자")
                                 .optional()
                                 .attributes(getDateFormat()),
@@ -153,7 +160,8 @@ class QueryOrderControllerTest {
                                 .optional()
                                 .attributes(getDateFormat())
                 ),
-                responseFields(fieldWithPath("totalPage").type(JsonFieldType.NUMBER)
+                responseFields(
+                        fieldWithPath("totalPage").type(JsonFieldType.NUMBER)
                                 .description("총 페이지 수"),
                         fieldWithPath("currentPage").type(JsonFieldType.NUMBER)
                                 .description("현재 페이지 번호"),
@@ -179,7 +187,8 @@ class QueryOrderControllerTest {
         List<String> titles = List.of("책 1번", "책 2번", "책 3번", "책 4번", "책 5번");
         for (int i = 0; i < 5; i++) {
             String isbn = "12342736-4812204";
-            orderProducts.add(new ProductOrderSheetResponseDto((long) i,
+            orderProducts.add(new ProductOrderSheetResponseDto(
+                    (long) i,
                     isbn + i,
                     titles.get(i),
                     10000L,
@@ -227,7 +236,8 @@ class QueryOrderControllerTest {
 
         List<Product> products = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
-            Product product = DummyProduct.dummy(isbn + i,
+            Product product = DummyProduct.dummy(
+                    isbn + i,
                     subscribeProduct,
                     thumbnailFile,
                     ebookFile,
@@ -258,7 +268,8 @@ class QueryOrderControllerTest {
         Mockito.when(queryOrderService.getDetailsDtoByOrderNumber(any())).thenReturn(responseDto);
 
         // when
-        ResultActions perform = mockMvc.perform(get("/v1/orders/{orderNumber}",
+        ResultActions perform = mockMvc.perform(get(
+                "/v1/orders/{orderNumber}",
                 nonMemberOrder.getOrderNumber()
         ).contentType(MediaType.APPLICATION_JSON));
 
@@ -268,19 +279,24 @@ class QueryOrderControllerTest {
                 .andExpect(header().stringValues("Content-Type", MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$.success", equalTo(true)))
                 .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())))
-                .andExpect(jsonPath("$.data.order.orderNumber",
+                .andExpect(jsonPath(
+                        "$.data.order.orderNumber",
                         equalTo(responseDto.getOrder().getOrderNumber())
                 ))
-                .andExpect(jsonPath("$.data.order.orderStatusCode",
+                .andExpect(jsonPath(
+                        "$.data.order.orderStatusCode",
                         equalTo(responseDto.getOrder().getOrderStatusCode().toString())
                 ))
-                .andExpect(jsonPath("$.data.orderProducts.[0].productDto.isbn",
+                .andExpect(jsonPath(
+                        "$.data.orderProducts.[0].productDto.isbn",
                         equalTo(responseDto.getOrderProducts().get(0).getProductDto().getIsbn())
                 ))
-                .andExpect(jsonPath("$.data.payment.paymentId",
+                .andExpect(jsonPath(
+                        "$.data.payment.paymentId",
                         equalTo(responseDto.getPayment().getPaymentId())
                 ))
-                .andExpect(jsonPath("$.data.payment.easyPayProvider",
+                .andExpect(jsonPath(
+                        "$.data.payment.easyPayProvider",
                         equalTo(responseDto.getPayment().getEasyPayProvider())
                 ));
 
@@ -349,7 +365,8 @@ class QueryOrderControllerTest {
                                 .description("주문 상품 할인률").optional(),
                         fieldWithPath("orderProducts.[].productDto.isGivenPoint").type(JsonFieldType.BOOLEAN)
                                 .description("주문 상품 포인트 지급 여부").optional(),
-                        fieldWithPath("orderProducts.[].productDto.givenPointRate").type(JsonFieldType.NUMBER)
+                        fieldWithPath("orderProducts.[].productDto.givenPointRate").type(
+                                        JsonFieldType.NUMBER)
                                 .description("주문 상품 제공 포인트").optional(),
                         fieldWithPath("orderProducts.[].productDto.quantity").type(JsonFieldType.NUMBER)
                                 .description("상품 개수").optional(),

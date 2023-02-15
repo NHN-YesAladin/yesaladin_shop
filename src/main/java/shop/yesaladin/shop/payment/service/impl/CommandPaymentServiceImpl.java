@@ -7,6 +7,7 @@ import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -21,6 +22,8 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.exception.ClientException;
+import shop.yesaladin.coupon.message.CouponUseRequestResponseMessage;
+import shop.yesaladin.shop.coupon.service.inter.UseCouponService;
 import shop.yesaladin.shop.order.domain.model.NonMemberOrder;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
@@ -35,6 +38,7 @@ import shop.yesaladin.shop.payment.domain.repository.CommandPaymentRepository;
 import shop.yesaladin.shop.payment.domain.repository.QueryPaymentRepository;
 import shop.yesaladin.shop.payment.dto.PaymentCancelDto;
 import shop.yesaladin.shop.payment.dto.PaymentCompleteSimpleResponseDto;
+import shop.yesaladin.shop.payment.dto.PaymentCouponEventDto;
 import shop.yesaladin.shop.payment.dto.PaymentEventDto;
 import shop.yesaladin.shop.payment.dto.PaymentRequestDto;
 import shop.yesaladin.shop.payment.exception.PaymentFailException;
@@ -96,6 +100,9 @@ public class CommandPaymentServiceImpl implements CommandPaymentService {
                 order,
                 OrderStatusCode.DEPOSIT
         );
+
+        // 쿠폰 실제 사용하기
+        applicationEventPublisher.publishEvent(new PaymentCouponEventDto(order.getOrderNumber()));
 
         //TODO 결제 :  배송 서버에 배송 요청 - 게이트웨이 오픈 필요
         //applicationEventPublisher.publishEvent(new DeliveryEventDto(order.getId()));
