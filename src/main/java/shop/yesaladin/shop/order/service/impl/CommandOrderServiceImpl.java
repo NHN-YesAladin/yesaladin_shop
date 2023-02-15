@@ -243,7 +243,7 @@ public class CommandOrderServiceImpl implements CommandOrderService {
                     PointReasonCode.USE_ORDER
             ));
         }
-        if(savePoint != 0) {
+        if (savePoint != 0) {
             commandPointHistoryService.save(new PointHistoryRequestDto(
                     loginId,
                     savePoint,

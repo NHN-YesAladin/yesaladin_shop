@@ -145,7 +145,7 @@ public interface QueryOrderService {
      * @since 1.0
      */
     Page<OrderSummaryResponseDto> getHiddenOrderByLoginId(String loginId, Pageable pageable);
-    
+
     /**
      * 주문 상세 정보를 위한 조회
      *

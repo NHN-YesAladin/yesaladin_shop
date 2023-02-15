@@ -151,10 +151,11 @@ class QueryDslOrderQueryRepositoryTest {
             SubscribeProduct subscribeProduct = SubscribeProduct.builder()
                     .ISSN("12345" + i)
                     .build();
+            int index = i % 5;
             Subscribe subscribe = Subscribe.builder()
-                    .member(memberList.get(i % 5))
+                    .member(memberList.get(index))
                     .name("subscribe" + i)
-                    .memberAddress(memberAddressList.get(i % 5))
+                    .memberAddress(memberAddressList.get(index))
                     .nextRenewalDate(LocalDate.of(2023, i + 1, 1))
                     .subscribeProduct(subscribeProduct)
                     .orderNumber("Subscribe-order-" + i)
@@ -172,12 +173,13 @@ class QueryDslOrderQueryRepositoryTest {
             SubscribeOrderList subscribeOrder = SubscribeOrderList.builder()
                     .isTransported(true)
                     .subscribe(subscribe)
-                    .memberOrder(memberOrderList.get(i % 5))
+                    .memberOrder(memberOrderList.get(index))
                     .build();
             entityManager.persist(subscribeProduct);
             entityManager.persist(subscribe);
             entityManager.persist(subscribeOrder);
             this.subscribeList.add(subscribe);
+            persistStatusLog(index, subscribe);
         }
 
         entityManager.flush();
@@ -445,7 +447,7 @@ class QueryDslOrderQueryRepositoryTest {
         Page<OrderSummaryResponseDto> actual = queryRepository.findOrdersInPeriodByMemberId(
                 LocalDate.of(2023, 1, 1),
                 LocalDate.of(2023, 1, 31),
-                memberList.get(0).getId(),
+                memberList.get(1).getId(),
                 PageRequest.of(0, pageSize)
         );
 
@@ -570,5 +572,4 @@ class QueryDslOrderQueryRepositoryTest {
         // then
         Assertions.assertThat(orderCountByStatusCode).isZero();
     }
-
 }
