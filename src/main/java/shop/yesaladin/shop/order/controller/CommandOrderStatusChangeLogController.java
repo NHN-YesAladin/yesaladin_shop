@@ -102,9 +102,9 @@ public class CommandOrderStatusChangeLogController {
 
     @PostMapping("/delivery-complete")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseDto<ResultCodeDto> changeDeliveryCompleteStatusByOrderId(@PathVariable Long orderId) {
+    public ResponseDto<ResultCodeDto> changeDeliveryCompleteStatusByOrderId(@PathVariable("orderId") Long orderId) {
         commandOrderStatusChangeLogService.appendOrderStatusChangeLogByOrderId(LocalDateTime.now()
-                .plusSeconds(1), orderId, OrderStatusCode.COMPLETE);
+                .plusSeconds(5), orderId, OrderStatusCode.COMPLETE);
         return ResponseDto.<ResultCodeDto>builder()
                 .success(true)
                 .status(HttpStatus.CREATED)

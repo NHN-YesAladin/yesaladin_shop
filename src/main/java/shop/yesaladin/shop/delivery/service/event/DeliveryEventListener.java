@@ -84,6 +84,6 @@ public class DeliveryEventListener {
                 orderId,
                 OrderStatusCode.DELIVERY
         );
-        log.info("handleCancelPayment success");
+        log.info("handleRegisterDeliveryStatus success");
     }
 }

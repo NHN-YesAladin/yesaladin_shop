@@ -38,8 +38,8 @@ import shop.yesaladin.shop.payment.domain.model.PaymentCode;
 import shop.yesaladin.shop.payment.domain.repository.CommandPaymentRepository;
 import shop.yesaladin.shop.payment.domain.repository.QueryPaymentRepository;
 import shop.yesaladin.shop.payment.dto.PaymentCancelDto;
+import shop.yesaladin.shop.payment.dto.PaymentCommitCouponEventDto;
 import shop.yesaladin.shop.payment.dto.PaymentCompleteSimpleResponseDto;
-import shop.yesaladin.shop.payment.dto.PaymentCouponEventDto;
 import shop.yesaladin.shop.payment.dto.PaymentEventDto;
 import shop.yesaladin.shop.payment.dto.PaymentRequestDto;
 import shop.yesaladin.shop.payment.exception.PaymentFailException;
@@ -65,7 +65,7 @@ public class CommandPaymentServiceImpl implements CommandPaymentService {
     private final CommandOrderStatusChangeLogService commandOrderStatusChangeLogService;
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    private static HttpHeaders getHttpHeaders() {
+    private HttpHeaders getHttpHeaders() {
         String base64SecretKey = Base64.getEncoder().encodeToString(TOSS_SECRET_KEY.getBytes());
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -102,9 +102,6 @@ public class CommandPaymentServiceImpl implements CommandPaymentService {
                 OrderStatusCode.DEPOSIT
         );
 
-        // 쿠폰 실제 사용하기
-        applicationEventPublisher.publishEvent(new PaymentCouponEventDto(order.getOrderNumber()));
-
         // 배송 요청
         applicationEventPublisher.publishEvent(new DeliveryEventDto(order.getId()));
 
@@ -114,6 +111,9 @@ public class CommandPaymentServiceImpl implements CommandPaymentService {
                 order,
                 OrderStatusCode.READY
         );
+
+        // 쿠폰 실제 사용하기
+        applicationEventPublisher.publishEvent(new PaymentCommitCouponEventDto(order.getOrderNumber()));
         return getPaymentResponseDto(order, responseDto);
     }
 
@@ -224,7 +224,7 @@ public class CommandPaymentServiceImpl implements CommandPaymentService {
                     JsonNode.class
             );
         } catch (RestClientException e) {
-            log.error("{}", e.getMessage());
+            log.error("{}", e);
             throw new PaymentFailException(e.getMessage(), "ERROR");
         }
 
