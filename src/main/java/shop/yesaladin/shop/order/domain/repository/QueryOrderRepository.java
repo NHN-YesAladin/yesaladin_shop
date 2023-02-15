@@ -6,17 +6,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
-import shop.yesaladin.shop.order.dto.OrderPaymentResponseDto;
-import shop.yesaladin.shop.order.dto.OrderStatusResponseDto;
-import shop.yesaladin.shop.order.dto.OrderSummaryDto;
-import shop.yesaladin.shop.order.dto.OrderSummaryResponseDto;
+import shop.yesaladin.shop.order.dto.*;
 
 /**
  * 주문 조회 관련 repository 클래스입니다.
  *
  * @author 김홍대
  * @author 배수한
- * @author 최예한
+ * @author 최예린
  * @since 1.0
  */
 public interface QueryOrderRepository {
