@@ -56,6 +56,7 @@ public class SearchedProductResponseDto {
                 .isForcedOutOfStock(searchedProduct.getIsForcedOutOfStock())
                 .isSubscriptionAvailable(searchedProduct.getIsSubscriptionAvailable())
                 .isEbook(isEbook)
+                .publishedDate(searchedProduct.getPublishedDate())
                 .thumbnailFile(searchedProduct.getThumbnailFile())
                 .authors(authors)
                 .tags(tags)
