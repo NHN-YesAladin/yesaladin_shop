@@ -29,6 +29,15 @@ public interface QueryMemberCouponService {
     );
 
     /**
+     * 쿠폰 코드로 쿠폰의 요약 정보를 조회합니다.
+     *
+     * @param couponCodes 조회할 쿠폰 코드 리스트
+     * @return 쿠폰 코드의 요약 정보 리스트
+     * @author 서민지
+     */
+    List<MemberCouponSummaryDto> getMemberCouponSummaryList(List<String> couponCodes);
+
+    /**
      * 회원이 사용할 유효한 쿠폰들의 정보를 반환합니다.
      *
      * @param loginId     회원의 아이디
@@ -37,7 +46,7 @@ public interface QueryMemberCouponService {
      * @author 최예린
      * @since 1.0
      */
-    List<MemberCouponSummaryDto> getMemberCouponSummaryListByCouponCodes(
+    List<MemberCouponSummaryDto> getValidMemberCouponSummaryListByCouponCodes(
             String loginId,
             List<String> couponCodes
     );

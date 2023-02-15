@@ -1,5 +1,8 @@
 package shop.yesaladin.shop.coupon.service.impl;
 
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
+
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
@@ -14,12 +17,16 @@ import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import shop.yesaladin.common.exception.ClientException;
+import shop.yesaladin.coupon.code.CouponTypeCode;
 import shop.yesaladin.coupon.message.CouponUseRequestResponseMessage;
 import shop.yesaladin.shop.coupon.adapter.kafka.CouponProducer;
 import shop.yesaladin.shop.coupon.domain.model.MemberCoupon;
 import shop.yesaladin.shop.coupon.domain.repository.QueryMemberCouponRepository;
 import shop.yesaladin.shop.coupon.dto.CouponCodeOnlyDto;
+import shop.yesaladin.shop.coupon.dto.MemberCouponSummaryDto;
 import shop.yesaladin.shop.coupon.dto.RequestIdOnlyDto;
+import shop.yesaladin.shop.coupon.service.inter.QueryMemberCouponService;
+import shop.yesaladin.shop.point.service.inter.CommandPointHistoryService;
 
 @SuppressWarnings("unchecked")
 class UseCouponServiceImplTest {
@@ -27,6 +34,8 @@ class UseCouponServiceImplTest {
     private UseCouponServiceImpl useCouponService;
     private QueryMemberCouponRepository queryMemberCouponRepository;
     private CouponProducer couponProducer;
+    private QueryMemberCouponService queryMemberCouponService;
+    private CommandPointHistoryService commandPointHistoryService;
     private RedisTemplate<String, String> redisTemplate;
     private ListOperations<String, String> listOperations;
     private ValueOperations<String, String> valueOperations;
@@ -39,18 +48,22 @@ class UseCouponServiceImplTest {
     void setUp() {
         queryMemberCouponRepository = Mockito.mock(QueryMemberCouponRepository.class);
         couponProducer = Mockito.mock(CouponProducer.class);
+        queryMemberCouponService = Mockito.mock(QueryMemberCouponService.class);
+        commandPointHistoryService = Mockito.mock(CommandPointHistoryService.class);
         redisTemplate = Mockito.mock(RedisTemplate.class);
         listOperations = Mockito.mock(ListOperations.class);
         valueOperations = Mockito.mock(ValueOperations.class);
         useCouponService = new UseCouponServiceImpl(
                 queryMemberCouponRepository,
                 couponProducer,
+                queryMemberCouponService,
+                commandPointHistoryService,
                 redisTemplate,
                 clock
         );
 
-        Mockito.when(redisTemplate.opsForList()).thenReturn(listOperations);
-        Mockito.when(redisTemplate.opsForValue()).thenReturn(valueOperations);
+        when(redisTemplate.opsForList()).thenReturn(listOperations);
+        when(redisTemplate.opsForValue()).thenReturn(valueOperations);
     }
 
     @Test
@@ -63,9 +76,9 @@ class UseCouponServiceImplTest {
                 Mockito.mock(MemberCoupon.class),
                 Mockito.mock(MemberCoupon.class)
         );
-        Mockito.when(queryMemberCouponRepository.findByCouponCodes(couponCodes))
+        when(queryMemberCouponRepository.findByCouponCodes(couponCodes))
                 .thenReturn(expectedCoupons);
-        expectedCoupons.forEach(coupon -> Mockito.when(coupon.isUsed()).thenReturn(false));
+        expectedCoupons.forEach(coupon -> when(coupon.isUsed()).thenReturn(false));
         // when
         RequestIdOnlyDto actual = useCouponService.sendCouponUseRequest("mongmeo", couponCodes);
 
@@ -90,8 +103,8 @@ class UseCouponServiceImplTest {
                 Mockito.mock(MemberCoupon.class),
                 Mockito.mock(MemberCoupon.class)
         );
-        Mockito.when(expectedCoupons.get(2).isUsed()).thenReturn(true);
-        Mockito.when(queryMemberCouponRepository.findByCouponCodes(couponCodes))
+        when(expectedCoupons.get(2).isUsed()).thenReturn(true);
+        when(queryMemberCouponRepository.findByCouponCodes(couponCodes))
                 .thenReturn(expectedCoupons);
 
         // when
@@ -111,14 +124,14 @@ class UseCouponServiceImplTest {
                 .requestId("requestId")
                 .build();
         List<String> expectedCouponCodes = List.of("1", "2", "3", "4");
-        Mockito.when(listOperations.range("requestId", 0, -1)).thenReturn(expectedCouponCodes);
+        when(listOperations.range("requestId", 0, -1)).thenReturn(expectedCouponCodes);
         List<MemberCoupon> expectedMemberCoupons = List.of(
                 Mockito.mock(MemberCoupon.class),
                 Mockito.mock(MemberCoupon.class),
                 Mockito.mock(MemberCoupon.class),
                 Mockito.mock(MemberCoupon.class)
         );
-        Mockito.when(queryMemberCouponRepository.findByCouponCodes(expectedCouponCodes))
+        when(queryMemberCouponRepository.findByCouponCodes(expectedCouponCodes))
                 .thenReturn(expectedMemberCoupons);
 
         // when
@@ -166,7 +179,7 @@ class UseCouponServiceImplTest {
                 true,
                 null
         );
-        Mockito.when(listOperations.range("1", 0, -1)).thenReturn(null);
+        when(listOperations.range("1", 0, -1)).thenReturn(null);
 
         // when
         // then
@@ -190,5 +203,46 @@ class UseCouponServiceImplTest {
         Assertions.assertThat(actual.get(0).getCouponCode()).isEqualTo(couponCodes.get(0));
         Assertions.assertThat(actual.get(1).getCouponCode()).isEqualTo(couponCodes.get(1));
         Assertions.assertThat(actual.get(2).getCouponCode()).isEqualTo(couponCodes.get(2));
+    }
+
+    @Test
+    @DisplayName("포인트 쿠폰 사용시 포인트 적립 성공")
+    void savePointWithCouponUsageTest() {
+        // given
+        CouponUseRequestResponseMessage requestResponseMessage = CouponUseRequestResponseMessage.builder()
+                .success(true)
+                .requestId("requestId")
+                .build();
+
+        List<String> expectedCouponCodes = List.of("1");
+        when(listOperations.range("requestId", 0, -1)).thenReturn(expectedCouponCodes);
+
+        List<MemberCoupon> expectedMemberCoupons = List.of(
+                Mockito.mock(MemberCoupon.class)
+        );
+
+        MemberCouponSummaryDto memberCouponSummaryDto = MemberCouponSummaryDto.builder()
+                .couponTypeCode(CouponTypeCode.POINT)
+                .amount(500)
+                .build();
+        List<MemberCouponSummaryDto> expectedMemberCouponSummaryList = List.of(
+                memberCouponSummaryDto
+        );
+
+        String memberId = "memberId";
+
+        when(queryMemberCouponRepository.findByCouponCodes(expectedCouponCodes))
+                .thenReturn(expectedMemberCoupons);
+        when(queryMemberCouponService.getMemberCouponSummaryList(Mockito.anyList()))
+                .thenReturn(expectedMemberCouponSummaryList);
+        when(redisTemplate.opsForValue()).thenReturn(valueOperations);
+        when(valueOperations.get(Mockito.anyString())).thenReturn(memberId);
+
+        // when
+        List<CouponCodeOnlyDto> actual = useCouponService.useCoupon(requestResponseMessage);
+
+        // then
+        Mockito.verify(queryMemberCouponService).getMemberCouponSummaryList(Mockito.anyList());
+        Mockito.verify(commandPointHistoryService, times(1)).save(Mockito.any());
     }
 }

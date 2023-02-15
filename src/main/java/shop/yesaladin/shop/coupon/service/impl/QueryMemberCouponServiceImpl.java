@@ -80,7 +80,16 @@ public class QueryMemberCouponServiceImpl implements QueryMemberCouponService {
      */
     @Override
     @Transactional(readOnly = true)
-    public List<MemberCouponSummaryDto> getMemberCouponSummaryListByCouponCodes(
+    public List<MemberCouponSummaryDto> getMemberCouponSummaryList(List<String> couponCodes) {
+        return tryGetCouponSummary(couponCodes).getData();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<MemberCouponSummaryDto> getValidMemberCouponSummaryListByCouponCodes(
             String loginId,
             List<String> couponCodes
     ) {
@@ -92,6 +101,19 @@ public class QueryMemberCouponServiceImpl implements QueryMemberCouponService {
             throw new ClientException(ErrorCode.INVALID_COUPON_DATA, "Invalid coupon data.");
         }
         return usableCoupons;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<MemberCoupon> findByCouponCodes(List<String> couponCodes) {
+        List<MemberCoupon> memberCoupons = memberCouponRepository.findByCouponCodes(couponCodes);
+
+        checkAllCouponCodesAreAvailable(couponCodes, memberCoupons);
+
+        return memberCoupons;
     }
 
     private Page<String> getMemberCouponCodeList(
@@ -142,19 +164,6 @@ public class QueryMemberCouponServiceImpl implements QueryMemberCouponService {
                     "Cannot send request to server"
             );
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public List<MemberCoupon> findByCouponCodes(List<String> couponCodes) {
-        List<MemberCoupon> memberCoupons = memberCouponRepository.findByCouponCodes(couponCodes);
-
-        checkAllCouponCodesAreAvailable(couponCodes, memberCoupons);
-
-        return memberCoupons;
     }
 
     private void checkAllCouponCodesAreAvailable(
