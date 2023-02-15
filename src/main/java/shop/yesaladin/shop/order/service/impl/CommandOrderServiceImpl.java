@@ -100,7 +100,7 @@ public class CommandOrderServiceImpl implements CommandOrderService {
             OrderMemberCreateRequestDto request,
             String loginId
     ) {
-        queryMemberCouponService.getMemberCouponSummaryListByCouponCodes(
+        queryMemberCouponService.getValidMemberCouponSummaryListByCouponCodes(
                 loginId,
                 request.getOrderCoupons()
         );
@@ -129,7 +129,7 @@ public class CommandOrderServiceImpl implements CommandOrderService {
             OrderSubscribeCreateRequestDto request,
             String loginId
     ) {
-        queryMemberCouponService.getMemberCouponSummaryListByCouponCodes(
+        queryMemberCouponService.getValidMemberCouponSummaryListByCouponCodes(
                 loginId,
                 request.getOrderCoupons()
         );
