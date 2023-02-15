@@ -99,6 +99,12 @@ public class CommandOrderStatusChangeLogController {
                 .build();
     }
 
+    /**
+     * 배송서버로부터 주문 상태코드를 배송 완료로 변경하기 위한 컨트롤러
+     *
+     * @param orderId 배송 완료 상태로 바꾸고자하는 주문
+     * @return ResultCodeDto
+     */
     @PostMapping("/delivery-complete")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<ResultCodeDto> changeDeliveryCompleteStatusByOrderId(@PathVariable("orderId") Long orderId) {
