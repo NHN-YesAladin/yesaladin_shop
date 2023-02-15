@@ -75,6 +75,25 @@ public class QueryMemberCouponServiceImpl implements QueryMemberCouponService {
                 .build();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<MemberCouponSummaryDto> getMemberCouponSummaryListByCouponCodes(
+            String loginId,
+            List<String> couponCodes
+    ) {
+        List<MemberCoupon> memberCoupons = memberCouponRepository.findByCouponCodes(couponCodes);
+        List<MemberCouponSummaryDto> usableCoupons = tryGetCouponSummary(couponCodes).getData();
+
+        if (usableCoupons.size() != couponCodes.size()
+                || memberCoupons.size() != couponCodes.size()) {
+            throw new ClientException(ErrorCode.INVALID_COUPON_DATA, "Invalid coupon data.");
+        }
+        return usableCoupons;
+    }
+
     private Page<String> getMemberCouponCodeList(
             Pageable pageable,
             String memberId,
@@ -91,7 +110,8 @@ public class QueryMemberCouponServiceImpl implements QueryMemberCouponService {
         return new PageImpl<>(couponCodes, pageable, memberCouponList.getTotalElements());
     }
 
-    private static final ParameterizedTypeReference<ResponseDto<List<MemberCouponSummaryDto>>> COUPON_SUMMARY = new ParameterizedTypeReference<>() {};
+    private static final ParameterizedTypeReference<ResponseDto<List<MemberCouponSummaryDto>>> COUPON_SUMMARY = new ParameterizedTypeReference<>() {
+    };
 
     private ResponseDto<List<MemberCouponSummaryDto>> tryGetCouponSummary(List<String> memberCouponCodeList) {
 

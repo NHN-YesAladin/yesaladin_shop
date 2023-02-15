@@ -1,12 +1,21 @@
 package shop.yesaladin.shop.product.service.inter;
 
+import java.util.List;
+import java.util.Map;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
-import shop.yesaladin.shop.product.dto.*;
-
-import java.util.List;
-import java.util.Map;
+import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
+import shop.yesaladin.shop.product.dto.ProductModifyDto;
+import shop.yesaladin.shop.product.dto.ProductOnlyTitleDto;
+import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
+import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
+import shop.yesaladin.shop.product.dto.ProductRecentResponseDto;
+import shop.yesaladin.shop.product.dto.ProductWithCategoryResponseDto;
+import shop.yesaladin.shop.product.dto.ProductsResponseDto;
+import shop.yesaladin.shop.product.dto.RelationsResponseDto;
+import shop.yesaladin.shop.product.dto.SubscribeProductOrderResponseDto;
+import shop.yesaladin.shop.product.dto.ViewCartDto;
 
 
 /**
@@ -130,6 +139,16 @@ public interface QueryProductService {
      * @since 1.0
      */
     Page<RelationsResponseDto> findProductRelationByTitle(Long id, String title, Pageable pageable);
+
+    /**
+     * 상품의 isbn을 통해 상품과 카테고리를 반환합니다.
+     *
+     * @param isbn isbn
+     * @return 상품
+     * @author 최예린
+     * @since 1.0
+     */
+    ProductWithCategoryResponseDto getByIsbn(String isbn);
 
     /**
      * 최신 상품 조회 메서드

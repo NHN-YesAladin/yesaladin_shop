@@ -24,7 +24,6 @@ import shop.yesaladin.shop.member.dto.MemberUpdateResponseDto;
 import shop.yesaladin.shop.member.dto.MemberWithdrawResponseDto;
 import shop.yesaladin.shop.member.dto.OauthMemberCreateRequestDto;
 import shop.yesaladin.shop.member.event.SignUpEvent;
-import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.exception.MemberProfileAlreadyExistException;
 import shop.yesaladin.shop.member.exception.MemberRoleNotFoundException;
 import shop.yesaladin.shop.member.service.inter.CommandMemberService;
@@ -210,7 +209,10 @@ public class CommandMemberServiceImpl implements CommandMemberService {
     @Override
     public MemberWithdrawResponseDto withDraw(String loginId) {
         Member member = queryMemberRepository.findMemberByLoginId(loginId)
-                .orElseThrow(() -> new MemberNotFoundException("Member loginId: " + loginId));
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.MEMBER_NOT_FOUND,
+                        "Member loginId: " + loginId
+                ));
 
         member.withdrawMember();
 

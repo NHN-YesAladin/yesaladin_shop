@@ -33,7 +33,8 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import shop.yesaladin.shop.member.exception.MemberNotFoundException;
+import shop.yesaladin.common.code.ErrorCode;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.writing.dto.AuthorRequestDto;
 import shop.yesaladin.shop.writing.dto.AuthorResponseDto;
 import shop.yesaladin.shop.writing.service.inter.CommandAuthorService;
@@ -87,12 +88,16 @@ class CommandAuthorControllerTest {
                         fieldWithPath("loginId").description("저자 로그인 아이디")
                 ),
                 responseFields(
-                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("동작 성공 여부"),
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
                         fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
-                        fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("생성된 저자 아이디"),
+                        fieldWithPath("data.id").type(JsonFieldType.NUMBER)
+                                .description("생성된 저자 아이디"),
                         fieldWithPath("data.name").type(JsonFieldType.STRING).description("저자명"),
                         fieldWithPath("data.member").description("저자 멤버 엔터티"),
-                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY).description("에러 메세지").optional()
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
+                                .optional()
                 )
         ));
     }
@@ -105,7 +110,8 @@ class CommandAuthorControllerTest {
         String name = "저자1";
         AuthorRequestDto createDto = new AuthorRequestDto(name, "notExist");
 
-        Mockito.when(service.create(any())).thenThrow(MemberNotFoundException.class);
+        Mockito.when(service.create(any()))
+                .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, ""));
 
         // when
         ResultActions result = mockMvc.perform(post("/v1/authors")
@@ -115,7 +121,14 @@ class CommandAuthorControllerTest {
 
         // then
         result.andDo(print())
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.NOT_FOUND.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.MEMBER_NOT_FOUND.getDisplayName())
+                ));
 
         verify(service, times(1)).create(any());
     }
@@ -160,12 +173,17 @@ class CommandAuthorControllerTest {
                         fieldWithPath("loginId").description("저자 로그인 아이디")
                 ),
                 responseFields(
-                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("동작 성공 여부"),
-                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("HTTP 상태 코드"),
-                        fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("수정된 저자 아이디"),
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("HTTP 상태 코드"),
+                        fieldWithPath("data.id").type(JsonFieldType.NUMBER)
+                                .description("수정된 저자 아이디"),
                         fieldWithPath("data.name").type(JsonFieldType.STRING).description("저자명"),
                         fieldWithPath("data.member").description("저자"),
-                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY).description("에러 메세지").optional()
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
+                                .optional()
                 )
         ));
     }
@@ -179,7 +197,8 @@ class CommandAuthorControllerTest {
         String name = "저자1";
         AuthorRequestDto modifyDto = new AuthorRequestDto(name, "notExist");
 
-        Mockito.when(service.modify(anyLong(), any())).thenThrow(MemberNotFoundException.class);
+        Mockito.when(service.modify(anyLong(), any()))
+                .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, ""));
 
         // when
         ResultActions result = mockMvc.perform(put("/v1/authors/{authorId}", id)
@@ -189,7 +208,14 @@ class CommandAuthorControllerTest {
 
         // then
         result.andDo(print())
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.NOT_FOUND.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.MEMBER_NOT_FOUND.getDisplayName())
+                ));
 
         verify(service, times(1)).modify(anyLong(), any());
     }

@@ -14,8 +14,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.shop.member.domain.model.Member;
-import shop.yesaladin.shop.member.exception.MemberNotFoundException;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
@@ -64,11 +65,11 @@ class CommandWishlistServiceImplTest {
         Mockito.when(queryProductRepository.findProductById(1L))
                 .thenReturn(Optional.of(Product.builder().id(1L).build()));
         Mockito.when(queryMemberService.findByLoginId("loginId")).thenThrow(
-                new MemberNotFoundException("Member Login Id: loginId"));
+                new ClientException(ErrorCode.MEMBER_NOT_FOUND, "Member Login Id: loginId"));
 
         //when then
         assertThatThrownBy(() -> commandWishlistService.save("loginId", 1L)).isInstanceOf(
-                MemberNotFoundException.class);
+                ClientException.class);
     }
 
     @Test
@@ -113,10 +114,10 @@ class CommandWishlistServiceImplTest {
     @DisplayName("delete에서 MemberNotFound 발생")
     void delete_MemberNotFound() {
         Mockito.when(queryMemberService.findByLoginId("loginId")).thenThrow(
-                new MemberNotFoundException("Member Login Id: loginId"));
+                new ClientException(ErrorCode.MEMBER_NOT_FOUND, "Member Login Id: loginId"));
 
         assertThatThrownBy(() -> commandWishlistService.delete("loginId", 1L)).isInstanceOf(
-                MemberNotFoundException.class);
+                ClientException.class);
     }
 
     @Test

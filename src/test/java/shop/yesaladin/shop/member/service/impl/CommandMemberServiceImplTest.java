@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.mockito.Mockito;
 import org.springframework.context.ApplicationEventPublisher;
+import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberGrade;
@@ -34,7 +35,6 @@ import shop.yesaladin.shop.member.dto.OauthMemberCreateRequestDto;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
 import shop.yesaladin.shop.member.dummy.MemberRoleDummy;
 import shop.yesaladin.shop.member.dummy.RoleDummy;
-import shop.yesaladin.shop.member.exception.MemberNotFoundException;
 import shop.yesaladin.shop.member.exception.MemberProfileAlreadyExistException;
 
 class CommandMemberServiceImplTest {
@@ -65,7 +65,7 @@ class CommandMemberServiceImplTest {
 
     @Test
     @DisplayName("입력 받은 loginId이 기존에 있는 경우 예외가 발생한다.")
-    void create_fail_whenMemberProfileDuplicated() throws Exception {
+    void create_fail_whenMemberProfileDuplicated() {
         //given
         String loginId = "loginId";
         String nickname = "nickname";
@@ -97,7 +97,7 @@ class CommandMemberServiceImplTest {
 
     @Test
     @DisplayName("입력 받은 nickname이 기존에 있는 경우 예외가 발생한다.")
-    void create_fail_whenNicknameDuplicated() throws Exception {
+    void create_fail_whenNicknameDuplicated() {
         //given
         String loginId = "loginId";
         String nickname = "nickname";
@@ -129,7 +129,7 @@ class CommandMemberServiceImplTest {
 
     @Test
     @DisplayName("입력 받은 phone이 기존에 있는 경우 예외가 발생한다.")
-    void create_fail_whenPhoneDuplicated() throws Exception {
+    void create_fail_whenPhoneDuplicated() {
         //given
         String loginId = "loginId";
         String nickname = "nickname";
@@ -161,7 +161,7 @@ class CommandMemberServiceImplTest {
 
     @Test
     @DisplayName("입력 받은 email이 기존에 있는 경우 예외가 발생한다.")
-    void create_fail_whenEmailDuplicated() throws Exception {
+    void create_fail_whenEmailDuplicated() {
         //given
         String loginId = "loginId";
         String nickname = "nickname";
@@ -193,7 +193,7 @@ class CommandMemberServiceImplTest {
 
     @Test
     @DisplayName("회원 등록 성공")
-    void create() throws Exception {
+    void create() {
         //given
         String loginId = "loginId";
         String nickname = "nickname";
@@ -303,11 +303,11 @@ class CommandMemberServiceImplTest {
                 nickname
         );
         Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
-                .thenThrow(new MemberNotFoundException("Member loginId " + loginId));
+                .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, "Member loginId " + loginId));
 
         //when, then
         assertThatThrownBy(() -> service.update(loginId, request)).isInstanceOf(
-                MemberNotFoundException.class);
+                ClientException.class);
 
         verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
         verify(queryMemberRepository, never()).findMemberByNickname(nickname);
@@ -379,11 +379,11 @@ class CommandMemberServiceImplTest {
                 blockedReason
         );
         Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
-                .thenThrow(new MemberNotFoundException("Member loginId " + loginId));
+                .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, "Member loginId " + loginId));
 
         //when, then
         assertThatThrownBy(() -> service.block(loginId, request)).isInstanceOf(
-                MemberNotFoundException.class);
+                ClientException.class);
 
         verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
     }
@@ -452,10 +452,10 @@ class CommandMemberServiceImplTest {
         String loginId = "loginId";
 
         Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
-                .thenThrow(new MemberNotFoundException("Member loginId " + loginId));
+                .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, "Member loginId " + loginId));
 
         //when, then
-        assertThatThrownBy(() -> service.unblock(loginId)).isInstanceOf(MemberNotFoundException.class);
+        assertThatThrownBy(() -> service.unblock(loginId)).isInstanceOf(ClientException.class);
 
         verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
     }
@@ -504,7 +504,7 @@ class CommandMemberServiceImplTest {
 
     @Test
     @DisplayName("존재하지 않는 회원을 삭제 시 예외가 발생한다.")
-    void withdrawMember_fail_whenMemberNotExist() throws Exception {
+    void withdrawMember_fail_whenMemberNotExist() {
         //given
         String loginId = "loginId";
 
@@ -513,7 +513,7 @@ class CommandMemberServiceImplTest {
 
         //when
         assertThatThrownBy(() -> service.withDraw(loginId))
-                .isInstanceOf(MemberNotFoundException.class);
+                .isInstanceOf(ClientException.class);
 
         //then
         verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
@@ -521,7 +521,7 @@ class CommandMemberServiceImplTest {
 
     @Test
     @DisplayName("회원 삭제(soft delete) 성공")
-    void withdrawMember() throws Exception {
+    void withdrawMember() {
         //given
         long id = 1L;
         String name = "testName";
