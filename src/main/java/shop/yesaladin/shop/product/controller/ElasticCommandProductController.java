@@ -3,15 +3,14 @@ package shop.yesaladin.shop.product.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.common.dto.ResponseDto;
-import shop.yesaladin.shop.product.domain.model.SearchedProduct;
-import shop.yesaladin.shop.product.dto.SearchedProductUpdateDto;
+import shop.yesaladin.shop.product.dto.ProductOnlyIdDto;
 import shop.yesaladin.shop.product.service.inter.ElasticCommandProductService;
 
 /**
@@ -32,20 +31,48 @@ public class ElasticCommandProductController {
      * 상품을 수정하는 메서드
      *
      * @param id 수정할 상품의 id
-     * @param updateDto 수정할 상품의 정보
      * @return 수정 결과
      * @author 김선홍
      * @since 1.0
      */
     @PutMapping("/{id}")
-    public ResponseDto<SearchedProduct> update(
-            @PathVariable Long id,
-            @RequestBody SearchedProductUpdateDto updateDto
-    ) {
-        return ResponseDto.<SearchedProduct>builder()
+    public ResponseDto<ProductOnlyIdDto> update(@PathVariable Long id) {
+        return ResponseDto.<ProductOnlyIdDto>builder()
                 .success(true)
                 .status(HttpStatus.OK)
-                .data(elasticCommandProductService.update(id, updateDto))
+                .data(new ProductOnlyIdDto(elasticCommandProductService.update(id)))
+                .build();
+    }
+
+    /**
+     * 판매 여부 상태 변경 메서드
+     *
+     * @param id 수정할 상품의 id
+     * @author 김선홍
+     * @since 1.0
+     */
+    @GetMapping("/is-sale/{id}")
+    public ResponseDto<ProductOnlyIdDto> changeIsSale(@PathVariable Long id) {
+        return ResponseDto.<ProductOnlyIdDto>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(new ProductOnlyIdDto(elasticCommandProductService.changeIsSale(id)))
+                .build();
+    }
+
+    /**
+     * 강제 품절 상태 변경 메서드
+     *
+     * @param id 수정할 상품의 id
+     * @author 김선홍
+     * @since 1.0
+     */
+    @GetMapping("/is-forced-out-of-stock/{id}")
+    public ResponseDto<ProductOnlyIdDto> changeIsForcedOutOfStock(@PathVariable Long id) {
+        return ResponseDto.<ProductOnlyIdDto>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(new ProductOnlyIdDto(elasticCommandProductService.changeIsForcedOutOfStock(id)))
                 .build();
     }
 
