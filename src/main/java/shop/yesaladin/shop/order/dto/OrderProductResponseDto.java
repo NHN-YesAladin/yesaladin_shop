@@ -30,7 +30,8 @@ public class OrderProductResponseDto {
                 pd.getDiscountRate(),
                 pd.isGivenPoint(),
                 pd.getGivenPointRate(),
-                pd.getQuantity()
+                pd.getQuantity(),
+                null
         ), quantity);
     }
 

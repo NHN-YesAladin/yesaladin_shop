@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.product.dto;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -21,6 +22,7 @@ public class ProductOrderSheetResponseDto {
     private Boolean isGivenPoint;
     private int givenPointRate;
     private long quantity;
+    private List<String> categories;
 
     public void setQuantity(long quantity) {
         this.quantity = quantity;
