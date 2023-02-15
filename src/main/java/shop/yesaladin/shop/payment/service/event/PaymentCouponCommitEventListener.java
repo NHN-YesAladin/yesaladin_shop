@@ -1,18 +1,11 @@
 package shop.yesaladin.shop.payment.service.event;
 
-import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.event.TransactionPhase;
-import org.springframework.transaction.event.TransactionalEventListener;
-import shop.yesaladin.common.code.ErrorCode;
-import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.coupon.message.CouponUseRequestResponseMessage;
 import shop.yesaladin.shop.coupon.service.inter.UseCouponService;
 import shop.yesaladin.shop.payment.dto.PaymentCommitCouponEventDto;
@@ -28,9 +21,10 @@ import shop.yesaladin.shop.payment.dto.PaymentCommitCouponEventDto;
 @RequiredArgsConstructor
 @Component
 public class PaymentCouponCommitEventListener {
+
+    private static final String REQUEST_KEY = "USE_COUPON_REQ_ID";
     private final RedisTemplate<String, String> redisTemplate;
     private final UseCouponService useCouponService;
-    private static final String REQUEST_KEY = "USE_COUPON_REQ_ID";
 
     /**
      * 결제 service가 정상동작(commit 됨)의 경우, 쿠폰을 사용대기 -> 사용으로 상태 변경

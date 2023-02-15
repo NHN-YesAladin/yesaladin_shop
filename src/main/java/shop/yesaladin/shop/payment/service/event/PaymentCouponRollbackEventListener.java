@@ -10,9 +10,7 @@ import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.exception.ClientException;
-import shop.yesaladin.coupon.message.CouponUseRequestResponseMessage;
 import shop.yesaladin.shop.coupon.service.inter.UseCouponService;
-import shop.yesaladin.shop.payment.dto.PaymentCommitCouponEventDto;
 import shop.yesaladin.shop.payment.dto.PaymentRollbackCouponEventDto;
 
 /**
@@ -26,9 +24,10 @@ import shop.yesaladin.shop.payment.dto.PaymentRollbackCouponEventDto;
 @RequiredArgsConstructor
 @Component
 public class PaymentCouponRollbackEventListener {
+
+    private static final String REQUEST_KEY = "USE_COUPON_REQ_ID";
     private final RedisTemplate<String, String> redisTemplate;
     private final UseCouponService useCouponService;
-    private static final String REQUEST_KEY = "USE_COUPON_REQ_ID";
 
     /**
      * 결제 service가 실패된(rollback 됨) 경우, 쿠폰을 (사용대기 & 사용) -> 미사용으로 상태 변경

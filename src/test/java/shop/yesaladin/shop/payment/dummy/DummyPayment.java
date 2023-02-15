@@ -33,6 +33,7 @@ public class DummyPayment {
                 .paymentCode(PaymentCode.NORMAL)
                 .build();
     }
+
     public static Payment payment(String id, Order order, PaymentCode paymentCode) {
         long totalAmount = order.getShippingFee() + order.getWrappingFee();
         return Payment.builder()

@@ -1,7 +1,5 @@
 package shop.yesaladin.shop.payment.service.event;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.util.ArrayList;
 import java.util.List;
 import org.assertj.core.api.Assertions;
@@ -13,7 +11,6 @@ import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.coupon.service.inter.UseCouponService;
-import shop.yesaladin.shop.payment.dto.PaymentCommitCouponEventDto;
 import shop.yesaladin.shop.payment.dto.PaymentRollbackCouponEventDto;
 
 /**
@@ -36,8 +33,10 @@ class PaymentCouponRollbackEventListenerTest {
         hashOperations = Mockito.mock(HashOperations.class);
         listOperations = Mockito.mock(ListOperations.class);
 
-        paymentCouponRollbackEventListener = new PaymentCouponRollbackEventListener(redisTemplate,
-                useCouponService);
+        paymentCouponRollbackEventListener = new PaymentCouponRollbackEventListener(
+                redisTemplate,
+                useCouponService
+        );
     }
 
     @Test

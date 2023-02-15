@@ -61,8 +61,7 @@ public class CommandPaymentController {
                     .data(PaymentCompleteSimpleResponseDto.fromRequestDto(requestDto))
                     .errorMessages(List.of(e.getMessage(), e.getCode()))
                     .build();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             // exception ignore
             return ResponseDto.<PaymentCompleteSimpleResponseDto>builder()
                     .status(HttpStatus.OK)
