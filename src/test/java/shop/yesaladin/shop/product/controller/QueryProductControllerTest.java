@@ -725,11 +725,7 @@ class QueryProductControllerTest {
                 .author(List.of("author"))
                 .build();
         Mockito.when(service.findRecentProductByPublishedDate(PageRequest.of(0, 10)))
-                .thenReturn(new PageImpl<>(
-                        List.of(productRecentResponseDto),
-                        PageRequest.of(0, 1),
-                        1L
-                ));
+                .thenReturn(List.of(productRecentResponseDto));
 
         //when
         ResultActions result = mockMvc.perform(get("/v1/products/recent/product").with(csrf()));

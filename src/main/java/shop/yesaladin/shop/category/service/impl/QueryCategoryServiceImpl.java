@@ -59,7 +59,7 @@ public class QueryCategoryServiceImpl implements QueryCategoryService {
     @Transactional(readOnly = true)
     @Override
     public List<CategoryResponseDto> findParentCategories() {
-        log.info("findParentCategories - caching is working soon");
+        log.info("parentCategories - caching is working soon");
         return getCategoryResponseDtos(null, Category.DEPTH_PARENT);
     }
 
@@ -91,7 +91,7 @@ public class QueryCategoryServiceImpl implements QueryCategoryService {
     @Override
     public List<CategoryResponseDto> findChildCategoriesByParentId(Long parentId) {
 
-        log.info("findChildCategoriesByParentId - caching is working soon");
+        log.info("childCategories - caching is working soon");
         return getCategoryResponseDtos(parentId, Category.DEPTH_CHILD);
     }
 

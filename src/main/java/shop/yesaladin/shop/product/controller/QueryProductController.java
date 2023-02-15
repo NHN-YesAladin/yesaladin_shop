@@ -214,21 +214,16 @@ public class QueryProductController {
      * @since 1, 0
      */
     @GetMapping("/recent/product")
-    public ResponseDto<PaginatedResponseDto<ProductRecentResponseDto>> findRecentProductByPublishedDate(
+    public ResponseDto<List<ProductRecentResponseDto>> findRecentProductByPublishedDate(
             @PageableDefault Pageable pageable
     ) {
-        Page<ProductRecentResponseDto> products = queryProductService.findRecentProductByPublishedDate(
+        List<ProductRecentResponseDto> products = queryProductService.findRecentProductByPublishedDate(
                 pageable);
 
-        return ResponseDto.<PaginatedResponseDto<ProductRecentResponseDto>>builder()
+        return ResponseDto.<List<ProductRecentResponseDto>>builder()
                 .status(HttpStatus.OK)
                 .success(true)
-                .data(PaginatedResponseDto.<ProductRecentResponseDto>builder()
-                        .dataList(products.getContent())
-                        .totalPage(products.getTotalPages())
-                        .currentPage(products.getNumber())
-                        .totalDataCount(products.getTotalElements())
-                        .build())
+                .data(products)
                 .build();
     }
 
