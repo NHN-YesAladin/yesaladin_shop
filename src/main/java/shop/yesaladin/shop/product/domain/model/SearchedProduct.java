@@ -59,6 +59,10 @@ public class SearchedProduct {
     private LocalDate publishedDate;
     @Field(name = "is_deleted", type = FieldType.Boolean)
     private Boolean isDeleted;
+    @Field(name = "ebook_file_id", type = FieldType.Long)
+    private Long ebookId;
+    @Field(name = "is_subscription_available", type = FieldType.Boolean)
+    private Boolean isSubscriptionAvailable;
     @Field(name = "categories", type = FieldType.Object)
     private List<SearchedProductCategory> categories;
     @Field(name = "authors", type = FieldType.Object)
