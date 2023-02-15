@@ -64,6 +64,7 @@ import shop.yesaladin.shop.order.dto.OrderStatusResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryResponseDto;
 import shop.yesaladin.shop.order.exception.OrderNotFoundException;
+import shop.yesaladin.shop.order.persistence.MyBatisSalesStatisticsMapper;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMemberAddress;
 import shop.yesaladin.shop.order.persistence.dummy.DummyOrder;
@@ -101,6 +102,7 @@ class QueryOrderServiceImplTest {
     private QueryMemberCouponService queryMemberCouponService;
     private QueryPaymentService queryPaymentService;
     private QueryOrderStatusChangeLogRepository queryOrderStatusChangeLogRepository;
+    private MyBatisSalesStatisticsMapper myBatisSalesStatisticsMapper;
 
     private MemberOrder memberOrder;
     private NonMemberOrder nonMemberOrder;
@@ -118,6 +120,7 @@ class QueryOrderServiceImplTest {
         queryMemberCouponService = Mockito.mock(QueryMemberCouponService.class);
         queryPaymentService = Mockito.mock(QueryPaymentService.class);
         queryOrderStatusChangeLogRepository = Mockito.mock(QueryOrderStatusChangeLogRepository.class);
+        myBatisSalesStatisticsMapper = Mockito.mock(MyBatisSalesStatisticsMapper.class);
 
         service = new QueryOrderServiceImpl(
                 repository,
@@ -129,6 +132,7 @@ class QueryOrderServiceImplTest {
                 queryMemberCouponService,
                 queryPaymentService,
                 queryOrderStatusChangeLogRepository,
+                myBatisSalesStatisticsMapper,
                 clock
         );
 

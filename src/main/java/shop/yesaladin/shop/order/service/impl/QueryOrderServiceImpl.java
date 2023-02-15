@@ -1,15 +1,7 @@
 package shop.yesaladin.shop.order.service.impl;
 
-import java.time.Clock;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,25 +19,13 @@ import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
 import shop.yesaladin.shop.member.dto.MemberOrderSheetResponseDto;
 import shop.yesaladin.shop.member.service.inter.QueryMemberAddressService;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
-import shop.yesaladin.shop.order.domain.model.MemberOrder;
-import shop.yesaladin.shop.order.domain.model.NonMemberOrder;
-import shop.yesaladin.shop.order.domain.model.Order;
-import shop.yesaladin.shop.order.domain.model.OrderCode;
-import shop.yesaladin.shop.order.domain.model.OrderStatusChangeLog;
-import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
-import shop.yesaladin.shop.order.domain.model.Subscribe;
+import shop.yesaladin.shop.order.domain.model.*;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderProductRepository;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderStatusChangeLogRepository;
-import shop.yesaladin.shop.order.dto.OrderDetailsResponseDto;
-import shop.yesaladin.shop.order.dto.OrderPaymentResponseDto;
-import shop.yesaladin.shop.order.dto.OrderResponseDto;
-import shop.yesaladin.shop.order.dto.OrderSheetRequestDto;
-import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
-import shop.yesaladin.shop.order.dto.OrderStatusResponseDto;
-import shop.yesaladin.shop.order.dto.OrderSummaryDto;
-import shop.yesaladin.shop.order.dto.OrderSummaryResponseDto;
+import shop.yesaladin.shop.order.dto.*;
 import shop.yesaladin.shop.order.exception.OrderNotFoundException;
+import shop.yesaladin.shop.order.persistence.MyBatisSalesStatisticsMapper;
 import shop.yesaladin.shop.order.service.inter.QueryOrderService;
 import shop.yesaladin.shop.payment.domain.model.Payment;
 import shop.yesaladin.shop.payment.domain.model.PaymentCode;
@@ -55,14 +35,22 @@ import shop.yesaladin.shop.point.service.inter.QueryPointHistoryService;
 import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
 import shop.yesaladin.shop.product.service.inter.QueryProductService;
 
+import java.time.Clock;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 /**
  * 주문 데이터 조회 서비스의 구현체
  *
  * @author 김홍대
  * @author 최예린
  * @author 배수한
+ * @author 이수정
  * @since 1.0
  */
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class QueryOrderServiceImpl implements QueryOrderService {
@@ -76,6 +64,8 @@ public class QueryOrderServiceImpl implements QueryOrderService {
     private final QueryMemberCouponService queryMemberCouponService;
     private final QueryPaymentService queryPaymentService;
     private final QueryOrderStatusChangeLogRepository queryOrderStatusChangeLogRepository;
+
+    private final MyBatisSalesStatisticsMapper myBatisSalesStatisticsMapper;
 
     private final Clock clock;
 
@@ -396,5 +386,23 @@ public class QueryOrderServiceImpl implements QueryOrderService {
 
     private void checkValidMemberId(long memberId) {
         queryMemberService.findMemberById(memberId);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public PaginatedResponseDto<SalesStatisticsMyBatisResponseDto> getSalesStatistics(String start, String end, Pageable pageable) {
+        List<SalesStatisticsMyBatisResponseDto> salesStatistics = myBatisSalesStatisticsMapper.getSalesStatistics(start, end, pageable.getPageSize(), pageable.getOffset());
+        Integer totalDataCount = myBatisSalesStatisticsMapper.getSalesStatisticsTotalCount(start, end);
+
+        return PaginatedResponseDto.<SalesStatisticsMyBatisResponseDto>builder()
+                .currentPage(pageable.getPageNumber())
+                .dataList(salesStatistics)
+                .totalDataCount(totalDataCount)
+                .totalPage((long) Math.ceil((double) totalDataCount / pageable.getPageSize()))
+                .build();
     }
 }
