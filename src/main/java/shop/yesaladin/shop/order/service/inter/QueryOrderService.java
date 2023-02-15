@@ -159,5 +159,5 @@ public interface QueryOrderService {
      * @author 이수정
      * @since 1.0
      */
-    PaginatedResponseDto<SalesStatisticsMyBatisResponseDto> getSalesStatistics(String start, String end, Pageable pageable);
+    PaginatedResponseDto<SalesStatisticsResponseDto> getSalesStatistics(String start, String end, Pageable pageable);
 }
