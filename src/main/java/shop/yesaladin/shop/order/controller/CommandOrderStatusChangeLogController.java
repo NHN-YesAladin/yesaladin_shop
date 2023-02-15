@@ -1,9 +1,11 @@
 package shop.yesaladin.shop.order.controller;
 
+import java.time.LocalDateTime;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.common.exception.ClientException;
+import shop.yesaladin.shop.category.dto.ResultCodeDto;
 import shop.yesaladin.shop.common.aspect.annotation.LoginId;
 import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
 import shop.yesaladin.shop.order.dto.NonMemberRequestDto;
@@ -94,6 +97,18 @@ public class CommandOrderStatusChangeLogController {
                 .success(true)
                 .status(HttpStatus.CREATED)
                 .data(response)
+                .build();
+    }
+
+    @PostMapping("/delivery-complete")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseDto<ResultCodeDto> changeDeliveryCompleteStatusByOrderId(@PathVariable Long orderId) {
+        commandOrderStatusChangeLogService.appendOrderStatusChangeLogByOrderId(LocalDateTime.now()
+                .plusSeconds(1), orderId, OrderStatusCode.COMPLETE);
+        return ResponseDto.<ResultCodeDto>builder()
+                .success(true)
+                .status(HttpStatus.CREATED)
+                .data(new ResultCodeDto("Success"))
                 .build();
     }
 

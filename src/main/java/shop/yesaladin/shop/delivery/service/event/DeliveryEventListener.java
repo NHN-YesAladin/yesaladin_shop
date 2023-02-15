@@ -1,10 +1,12 @@
 package shop.yesaladin.shop.delivery.service.event;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.event.EventListener;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -24,6 +26,8 @@ import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.config.GatewayProperties;
 import shop.yesaladin.shop.delivery.dto.DeliveryEventDto;
 import shop.yesaladin.shop.delivery.dto.TransportResponseDto;
+import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
+import shop.yesaladin.shop.order.service.inter.CommandOrderStatusChangeLogService;
 import shop.yesaladin.shop.payment.dto.PaymentCancelDto;
 import shop.yesaladin.shop.payment.dto.PaymentEventDto;
 import shop.yesaladin.shop.payment.exception.PaymentFailException;
@@ -41,6 +45,7 @@ import shop.yesaladin.shop.payment.exception.PaymentFailException;
 public class DeliveryEventListener {
     private final RestTemplate restTemplate;
     private final GatewayProperties gatewayProperties;
+    private final CommandOrderStatusChangeLogService commandOrderStatusChangeLogService;
 
     /**
      * 배송 생성을 위해 통신하는 메서드
@@ -48,13 +53,14 @@ public class DeliveryEventListener {
      *
      * @param eventDto 주문 id가 들어있는 dto
      */
-    @TransactionalEventListener
+    @EventListener
     public void handleRegisterDeliveryStatus(DeliveryEventDto eventDto) {
 
-        log.warn("TransactionalEventListener : {}", eventDto.getOrderId());
+        Long orderId = eventDto.getOrderId();
+        log.info("DeliveryEventListener - handleRegisterDeliveryStatus : {}", orderId);
 
         UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(
-                        gatewayProperties.getDeliveryUrl() + "/api/delivery/" + eventDto.getOrderId())
+                        gatewayProperties.getDeliveryUrl() + "/api/delivery/" + orderId)
                 .build();
 
         HttpHeaders headers = new HttpHeaders();
@@ -73,6 +79,11 @@ public class DeliveryEventListener {
         if (!responseDto.isSuccess()) {
             throw new ClientException(ErrorCode.BAD_REQUEST, "배송 서버의 응답이 올바르지 않습니다.");
         }
+        commandOrderStatusChangeLogService.appendOrderStatusChangeLogByOrderId(
+                LocalDateTime.now().plusSeconds(3),
+                orderId,
+                OrderStatusCode.DELIVERY
+        );
         log.info("handleCancelPayment success");
     }
 }
