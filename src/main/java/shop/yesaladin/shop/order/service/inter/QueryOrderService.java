@@ -1,19 +1,15 @@
 package shop.yesaladin.shop.order.service.inter;
 
-import java.util.Map;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.common.exception.PageOffsetOutOfBoundsException;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
-import shop.yesaladin.shop.order.dto.OrderDetailsResponseDto;
-import shop.yesaladin.shop.order.dto.OrderPaymentResponseDto;
-import shop.yesaladin.shop.order.dto.OrderSheetRequestDto;
-import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
-import shop.yesaladin.shop.order.dto.OrderStatusResponseDto;
-import shop.yesaladin.shop.order.dto.OrderSummaryDto;
-import shop.yesaladin.shop.order.dto.OrderSummaryResponseDto;
+import shop.yesaladin.shop.order.dto.*;
+
+import java.util.Map;
 
 /**
  * 주문 데이터 조회에 관련된 기능을 수행하는 서비스 인터페이스
@@ -21,6 +17,7 @@ import shop.yesaladin.shop.order.dto.OrderSummaryResponseDto;
  * @author 김홍대
  * @author 배수한
  * @author 최예린
+ * @author 이수정
  * @since 1.0
  */
 public interface QueryOrderService {
@@ -152,4 +149,15 @@ public interface QueryOrderService {
      * @return 주문 상세 정보
      */
     OrderDetailsResponseDto getDetailsDtoByOrderNumber(String orderNumber);
+
+    /**
+     * 기간에 따른 매출 통계 정보를 조회하여 반환합니다.
+     *
+     * @param start 시작일
+     * @param end   종료일
+     * @return 매출 통계 정보
+     * @author 이수정
+     * @since 1.0
+     */
+    PaginatedResponseDto<SalesStatisticsResponseDto> getSalesStatistics(String start, String end, Pageable pageable);
 }

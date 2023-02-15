@@ -2,6 +2,7 @@ package shop.yesaladin.shop.product.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.exception.ClientException;
@@ -50,6 +51,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @RequiredArgsConstructor
+@CacheEvict(cacheNames = "recentProducts")
 @Service
 public class CommandProductServiceImpl implements CommandProductService {
 

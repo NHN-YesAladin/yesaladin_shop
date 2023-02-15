@@ -79,7 +79,8 @@ class CommandPaymentServiceImplTest {
         queryPaymentRepository = mock(QueryPaymentRepository.class);
         commandOrderStatusChangeLogService = mock(CommandOrderStatusChangeLogService.class);
 
-        paymentService = new CommandPaymentServiceImpl(restTemplate,
+        paymentService = new CommandPaymentServiceImpl(
+                restTemplate,
                 paymentRepository,
                 queryPaymentRepository,
                 orderService,

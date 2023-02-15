@@ -100,7 +100,7 @@ public class CommandOrderServiceImpl implements CommandOrderService {
             OrderMemberCreateRequestDto request,
             String loginId
     ) {
-        queryMemberCouponService.getMemberCouponSummaryListByCouponCodes(
+        queryMemberCouponService.getValidMemberCouponSummaryListByCouponCodes(
                 loginId,
                 request.getOrderCoupons()
         );
@@ -129,7 +129,7 @@ public class CommandOrderServiceImpl implements CommandOrderService {
             OrderSubscribeCreateRequestDto request,
             String loginId
     ) {
-        queryMemberCouponService.getMemberCouponSummaryListByCouponCodes(
+        queryMemberCouponService.getValidMemberCouponSummaryListByCouponCodes(
                 loginId,
                 request.getOrderCoupons()
         );
@@ -269,7 +269,11 @@ public class CommandOrderServiceImpl implements CommandOrderService {
         commandOrderStatusChangeLogRepository.save(orderStatusChangeLog);
     }
 
-    private void requestUseCoupon(OrderMemberCreateRequestDto request, String loginId, Order savedOrder) {
+    private void requestUseCoupon(
+            OrderMemberCreateRequestDto request,
+            String loginId,
+            Order savedOrder
+    ) {
         String requestId = useCouponService.sendCouponUseRequest(loginId, request.getOrderCoupons())
                 .getRequestId();
         putRequestIdForCouponsToRedis(savedOrder.getOrderNumber(), requestId);

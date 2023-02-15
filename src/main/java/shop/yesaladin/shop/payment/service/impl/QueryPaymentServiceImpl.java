@@ -3,13 +3,10 @@ package shop.yesaladin.shop.payment.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.payment.domain.model.Payment;
 import shop.yesaladin.shop.payment.domain.repository.QueryPaymentRepository;
-import shop.yesaladin.shop.payment.dto.PaymentCompleteSimpleResponseDto;
-import shop.yesaladin.shop.payment.exception.PaymentNotFoundException;
 import shop.yesaladin.shop.payment.service.inter.QueryPaymentService;
 
 /**

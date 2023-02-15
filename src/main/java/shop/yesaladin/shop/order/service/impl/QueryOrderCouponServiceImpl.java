@@ -49,7 +49,7 @@ public class QueryOrderCouponServiceImpl implements QueryOrderCouponService {
         }
 
         //쿠폰 사용 가능 검증
-        List<MemberCouponSummaryDto> memberCoupons = queryMemberCouponService.getMemberCouponSummaryListByCouponCodes(
+        List<MemberCouponSummaryDto> memberCoupons = queryMemberCouponService.getValidMemberCouponSummaryListByCouponCodes(
                 loginId,
                 couponCodes
         );

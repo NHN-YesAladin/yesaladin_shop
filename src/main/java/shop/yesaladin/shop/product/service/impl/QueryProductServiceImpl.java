@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -44,6 +46,8 @@ import shop.yesaladin.shop.writing.service.inter.QueryWritingService;
  * @author 최예린
  * @since 1.0
  */
+
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class QueryProductServiceImpl implements QueryProductService {
@@ -507,10 +511,12 @@ public class QueryProductServiceImpl implements QueryProductService {
      * {@inheritDoc}
      */
     @Override
+    @Cacheable(cacheNames = "recentProducts",key = "'recentProducts-pageNum:'+#pageable.pageNumber")
     @Transactional(readOnly = true)
-    public Page<ProductRecentResponseDto> findRecentProductByPublishedDate(Pageable pageable) {
+    public List<ProductRecentResponseDto> findRecentProductByPublishedDate(Pageable pageable) {
+        log.info("recentProducts - caching is working soon");
         return createProductRecentResponseDto(queryProductRepository.findRecentProductByPublishedDate(
-                pageable), pageable);
+                pageable), pageable).getContent();
     }
 
     /**
