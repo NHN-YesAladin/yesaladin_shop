@@ -22,8 +22,9 @@ public enum OrderStatusCode {
     READY(3),
     DELIVERY(4),
     COMPLETE(5),
-    REFUND(6),
-    CANCEL(7);
+    CONFIRM(6),
+    REFUND(7),
+    CANCEL(8);
 
     private final int statusCode;
 

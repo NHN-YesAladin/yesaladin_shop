@@ -61,6 +61,9 @@ class QueryMemberCouponControllerTest {
                 "test coupon",
                 "coupon-code",
                 1000,
+                10000,
+                null,
+                true,
                 CouponTypeCode.FIXED_PRICE,
                 LocalDate.of(2023, 1, 1),
                 false,
@@ -123,6 +126,15 @@ class QueryMemberCouponControllerTest {
                                 .description("쿠폰 코드"),
                         fieldWithPath("dataList.[].amount").type(JsonFieldType.NUMBER)
                                 .description("쿠폰 할인/포인트 값"),
+                        fieldWithPath("dataList.[].minOrderAmount").type(JsonFieldType.NUMBER)
+                                .optional()
+                                .description("할일 쿠폰 최소 주문 금액 값"),
+                        fieldWithPath("dataList.[].maxDiscountAmount").type(JsonFieldType.NUMBER)
+                                .optional()
+                                .description("할인 쿠폰의 최대 할인 값"),
+                        fieldWithPath("dataList.[].canBeOverlapped").type(JsonFieldType.BOOLEAN)
+                                .optional()
+                                .description("할인 쿠폰의 중복 할인 가능 여부"),
                         fieldWithPath("dataList.[].couponTypeCode").type(JsonFieldType.STRING)
                                 .description("쿠폰 유형 코드"),
                         fieldWithPath("dataList.[].expireDate").type(JsonFieldType.STRING)

@@ -201,6 +201,7 @@ public class QueryOrderServiceImpl implements QueryOrderService {
         List<MemberCouponSummaryDto> memberCoupons = new ArrayList<>();
 
         PaginatedResponseDto<MemberCouponSummaryDto> coupons;
+
         for (int i = 0; i <= totalCount / 20; i++) {
             coupons = queryMemberCouponService.getMemberCouponSummaryList(
                     PageRequest.of(i, offset),
@@ -227,6 +228,7 @@ public class QueryOrderServiceImpl implements QueryOrderService {
         LocalDate endDate = queryDto.getEndDateOrDefaultValue(clock);
 
         checkRequestedOffsetInBounds(startDate, endDate, foundMember.getId(), pageable);
+
         return queryOrderRepository.findOrdersInPeriodByMemberId(
                 startDate,
                 endDate,
@@ -271,7 +273,7 @@ public class QueryOrderServiceImpl implements QueryOrderService {
 
         Map<OrderStatusCode, Long> map = new HashMap<>();
         for (OrderStatusCode code : OrderStatusCode.values()) {
-            if (code.equals(OrderStatusCode.DEPOSIT) || code.equals(OrderStatusCode.REFUND)
+            if (code.equals(OrderStatusCode.DEPOSIT) || code.equals(OrderStatusCode.CONFIRM) || code.equals(OrderStatusCode.REFUND)
                     || code.equals(OrderStatusCode.CANCEL)) {
                 continue;
             }
