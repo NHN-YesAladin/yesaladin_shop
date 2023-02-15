@@ -41,12 +41,6 @@ public class SearchedProduct {
     private int discountRate;
     @Field(name = "is_separately_discount", type = FieldType.Boolean)
     private boolean isSeparatelyDiscount;
-    @Field(name = "given_point_rate", type = FieldType.Integer)
-    private int givenPointRate;
-    @Field(name = "is_given_point", type = FieldType.Boolean)
-    private boolean isGivenPoint;
-    @Field(name = "is_subscription_available", type = FieldType.Boolean)
-    private boolean isSubscriptionAvailable;
     @Field(name = "is_sale", type = FieldType.Boolean)
     private boolean isSale;
     @Field(name = "quantity", type = FieldType.Long)
@@ -55,20 +49,14 @@ public class SearchedProduct {
     private Boolean isForcedOutOfStock;
     @Field(name = "preferential_show_ranking", type = FieldType.Long)
     private long preferentialShowRanking;
-    @Field(name = "product_type", type = FieldType.Object)
-    private SearchedProductProductType productType;
     @Field(name = "integrated_discount_rate", type = FieldType.Object)
     private SearchedProductTotalDiscountRate searchedTotalDiscountRate;
-    @Field(name = "thumbnail_file", type = FieldType.Object)
-    private SearchedProductFile thumbnailFile;
-    @Field(name = "ebook_file", type = FieldType.Object)
-    private SearchedProductFile ebookFile;
+    @Field(name = "thumbnail_file", type = FieldType.Keyword)
+    private String thumbnailFile;
     @Field(name = "publisher", type = FieldType.Object)
     private SearchedProductPublisher publisher;
     @Field(name = "published_date", type = FieldType.Date)
     private LocalDate publishedDate;
-    @Field(name = "saving_method", type = FieldType.Keyword)
-    private String savingMethod;
     @Field(name = "is_deleted", type = FieldType.Boolean)
     private Boolean isDeleted;
     @Field(name = "categories", type = FieldType.Object)
@@ -77,6 +65,4 @@ public class SearchedProduct {
     private List<SearchedProductAuthor> authors;
     @Field(name = "tags", type = FieldType.Object)
     private List<SearchedProductTag> tags;
-    @Field(name = "SubscribeProduct", type = FieldType.Object)
-    private List<SearchedProductSubscribProduct> subscribeProduct;
 }
