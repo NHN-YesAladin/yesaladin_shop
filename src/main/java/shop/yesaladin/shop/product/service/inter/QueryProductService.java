@@ -158,7 +158,7 @@ public interface QueryProductService {
      * @author 김선홍
      * @since 1, 0
      */
-    Page<ProductRecentResponseDto> findRecentProductByPublishedDate(Pageable pageable);
+    List<ProductRecentResponseDto> findRecentProductByPublishedDate(Pageable pageable);
 
     /**
      * 최근 본 상품 메소드

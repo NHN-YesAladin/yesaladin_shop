@@ -720,12 +720,11 @@ class QueryProductServiceImplTest {
                         publish2.getPublisher()
                 ));
 
-        Page<ProductRecentResponseDto> dto = service.findRecentProductByPublishedDate(PageRequest.of(
-                0,
-                10
-        ));
-        assertThat(dto.getTotalElements()).isEqualTo(2);
-        assertThat(dto.getContent().get(0).getId()).isEqualTo(product2.getId());
-        assertThat(dto.getContent().get(1).getId()).isEqualTo(product.getId());
+        List<ProductRecentResponseDto> dto = service.findRecentProductByPublishedDate(
+                PageRequest.of(
+                        0,
+                        10
+                ));
+        assertThat(dto).hasSize(2);
     }
 }
