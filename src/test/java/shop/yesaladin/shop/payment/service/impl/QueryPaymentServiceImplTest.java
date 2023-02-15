@@ -84,9 +84,11 @@ class QueryPaymentServiceImplTest {
                 memberOrder.getId());
 
         // then
-        assertThat(foundPayment.getPaymentCard().getNumber()).isEqualTo(payment.getPaymentCard().getNumber());
+        assertThat(foundPayment.getPaymentCard().getNumber()).isEqualTo(payment.getPaymentCard()
+                .getNumber());
         assertThat(foundPayment.getId()).isEqualTo(payment.getId());
-        assertThat(foundPayment.getOrder().getOrderNumber()).isEqualTo(payment.getOrder().getOrderNumber());
+        assertThat(foundPayment.getOrder().getOrderNumber()).isEqualTo(payment.getOrder()
+                .getOrderNumber());
 
         verify(queryPaymentRepository, times(1)).findById(
                 eq(null),

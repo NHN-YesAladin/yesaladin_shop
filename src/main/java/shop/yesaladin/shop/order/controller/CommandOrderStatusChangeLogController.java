@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.order.controller;
 
+import java.time.LocalDateTime;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.common.exception.ClientException;
+import shop.yesaladin.shop.category.dto.ResultCodeDto;
 import shop.yesaladin.shop.common.aspect.annotation.LoginId;
 import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
 import shop.yesaladin.shop.order.dto.NonMemberRequestDto;
@@ -94,6 +96,24 @@ public class CommandOrderStatusChangeLogController {
                 .success(true)
                 .status(HttpStatus.CREATED)
                 .data(response)
+                .build();
+    }
+
+    /**
+     * 배송서버로부터 주문 상태코드를 배송 완료로 변경하기 위한 컨트롤러
+     *
+     * @param orderId 배송 완료 상태로 바꾸고자하는 주문
+     * @return ResultCodeDto
+     */
+    @PostMapping("/delivery-complete")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseDto<ResultCodeDto> changeDeliveryCompleteStatusByOrderId(@PathVariable("orderId") Long orderId) {
+        commandOrderStatusChangeLogService.appendOrderStatusChangeLogByOrderId(LocalDateTime.now()
+                .plusSeconds(5), orderId, OrderStatusCode.COMPLETE);
+        return ResponseDto.<ResultCodeDto>builder()
+                .success(true)
+                .status(HttpStatus.CREATED)
+                .data(new ResultCodeDto("Success"))
                 .build();
     }
 

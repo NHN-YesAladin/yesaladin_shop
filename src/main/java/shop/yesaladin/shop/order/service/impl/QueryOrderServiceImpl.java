@@ -273,7 +273,8 @@ public class QueryOrderServiceImpl implements QueryOrderService {
 
         Map<OrderStatusCode, Long> map = new HashMap<>();
         for (OrderStatusCode code : OrderStatusCode.values()) {
-            if (code.equals(OrderStatusCode.DEPOSIT) || code.equals(OrderStatusCode.CONFIRM) || code.equals(OrderStatusCode.REFUND)
+            if (code.equals(OrderStatusCode.DEPOSIT) || code.equals(OrderStatusCode.CONFIRM)
+                    || code.equals(OrderStatusCode.REFUND)
                     || code.equals(OrderStatusCode.CANCEL)) {
                 continue;
             }

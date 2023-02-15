@@ -1,36 +1,26 @@
 package shop.yesaladin.shop.payment.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import java.net.URI;
 import java.util.Base64;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
-import shop.yesaladin.shop.order.domain.model.Order;
-import shop.yesaladin.shop.order.service.inter.QueryOrderService;
 import shop.yesaladin.shop.payment.dto.PaymentCancelDto;
-import shop.yesaladin.shop.payment.dto.PaymentCompleteSimpleResponseDto;
 import shop.yesaladin.shop.payment.dto.PaymentEventDto;
-import shop.yesaladin.shop.payment.dto.PaymentRequestDto;
 import shop.yesaladin.shop.payment.exception.PaymentFailException;
 import shop.yesaladin.shop.payment.service.event.PaymentEventListener;
-import shop.yesaladin.shop.payment.service.inter.CommandPaymentService;
 
 
 class PaymentEventListenerTest {
