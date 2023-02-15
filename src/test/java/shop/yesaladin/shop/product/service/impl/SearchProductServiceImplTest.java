@@ -1,784 +1,285 @@
 package shop.yesaladin.shop.product.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.verify;
 
-import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import shop.yesaladin.shop.product.domain.model.SearchedProductAuthor;
-import shop.yesaladin.shop.product.domain.model.SearchedProductCategory;
-import shop.yesaladin.shop.product.domain.model.SearchedProductFile;
-import shop.yesaladin.shop.product.domain.model.SearchedProductProductType;
-import shop.yesaladin.shop.product.domain.model.SearchedProductSubscribProduct;
-import shop.yesaladin.shop.product.domain.model.SearchedProductTag;
-import shop.yesaladin.shop.product.domain.model.SearchedProductTotalDiscountRate;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.product.domain.repository.SearchProductRepository;
-import shop.yesaladin.shop.product.dto.SearchedProductDto;
-import shop.yesaladin.shop.product.dto.SearchedProductManagerDto;
-import shop.yesaladin.shop.product.dto.SearchedProductManagerResponseDto;
 import shop.yesaladin.shop.product.dto.SearchedProductResponseDto;
 
 class SearchProductServiceImplTest {
 
     SearchProductRepository searchProductRepository;
     SearchProductServiceImpl searchProductService;
-    SearchedProductDto dummySearchedProductDto;
-    SearchedProductResponseDto dummySearchedProductResponseDto;
-    SearchedProductManagerResponseDto dummySearchedProductManagerResponseDto;
-    SearchedProductManagerDto dummySearchedProductManagerDto;
+    SearchedProductResponseDto responseDto;
+    Pageable pageable = PageRequest.of(0, 1);
 
-    private static final int OFFSET = 0;
-    private static final int SIZE = 1;
-    private static final long COUNT = 1;
-    private static final int ZERO = 0;
-    private static final int ONE = 1;
 
     @BeforeEach
     void setUp() {
         searchProductRepository = Mockito.mock(SearchProductRepository.class);
         searchProductService = new SearchProductServiceImpl(searchProductRepository);
-        dummySearchedProductDto = SearchedProductDto.builder()
-                .id(-1L)
+
+        responseDto = SearchedProductResponseDto.builder()
+                .id(1L)
                 .title("title")
-                .discountRate(10)
-                .sellingPrice(1000L)
-                .authors(List.of("author"))
-                .isForcedOutOfStock(false)
-                .thumbnailFileUrl("깃 허브.jpg")
-                .publishedDate(LocalDate.now().toString())
-                .categories(List.of(new SearchedProductCategory(12L, null, "국내소설", true, false)))
-                .tags(List.of("tag1"))
-                .build();
-
-        dummySearchedProductResponseDto = SearchedProductResponseDto.builder()
-                .products(List.of(dummySearchedProductDto))
-                .count(COUNT)
-                .build();
-
-        dummySearchedProductManagerDto = SearchedProductManagerDto.builder()
-                .id(-1L)
                 .isbn("isbn")
-                .title("title")
-                .actualPrice(1000L)
-                .discountRate(10)
-                .isSeparatelyDiscount(false)
-                .givenPointRate(10)
-                .isGivenPoint(false)
-                .isSale(false)
                 .quantity(1000L)
-                .preferentialShowRanking(1000L)
-                .productType(new SearchedProductProductType(1, "type"))
-                .searchedTotalDiscountRate(new SearchedProductTotalDiscountRate(1, 10))
-                .thumbnailFile(new SearchedProductFile(1L, "file1", LocalDate.now()))
-                .ebookFile(new SearchedProductFile(2L, "file2", LocalDate.now()))
-                .publishedDate(LocalDate.now())
-                .savingMethod("saving")
-                .categories(List.of(new SearchedProductCategory(1L, null, "name", true, false)))
-                .authors(List.of(new SearchedProductAuthor(1L, "name")))
-                .tags(List.of(new SearchedProductTag(1L, "tag")))
-                .subscribeProducts(List.of(new SearchedProductSubscribProduct(1L, "issn")))
+                .sellingPrice(1000L)
+                .rate(10)
+                .isForcedOutOfStock(false)
+                .publisher("publisher")
+                .authors(List.of("author"))
+                .tags(List.of("tags"))
+                .thumbnailFile("file")
                 .build();
 
-        dummySearchedProductManagerResponseDto = SearchedProductManagerResponseDto.builder()
-                .products(List.of(dummySearchedProductManagerDto))
-                .count(COUNT)
-                .build();
     }
 
     @Test
     @DisplayName("카테고리 id 검색 테스트")
     void testSearchProductsByCategoryId() {
         //given
-        Mockito.when(searchProductRepository.searchProductsByCategoryId(1L, OFFSET, SIZE))
-                .thenReturn(dummySearchedProductResponseDto);
+        Mockito.when(searchProductRepository.searchProductsByCategoryId(1L, pageable))
+                .thenReturn(new PageImpl<>(List.of(responseDto), pageable, 1L));
 
         //when
-        SearchedProductResponseDto result = searchProductService.searchProductsByCategoryId(
+        Page<SearchedProductResponseDto> result = searchProductService.searchProductsByCategoryId(
                 1L,
-                OFFSET,
-                SIZE
+                pageable
         );
 
         //then
-        assertThat(result.getCount()).isEqualTo(1);
-        assertThat(result.getProducts()).hasSize(1);
-        assertThat(result.getProducts().get(0).getId()).isEqualTo(dummySearchedProductDto.getId());
-        assertThat(result.getProducts()
-                .get(0)
-                .getTitle()).isEqualTo(dummySearchedProductDto.getTitle());
-        assertThat(result.getProducts()
-                .get(0)
-                .getDiscountRate()).isEqualTo(dummySearchedProductDto.getDiscountRate());
-        assertThat(result.getProducts()
-                .get(0)
-                .getSellingPrice()).isEqualTo(dummySearchedProductDto.getSellingPrice());
-        assertThat(result.getProducts()
-                .get(0)
-                .getPublishedDate()).isEqualTo(dummySearchedProductDto.getPublishedDate());
-        assertThat(result.getProducts()
-                .get(0)
-                .getIsForcedOutOfStock()).isEqualTo(dummySearchedProductDto.getIsForcedOutOfStock());
-        assertThat(result.getProducts().get(0).getCategories()).hasSameSizeAs(
-                dummySearchedProductDto.getCategories());
-        assertThat(result.getProducts()
-                .get(0)
-                .getCategories()
-                .get(0)
-                .getId()).isEqualTo(dummySearchedProductDto.getCategories()
-                .get(0)
-                .getId());
-        assertThat(result.getProducts()
-                .get(0)
-                .getCategories()
-                .get(0)
-                .getName()).isEqualTo(dummySearchedProductDto.getCategories()
-                .get(0)
-                .getName());
-        assertThat(result.getProducts()
-                .get(0)
-                .getCategories()
-                .get(0)
-                .getParent()).isEqualTo(dummySearchedProductDto.getCategories()
-                .get(0)
-                .getParent());
-        assertThat(result.getProducts()
-                .get(0)
-                .getCategories()
-                .get(0)
-                .getIsShown()).isEqualTo(dummySearchedProductDto.getCategories()
-                .get(0)
-                .getIsShown());
-        assertThat(result.getProducts()
-                .get(0)
-                .getCategories()
-                .get(0)
-                .getDisable()).isEqualTo(dummySearchedProductDto.getCategories()
-                .get(0)
-                .getDisable());
-        assertThat(result.getProducts().get(0).getAuthors().get(0)).isEqualTo(
-                dummySearchedProductDto.getAuthors()
-                        .get(0));
-        assertThat(result.getProducts()
-                .get(0)
-                .getTags()
-                .get(0)).isEqualTo(dummySearchedProductDto.getTags()
-                .get(0));
-
-        verify(searchProductRepository, atLeastOnce()).searchProductsByCategoryId(1L, OFFSET, SIZE);
+        assertThat(result).hasSize(1);
+        assertThat(result.getContent().get(0).getId()).isEqualTo(responseDto.getId());
+        assertThat(result.getContent().get(0).getTitle()).isEqualTo(responseDto.getTitle());
+        assertThat(result.getContent().get(0).getQuantity()).isEqualTo(responseDto.getQuantity());
+        assertThat(result.getContent().get(0).getSellingPrice()).isEqualTo(responseDto.getSellingPrice());
+        assertThat(result.getContent().get(0).getRate()).isEqualTo(responseDto.getRate());
+        assertThat(result.getContent().get(0).getIsForcedOutOfStock()).isEqualTo(responseDto.getIsForcedOutOfStock());
+        assertThat(result.getContent().get(0).getIsbn()).isEqualTo(responseDto.getIsbn());
+        assertThat(result.getContent().get(0).getPublisher()).isEqualTo(responseDto.getPublisher());
+        assertThat(result.getContent().get(0).getAuthors()).hasSize(responseDto.getAuthors().size());
+        assertThat(result.getContent().get(0).getAuthors().get(0)).isEqualTo(responseDto.getAuthors().get(0));
+        assertThat(result.getContent().get(0).getThumbnailFile()).isEqualTo(responseDto.getThumbnailFile());
+        assertThat(result.getContent().get(0).getTags()).hasSize(responseDto.getTags().size());
+        assertThat(result.getContent().get(0).getTags().get(0)).isEqualTo(responseDto.getTags().get(0));
     }
 
     @Test
     @DisplayName("카테고리 이름 검색 테스트")
     void testSearchProductsByCategoryName() {
-        //given
-        String name = "name";
-        Mockito.when(searchProductRepository.searchProductsByCategoryName(name, OFFSET, SIZE))
-                .thenReturn(dummySearchedProductResponseDto);
+//given
+        Mockito.when(searchProductRepository.searchProductsByCategoryName("name", pageable))
+                .thenReturn(new PageImpl<>(List.of(responseDto), pageable, 1L));
 
         //when
-        SearchedProductResponseDto result = searchProductService.searchProductsByCategoryName(
-                name,
-                OFFSET,
-                SIZE
+        Page<SearchedProductResponseDto> result = searchProductService.searchProductsByCategoryName(
+                "name",
+                pageable
         );
 
         //then
-        assertThat(result.getCount()).isEqualTo(1);
-        assertThat(result.getProducts()).hasSize(1);
-        assertThat(result.getProducts().get(0).getId()).isEqualTo(dummySearchedProductDto.getId());
-        assertThat(result.getProducts()
-                .get(0)
-                .getTitle()).isEqualTo(dummySearchedProductDto.getTitle());
-        assertThat(result.getProducts()
-                .get(0)
-                .getDiscountRate()).isEqualTo(dummySearchedProductDto.getDiscountRate());
-        assertThat(result.getProducts()
-                .get(0)
-                .getSellingPrice()).isEqualTo(dummySearchedProductDto.getSellingPrice());
-        assertThat(result.getProducts()
-                .get(0)
-                .getPublishedDate()).isEqualTo(dummySearchedProductDto.getPublishedDate());
-        assertThat(result.getProducts()
-                .get(0)
-                .getIsForcedOutOfStock()).isEqualTo(dummySearchedProductDto.getIsForcedOutOfStock());
-        assertThat(result.getProducts().get(0).getCategories()).hasSameSizeAs(
-                dummySearchedProductDto.getCategories());
-        assertThat(result.getProducts()
-                .get(0)
-                .getCategories()
-                .get(0)
-                .getId()).isEqualTo(dummySearchedProductDto.getCategories()
-                .get(0)
-                .getId());
-        assertThat(result.getProducts()
-                .get(0)
-                .getCategories()
-                .get(0)
-                .getName()).isEqualTo(dummySearchedProductDto.getCategories()
-                .get(0)
-                .getName());
-        assertThat(result.getProducts()
-                .get(0)
-                .getCategories()
-                .get(0)
-                .getParent()).isEqualTo(dummySearchedProductDto.getCategories()
-                .get(0)
-                .getParent());
-        assertThat(result.getProducts()
-                .get(0)
-                .getCategories()
-                .get(0)
-                .getIsShown()).isEqualTo(dummySearchedProductDto.getCategories()
-                .get(0)
-                .getIsShown());
-        assertThat(result.getProducts()
-                .get(0)
-                .getCategories()
-                .get(0)
-                .getDisable()).isEqualTo(dummySearchedProductDto.getCategories()
-                .get(0)
-                .getDisable());
-        assertThat(result.getProducts().get(0).getAuthors().get(0)).isEqualTo(
-                dummySearchedProductDto.getAuthors()
-                        .get(0));
-        assertThat(result.getProducts()
-                .get(0)
-                .getTags()
-                .get(0)).isEqualTo(dummySearchedProductDto.getTags()
-                .get(0));
-
-        verify(searchProductRepository, atLeastOnce()).searchProductsByCategoryName(
-                name,
-                OFFSET,
-                SIZE
-        );
+        assertThat(result).hasSize(1);
+        assertThat(result.getContent().get(0).getId()).isEqualTo(responseDto.getId());
+        assertThat(result.getContent().get(0).getTitle()).isEqualTo(responseDto.getTitle());
+        assertThat(result.getContent().get(0).getQuantity()).isEqualTo(responseDto.getQuantity());
+        assertThat(result.getContent().get(0).getSellingPrice()).isEqualTo(responseDto.getSellingPrice());
+        assertThat(result.getContent().get(0).getRate()).isEqualTo(responseDto.getRate());
+        assertThat(result.getContent().get(0).getIsForcedOutOfStock()).isEqualTo(responseDto.getIsForcedOutOfStock());
+        assertThat(result.getContent().get(0).getIsbn()).isEqualTo(responseDto.getIsbn());
+        assertThat(result.getContent().get(0).getPublisher()).isEqualTo(responseDto.getPublisher());
+        assertThat(result.getContent().get(0).getAuthors()).hasSize(responseDto.getAuthors().size());
+        assertThat(result.getContent().get(0).getAuthors().get(0)).isEqualTo(responseDto.getAuthors().get(0));
+        assertThat(result.getContent().get(0).getThumbnailFile()).isEqualTo(responseDto.getThumbnailFile());
+        assertThat(result.getContent().get(0).getTags()).hasSize(responseDto.getTags().size());
+        assertThat(result.getContent().get(0).getTags().get(0)).isEqualTo(responseDto.getTags().get(0));
     }
 
     @Test
     @DisplayName("상품 제목 검색 테스트")
     void testSearchProductsByProductTitle() {
         //given
-        String title = "title";
-        Mockito.when(searchProductRepository.searchProductsByProductTitle(title, OFFSET, SIZE))
-                .thenReturn(dummySearchedProductResponseDto);
+        Mockito.when(searchProductRepository.searchProductsByProductTitle("title", pageable))
+                .thenReturn(new PageImpl<>(List.of(responseDto), pageable, 1L));
 
         //when
-        SearchedProductResponseDto result = searchProductService.searchProductsByProductTitle(
-                title,
-                OFFSET,
-                SIZE
+        Page<SearchedProductResponseDto> result = searchProductService.searchProductsByProductTitle(
+                "title",
+                pageable
         );
 
         //then
-        assertThat(result.getCount()).isEqualTo(1L);
-        assertThat(result.getProducts()).hasSize(1);
-        assertThat(result.getProducts().get(0).getId()).isEqualTo(dummySearchedProductDto.getId());
-        assertThat(result.getProducts()
-                .get(0)
-                .getTitle()).isEqualTo(dummySearchedProductDto.getTitle());
-        assertThat(result.getProducts()
-                .get(0)
-                .getDiscountRate()).isEqualTo(dummySearchedProductDto.getDiscountRate());
-        assertThat(result.getProducts()
-                .get(0)
-                .getSellingPrice()).isEqualTo(dummySearchedProductDto.getSellingPrice());
-        assertThat(result.getProducts()
-                .get(0)
-                .getPublishedDate()).isEqualTo(dummySearchedProductDto.getPublishedDate());
-        assertThat(result.getProducts()
-                .get(0)
-                .getIsForcedOutOfStock()).isEqualTo(dummySearchedProductDto.getIsForcedOutOfStock());
-        assertThat(result.getProducts().get(0).getCategories()).hasSameSizeAs(
-                dummySearchedProductDto.getCategories());
-        assertThat(result.getProducts()
-                .get(0)
-                .getCategories()
-                .get(0)
-                .getId()).isEqualTo(dummySearchedProductDto.getCategories()
-                .get(0)
-                .getId());
-        assertThat(result.getProducts()
-                .get(0)
-                .getCategories()
-                .get(0)
-                .getName()).isEqualTo(dummySearchedProductDto.getCategories()
-                .get(0)
-                .getName());
-        assertThat(result.getProducts()
-                .get(0)
-                .getCategories()
-                .get(0)
-                .getParent()).isEqualTo(dummySearchedProductDto.getCategories()
-                .get(0)
-                .getParent());
-        assertThat(result.getProducts()
-                .get(0)
-                .getCategories()
-                .get(0)
-                .getIsShown()).isEqualTo(dummySearchedProductDto.getCategories()
-                .get(0)
-                .getIsShown());
-        assertThat(result.getProducts()
-                .get(0)
-                .getCategories()
-                .get(0)
-                .getDisable()).isEqualTo(dummySearchedProductDto.getCategories()
-                .get(0)
-                .getDisable());
-        assertThat(result.getProducts().get(0).getAuthors().get(0)).isEqualTo(
-                dummySearchedProductDto.getAuthors()
-                        .get(0));
-        assertThat(result.getProducts()
-                .get(0)
-                .getTags()
-                .get(0)).isEqualTo(dummySearchedProductDto.getTags()
-                .get(0));
-
-        verify(searchProductRepository, atLeastOnce()).searchProductsByProductTitle(
-                title,
-                OFFSET,
-                SIZE
-        );
+        assertThat(result).hasSize(1);
+        assertThat(result.getContent().get(0).getId()).isEqualTo(responseDto.getId());
+        assertThat(result.getContent().get(0).getTitle()).isEqualTo(responseDto.getTitle());
+        assertThat(result.getContent().get(0).getQuantity()).isEqualTo(responseDto.getQuantity());
+        assertThat(result.getContent().get(0).getSellingPrice()).isEqualTo(responseDto.getSellingPrice());
+        assertThat(result.getContent().get(0).getRate()).isEqualTo(responseDto.getRate());
+        assertThat(result.getContent().get(0).getIsForcedOutOfStock()).isEqualTo(responseDto.getIsForcedOutOfStock());
+        assertThat(result.getContent().get(0).getIsbn()).isEqualTo(responseDto.getIsbn());
+        assertThat(result.getContent().get(0).getPublisher()).isEqualTo(responseDto.getPublisher());
+        assertThat(result.getContent().get(0).getAuthors()).hasSize(responseDto.getAuthors().size());
+        assertThat(result.getContent().get(0).getAuthors().get(0)).isEqualTo(responseDto.getAuthors().get(0));
+        assertThat(result.getContent().get(0).getThumbnailFile()).isEqualTo(responseDto.getThumbnailFile());
+        assertThat(result.getContent().get(0).getTags()).hasSize(responseDto.getTags().size());
+        assertThat(result.getContent().get(0).getTags().get(0)).isEqualTo(responseDto.getTags().get(0));
     }
 
     @Test
     @DisplayName("상품 내용으로 검색 테스트")
     void testSearchProductsByProductContent() {
         //given
-        String content = "content";
-        Mockito.when(searchProductRepository.searchProductsByProductContent(content, OFFSET, SIZE))
-                .thenReturn(dummySearchedProductResponseDto);
+        Mockito.when(searchProductRepository.searchProductsByProductContent("content", pageable))
+                .thenReturn(new PageImpl<>(List.of(responseDto), pageable, 1L));
 
         //when
-        SearchedProductResponseDto result = searchProductService.searchProductsByProductContent(
-                content,
-                OFFSET,
-                SIZE
+        Page<SearchedProductResponseDto> result = searchProductService.searchProductsByProductContent(
+                "content",
+                pageable
         );
 
         //then
-        assertThat(result.getCount()).isEqualTo(1L);
-        assertThat(result.getProducts()).hasSize(1);
-        assertThat(result.getProducts().get(0).getId()).isEqualTo(dummySearchedProductDto.getId());
-        assertThat(result.getProducts()
-                .get(0)
-                .getTitle()).isEqualTo(dummySearchedProductDto.getTitle());
-        assertThat(result.getProducts()
-                .get(0)
-                .getDiscountRate()).isEqualTo(dummySearchedProductDto.getDiscountRate());
-        assertThat(result.getProducts()
-                .get(0)
-                .getSellingPrice()).isEqualTo(dummySearchedProductDto.getSellingPrice());
-        assertThat(result.getProducts()
-                .get(0)
-                .getPublishedDate()).isEqualTo(dummySearchedProductDto.getPublishedDate());
-        assertThat(result.getProducts()
-                .get(0)
-                .getIsForcedOutOfStock()).isEqualTo(dummySearchedProductDto.getIsForcedOutOfStock());
-        assertThat(result.getProducts().get(0).getCategories()).hasSameSizeAs(
-                dummySearchedProductDto.getCategories());
-        assertThat(result.getProducts()
-                .get(0)
-                .getCategories()
-                .get(0)
-                .getId()).isEqualTo(dummySearchedProductDto.getCategories()
-                .get(0)
-                .getId());
-        assertThat(result.getProducts()
-                .get(0)
-                .getCategories()
-                .get(0)
-                .getName()).isEqualTo(dummySearchedProductDto.getCategories()
-                .get(0)
-                .getName());
-        assertThat(result.getProducts()
-                .get(0)
-                .getCategories()
-                .get(0)
-                .getParent()).isEqualTo(dummySearchedProductDto.getCategories()
-                .get(0)
-                .getParent());
-        assertThat(result.getProducts()
-                .get(0)
-                .getCategories()
-                .get(0)
-                .getIsShown()).isEqualTo(dummySearchedProductDto.getCategories()
-                .get(0)
-                .getIsShown());
-        assertThat(result.getProducts()
-                .get(0)
-                .getCategories()
-                .get(0)
-                .getDisable()).isEqualTo(dummySearchedProductDto.getCategories()
-                .get(0)
-                .getDisable());
-        assertThat(result.getProducts().get(0).getAuthors().get(0)).isEqualTo(
-                dummySearchedProductDto.getAuthors()
-                        .get(0));
-        assertThat(result.getProducts()
-                .get(0)
-                .getTags()
-                .get(0)).isEqualTo(dummySearchedProductDto.getTags()
-                .get(0));
-
-        verify(searchProductRepository, atLeastOnce()).searchProductsByProductContent(
-                content,
-                OFFSET,
-                SIZE
-        );
+        assertThat(result).hasSize(1);
+        assertThat(result.getContent().get(0).getId()).isEqualTo(responseDto.getId());
+        assertThat(result.getContent().get(0).getTitle()).isEqualTo(responseDto.getTitle());
+        assertThat(result.getContent().get(0).getQuantity()).isEqualTo(responseDto.getQuantity());
+        assertThat(result.getContent().get(0).getSellingPrice()).isEqualTo(responseDto.getSellingPrice());
+        assertThat(result.getContent().get(0).getRate()).isEqualTo(responseDto.getRate());
+        assertThat(result.getContent().get(0).getIsForcedOutOfStock()).isEqualTo(responseDto.getIsForcedOutOfStock());
+        assertThat(result.getContent().get(0).getIsbn()).isEqualTo(responseDto.getIsbn());
+        assertThat(result.getContent().get(0).getPublisher()).isEqualTo(responseDto.getPublisher());
+        assertThat(result.getContent().get(0).getAuthors()).hasSize(responseDto.getAuthors().size());
+        assertThat(result.getContent().get(0).getAuthors().get(0)).isEqualTo(responseDto.getAuthors().get(0));
+        assertThat(result.getContent().get(0).getThumbnailFile()).isEqualTo(responseDto.getThumbnailFile());
+        assertThat(result.getContent().get(0).getTags()).hasSize(responseDto.getTags().size());
+        assertThat(result.getContent().get(0).getTags().get(0)).isEqualTo(responseDto.getTags().get(0));
     }
 
     @Test
     @DisplayName("ISBN으로 검색")
     void testSearchProductsByProductISBN() {
         //given
-        String isbn = "ISBN";
-        Mockito.when(searchProductRepository.searchProductsByProductISBN(isbn, OFFSET, SIZE))
-                .thenReturn(dummySearchedProductResponseDto);
+        Mockito.when(searchProductRepository.searchProductsByProductISBN("isbn", pageable))
+                .thenReturn(new PageImpl<>(List.of(responseDto), pageable, 1L));
 
         //when
-        SearchedProductResponseDto result = searchProductService.searchProductsByProductISBN(
-                isbn,
-                OFFSET,
-                SIZE
+        Page<SearchedProductResponseDto> result = searchProductService.searchProductsByProductISBN(
+                "isbn",
+                pageable
         );
 
         //then
-        //then
-        assertThat(result.getCount()).isEqualTo(1L);
-        assertThat(result.getProducts()).hasSize(1);
-        assertThat(result.getProducts().get(0).getId()).isEqualTo(dummySearchedProductDto.getId());
-        assertThat(result.getProducts()
-                .get(0)
-                .getTitle()).isEqualTo(dummySearchedProductDto.getTitle());
-        assertThat(result.getProducts()
-                .get(0)
-                .getDiscountRate()).isEqualTo(dummySearchedProductDto.getDiscountRate());
-        assertThat(result.getProducts()
-                .get(0)
-                .getSellingPrice()).isEqualTo(dummySearchedProductDto.getSellingPrice());
-        assertThat(result.getProducts()
-                .get(0)
-                .getPublishedDate()).isEqualTo(dummySearchedProductDto.getPublishedDate());
-        assertThat(result.getProducts()
-                .get(0)
-                .getIsForcedOutOfStock()).isEqualTo(dummySearchedProductDto.getIsForcedOutOfStock());
-        assertThat(result.getProducts().get(0).getCategories()).hasSameSizeAs(
-                dummySearchedProductDto.getCategories());
-        assertThat(result.getProducts()
-                .get(0)
-                .getCategories()
-                .get(0)
-                .getId()).isEqualTo(dummySearchedProductDto.getCategories()
-                .get(0)
-                .getId());
-        assertThat(result.getProducts()
-                .get(0)
-                .getCategories()
-                .get(0)
-                .getName()).isEqualTo(dummySearchedProductDto.getCategories()
-                .get(0)
-                .getName());
-        assertThat(result.getProducts()
-                .get(0)
-                .getCategories()
-                .get(0)
-                .getParent()).isEqualTo(dummySearchedProductDto.getCategories()
-                .get(0)
-                .getParent());
-        assertThat(result.getProducts()
-                .get(0)
-                .getCategories()
-                .get(0)
-                .getIsShown()).isEqualTo(dummySearchedProductDto.getCategories()
-                .get(0)
-                .getIsShown());
-        assertThat(result.getProducts()
-                .get(0)
-                .getCategories()
-                .get(0)
-                .getDisable()).isEqualTo(dummySearchedProductDto.getCategories()
-                .get(0)
-                .getDisable());
-        assertThat(result.getProducts().get(0).getAuthors().get(0)).isEqualTo(
-                dummySearchedProductDto.getAuthors()
-                        .get(0));
-        assertThat(result.getProducts()
-                .get(0)
-                .getTags()
-                .get(0)).isEqualTo(dummySearchedProductDto.getTags()
-                .get(0));
-
-        verify(searchProductRepository, atLeastOnce()).searchProductsByProductISBN(
-                isbn,
-                OFFSET,
-                SIZE
-        );
+        assertThat(result).hasSize(1);
+        assertThat(result.getContent().get(0).getId()).isEqualTo(responseDto.getId());
+        assertThat(result.getContent().get(0).getTitle()).isEqualTo(responseDto.getTitle());
+        assertThat(result.getContent().get(0).getQuantity()).isEqualTo(responseDto.getQuantity());
+        assertThat(result.getContent().get(0).getSellingPrice()).isEqualTo(responseDto.getSellingPrice());
+        assertThat(result.getContent().get(0).getRate()).isEqualTo(responseDto.getRate());
+        assertThat(result.getContent().get(0).getIsForcedOutOfStock()).isEqualTo(responseDto.getIsForcedOutOfStock());
+        assertThat(result.getContent().get(0).getIsbn()).isEqualTo(responseDto.getIsbn());
+        assertThat(result.getContent().get(0).getPublisher()).isEqualTo(responseDto.getPublisher());
+        assertThat(result.getContent().get(0).getAuthors()).hasSize(responseDto.getAuthors().size());
+        assertThat(result.getContent().get(0).getAuthors().get(0)).isEqualTo(responseDto.getAuthors().get(0));
+        assertThat(result.getContent().get(0).getThumbnailFile()).isEqualTo(responseDto.getThumbnailFile());
+        assertThat(result.getContent().get(0).getTags()).hasSize(responseDto.getTags().size());
+        assertThat(result.getContent().get(0).getTags().get(0)).isEqualTo(responseDto.getTags().get(0));
     }
 
     @Test
     @DisplayName("작가 이름으로 검색")
     void testSearchProductsByProductAuthor() {
         //given
-        String author = "author";
-        Mockito.when(searchProductRepository.searchProductsByProductAuthor(author, OFFSET, SIZE))
-                .thenReturn(dummySearchedProductResponseDto);
+        Mockito.when(searchProductRepository.searchProductsByProductAuthor("name", pageable))
+                .thenReturn(new PageImpl<>(List.of(responseDto), pageable, 1L));
 
         //when
-        SearchedProductResponseDto result = searchProductService.searchProductsByProductAuthor(
-                author,
-                OFFSET,
-                SIZE
+        Page<SearchedProductResponseDto> result = searchProductService.searchProductsByProductAuthor(
+                "name",
+                pageable
         );
 
         //then
-        assertThat(result.getCount()).isEqualTo(1);
-        assertThat(result.getProducts()).hasSize(1);
-        assertThat(result.getProducts().get(0).getId()).isEqualTo(dummySearchedProductDto.getId());
-        assertThat(result.getProducts()
-                .get(0)
-                .getTitle()).isEqualTo(dummySearchedProductDto.getTitle());
-        assertThat(result.getProducts()
-                .get(0)
-                .getDiscountRate()).isEqualTo(dummySearchedProductDto.getDiscountRate());
-        assertThat(result.getProducts()
-                .get(0)
-                .getSellingPrice()).isEqualTo(dummySearchedProductDto.getSellingPrice());
-        assertThat(result.getProducts()
-                .get(0)
-                .getPublishedDate()).isEqualTo(dummySearchedProductDto.getPublishedDate());
-        assertThat(result.getProducts()
-                .get(0)
-                .getIsForcedOutOfStock()).isEqualTo(dummySearchedProductDto.getIsForcedOutOfStock());
-        assertThat(result.getProducts().get(0).getCategories()).hasSameSizeAs(
-                dummySearchedProductDto.getCategories());
-        assertThat(result.getProducts()
-                .get(0)
-                .getCategories()
-                .get(0)
-                .getId()).isEqualTo(dummySearchedProductDto.getCategories()
-                .get(0)
-                .getId());
-        assertThat(result.getProducts()
-                .get(0)
-                .getCategories()
-                .get(0)
-                .getName()).isEqualTo(dummySearchedProductDto.getCategories()
-                .get(0)
-                .getName());
-        assertThat(result.getProducts()
-                .get(0)
-                .getCategories()
-                .get(0)
-                .getParent()).isEqualTo(dummySearchedProductDto.getCategories()
-                .get(0)
-                .getParent());
-        assertThat(result.getProducts()
-                .get(0)
-                .getCategories()
-                .get(0)
-                .getIsShown()).isEqualTo(dummySearchedProductDto.getCategories()
-                .get(0)
-                .getIsShown());
-        assertThat(result.getProducts()
-                .get(0)
-                .getCategories()
-                .get(0)
-                .getDisable()).isEqualTo(dummySearchedProductDto.getCategories()
-                .get(0)
-                .getDisable());
-        assertThat(result.getProducts().get(0).getAuthors().get(0)).isEqualTo(
-                dummySearchedProductDto.getAuthors()
-                        .get(0));
-        assertThat(result.getProducts()
-                .get(0)
-                .getTags()
-                .get(0)).isEqualTo(dummySearchedProductDto.getTags()
-                .get(0));
-
-        verify(searchProductRepository, atLeastOnce()).searchProductsByProductAuthor(
-                author,
-                OFFSET,
-                SIZE
-        );
+        assertThat(result).hasSize(1);
+        assertThat(result.getContent().get(0).getId()).isEqualTo(responseDto.getId());
+        assertThat(result.getContent().get(0).getTitle()).isEqualTo(responseDto.getTitle());
+        assertThat(result.getContent().get(0).getQuantity()).isEqualTo(responseDto.getQuantity());
+        assertThat(result.getContent().get(0).getSellingPrice()).isEqualTo(responseDto.getSellingPrice());
+        assertThat(result.getContent().get(0).getRate()).isEqualTo(responseDto.getRate());
+        assertThat(result.getContent().get(0).getIsForcedOutOfStock()).isEqualTo(responseDto.getIsForcedOutOfStock());
+        assertThat(result.getContent().get(0).getIsbn()).isEqualTo(responseDto.getIsbn());
+        assertThat(result.getContent().get(0).getPublisher()).isEqualTo(responseDto.getPublisher());
+        assertThat(result.getContent().get(0).getAuthors()).hasSize(responseDto.getAuthors().size());
+        assertThat(result.getContent().get(0).getAuthors().get(0)).isEqualTo(responseDto.getAuthors().get(0));
+        assertThat(result.getContent().get(0).getThumbnailFile()).isEqualTo(responseDto.getThumbnailFile());
+        assertThat(result.getContent().get(0).getTags()).hasSize(responseDto.getTags().size());
+        assertThat(result.getContent().get(0).getTags().get(0)).isEqualTo(responseDto.getTags().get(0));
     }
 
     @Test
     @DisplayName("출판사로 검색")
     void testSearchProductsByPublisher() {
         //given
-        String publisher = "publisher";
-        Mockito.when(searchProductRepository.searchProductsByPublisher(publisher, OFFSET, SIZE))
-                .thenReturn(dummySearchedProductResponseDto);
+        Mockito.when(searchProductRepository.searchProductsByPublisher("publisher", pageable))
+                .thenReturn(new PageImpl<>(List.of(responseDto), pageable, 1L));
 
         //when
-        SearchedProductResponseDto result = searchProductService.searchProductsByPublisher(
-                publisher,
-                OFFSET,
-                SIZE
+        Page<SearchedProductResponseDto> result = searchProductService.searchProductsByPublisher(
+                "publisher",
+                pageable
         );
 
         //then
-        assertThat(result.getCount()).isEqualTo(1L);
-        assertThat(result.getProducts()).hasSize(1);
-        assertThat(result.getProducts().get(0).getId()).isEqualTo(dummySearchedProductDto.getId());
-        assertThat(result.getProducts()
-                .get(0)
-                .getTitle()).isEqualTo(dummySearchedProductDto.getTitle());
-        assertThat(result.getProducts()
-                .get(0)
-                .getDiscountRate()).isEqualTo(dummySearchedProductDto.getDiscountRate());
-        assertThat(result.getProducts()
-                .get(0)
-                .getSellingPrice()).isEqualTo(dummySearchedProductDto.getSellingPrice());
-        assertThat(result.getProducts()
-                .get(0)
-                .getPublishedDate()).isEqualTo(dummySearchedProductDto.getPublishedDate());
-        assertThat(result.getProducts()
-                .get(0)
-                .getIsForcedOutOfStock()).isEqualTo(dummySearchedProductDto.getIsForcedOutOfStock());
-        assertThat(result.getProducts().get(0).getCategories()).hasSameSizeAs(
-                dummySearchedProductDto.getCategories());
-        assertThat(result.getProducts()
-                .get(0)
-                .getCategories()
-                .get(0)
-                .getId()).isEqualTo(dummySearchedProductDto.getCategories()
-                .get(0)
-                .getId());
-        assertThat(result.getProducts()
-                .get(0)
-                .getCategories()
-                .get(0)
-                .getName()).isEqualTo(dummySearchedProductDto.getCategories()
-                .get(0)
-                .getName());
-        assertThat(result.getProducts()
-                .get(0)
-                .getCategories()
-                .get(0)
-                .getParent()).isEqualTo(dummySearchedProductDto.getCategories()
-                .get(0)
-                .getParent());
-        assertThat(result.getProducts()
-                .get(0)
-                .getCategories()
-                .get(0)
-                .getIsShown()).isEqualTo(dummySearchedProductDto.getCategories()
-                .get(0)
-                .getIsShown());
-        assertThat(result.getProducts()
-                .get(0)
-                .getCategories()
-                .get(0)
-                .getDisable()).isEqualTo(dummySearchedProductDto.getCategories()
-                .get(0)
-                .getDisable());
-        assertThat(result.getProducts().get(0).getAuthors().get(0)).isEqualTo(
-                dummySearchedProductDto.getAuthors()
-                        .get(0));
-        assertThat(result.getProducts()
-                .get(0)
-                .getTags()
-                .get(0)).isEqualTo(dummySearchedProductDto.getTags()
-                .get(0));
-
-        verify(searchProductRepository, atLeastOnce()).searchProductsByPublisher(
-                publisher,
-                OFFSET,
-                SIZE
-        );
+        assertThat(result).hasSize(1);
+        assertThat(result.getContent().get(0).getId()).isEqualTo(responseDto.getId());
+        assertThat(result.getContent().get(0).getTitle()).isEqualTo(responseDto.getTitle());
+        assertThat(result.getContent().get(0).getQuantity()).isEqualTo(responseDto.getQuantity());
+        assertThat(result.getContent().get(0).getSellingPrice()).isEqualTo(responseDto.getSellingPrice());
+        assertThat(result.getContent().get(0).getRate()).isEqualTo(responseDto.getRate());
+        assertThat(result.getContent().get(0).getIsForcedOutOfStock()).isEqualTo(responseDto.getIsForcedOutOfStock());
+        assertThat(result.getContent().get(0).getIsbn()).isEqualTo(responseDto.getIsbn());
+        assertThat(result.getContent().get(0).getPublisher()).isEqualTo(responseDto.getPublisher());
+        assertThat(result.getContent().get(0).getAuthors()).hasSize(responseDto.getAuthors().size());
+        assertThat(result.getContent().get(0).getAuthors().get(0)).isEqualTo(responseDto.getAuthors().get(0));
+        assertThat(result.getContent().get(0).getThumbnailFile()).isEqualTo(responseDto.getThumbnailFile());
+        assertThat(result.getContent().get(0).getTags()).hasSize(responseDto.getTags().size());
+        assertThat(result.getContent().get(0).getTags().get(0)).isEqualTo(responseDto.getTags().get(0));
     }
 
     @Test
     @DisplayName("태그로 검색")
     void testSearchProductsByTag() {
         //given
-        String tag = "tag";
-        Mockito.when(searchProductRepository.searchProductsByTag(tag, OFFSET, SIZE))
-                .thenReturn(dummySearchedProductResponseDto);
+        Mockito.when(searchProductRepository.searchProductsByTag("tag", pageable))
+                .thenReturn(new PageImpl<>(List.of(responseDto), pageable, 1L));
 
         //when
-        SearchedProductResponseDto result = searchProductService.searchProductsByTag(
-                tag,
-                OFFSET,
-                SIZE
+        Page<SearchedProductResponseDto> result = searchProductService.searchProductsByTag(
+                "tag",
+                pageable
         );
 
         //then
-        assertThat(result.getCount()).isEqualTo(1L);
-        assertThat(result.getProducts()).hasSize(1);
-        assertThat(result.getProducts().get(0).getId()).isEqualTo(dummySearchedProductDto.getId());
-        assertThat(result.getProducts()
-                .get(0)
-                .getTitle()).isEqualTo(dummySearchedProductDto.getTitle());
-        assertThat(result.getProducts()
-                .get(0)
-                .getDiscountRate()).isEqualTo(dummySearchedProductDto.getDiscountRate());
-        assertThat(result.getProducts()
-                .get(0)
-                .getSellingPrice()).isEqualTo(dummySearchedProductDto.getSellingPrice());
-        assertThat(result.getProducts()
-                .get(0)
-                .getPublishedDate()).isEqualTo(dummySearchedProductDto.getPublishedDate());
-        assertThat(result.getProducts()
-                .get(0)
-                .getIsForcedOutOfStock()).isEqualTo(dummySearchedProductDto.getIsForcedOutOfStock());
-        assertThat(result.getProducts().get(0).getCategories()).hasSameSizeAs(
-                dummySearchedProductDto.getCategories());
-        assertThat(result.getProducts()
-                .get(0)
-                .getCategories()
-                .get(0)
-                .getId()).isEqualTo(dummySearchedProductDto.getCategories()
-                .get(0)
-                .getId());
-        assertThat(result.getProducts()
-                .get(0)
-                .getCategories()
-                .get(0)
-                .getName()).isEqualTo(dummySearchedProductDto.getCategories()
-                .get(0)
-                .getName());
-        assertThat(result.getProducts()
-                .get(0)
-                .getCategories()
-                .get(0)
-                .getParent()).isEqualTo(dummySearchedProductDto.getCategories()
-                .get(0)
-                .getParent());
-        assertThat(result.getProducts()
-                .get(0)
-                .getCategories()
-                .get(0)
-                .getIsShown()).isEqualTo(dummySearchedProductDto.getCategories()
-                .get(0)
-                .getIsShown());
-        assertThat(result.getProducts()
-                .get(0)
-                .getCategories()
-                .get(0)
-                .getDisable()).isEqualTo(dummySearchedProductDto.getCategories()
-                .get(0)
-                .getDisable());
-        assertThat(result.getProducts().get(0).getAuthors().get(0)).isEqualTo(
-                dummySearchedProductDto.getAuthors()
-                        .get(0));
-        assertThat(result.getProducts()
-                .get(0)
-                .getTags()
-                .get(0)).isEqualTo(dummySearchedProductDto.getTags()
-                .get(0));
-
-        verify(searchProductRepository, atLeastOnce()).searchProductsByTag(
-                tag,
-                OFFSET,
-                SIZE
-        );
+        assertThat(result).hasSize(1);
+        assertThat(result.getContent().get(0).getId()).isEqualTo(responseDto.getId());
+        assertThat(result.getContent().get(0).getTitle()).isEqualTo(responseDto.getTitle());
+        assertThat(result.getContent().get(0).getQuantity()).isEqualTo(responseDto.getQuantity());
+        assertThat(result.getContent().get(0).getSellingPrice()).isEqualTo(responseDto.getSellingPrice());
+        assertThat(result.getContent().get(0).getRate()).isEqualTo(responseDto.getRate());
+        assertThat(result.getContent().get(0).getIsForcedOutOfStock()).isEqualTo(responseDto.getIsForcedOutOfStock());
+        assertThat(result.getContent().get(0).getIsbn()).isEqualTo(responseDto.getIsbn());
+        assertThat(result.getContent().get(0).getPublisher()).isEqualTo(responseDto.getPublisher());
+        assertThat(result.getContent().get(0).getAuthors()).hasSize(responseDto.getAuthors().size());
+        assertThat(result.getContent().get(0).getAuthors().get(0)).isEqualTo(responseDto.getAuthors().get(0));
+        assertThat(result.getContent().get(0).getThumbnailFile()).isEqualTo(responseDto.getThumbnailFile());
+        assertThat(result.getContent().get(0).getTags()).hasSize(responseDto.getTags().size());
+        assertThat(result.getContent().get(0).getTags().get(0)).isEqualTo(responseDto.getTags().get(0));
     }
 }
