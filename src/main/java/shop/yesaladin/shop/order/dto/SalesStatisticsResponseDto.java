@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * MyBatis 에서 조회한 매출 통계 정보를 담은 Dto 입니다.
+ * 매출 통계 정보를 담은 전달하기 위한 Dto 입니다.
  *
  * @author 이수정
  * @since 1.0
@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SalesStatisticsMyBatisResponseDto {
+public class SalesStatisticsResponseDto {
 
     // 상품 ID
     private long id;
@@ -25,11 +25,10 @@ public class SalesStatisticsMyBatisResponseDto {
     // 주문 개수
     private long totalQuantity;
 
-    // 실구매가
+    // 카드매출액
     private String creditCardSales;
-    // 판매가 관련
-    private long actualPrice;
-    private int discountRate;
+    // 순매출액
+    private String netSales;
 
     // 주문 취소 건수
     private long numberOfOrderCancellations;
