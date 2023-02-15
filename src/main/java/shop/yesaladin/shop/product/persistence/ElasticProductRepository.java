@@ -4,6 +4,7 @@ package shop.yesaladin.shop.product.persistence;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -154,7 +155,8 @@ public class ElasticProductRepository implements SearchProductRepository {
                         product.getContent(),
                         calcSellingPrice(
                                 product.getContent().getActualPrice(),getRateByProduct(product.getContent())),
-                                getRateByProduct(product.getContent())
+                                getRateByProduct(product.getContent()),
+                                isEbook(product.getContent())
                         )
                 ).collect(Collectors.toList());
 
@@ -181,7 +183,8 @@ public class ElasticProductRepository implements SearchProductRepository {
                                 product.getContent(),
                                 calcSellingPrice(
                                         product.getContent().getActualPrice(),getRateByProduct(product.getContent())),
-                                getRateByProduct(product.getContent())
+                                getRateByProduct(product.getContent()),
+                                isEbook(product.getContent())
                         )
                 ).collect(Collectors.toList());
 
@@ -269,5 +272,9 @@ public class ElasticProductRepository implements SearchProductRepository {
         return product.isSeparatelyDiscount()
                 ? product.getDiscountRate()
                 : product.getSearchedTotalDiscountRate().getDiscountRate();
+    }
+
+    private Boolean isEbook(SearchedProduct searchedProduct) {
+        return Objects.nonNull(searchedProduct.getEbookId());
     }
 }

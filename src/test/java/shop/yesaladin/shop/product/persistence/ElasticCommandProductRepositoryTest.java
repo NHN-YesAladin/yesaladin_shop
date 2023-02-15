@@ -6,9 +6,11 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import shop.yesaladin.shop.product.domain.model.SearchedProduct;
 
 @SpringBootTest
+@ActiveProfiles("local-test")
 class ElasticCommandProductRepositoryTest {
     @Autowired
     private ElasticCommandProductRepository elasticCommandProductRepository;

@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.product.dto;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -25,13 +26,17 @@ public class SearchedProductResponseDto {
     private Boolean isForcedOutOfStock;
     private String thumbnailFile;
     private String publisher;
+    private Boolean isEbook;
+    private Boolean isSubscriptionAvailable;
+    private LocalDate publishedDate;
     private List<String> authors;
     private List<String> tags;
 
     public static SearchedProductResponseDto fromIndex(
             SearchedProduct searchedProduct,
             Long sellingPrice,
-            int rate
+            int rate,
+            Boolean isEbook
     ) {
         List<String> authors = new ArrayList<>();
         for(SearchedProductAuthor searchedProductAuthor: searchedProduct.getAuthors()) {
@@ -49,6 +54,8 @@ public class SearchedProductResponseDto {
                 .sellingPrice(sellingPrice)
                 .rate(rate)
                 .isForcedOutOfStock(searchedProduct.getIsForcedOutOfStock())
+                .isSubscriptionAvailable(searchedProduct.getIsSubscriptionAvailable())
+                .isEbook(isEbook)
                 .thumbnailFile(searchedProduct.getThumbnailFile())
                 .authors(authors)
                 .tags(tags)
