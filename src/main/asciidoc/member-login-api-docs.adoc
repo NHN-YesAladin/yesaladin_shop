@@ -1,0 +1,19 @@
+= 인증 서버 용 member 조회
+
+=== loginId 기준 member 조회
+
+==== curl
+include::{snippets}/doLogin/curl-request.adoc[]
+
+==== request
+
+===== Example
+include::{snippets}/doLogin/http-request.adoc[]
+
+==== response
+
+===== Body
+include::{snippets}/doLogin/response-fields.adoc[]
+
+===== Example
+include::{snippets}/doLogin/http-response.adoc[]

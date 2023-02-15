@@ -1,0 +1,134 @@
+= Member
+
+=== 회원 탈퇴
+
+==== curl
+include::{snippets}/withdraw-member-success/curl-request.adoc[]
+
+==== request
+
+===== Example
+include::{snippets}/withdraw-member-success/http-request.adoc[]
+
+==== response
+
+===== Body
+include::{snippets}/withdraw-member-success/response-fields.adoc[]
+
+===== Example
+include::{snippets}/withdraw-member-success/http-response.adoc[]
+
+
+=== 회원 탈퇴 실패
+
+==== curl
+include::{snippets}/withdraw-member-fail-member-not-found/curl-request.adoc[]
+
+==== request
+
+===== Example
+include::{snippets}/withdraw-member-fail-member-not-found/http-request.adoc[]
+
+==== response
+
+===== Body
+include::{snippets}/withdraw-member-fail-member-not-found/response-fields.adoc[]
+
+===== Example
+include::{snippets}/withdraw-member-fail-member-not-found/http-response.adoc[]
+
+
+=== 회원의 loginId 중복 여부 판단
+
+==== curl
+include::{snippets}/existsLoginId/curl-request.adoc[]
+
+==== request
+
+===== Example
+include::{snippets}/existsLoginId/http-request.adoc[]
+
+==== response
+
+===== Body
+include::{snippets}/existsLoginId/response-fields.adoc[]
+
+===== Example
+include::{snippets}/existsLoginId/response-body.adoc[]
+
+
+=== 회원의 nickname 중복 여부 판단
+
+==== curl
+include::{snippets}/existsNickname/curl-request.adoc[]
+
+==== request
+
+===== Example
+include::{snippets}/existsNickname/http-request.adoc[]
+
+==== response
+
+===== Body
+include::{snippets}/existsNickname/response-fields.adoc[]
+
+===== Example
+include::{snippets}/existsNickname/response-body.adoc[]
+
+
+=== 회원의 email 중복 여부 판단
+
+==== curl
+include::{snippets}/existsEmail/curl-request.adoc[]
+
+==== request
+
+===== Example
+include::{snippets}/existsEmail/http-request.adoc[]
+
+==== response
+
+===== Body
+include::{snippets}/existsEmail/response-fields.adoc[]
+
+===== Example
+include::{snippets}/existsEmail/response-body.adoc[]
+
+
+=== 회원의 phone 중복 여부 판단
+
+==== curl
+include::{snippets}/existsPhone/curl-request.adoc[]
+
+==== request
+
+===== Example
+include::{snippets}/existsPhone/http-request.adoc[]
+
+==== response
+
+===== Body
+include::{snippets}/existsPhone/response-fields.adoc[]
+
+===== Example
+include::{snippets}/existsPhone/response-body.adoc[]
+
+
+=== 회원 통계용 데이터 조회
+
+==== curl
+include::{snippets}/get-member-statistics-success/curl-request.adoc[]
+
+==== request
+
+===== Example
+include::{snippets}/get-member-statistics-success/http-request.adoc[]
+
+==== response
+
+===== Body
+include::{snippets}/get-member-statistics-success/response-fields.adoc[]
+
+===== Example
+include::{snippets}/get-member-statistics-success/response-body.adoc[]
+
