@@ -553,7 +553,7 @@ class QueryDslOrderQueryRepositoryTest {
         );
 
         // then
-        Assertions.assertThat(orderCountByStatusCode).isEqualTo(6);
+        Assertions.assertThat(orderCountByStatusCode).isEqualTo(8); //구독 주문 포함
     }
 
     @ParameterizedTest
