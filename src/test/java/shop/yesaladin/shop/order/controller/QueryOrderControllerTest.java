@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
@@ -195,7 +196,8 @@ class QueryOrderControllerTest {
                     10,
                     true,
                     10,
-                    10L
+                    10L,
+                    Collections.emptyList()
             ));
         }
 

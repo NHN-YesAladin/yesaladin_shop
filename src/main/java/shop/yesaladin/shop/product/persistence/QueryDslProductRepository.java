@@ -1,6 +1,8 @@
 package shop.yesaladin.shop.product.persistence;
 
 
+import static com.querydsl.core.group.GroupBy.groupBy;
+
 import com.querydsl.core.group.GroupBy;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.NumberExpression;
@@ -131,8 +133,8 @@ public class QueryDslProductRepository implements QueryProductRepository {
                                 .and(productCategory.product.isForcedOutOfStock.isFalse())
                                 .and(productCategory.product.isDeleted.isFalse()))
                         .transform(
-                                GroupBy.groupBy(product.id).list(
-                                        Projections.fields(
+                                groupBy(product.id).list(
+                                        Projections.constructor(
                                                 ProductWithCategoryResponseDto.class,
                                                 product.isbn,
                                                 product.actualPrice,
@@ -142,8 +144,11 @@ public class QueryDslProductRepository implements QueryProductRepository {
                                                 product.isGivenPoint,
                                                 product.totalDiscountRate,
                                                 product.productSavingMethodCode,
-                                                GroupBy.list(
-                                                        productCategory.category.id.stringValue()
+                                                Projections.list(
+                                                        Projections.constructor(
+                                                                Long.class,
+                                                                productCategory.category.id
+                                                        )
                                                 )
                                         ))
                         ).get(0)
@@ -302,7 +307,7 @@ public class QueryDslProductRepository implements QueryProductRepository {
                         .and(product.isForcedOutOfStock.isFalse())
                         .and(product.isSale.isTrue()))
                 .transform(
-                        GroupBy.groupBy(product.id).list(
+                        groupBy(product.id).list(
                                 Projections.constructor(
                                         ProductOrderSheetResponseDto.class,
                                         product.id,
