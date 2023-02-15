@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.product.persistence;
 
-import lombok.NonNull;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import shop.yesaladin.shop.product.domain.model.SearchedProduct;
 
@@ -11,6 +10,5 @@ import shop.yesaladin.shop.product.domain.model.SearchedProduct;
  * @since 1.0
  */
 public interface ElasticCommandProductRepository extends ElasticsearchRepository<SearchedProduct, Long> {
-    boolean existsById(@NonNull Long id);
     void deleteByIdEquals(Long id);
 }

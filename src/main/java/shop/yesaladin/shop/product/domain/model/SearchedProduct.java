@@ -69,4 +69,12 @@ public class SearchedProduct {
     private List<SearchedProductAuthor> authors;
     @Field(name = "tags", type = FieldType.Object)
     private List<SearchedProductTag> tags;
+
+    public void changeIsSale() {
+        this.isSale = !this.isSale;
+    }
+
+    public void changeIsForcedOutOfStock() {
+        this.isForcedOutOfStock = !this.isForcedOutOfStock;
+    }
 }
