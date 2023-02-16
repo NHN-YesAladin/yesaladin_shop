@@ -173,8 +173,6 @@ include::{snippets}/block-member-success/response-body.adoc[]
 
 === 회원 차단 실패
 
-==== request
-
 ===== Example
 ====== 이미 차단된 회원
 include::{snippets}/block-member-fail-already-blocked/response-body.adoc[]
@@ -193,8 +191,73 @@ include::{snippets}/unblock-member-success/curl-request.adoc[]
 
 ==== request
 
-===== Body
-include::{snippets}/unblock-member-success/request-body.adoc[]
-
 ===== Example
 include::{snippets}/unblock-member-success/http-request.adoc[]
+
+==== response
+
+===== Body
+include::{snippets}/unblock-member-success/response-fields.adoc[]
+
+===== Example
+include::{snippets}/unblock-member-success/response-body.adoc[]
+
+
+=== 회원 본인의 등급 조회
+
+==== curl
+include::{snippets}/get-member-grade-success/curl-request.adoc[]
+
+==== request
+
+===== Example
+include::{snippets}/get-member-grade-success/http-request.adoc[]
+
+==== response
+
+===== Body
+include::{snippets}/get-member-grade-success/response-fields.adoc[]
+
+===== Example
+include::{snippets}/get-member-grade-success/http-response.adoc[]
+
+
+=== 회원 본인의 등급 조회 실패
+
+==== Example
+
+===== 잘못된 파라미터
+include::{snippets}/get-member-grade-fail-invalid-parameter/response-body.adoc[]
+
+===== 잘못된 기간 조건
+include::{snippets}/get-member-grade-fail-invalid-period-condition/response-body.adoc[]
+
+===== 회원 본인의 정보 조히ㅗ 실패
+include::{snippets}/get-member-grade-fail-member-not-found/response-body.adoc[]
+
+
+=== 회원 본인의 정보 조회
+
+==== curl
+include::{snippets}/get-member-info-success/curl-request.adoc[]
+
+==== request
+
+===== Example
+include::{snippets}/get-member-info-success/http-request.adoc[]
+
+==== response
+
+===== Body
+include::{snippets}/get-member-info-success/response-fields.adoc[]
+
+===== Example
+include::{snippets}/get-member-info-success/response-body.adoc[]
+
+
+=== 회원 본인의 정보 조회 실패
+
+==== Example
+
+===== 찾을 수 없는 회원인 경우
+include::{snippets}/get-member-info-fail-member-not-found/response-body.adoc[]
