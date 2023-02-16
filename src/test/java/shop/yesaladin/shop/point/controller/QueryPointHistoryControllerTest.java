@@ -23,16 +23,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.aop.AopAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -45,13 +47,16 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.exception.ClientException;
+import shop.yesaladin.shop.common.aspect.advice.LoginIdAspect;
 import shop.yesaladin.shop.point.domain.model.PointCode;
 import shop.yesaladin.shop.point.domain.model.PointReasonCode;
 import shop.yesaladin.shop.point.dto.PointHistoryResponseDto;
 import shop.yesaladin.shop.point.service.inter.QueryPointHistoryService;
 
 @AutoConfigureRestDocs
+@Import({AopAutoConfiguration.class, LoginIdAspect.class})
 @WebMvcTest(QueryPointHistoryController.class)
+@AutoConfigureMockMvc(addFilters = false)
 class QueryPointHistoryControllerTest {
 
     @Autowired
@@ -63,13 +68,11 @@ class QueryPointHistoryControllerTest {
     @Autowired
     ObjectMapper objectMapper;
 
-    String loginId = "user@1";
     PointCode pointCode = PointCode.USE;
     PointReasonCode pointReasonCode = PointReasonCode.USE_ORDER;
     Page<PointHistoryResponseDto> response = getPageableData(5, pointCode, pointReasonCode);
 
     @Test
-    @Disabled
     @DisplayName("회원의 포인트내역 조회 실패 - 유효하지 않는 권한")
     @WithAnonymousUser
     void getPointHistoriesByLoginId_fail_InvalidAuthority() throws Exception {
