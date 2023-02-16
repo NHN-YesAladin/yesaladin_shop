@@ -77,11 +77,11 @@ class SearchProductControllerTest {
                 .thenReturn(new PageImpl<>(List.of(responseDto), PageRequest.of(0, 1), 1));
 
         //when
-        ResultActions resultActions = mockMvc.perform(get("/v1/search/products/titles")
+        ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
-                .queryParam("input", "title"));
+                .queryParam("title", "title"));
         //then
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())))
@@ -121,10 +121,10 @@ class SearchProductControllerTest {
                 .thenReturn(new PageImpl<>(List.of(responseDto), PageRequest.of(0, 1), 1));
 
         //when
-        ResultActions resultActions = mockMvc.perform(get("/v1/search/products/contents")
+        ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
                 .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
-                .param("input", "content"));
+                .param("content", "content"));
         //then
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())))
@@ -164,10 +164,10 @@ class SearchProductControllerTest {
                 .thenReturn(new PageImpl<>(List.of(responseDto), PageRequest.of(0, 1), 1));
 
         //when
-        ResultActions resultActions = mockMvc.perform(get("/v1/search/products/isbn")
+        ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
                 .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
-                .param("input", "isbn"));
+                .param("isbn", "isbn"));
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())))
                 .andExpect(jsonPath("$.success", equalTo(true)))
@@ -206,10 +206,10 @@ class SearchProductControllerTest {
                 .thenReturn(new PageImpl<>(List.of(responseDto), PageRequest.of(0, 1), 1));
 
         //when
-        ResultActions resultActions = mockMvc.perform(get("/v1/search/products/authors")
+        ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
                 .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
-                .param("input", "author"));
+                .param("author", "author"));
         //then
          resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())))
@@ -249,10 +249,10 @@ class SearchProductControllerTest {
                 .thenReturn(new PageImpl<>(List.of(responseDto), PageRequest.of(0, 1), 1));
 
         //when
-        ResultActions resultActions = mockMvc.perform(get("/v1/search/products/publishers")
+        ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
                 .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
-                .param("input", "publisher"));
+                .param("publisher", "publisher"));
         //then
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())))
@@ -292,10 +292,10 @@ class SearchProductControllerTest {
                 .thenReturn(new PageImpl<>(List.of(responseDto), PageRequest.of(0, 1), 1));
 
         //when
-        ResultActions resultActions = mockMvc.perform(get("/v1/search/products/tags")
+        ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
                 .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
-                .param("input", "tag"));
+                .param("tag", "tag"));
         //then
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())))
