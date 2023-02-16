@@ -20,6 +20,7 @@ import javax.validation.Valid;
  */
 @Slf4j
 @RequiredArgsConstructor
+@CrossOrigin(origins = {"http://localhost:9090", "https://www.yesaladin.shop", "https://test.yesaladin.shop"})
 @RestController
 @RequestMapping("/v1/products")
 public class CommandProductController {

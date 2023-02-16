@@ -35,6 +35,7 @@ import shop.yesaladin.shop.point.service.inter.QueryPointHistoryService;
 import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
 import shop.yesaladin.shop.product.service.inter.QueryProductService;
 
+import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.*;
@@ -54,6 +55,9 @@ import java.util.stream.IntStream;
 @RequiredArgsConstructor
 @Service
 public class QueryOrderServiceImpl implements QueryOrderService {
+
+    private static final float PERCENT_DENOMINATOR_VALUE = 100;
+    private static final long ROUND_OFF_VALUE = 10;
 
     private final QueryOrderRepository queryOrderRepository;
     private final QueryOrderProductRepository queryOrderProductRepository;
@@ -394,15 +398,44 @@ public class QueryOrderServiceImpl implements QueryOrderService {
      */
     @Transactional(readOnly = true)
     @Override
-    public PaginatedResponseDto<SalesStatisticsMyBatisResponseDto> getSalesStatistics(String start, String end, Pageable pageable) {
+    public PaginatedResponseDto<SalesStatisticsResponseDto> getSalesStatistics(String start, String end, Pageable pageable) {
         List<SalesStatisticsMyBatisResponseDto> salesStatistics = myBatisSalesStatisticsMapper.getSalesStatistics(start, end, pageable.getPageSize(), pageable.getOffset());
+        List<SalesStatisticsResponseDto> dataList = salesStatistics.stream().map(s ->
+                new SalesStatisticsResponseDto(
+                        s.getId(),
+                        s.getTitle(),
+                        s.getNumberOfOrders(),
+                        s.getTotalQuantity(),
+                        BigDecimal.valueOf(calcSellingPrice(s.getActualPrice(), s.getDiscountRate())).multiply(BigDecimal.valueOf(s.getTotalQuantity())).toString(),
+                        s.getNumberOfOrderCancellations(),
+                        s.getTotalCancelQuantity(),
+                        BigDecimal.valueOf(calcSellingPrice(s.getActualPrice(), s.getDiscountRate())).multiply(BigDecimal.valueOf(s.getTotalCancelQuantity())).toString()
+                )).collect(Collectors.toList());
+
         Integer totalDataCount = myBatisSalesStatisticsMapper.getSalesStatisticsTotalCount(start, end);
 
-        return PaginatedResponseDto.<SalesStatisticsMyBatisResponseDto>builder()
+        return PaginatedResponseDto.<SalesStatisticsResponseDto>builder()
                 .currentPage(pageable.getPageNumber())
-                .dataList(salesStatistics)
+                .dataList(dataList)
                 .totalDataCount(totalDataCount)
                 .totalPage((long) Math.ceil((double) totalDataCount / pageable.getPageSize()))
                 .build();
+    }
+
+    /**
+     * 상품의 정가, 할인율을 바탕으로 판매가를 계산해 반환합니다.
+     *
+     * @param actualPrice 상품의 정가
+     * @param rate        상품의 할인율(전체 / 개별)
+     * @return 계산된 상품의 판매가
+     * @author 이수정
+     * @since 1.0
+     */
+    private long calcSellingPrice(long actualPrice, int rate) {
+        if (rate > 0) {
+            return Math.round((actualPrice - actualPrice * rate / PERCENT_DENOMINATOR_VALUE)
+                    / ROUND_OFF_VALUE) * ROUND_OFF_VALUE;
+        }
+        return actualPrice;
     }
 }

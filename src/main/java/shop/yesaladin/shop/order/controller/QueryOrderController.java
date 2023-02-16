@@ -107,14 +107,18 @@ public class QueryOrderController {
      * @since 1.0
      */
     @GetMapping("/v1/orders/statistics")
-    public ResponseDto<PaginatedResponseDto<SalesStatisticsMyBatisResponseDto>> getSalesStatistics(
+    public ResponseDto<PaginatedResponseDto<SalesStatisticsResponseDto>> getSalesStatistics(
             @RequestParam String start,
             @RequestParam String end,
             Pageable pageable
     ) {
-        PaginatedResponseDto<SalesStatisticsMyBatisResponseDto> response = queryOrderService.getSalesStatistics(start, end, pageable);
+        PaginatedResponseDto<SalesStatisticsResponseDto> response = queryOrderService.getSalesStatistics(start, end, pageable);
+        log.info("start = {}", start);
+        log.info("end = {}", end);
+        log.info("page = {}", pageable.getPageNumber());
+        log.info("size = {}", pageable.getPageSize());
 
-        return ResponseDto.<PaginatedResponseDto<SalesStatisticsMyBatisResponseDto>>builder()
+        return ResponseDto.<PaginatedResponseDto<SalesStatisticsResponseDto>>builder()
                 .success(true)
                 .status(HttpStatus.OK)
                 .data(response)
