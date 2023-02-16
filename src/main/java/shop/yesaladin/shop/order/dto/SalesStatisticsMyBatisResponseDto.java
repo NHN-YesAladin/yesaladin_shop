@@ -25,8 +25,6 @@ public class SalesStatisticsMyBatisResponseDto {
     // 주문 개수
     private long totalQuantity;
 
-    // 실구매가
-    private String netSales;
     // 판매가 관련
     private long actualPrice;
     private int discountRate;
