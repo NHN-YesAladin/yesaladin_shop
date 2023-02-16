@@ -25,8 +25,6 @@ public class SalesStatisticsMyBatisResponseDto {
     // 주문 개수
     private long totalQuantity;
 
-    // 실구매가
-    private String creditCardSales;
     // 판매가 관련
     private long actualPrice;
     private int discountRate;
@@ -35,6 +33,4 @@ public class SalesStatisticsMyBatisResponseDto {
     private long numberOfOrderCancellations;
     // 주문 개수
     private long totalCancelQuantity;
-    // 주문 취소 금액
-    private long cancelSales;
 }

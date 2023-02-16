@@ -3,11 +3,12 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="shop.yesaladin.shop.order.persistence.MyBatisSalesStatisticsMapper">
-    <select id="getSalesStatistics" resultType="shop.yesaladin.shop.order.dto.SalesStatisticsMyBatisResponseDto" parameterType="hashmap">
-        select success.product_id as id, success.title, success.scoi as number_of_orders, success.sopq as total_quntity, success.sota as credit_card_sales,
-               success.actual_price as actual_price, discount_rate as discount_rate, cancel.ccoi as number_of_order_cancellations, cancel.copq as total_cancel_quantity, cancel.cota as cancel_sales
+    <select id="getSalesStatistics" resultType="shop.yesaladin.shop.order.dto.SalesStatisticsMyBatisResponseDto"
+            parameterType="hashmap">
+        select success.product_id as id, success.title, success.scoi as number_of_orders, success.sopq as total_quantity,
+               success.actual_price as actual_price, discount_rate as discount_rate, cancel.ccoi as number_of_order_cancellations, cancel.copq as total_cancel_quantity
         from (
-                 select op.product_id, p.title, count(o.id) as scoi, sum(op.quantity) as sopq, sum(o.total_amount) as sota, p.actual_price,
+                 select op.product_id, p.title, count(o.id) as scoi, sum(op.quantity) as sopq, p.actual_price,
                         case when p.is_separately_discount='1' then p.discount_rate else t.discount_rate end discount_rate
                  from orders as o
                           inner join (
@@ -23,10 +24,10 @@
                           inner join order_products as op on o.id = op.order_id
                           inner join products as p on op.product_id = p.id
                           inner join total_discount_rates as t on p.discount_rate_id = t.id
-                 where DATE(o.order_datetime) between  ${start} and ${end}
+                 where DATE(o.order_datetime) between #{start} and #{end}
         group by op.product_id) as success
             left join (
-        select op.product_id, sum(o.total_amount) as cota, count(o.id) as ccoi, sum(op.quantity) as copq
+        select op.product_id, count(o.id) as ccoi, sum(op.quantity) as copq
         from orders as o
             inner join (
             select order_id
@@ -34,42 +35,39 @@
             where order_status_code_id in (select id from order_status_codes where status in ('REFUND', 'CANCEL'))
             group by order_id) as l on o.id = l.order_id
             inner join order_products as op on o.id = op.order_id
-        where DATE(o.order_datetime) between  ${start} and ${end}
+        where DATE(o.order_datetime) between #{start} and #{end}
         group by op.product_id) as cancel on success.product_id = cancel.product_id
-        order by credit_card_sales desc
+        order by total_quantity desc
         limit ${limit} offset ${offset};
     </select>
 
     <select id="getSalesStatisticsTotalCount" resultType="Integer">
         select count(res.product_id)
-        from (
-                 select success.product_id
-                 from (
-                          select op.product_id
-                          from orders as o
-                                   inner join (
-                              select l.order_id
-                              from order_status_change_logs as l
-                                       left join (
-                                  select o.order_id
-                                  from order_status_change_logs as o
-                                  where o.order_status_code_id in (select id from order_status_codes where status in ('REFUND', 'CANCEL'))
-                                  group by o.order_id) as o on o.order_id = l.order_id
-                              where o.order_id is null
-                              group by l.order_id) as l on o.id = l.order_id
-                                   inner join order_products as op on o.id = op.order_id
-                          where DATE(o.order_datetime) between ${start} and ${end}
-                 group by op.product_id) as success
-                 left join (
-            select op.product_id
-            from orders as o
-                     inner join (
-                select order_id
-                from order_status_change_logs
-                where order_status_code_id in (select id from order_status_codes where status in ('REFUND', 'CANCEL'))
-                group by order_id) as l on o.id = l.order_id
-                     inner join order_products as op on o.id = op.order_id
-            where DATE(o.order_datetime) between ${start} and ${end}
-        group by op.product_id) as cancel on success.product_id = cancel.product_id) as res;
+        from (select success.product_id
+              from (select op.product_id
+                    from orders as o
+                             inner join (select l.order_id
+                                         from order_status_change_logs as l
+                                                  left join (select o.order_id
+                                                             from order_status_change_logs as o
+                                                             where o.order_status_code_id in
+                                                                   (select id from order_status_codes where status in ('REFUND', 'CANCEL'))
+                                                             group by o.order_id) as o on o.order_id = l.order_id
+                                         where o.order_id is null
+                                         group by l.order_id) as l on o.id = l.order_id
+                             inner join order_products as op on o.id = op.order_id
+                    where DATE (o.order_datetime) between #{start} and #{end}
+              group by op.product_id) as success
+                 left join (select op.product_id
+                            from orders as o
+                                     inner join (select order_id
+                                                 from order_status_change_logs
+                                                 where order_status_code_id in
+                                                       (select id from order_status_codes where status in ('REFUND', 'CANCEL'))
+                                                 group by order_id) as l on o.id = l.order_id
+                                     inner join order_products as op on o.id = op.order_id
+                            where DATE (o.order_datetime) between #{start} and #{end}
+        group by op.product_id) as cancel
+        on success.product_id = cancel.product_id) as res;
     </select>
 </mapper>
