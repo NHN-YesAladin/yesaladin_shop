@@ -8,7 +8,6 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -399,14 +398,12 @@ public class QueryDslProductRepository implements QueryProductRepository {
     public Page<Product> findRecentViewProductById(List<Long> ids, Pageable pageable) {
         QProduct product = QProduct.product;
 
-        List<Product> products = new ArrayList<>();
-        for (Long id : ids) {
-            products.add(queryFactory.selectFrom(product)
-                    .where(product.id.eq(id).and(product.isDeleted.isFalse()))
+        List<Product> products = queryFactory.selectFrom(product)
+                    .where(product.id.in(ids).and(product.isDeleted.isFalse()))
                     .offset((long) pageable.getPageNumber() * pageable.getPageSize())
                     .limit(pageable.getPageSize())
-                    .fetchFirst());
-        }
+                    .fetch();
+
 
         Long count = queryFactory.select(product.count())
                 .where(product.id.in(ids).and(product.isDeleted.isFalse()))
