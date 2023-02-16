@@ -35,6 +35,4 @@ public class SalesStatisticsMyBatisResponseDto {
     private long numberOfOrderCancellations;
     // 주문 개수
     private long totalCancelQuantity;
-    // 주문 취소 금액
-    private long cancelSales;
 }

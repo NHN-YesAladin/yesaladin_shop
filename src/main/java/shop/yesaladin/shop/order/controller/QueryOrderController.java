@@ -113,6 +113,10 @@ public class QueryOrderController {
             Pageable pageable
     ) {
         PaginatedResponseDto<SalesStatisticsResponseDto> response = queryOrderService.getSalesStatistics(start, end, pageable);
+        log.info("start = {}", start);
+        log.info("end = {}", end);
+        log.info("page = {}", pageable.getPageNumber());
+        log.info("size = {}", pageable.getPageSize());
 
         return ResponseDto.<PaginatedResponseDto<SalesStatisticsResponseDto>>builder()
                 .success(true)

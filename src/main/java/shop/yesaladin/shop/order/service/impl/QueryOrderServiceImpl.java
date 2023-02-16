@@ -406,11 +406,10 @@ public class QueryOrderServiceImpl implements QueryOrderService {
                         s.getTitle(),
                         s.getNumberOfOrders(),
                         s.getTotalQuantity(),
-                        s.getCreditCardSales(),
                         BigDecimal.valueOf(calcSellingPrice(s.getActualPrice(), s.getDiscountRate())).multiply(BigDecimal.valueOf(s.getTotalQuantity())).toString(),
                         s.getNumberOfOrderCancellations(),
                         s.getTotalCancelQuantity(),
-                        s.getCancelSales()
+                        BigDecimal.valueOf(calcSellingPrice(s.getActualPrice(), s.getDiscountRate())).multiply(BigDecimal.valueOf(s.getTotalCancelQuantity())).toString()
                 )).collect(Collectors.toList());
 
         Integer totalDataCount = myBatisSalesStatisticsMapper.getSalesStatisticsTotalCount(start, end);
