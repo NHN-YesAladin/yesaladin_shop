@@ -11,17 +11,18 @@ import org.springframework.stereotype.Component;
 import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.exception.ServerException;
 import shop.yesaladin.shop.config.SocketProperties;
-import shop.yesaladin.shop.coupon.dto.CouponGiveResultDto;
+import shop.yesaladin.shop.coupon.domain.model.CouponSocketRequestKind;
+import shop.yesaladin.shop.coupon.dto.CouponResultDto;
 
 /**
- * 레디스 pub/sub 메시지 중 /ws/topic/coupon/give/result 토픽을 구독하다 메시지가 들어오면 websocket으로 발행합니다.
+ * 레디스 pub/sub 메시지 중 /ws/topic/coupon/(give|use)/result 토픽을 구독하다 메시지가 들어오면 websocket으로 발행합니다.
  *
  * @author 김홍대
  * @since 1.0
  */
 @RequiredArgsConstructor
 @Component
-public class CouponGiveResultRedisSubscriber implements MessageListener {
+public class CouponResultRedisSubscriber implements MessageListener {
 
     private final ObjectMapper objectMapper;
     private final RedisTemplate<String, Object> redisTemplate;
@@ -35,14 +36,17 @@ public class CouponGiveResultRedisSubscriber implements MessageListener {
             String publishMessage = redisTemplate.getStringSerializer()
                     .deserialize(message.getBody());
 
-            CouponGiveResultDto parsedMessage = objectMapper.readValue(
+            CouponResultDto parsedMessage = objectMapper.readValue(
                     publishMessage,
-                    CouponGiveResultDto.class
+                    CouponResultDto.class
             );
 
+            String topicPrefix = parsedMessage.getRequestKind().equals(CouponSocketRequestKind.GIVE)
+                    ? socketProperties.getCouponGiveResultTopicPrefix()
+                    : socketProperties.getCouponUseResultTopicPrefix();
+
             messagingTemplate.convertAndSend(
-                    socketProperties.getCouponGiveResultTopicPrefix()
-                            + parsedMessage.getRequestId(),
+                    topicPrefix + parsedMessage.getRequestId(),
                     parsedMessage
             );
 
