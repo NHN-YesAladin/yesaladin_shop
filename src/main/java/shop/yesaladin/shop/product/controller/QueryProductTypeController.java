@@ -19,7 +19,7 @@ import java.util.List;
  * @since 1.0
  */
 @RequiredArgsConstructor
-@CrossOrigin(origins = {"http://localhost:9090", "https://www.yesaladin.shop", "https://test.yesaladin.shop"})
+//@CrossOrigin(origins = {"http://localhost:9090", "https://www.yesaladin.shop", "https://test.yesaladin.shop"})
 @RestController
 @RequestMapping("/v1/product-types")
 public class QueryProductTypeController {

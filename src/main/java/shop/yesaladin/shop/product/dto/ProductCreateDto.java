@@ -183,4 +183,35 @@ public class ProductCreateDto {
                 ))
                 .build();
     }
+
+    @Override
+    public String toString() {
+        return "ProductCreateDto{" +
+                "isbn='" + isbn + '\'' +
+                ", title='" + title + '\'' +
+                ", contents='" + contents + '\'' +
+                ", description='" + description + '\'' +
+                ", authors=" + authors +
+                ", publisherId=" + publisherId +
+                ", actualPrice=" + actualPrice +
+                ", discountRate=" + discountRate +
+                ", isSeparatelyDiscount=" + isSeparatelyDiscount +
+                ", givenPointRate=" + givenPointRate +
+                ", isGivenPoint=" + isGivenPoint +
+                ", issn='" + issn + '\'' +
+                ", isSubscriptionAvailable=" + isSubscriptionAvailable +
+                ", isSale=" + isSale +
+                ", quantity=" + quantity +
+                ", publishedDate='" + publishedDate + '\'' +
+                ", preferentialShowRanking=" + preferentialShowRanking +
+                ", thumbnailFileUrl='" + thumbnailFileUrl + '\'' +
+                ", thumbnailFileUploadDateTime='" + thumbnailFileUploadDateTime + '\'' +
+                ", ebookFileUrl='" + ebookFileUrl + '\'' +
+                ", ebookFileUploadDateTime='" + ebookFileUploadDateTime + '\'' +
+                ", productTypeCode='" + productTypeCode + '\'' +
+                ", productSavingMethodCode='" + productSavingMethodCode + '\'' +
+                ", tags=" + tags +
+                ", categories=" + categories +
+                '}';
+    }
 }
