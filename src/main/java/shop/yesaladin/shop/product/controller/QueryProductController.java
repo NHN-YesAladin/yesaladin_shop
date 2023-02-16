@@ -23,7 +23,7 @@ import java.util.Map;
  */
 @Slf4j
 @RequiredArgsConstructor
-//@CrossOrigin(origins = {"http://localhost:9090", "https://www.yesaladin.shop", "https://test.yesaladin.shop"})
+@CrossOrigin(origins = {"http://localhost:9090", "https://www.yesaladin.shop", "https://test.yesaladin.shop"})
 @RestController
 @RequestMapping("/v1/products")
 public class QueryProductController {
