@@ -1,0 +1,30 @@
+= 회원 등급 변경 이력
+
+=== 회원의 등급 변경 이력 조회
+
+==== curl
+include::{snippets}/get-member-grade-success/curl-request.adoc[]
+
+==== request
+
+===== Example
+include::{snippets}/get-member-grade-success/http-request.adoc[]
+
+===== response
+
+===== Body
+
+include::{snippets}/get-member-grade-success/response-fields.adoc[]
+
+===== Example
+include::{snippets}/get-member-grade-success/response-body.adoc[]
+
+=== 회원의 등급 변경 이력 조회 실패
+
+===== Example
+
+====== 찾을 수 없는 회원
+include::{snippets}/get-member-grade-fail-member-not-found/response-body.adoc[]
+
+====== 유효하지 않은 조회 기간
+include::{snippets}/get-member-grade-fail-invalid-period-condition/response-body.adoc[]

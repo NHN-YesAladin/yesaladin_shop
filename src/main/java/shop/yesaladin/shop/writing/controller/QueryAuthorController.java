@@ -2,7 +2,9 @@ package shop.yesaladin.shop.writing.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,6 +20,7 @@ import shop.yesaladin.shop.writing.service.inter.QueryAuthorService;
  * @since 1.0
  */
 @RequiredArgsConstructor
+@CrossOrigin(origins = {"http://localhost:9090", "https://www.yesaladin.shop", "https://test.yesaladin.shop"})
 @RestController
 @RequestMapping("/v1/authors")
 public class QueryAuthorController {

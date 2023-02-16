@@ -24,9 +24,6 @@ public class SalesStatisticsResponseDto {
     private long numberOfOrders;
     // 주문 개수
     private long totalQuantity;
-
-    // 카드매출액
-    private String creditCardSales;
     // 순매출액
     private String netSales;
 
@@ -35,5 +32,5 @@ public class SalesStatisticsResponseDto {
     // 주문 개수
     private long totalCancelQuantity;
     // 주문 취소 금액
-    private long cancelSales;
+    private String cancelSales;
 }

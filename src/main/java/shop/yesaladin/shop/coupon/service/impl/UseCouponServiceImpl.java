@@ -41,6 +41,7 @@ import shop.yesaladin.shop.point.service.inter.CommandPointHistoryService;
 @Service
 public class UseCouponServiceImpl implements UseCouponService {
 
+    private static final String COUPON_CODE_SUFFIX = "-codes";
     private final QueryMemberCouponRepository queryMemberCouponRepository;
     private final CouponProducer couponProducer;
     private final QueryMemberCouponService queryMemberCouponService;
@@ -65,6 +66,7 @@ public class UseCouponServiceImpl implements UseCouponService {
         }
 
         String requestId = generateRequestId(memberId);
+        saveRequestedCouponCodeList(couponCodeList, requestId);
 
         CouponUseRequestMessage requestMessage = new CouponUseRequestMessage(
                 requestId,
@@ -83,14 +85,14 @@ public class UseCouponServiceImpl implements UseCouponService {
     @Override
     @Transactional
     public List<CouponCodeOnlyDto> useCoupon(CouponUseRequestResponseMessage message) {
+        List<String> couponCodeList = getUsedCouponCode(message);
+
         if (!message.isSuccess()) {
             throw new ClientException(
                     ErrorCode.BAD_REQUEST,
-                    "Cannot use coupons. Request id : " + message.getRequestId()
+                    "Cannot use coupons. Request id : " + message.getRequestId() + ". " + message.getErrorMessage()
             );
         }
-
-        List<String> couponCodeList = getUsedCouponCode(message);
 
         try {
             List<MemberCouponSummaryDto> couponSummaryDtoList = queryMemberCouponService.getMemberCouponSummaryList(
@@ -107,7 +109,6 @@ public class UseCouponServiceImpl implements UseCouponService {
             return couponCodeList.stream().map(CouponCodeOnlyDto::new).collect(Collectors.toList());
         } catch (Exception e) {
             sendUseResultMessage(couponCodeList, false);
-
             throw new ServerException(
                     ErrorCode.INTERNAL_SERVER_ERROR,
                     "Use coupon failed. Coupon codes : " + couponCodeList
@@ -160,13 +161,20 @@ public class UseCouponServiceImpl implements UseCouponService {
         return requestId;
     }
 
+    private Long saveRequestedCouponCodeList(List<String> couponCodeList, String requestId) {
+        return redisTemplate.opsForList()
+                .rightPushAll(requestId + COUPON_CODE_SUFFIX, couponCodeList);
+    }
+
     private String getMemberIdByRequestId(String requestId) {
         return redisTemplate.opsForValue().get(requestId);
     }
 
     private List<String> getUsedCouponCode(CouponUseRequestResponseMessage message) {
+        String key = message.getRequestId() + COUPON_CODE_SUFFIX;
         List<String> couponCodeList = redisTemplate.opsForList()
-                .range(message.getRequestId(), 0, -1);
+                .range(key, 0, -1);
+        redisTemplate.opsForList().getOperations().delete(key);
         if (Objects.isNull(couponCodeList)) {
             throw new ClientException(
                     ErrorCode.BAD_REQUEST,

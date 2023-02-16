@@ -4,12 +4,15 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.payload.PayloadDocumentation.beneathPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -20,6 +23,7 @@ import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.mockito.Mockito;
@@ -40,6 +44,7 @@ import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberGrade;
 import shop.yesaladin.shop.member.dto.MemberGradeQueryResponseDto;
+import shop.yesaladin.shop.member.dto.MemberIdDto;
 import shop.yesaladin.shop.member.dto.MemberManagerResponseDto;
 import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
 import shop.yesaladin.shop.member.dto.MemberStatisticsResponseDto;
@@ -731,6 +736,49 @@ class QueryMemberControllerTest {
 
     @WithMockUser
     @Test
+    @DisplayName("n일 후 생일인 회원 조회 성공")
+    void getBirthdayMemberTest() throws Exception {
+        // given
+        int laterDays = 3;
+        long memberId = 1L;
+        when(queryMemberService.findMemberIdsByBirthday(Mockito.anyInt())).thenReturn(List.of(new MemberIdDto(
+                memberId)));
+
+        // when
+        ResultActions resultActions = mockMvc.perform(get("/v1/members")
+                .queryParam("type", "birthday")
+                .queryParam("laterDays", String.valueOf(laterDays))
+                .contentType(MediaType.APPLICATION_JSON)).andDo(print());
+
+        // then
+        resultActions.andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.status").value(HttpStatus.OK.value()))
+                .andExpect(jsonPath("$.data.[0].memberId").value(memberId));
+
+        // docs
+        resultActions.andDo(document(
+                "get-member-id-list-by-birthday-success",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                requestParameters(
+                        parameterWithName("type")
+                                .description("조회 조건을 생일(birthday)으로 지정 필수"),
+                        parameterWithName("laterDays")
+                                .description("오늘 날짜를 기준으로 생일을 계산할 일수")
+
+                ),
+                responseFields(
+                        beneathPath("data").withSubsectionId("data"),
+                        fieldWithPath("memberId").type(JsonFieldType.NUMBER)
+                                .description("생일인 회원의 PK")
+                )
+        ));
+    }
+
+    @WithMockUser
+    @Test
     void getMemberStatistics() throws Exception {
         //given
         long totalCount = 10L;
@@ -757,14 +805,38 @@ class QueryMemberControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.success", equalTo(true)))
                 .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())))
-                .andExpect(jsonPath("$.data.totalMembers", equalTo(response.getTotalMembers().intValue())))
-                .andExpect(jsonPath("$.data.totalWithdrawMembers", equalTo(response.getTotalWithdrawMembers().intValue())))
-                .andExpect(jsonPath("$.data.totalBlockedMembers", equalTo(response.getTotalBlockedMembers().intValue())))
-                .andExpect(jsonPath("$.data.totalWhiteGrades", equalTo(response.getTotalWhiteGrades().intValue())))
-                .andExpect(jsonPath("$.data.totalBronzeGrades", equalTo(response.getTotalBronzeGrades().intValue())))
-                .andExpect(jsonPath("$.data.totalSilverGrades", equalTo(response.getTotalSilverGrades().intValue())))
-                .andExpect(jsonPath("$.data.totalGoldGrades", equalTo(response.getTotalGoldGrades().intValue())))
-                .andExpect(jsonPath("$.data.totalPlatinumGrades", equalTo(response.getTotalPlatinumGrades().intValue())));
+                .andExpect(jsonPath(
+                        "$.data.totalMembers",
+                        equalTo(response.getTotalMembers().intValue())
+                ))
+                .andExpect(jsonPath(
+                        "$.data.totalWithdrawMembers",
+                        equalTo(response.getTotalWithdrawMembers().intValue())
+                ))
+                .andExpect(jsonPath(
+                        "$.data.totalBlockedMembers",
+                        equalTo(response.getTotalBlockedMembers().intValue())
+                ))
+                .andExpect(jsonPath(
+                        "$.data.totalWhiteGrades",
+                        equalTo(response.getTotalWhiteGrades().intValue())
+                ))
+                .andExpect(jsonPath(
+                        "$.data.totalBronzeGrades",
+                        equalTo(response.getTotalBronzeGrades().intValue())
+                ))
+                .andExpect(jsonPath(
+                        "$.data.totalSilverGrades",
+                        equalTo(response.getTotalSilverGrades().intValue())
+                ))
+                .andExpect(jsonPath(
+                        "$.data.totalGoldGrades",
+                        equalTo(response.getTotalGoldGrades().intValue())
+                ))
+                .andExpect(jsonPath(
+                        "$.data.totalPlatinumGrades",
+                        equalTo(response.getTotalPlatinumGrades().intValue())
+                ));
 
         //docs
         resultActions.andDo(document(
