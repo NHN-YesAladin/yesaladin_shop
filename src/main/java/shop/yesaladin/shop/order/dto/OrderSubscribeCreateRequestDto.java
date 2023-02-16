@@ -90,6 +90,7 @@ public class OrderSubscribeCreateRequestDto extends OrderMemberCreateRequestDto 
                 .expectedTransportDate(null)
                 .isHidden(false)
                 .usedPoint(usePoint)
+                .savedPoint(savePoint)
                 .shippingFee(shippingFee)
                 .wrappingFee(wrappingFee)
                 .totalAmount(productTotalAmount)

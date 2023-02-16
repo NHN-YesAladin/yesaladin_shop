@@ -49,7 +49,8 @@ public abstract class Order {
     private LocalDate expectedTransportDate;
     @Column(name = "used_point", nullable = false)
     private long usedPoint;
-
+    @Column(name = "saved_point", nullable = false)
+    private long savedPoint;
     @Column(name = "shipping_fee", nullable = false)
     private int shippingFee;
 
