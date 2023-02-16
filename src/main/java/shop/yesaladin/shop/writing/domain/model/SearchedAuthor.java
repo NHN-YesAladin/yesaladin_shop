@@ -10,7 +10,7 @@ import javax.persistence.Id;
 
 @Getter
 @AllArgsConstructor
-@Document(indexName = "author", writeTypeHint = WriteTypeHint.FALSE)
+@Document(indexName = "yesaladin_author", writeTypeHint = WriteTypeHint.FALSE)
 public class SearchedAuthor {
     @Id
     @Field

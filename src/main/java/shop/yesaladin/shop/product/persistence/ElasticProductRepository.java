@@ -3,19 +3,20 @@ package shop.yesaladin.shop.product.persistence;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.stereotype.Repository;
 import shop.yesaladin.shop.product.domain.model.SearchedProduct;
 import shop.yesaladin.shop.product.domain.repository.SearchProductRepository;
-import shop.yesaladin.shop.product.dto.SearchedProductDto;
 import shop.yesaladin.shop.product.dto.SearchedProductResponseDto;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 상품 검색 레포지토리
@@ -36,180 +37,112 @@ public class ElasticProductRepository implements SearchProductRepository {
     private static final String AUTHORS_NAME = "authors.name";
     private static final String PUBLISHER_NAME = "publisher.name";
     private static final String TAG = "tags.name";
-    private static final String CATEGORIES_DISABLE = "categories.disable";
-    private static final String CATEGORIES_IS_SHOWN = "categories.is_shown";
+    private static final String IS_SALE = "is_sale";
     private static final String IS_DELETE = "is_deleted";
+    private static final float PERCENT_DENOMINATOR_VALUE = 100;
+    private static final long ROUND_OFF_VALUE = 10;
     private final ElasticsearchOperations elasticsearchOperations;
 
     /**
-     * 카테고리 id를 이용한 검색하는 메소드
-     *
-     * @param id     검색할 카테고리 id
-     * @param offset 검색하고 싶은 페이지 위치
-     * @param size   검색하고 싶은 상품 갯수
-     * @return 상품 리스트와 총 갯수
-     * @
+     * {@inheritDoc}
      */
     @Override
-    public SearchedProductResponseDto searchProductsByCategoryId(
+    public Page<SearchedProductResponseDto> searchProductsByCategoryId(
             Long id,
-            int offset,
-            int size
+            Pageable pageable
     ) {
-        return searchResponseProductByTermQuery(String.valueOf(id), offset, size, CATEGORIES_ID);
+        return searchResponseProductByTermQuery(String.valueOf(id), pageable, CATEGORIES_ID);
     }
 
     /**
-     * 카테고리 이름으로 상품을 검색하는 메서드
-     *
-     * @param name   검색하고 싶은 카테고리 이름
-     * @param offset 검색하고 싶은 페이지 위치
-     * @param size   검색하고 싶은 상품 갯수
-     * @return 상품 리스트와 총 갯수
-     * @author : 김선홍
-     * @since : 1.0
+     * {@inheritDoc}
      */
     @Override
-    public SearchedProductResponseDto searchProductsByCategoryName(
+    public Page<SearchedProductResponseDto> searchProductsByCategoryName(
             String name,
-            int offset,
-            int size
+            Pageable pageable
     ) {
-        return searchResponseProductByTermQuery(CATEGORIES_NAME, offset, size, name);
+        return searchResponseProductByTermQuery(CATEGORIES_NAME, pageable, name);
     }
 
     /**
-     * 상품 이름으로 상품을 검색하는 메서드
-     *
-     * @param title  검색하고 싶은 상품 이름
-     * @param offset 검색하고 싶은 페이지 위치
-     * @param size   검색하고 싶은 상품 갯수
-     * @return 상품 리스트와 총 갯수
-     * @author : 김선홍
-     * @since : 1.0
+     * {@inheritDoc}
      */
     @Override
-    public SearchedProductResponseDto searchProductsByProductTitle(
-            String title, int offset, int size
+    public Page<SearchedProductResponseDto> searchProductsByProductTitle(
+            String title, Pageable pageable
     ) {
-        return searchResponseProductByMultiQuery(title, offset, size, List.of(TITLE, TAG));
+        return searchResponseProductByMultiQuery(title, pageable, List.of(TITLE, TAG));
     }
 
     /**
-     * 상품 내용으로 상품을 검색하는 메서드
-     *
-     * @param content 검색하고 싶은 상품 내용
-     * @param offset  검색하고 싶은 페이지 위치
-     * @param size    검색하고 싶은 상품 갯수
-     * @return 상품 리스트와 총 갯수
-     * @author : 김선홍
-     * @since : 1.0
+     * {@inheritDoc}
      */
     @Override
-    public SearchedProductResponseDto searchProductsByProductContent(
-            String content, int offset, int size
+    public Page<SearchedProductResponseDto> searchProductsByProductContent(
+            String content, Pageable pageable
     ) {
         return searchResponseProductByMultiQuery(
                 content,
-                offset,
-                size,
+                pageable,
                 List.of(CONTENT, TAG, DESCRIPTION)
         );
     }
 
     /**
-     * 상품 isbn으로 상품을 검색하는 메서드
-     *
-     * @param isbn   검색하고 싶은 카테고리 이름
-     * @param offset 검색하고 싶은 페이지 위치
-     * @param size   검색하고 싶은 상품 갯수
-     * @return 상품 리스트와 총 갯수
-     * @author : 김선홍
-     * @since : 1.0
+     * {@inheritDoc}
      */
     @Override
-    public SearchedProductResponseDto searchProductsByProductISBN(
-            String isbn, int offset, int size
+    public Page<SearchedProductResponseDto> searchProductsByProductISBN(
+            String isbn, Pageable pageable
     ) {
-        return searchResponseProductByTermQuery(isbn, offset, size, ISBN);
+        return searchResponseProductByTermQuery(isbn, pageable, ISBN);
     }
 
     /**
-     * 작가 이름으로 상품을 검색하는 메서드
-     *
-     * @param author 검색하고 싶은 카테고리 이름
-     * @param offset 검색하고 싶은 페이지 위치
-     * @param size   검색하고 싶은 상품 갯수
-     * @return 상품 리스트와 총 갯수
-     * @author : 김선홍
-     * @since : 1.0
+     * {@inheritDoc}
      */
     @Override
-    public SearchedProductResponseDto searchProductsByProductAuthor(
+    public Page<SearchedProductResponseDto> searchProductsByProductAuthor(
             String author,
-            int offset,
-            int size
+            Pageable pageable
     ) {
-        return searchResponseProductByTermQuery(author, offset, size, AUTHORS_NAME);
+        return searchResponseProductByTermQuery(author, pageable, AUTHORS_NAME);
     }
 
     /**
-     * 출판사 이름으로 상품을 검색하는 메서드
-     *
-     * @param publisher 검색하고 싶은 출판사 이름
-     * @param offset    검색하고 싶은 페이지 위치
-     * @param size      검색하고 싶은 상품 갯수
-     * @return 상품 리스트와 총 갯수
-     * @author : 김선홍
-     * @since : 1.0
+     * {@inheritDoc}
      */
     @Override
-    public SearchedProductResponseDto searchProductsByPublisher(
-            String publisher, int offset, int size
+    public Page<SearchedProductResponseDto> searchProductsByPublisher(
+            String publisher, Pageable pageable
     ) {
-        return searchResponseProductByTermQuery(publisher, offset, size, PUBLISHER_NAME);
+        return searchResponseProductByTermQuery(publisher, pageable, PUBLISHER_NAME);
     }
 
     /**
-     * 태그 이름으로 상품을 검색하는 메서드
-     *
-     * @param tag    검색하고 싶은 태그 이름
-     * @param offset 검색하고 싶은 페이지 위치
-     * @param size   검색하고 싶은 상품 갯수
-     * @return 상품 리스트와 총 갯수
-     * @author : 김선홍
-     * @since : 1.0
+     * {@inheritDoc}
      */
     @Override
-    public SearchedProductResponseDto searchProductsByTag(String tag, int offset, int size) {
-        return searchResponseProductByTermQuery(tag, offset, size, TAG);
+    public Page<SearchedProductResponseDto> searchProductsByTag(String tag, Pageable pageable) {
+        return searchResponseProductByTermQuery(tag, pageable, TAG);
     }
 
     /**
-     * 멀티 필드와 형태소분석을 통해상품을 검색하는 메서드
-     *
-     * @param value  멀티 필드에 검색하고 싶은 값
-     * @param offset 검색하고 싶은 페이지 위치
-     * @param size   검색하고 싶은 상품 갯수
-     * @param fields 검색할 필드들
-     * @return 상품 리스트와 총 갯수
-     * @author : 김선홍
-     * @since : 1.0
+     * {@inheritDoc}
      */
-    public SearchedProductResponseDto searchResponseProductByMultiQuery(
+    public Page<SearchedProductResponseDto> searchResponseProductByMultiQuery(
             String value,
-            int offset,
-            int size,
+            Pageable pageable,
             List<String> fields
     ) {
         NativeQuery query = NativeQuery.builder()
                 .withQuery(q -> q.multiMatch(v -> v.query(value).fields(fields)))
                 .withFilter(QueryBuilders.bool(v -> v.must(
-                        getTermQueryByBoolean(CATEGORIES_IS_SHOWN, true),
-                        getTermQueryByBoolean(CATEGORIES_DISABLE, false),
+                        getTermQueryByBoolean(IS_SALE, true),
                         getTermQueryByBoolean(IS_DELETE, false)
                 )))
-                .withPageable(PageRequest.of(offset, size))
+                .withPageable(pageable)
                 .build();
 
         SearchHits<SearchedProduct> result = elasticsearchOperations.search(
@@ -217,72 +150,68 @@ public class ElasticProductRepository implements SearchProductRepository {
                 SearchedProduct.class
         );
 
-        return SearchedProductResponseDto.builder()
-                .products(result.stream()
-                        .map(searchedProductSearchHit -> SearchedProductDto.fromIndex(
-                                searchedProductSearchHit.getContent()))
-                        .collect(Collectors.toList()))
-                .count(result.getTotalHits())
-                .build();
+        List<SearchedProductResponseDto> list = result.stream()
+                .map(product -> SearchedProductResponseDto.fromIndex(
+                        product.getContent(),
+                        calcSellingPrice(
+                                product.getContent().getActualPrice(),getRateByProduct(product.getContent())),
+                                getRateByProduct(product.getContent()),
+                                isEbook(product.getContent())
+                        )
+                ).collect(Collectors.toList());
+
+        return new PageImpl<>(list, pageable, result.getTotalHits());
     }
 
     /**
-     * 필터에서 TermQuery를 통해 상품을 검색하는 메서드
-     *
-     * @param value  필드에 검색하고 싶은 값
-     * @param offset 검색하고 싶은 페이지 위치
-     * @param size   검색하고 싶은 상품 갯수
-     * @param field  검색할 필드
-     * @return 상품 리스트와 총 갯수
-     * @author : 김선홍
-     * @since : 1.0
+     * {@inheritDoc}
      */
-    public SearchedProductResponseDto searchResponseProductByTermQuery(
+    public Page<SearchedProductResponseDto> searchResponseProductByTermQuery(
             String value,
-            int offset,
-            int size,
+            Pageable pageable,
             String field
     ) {
-        NativeQuery query = getDefaultSearchProductTermQuery(field, value, offset, size);
+        NativeQuery query = getDefaultSearchProductTermQuery(field, value, pageable);
 
         SearchHits<SearchedProduct> result = elasticsearchOperations.search(
                 query,
                 SearchedProduct.class
         );
 
-        return SearchedProductResponseDto.builder()
-                .products(result.stream()
-                        .map(searchedProductSearchHit -> SearchedProductDto.fromIndex(
-                                searchedProductSearchHit.getContent()))
-                        .collect(Collectors.toList()))
-                .count(result.getTotalHits())
-                .build();
+        List<SearchedProductResponseDto> list = result.stream()
+                .map(product -> SearchedProductResponseDto.fromIndex(
+                                product.getContent(),
+                                calcSellingPrice(
+                                        product.getContent().getActualPrice(),getRateByProduct(product.getContent())),
+                                getRateByProduct(product.getContent()),
+                                isEbook(product.getContent())
+                        )
+                ).collect(Collectors.toList());
+
+        return new PageImpl<>(list, pageable, result.getTotalHits());
     }
 
     /**
      * Term 쿼리를 이용한 상품 검색 아래와 같은 기본 조건을 가지고 있다. categories.is_shown: true categories.disable: false
      * products.is_deleted: false
      *
-     * @param field  필드 이름
-     * @param value  밸류 이름
-     * @param offset 페이지 위치
-     * @param size   데이터 갯수
+     * @param field    필드 이름
+     * @param value    밸류 이름
+     * @param pageable 패이지정보
      * @return 해당 쿼리
      */
     private NativeQuery getDefaultSearchProductTermQuery(
             String field,
             String value,
-            int offset,
-            int size
+            Pageable pageable
     ) {
         return NativeQuery.builder()
                 .withFilter(QueryBuilders.bool(v -> v.must(
                         getTermQueryByString(field, value),
-                        getTermQueryByBoolean(CATEGORIES_IS_SHOWN, true),
-                        getTermQueryByBoolean(CATEGORIES_DISABLE, false),
+                        getTermQueryByBoolean(IS_SALE, true),
                         getTermQueryByBoolean(IS_DELETE, false)
                 )))
-                .withPageable(PageRequest.of(offset, size))
+                .withPageable(pageable)
                 .build();
     }
 
@@ -312,5 +241,40 @@ public class ElasticProductRepository implements SearchProductRepository {
         return NativeQuery.builder()
                 .withQuery(q -> q.term(t -> t.field(field).value(value)))
                 .getQuery();
+    }
+
+    /**
+     * 상품의 정가, 할인율을 바탕으로 판매가를 계산해 반환합니다.
+     *
+     * @param actualPrice 상품의 정가
+     * @param rate        상품의 할인율(전체 / 개별)
+     * @return 계산된 상품의 판매가
+     * @author 이수정
+     * @since 1.0
+     */
+    private long calcSellingPrice(long actualPrice, int rate) {
+        if (rate > 0) {
+            return Math.round((actualPrice - actualPrice * rate / PERCENT_DENOMINATOR_VALUE)
+                    / ROUND_OFF_VALUE) * ROUND_OFF_VALUE;
+        }
+        return actualPrice;
+    }
+
+    /**
+     * 상품의 할인율을 얻어 반환합니다.
+     *
+     * @param product 할인율을 구할 상품
+     * @return 상품의 할인율
+     * @author 이수정
+     * @since 1.0
+     */
+    private int getRateByProduct(SearchedProduct product) {
+        return product.isSeparatelyDiscount()
+                ? product.getDiscountRate()
+                : product.getSearchedTotalDiscountRate().getDiscountRate();
+    }
+
+    private Boolean isEbook(SearchedProduct searchedProduct) {
+        return Objects.nonNull(searchedProduct.getEbookId());
     }
 }
