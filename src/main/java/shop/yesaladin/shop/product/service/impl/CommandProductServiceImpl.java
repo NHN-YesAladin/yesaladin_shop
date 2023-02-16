@@ -94,8 +94,6 @@ public class CommandProductServiceImpl implements CommandProductService {
     @Override
     public ProductOnlyIdDto create(ProductCreateDto dto) {
 
-        log.info("dto = {}", dto.toString());
-
         // ThumbnailFile
         FileResponseDto thumbnailFile = commandFileService.register(dto.toThumbnailFileEntity());
 
