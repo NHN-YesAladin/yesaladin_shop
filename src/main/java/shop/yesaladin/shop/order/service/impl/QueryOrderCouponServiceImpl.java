@@ -54,12 +54,11 @@ public class QueryOrderCouponServiceImpl implements QueryOrderCouponService {
                 couponCodes
         );
 
-        log.error("actualPrice : {} * {} = {}", product.getActualPrice(), request.getQuantity(), (product.getActualPrice() * request.getQuantity()));
         //상품의 판매가
-        long saleAmount = (product.getActualPrice() * request.getQuantity()) *
+        long saleAmount = Math.round((product.getActualPrice() * request.getQuantity()) *
                 (100 - ((product.isSeparatelyDiscount() ? product.getDiscountRate()
-                        : product.getTotalDiscountRate().getDiscountRate()))) / 100;
-        log.error("saleAmount : {}", saleAmount);
+                        : product.getTotalDiscountRate().getDiscountRate()))) / 1000)* 10L;
+
         //상품의 실판매가
         long couponAppliedAmount = getCouponAppliedAmount(
                 request.getCouponCode(),
@@ -67,7 +66,6 @@ public class QueryOrderCouponServiceImpl implements QueryOrderCouponService {
                 memberCoupons,
                 saleAmount
         );
-        log.error("couponAppliedAmount : {}", couponAppliedAmount);
         //적립 예정 포인트
         long expectedPoint = getExpectedPoint(product, saleAmount, couponAppliedAmount);
 
@@ -85,8 +83,8 @@ public class QueryOrderCouponServiceImpl implements QueryOrderCouponService {
             long couponAppliedAmount
     ) {
         return (product.getProductSavingMethodCode().getId() == 2) ?
-                discountAmount / (100 - product.getGivenPointRate()) * 100 :
-                couponAppliedAmount / (100 - product.getGivenPointRate()) * 100;
+                discountAmount * product.getGivenPointRate() / 100 :
+                couponAppliedAmount * product.getGivenPointRate() / 100;
     }
 
     private long getCouponAppliedAmount(
@@ -103,15 +101,12 @@ public class QueryOrderCouponServiceImpl implements QueryOrderCouponService {
         if (!Objects.equals(couponCode, "")) {
             couponAppliedAmount = couponMap.get(couponCode).discount(product, discountAmount);
         }
-        log.error("일반 쿠폰 적용 : {}", couponAppliedAmount);
-        int cnt = 1;
         //중복 쿠폰
         for (MemberCouponSummaryDto memberCoupon : memberCoupons) {
             if (Objects.equals(couponCode, memberCoupon.getCouponCode())) {
                 continue;
             }
             couponAppliedAmount = memberCoupon.discount(product, couponAppliedAmount);
-            log.error("중복 쿠폰 적용 {} : {}", cnt++, couponAppliedAmount);
         }
 
         return couponAppliedAmount;
