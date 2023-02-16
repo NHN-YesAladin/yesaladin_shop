@@ -21,6 +21,11 @@ include::{snippets}/get-category-by-id/response-fields.adoc[]
 ===== Example
 include::{snippets}/get-category-by-id/http-response.adoc[]
 
+==== * Fail response
+===== Example
+include::{snippets}/get-category-by-id-not-found-fail/http-response.adoc[]
+
+
 ---
 
 === 1차 카테고리 아이디를 통한 2차 카테고리 조회 (페이징)
