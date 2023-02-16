@@ -16,7 +16,7 @@ import shop.yesaladin.shop.product.service.inter.QueryRelationService;
  * @since 1.0
  */
 @RequiredArgsConstructor
-//@CrossOrigin(origins = {"http://localhost:9090", "https://www.yesaladin.shop", "https://test.yesaladin.shop"})
+@CrossOrigin(origins = {"http://localhost:9090", "https://www.yesaladin.shop", "https://test.yesaladin.shop"})
 @RestController
 @RequestMapping("/v1/products/{id}/relations")
 public class QueryRelationController {
