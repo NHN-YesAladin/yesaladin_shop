@@ -1,0 +1,120 @@
+= Member Address
+
+=== 회원의 배송지 조회
+
+==== curl
+include::{snippets}/get-member-address-success/curl-request.adoc[]
+
+==== request
+
+===== Example
+include::{snippets}/get-member-address-success/http-request.adoc[]
+
+===== response
+
+===== Body
+
+include::{snippets}/get-member-address-success/response-fields.adoc[]
+
+===== Example
+include::{snippets}/get-member-address-success/response-body.adoc[]
+
+
+=== 회원의 배송지 조회 실패
+
+===== Example
+
+====== 찾을 수 없는 회원
+include::{snippets}/get-member-address-fail-member-not-found/response-body.adoc[]
+
+
+=== 회원의 배송지 등록
+
+==== curl
+include::{snippets}/create-member-address-success/curl-request.adoc[]
+
+==== request
+
+===== Example
+include::{snippets}/create-member-address-success/http-request.adoc[]
+
+===== response
+
+===== Body
+
+include::{snippets}/create-member-address-success/response-fields.adoc[]
+
+===== Example
+include::{snippets}/create-member-address-success/response-body.adoc[]
+
+
+=== 회원의 배송지 등록 실패
+
+==== Example
+
+====== 찾을 수 없는 회원
+include::{snippets}/create-member-address-fail-not-found-member/response-body.adoc[]
+
+====== 최대 배송지 등록 개수 초과
+include::{snippets}/create-member-address-fail-registered-up-to-limit/response-body.adoc[]
+
+====== Validation 실패
+include::{snippets}/create-member-address-fail-validation-error/response-body.adoc[]
+
+
+=== 대표 배송지 설정
+
+==== curl
+include::{snippets}/mark-as-default-address-success/curl-request.adoc[]
+
+==== request
+
+===== Example
+include::{snippets}/mark-as-default-address-success/http-request.adoc[]
+
+===== response
+
+===== Body
+
+include::{snippets}/mark-as-default-address-success/response-fields.adoc[]
+
+===== Example
+include::{snippets}/mark-as-default-address-success/response-body.adoc[]
+
+
+=== 대표 배송지 설정 실패
+
+==== Example
+====== 존재하지 않는 배송지
+include::{snippets}/mark-as-default-address-fail-member-address-not-found/response-body.adoc[]
+
+
+=== 배송지 삭제
+
+==== curl
+include::{snippets}/delete-member-address-success/curl-request.adoc[]
+
+==== request
+
+===== Example
+include::{snippets}/delete-member-address-success/http-request.adoc[]
+
+===== response
+
+===== Body
+
+include::{snippets}/delete-member-address-success/response-fields.adoc[]
+
+===== Example
+include::{snippets}/delete-member-address-success/response-body.adoc[]
+
+
+=== 배송지 삭제 실패
+
+==== Example
+====== 이미 삭제된 배송지
+include::{snippets}/delete-member-address-fail-already-deleted-address/response-body.adoc[]
+
+====== 존재하지 않는 배송지
+include::{snippets}/delete-member-address-fail-member-address-not-found/response-body.adoc[]
+
