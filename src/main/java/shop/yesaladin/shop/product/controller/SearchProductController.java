@@ -1,11 +1,13 @@
 package shop.yesaladin.shop.product.controller;
 
+import javax.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,6 +24,7 @@ import shop.yesaladin.shop.product.service.inter.SearchProductService;
  * @since : 1.0
  */
 @Slf4j
+@Validated
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/v1/search/products")
@@ -40,7 +43,7 @@ public class SearchProductController {
      */
     @GetMapping(params = "title")
     public ResponseDto<PaginatedResponseDto<SearchedProductResponseDto>> searchProductByTitle(
-            @RequestParam String title,
+            @RequestParam @Size(max = 30) String title,
             @PageableDefault Pageable pageable
     ) {
 
@@ -72,7 +75,7 @@ public class SearchProductController {
      */
     @GetMapping(params = "content")
     public ResponseDto<PaginatedResponseDto<SearchedProductResponseDto>> searchProductByContent(
-            @RequestParam String content,
+            @RequestParam @Size(max = 30) String content,
             @PageableDefault Pageable pageable
     ) {
         Page<SearchedProductResponseDto> response = searchProductService.searchProductsByProductContent(
@@ -103,7 +106,7 @@ public class SearchProductController {
      */
     @GetMapping(params = "isbn")
     public ResponseDto<PaginatedResponseDto<SearchedProductResponseDto>> searchProductByISBN(
-            @RequestParam String isbn,
+            @RequestParam @Size(max = 30) String isbn,
             @PageableDefault Pageable pageable
     ) {
         Page<SearchedProductResponseDto> response = searchProductService.searchProductsByProductISBN(
@@ -134,7 +137,7 @@ public class SearchProductController {
      */
     @GetMapping(params = "author")
     public ResponseDto<PaginatedResponseDto<SearchedProductResponseDto>> searchProductByAuthor(
-            @RequestParam String author,
+            @RequestParam @Size(max = 30) String author,
             @PageableDefault Pageable pageable
     ) {
         Page<SearchedProductResponseDto> response = searchProductService.searchProductsByProductAuthor(
@@ -165,7 +168,7 @@ public class SearchProductController {
      */
     @GetMapping(params = "publisher")
     public ResponseDto<PaginatedResponseDto<SearchedProductResponseDto>> searchProductByPublisher(
-            @RequestParam String publisher,
+            @RequestParam @Size(max = 30) String publisher,
             @PageableDefault Pageable pageable
     ) {
         Page<SearchedProductResponseDto> response = searchProductService.searchProductsByPublisher(
@@ -196,7 +199,7 @@ public class SearchProductController {
      */
     @GetMapping(params = "tag")
     public ResponseDto<PaginatedResponseDto<SearchedProductResponseDto>> searchProductByTag(
-            @RequestParam String tag,
+            @RequestParam @Size(max = 30) String tag,
             @PageableDefault Pageable pageable
     ) {
         Page<SearchedProductResponseDto> response = searchProductService.searchProductsByTag(

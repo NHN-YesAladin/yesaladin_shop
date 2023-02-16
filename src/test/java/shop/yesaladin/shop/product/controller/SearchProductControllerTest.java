@@ -39,6 +39,7 @@ class SearchProductControllerTest {
     @Autowired
     ObjectMapper objectMapper;
     SearchedProductResponseDto responseDto;
+    String over = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 
     @BeforeEach
     void setUp() {
@@ -59,17 +60,28 @@ class SearchProductControllerTest {
 
     @WithMockUser
     @Test
+    void searchProductByTitle_overMaximumInputLength() throws Exception {
+        ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+                .with(csrf())
+                .accept(MediaType.APPLICATION_JSON)
+                .queryParam("title", over));
+
+        resultActions.andExpect(status().is5xxServerError());
+    }
+
+    @WithMockUser
+    @Test
     @DisplayName("상품의 제목으로 검색 성공")
     void testSearchProductByTitleSuccess() throws Exception {
         Mockito.when(searchProductService.searchProductsByProductTitle("title", PageRequest.of(0, 10)))
                 .thenReturn(new PageImpl<>(List.of(responseDto), PageRequest.of(0, 1), 1));
 
         //when
-        ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+        ResultActions resultActions = mockMvc.perform(get("/v1/search/products/titles")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
-                .param("title", "title"));
+                .queryParam("input", "title"));
         //then
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())))
@@ -87,6 +99,17 @@ class SearchProductControllerTest {
                 .andExpect(jsonPath("$.data.dataList[0].thumbnailFile", equalTo(responseDto.getThumbnailFile())))
                 .andExpect(jsonPath("$.data.dataList[0].authors[0]", equalTo(responseDto.getAuthors().get(0))))
                 .andExpect(jsonPath("$.data.dataList[0].tags[0]", equalTo(responseDto.getTags().get(0))));
+    }
+
+    @WithMockUser
+    @Test
+    void searchProductByContent_overMaximumInputLength() throws Exception {
+        ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+                .with(csrf())
+                .accept(MediaType.APPLICATION_JSON)
+                .queryParam("content", over));
+
+        resultActions.andExpect(status().is5xxServerError());
     }
 
     @WithMockUser
@@ -98,10 +121,10 @@ class SearchProductControllerTest {
                 .thenReturn(new PageImpl<>(List.of(responseDto), PageRequest.of(0, 1), 1));
 
         //when
-        ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+        ResultActions resultActions = mockMvc.perform(get("/v1/search/products/contents")
                 .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
-                .param("content", "content"));
+                .param("input", "content"));
         //then
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())))
@@ -123,6 +146,17 @@ class SearchProductControllerTest {
 
     @WithMockUser
     @Test
+    void searchProductByISBN_overMaximumInputLength() throws Exception {
+        ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+                .with(csrf())
+                .accept(MediaType.APPLICATION_JSON)
+                .queryParam("isbn", over));
+
+        resultActions.andExpect(status().is5xxServerError());
+    }
+
+    @WithMockUser
+    @Test
     @DisplayName("상품의 isbn으로 검색 성공")
     void testSearchProductByISBNSuccess() throws Exception {
         //given
@@ -130,10 +164,10 @@ class SearchProductControllerTest {
                 .thenReturn(new PageImpl<>(List.of(responseDto), PageRequest.of(0, 1), 1));
 
         //when
-        ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+        ResultActions resultActions = mockMvc.perform(get("/v1/search/products/isbn")
                 .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
-                .param("isbn", "isbn"));
+                .param("input", "isbn"));
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())))
                 .andExpect(jsonPath("$.success", equalTo(true)))
@@ -154,6 +188,17 @@ class SearchProductControllerTest {
 
     @WithMockUser
     @Test
+    void searchProductByAuthor_overMaximumInputLength() throws Exception {
+        ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+                .with(csrf())
+                .accept(MediaType.APPLICATION_JSON)
+                .queryParam("author", over));
+
+        resultActions.andExpect(status().is5xxServerError());
+    }
+
+    @WithMockUser
+    @Test
     @DisplayName("작가의 이름으로 검색 성공")
     void testSearchProductByAuthorSuccess() throws Exception {
         //given
@@ -161,10 +206,10 @@ class SearchProductControllerTest {
                 .thenReturn(new PageImpl<>(List.of(responseDto), PageRequest.of(0, 1), 1));
 
         //when
-        ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+        ResultActions resultActions = mockMvc.perform(get("/v1/search/products/authors")
                 .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
-                .param("author", "author"));
+                .param("input", "author"));
         //then
          resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())))
@@ -186,6 +231,17 @@ class SearchProductControllerTest {
 
     @WithMockUser
     @Test
+    void searchProductByPublisher_overMaximumInputLength() throws Exception {
+        ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+                .with(csrf())
+                .accept(MediaType.APPLICATION_JSON)
+                .queryParam("publisher", over));
+
+        resultActions.andExpect(status().is5xxServerError());
+    }
+
+    @WithMockUser
+    @Test
     @DisplayName("출판사 이름으로 검색 성공")
     void testSearchProductByPublisherSuccess() throws Exception {
         //when
@@ -193,10 +249,10 @@ class SearchProductControllerTest {
                 .thenReturn(new PageImpl<>(List.of(responseDto), PageRequest.of(0, 1), 1));
 
         //when
-        ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+        ResultActions resultActions = mockMvc.perform(get("/v1/search/products/publishers")
                 .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
-                .param("publisher", "publisher"));
+                .param("input", "publisher"));
         //then
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())))
@@ -218,6 +274,17 @@ class SearchProductControllerTest {
 
     @WithMockUser
     @Test
+    void searchProductByTag_overMaximumInputLength() throws Exception {
+        ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+                .with(csrf())
+                .accept(MediaType.APPLICATION_JSON)
+                .queryParam("tag", over));
+
+        resultActions.andExpect(status().is5xxServerError());
+    }
+
+    @WithMockUser
+    @Test
     @DisplayName("태그로 검색 성공")
     void testSearchProductByTagSuccess() throws Exception {
         //given
@@ -225,10 +292,10 @@ class SearchProductControllerTest {
                 .thenReturn(new PageImpl<>(List.of(responseDto), PageRequest.of(0, 1), 1));
 
         //when
-        ResultActions resultActions = mockMvc.perform(get("/v1/search/products")
+        ResultActions resultActions = mockMvc.perform(get("/v1/search/products/tags")
                 .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
-                .param("tag", "tag"));
+                .param("input", "tag"));
         //then
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())))
