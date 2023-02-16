@@ -244,15 +244,17 @@ public class CommandProductServiceImpl implements CommandProductService {
         // Tag
         commandProductTagService.deleteByProduct(product);
 
-        List<Tag> tags = dto.getTags().stream()
-                .map(tagId -> queryTagService.findById(tagId).toEntity())
-                .collect(Collectors.toList());
+        if (Objects.nonNull(dto.getTags())) {
+            List<Tag> tags = dto.getTags().stream()
+                    .map(tagId -> queryTagService.findById(tagId).toEntity())
+                    .collect(Collectors.toList());
 
-        for (Tag tag : tags) {
-            commandProductTagService.register(ProductTag.create(
-                    product,
-                    Tag.builder().id(tag.getId()).name(tag.getName()).build()
-            ));
+            for (Tag tag : tags) {
+                commandProductTagService.register(ProductTag.create(
+                        product,
+                        Tag.builder().id(tag.getId()).name(tag.getName()).build()
+                ));
+            }
         }
 
         // Category
