@@ -95,9 +95,6 @@ public class QueryMemberCouponServiceImpl implements QueryMemberCouponService {
     ) {
         List<MemberCoupon> memberCoupons = memberCouponRepository.findByCouponCodes(couponCodes);
         List<MemberCouponSummaryDto> usableCoupons = tryGetCouponSummary(couponCodes).getData();
-        log.error("couponCodes : {} | {}", couponCodes.size(), couponCodes);
-        log.error("memberCOupons : {} | {}", memberCoupons.size(), memberCoupons);
-        log.error("usableCoupons : {} | {}", usableCoupons.size(), usableCoupons);
 
         if (usableCoupons.size() != couponCodes.size()
                 || memberCoupons.size() != couponCodes.size()) {
