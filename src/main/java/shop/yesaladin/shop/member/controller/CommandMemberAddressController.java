@@ -1,15 +1,18 @@
 package shop.yesaladin.shop.member.controller;
 
+import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.common.code.ErrorCode;
@@ -111,5 +114,15 @@ public class CommandMemberAddressController {
                             bindingResult.getAllErrors()
             );
         }
+    }
+
+    @ExceptionHandler(ClientException.class)
+    @ResponseBody
+    public ResponseDto<Void> clientExceptionHandler(ClientException ce) {
+        return ResponseDto.<Void>builder()
+                .success(true)
+                .errorMessages(List.of(ce.getDisplayErrorMessage()))
+                .status(ce.getResponseStatus())
+                .build();
     }
 }
