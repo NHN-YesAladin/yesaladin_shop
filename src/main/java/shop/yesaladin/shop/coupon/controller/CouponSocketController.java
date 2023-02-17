@@ -16,7 +16,7 @@ import shop.yesaladin.shop.coupon.service.inter.CouponWebsocketMessageSendServic
 @Slf4j
 @RequiredArgsConstructor
 @Controller
-public class GiveCouponSocketController {
+public class CouponSocketController {
 
     private final CouponWebsocketMessageSendService websocketMessageSendService;
 
@@ -25,7 +25,7 @@ public class GiveCouponSocketController {
      *
      * @param requestId 연결된 클라이언트의 request id
      */
-    @MessageMapping("/coupon/give/result/connect/{requestId}")
+    @MessageMapping("/coupon/{kind}/result/connect/{requestId}")
     public void receiveConnectMessage(@DestinationVariable String requestId) {
         websocketMessageSendService.registerConnection(requestId);
         log.info("Request id {} socket connected.", requestId);

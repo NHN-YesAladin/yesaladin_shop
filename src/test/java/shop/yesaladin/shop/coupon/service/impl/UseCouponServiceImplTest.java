@@ -14,6 +14,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.data.redis.core.ListOperations;
+import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import shop.yesaladin.common.exception.ClientException;
@@ -25,6 +26,7 @@ import shop.yesaladin.shop.coupon.domain.repository.QueryMemberCouponRepository;
 import shop.yesaladin.shop.coupon.dto.CouponCodeOnlyDto;
 import shop.yesaladin.shop.coupon.dto.MemberCouponSummaryDto;
 import shop.yesaladin.shop.coupon.dto.RequestIdOnlyDto;
+import shop.yesaladin.shop.coupon.service.inter.CouponWebsocketMessageSendService;
 import shop.yesaladin.shop.coupon.service.inter.QueryMemberCouponService;
 import shop.yesaladin.shop.point.service.inter.CommandPointHistoryService;
 
@@ -39,6 +41,8 @@ class UseCouponServiceImplTest {
     private RedisTemplate<String, String> redisTemplate;
     private ListOperations<String, String> listOperations;
     private ValueOperations<String, String> valueOperations;
+    private RedisOperations<String, String> redisOperations;
+    private CouponWebsocketMessageSendService couponWebsocketMessageSendService;
     private final static Clock clock = Clock.fixed(
             Instant.parse("2023-02-01T00:00:00.00Z"),
             ZoneId.of("UTC")
@@ -52,18 +56,22 @@ class UseCouponServiceImplTest {
         commandPointHistoryService = Mockito.mock(CommandPointHistoryService.class);
         redisTemplate = Mockito.mock(RedisTemplate.class);
         listOperations = Mockito.mock(ListOperations.class);
+        redisOperations = Mockito.mock(RedisOperations.class);
         valueOperations = Mockito.mock(ValueOperations.class);
+        couponWebsocketMessageSendService = Mockito.mock(CouponWebsocketMessageSendService.class);
         useCouponService = new UseCouponServiceImpl(
                 queryMemberCouponRepository,
                 couponProducer,
                 queryMemberCouponService,
                 commandPointHistoryService,
+                couponWebsocketMessageSendService,
                 redisTemplate,
                 clock
         );
 
         when(redisTemplate.opsForList()).thenReturn(listOperations);
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
+        when(listOperations.getOperations()).thenReturn(redisOperations);
     }
 
     @Test
@@ -124,7 +132,7 @@ class UseCouponServiceImplTest {
                 .requestId("requestId")
                 .build();
         List<String> expectedCouponCodes = List.of("1", "2", "3", "4");
-        when(listOperations.range("requestId", 0, -1)).thenReturn(expectedCouponCodes);
+        when(listOperations.range("requestId-codes", 0, -1)).thenReturn(expectedCouponCodes);
         List<MemberCoupon> expectedMemberCoupons = List.of(
                 Mockito.mock(MemberCoupon.class),
                 Mockito.mock(MemberCoupon.class),
@@ -138,8 +146,8 @@ class UseCouponServiceImplTest {
         List<CouponCodeOnlyDto> actual = useCouponService.useCoupon(requestResponseMessage);
 
         // then
-        Mockito.verify(redisTemplate, Mockito.times(1)).opsForList();
-        Mockito.verify(listOperations, Mockito.times(1)).range("requestId", 0, -1);
+        Mockito.verify(redisTemplate, Mockito.times(2)).opsForList();
+        Mockito.verify(listOperations, Mockito.times(1)).range("requestId-codes", 0, -1);
         Mockito.verify(queryMemberCouponRepository, Mockito.times(1))
                 .findByCouponCodes(expectedCouponCodes);
         Mockito.verify(couponProducer, Mockito.times(1))
@@ -179,7 +187,7 @@ class UseCouponServiceImplTest {
                 true,
                 null
         );
-        when(listOperations.range("1", 0, -1)).thenReturn(null);
+        when(listOperations.range("1-codes" , 0, -1)).thenReturn(null);
 
         // when
         // then
