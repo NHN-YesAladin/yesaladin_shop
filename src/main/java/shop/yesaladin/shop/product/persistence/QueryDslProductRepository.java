@@ -2,13 +2,12 @@ package shop.yesaladin.shop.product.persistence;
 
 
 import static com.querydsl.core.group.GroupBy.groupBy;
-import static com.querydsl.core.types.dsl.Expressions.list;
 
+import com.querydsl.core.group.GroupBy;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -134,7 +133,7 @@ public class QueryDslProductRepository implements QueryProductRepository {
                                 .and(productCategory.product.isDeleted.isFalse()))
                         .transform(
                                 groupBy(product.id).list(
-                                        Projections.fields(
+                                        Projections.constructor(
                                                 ProductWithCategoryResponseDto.class,
                                                 product.isbn,
                                                 product.actualPrice,
@@ -144,14 +143,13 @@ public class QueryDslProductRepository implements QueryProductRepository {
                                                 product.isGivenPoint,
                                                 product.totalDiscountRate,
                                                 product.productSavingMethodCode,
-                                                list(
-                                                        Projections.fields(
-                                                                String.class,
+                                                Projections.list(
+                                                        Projections.constructor(
+                                                                Long.class,
                                                                 productCategory.category.id
-                                                        ).as("categoryList")
+                                                        )
                                                 )
                                         ))
-
                         ).get(0)
         );
     }
@@ -295,29 +293,32 @@ public class QueryDslProductRepository implements QueryProductRepository {
     @Override
     public List<ProductOrderSheetResponseDto> getByIsbnList(List<String> isbnList) {
         QProduct product = QProduct.product;
+        QProductCategory productCategory = QProductCategory.productCategory;
 
         NumberExpression<Integer> discountRate = product.isSeparatelyDiscount.when(true)
                 .then(product.discountRate)
                 .otherwise(product.totalDiscountRate.discountRate);
 
-        return queryFactory.select(Projections.constructor(
-                        ProductOrderSheetResponseDto.class,
-                        product.id,
-                        product.isbn,
-                        product.title,
-                        product.actualPrice,
-                        discountRate,
-                        product.isGivenPoint,
-                        product.givenPointRate,
-                        product.quantity
-                ))
-                .from(product)
+        return queryFactory.from(product)
+                .innerJoin(productCategory).on(product.id.eq(productCategory.product.id))
                 .where(product.isbn.in(isbnList)
                         .and(product.isDeleted.isFalse())
                         .and(product.isForcedOutOfStock.isFalse())
-                        .and(product.isSale.isTrue())
-                )
-                .fetch();
+                        .and(product.isSale.isTrue()))
+                .transform(
+                        groupBy(product.id).list(
+                                Projections.constructor(
+                                        ProductOrderSheetResponseDto.class,
+                                        product.id,
+                                        product.isbn,
+                                        product.title,
+                                        product.actualPrice,
+                                        discountRate,
+                                        product.isGivenPoint,
+                                        product.givenPointRate,
+                                        product.quantity,
+                                        GroupBy.list(productCategory.category.id.stringValue())
+                                )));
     }
 
     /**
@@ -399,14 +400,12 @@ public class QueryDslProductRepository implements QueryProductRepository {
     public Page<Product> findRecentViewProductById(List<Long> ids, Pageable pageable) {
         QProduct product = QProduct.product;
 
-        List<Product> products = new ArrayList<>();
-        for (Long id : ids) {
-            products.add(queryFactory.selectFrom(product)
-                    .where(product.id.eq(id).and(product.isDeleted.isFalse()))
+        List<Product> products = queryFactory.selectFrom(product)
+                    .where(product.id.in(ids).and(product.isDeleted.isFalse()))
                     .offset((long) pageable.getPageNumber() * pageable.getPageSize())
                     .limit(pageable.getPageSize())
-                    .fetchFirst());
-        }
+                    .fetch();
+
 
         Long count = queryFactory.select(product.count())
                 .where(product.id.in(ids).and(product.isDeleted.isFalse()))

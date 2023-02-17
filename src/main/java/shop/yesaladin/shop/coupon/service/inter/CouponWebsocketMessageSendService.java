@@ -1,6 +1,6 @@
 package shop.yesaladin.shop.coupon.service.inter;
 
-import shop.yesaladin.shop.coupon.dto.CouponGiveResultDto;
+import shop.yesaladin.shop.coupon.dto.CouponResultDto;
 
 /**
  * 웹소켓을 사용하여 쿠폰 관련 메시지를 발송하는 인터페이스입니다.
@@ -16,7 +16,7 @@ public interface CouponWebsocketMessageSendService {
      *
      * @param resultDto 전송할 메시지
      */
-    void trySendGiveCouponResultMessage(CouponGiveResultDto resultDto);
+    void trySendGiveCouponResultMessage(CouponResultDto resultDto);
 
     /**
      * 소켓 연결 정보를 등록합니다.

@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import shop.yesaladin.shop.order.domain.model.OrderProduct;
 import shop.yesaladin.shop.product.domain.model.Product;
-import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
+import shop.yesaladin.shop.product.dto.ProductOrderQueryResponseDto;
 
 /**
  * 주문 상품을 조회 하기 위한 dto
@@ -17,12 +17,12 @@ import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
 @AllArgsConstructor
 public class OrderProductResponseDto {
 
-    private ProductOrderSheetResponseDto productDto;
+    private ProductOrderQueryResponseDto productDto;
     private int quantity;
 
     public static OrderProductResponseDto fromEntity(OrderProduct orderProduct, int quantity) {
         Product pd = orderProduct.getProduct();
-        return new OrderProductResponseDto(new ProductOrderSheetResponseDto(
+        return new OrderProductResponseDto(new ProductOrderQueryResponseDto(
                 pd.getId(),
                 pd.getIsbn(),
                 pd.getTitle(),

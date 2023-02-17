@@ -58,6 +58,32 @@ include::{snippets}/withdraw-member-success/http-response.adoc[]
 ====== 찾을 수 없는 회원
 include::{snippets}/withdraw-member-fail-member-not-found/response-body.adoc[]
 
+=== 생일인 회원 조회
+
+==== curl
+
+include::{snippets}/get-member-id-list-by-birthday-success/curl-request.adoc[]
+
+=== request
+
+==== Parameters
+
+include::{snippets}/get-member-id-list-by-birthday-success/request-parameters.adoc[]
+
+===== Example
+
+include::{snippets}/get-member-id-list-by-birthday-success/http-request.adoc[]
+
+==== response (Success)
+
+===== Body
+
+include::{snippets}/get-member-id-list-by-birthday-success/response-body.adoc[]
+
+===== Example
+
+include::{snippets}/get-member-id-list-by-birthday-success/http-response.adoc[]
+
 
 === 회원의 loginId 중복 여부 판단
 

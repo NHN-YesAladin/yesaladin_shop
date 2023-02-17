@@ -81,7 +81,7 @@ public class QueryDslQueryMemberCouponRepository implements QueryMemberCouponRep
                 .from(memberCoupon)
                 .where(memberCoupon.couponCode.in(couponCodes)
                         .and(memberCoupon.isUsed.isFalse())
-                        .and(memberCoupon.expirationDate.before(LocalDate.now(clock))))
+                        .and(memberCoupon.expirationDate.goe(LocalDate.now(clock))))
                 .fetch();
     }
 }

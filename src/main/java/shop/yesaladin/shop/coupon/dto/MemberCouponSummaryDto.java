@@ -7,12 +7,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.coupon.code.CouponBoundCode;
 import shop.yesaladin.coupon.code.CouponTypeCode;
 import shop.yesaladin.shop.product.dto.ProductWithCategoryResponseDto;
 
+@Slf4j
 @Getter
 @Builder
 @Setter
@@ -44,16 +46,21 @@ public class MemberCouponSummaryDto {
         long discountPrice = 0;
         switch (couponBoundCode) {
             case PRODUCT:
+                log.error("상품 적용 => ");
                 if (Objects.equals(product.getIsbn(), couponBound)) {
                     discountPrice = getDiscountPrice(price);
                 }
                 break;
             case CATEGORY:
-                if (product.getCategoryList().contains(couponBound)) {
+                log.error("카테고리 적용 => ");
+
+                if (product.getCategoryList().contains(Long.parseLong(couponBound))) {
                     discountPrice = getDiscountPrice(price);
                 }
                 break;
             case ALL:
+                log.error("전체 적용 => ");
+
                 discountPrice = getDiscountPrice(price);
                 break;
         }
@@ -71,14 +78,32 @@ public class MemberCouponSummaryDto {
      */
     private long getDiscountPrice(long price) {
         if (couponTypeCode.getCode() == 1) {
-            return price - amount;
+            log.error("정액 할인 => ");
+            if(price >= minOrderAmount) {
+                log.error("{} - {}", price, amount);
+                return price - amount;
+            }
         } else if (couponTypeCode.getCode() == 2) {
-            return price / (100 - amount) * 100;
+            log.error("정률 할인 => ");
+            if(price >= minOrderAmount) {
+                long discountAmount = price *(100 - amount) / 100;
+                if(discountAmount > maxDiscountAmount) {
+                    log.error("{} - 최대할인금액({})", price, maxDiscountAmount);
+                    return price - maxDiscountAmount;
+                }
+                log.error("{} - {}", price, discountAmount);
+
+                return price - discountAmount;
+            }
         } else {
             throw new ClientException(
                     ErrorCode.INVALID_COUPON_DATA,
                     "Invalid coupon data."
             );
         }
+        return price;
     }
+    //private Integer minOrderAmount;
+    //    private Integer maxDiscountAmount;
+    //    private Boolean canBeOverlapped;
 }
