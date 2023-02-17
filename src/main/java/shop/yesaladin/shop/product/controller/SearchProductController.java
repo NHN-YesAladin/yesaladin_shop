@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.product.controller;
 
-import javax.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -16,6 +15,8 @@ import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.product.dto.SearchedProductResponseDto;
 import shop.yesaladin.shop.product.service.inter.SearchProductService;
+
+import javax.validation.constraints.Size;
 
 /**
  * 상품 검색 컨트롤러
