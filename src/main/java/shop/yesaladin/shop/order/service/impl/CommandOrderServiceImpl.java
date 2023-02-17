@@ -119,13 +119,15 @@ public class CommandOrderServiceImpl implements CommandOrderService {
 
         createOrderStatusChangeLog(orderDateTime, savedOrder);
 
-        try {
-            if (request.getOrderCoupons() != null) {
+        if (request.getOrderCoupons() != null) {
+            try {
                 requestUseCoupon(request, loginId, savedOrder);
+
+                createOrderCoupon(request, savedOrder);
+            } catch (Exception e) {
+                useCouponService.cancelCouponUse(request.getOrderCoupons());
             }
-            createOrderCoupon(request, savedOrder);
-        } catch (Exception e) {
-            useCouponService.cancelCouponUse(request.getOrderCoupons());
+
         }
 
         return OrderCreateResponseDto.fromEntity(savedOrder);
