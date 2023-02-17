@@ -1,6 +1,7 @@
 package shop.yesaladin.shop.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -15,7 +16,7 @@ import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
-import shop.yesaladin.shop.coupon.adapter.websocket.CouponGiveResultRedisSubscriber;
+import shop.yesaladin.shop.coupon.adapter.websocket.CouponResultRedisSubscriber;
 
 /**
  * Redis 설정 클래스 입니다.
@@ -101,12 +102,15 @@ public class RedisConfig {
      */
     @Bean
     public RedisMessageListenerContainer redisMessageListenerContainer(
-            RedisConnectionFactory connectionFactory, CouponGiveResultRedisSubscriber subscriber
+            RedisConnectionFactory connectionFactory, CouponResultRedisSubscriber subscriber
     ) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.addMessageListener(
                 listenerAdapter(subscriber),
-                new PatternTopic(socketProperties.getCouponGiveResultTopicPrefix())
+                List.of(
+                        new PatternTopic(socketProperties.getCouponGiveResultTopicPrefix()),
+                        new PatternTopic(socketProperties.getCouponUseResultTopicPrefix())
+                )
         );
         container.setConnectionFactory(connectionFactory);
         return container;
@@ -119,7 +123,7 @@ public class RedisConfig {
      * @return RedisMessageListenerFactory
      */
     @Bean
-    public MessageListenerAdapter listenerAdapter(CouponGiveResultRedisSubscriber subscriber) {
+    public MessageListenerAdapter listenerAdapter(CouponResultRedisSubscriber subscriber) {
         return new MessageListenerAdapter(subscriber, "onMessage");
     }
 
