@@ -35,6 +35,7 @@ import shop.yesaladin.shop.order.dto.OrderMemberCreateRequestDto;
 import shop.yesaladin.shop.order.dto.OrderNonMemberCreateRequestDto;
 import shop.yesaladin.shop.order.dto.OrderSubscribeCreateRequestDto;
 import shop.yesaladin.shop.order.dto.OrderUpdateResponseDto;
+import shop.yesaladin.shop.order.service.inter.CommandOrderCouponService;
 import shop.yesaladin.shop.order.service.inter.CommandOrderService;
 import shop.yesaladin.shop.point.domain.model.PointReasonCode;
 import shop.yesaladin.shop.point.dto.PointHistoryRequestDto;
@@ -62,6 +63,7 @@ public class CommandOrderServiceImpl implements CommandOrderService {
     private final CommandOrderStatusChangeLogRepository commandOrderStatusChangeLogRepository;
     private final CommandOrderProductRepository commandOrderProductRepository;
     private final CommandPointHistoryService commandPointHistoryService;
+    private final CommandOrderCouponService commandOrderCouponService;
     private final CommandProductService commandProductService;
     private final QueryMemberAddressService queryMemberAddressService;
     private final QueryMemberCouponService queryMemberCouponService;
@@ -100,10 +102,12 @@ public class CommandOrderServiceImpl implements CommandOrderService {
             OrderMemberCreateRequestDto request,
             String loginId
     ) {
-        queryMemberCouponService.getValidMemberCouponSummaryListByCouponCodes(
-                loginId,
-                request.getOrderCoupons()
-        );
+        if (request.getOrderCoupons() != null) {
+            queryMemberCouponService.getValidMemberCouponSummaryListByCouponCodes(
+                    loginId,
+                    request.getOrderCoupons()
+            );
+        }
 
         LocalDateTime orderDateTime = LocalDateTime.now(clock);
         Map<String, Product> products = commandProductService.orderProducts(request.getOrderProducts());
@@ -115,7 +119,16 @@ public class CommandOrderServiceImpl implements CommandOrderService {
 
         createOrderStatusChangeLog(orderDateTime, savedOrder);
 
-        requestUseCoupon(request, loginId, savedOrder);
+        if (request.getOrderCoupons() != null) {
+            try {
+                requestUseCoupon(request, loginId, savedOrder);
+
+                createOrderCoupon(request, savedOrder);
+            } catch (Exception e) {
+                useCouponService.cancelCouponUse(request.getOrderCoupons());
+            }
+
+        }
 
         return OrderCreateResponseDto.fromEntity(savedOrder);
     }
@@ -260,6 +273,15 @@ public class CommandOrderServiceImpl implements CommandOrderService {
         }
     }
 
+    private void createOrderCoupon(OrderMemberCreateRequestDto request, Order savedOrder) {
+        if (!request.getOrderCoupons().isEmpty()) {
+            commandOrderCouponService.createOrderCoupons(
+                    savedOrder.getId(),
+                    request.getOrderCoupons()
+            );
+        }
+    }
+
     private void createOrderStatusChangeLog(LocalDateTime orderDateTime, Order savedOrder) {
         OrderStatusChangeLog orderStatusChangeLog = OrderStatusChangeLog.create(
                 savedOrder,
@@ -296,10 +318,18 @@ public class CommandOrderServiceImpl implements CommandOrderService {
     }
 
     private String generateOrderName(List<Product> products) {
+        String title = products.get(0).getTitle();
         if (products.size() == 1) {
-            return products.get(0).getTitle();
+            return getValidOrderName(title);
         }
-        return products.get(0).getTitle() + "외 " + (products.size() - 1) + "권";
+        return getValidOrderName(title) + "외 " + (products.size() - 1) + "권";
+    }
+
+    private String getValidOrderName(String title) {
+        if (title.length() > 90) {
+            return title.substring(0, 87) + "...";
+        }
+        return title;
     }
 
     private String generateOrderNumber(LocalDateTime orderDateTime) {

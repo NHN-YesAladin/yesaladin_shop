@@ -47,4 +47,25 @@ public class DummyMember {
                 .memberGenderCode(MemberGenderCode.MALE)
                 .build();
     }
+
+    public static Member memberWithBirthdayWithId(LocalDate birthday) {
+        return Member.builder()
+                .id(1L)
+                .nickname("익명의 오소리")
+                .name("김홍대")
+                .loginId("mongmeo")
+                .password("1234")
+                .birthYear(birthday.getYear())
+                .birthMonth(birthday.getMonthValue())
+                .birthDay(birthday.getDayOfMonth())
+                .email("mongemo@yesaladin.shop")
+                .phone("01012345678")
+                .signUpDate(LocalDate.now())
+                .withdrawalDate(null)
+                .isWithdrawal(false)
+                .isBlocked(false)
+                .memberGrade(MemberGrade.WHITE)
+                .memberGenderCode(MemberGenderCode.MALE)
+                .build();
+    }
 }

@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -33,10 +34,11 @@ import shop.yesaladin.coupon.message.CouponGiveRequestMessage;
 import shop.yesaladin.coupon.message.CouponGiveRequestResponseMessage;
 import shop.yesaladin.shop.config.GatewayProperties;
 import shop.yesaladin.shop.coupon.adapter.kafka.CouponProducer;
+import shop.yesaladin.shop.coupon.domain.model.CouponSocketRequestKind;
 import shop.yesaladin.shop.coupon.domain.model.MemberCoupon;
 import shop.yesaladin.shop.coupon.domain.repository.CommandMemberCouponRepository;
 import shop.yesaladin.shop.coupon.domain.repository.QueryMemberCouponRepository;
-import shop.yesaladin.shop.coupon.dto.CouponGiveResultDto;
+import shop.yesaladin.shop.coupon.dto.CouponResultDto;
 import shop.yesaladin.shop.coupon.dto.CouponGroupAndLimitDto;
 import shop.yesaladin.shop.coupon.dto.RequestIdOnlyDto;
 import shop.yesaladin.shop.coupon.service.inter.CouponWebsocketMessageSendService;
@@ -68,6 +70,7 @@ public class GiveCouponServiceImpl implements GiveCouponService {
     private final QueryMemberService queryMemberService;
     private final RestTemplate restTemplate;
     private final RedisTemplate<String, String> redisTemplate;
+    ListOperations<String, String> listOperations;
     private final CouponWebsocketMessageSendService couponWebsocketMessageSendService;
 
     @Override
@@ -141,14 +144,16 @@ public class GiveCouponServiceImpl implements GiveCouponService {
             tryGiveCouponToMember(responseMessage, memberId);
             couponProducer.produceGivenResultMessage(resultBuilder.success(true).build());
 
-            couponWebsocketMessageSendService.trySendGiveCouponResultMessage(new CouponGiveResultDto(
+            couponWebsocketMessageSendService.trySendGiveCouponResultMessage(new CouponResultDto(
+                    CouponSocketRequestKind.GIVE,
                     responseMessage.getRequestId(),
                     responseMessage.isSuccess(),
                     responseMessage.isSuccess() ? "발급이 완료되었습니다." : responseMessage.getErrorMessage()
             ));
         } catch (Exception e) {
             couponProducer.produceGivenResultMessage(resultBuilder.success(false).build());
-            couponWebsocketMessageSendService.trySendGiveCouponResultMessage(new CouponGiveResultDto(
+            couponWebsocketMessageSendService.trySendGiveCouponResultMessage(new CouponResultDto(
+                    CouponSocketRequestKind.GIVE,
                     responseMessage.getRequestId(),
                     responseMessage.isSuccess(),
                     responseMessage.getErrorMessage()

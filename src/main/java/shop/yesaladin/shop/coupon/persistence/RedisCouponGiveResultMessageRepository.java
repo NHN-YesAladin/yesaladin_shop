@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.exception.ServerException;
 import shop.yesaladin.shop.coupon.domain.repository.CouponGiveResultMessageRepository;
-import shop.yesaladin.shop.coupon.dto.CouponGiveResultDto;
+import shop.yesaladin.shop.coupon.dto.CouponResultDto;
 
 @RequiredArgsConstructor
 @Repository
@@ -21,7 +21,7 @@ public class RedisCouponGiveResultMessageRepository implements CouponGiveResultM
 
 
     @Override
-    public void save(CouponGiveResultDto result) {
+    public void save(CouponResultDto result) {
         try {
             String serializedResult = objectMapper.writeValueAsString(result);
             redisTemplate.opsForHash().put(KEY, result.getRequestId(), serializedResult);
@@ -36,10 +36,10 @@ public class RedisCouponGiveResultMessageRepository implements CouponGiveResultM
     }
 
     @Override
-    public CouponGiveResultDto getByRequestId(String requestId) {
+    public CouponResultDto getByRequestId(String requestId) {
         String stringMessage = (String) redisTemplate.opsForHash().get(KEY, requestId);
         try {
-            return objectMapper.readValue(stringMessage, CouponGiveResultDto.class);
+            return objectMapper.readValue(stringMessage, CouponResultDto.class);
 
         } catch (JsonProcessingException e) {
             throw new ServerException(

@@ -3,6 +3,7 @@ package shop.yesaladin.shop.coupon.service.impl;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -20,11 +21,14 @@ import shop.yesaladin.coupon.message.CouponCodesMessage;
 import shop.yesaladin.coupon.message.CouponUseRequestMessage;
 import shop.yesaladin.coupon.message.CouponUseRequestResponseMessage;
 import shop.yesaladin.shop.coupon.adapter.kafka.CouponProducer;
+import shop.yesaladin.shop.coupon.domain.model.CouponSocketRequestKind;
 import shop.yesaladin.shop.coupon.domain.model.MemberCoupon;
 import shop.yesaladin.shop.coupon.domain.repository.QueryMemberCouponRepository;
 import shop.yesaladin.shop.coupon.dto.CouponCodeOnlyDto;
+import shop.yesaladin.shop.coupon.dto.CouponResultDto;
 import shop.yesaladin.shop.coupon.dto.MemberCouponSummaryDto;
 import shop.yesaladin.shop.coupon.dto.RequestIdOnlyDto;
+import shop.yesaladin.shop.coupon.service.inter.CouponWebsocketMessageSendService;
 import shop.yesaladin.shop.coupon.service.inter.QueryMemberCouponService;
 import shop.yesaladin.shop.coupon.service.inter.UseCouponService;
 import shop.yesaladin.shop.point.domain.model.PointReasonCode;
@@ -41,10 +45,12 @@ import shop.yesaladin.shop.point.service.inter.CommandPointHistoryService;
 @Service
 public class UseCouponServiceImpl implements UseCouponService {
 
+    private static final String COUPON_CODE_SUFFIX = "-codes";
     private final QueryMemberCouponRepository queryMemberCouponRepository;
     private final CouponProducer couponProducer;
     private final QueryMemberCouponService queryMemberCouponService;
     private final CommandPointHistoryService commandPointHistoryService;
+    private final CouponWebsocketMessageSendService couponWebsocketMessageSendService;
     private final RedisTemplate<String, String> redisTemplate;
     private final Clock clock;
 
@@ -65,6 +71,7 @@ public class UseCouponServiceImpl implements UseCouponService {
         }
 
         String requestId = generateRequestId(memberId);
+        saveRequestedCouponCodeList(couponCodeList, requestId);
 
         CouponUseRequestMessage requestMessage = new CouponUseRequestMessage(
                 requestId,
@@ -83,17 +90,20 @@ public class UseCouponServiceImpl implements UseCouponService {
     @Override
     @Transactional
     public List<CouponCodeOnlyDto> useCoupon(CouponUseRequestResponseMessage message) {
+        List<String> couponCodeList = getUsedCouponCode(message);
+        List<MemberCouponSummaryDto> couponSummaryDtoList = Collections.emptyList();
+
         if (!message.isSuccess()) {
+            sendUseResultSocketMessageIfIsPointCoupon(couponSummaryDtoList, message);
             throw new ClientException(
                     ErrorCode.BAD_REQUEST,
-                    "Cannot use coupons. Request id : " + message.getRequestId()
+                    "Cannot use coupons. Request id : " + message.getRequestId() + ". "
+                            + message.getErrorMessage()
             );
         }
 
-        List<String> couponCodeList = getUsedCouponCode(message);
-
         try {
-            List<MemberCouponSummaryDto> couponSummaryDtoList = queryMemberCouponService.getMemberCouponSummaryList(
+            couponSummaryDtoList = queryMemberCouponService.getMemberCouponSummaryList(
                     couponCodeList);
             checkCouponIsPointCouponType(couponSummaryDtoList, message.getRequestId());
 
@@ -104,15 +114,37 @@ public class UseCouponServiceImpl implements UseCouponService {
 
             sendUseResultMessage(couponCodeList, true);
 
+            sendUseResultSocketMessageIfIsPointCoupon(couponSummaryDtoList, message);
+
             return couponCodeList.stream().map(CouponCodeOnlyDto::new).collect(Collectors.toList());
         } catch (Exception e) {
             sendUseResultMessage(couponCodeList, false);
-
+            sendUseResultSocketMessageIfIsPointCoupon(couponSummaryDtoList, message);
             throw new ServerException(
                     ErrorCode.INTERNAL_SERVER_ERROR,
                     "Use coupon failed. Coupon codes : " + couponCodeList
             );
         }
+    }
+
+    private void sendUseResultSocketMessageIfIsPointCoupon(
+            List<MemberCouponSummaryDto> couponSummaryDtoList,
+            CouponUseRequestResponseMessage message
+    ) {
+        boolean hasOnlyPointCoupon = couponSummaryDtoList.stream()
+                .allMatch(memberCouponSummaryDto -> memberCouponSummaryDto.getCouponTypeCode()
+                        .equals(CouponTypeCode.POINT));
+
+        if (!hasOnlyPointCoupon) {
+            return;
+        }
+
+        couponWebsocketMessageSendService.trySendGiveCouponResultMessage(new CouponResultDto(
+                CouponSocketRequestKind.USE,
+                message.getRequestId(),
+                message.isSuccess(),
+                message.isSuccess() ? "사용이 완료되었습니다." : message.getErrorMessage()
+        ));
     }
 
     /**
@@ -132,7 +164,7 @@ public class UseCouponServiceImpl implements UseCouponService {
                 .allMatch(memberCouponSummaryDto -> memberCouponSummaryDto.getCouponTypeCode()
                         .equals(CouponTypeCode.POINT));
 
-        if (isAllPointCouponType) {
+        if (couponSummaryDtoList.isEmpty() || isAllPointCouponType) {
             String memberId = getMemberIdByRequestId(requestId);
             chargeMemberPoint(memberId, couponSummaryDtoList);
         }
@@ -160,13 +192,19 @@ public class UseCouponServiceImpl implements UseCouponService {
         return requestId;
     }
 
+    private Long saveRequestedCouponCodeList(List<String> couponCodeList, String requestId) {
+        return redisTemplate.opsForList()
+                .rightPushAll(requestId + COUPON_CODE_SUFFIX, couponCodeList);
+    }
+
     private String getMemberIdByRequestId(String requestId) {
         return redisTemplate.opsForValue().get(requestId);
     }
 
     private List<String> getUsedCouponCode(CouponUseRequestResponseMessage message) {
-        List<String> couponCodeList = redisTemplate.opsForList()
-                .range(message.getRequestId(), 0, -1);
+        String key = message.getRequestId() + COUPON_CODE_SUFFIX;
+        List<String> couponCodeList = redisTemplate.opsForList().range(key, 0, -1);
+        redisTemplate.opsForList().getOperations().delete(key);
         if (Objects.isNull(couponCodeList)) {
             throw new ClientException(
                     ErrorCode.BAD_REQUEST,

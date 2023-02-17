@@ -2,10 +2,10 @@ package shop.yesaladin.shop.coupon.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import shop.yesaladin.shop.coupon.adapter.websocket.CouponGiveResultRedisPublisher;
+import shop.yesaladin.shop.coupon.adapter.websocket.CouponResultRedisPublisher;
 import shop.yesaladin.shop.coupon.domain.repository.CouponGiveResultMessageRepository;
 import shop.yesaladin.shop.coupon.domain.repository.CouponGiveSocketConnectionRepository;
-import shop.yesaladin.shop.coupon.dto.CouponGiveResultDto;
+import shop.yesaladin.shop.coupon.dto.CouponResultDto;
 import shop.yesaladin.shop.coupon.service.inter.CouponWebsocketMessageSendService;
 
 /**
@@ -18,7 +18,7 @@ import shop.yesaladin.shop.coupon.service.inter.CouponWebsocketMessageSendServic
 @Component
 public class CouponWebsocketMessageSendServiceImpl implements CouponWebsocketMessageSendService {
 
-    private final CouponGiveResultRedisPublisher couponGiveResultRedisPublisher;
+    private final CouponResultRedisPublisher couponResultRedisPublisher;
     private final CouponGiveResultMessageRepository couponGiveResultMessageRepository;
     private final CouponGiveSocketConnectionRepository couponGiveSocketConnectionRepository;
 
@@ -26,9 +26,9 @@ public class CouponWebsocketMessageSendServiceImpl implements CouponWebsocketMes
      * {@inheritDoc}
      */
     @Override
-    public void trySendGiveCouponResultMessage(CouponGiveResultDto resultDto) {
+    public void trySendGiveCouponResultMessage(CouponResultDto resultDto) {
         if (canSendMessage(resultDto)) {
-            couponGiveResultRedisPublisher.publish(resultDto);
+            couponResultRedisPublisher.publish(resultDto);
             couponGiveSocketConnectionRepository.delete(resultDto.getRequestId());
             couponGiveResultMessageRepository.deleteByRequestId(resultDto.getRequestId());
             return;
@@ -43,12 +43,12 @@ public class CouponWebsocketMessageSendServiceImpl implements CouponWebsocketMes
     public void registerConnection(String requestId) {
         couponGiveSocketConnectionRepository.save(requestId);
         if (couponGiveResultMessageRepository.existsByRequestId(requestId)) {
-            CouponGiveResultDto result = couponGiveResultMessageRepository.getByRequestId(requestId);
+            CouponResultDto result = couponGiveResultMessageRepository.getByRequestId(requestId);
             trySendGiveCouponResultMessage(result);
         }
     }
 
-    private boolean canSendMessage(CouponGiveResultDto resultDto) {
+    private boolean canSendMessage(CouponResultDto resultDto) {
         return couponGiveSocketConnectionRepository.existsByRequestId(resultDto.getRequestId());
     }
 }

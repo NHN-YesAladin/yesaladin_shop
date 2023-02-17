@@ -171,7 +171,6 @@ class CommandProductControllerTest {
                         fieldWithPath("isGivenPoint").type(JsonFieldType.BOOLEAN).description("포인트 적립여부"),
                         fieldWithPath("issn").type(JsonFieldType.STRING).description("ISSN"),
                         fieldWithPath("isSubscriptionAvailable").type(JsonFieldType.BOOLEAN).description("구독 가능여부"),
-                        fieldWithPath("isSale").type(JsonFieldType.BOOLEAN).description("상품 판매여부"),
                         fieldWithPath("quantity").type(JsonFieldType.NUMBER).description("수량"),
                         fieldWithPath("publishedDate").type(JsonFieldType.STRING).description("출간일"),
                         fieldWithPath("preferentialShowRanking").type(JsonFieldType.NUMBER).description("노출우선순위"),
@@ -182,8 +181,7 @@ class CommandProductControllerTest {
                         fieldWithPath("productTypeCode").type(JsonFieldType.STRING).description("상품 유형"),
                         fieldWithPath("productSavingMethodCode").type(JsonFieldType.STRING).description("상품 적립 방식"),
                         fieldWithPath("tags").type(JsonFieldType.ARRAY).description("태그"),
-                        fieldWithPath("categories").type(JsonFieldType.ARRAY).description("카테고라"),
-                        fieldWithPath("isForcedOutOfStock").type(JsonFieldType.BOOLEAN).description("강제 품절 여부")
+                        fieldWithPath("categories").type(JsonFieldType.ARRAY).description("카테고리")
                 ),
                 responseFields(
                         fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("동작 성공 여부"),

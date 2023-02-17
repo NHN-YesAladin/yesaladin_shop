@@ -13,6 +13,7 @@ import javax.validation.constraints.NotBlank;
  * @author 최예린
  * @since 1.0
  */
+
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor

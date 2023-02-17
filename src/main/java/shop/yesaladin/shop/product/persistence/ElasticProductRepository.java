@@ -3,9 +3,6 @@ package shop.yesaladin.shop.product.persistence;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -17,6 +14,10 @@ import org.springframework.stereotype.Repository;
 import shop.yesaladin.shop.product.domain.model.SearchedProduct;
 import shop.yesaladin.shop.product.domain.repository.SearchProductRepository;
 import shop.yesaladin.shop.product.dto.SearchedProductResponseDto;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * 상품 검색 레포지토리
@@ -152,9 +153,10 @@ public class ElasticProductRepository implements SearchProductRepository {
 
         List<SearchedProductResponseDto> list = result.stream()
                 .map(product -> SearchedProductResponseDto.fromIndex(
-                        product.getContent(),
-                        calcSellingPrice(
-                                product.getContent().getActualPrice(),getRateByProduct(product.getContent())),
+                                product.getContent(),
+                                calcSellingPrice(
+                                        product.getContent().getActualPrice(),
+                                        getRateByProduct(product.getContent())),
                                 getRateByProduct(product.getContent()),
                                 isEbook(product.getContent())
                         )
@@ -182,7 +184,8 @@ public class ElasticProductRepository implements SearchProductRepository {
                 .map(product -> SearchedProductResponseDto.fromIndex(
                                 product.getContent(),
                                 calcSellingPrice(
-                                        product.getContent().getActualPrice(),getRateByProduct(product.getContent())),
+                                        product.getContent().getActualPrice(),
+                                        getRateByProduct(product.getContent())),
                                 getRateByProduct(product.getContent()),
                                 isEbook(product.getContent())
                         )
@@ -207,7 +210,7 @@ public class ElasticProductRepository implements SearchProductRepository {
     ) {
         return NativeQuery.builder()
                 .withFilter(QueryBuilders.bool(v -> v.must(
-                        getTermQueryByString(field, value),
+                        getMatchQuery(field, value),
                         getTermQueryByBoolean(IS_SALE, true),
                         getTermQueryByBoolean(IS_DELETE, false)
                 )))
@@ -225,6 +228,12 @@ public class ElasticProductRepository implements SearchProductRepository {
     private Query getTermQueryByBoolean(String field, boolean value) {
         return NativeQuery.builder()
                 .withQuery(q -> q.term(t -> t.field(field).value(value)))
+                .getQuery();
+    }
+
+    private Query getMatchQuery(String field, String value) {
+        return NativeQuery.builder()
+                .withQuery(q -> q.match(v -> v.query(value).field(field)))
                 .getQuery();
     }
 

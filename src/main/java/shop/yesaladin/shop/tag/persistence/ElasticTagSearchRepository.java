@@ -39,7 +39,7 @@ public class ElasticTagSearchRepository implements SearchTagRepository {
                 .build();
         SearchHits<SearchedTag> list = elasticsearchOperations.search(query, SearchedTag.class);
         return SearchedTagResponseDto.builder()
-                .count(list.stream().count())
+                .count(list.getTotalHits())
                 .searchedTagDtoList(list.getSearchHits()
                         .stream()
                         .map(hit -> SearchedTagDto.fromIndex(hit.getContent()))

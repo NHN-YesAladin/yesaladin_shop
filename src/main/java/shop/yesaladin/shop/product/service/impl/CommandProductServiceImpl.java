@@ -1,7 +1,6 @@
 package shop.yesaladin.shop.product.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import shop.yesaladin.common.code.ErrorCode;
@@ -37,10 +36,13 @@ import shop.yesaladin.shop.writing.service.inter.CommandWritingService;
 import shop.yesaladin.shop.writing.service.inter.QueryAuthorService;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -49,9 +51,8 @@ import java.util.stream.Collectors;
  * @author 이수정
  * @since 1.0
  */
-@Slf4j
 @RequiredArgsConstructor
-@CacheEvict(cacheNames = "recentProducts")
+@CacheEvict(cacheNames = "recentProducts", key = "'recentProducts'")
 @Service
 public class CommandProductServiceImpl implements CommandProductService {
 
@@ -217,7 +218,18 @@ public class CommandProductServiceImpl implements CommandProductService {
         // EbookFile
         File ebookFile = product.getEbookFile();
         if (Objects.nonNull(dto.getEbookFileUrl())) {
-            ebookFile = commandFileService.register(dto.changeEbookFile(ebookFile)).toEntity();
+            if (Objects.isNull(ebookFile)) {
+                ebookFile = commandFileService.register(
+                        File.builder()
+                                .url(dto.getEbookFileUrl())
+                                .uploadDateTime(LocalDateTime.parse(
+                                        dto.getEbookFileUploadDateTime(),
+                                        DateTimeFormatter.ISO_LOCAL_DATE_TIME
+                                )).build()
+                ).toEntity();
+            } else {
+                ebookFile = commandFileService.register(dto.changeEbookFile(ebookFile)).toEntity();
+            }
         }
 
         // Writing
@@ -387,7 +399,7 @@ public class CommandProductServiceImpl implements CommandProductService {
 
         return productList
                 .stream()
-                .collect(Collectors.toMap(Product::getIsbn, product -> product));
+                .collect(Collectors.toMap(Product::getIsbn, Function.identity()));
     }
 
     private List<Product> getAvailableProducts(Map<String, Integer> quantities) {

@@ -4,21 +4,22 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import shop.yesaladin.shop.coupon.adapter.websocket.CouponGiveResultRedisPublisher;
+import shop.yesaladin.shop.coupon.adapter.websocket.CouponResultRedisPublisher;
+import shop.yesaladin.shop.coupon.domain.model.CouponSocketRequestKind;
 import shop.yesaladin.shop.coupon.domain.repository.CouponGiveResultMessageRepository;
 import shop.yesaladin.shop.coupon.domain.repository.CouponGiveSocketConnectionRepository;
-import shop.yesaladin.shop.coupon.dto.CouponGiveResultDto;
+import shop.yesaladin.shop.coupon.dto.CouponResultDto;
 
 class CouponWebsocketMessageSendServiceImplTest {
 
-    private CouponGiveResultRedisPublisher publisher;
+    private CouponResultRedisPublisher publisher;
     private CouponGiveResultMessageRepository messageRepository;
     private CouponGiveSocketConnectionRepository connectionRepository;
     private CouponWebsocketMessageSendServiceImpl service;
 
     @BeforeEach
     void setUp() {
-        publisher = Mockito.mock(CouponGiveResultRedisPublisher.class);
+        publisher = Mockito.mock(CouponResultRedisPublisher.class);
         messageRepository = Mockito.mock(CouponGiveResultMessageRepository.class);
         connectionRepository = Mockito.mock(CouponGiveSocketConnectionRepository.class);
         service = new CouponWebsocketMessageSendServiceImpl(
@@ -32,7 +33,7 @@ class CouponWebsocketMessageSendServiceImplTest {
     @DisplayName("클라이언트가 연결되어있다면 메시지를 발행한다.")
     void sendGiveCouponResultMessageTest() {
         // given
-        CouponGiveResultDto message = new CouponGiveResultDto("123", true, "message");
+        CouponResultDto message = new CouponResultDto(CouponSocketRequestKind.GIVE, "123", true, "message");
         Mockito.when(connectionRepository.existsByRequestId("123")).thenReturn(true);
 
         // when
@@ -50,7 +51,7 @@ class CouponWebsocketMessageSendServiceImplTest {
     @DisplayName("클라이언트가 연결되어있지 않다면 메시지를 저장한다.")
     void saveGiveCouponResultMessageTest() {
         // given
-        CouponGiveResultDto message = new CouponGiveResultDto("123", true, "message");
+        CouponResultDto message = new CouponResultDto(CouponSocketRequestKind.GIVE, "123", true, "message");
         Mockito.when(connectionRepository.existsByRequestId("123")).thenReturn(false);
 
         // when
@@ -85,7 +86,7 @@ class CouponWebsocketMessageSendServiceImplTest {
     @DisplayName("발행된 메시지가 존재한다면 메시지를 발행한다.")
     void registerConnectionAndSendGiveCouponResultMessageTest() {
         // given
-        CouponGiveResultDto message = new CouponGiveResultDto("123", true, "message");
+        CouponResultDto message = new CouponResultDto(CouponSocketRequestKind.GIVE, "123", true, "message");
         Mockito.when(messageRepository.existsByRequestId("123")).thenReturn(true);
         Mockito.when(connectionRepository.existsByRequestId("123")).thenReturn(true);
         Mockito.when(messageRepository.getByRequestId("123")).thenReturn(message);

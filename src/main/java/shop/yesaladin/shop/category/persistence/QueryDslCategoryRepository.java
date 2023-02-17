@@ -42,13 +42,13 @@ public class QueryDslCategoryRepository implements QueryCategoryRepository {
                 .from(category)
                 .leftJoin(category.parent)
                 .fetchJoin()
-                .where(category.parent.id.eq(parentId),category.isDisable.eq(false))
+                .where(category.parent.id.eq(parentId),category.isDisable.isFalse())
                 .orderBy(category.order.asc().nullsLast())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
         JPAQuery<Long> countQuery = queryFactory.select(category.count())
-                .where(category.parent.id.eq(parentId))
+                .where(category.parent.id.eq(parentId),category.isDisable.isFalse())
                 .from(category);
 
         return PageableExecutionUtils.getPage(categories, pageable, countQuery::fetchFirst);
@@ -63,7 +63,7 @@ public class QueryDslCategoryRepository implements QueryCategoryRepository {
     public Optional<Category> findByName(String name) {
         QCategory category = QCategory.category;
         return Optional.ofNullable(queryFactory.selectFrom(category)
-                .where(category.name.eq(name),category.isDisable.eq(false))
+                .where(category.name.eq(name),category.isDisable.isFalse())
                 .fetchFirst());
     }
 
@@ -152,7 +152,7 @@ public class QueryDslCategoryRepository implements QueryCategoryRepository {
                 .from(category)
                 .leftJoin(category.parent)
                 .fetchJoin()
-                .where(parentIdEq(category, parentId), depthEq(category, depth),category.isDisable.eq(false))
+                .where(parentIdEq(category, parentId), depthEq(category, depth),category.isDisable.isFalse())
                 .orderBy(category.order.asc().nullsLast())
                 .fetch();
     }
@@ -192,7 +192,7 @@ public class QueryDslCategoryRepository implements QueryCategoryRepository {
         return Optional.ofNullable(queryFactory.selectFrom(category)
                 .leftJoin(category.parent)
                 .fetchJoin()
-                .where(category.id.eq(id), category.isDisable.eq(false))
+                .where(category.id.eq(id), category.isDisable.isFalse())
                 .fetchFirst());
     }
 
