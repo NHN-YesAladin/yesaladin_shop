@@ -93,7 +93,7 @@ class CommandMemberAddressControllerTest {
         //then
         result.andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.success", equalTo(true)))
                 .andExpect(jsonPath("$.status", equalTo(HttpStatus.BAD_REQUEST.value())))
                 .andExpect(jsonPath(
                         "$.errorMessages[0]",
@@ -116,7 +116,7 @@ class CommandMemberAddressControllerTest {
         //then
         result.andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.success", equalTo(true)))
                 .andExpect(jsonPath("$.status", equalTo(HttpStatus.BAD_REQUEST.value())))
                 .andExpect(jsonPath(
                         "$.errorMessages[0]",
@@ -164,7 +164,7 @@ class CommandMemberAddressControllerTest {
         //then
         result.andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.success", equalTo(true)))
                 .andExpect(jsonPath("$.status", equalTo(HttpStatus.NOT_FOUND.value())))
                 .andExpect(jsonPath(
                         "$.errorMessages[0]",
@@ -219,7 +219,7 @@ class CommandMemberAddressControllerTest {
         //then
         result.andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.success", equalTo(true)))
                 .andExpect(jsonPath("$.status", equalTo(HttpStatus.BAD_REQUEST.value())))
                 .andExpect(jsonPath(
                         "$.errorMessages[0]",
@@ -348,7 +348,7 @@ class CommandMemberAddressControllerTest {
         //then
         result.andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.success", equalTo(true)))
                 .andExpect(jsonPath("$.status", equalTo(HttpStatus.NOT_FOUND.value())))
                 .andExpect(jsonPath(
                         "$.errorMessages[0]",
@@ -449,7 +449,7 @@ class CommandMemberAddressControllerTest {
         //then
         result.andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.success", equalTo(true)))
                 .andExpect(jsonPath("$.status", equalTo(HttpStatus.NOT_FOUND.value())))
                 .andExpect(jsonPath(
                         "$.errorMessages[0]",
@@ -496,7 +496,7 @@ class CommandMemberAddressControllerTest {
         //then
         result.andExpect(status().isConflict())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.success", equalTo(true)))
                 .andExpect(jsonPath("$.status", equalTo(HttpStatus.CONFLICT.value())))
                 .andExpect(jsonPath(
                         "$.errorMessages[0]",

@@ -1,11 +1,10 @@
 package shop.yesaladin.shop.order.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestController;
-import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.shop.common.aspect.annotation.LoginId;
 import shop.yesaladin.shop.coupon.dto.CouponOrderSheetRequestDto;
 import shop.yesaladin.shop.coupon.dto.CouponOrderSheetResponseDto;
@@ -17,6 +16,7 @@ import shop.yesaladin.shop.order.service.inter.QueryOrderCouponService;
  * @author 최예린
  * @since 1.0
  */
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 public class QueryOrderCouponController {
@@ -33,19 +33,14 @@ public class QueryOrderCouponController {
      * @since 1.0
      */
     @GetMapping("/v1/order-coupons")
-    public ResponseDto<CouponOrderSheetResponseDto> calculateCoupon(
+    public CouponOrderSheetResponseDto calculateCoupon(
             @LoginId(required = true) String loginId,
             @ModelAttribute CouponOrderSheetRequestDto request
     ) {
-        CouponOrderSheetResponseDto response = queryOrderCouponService.calculateCoupons(
+
+        return queryOrderCouponService.calculateCoupons(
                 loginId,
                 request
         );
-
-        return ResponseDto.<CouponOrderSheetResponseDto>builder()
-                .success(true)
-                .status(HttpStatus.OK)
-                .data(response)
-                .build();
     }
 }

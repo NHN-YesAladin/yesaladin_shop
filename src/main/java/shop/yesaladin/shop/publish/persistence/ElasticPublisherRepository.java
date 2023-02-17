@@ -37,7 +37,7 @@ public class ElasticPublisherRepository implements SearchPublisherRepository {
                 SearchedPublisher.class
         );
         return SearchPublisherResponseDto.builder()
-                .count(searchHits.stream().count())
+                .count(searchHits.getTotalHits())
                 .searchedPublisherDtoList(searchHits.stream()
                         .map(hits -> SearchedPublisherDto.fromIndex(hits.getContent()))
                         .collect(Collectors.toList()))
