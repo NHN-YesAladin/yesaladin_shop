@@ -7,10 +7,7 @@ import org.hibernate.validator.constraints.Length;
 import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.product.domain.model.*;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
+import javax.validation.constraints.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -28,11 +25,13 @@ public class ProductUpdateDto {
 
     // 상품 설명
     @NotBlank
-    @Length(max = 255)
+    @Length(min = 1, max = 255)
     private String title;
     @NotBlank
+    @Length(min = 1, max = 21844)
     private String contents;
     @NotBlank
+    @Length(min = 1, max = 21844)
     private String description;
 
     // 저자, 출판사
@@ -42,6 +41,7 @@ public class ProductUpdateDto {
 
     // 정가, 할인율, 포인트 적립율
     @PositiveOrZero
+    @Max(2000000)
     private long actualPrice;
     @PositiveOrZero
     @Max(100)
@@ -53,18 +53,19 @@ public class ProductUpdateDto {
     private Boolean isGivenPoint;
 
     // 구독 상품 관련
-    @Length(max = 9)
+    @Length(max = 8)
     private String issn;
     private Boolean isSubscriptionAvailable;
 
-    // 판매 여부
-    private Boolean isSale;
-
     // 수량, 출간일, 노출우선순위
     @PositiveOrZero
+    @Max(2000000)
     private long quantity;
     @NotBlank
     private String publishedDate;
+
+    @Min(-100)
+    @Max(100)
     private int preferentialShowRanking;
 
     // 썸네일 파일
@@ -86,10 +87,6 @@ public class ProductUpdateDto {
 
     // 카테고리
     private List<Long> categories;
-
-    // 강제 품절
-    private Boolean isForcedOutOfStock;
-
 
     /**
      * Dto를 바탕으로 Product를 수정하여 반환합니다.
@@ -183,36 +180,5 @@ public class ProductUpdateDto {
                         DateTimeFormatter.ISO_LOCAL_DATE_TIME
                 ))
                 .build();
-    }
-
-    @Override
-    public String toString() {
-        return "ProductUpdateDto{" +
-                "title='" + title + '\'' +
-                ", contents='" + contents + '\'' +
-                ", description='" + description + '\'' +
-                ", authors=" + authors +
-                ", publisherId=" + publisherId +
-                ", actualPrice=" + actualPrice +
-                ", discountRate=" + discountRate +
-                ", isSeparatelyDiscount=" + isSeparatelyDiscount +
-                ", givenPointRate=" + givenPointRate +
-                ", isGivenPoint=" + isGivenPoint +
-                ", issn='" + issn + '\'' +
-                ", isSubscriptionAvailable=" + isSubscriptionAvailable +
-                ", isSale=" + isSale +
-                ", quantity=" + quantity +
-                ", publishedDate='" + publishedDate + '\'' +
-                ", preferentialShowRanking=" + preferentialShowRanking +
-                ", thumbnailFileUrl='" + thumbnailFileUrl + '\'' +
-                ", thumbnailFileUploadDateTime='" + thumbnailFileUploadDateTime + '\'' +
-                ", ebookFileUrl='" + ebookFileUrl + '\'' +
-                ", ebookFileUploadDateTime='" + ebookFileUploadDateTime + '\'' +
-                ", productTypeCode='" + productTypeCode + '\'' +
-                ", productSavingMethodCode='" + productSavingMethodCode + '\'' +
-                ", tags=" + tags +
-                ", categories=" + categories +
-                ", isForcedOutOfStock=" + isForcedOutOfStock +
-                '}';
     }
 }

@@ -21,7 +21,7 @@ public class SearchProductServiceImpl implements SearchProductService {
     private final SearchProductRepository searchProductRepository;
 
     /**
-     *{@inheritDoc}
+     * {@inheritDoc}
      */
     @Override
     public Page<SearchedProductResponseDto> searchProductsByCategoryId(
@@ -31,7 +31,7 @@ public class SearchProductServiceImpl implements SearchProductService {
     }
 
     /**
-     *{@inheritDoc}
+     * {@inheritDoc}
      */
     @Override
     public Page<SearchedProductResponseDto> searchProductsByCategoryName(
@@ -41,7 +41,7 @@ public class SearchProductServiceImpl implements SearchProductService {
     }
 
     /**
-     *{@inheritDoc}
+     * {@inheritDoc}
      */
     @Override
     public Page<SearchedProductResponseDto> searchProductsByProductTitle(
@@ -51,7 +51,7 @@ public class SearchProductServiceImpl implements SearchProductService {
     }
 
     /**
-     *{@inheritDoc}
+     * {@inheritDoc}
      */
     @Override
     public Page<SearchedProductResponseDto> searchProductsByProductContent(
@@ -61,7 +61,7 @@ public class SearchProductServiceImpl implements SearchProductService {
     }
 
     /**
-     *{@inheritDoc}
+     * {@inheritDoc}
      */
     @Override
     public Page<SearchedProductResponseDto> searchProductsByProductISBN(
@@ -71,7 +71,7 @@ public class SearchProductServiceImpl implements SearchProductService {
     }
 
     /**
-     *{@inheritDoc}
+     * {@inheritDoc}
      */
     @Override
     public Page<SearchedProductResponseDto> searchProductsByProductAuthor(
@@ -81,7 +81,7 @@ public class SearchProductServiceImpl implements SearchProductService {
     }
 
     /**
-     *{@inheritDoc}
+     * {@inheritDoc}
      */
     @Override
     public Page<SearchedProductResponseDto> searchProductsByPublisher(
@@ -91,7 +91,7 @@ public class SearchProductServiceImpl implements SearchProductService {
     }
 
     /**
-     *{@inheritDoc}
+     * {@inheritDoc}
      */
     @Override
     public Page<SearchedProductResponseDto> searchProductsByTag(String tag, Pageable pageable) {

@@ -72,8 +72,8 @@ public class ProductCreateDto {
     @NotBlank
     private String publishedDate;
 
-    @Min(-1000)
-    @Max(1000)
+    @Min(-100)
+    @Max(100)
     private int preferentialShowRanking;
 
     // 썸네일 파일
