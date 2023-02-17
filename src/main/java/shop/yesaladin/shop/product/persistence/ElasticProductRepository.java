@@ -152,9 +152,10 @@ public class ElasticProductRepository implements SearchProductRepository {
 
         List<SearchedProductResponseDto> list = result.stream()
                 .map(product -> SearchedProductResponseDto.fromIndex(
-                        product.getContent(),
-                        calcSellingPrice(
-                                product.getContent().getActualPrice(),getRateByProduct(product.getContent())),
+                                product.getContent(),
+                                calcSellingPrice(
+                                        product.getContent().getActualPrice(),
+                                        getRateByProduct(product.getContent())),
                                 getRateByProduct(product.getContent()),
                                 isEbook(product.getContent())
                         )
@@ -182,7 +183,8 @@ public class ElasticProductRepository implements SearchProductRepository {
                 .map(product -> SearchedProductResponseDto.fromIndex(
                                 product.getContent(),
                                 calcSellingPrice(
-                                        product.getContent().getActualPrice(),getRateByProduct(product.getContent())),
+                                        product.getContent().getActualPrice(),
+                                        getRateByProduct(product.getContent())),
                                 getRateByProduct(product.getContent()),
                                 isEbook(product.getContent())
                         )
@@ -207,7 +209,7 @@ public class ElasticProductRepository implements SearchProductRepository {
     ) {
         return NativeQuery.builder()
                 .withFilter(QueryBuilders.bool(v -> v.must(
-                        getTermQueryByString(field, value),
+                        getMatchQuery(field, value),
                         getTermQueryByBoolean(IS_SALE, true),
                         getTermQueryByBoolean(IS_DELETE, false)
                 )))
@@ -225,6 +227,12 @@ public class ElasticProductRepository implements SearchProductRepository {
     private Query getTermQueryByBoolean(String field, boolean value) {
         return NativeQuery.builder()
                 .withQuery(q -> q.term(t -> t.field(field).value(value)))
+                .getQuery();
+    }
+
+    private Query getMatchQuery(String field, String value) {
+        return NativeQuery.builder()
+                .withQuery(q -> q.match(v -> v.query(value).field(field)))
                 .getQuery();
     }
 
