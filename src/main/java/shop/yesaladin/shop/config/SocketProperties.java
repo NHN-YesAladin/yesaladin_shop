@@ -16,4 +16,7 @@ public class SocketProperties {
 
     @Value("${socket.topic-prefix.coupon-give-result}")
     private String couponGiveResultTopicPrefix;
+
+    @Value("${socket.topic-prefix.coupon-use-result}")
+    private String couponUseResultTopicPrefix;
 }
