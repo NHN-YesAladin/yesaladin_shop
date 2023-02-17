@@ -55,7 +55,7 @@ public class QueryCategoryServiceImpl implements QueryCategoryService {
     /**
      * {@inheritDoc}
      */
-    @Cacheable(cacheNames = "parentCategories")
+    @Cacheable(cacheNames = "parentCategories",key = "'parentCategories'")
     @Transactional(readOnly = true)
     @Override
     public List<CategoryResponseDto> findParentCategories() {
