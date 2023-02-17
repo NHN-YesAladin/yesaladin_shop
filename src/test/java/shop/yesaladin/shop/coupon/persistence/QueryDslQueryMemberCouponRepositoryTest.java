@@ -154,7 +154,7 @@ class QueryDslQueryMemberCouponRepositoryTest {
                 .couponCode(couponCode)
                 .couponGroupCode(couponGroupCode)
                 .member(member)
-                .expirationDate(LocalDate.of(2023, 1, 1))
+                .expirationDate(LocalDate.of(2023, 10, 1))
                 .isUsed(false)
                 .build();
     }

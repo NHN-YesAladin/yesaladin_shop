@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.yesaladin.shop.payment.dto.PaymentResponseDto;
-import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
+import shop.yesaladin.shop.product.dto.ProductOrderQueryResponseDto;
 
 /**
  * 주문 상세 조회시 사용하는 dto
@@ -50,7 +50,7 @@ public class OrderDetailsResponseDto {
      */
     public void calculateAmounts() {
         this.productsAmount = this.orderProducts.stream().map(p -> {
-            ProductOrderSheetResponseDto productDto = p.getProductDto();
+            ProductOrderQueryResponseDto productDto = p.getProductDto();
             return (productDto.getActualPrice() * p.getQuantity());
         }).mapToLong(Long::longValue).sum();
         calculateDiscountsAmount();
