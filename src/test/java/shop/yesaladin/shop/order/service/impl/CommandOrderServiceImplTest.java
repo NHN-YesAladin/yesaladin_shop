@@ -159,6 +159,7 @@ class CommandOrderServiceImplTest {
                 commandOrderStatusChangeLogRepository,
                 commandOrderProductRepository,
                 commandPointHistoryService,
+                commandOrderCouponService,
                 commandProductService,
                 queryMemberAddressService,
                 queryMemberCouponService,

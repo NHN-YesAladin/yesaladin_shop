@@ -45,24 +45,28 @@ class QueryDslCategoryRepositoryTest {
     @Test
     void findCategoriesByParentId_pageable() {
         //given
-        int size = 3;
+        int size = 5;
         em.persist(parentCategory);
-        for (int i = 0; i < 10; i++) {
+        int max = 10;
+        for (int i = 0; i < max; i++) {
             childCategory = CategoryDummy.dummyChild((long) i, parentCategory);
             em.persist(childCategory);
+            if (i == 3) {
+                childCategory.disableCategory(childCategory.getName());
+            }
         }
 
-        PageRequest pageRequest = PageRequest.of(1, size);
+        PageRequest pageRequest = PageRequest.of(0, size);
 
         //when
         Page<Category> page = queryCategoryRepository.findCategoriesByParentId(
                 pageRequest,
                 parentCategory.getId()
         );
-        log.info("{}", page.getContent().size());
 
         //then
         assertThat(page.getContent()).hasSize(size);
+        assertThat(page.getTotalElements()).isEqualTo(max - 1); //1개는 disable 시켰기때문에
     }
 
     @Test
