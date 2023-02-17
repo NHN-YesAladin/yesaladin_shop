@@ -1,28 +1,5 @@
 = Payment
 
-=== 주문아이디를 통한 결제 정보 조회
-
-==== curl
-include::{snippets}/get-payment-by-orderId/curl-request.adoc[]
-
-
-==== request
-===== Path Variable
-include::{snippets}/get-payment-by-orderId/path-parameters.adoc[]
-
-===== Example
-include::{snippets}/get-payment-by-orderId/http-request.adoc[]
-
-
-==== response
-===== Body
-include::{snippets}/get-payment-by-orderId/response-fields.adoc[]
-
-===== Example
-include::{snippets}/get-payment-by-orderId/http-response.adoc[]
-
----
-
 === 토스페이먼츠로부터 승인을 받기 위한 요청
 
 ==== curl
