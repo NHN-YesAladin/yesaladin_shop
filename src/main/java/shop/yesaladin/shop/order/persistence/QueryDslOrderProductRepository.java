@@ -10,7 +10,7 @@ import shop.yesaladin.shop.order.domain.model.querydsl.QOrderProduct;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderProductRepository;
 import shop.yesaladin.shop.order.dto.OrderProductResponseDto;
 import shop.yesaladin.shop.product.domain.model.querydsl.QProduct;
-import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
+import shop.yesaladin.shop.product.dto.ProductOrderQueryResponseDto;
 
 /**
  * 주문 상품 데이터 조회를 위한 레포지토리의 QueryDsl 구현체입니다.
@@ -36,7 +36,7 @@ public class QueryDslOrderProductRepository implements QueryOrderProductReposito
         return queryFactory.select(Projections.constructor(
                         OrderProductResponseDto.class,
                         Projections.constructor(
-                                ProductOrderSheetResponseDto.class,
+                                ProductOrderQueryResponseDto.class,
                                 orderProduct.product.id,
                                 orderProduct.product.isbn,
                                 orderProduct.product.title,
