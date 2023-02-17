@@ -141,7 +141,7 @@ class CommandProductControllerTest {
         Mockito.when(service.update(any(), any())).thenReturn(productOnlyIdDto);
 
         // when
-        ResultActions result = mockMvc.perform(post("/v1/products/{productId}", ID)
+        ResultActions result = mockMvc.perform(put("/v1/products/{productId}", ID)
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(productUpdateDto)));
@@ -181,7 +181,7 @@ class CommandProductControllerTest {
                         fieldWithPath("productTypeCode").type(JsonFieldType.STRING).description("상품 유형"),
                         fieldWithPath("productSavingMethodCode").type(JsonFieldType.STRING).description("상품 적립 방식"),
                         fieldWithPath("tags").type(JsonFieldType.ARRAY).description("태그"),
-                        fieldWithPath("categories").type(JsonFieldType.ARRAY).description("카테고라")
+                        fieldWithPath("categories").type(JsonFieldType.ARRAY).description("카테고리")
                 ),
                 responseFields(
                         fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("동작 성공 여부"),
@@ -197,7 +197,7 @@ class CommandProductControllerTest {
     @DisplayName("상품 삭제 성공")
     void deleteProduct() throws Exception {
         // when
-        ResultActions result = mockMvc.perform(post("/v1/products/{productId}/delete", ID).with(csrf()));
+        ResultActions result = mockMvc.perform(post("/v1/products/{productId}", ID).with(csrf()));
 
         // then
         result.andDo(print()).andExpect(status().isOk());

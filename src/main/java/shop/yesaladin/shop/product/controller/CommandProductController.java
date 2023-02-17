@@ -54,7 +54,7 @@ public class CommandProductController {
      * @author 이수정
      * @since 1.0
      */
-    @PostMapping("/{id}")
+    @PutMapping("/{id}")
     public ResponseDto<ProductOnlyIdDto> updateProduct(
             @PathVariable("id") long id,
             @Valid @RequestBody ProductUpdateDto updateDto
@@ -73,7 +73,7 @@ public class CommandProductController {
      * @author 이수정
      * @since 1.0
      */
-    @PostMapping("/{id}/delete")
+    @PostMapping("/{id}")
     public ResponseDto<Void> deleteProduct(@PathVariable("id") long id) {
         commandProductService.softDelete(id);
 
