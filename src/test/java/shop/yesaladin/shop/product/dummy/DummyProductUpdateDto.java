@@ -34,8 +34,7 @@ public class DummyProductUpdateDto {
                 "BESTSELLER",
                 "SELLING_PRICE",
                 tags,
-                categories,
-                false
+                categories
         );
     }
 }
