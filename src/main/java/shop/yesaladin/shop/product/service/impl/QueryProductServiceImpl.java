@@ -511,7 +511,7 @@ public class QueryProductServiceImpl implements QueryProductService {
      * {@inheritDoc}
      */
     @Override
-    @Cacheable(cacheNames = "recentProducts",key = "'recentProducts-pageNum:'+#pageable.pageNumber")
+    @Cacheable(cacheNames = "recentProducts", key = "'recentProducts'")
     @Transactional(readOnly = true)
     public List<ProductRecentResponseDto> findRecentProductByPublishedDate(Pageable pageable) {
         log.info("recentProducts - caching is working soon");

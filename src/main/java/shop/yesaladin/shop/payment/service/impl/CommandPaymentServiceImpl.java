@@ -109,8 +109,6 @@ public class CommandPaymentServiceImpl implements CommandPaymentService {
                 OrderStatusCode.READY
         );
 
-        // 쿠폰 실제 사용하기
-        applicationEventPublisher.publishEvent(new PaymentCommitCouponEventDto(order.getOrderNumber()));
         return getPaymentResponseDto(order, responseDto);
     }
 

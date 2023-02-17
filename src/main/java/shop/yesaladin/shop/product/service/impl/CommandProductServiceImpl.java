@@ -53,7 +53,7 @@ import shop.yesaladin.shop.writing.service.inter.QueryAuthorService;
  * @since 1.0
  */
 @RequiredArgsConstructor
-@CacheEvict(cacheNames = "recentProducts")
+@CacheEvict(cacheNames = "recentProducts", key = "'recentProducts'")
 @Service
 public class CommandProductServiceImpl implements CommandProductService {
 
