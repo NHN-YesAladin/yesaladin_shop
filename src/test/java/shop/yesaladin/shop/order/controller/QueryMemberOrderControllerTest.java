@@ -138,7 +138,7 @@ class QueryMemberOrderControllerTest {
 
         // docs
         resultActions.andDo(document(
-                "get-all-order-in-period",
+                "get-all-order-in-period-by-member",
                 getDocumentRequest(),
                 getDocumentResponse(),
                 requestParameters(

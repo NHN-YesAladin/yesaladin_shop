@@ -14,7 +14,7 @@ include::{snippets}/get-all-order-in-period/request-parameters.adoc[]
 
 ===== Body
 
-include::{snippets}/get-all-order-in-period/request-fields.adoc[]
+include::{snippets}/get-all-order-in-period/request-body.adoc[]
 
 ===== Example
 
@@ -29,3 +29,118 @@ include::{snippets}/get-all-order-in-period/response-fields.adoc[]
 ===== Example
 
 include::{snippets}/get-all-order-in-period/http-response.adoc[]
+
+---
+
+=== 기간 내의 회원 주문 목록 조회
+
+==== curl
+
+include::{snippets}/get-all-order-in-period-by-member/curl-request.adoc[]
+
+==== request
+
+===== Query Param
+
+include::{snippets}/get-all-order-in-period-by-member/request-parameters.adoc[]
+
+===== Body
+
+include::{snippets}/get-all-order-in-period-by-member/request-body.adoc[]
+
+===== Example
+
+include::{snippets}/get-all-order-in-period-by-member/http-request.adoc[]
+
+==== response
+
+===== Body
+
+include::{snippets}/get-all-order-in-period-by-member/response-fields.adoc[]
+
+===== Example
+
+include::{snippets}/get-all-order-in-period-by-member/http-response.adoc[]
+
+---
+
+=== 주문 상태에 따라 회원 주문을 조회
+
+==== curl
+
+include::{snippets}/get-orders-by-status/curl-request.adoc[]
+
+==== request
+
+===== Query Param
+
+include::{snippets}/get-orders-by-status/request-parameters.adoc[]
+
+
+===== Example
+
+include::{snippets}/get-orders-by-status/http-request.adoc[]
+
+==== response
+
+===== Body
+
+include::{snippets}/get-orders-by-status/response-fields.adoc[]
+
+===== Example
+
+include::{snippets}/get-orders-by-status/http-response.adoc[]
+
+---
+
+=== 주문 상태에 따른 주문 개수 조회
+
+==== curl
+
+include::{snippets}/get-order-count-by-status/curl-request.adoc[]
+
+===== Example
+
+include::{snippets}/get-order-count-by-status/http-request.adoc[]
+
+==== response
+
+===== Body
+
+include::{snippets}/get-order-count-by-status/response-fields.adoc[]
+
+===== Example
+
+include::{snippets}/get-order-count-by-status/http-response.adoc[]
+
+=== 주문 상세 조
+
+==== curl
+
+include::{snippets}/get-order-details/curl-request.adoc[]
+
+==== request
+
+===== Path Parameter
+
+include::{snippets}/get-order-details/path-parameters.adoc[]
+
+===== Body
+
+include::{snippets}/get-order-details/request-body.adoc[]
+
+===== Example
+
+include::{snippets}/get-order-details/http-request.adoc[]
+
+==== response
+
+===== Body
+
+include::{snippets}/get-order-details/response-fields-data.adoc[]
+
+===== Example
+
+include::{snippets}/get-order-details/http-response.adoc[]
+
+---
