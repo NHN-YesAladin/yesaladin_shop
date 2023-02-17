@@ -24,7 +24,6 @@ public class DummyProductUpdateDto {
                 true,
                 "",
                 false,
-                true,
                 100,
                 "2000-06-08",
                 3,

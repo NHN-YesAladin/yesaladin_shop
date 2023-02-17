@@ -1,12 +1,5 @@
 package shop.yesaladin.shop.product.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
@@ -23,11 +16,7 @@ import shop.yesaladin.shop.file.service.inter.CommandFileService;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
-import shop.yesaladin.shop.product.domain.repository.CommandProductRepository;
-import shop.yesaladin.shop.product.domain.repository.CommandSubscribeProductRepository;
-import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
-import shop.yesaladin.shop.product.domain.repository.QuerySubscribeProductRepository;
-import shop.yesaladin.shop.product.domain.repository.QueryTotalDiscountRateRepository;
+import shop.yesaladin.shop.product.domain.repository.*;
 import shop.yesaladin.shop.product.dto.ProductCreateDto;
 import shop.yesaladin.shop.product.dto.ProductOnlyIdDto;
 import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
@@ -45,6 +34,16 @@ import shop.yesaladin.shop.writing.domain.model.Author;
 import shop.yesaladin.shop.writing.domain.model.Writing;
 import shop.yesaladin.shop.writing.service.inter.CommandWritingService;
 import shop.yesaladin.shop.writing.service.inter.QueryAuthorService;
+
+import javax.transaction.Transactional;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * 상품 생성을 위한 Service 구현체 입니다.
@@ -219,7 +218,18 @@ public class CommandProductServiceImpl implements CommandProductService {
         // EbookFile
         File ebookFile = product.getEbookFile();
         if (Objects.nonNull(dto.getEbookFileUrl())) {
-            ebookFile = commandFileService.register(dto.changeEbookFile(ebookFile)).toEntity();
+            if (Objects.isNull(ebookFile)) {
+                ebookFile = commandFileService.register(
+                        File.builder()
+                                .url(dto.getEbookFileUrl())
+                                .uploadDateTime(LocalDateTime.parse(
+                                        dto.getEbookFileUploadDateTime(),
+                                        DateTimeFormatter.ISO_LOCAL_DATE_TIME
+                                )).build()
+                ).toEntity();
+            } else {
+                ebookFile = commandFileService.register(dto.changeEbookFile(ebookFile)).toEntity();
+            }
         }
 
         // Writing
