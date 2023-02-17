@@ -53,10 +53,7 @@ import shop.yesaladin.shop.order.domain.model.NonMemberOrder;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
 import shop.yesaladin.shop.order.domain.model.OrderProduct;
 import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
-import shop.yesaladin.shop.order.dto.OrderDetailsResponseDto;
-import shop.yesaladin.shop.order.dto.OrderProductResponseDto;
-import shop.yesaladin.shop.order.dto.OrderResponseDto;
-import shop.yesaladin.shop.order.dto.OrderSummaryDto;
+import shop.yesaladin.shop.order.dto.*;
 import shop.yesaladin.shop.order.persistence.dummy.DummyOrder;
 import shop.yesaladin.shop.order.service.inter.QueryOrderService;
 import shop.yesaladin.shop.payment.domain.model.Payment;
@@ -405,6 +402,16 @@ class QueryOrderControllerTest {
                                 .description("간편결제 즉시 할인 금액").optional()
                 )
         ));
+
+    }
+
+    @WithMockUser
+    @Test
+    @DisplayName("정해진 기간동안의 매출 통계 정보를 조회하여 반환 성공")
+    void getSalesStatistics() {
+        // given
+        SalesStatisticsResponseDto responseDto = new SalesStatisticsResponseDto();
+
 
     }
 }
