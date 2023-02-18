@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
@@ -112,7 +113,7 @@ class CommandRelationServiceImplTest {
 
         // when
         assertThatThrownBy(() -> service.create(MAIN_ID, SUB_ID))
-                .isInstanceOf(RelationAlreadyExistsException.class);
+                .isInstanceOf(ClientException.class);
     }
 
     @Test
