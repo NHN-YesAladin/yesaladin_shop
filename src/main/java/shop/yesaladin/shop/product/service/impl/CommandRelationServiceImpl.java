@@ -40,7 +40,10 @@ public class CommandRelationServiceImpl implements CommandRelationService {
         boolean isExistsRelationSub = isExistsRelation(productSubId, productMainId);
 
         if (isExistsRelationMain && isExistsRelationSub) {
-            throw new RelationAlreadyExistsException(productMainId, productSubId);
+            throw new ClientException(
+                    ErrorCode.PRODUCT_RELATION_ALREADY_EXIST,
+                    "Relation already exists => mainId : " + productMainId + ", subId : " + productSubId
+            );
         }
 
         Product productMain = queryProductRepository.findProductById(productMainId)
