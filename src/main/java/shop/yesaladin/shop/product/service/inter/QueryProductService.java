@@ -19,6 +19,8 @@ import java.util.Map;
  */
 public interface QueryProductService {
 
+
+
     /**
      * ISBN이 isbn인 상품을 찾아 반환합니다.
      *

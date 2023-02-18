@@ -32,6 +32,7 @@ import shop.yesaladin.shop.payment.domain.model.PaymentCode;
 import shop.yesaladin.shop.payment.dto.PaymentResponseDto;
 import shop.yesaladin.shop.payment.service.inter.QueryPaymentService;
 import shop.yesaladin.shop.point.service.inter.QueryPointHistoryService;
+import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
 import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
 import shop.yesaladin.shop.product.service.inter.QueryProductService;
 
@@ -420,6 +421,34 @@ public class QueryOrderServiceImpl implements QueryOrderService {
                 .totalDataCount(totalDataCount)
                 .totalPage((long) Math.ceil((double) totalDataCount / pageable.getPageSize()))
                 .build();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public List<BestsellerResponseDto> getBestseller() {
+        LocalDate now = LocalDate.now();
+        List<Long> bestseller = myBatisSalesStatisticsMapper.getBestseller(
+                now.minusYears(1).toString(),
+                now.toString()
+        );
+
+        return bestseller.stream()
+                .map(id -> {
+                    // TODO: 베스트셀러용 조회 Product Service 만들기!!
+                    ProductDetailResponseDto detailResponseDto = queryProductService.findDetailProductById(id);
+
+                    return new BestsellerResponseDto(
+                            id,
+                            detailResponseDto.getTitle(),
+                            detailResponseDto.getThumbnailFileUrl(),
+                            detailResponseDto.getAuthors(),
+                            detailResponseDto.getPublisher(),
+                            detailResponseDto.getSellingPrice()
+                    );
+                }).collect(Collectors.toList());
     }
 
     /**
