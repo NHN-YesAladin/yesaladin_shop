@@ -50,6 +50,7 @@ import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
 import shop.yesaladin.shop.product.dto.ProductOnlyTitleDto;
 import shop.yesaladin.shop.product.dto.ProductRecentResponseDto;
 import shop.yesaladin.shop.product.dto.ProductsResponseDto;
+import shop.yesaladin.shop.product.dto.RecentViewProductRequestDto;
 import shop.yesaladin.shop.product.dto.RelationsResponseDto;
 import shop.yesaladin.shop.product.dto.ViewCartDto;
 import shop.yesaladin.shop.product.dummy.DummyProductDetailResponseDto;
@@ -750,13 +751,17 @@ class QueryProductControllerTest {
                 .sellingPrice(10000L)
                 .author(List.of("author"))
                 .build();
-        Mockito.when(service.findRecentViewProductById(List.of(1L), PageRequest.of(0, 10)))
+        Mockito.when(service.findRecentViewProductById(
+                        List.of(1L),
+                        List.of(1L),
+                        PageRequest.of(0, 10)
+                ))
                 .thenReturn(new PageImpl<>(
                         List.of(productRecentResponseDto),
                         PageRequest.of(0, 1),
                         1L
                 ));
-        String body = objectMapper.writeValueAsString(List.of(1L));
+        String body = objectMapper.writeValueAsString(new RecentViewProductRequestDto(List.of(1L), List.of(1L)));
 
         //when
         ResultActions result = mockMvc.perform(post("/v1/products/recentview/product").with(csrf())
