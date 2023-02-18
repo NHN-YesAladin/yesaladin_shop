@@ -250,7 +250,7 @@ public class QueryOrderServiceImpl implements QueryOrderService {
             String loginId, OrderStatusCode code, Pageable pageable
     ) {
         checkValidLoginId(loginId);
-        return queryOrderRepository.findSuccessStatusResponsesByLoginIdAndStatus(
+        return queryOrderRepository.findOrderStatusResponsesByLoginIdAndStatus(
                 loginId,
                 code,
                 pageable

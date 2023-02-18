@@ -132,7 +132,7 @@ public interface QueryOrderRepository {
      * @author 배수한
      * @since 1.0
      */
-    Page<OrderStatusResponseDto> findSuccessStatusResponsesByLoginIdAndStatus(
+    Page<OrderStatusResponseDto> findOrderStatusResponsesByLoginIdAndStatus(
             String loginId,
             OrderStatusCode code,
             Pageable pageable

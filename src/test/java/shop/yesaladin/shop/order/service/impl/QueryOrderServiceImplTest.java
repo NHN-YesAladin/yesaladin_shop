@@ -817,7 +817,7 @@ class QueryOrderServiceImplTest {
             responseList.add(responseDto);
         }
         PageRequest pageRequest = PageRequest.of(1, 3);
-        Mockito.when(repository.findSuccessStatusResponsesByLoginIdAndStatus(any(), any(), any()))
+        Mockito.when(repository.findOrderStatusResponsesByLoginIdAndStatus(any(), any(), any()))
                 .thenReturn(new PageImpl<>(responseList, pageRequest, responseList.size()));
 
         Mockito.when(queryMemberService.existsLoginId(any())).thenReturn(true);
@@ -840,7 +840,7 @@ class QueryOrderServiceImplTest {
         assertThat(responses.getNumber()).isEqualTo(pageRequest.getPageNumber());
 
         Mockito.verify(repository, Mockito.times(1))
-                .findSuccessStatusResponsesByLoginIdAndStatus(any(), any(), any());
+                .findOrderStatusResponsesByLoginIdAndStatus(any(), any(), any());
         Mockito.verify(queryMemberService, Mockito.times(1)).existsLoginId(any());
     }
 
@@ -865,7 +865,7 @@ class QueryOrderServiceImplTest {
             responseList.add(responseDto);
         }
         PageRequest pageRequest = PageRequest.of(0, 5);
-        Mockito.when(repository.findSuccessStatusResponsesByLoginIdAndStatus(any(), any(), any()))
+        Mockito.when(repository.findOrderStatusResponsesByLoginIdAndStatus(any(), any(), any()))
                 .thenReturn(new PageImpl<>(responseList, pageRequest, responseList.size()));
 
         Mockito.when(queryMemberService.existsLoginId(any())).thenReturn(false);
@@ -881,7 +881,7 @@ class QueryOrderServiceImplTest {
                 .hasMessageContaining("Member not found with loginId");
 
         Mockito.verify(repository, Mockito.never())
-                .findSuccessStatusResponsesByLoginIdAndStatus(any(), any(), any());
+                .findOrderStatusResponsesByLoginIdAndStatus(any(), any(), any());
         Mockito.verify(queryMemberService, Mockito.times(1)).existsLoginId(any());
     }
 
