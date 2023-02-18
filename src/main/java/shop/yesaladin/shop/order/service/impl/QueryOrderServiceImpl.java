@@ -1,5 +1,15 @@
 package shop.yesaladin.shop.order.service.impl;
 
+import java.math.BigDecimal;
+import java.time.Clock;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -19,11 +29,26 @@ import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
 import shop.yesaladin.shop.member.dto.MemberOrderSheetResponseDto;
 import shop.yesaladin.shop.member.service.inter.QueryMemberAddressService;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
-import shop.yesaladin.shop.order.domain.model.*;
+import shop.yesaladin.shop.order.domain.model.MemberOrder;
+import shop.yesaladin.shop.order.domain.model.NonMemberOrder;
+import shop.yesaladin.shop.order.domain.model.Order;
+import shop.yesaladin.shop.order.domain.model.OrderCode;
+import shop.yesaladin.shop.order.domain.model.OrderStatusChangeLog;
+import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
+import shop.yesaladin.shop.order.domain.model.Subscribe;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderProductRepository;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderStatusChangeLogRepository;
-import shop.yesaladin.shop.order.dto.*;
+import shop.yesaladin.shop.order.dto.OrderDetailsResponseDto;
+import shop.yesaladin.shop.order.dto.OrderPaymentResponseDto;
+import shop.yesaladin.shop.order.dto.OrderResponseDto;
+import shop.yesaladin.shop.order.dto.OrderSheetRequestDto;
+import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
+import shop.yesaladin.shop.order.dto.OrderStatusResponseDto;
+import shop.yesaladin.shop.order.dto.OrderSummaryDto;
+import shop.yesaladin.shop.order.dto.OrderSummaryResponseDto;
+import shop.yesaladin.shop.order.dto.SalesStatisticsMyBatisResponseDto;
+import shop.yesaladin.shop.order.dto.SalesStatisticsResponseDto;
 import shop.yesaladin.shop.order.exception.OrderNotFoundException;
 import shop.yesaladin.shop.order.persistence.MyBatisSalesStatisticsMapper;
 import shop.yesaladin.shop.order.service.inter.QueryOrderService;
@@ -34,13 +59,6 @@ import shop.yesaladin.shop.payment.service.inter.QueryPaymentService;
 import shop.yesaladin.shop.point.service.inter.QueryPointHistoryService;
 import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
 import shop.yesaladin.shop.product.service.inter.QueryProductService;
-
-import java.math.BigDecimal;
-import java.time.Clock;
-import java.time.LocalDate;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * 주문 데이터 조회 서비스의 구현체
@@ -398,21 +416,39 @@ public class QueryOrderServiceImpl implements QueryOrderService {
      */
     @Transactional(readOnly = true)
     @Override
-    public PaginatedResponseDto<SalesStatisticsResponseDto> getSalesStatistics(String start, String end, Pageable pageable) {
-        List<SalesStatisticsMyBatisResponseDto> salesStatistics = myBatisSalesStatisticsMapper.getSalesStatistics(start, end, pageable.getPageSize(), pageable.getOffset());
+    public PaginatedResponseDto<SalesStatisticsResponseDto> getSalesStatistics(
+            String start,
+            String end,
+            Pageable pageable
+    ) {
+        List<SalesStatisticsMyBatisResponseDto> salesStatistics = myBatisSalesStatisticsMapper.getSalesStatistics(
+                start,
+                end,
+                pageable.getPageSize(),
+                pageable.getOffset()
+        );
         List<SalesStatisticsResponseDto> dataList = salesStatistics.stream().map(s ->
                 new SalesStatisticsResponseDto(
                         s.getId(),
                         s.getTitle(),
                         s.getNumberOfOrders(),
                         s.getTotalQuantity(),
-                        BigDecimal.valueOf(calcSellingPrice(s.getActualPrice(), s.getDiscountRate())).multiply(BigDecimal.valueOf(s.getTotalQuantity())).toString(),
+                        BigDecimal.valueOf(calcSellingPrice(
+                                s.getActualPrice(),
+                                s.getDiscountRate()
+                        )).multiply(BigDecimal.valueOf(s.getTotalQuantity())).toString(),
                         s.getNumberOfOrderCancellations(),
                         s.getTotalCancelQuantity(),
-                        BigDecimal.valueOf(calcSellingPrice(s.getActualPrice(), s.getDiscountRate())).multiply(BigDecimal.valueOf(s.getTotalCancelQuantity())).toString()
+                        BigDecimal.valueOf(calcSellingPrice(
+                                s.getActualPrice(),
+                                s.getDiscountRate()
+                        )).multiply(BigDecimal.valueOf(s.getTotalCancelQuantity())).toString()
                 )).collect(Collectors.toList());
 
-        Integer totalDataCount = myBatisSalesStatisticsMapper.getSalesStatisticsTotalCount(start, end);
+        Integer totalDataCount = myBatisSalesStatisticsMapper.getSalesStatisticsTotalCount(
+                start,
+                end
+        );
 
         return PaginatedResponseDto.<SalesStatisticsResponseDto>builder()
                 .currentPage(pageable.getPageNumber())

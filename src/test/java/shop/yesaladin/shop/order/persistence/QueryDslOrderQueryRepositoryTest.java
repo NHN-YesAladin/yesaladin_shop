@@ -534,7 +534,7 @@ class QueryDslOrderQueryRepositoryTest {
         // then
         Assertions.assertThat(responses).isEmpty();
     }
-    
+
     @Test
     @DisplayName("주문 상태 조회 데이터 없음 (실패아님) - CANCEL이 제외이므로")
     void findOrderStatusResponsesByLoginIdAndStatus_CANCEL() throws Exception {
@@ -548,14 +548,14 @@ class QueryDslOrderQueryRepositoryTest {
             );
             entityManager.persist(log);
         }
-        
+
         // when
         Page<OrderStatusResponseDto> responses = queryRepository.findOrderStatusResponsesByLoginIdAndStatus(
                 member.getLoginId(),
                 OrderStatusCode.COMPLETE,
                 PageRequest.of(0, 300)
         );
-        
+
         // then
         Assertions.assertThat(responses).hasSize(2); //구독 주문만 존재
     }
