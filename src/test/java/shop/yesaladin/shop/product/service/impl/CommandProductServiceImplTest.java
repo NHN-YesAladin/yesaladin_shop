@@ -1,16 +1,5 @@
 package shop.yesaladin.shop.product.service.impl;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,20 +15,11 @@ import shop.yesaladin.shop.file.service.inter.CommandFileService;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
-import shop.yesaladin.shop.product.domain.repository.CommandProductRepository;
-import shop.yesaladin.shop.product.domain.repository.CommandSubscribeProductRepository;
-import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
-import shop.yesaladin.shop.product.domain.repository.QuerySubscribeProductRepository;
-import shop.yesaladin.shop.product.domain.repository.QueryTotalDiscountRateRepository;
+import shop.yesaladin.shop.product.domain.repository.*;
 import shop.yesaladin.shop.product.dto.ProductCreateDto;
 import shop.yesaladin.shop.product.dto.ProductOnlyIdDto;
 import shop.yesaladin.shop.product.dto.ProductUpdateDto;
-import shop.yesaladin.shop.product.dummy.DummyFile;
-import shop.yesaladin.shop.product.dummy.DummyProduct;
-import shop.yesaladin.shop.product.dummy.DummyProductCreateDto;
-import shop.yesaladin.shop.product.dummy.DummyProductUpdateDto;
-import shop.yesaladin.shop.product.dummy.DummySubscribeProduct;
-import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
+import shop.yesaladin.shop.product.dummy.*;
 import shop.yesaladin.shop.product.service.inter.CommandProductService;
 import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
 import shop.yesaladin.shop.publish.service.inter.CommandPublishService;
@@ -50,6 +30,13 @@ import shop.yesaladin.shop.tag.service.inter.QueryTagService;
 import shop.yesaladin.shop.writing.dto.AuthorResponseDto;
 import shop.yesaladin.shop.writing.service.inter.CommandWritingService;
 import shop.yesaladin.shop.writing.service.inter.QueryAuthorService;
+
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 class CommandProductServiceImplTest {
 
