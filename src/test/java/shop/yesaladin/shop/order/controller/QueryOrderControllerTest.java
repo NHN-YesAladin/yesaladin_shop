@@ -2,6 +2,9 @@ package shop.yesaladin.shop.order.controller;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.beneathPath;
@@ -47,6 +50,7 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.order.domain.model.NonMemberOrder;
@@ -66,6 +70,7 @@ import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
 import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
+import shop.yesaladin.shop.product.dto.ProductsResponseDto;
 import shop.yesaladin.shop.product.dummy.DummyFile;
 import shop.yesaladin.shop.product.dummy.DummyProduct;
 import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
@@ -114,7 +119,7 @@ class QueryOrderControllerTest {
         ResultActions resultActions = result.andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
 
-        Mockito.verify(queryOrderService, Mockito.times(1))
+        verify(queryOrderService, times(1))
                 .getAllOrderListInPeriod(dtoCaptor.capture(), pageableCaptor.capture());
         PeriodQueryRequestDto actualDto = dtoCaptor.getValue();
         Pageable actualPageable = pageableCaptor.getValue();
@@ -408,10 +413,88 @@ class QueryOrderControllerTest {
     @WithMockUser
     @Test
     @DisplayName("정해진 기간동안의 매출 통계 정보를 조회하여 반환 성공")
-    void getSalesStatistics() {
+    void getSalesStatistics() throws Exception {
         // given
-        SalesStatisticsResponseDto responseDto = new SalesStatisticsResponseDto();
+        List<SalesStatisticsResponseDto> dataList = new ArrayList<>();
+        for (int i = 1; i <= 10; i++) {
+            dataList.add(
+                    new SalesStatisticsResponseDto(
+                            i,
+                            "title" + i,
+                            i,
+                            i,
+                            i + "000",
+                            i,
+                            i,
+                            i + "000"
+                    )
+            );
+        }
 
+        PaginatedResponseDto<SalesStatisticsResponseDto> paginated = PaginatedResponseDto.<SalesStatisticsResponseDto>builder()
+                .totalPage(2)
+                .currentPage(0)
+                .totalDataCount(10)
+                .dataList(dataList)
+                .build();
+
+        Mockito.when(queryOrderService.getSalesStatistics(anyString(), anyString(), any()))
+                .thenReturn(paginated);
+
+        // when
+        ResultActions result = mockMvc.perform(get("/v1/orders/statistics")
+                        .param("start", "2023-02-18")
+                        .param("end", "2023-02-18")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+
+        verify(queryOrderService, times(1)).getSalesStatistics(anyString(), anyString(), any());
+
+
+        // docs
+        result.andDo(document(
+                "get-sales-statistics",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                requestParameters(
+                        parameterWithName("start").description("시작일"),
+                        parameterWithName("end").description("종료일")
+                ),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER)
+                                .description("전체 페이지"),
+                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER)
+                                .description("현재 페이지"),
+                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER)
+                                .description("데이터 개수"),
+                        fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER)
+                                .description("상품 아이디"),
+                        fieldWithPath("data.dataList.[].title").type(JsonFieldType.STRING)
+                                .description("제목"),
+                        fieldWithPath("data.dataList.[].numberOfOrders").type(JsonFieldType.NUMBER)
+                                .description("주문 건수"),
+                        fieldWithPath("data.dataList.[].totalQuantity").type(JsonFieldType.NUMBER)
+                                .description("주문 개수"),
+                        fieldWithPath("data.dataList.[].netSales").type(JsonFieldType.STRING)
+                                .description("순매출액"),
+                        fieldWithPath("data.dataList.[].numberOfOrderCancellations").type(JsonFieldType.NUMBER)
+                                .description("주문 취소 건수"),
+                        fieldWithPath("data.dataList.[].totalCancelQuantity").type(JsonFieldType.NUMBER)
+                                .description("주문 취소 개수"),
+                        fieldWithPath("data.dataList.[].cancelSales").type(JsonFieldType.STRING)
+                                .description("주문 취소 금액"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
+                                .optional()
+                )
+        ));
 
     }
 }

@@ -1,0 +1,60 @@
+= Tag
+
+=== 관리자용 태그 전체 조회
+
+==== curl
+include::{snippets}/find-all-for-manager-tag/curl-request.adoc[]
+
+==== request
+
+===== Example
+include::{snippets}/find-all-for-manager-tag/http-request.adoc[]
+
+===== response
+
+===== Body
+
+include::{snippets}/find-all-for-manager-tag/response-fields.adoc[]
+
+===== Example
+include::{snippets}/find-all-for-manager-tag/response-body.adoc[]
+
+
+=== 태그 등록
+
+==== curl
+include::{snippets}/register-tag/curl-request.adoc[]
+
+==== request
+
+===== Example
+include::{snippets}/register-tag/http-request.adoc[]
+
+===== response
+
+===== Body
+
+include::{snippets}/register-tag/response-fields.adoc[]
+
+===== Example
+include::{snippets}/register-tag/response-body.adoc[]
+
+
+=== 태그 수정
+
+==== curl
+include::{snippets}/modify-tag/curl-request.adoc[]
+
+==== request
+
+===== Example
+include::{snippets}/modify-tag/http-request.adoc[]
+
+===== response
+
+===== Body
+
+include::{snippets}/modify-tag/response-fields.adoc[]
+
+===== Example
+include::{snippets}/modify-tag/response-body.adoc[]
