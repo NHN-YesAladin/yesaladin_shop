@@ -15,6 +15,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RecentViewProductRequestDto {
-    List<Long> totalIds;
-    List<Long> pageIds;
+    private List<Long> totalIds;
+    private List<Long> pageIds;
 }
