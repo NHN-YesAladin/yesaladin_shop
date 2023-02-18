@@ -154,11 +154,12 @@ public interface QueryProductService {
     /**
      * 최근 본 상품 메소드
      *
-     * @param ids      본 상품들의 id 리스트
+     * @param totalIds 본 상품들의 id 리스트
+     * @param pageIds 페이지에 보여줄 상품들
      * @param pageable 페이지 정보
      * @return 최근 본 상품 리스트
      * @author 김선홍
      * @since 1, 0
      */
-    Page<ProductRecentResponseDto> findRecentViewProductById(List<Long> ids, Pageable pageable);
+    Page<ProductRecentResponseDto> findRecentViewProductById(List<Long> totalIds, List<Long> pageIds, Pageable pageable);
 }

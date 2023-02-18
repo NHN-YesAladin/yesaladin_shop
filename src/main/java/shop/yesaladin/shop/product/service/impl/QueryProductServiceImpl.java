@@ -516,11 +516,13 @@ public class QueryProductServiceImpl implements QueryProductService {
     @Override
     @Transactional(readOnly = true)
     public Page<ProductRecentResponseDto> findRecentViewProductById(
-            List<Long> ids,
+            List<Long> totalIds,
+            List<Long> pageIds,
             Pageable pageable
     ) {
         return createProductRecentResponseDto(queryProductRepository.findRecentViewProductById(
-                ids,
+                totalIds,
+                pageIds,
                 pageable
         ), pageable);
     }
