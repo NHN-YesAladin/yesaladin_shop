@@ -32,8 +32,8 @@ import shop.yesaladin.shop.payment.domain.model.PaymentCode;
 import shop.yesaladin.shop.payment.dto.PaymentResponseDto;
 import shop.yesaladin.shop.payment.service.inter.QueryPaymentService;
 import shop.yesaladin.shop.point.service.inter.QueryPointHistoryService;
-import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
 import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
+import shop.yesaladin.shop.product.dto.ProductResponseDto;
 import shop.yesaladin.shop.product.service.inter.QueryProductService;
 
 import java.math.BigDecimal;
@@ -437,16 +437,15 @@ public class QueryOrderServiceImpl implements QueryOrderService {
 
         return bestseller.stream()
                 .map(id -> {
-                    // TODO: 베스트셀러용 조회 Product Service 만들기!!
-                    ProductDetailResponseDto detailResponseDto = queryProductService.findDetailProductById(id);
+                    ProductResponseDto product = queryProductService.findProductById(id);
 
                     return new BestsellerResponseDto(
                             id,
-                            detailResponseDto.getTitle(),
-                            detailResponseDto.getThumbnailFileUrl(),
-                            detailResponseDto.getAuthors(),
-                            detailResponseDto.getPublisher(),
-                            detailResponseDto.getSellingPrice()
+                            product.getTitle(),
+                            product.getThumbnailFileUrl(),
+                            product.getAuthors(),
+                            product.getPublisher(),
+                            product.getSellingPrice()
                     );
                 }).collect(Collectors.toList());
     }

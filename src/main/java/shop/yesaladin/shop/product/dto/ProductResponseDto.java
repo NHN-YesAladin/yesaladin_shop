@@ -1,4 +1,5 @@
-package shop.yesaladin.shop.order.dto;
+package shop.yesaladin.shop.product.dto;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +10,7 @@ import shop.yesaladin.shop.writing.dto.AuthorsResponseDto;
 import java.util.List;
 
 /**
- * 베스트셀러 정보를 전달하기 위한 Dto 입니다.
+ * 간단한 상품 정보를 응답하기 위한 Dto 입니다.
  *
  * @author 이수정
  * @since 1.0
@@ -17,18 +18,17 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class BestsellerResponseDto {
+public class ProductResponseDto {
 
-    // 상품 ID
-    private long id;
-    // 상품 제목
+    // 기본 정보
+    private Long id;
     private String title;
-    // url
     private String thumbnailFileUrl;
-    // 저자
+
+    // 저자, 출판사
     private List<AuthorsResponseDto> authors;
-    // 출판사
     private PublisherResponseDto publisher;
-    // 판매가
+
+    // 금액
     private long sellingPrice;
 }

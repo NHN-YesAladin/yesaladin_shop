@@ -74,6 +74,8 @@ import shop.yesaladin.shop.product.dto.ProductsResponseDto;
 import shop.yesaladin.shop.product.dummy.DummyFile;
 import shop.yesaladin.shop.product.dummy.DummyProduct;
 import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
+import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
+import shop.yesaladin.shop.writing.dto.AuthorsResponseDto;
 
 @AutoConfigureRestDocs
 @WebMvcTest(QueryOrderController.class)
@@ -450,7 +452,9 @@ class QueryOrderControllerTest {
         // then
         result.andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())));
 
         verify(queryOrderService, times(1)).getSalesStatistics(anyString(), anyString(), any());
 
@@ -465,34 +469,93 @@ class QueryOrderControllerTest {
                         parameterWithName("end").description("종료일")
                 ),
                 responseFields(
-                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
-                                .description("동작 성공 여부"),
-                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
-                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER)
+                        beneathPath("data").withSubsectionId("data"),
+                        fieldWithPath("totalPage").type(JsonFieldType.NUMBER)
                                 .description("전체 페이지"),
-                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER)
+                        fieldWithPath("currentPage").type(JsonFieldType.NUMBER)
                                 .description("현재 페이지"),
-                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER)
+                        fieldWithPath("totalDataCount").type(JsonFieldType.NUMBER)
                                 .description("데이터 개수"),
-                        fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER)
+                        fieldWithPath("dataList.[].id").type(JsonFieldType.NUMBER)
                                 .description("상품 아이디"),
-                        fieldWithPath("data.dataList.[].title").type(JsonFieldType.STRING)
+                        fieldWithPath("dataList.[].title").type(JsonFieldType.STRING)
                                 .description("제목"),
-                        fieldWithPath("data.dataList.[].numberOfOrders").type(JsonFieldType.NUMBER)
+                        fieldWithPath("dataList.[].numberOfOrders").type(JsonFieldType.NUMBER)
                                 .description("주문 건수"),
-                        fieldWithPath("data.dataList.[].totalQuantity").type(JsonFieldType.NUMBER)
+                        fieldWithPath("dataList.[].totalQuantity").type(JsonFieldType.NUMBER)
                                 .description("주문 개수"),
-                        fieldWithPath("data.dataList.[].netSales").type(JsonFieldType.STRING)
+                        fieldWithPath("dataList.[].netSales").type(JsonFieldType.STRING)
                                 .description("순매출액"),
-                        fieldWithPath("data.dataList.[].numberOfOrderCancellations").type(JsonFieldType.NUMBER)
+                        fieldWithPath("dataList.[].numberOfOrderCancellations").type(JsonFieldType.NUMBER)
                                 .description("주문 취소 건수"),
-                        fieldWithPath("data.dataList.[].totalCancelQuantity").type(JsonFieldType.NUMBER)
+                        fieldWithPath("dataList.[].totalCancelQuantity").type(JsonFieldType.NUMBER)
                                 .description("주문 취소 개수"),
-                        fieldWithPath("data.dataList.[].cancelSales").type(JsonFieldType.STRING)
-                                .description("주문 취소 금액"),
-                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
-                                .description("에러 메세지")
-                                .optional()
+                        fieldWithPath("dataList.[].cancelSales").type(JsonFieldType.STRING)
+                                .description("주문 취소 금액")
+                )
+        ));
+
+    }
+
+    @WithMockUser
+    @Test
+    @DisplayName("지난 1년간의 베스트셀러를 조회하여 반환 성공")
+    void getBestseller() throws Exception {
+        // given
+        List<BestsellerResponseDto> dataList = new ArrayList<>();
+        for (long i = 1; i <= 10; i++) {
+            dataList.add(
+                    new BestsellerResponseDto(
+                            i,
+                            "title" + i,
+                            "url" + i,
+                            List.of(new AuthorsResponseDto(i, "author" + i, null)),
+                            new PublisherResponseDto(i, "publisher" + i),
+                            i * 1000
+                    )
+            );
+        }
+
+        Mockito.when(queryOrderService.getBestseller()).thenReturn(dataList);
+
+        // when
+        ResultActions result = mockMvc.perform(get("/v1/bestseller")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())));
+
+        verify(queryOrderService, times(1)).getBestseller();
+
+        // docs
+        result.andDo(document(
+                "get-bestseller",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                responseFields(
+                        beneathPath("data").withSubsectionId("data"),
+                        fieldWithPath("id").type(JsonFieldType.NUMBER)
+                                .description("상품 아이디"),
+                        fieldWithPath("title").type(JsonFieldType.STRING)
+                                .description("상품 제목"),
+                        fieldWithPath("thumbnailFileUrl").type(JsonFieldType.STRING)
+                                .description("상품 썸네일 URL"),
+                        fieldWithPath("authors.[].id").type(JsonFieldType.NUMBER)
+                                .description("저자 아이디"),
+                        fieldWithPath("authors.[].name").type(JsonFieldType.STRING)
+                                .description("저자 이름"),
+                        fieldWithPath("authors.[].loginId").type(JsonFieldType.STRING)
+                                .description("저자 로그인 아이디").optional(),
+                        fieldWithPath("publisher.id").type(JsonFieldType.NUMBER)
+                                .description("출판사 아이디"),
+                        fieldWithPath("publisher.name").type(JsonFieldType.STRING)
+                                .description("출판사 이름"),
+                        fieldWithPath("sellingPrice").type(JsonFieldType.NUMBER)
+                                .description("상품 판매가")
                 )
         ));
 

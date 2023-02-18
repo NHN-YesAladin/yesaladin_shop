@@ -154,8 +154,8 @@ public interface QueryOrderService {
     /**
      * 기간에 따른 매출 통계 정보를 조회하여 반환합니다.
      *
-     * @param start 시작일
-     * @param end   종료일
+     * @param start    시작일
+     * @param end      종료일
      * @param pageable 페이징 객체
      * @return 매출 통계 정보
      * @author 이수정
