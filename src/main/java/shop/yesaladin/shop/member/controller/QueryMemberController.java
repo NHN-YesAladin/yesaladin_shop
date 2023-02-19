@@ -180,6 +180,30 @@ public class QueryMemberController {
     }
 
     /**
+     * 기본 화면을 위한 회원 조회 메서드
+     *
+     * @param pageable 페이지 정보
+     * @return 조회된 회원 정보
+     * @author 김선홍
+     * @since 1.0
+     */
+    @GetMapping("/manage")
+    public ResponseDto<PaginatedResponseDto<MemberManagerResponseDto>> mangeMemberInfo(@PageableDefault Pageable pageable) {
+        Page<MemberManagerResponseDto> members = queryMemberService.findMemberManages(pageable);
+
+        return ResponseDto.<PaginatedResponseDto<MemberManagerResponseDto>>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(PaginatedResponseDto.<MemberManagerResponseDto>builder()
+                        .dataList(members.toList())
+                        .totalPage(members.getTotalPages())
+                        .currentPage(members.getNumber())
+                        .totalDataCount(members.getTotalElements())
+                        .build())
+                .build();
+    }
+
+    /**
      * 관리자가 회원의 loginId 를 이용해 회원의 정보를 조회
      *
      * @param loginId  조회할 회원의 loginId

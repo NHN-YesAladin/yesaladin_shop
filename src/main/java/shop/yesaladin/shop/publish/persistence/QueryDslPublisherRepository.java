@@ -4,6 +4,7 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
@@ -69,6 +70,24 @@ public class QueryDslPublisherRepository implements QueryPublisherRepository {
         JPAQuery<Long> countQuery = queryFactory.select(publisher.count()).from(publisher);
 
         return PageableExecutionUtils.getPage(publishers, pageable, countQuery::fetchFirst);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Page<Publisher> findByNameForManager(String name, Pageable pageable) {
+        QPublisher publisher = QPublisher.publisher;
+
+        List<Publisher> publishers = queryFactory.select(publisher)
+                .from(publisher)
+                .where(publisher.name.contains(name))
+                .fetch();
+        Long count  = queryFactory.select(publisher.count())
+                .from(publisher)
+                .where(publisher.name.contains(name))
+                .fetchFirst();
+        return new PageImpl<>(publishers, pageable, count);
     }
 
     /**

@@ -31,4 +31,15 @@ public interface QueryPublisherService {
      * @since 1.0
      */
     PaginatedResponseDto<PublisherResponseDto> findAllForManager(Pageable pageable);
+
+    /**
+     * 출판사를 이름으로 검색하는 메서드
+     *
+     * @param name 검색할 이름
+     * @param pageable 페이지 정보
+     * @return 검색 결과
+     * @author 김선홍
+     * @since 1.0
+     */
+    PaginatedResponseDto<PublisherResponseDto> findByNameForManager(String name, Pageable pageable);
 }
