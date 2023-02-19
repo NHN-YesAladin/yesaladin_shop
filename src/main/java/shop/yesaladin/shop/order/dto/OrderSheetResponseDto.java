@@ -1,11 +1,12 @@
 package shop.yesaladin.shop.order.dto;
 
-import java.util.List;
 import lombok.Getter;
 import shop.yesaladin.shop.coupon.dto.MemberCouponSummaryDto;
 import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
 import shop.yesaladin.shop.member.dto.MemberOrderSheetResponseDto;
 import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
+
+import java.util.List;
 
 /**
  * 회원 주문서에 필요한 데이터를 반환하는 dto 클래스입니다.

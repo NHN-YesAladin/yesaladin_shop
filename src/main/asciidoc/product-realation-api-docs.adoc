@@ -1,0 +1,127 @@
+= Product Relation
+
+
+=== 일반 사용자용 상품의 연관관계 전체 조회
+
+==== curl
+include::{snippets}/find-all-relation/curl-request.adoc[]
+
+==== request
+
+===== Example
+include::{snippets}/find-all-relation/http-request.adoc[]
+
+===== response
+
+===== Body
+
+include::{snippets}/find-all-relation/response-fields.adoc[]
+
+===== Example
+include::{snippets}/find-all-relation/response-body.adoc[]
+
+
+=== 관리자용 상품의 연관관계 전체 조회
+
+==== curl
+include::{snippets}/find-all-for-manager-relation/curl-request.adoc[]
+
+==== request
+
+===== Example
+include::{snippets}/find-all-for-manager-relation/http-request.adoc[]
+
+===== response
+
+===== Body
+
+include::{snippets}/find-all-for-manager-relation/response-fields.adoc[]
+
+===== Example
+include::{snippets}/find-all-for-manager-relation/response-body.adoc[]
+
+
+== 연관관계 등록
+
+==== curl
+include::{snippets}/register-relation/curl-request.adoc[]
+
+==== request
+
+===== Example
+include::{snippets}/register-relation/http-request.adoc[]
+
+===== response
+
+===== Body
+
+include::{snippets}/register-relation/response-fields.adoc[]
+
+===== Example
+include::{snippets}/register-relation/response-body.adoc[]
+
+
+=== 스스로 연관관계를 맺으려 할 때 연관관계 등록 실패
+
+==== request
+
+===== Example
+====== 찾을 수 없는 상품
+include::{snippets}/register-relation-fail-try-self-relate/response-body.adoc[]
+
+
+== 연관관계 삭제
+
+==== curl
+include::{snippets}/delete-relation/curl-request.adoc[]
+
+==== request
+===== Example
+include::{snippets}/delete-relation/http-request.adoc[]
+
+===== response
+===== Example
+include::{snippets}/delete-relation/response-body.adoc[]
+
+
+== 상품 연관관계 관리자용 전체 조회
+
+==== curl
+include::{snippets}/find-all-for-manager-relation/curl-request.adoc[]
+
+==== request
+
+===== Example
+include::{snippets}/find-all-for-manager-relation/http-request.adoc[]
+
+===== response
+
+===== Body
+
+include::{snippets}/find-all-for-manager-relation/response-fields.adoc[]
+
+===== Example
+include::{snippets}/find-all-for-manager-relation/response-body.adoc[]
+
+
+== 상품 연관관계 일반 사용자용 전체 조회
+
+==== curl
+include::{snippets}/find-all-relation/curl-request.adoc[]
+
+==== request
+
+===== Example
+include::{snippets}/find-all-relation/http-request.adoc[]
+
+===== response
+
+===== Body
+
+include::{snippets}/find-all-relation/response-fields.adoc[]
+
+===== Example
+include::{snippets}/find-all-relation/response-body.adoc[]
+
+
+

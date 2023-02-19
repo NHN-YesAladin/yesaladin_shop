@@ -1,21 +1,5 @@
 package shop.yesaladin.shop.product.service.impl;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.mock;
-
-import java.time.Clock;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,14 +17,7 @@ import shop.yesaladin.shop.product.domain.model.ProductTypeCode;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
 import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
-import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
-import shop.yesaladin.shop.product.dto.ProductModifyDto;
-import shop.yesaladin.shop.product.dto.ProductOnlyTitleDto;
-import shop.yesaladin.shop.product.dto.ProductRecentResponseDto;
-import shop.yesaladin.shop.product.dto.ProductWithCategoryResponseDto;
-import shop.yesaladin.shop.product.dto.ProductsResponseDto;
-import shop.yesaladin.shop.product.dto.RelationsResponseDto;
-import shop.yesaladin.shop.product.dto.ViewCartDto;
+import shop.yesaladin.shop.product.dto.*;
 import shop.yesaladin.shop.product.dummy.DummyFile;
 import shop.yesaladin.shop.product.dummy.DummyProduct;
 import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
@@ -51,6 +28,15 @@ import shop.yesaladin.shop.publish.dto.PublishResponseDto;
 import shop.yesaladin.shop.publish.service.inter.QueryPublishService;
 import shop.yesaladin.shop.tag.service.inter.QueryProductTagService;
 import shop.yesaladin.shop.writing.service.inter.QueryWritingService;
+
+import java.time.*;
+import java.util.*;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.*;
 
 class QueryProductServiceImplTest {
 
@@ -158,8 +144,69 @@ class QueryProductServiceImplTest {
     }
 
     @Test
+    @DisplayName("상품 일반 조회 성공")
+    void findProductById() {
+        // given
+        String isbn = "0000000000001";
+
+        File thumbnailFile = DummyFile.dummy(URL + "/image1.png");
+        File ebookFile = DummyFile.dummy(URL + "/ebook1.pdf");
+        SubscribeProduct subscribeProduct = SubscribeProduct.builder()
+                .id(1L)
+                .ISSN("00000001")
+                .build();
+        TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
+
+        Product product = DummyProduct.dummy(
+                1L,
+                isbn,
+                subscribeProduct,
+                thumbnailFile,
+                ebookFile,
+                totalDiscountRate
+        );
+        Mockito.when(queryProductRepository.findProductById(anyLong()))
+                .thenReturn(Optional.ofNullable(product));
+
+        Publish publish = Publish.create(
+                product,
+                Publisher.builder().id(1L).name("출판사").build(),
+                LocalDateTime.now(clock).toLocalDate().toString()
+        );
+        Mockito.when(queryPublishService.findByProduct(any()))
+                .thenReturn(new PublishResponseDto(
+                        publish.getPk(),
+                        publish.getPublishedDate(),
+                        publish.getProduct(),
+                        publish.getPublisher()
+                ));
+
+        // when
+        ProductResponseDto response = service.findProductById(1L);
+
+        // then
+        assertThat(response).isNotNull();
+        assertThat(response.getId()).isEqualTo(1L);
+        assertThat(response.getTitle()).isEqualTo("ex_title");
+        assertThat(response.getThumbnailFileUrl()).isEqualTo(URL + "/image1.png");
+        assertThat(response.getSellingPrice()).isEqualTo(9000L);
+    }
+
+    @Test
+    @DisplayName("상품 일반 조회 실패_해당 아이디의 상품이 존재하지 않는다면 예외 발생")
+    void findProductById_throwProductNotFoundException() {
+        // given
+        Mockito.when(queryProductRepository.findProductById(anyLong())).thenReturn(Optional.empty());
+
+        // when then
+        assertThatThrownBy(() -> service.findProductById(1L)).isInstanceOf(ClientException.class);
+
+        verify(queryProductRepository, times(1)).findProductById(anyLong());
+    }
+
+    @Test
     @DisplayName("상품 상세 조회 성공")
-    void findById() {
+    void findDetailProductById() {
         // given
         String isbn = "0000000000001";
 
@@ -205,6 +252,18 @@ class QueryProductServiceImplTest {
         assertThat(response.getActualPrice()).isEqualTo(10000L);
         assertThat(response.getSellingPrice()).isEqualTo(9000L);
         assertThat(response.getPointPrice()).isEqualTo(200L);
+    }
+
+    @Test
+    @DisplayName("상품 상세 조회 실패_해당 아이디의 상품이 존재하지 않는다면 예외 발생")
+    void findDetailProductById_throwProductNotFoundException() {
+        // given
+        Mockito.when(queryProductRepository.findProductById(anyLong())).thenReturn(Optional.empty());
+
+        // when then
+        assertThatThrownBy(() -> service.findDetailProductById(1L)).isInstanceOf(ClientException.class);
+
+        verify(queryProductRepository, times(1)).findProductById(anyLong());
     }
 
     @Test

@@ -175,6 +175,66 @@ public class QueryProductController {
                 .build();
     }
 
+    @GetMapping(value = "/manager", params = "title")
+    public ResponseDto<PaginatedResponseDto<ProductsResponseDto>> getProductsByTitleForManager(
+            @PageableDefault Pageable pageable,
+            @RequestParam(required = false) String title
+    ) {
+        return ResponseDto.<PaginatedResponseDto<ProductsResponseDto>>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(queryProductService.findByTitleForManager(title, pageable))
+                .build();
+    }
+
+    @GetMapping(value = "/manager", params = "content")
+    public ResponseDto<PaginatedResponseDto<ProductsResponseDto>> getProductsByContentForManager(
+            @PageableDefault Pageable pageable,
+            @RequestParam(required = false) String content
+    ) {
+        return ResponseDto.<PaginatedResponseDto<ProductsResponseDto>>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(queryProductService.findByContentForManager(content, pageable))
+                .build();
+    }
+
+    @GetMapping(value = "/manager", params = "publisher")
+    public ResponseDto<PaginatedResponseDto<ProductsResponseDto>> getProductsByPublisherForManager(
+            @PageableDefault Pageable pageable,
+            @RequestParam(required = false) String publisher
+    ) {
+        return ResponseDto.<PaginatedResponseDto<ProductsResponseDto>>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(queryProductService.findByPublisherForManager(publisher, pageable))
+                .build();
+    }
+
+    @GetMapping(value = "/manager", params = "author")
+    public ResponseDto<PaginatedResponseDto<ProductsResponseDto>> getProductsByAuthorForManager(
+            @PageableDefault Pageable pageable,
+            @RequestParam(required = false) String author
+    ) {
+        return ResponseDto.<PaginatedResponseDto<ProductsResponseDto>>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(queryProductService.findByAuthorForManager(author, pageable))
+                .build();
+    }
+
+    @GetMapping(value = "/manager", params = "isbn")
+    public ResponseDto<PaginatedResponseDto<ProductsResponseDto>> getProductsByISBNForManager(
+            @PageableDefault Pageable pageable,
+            @RequestParam(required = false) String isbn
+    ) {
+        return ResponseDto.<PaginatedResponseDto<ProductsResponseDto>>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(queryProductService.findByISBNForManager(isbn, pageable))
+                .build();
+    }
+
     /**
      * 연관관계 등록을 위한 상품 검색 메서드
      *
@@ -231,7 +291,7 @@ public class QueryProductController {
     /**
      * 최근 본 상품 메서드
      *
-     * @param dto 최근 본 상품 요청 dto
+     * @param dto      최근 본 상품 요청 dto
      * @param pageable 페이지 정보
      * @return 최근 본 상품 리스트
      * @author 김선홍

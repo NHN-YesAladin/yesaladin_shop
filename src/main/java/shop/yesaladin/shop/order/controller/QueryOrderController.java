@@ -17,12 +17,15 @@ import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.shop.common.aspect.annotation.LoginId;
 import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
+import shop.yesaladin.shop.order.dto.BestsellerResponseDto;
 import shop.yesaladin.shop.order.dto.OrderDetailsResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSheetRequestDto;
 import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 import shop.yesaladin.shop.order.dto.SalesStatisticsResponseDto;
 import shop.yesaladin.shop.order.service.inter.QueryOrderService;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * 전체 주문 조회 관련 rest controller 클래스 입니다.
@@ -121,20 +124,29 @@ public class QueryOrderController {
             @RequestParam String end,
             Pageable pageable
     ) {
-        PaginatedResponseDto<SalesStatisticsResponseDto> response = queryOrderService.getSalesStatistics(
-                start,
-                end,
-                pageable
-        );
-        log.info("start = {}", start);
-        log.info("end = {}", end);
-        log.info("page = {}", pageable.getPageNumber());
-        log.info("size = {}", pageable.getPageSize());
+
+        PaginatedResponseDto<SalesStatisticsResponseDto> response = queryOrderService.getSalesStatistics(start, end, pageable);
 
         return ResponseDto.<PaginatedResponseDto<SalesStatisticsResponseDto>>builder()
                 .success(true)
                 .status(HttpStatus.OK)
                 .data(response)
+                .build();
+    }
+
+    /**
+     * [GET /bestseller] 요청을 받아 지난 1년간의 베스트셀러를 조회합니다.
+     *
+     * @return 조회된 1년 기준 베스트셀러
+     * @author 이수정
+     * @since 1.0
+     */
+    @GetMapping("/v1/bestseller")
+    public ResponseDto<List<BestsellerResponseDto>> getBestseller() {
+        return ResponseDto.<List<BestsellerResponseDto>>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(queryOrderService.getBestseller())
                 .build();
     }
 

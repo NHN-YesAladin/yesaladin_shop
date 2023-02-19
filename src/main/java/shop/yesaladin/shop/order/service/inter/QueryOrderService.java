@@ -8,14 +8,10 @@ import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.common.exception.PageOffsetOutOfBoundsException;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
-import shop.yesaladin.shop.order.dto.OrderDetailsResponseDto;
-import shop.yesaladin.shop.order.dto.OrderPaymentResponseDto;
-import shop.yesaladin.shop.order.dto.OrderSheetRequestDto;
-import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
-import shop.yesaladin.shop.order.dto.OrderStatusResponseDto;
-import shop.yesaladin.shop.order.dto.OrderSummaryDto;
-import shop.yesaladin.shop.order.dto.OrderSummaryResponseDto;
-import shop.yesaladin.shop.order.dto.SalesStatisticsResponseDto;
+import shop.yesaladin.shop.order.dto.*;
+import java.util.List;
+import java.util.Map;
+
 
 /**
  * 주문 데이터 조회에 관련된 기능을 수행하는 서비스 인터페이스
@@ -159,15 +155,23 @@ public interface QueryOrderService {
     /**
      * 기간에 따른 매출 통계 정보를 조회하여 반환합니다.
      *
-     * @param start 시작일
-     * @param end   종료일
+     * @param start    시작일
+     * @param end      종료일
+     * @param pageable 페이징 객체
      * @return 매출 통계 정보
      * @author 이수정
      * @since 1.0
      */
-    PaginatedResponseDto<SalesStatisticsResponseDto> getSalesStatistics(
-            String start,
-            String end,
-            Pageable pageable
-    );
+
+    PaginatedResponseDto<SalesStatisticsResponseDto> getSalesStatistics(String start, String end, Pageable pageable);
+
+    /**
+     * 지난 1년동안 가장 매출이 좋은 12개의 상품을 조회합니다.
+     *
+     * @return 조회된 베스트셀러
+     * @author 이수정
+     * @since 1.0
+     */
+    List<BestsellerResponseDto> getBestseller();
+
 }

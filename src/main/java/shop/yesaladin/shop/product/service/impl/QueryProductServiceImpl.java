@@ -99,6 +99,31 @@ public class QueryProductServiceImpl implements QueryProductService {
      */
     @Transactional(readOnly = true)
     @Override
+    public ProductResponseDto findProductById(Long id) {
+        Product product = queryProductRepository.findProductById(id)
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.PRODUCT_NOT_FOUND,
+                        "Target product not found with id : " + id
+                ));
+
+        int rate = getRateByProduct(product);
+        PublishResponseDto publish = queryPublishService.findByProduct(product);
+
+        return new ProductResponseDto(
+                product.getId(),
+                product.getTitle(),
+                product.getThumbnailFile().getUrl(),
+                findAuthorsByProduct(product),
+                PublisherResponseDto.getPublisherFromPublish(publish),
+                calcSellingPrice(product.getActualPrice(), rate)
+        );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
     public ProductDetailResponseDto findDetailProductById(long id) {
         Product product = queryProductRepository.findProductById(id)
                 .orElseThrow(() -> new ClientException(
@@ -243,6 +268,66 @@ public class QueryProductServiceImpl implements QueryProductService {
             page = queryProductRepository.findAllByTypeIdForManager(pageable, typeId);
         }
         return getProductPaginatedResponses(page);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public PaginatedResponseDto<ProductsResponseDto> findByTitleForManager(
+            String title,
+            Pageable pageable
+    ) {
+        return getProductPaginatedResponses(queryProductRepository.findByTitleForManager(title, pageable));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public PaginatedResponseDto<ProductsResponseDto> findByISBNForManager(
+            String isbn,
+            Pageable pageable
+    ) {
+        return getProductPaginatedResponses(queryProductRepository.findByISBNForManager(isbn, pageable));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public PaginatedResponseDto<ProductsResponseDto> findByContentForManager(
+            String content,
+            Pageable pageable
+    ) {
+        return getProductPaginatedResponses(queryProductRepository.findByContentForManager(content, pageable));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public PaginatedResponseDto<ProductsResponseDto> findByPublisherForManager(
+            String publisher,
+            Pageable pageable
+    ) {
+        return getProductPaginatedResponses(queryProductRepository.findByPublisherForManager(publisher, pageable));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public PaginatedResponseDto<ProductsResponseDto> findByAuthorForManager(
+            String author,
+            Pageable pageable
+    ) {
+        return getProductPaginatedResponses(queryProductRepository.findByAuthorForManager(author, pageable));
     }
 
     /**

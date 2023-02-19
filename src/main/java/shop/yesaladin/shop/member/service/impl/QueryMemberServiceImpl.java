@@ -124,6 +124,14 @@ public class QueryMemberServiceImpl implements QueryMemberService {
     /**
      * {@inheritDoc}
      */
+    @Override
+    public Page<MemberManagerResponseDto> findMemberManages(Pageable pageable) {
+        return queryMemberRepository.findMemberManagers(pageable);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Transactional(readOnly = true)
     @Override
     public Page<MemberManagerResponseDto> findMemberManagesByLoginId(

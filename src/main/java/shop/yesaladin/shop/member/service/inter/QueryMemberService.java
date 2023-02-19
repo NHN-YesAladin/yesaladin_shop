@@ -80,6 +80,16 @@ public interface QueryMemberService {
     MemberLoginResponseDto findMemberLoginInfoByLoginId(String loginId);
 
     /**
+     * 기본 화면을 위한 회원 조회 메서드
+     *
+     * @param pageable 페이지 정보
+     * @return 조회된 회원 정보
+     * @author 김선홍
+     * @since 1.0
+     */
+    Page<MemberManagerResponseDto> findMemberManages(Pageable pageable);
+
+    /**
      * 관리자의 회원 관리 요창에 대해 회원을 unique column 인 LoginId 를 기준으로 조회하는 메서드 이다.
      *
      * @param loginId member의 loginId

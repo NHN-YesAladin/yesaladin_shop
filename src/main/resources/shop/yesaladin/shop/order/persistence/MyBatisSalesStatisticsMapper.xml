@@ -70,4 +70,24 @@
         group by op.product_id) as cancel
         on success.product_id = cancel.product_id) as res;
     </select>
+
+    <select id="getBestseller" resultType="Long">
+        select op.product_id as id
+        from orders as o
+                 inner join (
+            select l.order_id
+            from order_status_change_logs as l
+                     left join (
+                select o.order_id
+                from order_status_change_logs as o
+                where o.order_status_code_id in (select id from order_status_codes where status in ('REFUND', 'CANCEL'))
+                group by o.order_id) as o on o.order_id = l.order_id
+            where o.order_id is null
+            group by l.order_id) as l on o.id = l.order_id
+                 inner join order_products as op on o.id = op.order_id
+        where DATE(o.order_datetime) between #{start} and #{end}
+        group by op.product_id
+        order by sum(op.quantity) desc
+            limit 12;
+    </select>
 </mapper>

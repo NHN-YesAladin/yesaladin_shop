@@ -39,6 +39,7 @@ import shop.yesaladin.shop.order.domain.model.Subscribe;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderProductRepository;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderStatusChangeLogRepository;
+import shop.yesaladin.shop.order.dto.BestsellerResponseDto;
 import shop.yesaladin.shop.order.dto.OrderDetailsResponseDto;
 import shop.yesaladin.shop.order.dto.OrderPaymentResponseDto;
 import shop.yesaladin.shop.order.dto.OrderResponseDto;
@@ -58,6 +59,7 @@ import shop.yesaladin.shop.payment.dto.PaymentResponseDto;
 import shop.yesaladin.shop.payment.service.inter.QueryPaymentService;
 import shop.yesaladin.shop.point.service.inter.QueryPointHistoryService;
 import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
+import shop.yesaladin.shop.product.dto.ProductResponseDto;
 import shop.yesaladin.shop.product.service.inter.QueryProductService;
 
 /**
@@ -456,6 +458,33 @@ public class QueryOrderServiceImpl implements QueryOrderService {
                 .totalDataCount(totalDataCount)
                 .totalPage((long) Math.ceil((double) totalDataCount / pageable.getPageSize()))
                 .build();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public List<BestsellerResponseDto> getBestseller() {
+        LocalDate now = LocalDate.now();
+        List<Long> bestseller = myBatisSalesStatisticsMapper.getBestseller(
+                now.minusYears(1).toString(),
+                now.toString()
+        );
+
+        return bestseller.stream()
+                .map(id -> {
+                    ProductResponseDto product = queryProductService.findProductById(id);
+
+                    return new BestsellerResponseDto(
+                            id,
+                            product.getTitle(),
+                            product.getThumbnailFileUrl(),
+                            product.getAuthors(),
+                            product.getPublisher(),
+                            product.getSellingPrice()
+                    );
+                }).collect(Collectors.toList());
     }
 
     /**
