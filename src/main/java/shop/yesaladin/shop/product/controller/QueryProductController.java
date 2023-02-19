@@ -23,7 +23,8 @@ import java.util.Map;
  */
 @Slf4j
 @RequiredArgsConstructor
-@CrossOrigin(origins = {"http://localhost:9090", "https://www.yesaladin.shop", "https://test.yesaladin.shop"})
+@CrossOrigin(origins = {"http://localhost:9090", "https://www.yesaladin.shop",
+        "https://test.yesaladin.shop"})
 @RestController
 @RequestMapping("/v1/products")
 public class QueryProductController {
@@ -230,7 +231,7 @@ public class QueryProductController {
     /**
      * 최근 본 상품 메서드
      *
-     * @param ids      최근 본 상품들의 id 리스트
+     * @param dto      최근 본 상품 요청 dto
      * @param pageable 페이지 정보
      * @return 최근 본 상품 리스트
      * @author 김선홍
@@ -238,11 +239,14 @@ public class QueryProductController {
      */
     @PostMapping("/recentview/product")
     public ResponseDto<PaginatedResponseDto<ProductRecentResponseDto>> findRecentViewProductById(
-            @RequestBody List<Long> ids,
+            @RequestBody RecentViewProductRequestDto dto,
             @PageableDefault Pageable pageable
     ) {
-        Page<ProductRecentResponseDto> products = queryProductService.findRecentViewProductById(ids,
-                pageable);
+        Page<ProductRecentResponseDto> products = queryProductService.findRecentViewProductById(
+                dto.getTotalIds(),
+                dto.getPageIds(),
+                pageable
+        );
         return ResponseDto.<PaginatedResponseDto<ProductRecentResponseDto>>builder()
                 .status(HttpStatus.OK)
                 .success(true)

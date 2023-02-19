@@ -53,7 +53,17 @@ public interface QueryProductService {
      * 아이디가 id인 상품을 찾아 반환합니다.
      *
      * @param id 찾고자하는 상품의 id
-     * @return 찾은 상품 엔터티
+     * @return 찾은 상품의 Dto
+     * @author 이수정
+     * @since 1.0
+     */
+    ProductResponseDto findProductById(Long id);
+
+    /**
+     * 아이디가 id인 상품을 찾아 상세정보를 담아 반환합니다.
+     *
+     * @param id 찾고자하는 상품의 id
+     * @return 상세정보를 담은 Dto
      * @author 이수정
      * @since 1.0
      */
@@ -154,11 +164,12 @@ public interface QueryProductService {
     /**
      * 최근 본 상품 메소드
      *
-     * @param ids      본 상품들의 id 리스트
+     * @param totalIds 본 상품들의 id 리스트
+     * @param pageIds  페이지에 보여줄 상품들
      * @param pageable 페이지 정보
      * @return 최근 본 상품 리스트
      * @author 김선홍
      * @since 1, 0
      */
-    Page<ProductRecentResponseDto> findRecentViewProductById(List<Long> ids, Pageable pageable);
+    Page<ProductRecentResponseDto> findRecentViewProductById(List<Long> totalIds, List<Long> pageIds, Pageable pageable);
 }

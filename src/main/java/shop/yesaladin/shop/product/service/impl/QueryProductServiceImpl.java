@@ -108,6 +108,31 @@ public class QueryProductServiceImpl implements QueryProductService {
      */
     @Transactional(readOnly = true)
     @Override
+    public ProductResponseDto findProductById(Long id) {
+        Product product = queryProductRepository.findProductById(id)
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.PRODUCT_NOT_FOUND,
+                        "Target product not found with id : " + id
+                ));
+
+        int rate = getRateByProduct(product);
+        PublishResponseDto publish = queryPublishService.findByProduct(product);
+
+        return new ProductResponseDto(
+                product.getId(),
+                product.getTitle(),
+                product.getThumbnailFile().getUrl(),
+                findAuthorsByProduct(product),
+                PublisherResponseDto.getPublisherFromPublish(publish),
+                calcSellingPrice(product.getActualPrice(), rate)
+        );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
     public ProductDetailResponseDto findDetailProductById(long id) {
         Product product = queryProductRepository.findProductById(id)
                 .orElseThrow(() -> new ClientException(
@@ -531,11 +556,13 @@ public class QueryProductServiceImpl implements QueryProductService {
     @Override
     @Transactional(readOnly = true)
     public Page<ProductRecentResponseDto> findRecentViewProductById(
-            List<Long> ids,
+            List<Long> totalIds,
+            List<Long> pageIds,
             Pageable pageable
     ) {
         return createProductRecentResponseDto(queryProductRepository.findRecentViewProductById(
-                ids,
+                totalIds,
+                pageIds,
                 pageable
         ), pageable);
     }

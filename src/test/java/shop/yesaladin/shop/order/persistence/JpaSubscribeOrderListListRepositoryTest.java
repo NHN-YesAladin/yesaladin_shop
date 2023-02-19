@@ -1,10 +1,5 @@
 package shop.yesaladin.shop.order.persistence;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.Optional;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +17,12 @@ import shop.yesaladin.shop.order.persistence.dummy.DummyMemberAddress;
 import shop.yesaladin.shop.order.persistence.dummy.DummyOrder;
 import shop.yesaladin.shop.order.persistence.dummy.DummySubscribeProduct;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @ActiveProfiles("local-test")

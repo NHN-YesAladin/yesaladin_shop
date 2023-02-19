@@ -1,26 +1,5 @@
 package shop.yesaladin.shop.product.controller;
 
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentRequest;
-import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.Clock;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -48,6 +27,27 @@ import shop.yesaladin.shop.product.dummy.DummyProduct;
 import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
 import shop.yesaladin.shop.product.service.inter.QueryRelationService;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentRequest;
+import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
+
 @AutoConfigureRestDocs
 @WebMvcTest(QueryRelationController.class)
 class QueryRelationControllerTest {
@@ -61,9 +61,6 @@ class QueryRelationControllerTest {
 
     @MockBean
     private QueryRelationService service;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     Clock clock = Clock.fixed(
             Instant.parse("2023-03-10T00:00:00.000Z"),

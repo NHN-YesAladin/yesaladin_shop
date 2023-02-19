@@ -1,9 +1,10 @@
 package shop.yesaladin.shop.order.persistence.dummy;
 
-import java.time.LocalDateTime;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.model.OrderStatusChangeLog;
 import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
+
+import java.time.LocalDateTime;
 
 public class DummyOrderStatusChangeLog {
 

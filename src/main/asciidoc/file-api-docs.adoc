@@ -1,0 +1,40 @@
+= File
+
+=== 파일 업로드
+
+==== curl
+include::{snippets}/file-upload/curl-request.adoc[]
+
+==== request
+
+===== Example
+include::{snippets}/file-upload/http-request.adoc[]
+
+===== response
+
+===== Body
+
+include::{snippets}/file-upload/response-fields.adoc[]
+
+===== Example
+include::{snippets}/file-upload/response-body.adoc[]
+
+
+=== 오브젝트 스토리지 인증 토큰 얻어 반환
+
+==== curl
+include::{snippets}/get-object-storage-auth-token/curl-request.adoc[]
+
+==== request
+
+===== Example
+include::{snippets}/get-object-storage-auth-token/http-request.adoc[]
+
+===== response
+
+===== Body
+
+include::{snippets}/get-object-storage-auth-token/response-fields.adoc[]
+
+===== Example
+include::{snippets}/get-object-storage-auth-token/response-body.adoc[]

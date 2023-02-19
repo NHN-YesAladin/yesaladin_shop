@@ -1,7 +1,5 @@
 package shop.yesaladin.shop.order.service.impl;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +12,9 @@ import shop.yesaladin.shop.order.domain.model.OrderCoupon;
 import shop.yesaladin.shop.order.domain.repository.CommandOrderCouponRepository;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
 import shop.yesaladin.shop.order.service.inter.CommandOrderCouponService;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 주문에 사용한 쿠폰의 생성과 관련한 서비스 구현체 입니다.

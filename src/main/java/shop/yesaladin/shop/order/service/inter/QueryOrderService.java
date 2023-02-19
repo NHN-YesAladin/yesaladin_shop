@@ -9,6 +9,7 @@ import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
 import shop.yesaladin.shop.order.dto.*;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -153,11 +154,22 @@ public interface QueryOrderService {
     /**
      * 기간에 따른 매출 통계 정보를 조회하여 반환합니다.
      *
-     * @param start 시작일
-     * @param end   종료일
+     * @param start    시작일
+     * @param end      종료일
+     * @param pageable 페이징 객체
      * @return 매출 통계 정보
      * @author 이수정
      * @since 1.0
      */
     PaginatedResponseDto<SalesStatisticsResponseDto> getSalesStatistics(String start, String end, Pageable pageable);
+
+    /**
+     * 지난 1년동안 가장 매출이 좋은 12개의 상품을 조회합니다.
+     *
+     * @return 조회된 베스트셀러
+     * @author 이수정
+     * @since 1.0
+     */
+    List<BestsellerResponseDto> getBestseller();
+
 }

@@ -1,13 +1,5 @@
 package shop.yesaladin.shop.writing.controller;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -23,6 +15,15 @@ import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.shop.writing.dto.SearchedAuthorResponseDto;
 import shop.yesaladin.shop.writing.dto.SearchedAuthorResponseDto.SearchedAuthorDto;
 import shop.yesaladin.shop.writing.service.inter.SearchAuthorService;
+
+import java.util.List;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(SearchAuthorController.class)
 class SearchAuthorControllerTest {
