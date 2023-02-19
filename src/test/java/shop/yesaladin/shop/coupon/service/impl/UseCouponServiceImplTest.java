@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -26,11 +27,10 @@ import shop.yesaladin.shop.coupon.domain.repository.QueryMemberCouponRepository;
 import shop.yesaladin.shop.coupon.dto.CouponCodeOnlyDto;
 import shop.yesaladin.shop.coupon.dto.MemberCouponSummaryDto;
 import shop.yesaladin.shop.coupon.dto.RequestIdOnlyDto;
-import shop.yesaladin.shop.coupon.service.inter.CouponWebsocketMessageSendService;
 import shop.yesaladin.shop.coupon.service.inter.QueryMemberCouponService;
 import shop.yesaladin.shop.point.service.inter.CommandPointHistoryService;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings("all")
 class UseCouponServiceImplTest {
 
     private UseCouponServiceImpl useCouponService;
@@ -40,9 +40,9 @@ class UseCouponServiceImplTest {
     private CommandPointHistoryService commandPointHistoryService;
     private RedisTemplate<String, String> redisTemplate;
     private ListOperations<String, String> listOperations;
+    private ApplicationEventPublisher applicationEventPublisher;
     private ValueOperations<String, String> valueOperations;
     private RedisOperations<String, String> redisOperations;
-    private CouponWebsocketMessageSendService couponWebsocketMessageSendService;
     private final static Clock clock = Clock.fixed(
             Instant.parse("2023-02-01T00:00:00.00Z"),
             ZoneId.of("UTC")
@@ -58,13 +58,13 @@ class UseCouponServiceImplTest {
         listOperations = Mockito.mock(ListOperations.class);
         redisOperations = Mockito.mock(RedisOperations.class);
         valueOperations = Mockito.mock(ValueOperations.class);
-        couponWebsocketMessageSendService = Mockito.mock(CouponWebsocketMessageSendService.class);
+        applicationEventPublisher = Mockito.mock(ApplicationEventPublisher.class);
         useCouponService = new UseCouponServiceImpl(
                 queryMemberCouponRepository,
                 couponProducer,
                 queryMemberCouponService,
                 commandPointHistoryService,
-                couponWebsocketMessageSendService,
+                applicationEventPublisher,
                 redisTemplate,
                 clock
         );
