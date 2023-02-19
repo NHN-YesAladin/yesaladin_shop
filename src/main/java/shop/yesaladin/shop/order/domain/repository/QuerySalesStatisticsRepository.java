@@ -41,4 +41,12 @@ public interface QuerySalesStatisticsRepository {
      */
     Integer getSalesStatisticsTotalCount(@Param("start") String start, @Param("end") String end);
 
+    /**
+     * 지난 1년동안 가장 매출이 좋은 12개의 상품을 조회합니다.
+     *
+     * @return 조회된 베스트셀러
+     * @author 이수정
+     * @since 1.0
+     */
+    List<Long> getBestseller(@Param("start") String start, @Param("end") String end);
 }

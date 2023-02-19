@@ -20,7 +20,7 @@ include::{snippets}/file-upload/response-fields.adoc[]
 include::{snippets}/file-upload/response-body.adoc[]
 
 
-=== 오브젝트 스토리지 인증 토큰 얻어 반
+=== 오브젝트 스토리지 인증 토큰 얻어 반환
 
 ==== curl
 include::{snippets}/get-object-storage-auth-token/curl-request.adoc[]

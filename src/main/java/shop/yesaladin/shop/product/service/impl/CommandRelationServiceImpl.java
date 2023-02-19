@@ -12,7 +12,6 @@ import shop.yesaladin.shop.product.domain.repository.CommandRelationRepository;
 import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
 import shop.yesaladin.shop.product.domain.repository.QueryRelationRepository;
 import shop.yesaladin.shop.product.dto.ProductOnlyIdDto;
-import shop.yesaladin.shop.product.exception.RelationAlreadyExistsException;
 import shop.yesaladin.shop.product.exception.RelationNotFoundException;
 import shop.yesaladin.shop.product.service.inter.CommandRelationService;
 

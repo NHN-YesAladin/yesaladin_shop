@@ -231,7 +231,7 @@ public class QueryProductController {
     /**
      * 최근 본 상품 메서드
      *
-     * @param dto 최근 본 상품 요청 dto
+     * @param dto      최근 본 상품 요청 dto
      * @param pageable 페이지 정보
      * @return 최근 본 상품 리스트
      * @author 김선홍

@@ -1,7 +1,5 @@
 package shop.yesaladin.shop.file.service.impl;
 
-import static org.mockito.Mockito.mock;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -10,6 +8,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.client.RestTemplate;
 import shop.yesaladin.shop.config.ObjectStorageProperties;
 import shop.yesaladin.shop.file.service.inter.StorageAuthService;
+
+import static org.mockito.Mockito.mock;
 
 class StorageAuthServiceImplTest {
 

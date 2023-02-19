@@ -1,9 +1,5 @@
 package shop.yesaladin.shop.order.service.impl;
 
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.mockito.ArgumentMatchers.any;
-
-import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,21 +7,18 @@ import org.mockito.Mockito;
 import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
-import shop.yesaladin.shop.order.domain.model.MemberOrder;
-import shop.yesaladin.shop.order.domain.model.NonMemberOrder;
-import shop.yesaladin.shop.order.domain.model.OrderStatusChangeLog;
-import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
-import shop.yesaladin.shop.order.domain.model.Subscribe;
+import shop.yesaladin.shop.order.domain.model.*;
 import shop.yesaladin.shop.order.domain.repository.CommandOrderRepository;
 import shop.yesaladin.shop.order.domain.repository.CommandOrderStatusChangeLogRepository;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
-import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
-import shop.yesaladin.shop.order.persistence.dummy.DummyMemberAddress;
-import shop.yesaladin.shop.order.persistence.dummy.DummyOrder;
-import shop.yesaladin.shop.order.persistence.dummy.DummyOrderStatusChangeLog;
-import shop.yesaladin.shop.order.persistence.dummy.DummySubscribeProduct;
+import shop.yesaladin.shop.order.persistence.dummy.*;
 import shop.yesaladin.shop.order.service.inter.CommandOrderStatusChangeLogService;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
+
+import java.time.LocalDateTime;
+
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.mockito.ArgumentMatchers.any;
 
 class CommandOrderStatusChangeLogServiceImplTest {
 

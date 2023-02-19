@@ -1,9 +1,10 @@
 package shop.yesaladin.shop.order.persistence.converter;
 
-import java.util.Arrays;
+import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
+
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
-import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
+import java.util.Arrays;
 
 /**
  * 주문상태코드를 변환하기 위한 컨버터입니다.

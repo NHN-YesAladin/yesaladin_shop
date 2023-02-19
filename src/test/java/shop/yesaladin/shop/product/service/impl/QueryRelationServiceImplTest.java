@@ -1,15 +1,5 @@
 package shop.yesaladin.shop.product.service.impl;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-
-import java.time.Clock;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,6 +24,17 @@ import shop.yesaladin.shop.publish.domain.model.Publisher;
 import shop.yesaladin.shop.publish.dto.PublishResponseDto;
 import shop.yesaladin.shop.publish.service.inter.QueryPublishService;
 import shop.yesaladin.shop.writing.service.inter.QueryWritingService;
+
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 
 class QueryRelationServiceImplTest {
 

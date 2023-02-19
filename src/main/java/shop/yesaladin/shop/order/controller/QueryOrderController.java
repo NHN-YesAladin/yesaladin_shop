@@ -13,6 +13,7 @@ import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.order.dto.*;
 import shop.yesaladin.shop.order.service.inter.QueryOrderService;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -118,6 +119,22 @@ public class QueryOrderController {
                 .success(true)
                 .status(HttpStatus.OK)
                 .data(response)
+                .build();
+    }
+
+    /**
+     * [GET /bestseller] 요청을 받아 지난 1년간의 베스트셀러를 조회합니다.
+     *
+     * @return 조회된 1년 기준 베스트셀러
+     * @author 이수정
+     * @since 1.0
+     */
+    @GetMapping("/v1/bestseller")
+    public ResponseDto<List<BestsellerResponseDto>> getBestseller() {
+        return ResponseDto.<List<BestsellerResponseDto>>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(queryOrderService.getBestseller())
                 .build();
     }
 

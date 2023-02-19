@@ -1,9 +1,10 @@
 package shop.yesaladin.shop.product.dto;
 
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 /**
  * 최근 본 상품 요청 dto
