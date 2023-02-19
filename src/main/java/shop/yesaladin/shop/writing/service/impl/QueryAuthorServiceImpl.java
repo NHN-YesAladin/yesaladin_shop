@@ -50,8 +50,36 @@ public class QueryAuthorServiceImpl implements QueryAuthorService {
     @Transactional(readOnly = true)
     @Override
     public PaginatedResponseDto<AuthorsResponseDto> findAllForManager(Pageable pageable) {
-        Page<Author> page = queryAuthorRepository.findAllForManager(pageable);
+        return getAuthorsResponseDtoList(queryAuthorRepository.findAllForManager(pageable));
 
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public PaginatedResponseDto<AuthorsResponseDto> findAllByLoginIdForManager(
+            String loginId,
+            Pageable pageable
+    ) {
+        return getAuthorsResponseDtoList(queryAuthorRepository.findAllByLoginIdForManager(loginId, pageable));
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public PaginatedResponseDto<AuthorsResponseDto> findAllByNameForManager(
+            String name,
+            Pageable pageable
+    ) {
+        return getAuthorsResponseDtoList(queryAuthorRepository.findAllByNameForManager(name, pageable));
+    }
+
+    private PaginatedResponseDto<AuthorsResponseDto> getAuthorsResponseDtoList(Page<Author> page) {
         List<AuthorsResponseDto> authors = new ArrayList<>();
         for (Author author : page.getContent()) {
             authors.add(AuthorsResponseDto.builder()
