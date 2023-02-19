@@ -28,16 +28,15 @@ public class GiveMemberCouponController {
     /**
      * 쿠폰 지급 요청 메시지를 발행합니다.
      *
-     * @param memberId   로그인한 회원의 로그인 아이디
      * @param requestDto 쿠폰 지급 요청 정보
      * @return 성공 여부를 담은 ResponseDto
      */
     @PostMapping
     public ResponseDto<RequestIdOnlyDto> sendCouponGiveRequest(
-            @LoginId(required = true) String memberId, @RequestBody CouponGiveRequestDto requestDto
+            @RequestBody CouponGiveRequestDto requestDto
     ) {
         RequestIdOnlyDto response = giveCouponService.sendCouponGiveRequest(
-                memberId,
+                "member0001",
                 requestDto.getTriggerTypeCode(),
                 requestDto.getCouponId(),
                 requestDto.getRequestDateTime()

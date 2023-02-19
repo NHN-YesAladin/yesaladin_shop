@@ -1,7 +1,6 @@
 package shop.yesaladin.shop.coupon.service.impl;
 
 import java.time.Clock;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -29,7 +28,6 @@ import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.common.exception.ServerException;
 import shop.yesaladin.coupon.code.CouponSocketRequestKind;
 import shop.yesaladin.coupon.code.TriggerTypeCode;
-import shop.yesaladin.coupon.dto.CouponGiveDto;
 import shop.yesaladin.coupon.message.CouponCodesAndResultMessage;
 import shop.yesaladin.coupon.message.CouponCodesAndResultMessage.CouponCodesAndResultMessageBuilder;
 import shop.yesaladin.coupon.message.CouponGiveRequestMessage;
@@ -42,7 +40,6 @@ import shop.yesaladin.shop.coupon.domain.repository.CommandMemberCouponRepositor
 import shop.yesaladin.shop.coupon.domain.repository.QueryMemberCouponRepository;
 import shop.yesaladin.shop.coupon.dto.CouponGroupAndLimitDto;
 import shop.yesaladin.shop.coupon.dto.RequestIdOnlyDto;
-import shop.yesaladin.shop.coupon.event.CouponRequestProcessEndEvent;
 import shop.yesaladin.shop.coupon.service.inter.GiveCouponService;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
@@ -86,19 +83,16 @@ public class GiveCouponServiceImpl implements GiveCouponService {
             checkMonthlyCouponIssueRequestTime(requestDateTime);
         }
 
-        if (Objects.nonNull(couponId)) {    // 수동 발행 타입 쿠폰을 요청하는 경우
-            registerIssueRequest(memberId, triggerTypeCode.name(), couponId.toString());
-        }
         List<CouponGroupAndLimitDto> couponGroupAndLimitList = getCouponGroupAndLimit(
                 triggerTypeCode,
                 couponId
         );
 
+        log.info("found coupon : {}", couponGroupAndLimitList);
+
         List<String> couponGroupCodeList = couponGroupAndLimitList.stream()
                 .map(CouponGroupAndLimitDto::getCouponGroupCode)
                 .collect(Collectors.toList());
-
-        checkMemberAlreadyHasCoupon(memberId, triggerTypeCode, couponId, couponGroupCodeList);
 
         String requestId = generateRequestId(memberId);
         RequestIdOnlyDto response = new RequestIdOnlyDto(requestId);
@@ -129,15 +123,7 @@ public class GiveCouponServiceImpl implements GiveCouponService {
         try {
             checkRequestSucceeded(responseMessage);
             String memberId = getMemberIdFromRequestId(responseMessage.getRequestId());
-            checkMemberAlreadyHasCoupon(
-                    memberId,
-                    null,
-                    null,
-                    responseMessage.getCoupons()
-                            .stream()
-                            .map(CouponGiveDto::getCouponGroupCode)
-                            .collect(Collectors.toList())
-            );
+
             resultBuilder.couponCodes(responseMessage.getCoupons()
                     .stream()
                     .flatMap(coupon -> coupon.getCouponCodes().stream())
@@ -153,7 +139,7 @@ public class GiveCouponServiceImpl implements GiveCouponService {
                             : responseMessage.getErrorMessage(),
                     LocalDateTime.now(clock)
             );
-            eventPublisher.publishEvent(new CouponRequestProcessEndEvent(this, resultMessage));
+//            eventPublisher.publishEvent(new CouponRequestProcessEndEvent(this, resultMessage));
         } catch (Exception e) {
             couponProducer.produceGivenResultMessage(resultBuilder.success(false).build());
             CouponResultDto resultMessage = new CouponResultDto(
@@ -163,7 +149,7 @@ public class GiveCouponServiceImpl implements GiveCouponService {
                     responseMessage.getErrorMessage(),
                     LocalDateTime.now(clock)
             );
-            eventPublisher.publishEvent(new CouponRequestProcessEndEvent(this, resultMessage));
+//            eventPublisher.publishEvent(new CouponRequestProcessEndEvent(this, resultMessage));
             throw e;
         }
     }
@@ -253,7 +239,7 @@ public class GiveCouponServiceImpl implements GiveCouponService {
 
     private String generateRequestId(String memberId) {
         String requestId = UUID.randomUUID().toString();
-        redisTemplate.opsForValue().set(requestId, memberId, Duration.ofMinutes(30));
+//        redisTemplate.opsForValue().set(requestId, memberId, Duration.ofMinutes(30));
         return requestId;
     }
 
@@ -280,11 +266,7 @@ public class GiveCouponServiceImpl implements GiveCouponService {
     }
 
     private String getMemberIdFromRequestId(String requestId) {
-        return Optional.of(Objects.requireNonNull(redisTemplate.opsForValue().get(requestId)))
-                .orElseThrow(() -> new ClientException(
-                        ErrorCode.BAD_REQUEST,
-                        "Request id not exists or expired. request id : " + requestId
-                ));
+        return "member0001";
     }
 
     private void tryGiveCouponToMember(
