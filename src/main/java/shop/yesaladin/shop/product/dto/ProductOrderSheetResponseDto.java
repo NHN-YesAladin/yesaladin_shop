@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import lombok.ToString;
 
 /**
  * 주문한 상품의 정보를 반환하기 위한 dto 클래스입니다.
@@ -12,6 +13,7 @@ import java.util.List;
  * @author 최예린
  * @since 1.0
  */
+@ToString
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor

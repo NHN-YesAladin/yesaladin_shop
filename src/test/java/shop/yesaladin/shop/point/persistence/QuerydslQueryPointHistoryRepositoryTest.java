@@ -107,7 +107,7 @@ class QuerydslQueryPointHistoryRepositoryTest {
 
     @Test
     void getMemberPointByLoginId() {
-        setPointHistory(3, 5);
+        setPointHistory(3, 5, true);
 
         String loginId = member.getLoginId();
 
@@ -118,9 +118,21 @@ class QuerydslQueryPointHistoryRepositoryTest {
     }
 
     @Test
+    void getMemberPointByLoginId_noRecord() {
+        setPointHistory(3, 5, false);
+
+        String loginId = member.getLoginId();
+
+        long point = queryPointHistoryRepository.getMemberPointByLoginId(loginId);
+
+        assertThat(point).isEqualTo(-2000);
+
+    }
+
+    @Test
     void getByLoginIdAndPointCode() {
         //given
-        setPointHistory(5, 5);
+        setPointHistory(5, 5, true);
 
         //when
         Page<PointHistoryResponseDto> result = queryPointHistoryRepository.getByLoginIdAndPointCode(
@@ -137,7 +149,7 @@ class QuerydslQueryPointHistoryRepositoryTest {
     @Test
     void getByLoginId() {
         //given
-        setPointHistory(5, 5);
+        setPointHistory(5, 5, true);
 
         //when
         Page<PointHistoryResponseDto> result = queryPointHistoryRepository.getByLoginId(
@@ -155,7 +167,7 @@ class QuerydslQueryPointHistoryRepositoryTest {
     @Test
     void getByPointCode() {
         //given
-        setPointHistory(5, 5);
+        setPointHistory(5, 5, true);
 
         //when
         Page<PointHistoryResponseDto> result = queryPointHistoryRepository.getByPointCode(
@@ -171,7 +183,7 @@ class QuerydslQueryPointHistoryRepositoryTest {
     @Test
     void getBy() {
         //given
-        setPointHistory(5, 5);
+        setPointHistory(5, 5, true);
 
         //when
         Page<PointHistoryResponseDto> result = queryPointHistoryRepository.getBy(
@@ -198,8 +210,8 @@ class QuerydslQueryPointHistoryRepositoryTest {
                 .build();
     }
 
-    void setPointHistory(int save, int use) {
-        entityManager.persist(createPointHistory(member, PointCode.SUM, PointReasonCode.SUM));
+    void setPointHistory(int save, int use, boolean sum) {
+        if(sum) entityManager.persist(createPointHistory(member, PointCode.SUM, PointReasonCode.SUM));
         for (int i = 0; i < save; i++) {
             entityManager.persist(createPointHistory(
                     member,

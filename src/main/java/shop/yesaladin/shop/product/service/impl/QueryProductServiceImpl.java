@@ -408,18 +408,24 @@ public class QueryProductServiceImpl implements QueryProductService {
             Map<String, Integer> orderProduct,
             List<ProductOrderSheetResponseDto> result
     ) {
-        if (orderProduct.size() != result.size()) {
-            throw new ClientException(
-                    ErrorCode.BAD_REQUEST,
-                    "Product not available to order."
-            );
-        }
+        List<String> isbnList = result.stream()
+                .map(ProductOrderSheetResponseDto::getIsbn)
+                .collect(Collectors.toList());
+
+        orderProduct.keySet().forEach(isbn -> {
+            if (!isbnList.contains(isbn) ) {
+                throw new ClientException(
+                        ErrorCode.PRODUCT_NOT_AVAILABLE_TO_ORDER,
+                        "Product is not available to order with isbn : " + isbn
+                );
+            }
+        });
         result.forEach(product -> {
             int count;
             if (product.getQuantity() < (count = orderProduct.get(product.getIsbn()))) {
                 throw new ClientException(
                         ErrorCode.PRODUCT_NOT_AVAILABLE_TO_ORDER,
-                        "Product not available to order."
+                        "Product not available to order. with isbn : " + product.getIsbn()
                 );
             }
             product.setQuantity(count);

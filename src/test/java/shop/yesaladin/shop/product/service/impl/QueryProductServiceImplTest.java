@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,10 +37,13 @@ import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
 import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
 import shop.yesaladin.shop.product.dto.ProductModifyDto;
 import shop.yesaladin.shop.product.dto.ProductOnlyTitleDto;
+import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
+import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
 import shop.yesaladin.shop.product.dto.ProductRecentResponseDto;
 import shop.yesaladin.shop.product.dto.ProductWithCategoryResponseDto;
 import shop.yesaladin.shop.product.dto.ProductsResponseDto;
 import shop.yesaladin.shop.product.dto.RelationsResponseDto;
+import shop.yesaladin.shop.product.dto.SubscribeProductOrderResponseDto;
 import shop.yesaladin.shop.product.dto.ViewCartDto;
 import shop.yesaladin.shop.product.dummy.DummyFile;
 import shop.yesaladin.shop.product.dummy.DummyProduct;
@@ -726,5 +730,166 @@ class QueryProductServiceImplTest {
                         10
                 ));
         assertThat(dto).hasSize(2);
+    }
+
+    @Test
+    @DisplayName("주문서에 필요한 주문상품의 데이터 조회 실패 - 구매 불가능한 상품")
+    void getByOrderProducts_fail_productNotAvailableToOrder_cannotOrder() {
+        //given
+        String isbn = "0000000000001";
+        Map<String, Integer> orderProducts = Map.of(isbn, 1);
+        List<String> isbnList = new ArrayList<>(orderProducts.keySet());
+
+        Mockito.when(queryProductRepository.getByIsbnList(isbnList)).thenReturn(new ArrayList<>());
+
+        //when, then
+        assertThatThrownBy(() -> service.getByOrderProducts(orderProducts)).isInstanceOf(
+                ClientException.class);
+    }
+
+    @Test
+    @DisplayName("주문서에 필요한 주문상품의 데이터 조회 실패 - 재고 부족")
+    void getByOrderProducts_fail_productNotAvailableToOrder_lackOfQuantity() {
+        //given
+        String isbn = "0000000000001";
+        Map<String, Integer> orderProducts = Map.of(isbn, 1000);
+        List<String> isbnList = new ArrayList<>(orderProducts.keySet());
+
+        Mockito.when(queryProductRepository.getByIsbnList(isbnList)).thenReturn(
+                List.of(getProductOrderSheetReponseData(isbn)));
+
+        //when, then
+        assertThatThrownBy(() -> service.getByOrderProducts(orderProducts)).isInstanceOf(
+                ClientException.class);
+    }
+
+    @Test
+    @DisplayName("주문서에 필요한 주문상품의 데이터 조회 성공")
+    void getByOrderProducts_success() {
+        //given
+        String isbn = "0000000000001";
+        Map<String, Integer> orderProducts = Map.of(isbn, 1);
+        List<String> isbnList = new ArrayList<>(orderProducts.keySet());
+
+        Mockito.when(queryProductRepository.getByIsbnList(isbnList)).thenReturn(
+                List.of(getProductOrderSheetReponseData(isbn)));
+
+        //when
+        List<ProductOrderSheetResponseDto> result = service.getByOrderProducts(orderProducts);
+
+        //then
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getIsbn()).isEqualTo(isbn);
+        assertThat(result.get(0).getQuantity()).isEqualTo(1);
+    }
+
+    private ProductOrderSheetResponseDto getProductOrderSheetReponseData(String isbn) {
+        return new ProductOrderSheetResponseDto(
+                1L,
+                isbn,
+                "title",
+                10000L,
+                10,
+                false,
+                0,
+                10,
+                new ArrayList<>()
+        );
+    }
+
+    @Test
+    @DisplayName("주문 상품의 ISSN 조회 실패 - 존재하지 않는 상품")
+    void getIssnByOrderProduct_fail_productNotFound() {
+        //given
+        String isbn = "0000000000001";
+        int quantity = 1;
+        ProductOrderRequestDto request = new ProductOrderRequestDto(isbn, quantity);
+
+        Mockito.when(queryProductRepository.findOrderProductByIsbn(isbn, quantity))
+                .thenThrow(new ClientException(ErrorCode.PRODUCT_NOT_FOUND, ""));
+
+        //when, then
+        assertThatThrownBy(() -> service.getIssnByOrderProduct(request)).isInstanceOf(
+                ClientException.class);
+    }
+
+    @Test
+    @DisplayName("주문 상품의 ISSN 조회 실패 - 구독상품이 아닌 경우")
+    void getIssnByOrderProduct_fail_productNotSubscribeProduct() {
+        //given
+        String isbn = "0000000000001";
+        int quantity = 1;
+        ProductOrderRequestDto request = new ProductOrderRequestDto(isbn, quantity);
+
+        Mockito.when(queryProductRepository.findOrderProductByIsbn(isbn, quantity))
+                .thenThrow(new ClientException(ErrorCode.PRODUCT_NOT_SUBSCRIBE_PRODUCT, ""));
+
+        //when, then
+        assertThatThrownBy(() -> service.getIssnByOrderProduct(request)).isInstanceOf(
+                ClientException.class);
+    }
+
+    @Test
+    @DisplayName("주문 상품의 ISSN 조회 성공")
+    void getIssnByOrderProduct_success() {
+        //given
+        String isbn = "0000000000001";
+        int quantity = 1;
+        ProductOrderRequestDto request = new ProductOrderRequestDto(isbn, quantity);
+
+        SubscribeProduct subscribeProduct = SubscribeProduct.builder().id(1L).ISSN("12312").build();
+        Optional<Product> product = Optional.of(Product.builder()
+                .isbn(isbn)
+                .title("title")
+                .quantity(quantity)
+                .subscribeProduct(subscribeProduct)
+                .isSubscriptionAvailable(true)
+                .build());
+        Mockito.when(queryProductRepository.findOrderProductByIsbn(isbn, quantity))
+                .thenReturn(product);
+
+        //then
+        SubscribeProductOrderResponseDto result = service.getIssnByOrderProduct(request);
+
+        //when
+        assertThat(result.getTitle()).isEqualTo("title");
+        assertThat(result.getSubscribeProduct().getISSN()).isEqualTo(subscribeProduct.getISSN());
+    }
+
+    @Test
+    @DisplayName("상품의 isbn으로 상품을 조회 실패 - 존재하지 않는 상품")
+    void getByIsbn_fial_productNotFound() {
+        //given
+        String isbn = "0000000000001";
+
+        //when, then
+        Mockito.when(queryProductRepository.findByIsbn(isbn))
+                .thenThrow(new ClientException(ErrorCode.PRODUCT_NOT_FOUND, ""));
+    }
+
+    @Test
+    @DisplayName("상품의 isbn으로 상품을 조회 성공")
+    void getByIsbn_success() {
+        //given
+        String isbn = "0000000000001";
+        ProductWithCategoryResponseDto response = new ProductWithCategoryResponseDto(
+                isbn,
+                1000L,
+                10,
+                false,
+                0,
+                false,
+                null,
+                null,
+                Lists.newArrayList()
+        );
+        Mockito.when(queryProductRepository.getByIsbn(isbn)).thenReturn(Optional.of(response));
+
+        //when
+        ProductWithCategoryResponseDto result = service.getByIsbn(isbn);
+
+        //then
+        assertThat(result).isNotNull();
+        assertThat(result.getIsbn()).isEqualTo(isbn);
     }
 }

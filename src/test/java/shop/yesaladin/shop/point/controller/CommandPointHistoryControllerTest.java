@@ -41,7 +41,6 @@ import shop.yesaladin.shop.point.domain.model.PointCode;
 import shop.yesaladin.shop.point.domain.model.PointReasonCode;
 import shop.yesaladin.shop.point.dto.PointHistoryRequestDto;
 import shop.yesaladin.shop.point.dto.PointHistoryResponseDto;
-import shop.yesaladin.shop.point.exception.OverPointUseException;
 import shop.yesaladin.shop.point.service.inter.CommandPointHistoryService;
 
 @AutoConfigureRestDocs
@@ -259,7 +258,8 @@ class CommandPointHistoryControllerTest {
 
         PointHistoryRequestDto request = getPointHistoryRequest(loginId, amount, pointReasonCode);
 
-        Mockito.when(commandPointHistoryService.use(any())).thenThrow(new OverPointUseException());
+        Mockito.when(commandPointHistoryService.use(any()))
+                .thenThrow(new ClientException(ErrorCode.POINT_OVER_USE, ""));
 
         //when
         ResultActions result = mockMvc.perform(post("/v1/points")

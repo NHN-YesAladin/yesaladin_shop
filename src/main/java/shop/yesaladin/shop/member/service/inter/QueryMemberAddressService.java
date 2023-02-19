@@ -21,13 +21,6 @@ public interface QueryMemberAddressService {
      */
     MemberAddress findById(long id);
 
-    /**
-     * 회원배송지를 조회합니다.
-     *
-     * @param id 배송지 pk
-     * @return 배송지
-     */
-    MemberAddressResponseDto getById(long id);
 
     /**
      * 회원의 배송지 목록들을 조회합니다.
