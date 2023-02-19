@@ -3,32 +3,32 @@ package shop.yesaladin.shop.coupon.service.impl;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.common.exception.ServerException;
+import shop.yesaladin.coupon.code.CouponSocketRequestKind;
 import shop.yesaladin.coupon.code.CouponTypeCode;
 import shop.yesaladin.coupon.message.CouponCodesAndResultMessage;
 import shop.yesaladin.coupon.message.CouponCodesMessage;
+import shop.yesaladin.coupon.message.CouponResultDto;
 import shop.yesaladin.coupon.message.CouponUseRequestMessage;
 import shop.yesaladin.coupon.message.CouponUseRequestResponseMessage;
 import shop.yesaladin.shop.coupon.adapter.kafka.CouponProducer;
-import shop.yesaladin.shop.coupon.domain.model.CouponSocketRequestKind;
 import shop.yesaladin.shop.coupon.domain.model.MemberCoupon;
 import shop.yesaladin.shop.coupon.domain.repository.QueryMemberCouponRepository;
 import shop.yesaladin.shop.coupon.dto.CouponCodeOnlyDto;
-import shop.yesaladin.shop.coupon.dto.CouponResultDto;
 import shop.yesaladin.shop.coupon.dto.MemberCouponSummaryDto;
 import shop.yesaladin.shop.coupon.dto.RequestIdOnlyDto;
-import shop.yesaladin.shop.coupon.service.inter.CouponWebsocketMessageSendService;
+import shop.yesaladin.shop.coupon.event.CouponRequestProcessEndEvent;
 import shop.yesaladin.shop.coupon.service.inter.QueryMemberCouponService;
 import shop.yesaladin.shop.coupon.service.inter.UseCouponService;
 import shop.yesaladin.shop.point.domain.model.PointReasonCode;
@@ -50,7 +50,7 @@ public class UseCouponServiceImpl implements UseCouponService {
     private final CouponProducer couponProducer;
     private final QueryMemberCouponService queryMemberCouponService;
     private final CommandPointHistoryService commandPointHistoryService;
-    private final CouponWebsocketMessageSendService couponWebsocketMessageSendService;
+    private final ApplicationEventPublisher eventPublisher;
     private final RedisTemplate<String, String> redisTemplate;
     private final Clock clock;
 
@@ -91,10 +91,9 @@ public class UseCouponServiceImpl implements UseCouponService {
     @Transactional
     public List<CouponCodeOnlyDto> useCoupon(CouponUseRequestResponseMessage message) {
         List<String> couponCodeList = getUsedCouponCode(message);
-        List<MemberCouponSummaryDto> couponSummaryDtoList = Collections.emptyList();
 
         if (!message.isSuccess()) {
-            sendUseResultSocketMessageIfIsPointCoupon(couponSummaryDtoList, message);
+            publishCouponRequestProcessEndEvent(message);
             throw new ClientException(
                     ErrorCode.BAD_REQUEST,
                     "Cannot use coupons. Request id : " + message.getRequestId() + ". "
@@ -103,7 +102,7 @@ public class UseCouponServiceImpl implements UseCouponService {
         }
 
         try {
-            couponSummaryDtoList = queryMemberCouponService.getMemberCouponSummaryList(
+            List<MemberCouponSummaryDto> couponSummaryDtoList = queryMemberCouponService.getMemberCouponSummaryList(
                     couponCodeList);
             checkCouponIsPointCouponType(couponSummaryDtoList, message.getRequestId());
 
@@ -114,37 +113,17 @@ public class UseCouponServiceImpl implements UseCouponService {
 
             sendUseResultMessage(couponCodeList, true);
 
-            sendUseResultSocketMessageIfIsPointCoupon(couponSummaryDtoList, message);
+            publishCouponRequestProcessEndEvent(message);
 
             return couponCodeList.stream().map(CouponCodeOnlyDto::new).collect(Collectors.toList());
         } catch (Exception e) {
             sendUseResultMessage(couponCodeList, false);
-            sendUseResultSocketMessageIfIsPointCoupon(couponSummaryDtoList, message);
+            publishCouponRequestProcessEndEvent(message, false);
             throw new ServerException(
                     ErrorCode.INTERNAL_SERVER_ERROR,
                     "Use coupon failed. Coupon codes : " + couponCodeList
             );
         }
-    }
-
-    private void sendUseResultSocketMessageIfIsPointCoupon(
-            List<MemberCouponSummaryDto> couponSummaryDtoList,
-            CouponUseRequestResponseMessage message
-    ) {
-        boolean hasOnlyPointCoupon = couponSummaryDtoList.stream()
-                .allMatch(memberCouponSummaryDto -> memberCouponSummaryDto.getCouponTypeCode()
-                        .equals(CouponTypeCode.POINT));
-
-        if (!hasOnlyPointCoupon) {
-            return;
-        }
-
-        couponWebsocketMessageSendService.trySendGiveCouponResultMessage(new CouponResultDto(
-                CouponSocketRequestKind.USE,
-                message.getRequestId(),
-                message.isSuccess(),
-                message.isSuccess() ? "사용이 완료되었습니다." : message.getErrorMessage()
-        ));
     }
 
     /**
@@ -155,6 +134,23 @@ public class UseCouponServiceImpl implements UseCouponService {
         couponProducer.produceUseRequestCancelMessage(new CouponCodesMessage(couponCodeList));
 
         return couponCodeList.stream().map(CouponCodeOnlyDto::new).collect(Collectors.toList());
+    }
+
+    private void publishCouponRequestProcessEndEvent(CouponUseRequestResponseMessage message) {
+        this.publishCouponRequestProcessEndEvent(message, message.isSuccess());
+    }
+
+    private void publishCouponRequestProcessEndEvent(
+            CouponUseRequestResponseMessage message, boolean success
+    ) {
+        CouponResultDto resultMessage = new CouponResultDto(
+                CouponSocketRequestKind.USE,
+                message.getRequestId(),
+                success,
+                success ? "사용이 완료되었습니다." : message.getErrorMessage(),
+                LocalDateTime.now(clock)
+        );
+        eventPublisher.publishEvent(new CouponRequestProcessEndEvent(this, resultMessage));
     }
 
     private void checkCouponIsPointCouponType(

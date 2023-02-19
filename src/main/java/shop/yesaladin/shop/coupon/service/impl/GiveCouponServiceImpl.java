@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpMethod;
@@ -41,6 +42,7 @@ import shop.yesaladin.shop.coupon.domain.repository.CommandMemberCouponRepositor
 import shop.yesaladin.shop.coupon.domain.repository.QueryMemberCouponRepository;
 import shop.yesaladin.shop.coupon.dto.CouponGroupAndLimitDto;
 import shop.yesaladin.shop.coupon.dto.RequestIdOnlyDto;
+import shop.yesaladin.shop.coupon.event.CouponRequestProcessEndEvent;
 import shop.yesaladin.shop.coupon.service.inter.GiveCouponService;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
@@ -69,6 +71,7 @@ public class GiveCouponServiceImpl implements GiveCouponService {
     private final QueryMemberService queryMemberService;
     private final RestTemplate restTemplate;
     private final RedisTemplate<String, String> redisTemplate;
+    private final ApplicationEventPublisher eventPublisher;
     private final Clock clock;
 
     @Override
@@ -142,23 +145,25 @@ public class GiveCouponServiceImpl implements GiveCouponService {
             tryGiveCouponToMember(responseMessage, memberId);
             couponProducer.produceGivenResultMessage(resultBuilder.success(true).build());
 
-            couponWebsocketMessageSendService.trySendGiveCouponResultMessage(new CouponResultDto(
+            CouponResultDto resultMessage = new CouponResultDto(
                     CouponSocketRequestKind.GIVE,
                     responseMessage.getRequestId(),
                     responseMessage.isSuccess(),
                     responseMessage.isSuccess() ? "발급이 완료되었습니다."
                             : responseMessage.getErrorMessage(),
                     LocalDateTime.now(clock)
-            ));
+            );
+            eventPublisher.publishEvent(new CouponRequestProcessEndEvent(this, resultMessage));
         } catch (Exception e) {
             couponProducer.produceGivenResultMessage(resultBuilder.success(false).build());
-            couponWebsocketMessageSendService.trySendGiveCouponResultMessage(new CouponResultDto(
+            CouponResultDto resultMessage = new CouponResultDto(
                     CouponSocketRequestKind.GIVE,
                     responseMessage.getRequestId(),
                     responseMessage.isSuccess(),
                     responseMessage.getErrorMessage(),
                     LocalDateTime.now(clock)
-            ));
+            );
+            eventPublisher.publishEvent(new CouponRequestProcessEndEvent(this, resultMessage));
             throw e;
         }
     }

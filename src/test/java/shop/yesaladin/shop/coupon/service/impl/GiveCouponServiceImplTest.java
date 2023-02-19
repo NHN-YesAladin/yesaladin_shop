@@ -13,6 +13,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -40,7 +41,7 @@ import shop.yesaladin.shop.member.dto.MemberDto;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 
 @Disabled
-@SuppressWarnings("unchecked")
+@SuppressWarnings("all")
 class GiveCouponServiceImplTest {
 
     private GatewayProperties gatewayProperties;
@@ -52,6 +53,7 @@ class GiveCouponServiceImplTest {
     private RedisTemplate<String, String> redisTemplate;
     private GiveCouponServiceImpl giveCouponService;
     private ValueOperations<String, String> valueOperations = Mockito.mock(ValueOperations.class);
+    private ApplicationEventPublisher applicationEventPublisher;
     private final static Clock clock = Clock.fixed(Instant.ofEpochSecond(100000), ZoneId.of("UTC"));
 
     @BeforeEach
@@ -64,6 +66,7 @@ class GiveCouponServiceImplTest {
         queryMemberService = Mockito.mock(QueryMemberService.class);
         restTemplate = Mockito.mock(RestTemplate.class);
         redisTemplate = Mockito.mock(RedisTemplate.class);
+        applicationEventPublisher = Mockito.mock(ApplicationEventPublisher.class);
         giveCouponService = new GiveCouponServiceImpl(
                 gatewayProperties,
                 couponProducer,
@@ -72,6 +75,7 @@ class GiveCouponServiceImplTest {
                 queryMemberService,
                 restTemplate,
                 redisTemplate,
+                applicationEventPublisher,
                 clock
         );
         Mockito.when(gatewayProperties.getCouponUrl()).thenReturn("http://localhost:8085");
