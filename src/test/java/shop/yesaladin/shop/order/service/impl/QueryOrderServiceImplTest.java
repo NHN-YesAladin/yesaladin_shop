@@ -397,7 +397,7 @@ class QueryOrderServiceImplTest {
         // when
         // then
         assertThatThrownBy(() -> service.getOrderByNumber(wrongData))
-                .isInstanceOf(OrderNotFoundException.class);
+                .isInstanceOf(ClientException.class).hasMessageContaining("주문을 찾을 수 없습니다");
 
         Mockito.verify(repository, Mockito.times(1))
                 .findByOrderNumber(stringArgumentCaptor.capture());
@@ -1284,5 +1284,31 @@ class QueryOrderServiceImplTest {
                 .findFirstByOrder_IdOrderByOrderStatusCodeDesc(any());
         Mockito.verify(queryOrderProductRepository, Mockito.times(1)).findAllByOrderNumber(any());
         Mockito.verify(queryPaymentService, Mockito.times(1)).findByOrderId(memberOrder.getId());
+    }
+
+    @Test
+    @DisplayName("해당 주문번호가 회원 주문일 경우, 성공")
+    void isMemberOrder() throws Exception {
+        // given
+        Mockito.when(repository.findByOrderNumber(any())).thenReturn(Optional.of(memberOrder));
+
+        // when
+        boolean isMemberOrder = service.isMemberOrder(memberOrder.getOrderNumber());
+
+        // then
+        Assertions.assertThat(isMemberOrder).isTrue();
+    }
+
+    @Test
+    @DisplayName("해당 주문번호가 비회원 주문일 경우, 실패")
+    void isMemberOrder_nonMemberOrder_fail() throws Exception {
+        // given
+        Mockito.when(repository.findByOrderNumber(any())).thenReturn(Optional.of(nonMemberOrder));
+
+        // when
+        boolean isMemberOrder = service.isMemberOrder(nonMemberOrder.getOrderNumber());
+
+        // then
+        Assertions.assertThat(isMemberOrder).isFalse();
     }
 }

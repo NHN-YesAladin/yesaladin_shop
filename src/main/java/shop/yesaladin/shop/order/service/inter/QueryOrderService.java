@@ -174,4 +174,14 @@ public interface QueryOrderService {
      */
     List<BestsellerResponseDto> getBestseller();
 
+    /**
+     * 회원 주문인지 확인합니다.
+     *
+     * @param orderNumber 주문번호
+     * @return 회원주문 여부
+     * @author 배수한
+     * @since 1.0
+     */
+    boolean isMemberOrder(String orderNumber);
+
 }

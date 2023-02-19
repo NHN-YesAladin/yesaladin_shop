@@ -144,7 +144,10 @@ public class QueryOrderServiceImpl implements QueryOrderService {
 
     private Order tryGetOrder(String number) {
         return queryOrderRepository.findByOrderNumber(number)
-                .orElseThrow(() -> new OrderNotFoundException(number));
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.ORDER_NOT_FOUND,
+                        ErrorCode.ORDER_NOT_FOUND.getDisplayName() + number
+                ));
     }
 
     /**
@@ -485,6 +488,12 @@ public class QueryOrderServiceImpl implements QueryOrderService {
                             product.getSellingPrice()
                     );
                 }).collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean isMemberOrder(String orderNumber) {
+        Order order = tryGetOrder(orderNumber);
+        return order instanceof MemberOrder;
     }
 
     /**
