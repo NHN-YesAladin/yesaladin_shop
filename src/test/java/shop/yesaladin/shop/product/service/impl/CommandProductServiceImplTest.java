@@ -594,8 +594,8 @@ class CommandProductServiceImplTest {
                 .collect(Collectors.toList());
 
         List<Product> productList = List.of(
-                DummyProduct.dummy(ISBN1, null, null, null,null),
-                DummyProduct.dummy(ISBN2, null, null, null,null)
+                DummyProduct.dummy(ISBN1, null, null, null, null),
+                DummyProduct.dummy(ISBN2, null, null, null, null)
         );
         Mockito.when(queryProductRepository.findByIsbnList(any()))
                 .thenReturn(productList);
