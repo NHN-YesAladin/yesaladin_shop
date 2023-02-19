@@ -113,7 +113,7 @@ include::{snippets}/get-order-count-by-status/response-fields.adoc[]
 
 include::{snippets}/get-order-count-by-status/http-response.adoc[]
 
-=== 주문 상세 조
+=== 주문 상세 조회
 
 ==== curl
 
@@ -125,13 +125,16 @@ include::{snippets}/get-order-details/curl-request.adoc[]
 
 include::{snippets}/get-order-details/path-parameters.adoc[]
 
-===== Body
+===== Query Parameter
 
-include::{snippets}/get-order-details/request-body.adoc[]
+include::{snippets}/get-order-details/request-parameters.adoc[]
+
 
 ===== Example
-
+====== 회원 주문 조회
 include::{snippets}/get-order-details/http-request.adoc[]
+====== 비회원 주문 조회
+include::{snippets}/get-order-details-fail/http-request.adoc[]
 
 ==== response
 
@@ -140,7 +143,10 @@ include::{snippets}/get-order-details/http-request.adoc[]
 include::{snippets}/get-order-details/response-fields-data.adoc[]
 
 ===== Example
-
+===== 조회 성공
 include::{snippets}/get-order-details/http-response.adoc[]
+===== 회원 주문번호로 비회원 주문 조회시 실패
+include::{snippets}/get-order-details-fail/http-response.adoc[]
 
 ---
+

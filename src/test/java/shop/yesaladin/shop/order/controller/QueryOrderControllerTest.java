@@ -1,6 +1,37 @@
 package shop.yesaladin.shop.order.controller;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.payload.PayloadDocumentation.beneathPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentRequest;
+import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
+import static shop.yesaladin.shop.docs.DocumentFormatGenerator.defaultValue;
+import static shop.yesaladin.shop.docs.DocumentFormatGenerator.getDateFormat;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,11 +53,21 @@ import org.springframework.test.web.servlet.ResultActions;
 import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.file.domain.model.File;
+import shop.yesaladin.shop.member.domain.model.Member;
+import shop.yesaladin.shop.member.domain.model.MemberAddress;
+import shop.yesaladin.shop.order.domain.model.MemberOrder;
 import shop.yesaladin.shop.order.domain.model.NonMemberOrder;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
 import shop.yesaladin.shop.order.domain.model.OrderProduct;
 import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
-import shop.yesaladin.shop.order.dto.*;
+import shop.yesaladin.shop.order.dto.BestsellerResponseDto;
+import shop.yesaladin.shop.order.dto.OrderDetailsResponseDto;
+import shop.yesaladin.shop.order.dto.OrderProductResponseDto;
+import shop.yesaladin.shop.order.dto.OrderResponseDto;
+import shop.yesaladin.shop.order.dto.OrderSummaryDto;
+import shop.yesaladin.shop.order.dto.SalesStatisticsResponseDto;
+import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
+import shop.yesaladin.shop.order.persistence.dummy.DummyMemberAddress;
 import shop.yesaladin.shop.order.persistence.dummy.DummyOrder;
 import shop.yesaladin.shop.order.service.inter.QueryOrderService;
 import shop.yesaladin.shop.payment.domain.model.Payment;
@@ -44,30 +85,6 @@ import shop.yesaladin.shop.product.dummy.DummyProduct;
 import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
 import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
 import shop.yesaladin.shop.writing.dto.AuthorsResponseDto;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentRequest;
-import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
-import static shop.yesaladin.shop.docs.DocumentFormatGenerator.defaultValue;
-import static shop.yesaladin.shop.docs.DocumentFormatGenerator.getDateFormat;
 
 @AutoConfigureRestDocs
 @WebMvcTest(QueryOrderController.class)
@@ -263,6 +280,7 @@ class QueryOrderControllerTest {
         paymentDto.setEasyPayInfo(payment);
         responseDto.setPayment(paymentDto);
 
+        Mockito.when(queryOrderService.isMemberOrder(any())).thenReturn(false);
         Mockito.when(queryOrderService.getDetailsDtoByOrderNumber(any())).thenReturn(responseDto);
 
         // when
@@ -273,7 +291,6 @@ class QueryOrderControllerTest {
 
         // then
         perform.andExpect(status().isOk())
-                .andDo(print())
                 .andExpect(header().stringValues("Content-Type", MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$.success", equalTo(true)))
                 .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())))
@@ -305,6 +322,11 @@ class QueryOrderControllerTest {
                 getDocumentResponse(),
                 pathParameters(
                         parameterWithName("orderNumber").description("조회하고자 하는 주문 번호")
+                ),
+                requestParameters(
+                        parameterWithName("type").description("비회원 조회인지 확인하는 파라미터")
+                                .optional()
+                                .attributes(defaultValue("none"))
                 ),
                 responseFields(
                         beneathPath("data").withSubsectionId("data"),
@@ -406,6 +428,61 @@ class QueryOrderControllerTest {
 
     @WithMockUser
     @Test
+    @DisplayName("회원 주문번호를 비회원 주문 조회에서 조회할 경우 예외가 발생한다.")
+    void getOrderDetails_byFindingNonMember_fail() throws Exception {
+        // given
+        Member member = DummyMember.memberWithId();
+        MemberAddress memberAddress = DummyMemberAddress.addressWithId(member);
+        MemberOrder memberOrder = DummyOrder.memberOrderWithId(
+                member,
+                memberAddress
+        );
+
+        Mockito.when(queryOrderService.isMemberOrder(any())).thenReturn(true);
+
+        // when
+        ResultActions perform = mockMvc.perform(get(
+                "/v1/orders/{orderNumber}",
+                memberOrder.getOrderNumber()
+        ).queryParam("type", "none").contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        perform.andExpect(status().isForbidden())
+                .andDo(print())
+                .andExpect(header().stringValues("Content-Type", MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.FORBIDDEN.value())));
+
+        // docs
+        perform.andDo(document(
+                "get-order-details-fail",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                pathParameters(
+                        parameterWithName("orderNumber").description("조회하고자 하는 주문 번호")
+                ),
+                requestParameters(
+                        parameterWithName("type").description("비회원 조회인지 확인하는 파라미터")
+                                .optional()
+                                .attributes(defaultValue("none"))
+                ),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("HTTP 상태 코드"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지"),
+                        fieldWithPath("data").type(JsonFieldType.ARRAY)
+                                .optional()
+                                .description("데이터 리스트 ")
+                )
+        ));
+
+    }
+
+    @WithMockUser
+    @Test
     @DisplayName("정해진 기간동안의 매출 통계 정보를 조회하여 반환 성공")
     void getSalesStatistics() throws Exception {
         // given
@@ -449,7 +526,6 @@ class QueryOrderControllerTest {
                 .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())));
 
         verify(queryOrderService, times(1)).getSalesStatistics(anyString(), anyString(), any());
-
 
         // docs
         result.andDo(document(
