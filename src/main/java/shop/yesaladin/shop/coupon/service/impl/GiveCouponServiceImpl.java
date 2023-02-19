@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.coupon.service.impl;
 
+import java.time.Clock;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -12,7 +13,6 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -26,22 +26,21 @@ import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.common.exception.ServerException;
+import shop.yesaladin.coupon.code.CouponSocketRequestKind;
 import shop.yesaladin.coupon.code.TriggerTypeCode;
 import shop.yesaladin.coupon.dto.CouponGiveDto;
 import shop.yesaladin.coupon.message.CouponCodesAndResultMessage;
 import shop.yesaladin.coupon.message.CouponCodesAndResultMessage.CouponCodesAndResultMessageBuilder;
 import shop.yesaladin.coupon.message.CouponGiveRequestMessage;
 import shop.yesaladin.coupon.message.CouponGiveRequestResponseMessage;
+import shop.yesaladin.coupon.message.CouponResultDto;
 import shop.yesaladin.shop.config.GatewayProperties;
 import shop.yesaladin.shop.coupon.adapter.kafka.CouponProducer;
-import shop.yesaladin.shop.coupon.domain.model.CouponSocketRequestKind;
 import shop.yesaladin.shop.coupon.domain.model.MemberCoupon;
 import shop.yesaladin.shop.coupon.domain.repository.CommandMemberCouponRepository;
 import shop.yesaladin.shop.coupon.domain.repository.QueryMemberCouponRepository;
-import shop.yesaladin.shop.coupon.dto.CouponResultDto;
 import shop.yesaladin.shop.coupon.dto.CouponGroupAndLimitDto;
 import shop.yesaladin.shop.coupon.dto.RequestIdOnlyDto;
-import shop.yesaladin.shop.coupon.service.inter.CouponWebsocketMessageSendService;
 import shop.yesaladin.shop.coupon.service.inter.GiveCouponService;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
@@ -70,8 +69,7 @@ public class GiveCouponServiceImpl implements GiveCouponService {
     private final QueryMemberService queryMemberService;
     private final RestTemplate restTemplate;
     private final RedisTemplate<String, String> redisTemplate;
-    ListOperations<String, String> listOperations;
-    private final CouponWebsocketMessageSendService couponWebsocketMessageSendService;
+    private final Clock clock;
 
     @Override
     @Transactional(readOnly = true)
@@ -148,7 +146,9 @@ public class GiveCouponServiceImpl implements GiveCouponService {
                     CouponSocketRequestKind.GIVE,
                     responseMessage.getRequestId(),
                     responseMessage.isSuccess(),
-                    responseMessage.isSuccess() ? "발급이 완료되었습니다." : responseMessage.getErrorMessage()
+                    responseMessage.isSuccess() ? "발급이 완료되었습니다."
+                            : responseMessage.getErrorMessage(),
+                    LocalDateTime.now(clock)
             ));
         } catch (Exception e) {
             couponProducer.produceGivenResultMessage(resultBuilder.success(false).build());
@@ -156,7 +156,8 @@ public class GiveCouponServiceImpl implements GiveCouponService {
                     CouponSocketRequestKind.GIVE,
                     responseMessage.getRequestId(),
                     responseMessage.isSuccess(),
-                    responseMessage.getErrorMessage()
+                    responseMessage.getErrorMessage(),
+                    LocalDateTime.now(clock)
             ));
             throw e;
         }
@@ -305,17 +306,21 @@ public class GiveCouponServiceImpl implements GiveCouponService {
      * @param requestDateTime 이달의 쿠폰 발행 요청 시간
      */
     private void checkMonthlyCouponIssueRequestTime(LocalDateTime requestDateTime) {
-        if (Boolean.FALSE.equals(redisTemplate.opsForHash().hasKey(MONTHLY_POLICY_KEY, MONTHLY_COUPON_OPEN_DATE_TIME_KEY))) {
+        if (Boolean.FALSE.equals(redisTemplate.opsForHash()
+                .hasKey(MONTHLY_POLICY_KEY, MONTHLY_COUPON_OPEN_DATE_TIME_KEY))) {
             throw new ClientException(
                     ErrorCode.NOT_FOUND,
                     "Not found any monthly coupon open date time."
             );
         }
 
-        String openDateTimeStr = redisTemplate.opsForHash().get(MONTHLY_POLICY_KEY, MONTHLY_COUPON_OPEN_DATE_TIME_KEY).toString();
+        String openDateTimeStr = redisTemplate.opsForHash()
+                .get(MONTHLY_POLICY_KEY, MONTHLY_COUPON_OPEN_DATE_TIME_KEY)
+                .toString();
 
         requestDateTime = requestDateTime.plusHours(9);     // UTC to KST
-        LocalDateTime openDateTime = LocalDateTime.parse(openDateTimeStr,
+        LocalDateTime openDateTime = LocalDateTime.parse(
+                openDateTimeStr,
                 DateTimeFormatter.ISO_LOCAL_DATE_TIME
         );
 
