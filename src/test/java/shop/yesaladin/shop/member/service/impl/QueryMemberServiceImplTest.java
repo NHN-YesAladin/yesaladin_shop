@@ -172,6 +172,31 @@ class QueryMemberServiceImplTest {
     }
 
     @Test
+    void findMemberManages() {
+        //given
+        String loginId = "loginId";
+        Member member = Member.builder().loginId(loginId).build();
+        MemberManagerResponseDto dto = MemberManagerResponseDto.fromEntity(member);
+
+        Mockito.when(queryMemberRepository.findMemberManagers(
+                        PageRequest.of(0, 10)
+                ))
+                .thenReturn(new PageImpl<>(List.of(dto), PageRequest.of(0, 10), 1L));
+
+        //when
+        Page<MemberManagerResponseDto> result = service.findMemberManages(
+                PageRequest.of(0, 10)
+        );
+
+        //then
+        assertThat(result.getTotalElements()).isEqualTo(1);
+        assertThat(result.getContent()).hasSize(1);
+        assertThat(result.getNumber()).isZero();
+        assertThat(result.getContent().get(0).getLoginId()).isEqualTo(loginId);
+        verify(queryMemberRepository, atLeastOnce()).findMemberManagers(PageRequest.of(0, 10));
+    }
+
+    @Test
     void findMemberManagesByLoginId() {
         //given
         String loginId = "loginId";
@@ -193,7 +218,7 @@ class QueryMemberServiceImplTest {
         //then
         assertThat(result.getTotalElements()).isEqualTo(1);
         assertThat(result.getContent()).hasSize(1);
-        assertThat(result.getNumber()).isEqualTo(0);
+        assertThat(result.getNumber()).isZero();
         assertThat(result.getContent().get(0).getLoginId()).isEqualTo(loginId);
         verify(queryMemberRepository, atLeastOnce()).findMemberManagersByLoginId(loginId, PageRequest.of(0, 10));
     }

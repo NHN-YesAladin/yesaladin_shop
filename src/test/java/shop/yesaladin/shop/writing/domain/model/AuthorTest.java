@@ -1,11 +1,11 @@
 package shop.yesaladin.shop.writing.domain.model;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class AuthorTest {
 

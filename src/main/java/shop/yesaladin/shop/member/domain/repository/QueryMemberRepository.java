@@ -61,6 +61,16 @@ public interface QueryMemberRepository {
     Optional<Member> findMemberByEmail(String email);
 
     /**
+     * 기본 화면을 위한 회원 조회 메서드
+     *
+     * @param pageable 페이지 정보
+     * @return 조회된 회원 정보
+     * @author 김선홍
+     * @since 1.0
+     */
+    Page<MemberManagerResponseDto> findMemberManagers(Pageable pageable);
+
+    /**
      * 회원의 LoginId 를 통해 회원 Like 검색
      *
      * @param loginId 회원의 loginId

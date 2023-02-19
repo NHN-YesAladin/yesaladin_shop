@@ -120,6 +120,61 @@ public interface QueryProductRepository {
     Page<Product> findAllByTypeIdForManager(Pageable pageable, Integer typeId);
 
     /**
+     * 관리자용 상품 제목 검색 메서드
+     *
+     * @param title 검색할 제목
+     * @param pageable 페이지 정보
+     * @return 검색 결과
+     * @author 김선홍
+     * @since 1, 0
+     */
+    Page<Product> findByTitleForManager(String title, Pageable pageable);
+
+    /**
+     * 관리자용 상품 isbn 검색 메서드
+     *
+     * @param isbn 검색할 isbn
+     * @param pageable 페이지 정보
+     * @return 검색 결과
+     * @author 김선홍
+     * @since 1, 0
+     */
+    Page<Product> findByISBNForManager(String isbn, Pageable pageable);
+
+    /**
+     * 관리자용 상품 내용 검색 메서드
+     *
+     * @param content 검색할 제목
+     * @param pageable 페이지 정보
+     * @return 검색 결과
+     * @author 김선홍
+     * @since 1, 0
+     */
+    Page<Product> findByContentForManager(String content, Pageable pageable);
+
+    /**
+     * 관리자용 상품 출판사 검색 메서드
+     *
+     * @param publisher 검색할 제목
+     * @param pageable 페이지 정보
+     * @return 검색 결과
+     * @author 김선홍
+     * @since 1, 0
+     */
+    Page<Product> findByPublisherForManager(String publisher, Pageable pageable);
+
+    /**
+     * 관리자용 상품 저자 검색 메서드
+     *
+     * @param author 검색할 제목
+     * @param pageable 페이지 정보
+     * @return 검색 결과
+     * @author 김선홍
+     * @since 1, 0
+     */
+    Page<Product> findByAuthorForManager(String author, Pageable pageable);
+
+    /**
      * 주문 상품의 isbn 과 수량으로 구매 가능한 상품을 조회 합니다.
      *
      * @param isbn     상품의 isbn
@@ -174,11 +229,12 @@ public interface QueryProductRepository {
     /**
      * 최근 본 상품 메소드
      *
-     * @param ids      본 상품들의 id 리스트
+     * @param totalIds 본 상품들의 id 리스트
+     * @param pageIds  페이지에 보여줄 상품들
      * @param pageable 페이지 정보
      * @return 최근 본 상품 리스트
      * @author 김선홍
      * @since 1, 0
      */
-    Page<Product> findRecentViewProductById(List<Long> ids, Pageable pageable);
+    Page<Product> findRecentViewProductById(List<Long> totalIds, List<Long> pageIds, Pageable pageable);
 }

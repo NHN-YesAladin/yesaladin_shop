@@ -25,4 +25,7 @@ public class GatewayProperties {
 
     @Value("${yesaladin.gateway.delivery}")
     private String deliveryUrl;
+
+    @Value("${yesaladin.gateway.socket}")
+    private String socketUrl;
 }

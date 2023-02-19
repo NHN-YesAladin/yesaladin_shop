@@ -1,10 +1,11 @@
 package shop.yesaladin.shop.order.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonValue;
-import java.util.Arrays;
-import java.util.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Arrays;
+import java.util.Optional;
 
 /**
  * 주문 코드 입니다.

@@ -1,8 +1,5 @@
 package shop.yesaladin.shop.product.service.impl;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +10,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.product.domain.repository.SearchProductRepository;
 import shop.yesaladin.shop.product.dto.SearchedProductResponseDto;
+
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class SearchProductServiceImplTest {
 

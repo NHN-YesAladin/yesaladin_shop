@@ -537,6 +537,41 @@ class QueryMemberControllerTest {
 
     @WithMockUser
     @Test
+    void manageMemberInfo() throws Exception {
+        //given
+        String loginId = "loginId";
+        Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
+        MemberManagerResponseDto responseDto = MemberManagerResponseDto.fromEntity(member);
+        Mockito.when(queryMemberService.findMemberManages(PageRequest.of(0, 10)))
+                .thenReturn(new PageImpl<>(List.of(responseDto), PageRequest.of(0, 1), 1L));
+
+        ResultActions resultActions = mockMvc.perform(get("/v1/members/manage"));
+
+        resultActions.andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.data.dataList[0].id", equalTo(1)))
+                .andExpect(jsonPath("$.data.dataList[0].loginId", equalTo(member.getLoginId())))
+                .andExpect(jsonPath("$.data.dataList[0].nickname", equalTo(member.getNickname())))
+                .andExpect(jsonPath("$.data.dataList[0].email", equalTo(member.getEmail())))
+                .andExpect(jsonPath("$.data.dataList[0].phone", equalTo(member.getPhone())))
+                .andExpect(jsonPath("$.data.dataList[0].name", equalTo(member.getName())))
+                .andExpect(jsonPath(
+                        "$.data.dataList[0].signUpDate",
+                        equalTo(member.getSignUpDate().toString())
+                ))
+                .andExpect(jsonPath("$.data.dataList[0].withdrawalDate", equalTo(null)))
+                .andExpect(jsonPath(
+                        "$.data.dataList[0].isWithdrawal",
+                        equalTo(member.isWithdrawal())
+                ))
+                .andExpect(jsonPath("$.data.dataList[0].isBlocked", equalTo(member.isBlocked())))
+                .andExpect(jsonPath("$.data.dataList[0].blockedReason", equalTo(null)))
+                .andExpect(jsonPath("$.data.dataList[0].blockedDate", equalTo(null)))
+                .andExpect(jsonPath("$.data.dataList[0].unblockedDate", equalTo(null)));
+    }
+
+    @WithMockUser
+    @Test
     void manageMemberInfoByLoginId() throws Exception {
         //given
         String loginId = "loginId";

@@ -1,14 +1,5 @@
 package shop.yesaladin.shop.writing.service.impl;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,6 +16,11 @@ import shop.yesaladin.shop.writing.domain.repository.QueryWritingRepository;
 import shop.yesaladin.shop.writing.dto.WritingResponseDto;
 import shop.yesaladin.shop.writing.dummy.DummyAuthor;
 import shop.yesaladin.shop.writing.service.inter.CommandWritingService;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 class CommandWritingServiceImplTest {
 

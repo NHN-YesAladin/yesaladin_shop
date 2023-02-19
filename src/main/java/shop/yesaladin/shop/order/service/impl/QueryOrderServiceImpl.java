@@ -33,6 +33,7 @@ import shop.yesaladin.shop.payment.dto.PaymentResponseDto;
 import shop.yesaladin.shop.payment.service.inter.QueryPaymentService;
 import shop.yesaladin.shop.point.service.inter.QueryPointHistoryService;
 import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
+import shop.yesaladin.shop.product.dto.ProductResponseDto;
 import shop.yesaladin.shop.product.service.inter.QueryProductService;
 
 import java.math.BigDecimal;
@@ -420,6 +421,33 @@ public class QueryOrderServiceImpl implements QueryOrderService {
                 .totalDataCount(totalDataCount)
                 .totalPage((long) Math.ceil((double) totalDataCount / pageable.getPageSize()))
                 .build();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public List<BestsellerResponseDto> getBestseller() {
+        LocalDate now = LocalDate.now();
+        List<Long> bestseller = myBatisSalesStatisticsMapper.getBestseller(
+                now.minusYears(1).toString(),
+                now.toString()
+        );
+
+        return bestseller.stream()
+                .map(id -> {
+                    ProductResponseDto product = queryProductService.findProductById(id);
+
+                    return new BestsellerResponseDto(
+                            id,
+                            product.getTitle(),
+                            product.getThumbnailFileUrl(),
+                            product.getAuthors(),
+                            product.getPublisher(),
+                            product.getSellingPrice()
+                    );
+                }).collect(Collectors.toList());
     }
 
     /**

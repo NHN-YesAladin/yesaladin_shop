@@ -1,9 +1,5 @@
 package shop.yesaladin.shop.file.service.impl;
 
-import static org.mockito.Mockito.mock;
-
-import java.io.FileInputStream;
-import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -15,6 +11,11 @@ import shop.yesaladin.shop.config.ClockConfiguration;
 import shop.yesaladin.shop.config.ObjectStorageProperties;
 import shop.yesaladin.shop.file.service.inter.ObjectStorageService;
 import shop.yesaladin.shop.file.service.inter.StorageAuthService;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+
+import static org.mockito.Mockito.mock;
 
 class FileStorageServiceImplTest {
 
