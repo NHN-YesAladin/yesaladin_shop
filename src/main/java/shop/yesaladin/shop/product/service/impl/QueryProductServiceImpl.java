@@ -25,6 +25,7 @@ import shop.yesaladin.shop.product.dto.ProductOnlyTitleDto;
 import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
 import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
 import shop.yesaladin.shop.product.dto.ProductRecentResponseDto;
+import shop.yesaladin.shop.product.dto.ProductResponseDto;
 import shop.yesaladin.shop.product.dto.ProductWithCategoryResponseDto;
 import shop.yesaladin.shop.product.dto.ProductsResponseDto;
 import shop.yesaladin.shop.product.dto.RelationsResponseDto;
@@ -574,7 +575,7 @@ public class QueryProductServiceImpl implements QueryProductService {
      * @param pageable 페이지 정보
      * @return Dto 리스트
      * @author 김선홍
-     * @sinco 1.0
+     * @since 1.0
      */
     private Page<ProductRecentResponseDto> createProductRecentResponseDto(
             Page<Product> products,
