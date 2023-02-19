@@ -84,6 +84,26 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
      * {@inheritDoc}
      */
     @Override
+    public Page<MemberManagerResponseDto> findMemberManagers(Pageable pageable) {
+        QMember member = QMember.member;
+        List<Member> list = queryFactory.selectFrom(member)
+                .where(member.isWithdrawal.isFalse())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+        Long count = queryFactory.select(member.count())
+                .from(member)
+                .where(member.isWithdrawal.isFalse())
+                .fetchFirst();
+        return new PageImpl<>(list.stream()
+                .map(MemberManagerResponseDto::fromEntity)
+                .collect(Collectors.toList()), pageable, count);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Page<MemberManagerResponseDto> findMemberManagersByLoginId(
             String loginId,
             Pageable pageable

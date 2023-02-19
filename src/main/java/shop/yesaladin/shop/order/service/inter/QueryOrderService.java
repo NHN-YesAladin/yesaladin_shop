@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.order.service.inter;
 
+import java.util.Map;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
@@ -8,9 +9,9 @@ import shop.yesaladin.shop.common.exception.PageOffsetOutOfBoundsException;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
 import shop.yesaladin.shop.order.dto.*;
-
 import java.util.List;
 import java.util.Map;
+
 
 /**
  * 주문 데이터 조회에 관련된 기능을 수행하는 서비스 인터페이스
@@ -161,6 +162,7 @@ public interface QueryOrderService {
      * @author 이수정
      * @since 1.0
      */
+
     PaginatedResponseDto<SalesStatisticsResponseDto> getSalesStatistics(String start, String end, Pageable pageable);
 
     /**
@@ -171,5 +173,15 @@ public interface QueryOrderService {
      * @since 1.0
      */
     List<BestsellerResponseDto> getBestseller();
+
+    /**
+     * 회원 주문인지 확인합니다.
+     *
+     * @param orderNumber 주문번호
+     * @return 회원주문 여부
+     * @author 배수한
+     * @since 1.0
+     */
+    boolean isMemberOrder(String orderNumber);
 
 }

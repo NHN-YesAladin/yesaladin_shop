@@ -106,6 +106,18 @@ class QueryDslQueryMemberRepositoryTest {
     }
 
     @Test
+    void findMemberManagers() {
+        //when
+        Page<MemberManagerResponseDto> memberList = queryMemberRepository.findMemberManagers(
+                PageRequest.of(0, 1)
+        );
+        //then
+        assertThat(memberList.getTotalElements()).isEqualTo(2);
+        assertThat(memberList.getContent()).hasSize(1);
+        assertThat(memberList.getContent().get(0).getLoginId().contains(member.getLoginId())).isTrue();
+    }
+
+    @Test
     void findMemberManagersByLoginId() {
         //when
         Page<MemberManagerResponseDto> memberList = queryMemberRepository.findMemberManagersByLoginId(

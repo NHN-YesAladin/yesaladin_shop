@@ -1,20 +1,32 @@
 package shop.yesaladin.shop.order.controller;
 
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.dto.ResponseDto;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.common.aspect.annotation.LoginId;
 import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
-import shop.yesaladin.shop.order.dto.*;
+import shop.yesaladin.shop.order.dto.BestsellerResponseDto;
+import shop.yesaladin.shop.order.dto.OrderDetailsResponseDto;
+import shop.yesaladin.shop.order.dto.OrderSheetRequestDto;
+import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
+import shop.yesaladin.shop.order.dto.OrderSummaryDto;
+import shop.yesaladin.shop.order.dto.SalesStatisticsResponseDto;
 import shop.yesaladin.shop.order.service.inter.QueryOrderService;
-
 import java.util.List;
-import java.util.Objects;
 
 /**
  * 전체 주문 조회 관련 rest controller 클래스 입니다.
@@ -87,7 +99,18 @@ public class QueryOrderController {
      * @return 주문 상세 조회 관련 정보
      */
     @GetMapping("/v1/orders/{orderNumber}")
-    public ResponseDto<OrderDetailsResponseDto> getOrderDetails(@PathVariable String orderNumber) {
+    public ResponseDto<OrderDetailsResponseDto> getOrderDetails(
+            @PathVariable String orderNumber,
+            @RequestParam(value = "type", required = false) String type
+    ) {
+        // 비회원 주문 번호 조회로 회원 주문번호 조회했을 경우, 권한 없음 예외 발생
+        if (Objects.equals(type, "none") && queryOrderService.isMemberOrder(orderNumber)) {
+            throw new ClientException(
+                    ErrorCode.FORBIDDEN,
+                    ErrorCode.FORBIDDEN.getDisplayName() + " 회원 주문번호는 비회원 주문 조회에서는 조회가 불가합니다."
+            );
+        }
+
         OrderDetailsResponseDto response = queryOrderService.getDetailsDtoByOrderNumber(
                 orderNumber);
 
@@ -113,6 +136,7 @@ public class QueryOrderController {
             @RequestParam String end,
             Pageable pageable
     ) {
+
         PaginatedResponseDto<SalesStatisticsResponseDto> response = queryOrderService.getSalesStatistics(start, end, pageable);
 
         return ResponseDto.<PaginatedResponseDto<SalesStatisticsResponseDto>>builder()

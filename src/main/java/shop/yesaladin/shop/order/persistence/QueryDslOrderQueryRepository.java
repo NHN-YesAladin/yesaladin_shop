@@ -2,13 +2,11 @@ package shop.yesaladin.shop.order.persistence;
 
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
@@ -24,7 +22,6 @@ import shop.yesaladin.shop.order.dto.OrderPaymentResponseDto;
 import shop.yesaladin.shop.order.dto.OrderStatusResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryResponseDto;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -212,7 +209,10 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
                         memberOrder.orderDateTime,
                         memberOrder.name,
                         memberOrder.totalAmount,
-                        Expressions.asEnum(OrderStatusCode.ORDER),
+                        ExpressionUtils.as(queryFactory.select(orderStatusChangeLog.orderStatusCode.max())
+                                .from(orderStatusChangeLog)
+                                .where(orderStatusChangeLog.order.id.eq(memberOrder.id))
+                                .groupBy(orderStatusChangeLog.order.id), "orderStatusCode"),
                         memberOrder.member.id,
                         memberOrder.member.name,
                         orderProduct.count(),
@@ -228,28 +228,21 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
                 )))
                 .where(memberOrder.isHidden.isFalse())
                 .groupBy(memberOrder.id)
-                .orderBy(memberOrder.orderDateTime.asc())
+                .orderBy(memberOrder.orderDateTime.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        for (OrderSummaryResponseDto datum : data) {
-            OrderStatusCode code = queryFactory.select(orderStatusChangeLog.orderStatusCode.max())
-                    .from(orderStatusChangeLog)
-                    .where(orderStatusChangeLog.order.id.eq(datum.getOrderId()))
-                    .fetchFirst();
-            datum.setOrderStatusCode(code);
-        }
-
-        JPAQuery<Long> countQuery = queryFactory.select(memberOrder.count())
+        int totalCount = queryFactory.select(memberOrder.count())
                 .from(memberOrder)
                 .where(memberOrder.member.id.eq(memberId).and(memberOrder.orderDateTime.between(
                         LocalDateTime.of(startDate, LocalTime.MIDNIGHT),
                         LocalDateTime.of(endDate, LocalTime.MIDNIGHT)
                 )))
-                .where(memberOrder.isHidden.isFalse());
-
-        return PageableExecutionUtils.getPage(data, pageable, countQuery::fetchFirst);
+                .where(memberOrder.isHidden.isFalse())
+                .groupBy(memberOrder.id)
+                .fetch().size();
+        return PageableExecutionUtils.getPage(data, pageable, () -> totalCount);
     }
 
 
@@ -274,7 +267,7 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
      * {@inheritDoc}
      */
     @Override
-    public Page<OrderStatusResponseDto> findSuccessStatusResponsesByLoginIdAndStatus(
+    public Page<OrderStatusResponseDto> findOrderStatusResponsesByLoginIdAndStatus(
             String loginId,
             OrderStatusCode code,
             Pageable pageable
@@ -298,24 +291,24 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
                 .on(memberOrder.id.eq(orderStatusChangeLog.order.id))
                 .where(memberOrder.member.loginId.eq(loginId))
                 .groupBy(memberOrder.id)
-                .having(orderStatusChangeLog.orderStatusCode.count()
-                        .eq((long) code.getStatusCode()))
-                .orderBy(memberOrder.orderDateTime.asc())
+                .having(orderStatusChangeLog.orderStatusCode.max().eq(code))
+                .having(orderStatusChangeLog.orderStatusCode.max().lt(OrderStatusCode.REFUND))
+                .orderBy(memberOrder.orderDateTime.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        int size = queryFactory.select(memberOrder.count())
+        int totalCount = queryFactory.select(memberOrder.count())
                 .from(memberOrder)
                 .leftJoin(orderStatusChangeLog)
                 .on(memberOrder.id.eq(orderStatusChangeLog.order.id))
                 .where(memberOrder.member.loginId.eq(loginId))
                 .groupBy(memberOrder.id)
-                .having(orderStatusChangeLog.orderStatusCode.count()
-                        .eq((long) code.getStatusCode())).fetch().size();
+                .having(orderStatusChangeLog.orderStatusCode.max().eq(code))
+                .having(orderStatusChangeLog.orderStatusCode.max().lt(OrderStatusCode.REFUND))
+                .fetch().size();
 
-        return new PageImpl(data, pageable, size);
-        //Total count 를 계산하기 위해서는 list의 사이즈가 필요해서 PageImpl 사용
+        return PageableExecutionUtils.getPage(data, pageable, () -> totalCount);
     }
 
     /**
@@ -332,8 +325,8 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
                 .on(memberOrder.id.eq(orderStatusChangeLog.order.id))
                 .where(memberOrder.member.loginId.eq(loginId))
                 .groupBy(memberOrder.id)
-                .having(orderStatusChangeLog.orderStatusCode.count()
-                        .eq((long) code.getStatusCode()))
+                .having(orderStatusChangeLog.orderStatusCode.max().eq(code))
+                .having(orderStatusChangeLog.orderStatusCode.max().lt(OrderStatusCode.REFUND))
                 .fetch()
                 .size();
     }

@@ -1,7 +1,10 @@
 package shop.yesaladin.shop.coupon.service.impl;
 
+import java.time.Clock;
 import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,6 +13,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -32,13 +36,12 @@ import shop.yesaladin.shop.coupon.domain.model.MemberCoupon;
 import shop.yesaladin.shop.coupon.domain.repository.CommandMemberCouponRepository;
 import shop.yesaladin.shop.coupon.domain.repository.QueryMemberCouponRepository;
 import shop.yesaladin.shop.coupon.dto.CouponGroupAndLimitDto;
-import shop.yesaladin.shop.coupon.service.inter.CouponWebsocketMessageSendService;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.dto.MemberDto;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 
 @Disabled
-@SuppressWarnings("unchecked")
+@SuppressWarnings("all")
 class GiveCouponServiceImplTest {
 
     private GatewayProperties gatewayProperties;
@@ -49,8 +52,9 @@ class GiveCouponServiceImplTest {
     private RestTemplate restTemplate;
     private RedisTemplate<String, String> redisTemplate;
     private GiveCouponServiceImpl giveCouponService;
-    private CouponWebsocketMessageSendService websocketMessageSender;
     private ValueOperations<String, String> valueOperations = Mockito.mock(ValueOperations.class);
+    private ApplicationEventPublisher applicationEventPublisher;
+    private final static Clock clock = Clock.fixed(Instant.ofEpochSecond(100000), ZoneId.of("UTC"));
 
     @BeforeEach
     @SuppressWarnings("unchecked")
@@ -62,7 +66,7 @@ class GiveCouponServiceImplTest {
         queryMemberService = Mockito.mock(QueryMemberService.class);
         restTemplate = Mockito.mock(RestTemplate.class);
         redisTemplate = Mockito.mock(RedisTemplate.class);
-        websocketMessageSender = Mockito.mock(CouponWebsocketMessageSendService.class);
+        applicationEventPublisher = Mockito.mock(ApplicationEventPublisher.class);
         giveCouponService = new GiveCouponServiceImpl(
                 gatewayProperties,
                 couponProducer,
@@ -71,7 +75,8 @@ class GiveCouponServiceImplTest {
                 queryMemberService,
                 restTemplate,
                 redisTemplate,
-                websocketMessageSender
+                applicationEventPublisher,
+                clock
         );
         Mockito.when(gatewayProperties.getCouponUrl()).thenReturn("http://localhost:8085");
         Mockito.when(redisTemplate.opsForValue()).thenReturn(valueOperations);
@@ -105,7 +110,12 @@ class GiveCouponServiceImplTest {
         )).thenReturn(false);
 
         // when
-        giveCouponService.sendCouponGiveRequest(memberId, TriggerTypeCode.SIGN_UP, null, LocalDateTime.now());
+        giveCouponService.sendCouponGiveRequest(
+                memberId,
+                TriggerTypeCode.SIGN_UP,
+                null,
+                LocalDateTime.now()
+        );
 
         // then
         ArgumentCaptor<CouponGiveRequestMessage> requestMessageCaptor = ArgumentCaptor.forClass(
@@ -156,7 +166,12 @@ class GiveCouponServiceImplTest {
         )).thenReturn(false);
 
         // when
-        giveCouponService.sendCouponGiveRequest(memberId, TriggerTypeCode.SIGN_UP, null, LocalDateTime.now());
+        giveCouponService.sendCouponGiveRequest(
+                memberId,
+                TriggerTypeCode.SIGN_UP,
+                null,
+                LocalDateTime.now()
+        );
 
         // then
         ArgumentCaptor<CouponGiveRequestMessage> requestMessageCaptor = ArgumentCaptor.forClass(

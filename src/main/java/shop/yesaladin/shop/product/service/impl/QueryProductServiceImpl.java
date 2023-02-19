@@ -281,6 +281,66 @@ public class QueryProductServiceImpl implements QueryProductService {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public PaginatedResponseDto<ProductsResponseDto> findByTitleForManager(
+            String title,
+            Pageable pageable
+    ) {
+        return getProductPaginatedResponses(queryProductRepository.findByTitleForManager(title, pageable));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public PaginatedResponseDto<ProductsResponseDto> findByISBNForManager(
+            String isbn,
+            Pageable pageable
+    ) {
+        return getProductPaginatedResponses(queryProductRepository.findByISBNForManager(isbn, pageable));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public PaginatedResponseDto<ProductsResponseDto> findByContentForManager(
+            String content,
+            Pageable pageable
+    ) {
+        return getProductPaginatedResponses(queryProductRepository.findByContentForManager(content, pageable));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public PaginatedResponseDto<ProductsResponseDto> findByPublisherForManager(
+            String publisher,
+            Pageable pageable
+    ) {
+        return getProductPaginatedResponses(queryProductRepository.findByPublisherForManager(publisher, pageable));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public PaginatedResponseDto<ProductsResponseDto> findByAuthorForManager(
+            String author,
+            Pageable pageable
+    ) {
+        return getProductPaginatedResponses(queryProductRepository.findByAuthorForManager(author, pageable));
+    }
+
+    /**
      * 전체 조회된 page 객체를 바탕으로 전체 조회 화면에 내보낼 정보를 담은 dto page 객체를 반환합니다.
      *
      * @param page 페이징 전체 조회된 객체

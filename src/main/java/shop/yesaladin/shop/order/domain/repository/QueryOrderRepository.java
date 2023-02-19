@@ -8,9 +8,9 @@ import shop.yesaladin.shop.order.dto.OrderPaymentResponseDto;
 import shop.yesaladin.shop.order.dto.OrderStatusResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryResponseDto;
-
 import java.time.LocalDate;
 import java.util.Optional;
+
 
 /**
  * 주문 조회 관련 repository 클래스입니다.
@@ -136,7 +136,7 @@ public interface QueryOrderRepository {
      * @author 배수한
      * @since 1.0
      */
-    Page<OrderStatusResponseDto> findSuccessStatusResponsesByLoginIdAndStatus(
+    Page<OrderStatusResponseDto> findOrderStatusResponsesByLoginIdAndStatus(
             String loginId,
             OrderStatusCode code,
             Pageable pageable

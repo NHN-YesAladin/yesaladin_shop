@@ -48,8 +48,22 @@ public class QueryPublisherServiceImpl implements QueryPublisherService {
     @Transactional(readOnly = true)
     @Override
     public PaginatedResponseDto<PublisherResponseDto> findAllForManager(Pageable pageable) {
-        Page<Publisher> page = queryPublisherRepository.findAllForManager(pageable);
+        return getPublisherResponseDto(queryPublisherRepository.findAllForManager(pageable));
+    }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public PaginatedResponseDto<PublisherResponseDto> findByNameForManager(
+            String name,
+            Pageable pageable
+    ) {
+        return getPublisherResponseDto(queryPublisherRepository.findByNameForManager(name, pageable));
+    }
+
+    private PaginatedResponseDto<PublisherResponseDto> getPublisherResponseDto(Page<Publisher> page) {
         List<PublisherResponseDto> publishers = new ArrayList<>();
         for (Publisher publisher : page.getContent()) {
             publishers.add(PublisherResponseDto.builder().id(publisher.getId()).name(publisher.getName()).build());

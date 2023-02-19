@@ -4,6 +4,7 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
@@ -57,5 +58,47 @@ public class QueryDslAuthorRepository implements QueryAuthorRepository {
         JPAQuery<Long> countQuery = queryFactory.select(author.count()).from(author);
 
         return PageableExecutionUtils.getPage(authors, pageable, countQuery::fetchFirst);
+    }
+
+    /**
+     *{@inheritDoc}
+     */
+    @Override
+    public Page<Author> findAllByLoginIdForManager(String loginId, Pageable pageable) {
+        QAuthor author = QAuthor.author;
+
+        List<Author> authors = queryFactory.select(author)
+                .from(author)
+                .where(author.member.loginId.contains(loginId))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        Long count = queryFactory.select(author.count())
+                .from(author)
+                .where(author.member.loginId.contains(loginId))
+                .fetchFirst();
+        return new PageImpl<>(authors, pageable, count);
+    }
+
+    /**
+     *{@inheritDoc}
+     */
+    @Override
+    public Page<Author> findAllByNameForManager(String name, Pageable pageable) {
+        QAuthor author = QAuthor.author;
+
+        List<Author> authors = queryFactory.select(author)
+                .from(author)
+                .where(author.name.contains(name))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        Long count = queryFactory.select(author.count())
+                .from(author)
+                .where(author.name.contains(name))
+                .fetchFirst();
+        return new PageImpl<>(authors, pageable, count);
     }
 }
