@@ -45,7 +45,7 @@ public interface QueryPublisherRepository {
     Page<Publisher> findAllForManager(Pageable pageable);
 
     /**
-     * 출판사를 이름으로 검색하는 메서드
+     * 태그를 이름으로 검색하는 메서드
      *
      * @param name 검색할 이름
      * @param pageable 페이지 정보

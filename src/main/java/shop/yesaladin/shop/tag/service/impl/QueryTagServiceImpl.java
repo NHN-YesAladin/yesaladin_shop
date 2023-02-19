@@ -48,8 +48,23 @@ public class QueryTagServiceImpl implements QueryTagService {
     @Transactional(readOnly = true)
     @Override
     public PaginatedResponseDto<TagResponseDto> findAllForManager(Pageable pageable) {
-        Page<Tag> page = queryTagRepository.findAllForManager(pageable);
+        return getTagResponseDto(queryTagRepository.findAllForManager(pageable));
 
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public PaginatedResponseDto<TagResponseDto> findByNameForManager(
+            String name,
+            Pageable pageable
+    ) {
+        return getTagResponseDto(queryTagRepository.findByNameForManager(name, pageable));
+    }
+
+    private PaginatedResponseDto<TagResponseDto> getTagResponseDto(Page<Tag> page) {
         List<TagResponseDto> tags = new ArrayList<>();
         for (Tag tag : page.getContent()) {
             tags.add(TagResponseDto.builder().id(tag.getId()).name(tag.getName()).build());
@@ -62,5 +77,4 @@ public class QueryTagServiceImpl implements QueryTagService {
                 .dataList(tags)
                 .build();
     }
-
 }
