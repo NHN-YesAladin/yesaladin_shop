@@ -45,6 +45,17 @@ public interface QueryPublisherRepository {
     Page<Publisher> findAllForManager(Pageable pageable);
 
     /**
+     * 출판사를 이름으로 검색하는 메서드
+     *
+     * @param name 검색할 이름
+     * @param pageable 페이지 정보
+     * @return 검색 결과
+     * @author 김선홍
+     * @since 1.0
+     */
+    Page<Publisher> findByNameForManager(String name, Pageable pageable);
+
+    /**
      * 이미 존재하는 출판사 이름인지 확인합니다.
      *
      * @return 확인할 출판사 이름
