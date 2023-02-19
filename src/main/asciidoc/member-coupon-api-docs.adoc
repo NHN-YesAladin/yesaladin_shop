@@ -21,3 +21,30 @@ include::{snippets}/send-coupon-give-message/http-request.adoc[]
 ===== Example
 
 include::{snippets}/send-coupon-give-message/http-response.adoc[]
+
+=== 쿠폰 사용 요청 메시지 발행
+
+==== curl
+
+include::{snippets}/use-member-coupon-success/curl-request.adoc[]
+
+==== request
+
+===== Body
+
+include::{snippets}/use-member-coupon-success/request-fields.adoc[]
+
+===== Example
+
+include::{snippets}/use-member-coupon-success/http-request.adoc[]
+
+==== response (Success)
+
+===== Body
+
+include::{snippets}/use-member-coupon-success/response-body.adoc[]
+include::{snippets}/use-member-coupon-success/response-fields-data.adoc[]
+
+===== Example
+
+include::{snippets}/use-member-coupon-success/http-response.adoc[]
