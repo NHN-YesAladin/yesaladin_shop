@@ -29,6 +29,7 @@ import shop.yesaladin.shop.member.dto.MemberCreateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberCreateResponseDto;
 import shop.yesaladin.shop.member.dto.MemberEmailUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberNameUpdateRequestDto;
+import shop.yesaladin.shop.member.dto.MemberPasswordUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberPhoneUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberUnblockResponseDto;
 import shop.yesaladin.shop.member.dto.MemberNicknameUpdateRequestDto;
@@ -747,6 +748,52 @@ class CommandMemberServiceImplTest {
         assertThat(response.getId()).isEqualTo(id);
         assertThat(response.getName()).isEqualTo(deletedField);
         assertThat(response.isWithdrawal()).isTrue();
+
+        verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
+    }
+
+    @Test
+    @DisplayName("회원 이름 수정 실패 - 존재하지않는 회원")
+    void updatePassword_fail_NotFoundMember() {
+        //given
+        String loginId = "loginId";
+        String password = "password";
+
+        MemberPasswordUpdateRequestDto request = ReflectionUtils.newInstance(
+                MemberPasswordUpdateRequestDto.class,
+                password
+        );
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
+                .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, "Member loginId " + loginId));
+
+        //when, then
+        assertThatThrownBy(() -> service.updatePassword(loginId, request)).isInstanceOf(
+                ClientException.class);
+
+        verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
+    }
+
+    @Test
+    @DisplayName("회원 이름 수정 성공")
+    void updatePassword() {
+        //given
+        String loginId = "user@1";
+        String password = "password";
+
+        Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
+        MemberPasswordUpdateRequestDto request = ReflectionUtils.newInstance(
+                MemberPasswordUpdateRequestDto.class,
+                password
+        );
+
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
+                .thenReturn(Optional.of(member));
+
+        //when
+        MemberUpdateResponseDto actualMember = service.updatePassword(loginId, request);
+
+        //then
+        assertThat(actualMember.getLoginId()).isEqualTo(loginId);
 
         verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
     }
