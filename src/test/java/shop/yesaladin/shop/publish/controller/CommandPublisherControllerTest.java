@@ -14,6 +14,7 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.publish.dto.PublisherRequestDto;
 import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
@@ -99,7 +100,12 @@ class CommandPublisherControllerTest {
         String name = "출판사1";
         PublisherRequestDto createDto = new PublisherRequestDto(name);
 
-        Mockito.when(service.create(any())).thenThrow(ClientException.class);
+        Mockito.when(service.create(any())).thenThrow(
+                new ClientException(
+                        ErrorCode.PUBLISH_ALREADY_EXIST,
+                        "Publisher you are trying to create already exists => publisher name : " + createDto.getName()
+                )
+        );
 
         // when
         ResultActions result = mockMvc.perform(post("/v1/publishers")
@@ -109,7 +115,13 @@ class CommandPublisherControllerTest {
 
         // then
         result.andDo(print())
-                .andExpect(status().isConflict());
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.CONFLICT.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.PUBLISH_ALREADY_EXIST.getDisplayName())
+                ));
 
         verify(service, times(1)).create(any());
     }
@@ -171,7 +183,11 @@ class CommandPublisherControllerTest {
         String name = "출판사1";
         PublisherRequestDto modifyDto = new PublisherRequestDto(name);
 
-        Mockito.when(service.modify(any(), any())).thenThrow(ClientException.class);
+        Mockito.when(service.modify(any(), any())).thenThrow(
+                new ClientException(
+                        ErrorCode.PUBLISH_ALREADY_EXIST,
+                        "Publisher you are trying to modify already exists => publisher name : " + modifyDto.getName())
+        );
 
         // when
         ResultActions result = mockMvc.perform(put("/v1/publishers/{publisherId}", id)
@@ -181,7 +197,13 @@ class CommandPublisherControllerTest {
 
         // then
         result.andDo(print())
-                .andExpect(status().isConflict());
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.CONFLICT.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.PUBLISH_ALREADY_EXIST.getDisplayName())
+                ));
 
         verify(service, times(1)).modify(any(), any());
     }

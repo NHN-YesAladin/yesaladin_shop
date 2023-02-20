@@ -38,7 +38,6 @@ public class StorageAuthServiceImpl implements StorageAuthService {
     private final ObjectStorageProperties objectStorage;
     private final RestTemplate restTemplate;
     private final ObjectMapper mapper;
-
     private final RedisTemplate<String, String> redisTemplate;
 
     /**
@@ -48,7 +47,7 @@ public class StorageAuthServiceImpl implements StorageAuthService {
      * @author 이수정
      * @since 1.0
      */
-    public TokenRequest makeTokenRequest() {
+    private TokenRequest makeTokenRequest() {
         TokenRequest tokenRequest = new TokenRequest();
 
         tokenRequest.getAuth().setTenantId(objectStorage.getTenantId());
