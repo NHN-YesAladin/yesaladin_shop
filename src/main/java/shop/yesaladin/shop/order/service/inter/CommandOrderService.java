@@ -31,7 +31,8 @@ public interface CommandOrderService {
      */
     OrderCreateResponseDto createMemberOrders(
             OrderMemberCreateRequestDto request,
-            String loginId
+            String loginId,
+            String type
     );
 
     /**

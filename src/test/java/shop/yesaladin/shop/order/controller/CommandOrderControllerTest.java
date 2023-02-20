@@ -382,7 +382,7 @@ class CommandOrderControllerTest {
         //given
         OrderMemberCreateRequestDto request = getMemberOrderRequest();
 
-        Mockito.when(commandOrderService.createMemberOrders(any(), any()))
+        Mockito.when(commandOrderService.createMemberOrders(any(), any(), any()))
                 .thenThrow(new ClientException(ErrorCode.BAD_REQUEST, ""));
 
         //when
@@ -455,7 +455,7 @@ class CommandOrderControllerTest {
         //given
         OrderMemberCreateRequestDto request = getMemberOrderRequest();
 
-        Mockito.when(commandOrderService.createMemberOrders(any(), any()))
+        Mockito.when(commandOrderService.createMemberOrders(any(), any(), any()))
                 .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, ""));
 
         //when
@@ -528,7 +528,7 @@ class CommandOrderControllerTest {
         //given
         OrderMemberCreateRequestDto request = getMemberOrderRequest();
 
-        Mockito.when(commandOrderService.createMemberOrders(any(), any()))
+        Mockito.when(commandOrderService.createMemberOrders(any(), any(), any()))
                 .thenThrow(new ClientException(ErrorCode.ADDRESS_NOT_FOUND, ""));
 
         //when
@@ -601,7 +601,7 @@ class CommandOrderControllerTest {
         //given
         OrderMemberCreateRequestDto request = getMemberOrderRequest();
 
-        Mockito.when(commandOrderService.createMemberOrders(any(), any()))
+        Mockito.when(commandOrderService.createMemberOrders(any(), any(), any()))
                 .thenThrow(new ClientException(ErrorCode.POINT_OVER_USE, ""));
 
         //when
@@ -675,7 +675,7 @@ class CommandOrderControllerTest {
         OrderMemberCreateRequestDto request = getMemberOrderRequest();
         OrderCreateResponseDto response = getMemberResponse();
 
-        Mockito.when(commandOrderService.createMemberOrders(any(), any()))
+        Mockito.when(commandOrderService.createMemberOrders(any(), any(), any()))
                 .thenReturn(response);
 
         //when
