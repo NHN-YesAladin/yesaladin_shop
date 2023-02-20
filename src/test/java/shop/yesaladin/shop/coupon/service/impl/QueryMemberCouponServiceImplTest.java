@@ -1,5 +1,7 @@
 package shop.yesaladin.shop.coupon.service.impl;
 
+import static org.mockito.Mockito.when;
+
 import java.util.List;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
@@ -35,7 +37,7 @@ class QueryMemberCouponServiceImplTest {
     @BeforeEach
     void setup() {
         GatewayProperties gatewayProperties = Mockito.mock(GatewayProperties.class);
-        Mockito.when(gatewayProperties.getCouponUrl()).thenReturn("http://localhost:8085");
+        when(gatewayProperties.getCouponUrl()).thenReturn("http://localhost:8085");
 
         repository = Mockito.mock(QueryMemberCouponRepository.class);
         restTemplate = Mockito.mock(RestTemplate.class);
@@ -47,12 +49,12 @@ class QueryMemberCouponServiceImplTest {
     void getMemberCouponSummaryListSuccess() {
         // given
         Pageable pageable = PageRequest.of(0, 20);
-        Mockito.when(repository.findMemberCouponByMemberId(pageable, "member", true))
+        when(repository.findMemberCouponByMemberId(pageable, "member", true))
                 .thenReturn(new PageImpl<>(List.of(MemberCoupon.builder()
                         .couponCode("coupon-code")
                         .build())));
         List<MemberCouponSummaryDto> expectedData = List.of(Mockito.mock(MemberCouponSummaryDto.class));
-        Mockito.when(restTemplate.exchange(
+        when(restTemplate.exchange(
                         Mockito.eq(
                                 "http://localhost:8085/v1/coupons?couponCodes=coupon-code"),
                         Mockito.eq(HttpMethod.GET),
@@ -88,11 +90,11 @@ class QueryMemberCouponServiceImplTest {
     void getMemberCouponSummaryListFailCauseResponseStatusCode404() {
         // given
         Pageable pageable = PageRequest.of(0, 20);
-        Mockito.when(repository.findMemberCouponByMemberId(pageable, "member", true))
+        when(repository.findMemberCouponByMemberId(pageable, "member", true))
                 .thenReturn(new PageImpl<>(List.of(MemberCoupon.builder()
                         .couponCode("coupon-code")
                         .build())));
-        Mockito.when(restTemplate.exchange(
+        when(restTemplate.exchange(
                 Mockito.eq(
                         "http://localhost:8085/v1/coupons?couponCodes=coupon-code"),
                 Mockito.eq(HttpMethod.GET),
@@ -111,11 +113,11 @@ class QueryMemberCouponServiceImplTest {
     void getMemberCouponSummaryListFailCauseUnexpectedResponse() {
         // given
         Pageable pageable = PageRequest.of(0, 20);
-        Mockito.when(repository.findMemberCouponByMemberId(pageable, "member", true))
+        when(repository.findMemberCouponByMemberId(pageable, "member", true))
                 .thenReturn(new PageImpl<>(List.of(MemberCoupon.builder()
                         .couponCode("coupon-code")
                         .build())));
-        Mockito.when(restTemplate.exchange(
+        when(restTemplate.exchange(
                 Mockito.eq(
                         "http://localhost:8085/v1/coupons?couponCodes=coupon-code"),
                 Mockito.eq(HttpMethod.GET),
@@ -134,11 +136,11 @@ class QueryMemberCouponServiceImplTest {
     void getMemberCouponSummaryListFailCauseResponseBodyIsEmpty() {
         // given
         Pageable pageable = PageRequest.of(0, 20);
-        Mockito.when(repository.findMemberCouponByMemberId(pageable, "member", true))
+        when(repository.findMemberCouponByMemberId(pageable, "member", true))
                 .thenReturn(new PageImpl<>(List.of(MemberCoupon.builder()
                         .couponCode("coupon-code")
                         .build())));
-        Mockito.when(restTemplate.exchange(
+        when(restTemplate.exchange(
                 Mockito.eq(
                         "http://localhost:8085/v1/coupons?couponCodes=coupon-code"),
                 Mockito.eq(HttpMethod.GET),
@@ -151,5 +153,51 @@ class QueryMemberCouponServiceImplTest {
         Assertions.assertThatThrownBy(() -> service.getMemberCouponSummaryList(pageable, "member",
                         true))
                 .isInstanceOf(ServerException.class);
+    }
+
+    @Test
+    @DisplayName("쿠폰코드 리스트로 쿠폰 요약 정보 조회 성공")
+    void getMemberCouponSummaryListTest() {
+        // given
+        String couponCode = "coupon-code";
+        List<String> couponCodes = List.of(couponCode);
+        List<MemberCouponSummaryDto> expectedData = List.of(Mockito.mock(MemberCouponSummaryDto.class));
+        when(restTemplate.exchange(
+                        Mockito.eq(
+                                "http://localhost:8085/v1/coupons?couponCodes=coupon-code"),
+                        Mockito.eq(HttpMethod.GET),
+                        Mockito.eq(null),
+                        Mockito.any(ParameterizedTypeReference.class)
+                ))
+                .thenReturn(ResponseEntity.of(Optional.of(ResponseDto.<List<MemberCouponSummaryDto>>builder()
+                        .success(true)
+                        .status(HttpStatus.OK)
+                        .data(expectedData)
+                        .build())));
+
+        // when
+        List<MemberCouponSummaryDto> list = service.getMemberCouponSummaryListByCouponCode(
+                couponCodes);
+
+        // then
+        Mockito.verify(restTemplate, Mockito.times(1))
+                .exchange(
+                        Mockito.eq("http://localhost:8085/v1/coupons?couponCodes=coupon-code"),
+                        Mockito.eq(HttpMethod.GET),
+                        Mockito.eq(null),
+                        Mockito.any(ParameterizedTypeReference.class)
+                );
+        Assertions.assertThat(list).isEqualTo(expectedData);
+    }
+
+    @Test
+    @DisplayName("조회를 시도한 쿠폰 코드 수와 조회 결과인 회원의 쿠폰 코드 수가 일치하지 않아 예외 처리")
+    void findByCouponCodesFailTest() {
+        List<String> couponCodes = List.of("coupon", "code");
+        when(repository.findByCouponCodes(Mockito.any())).thenReturn(List.of(Mockito.mock(
+                MemberCoupon.class)));
+
+        // when
+        Assertions.assertThatThrownBy(() -> service.findByCouponCodes(couponCodes)).isInstanceOf(ClientException.class);
     }
 }
