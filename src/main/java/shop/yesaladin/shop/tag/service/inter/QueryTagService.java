@@ -36,7 +36,7 @@ public interface QueryTagService {
     /**
      * 태그를 이름으로 검색하는 메서드
      *
-     * @param name 검색할 이름
+     * @param name     검색할 이름
      * @param pageable 페이지 정보
      * @return 검색 결과
      * @author 김선홍

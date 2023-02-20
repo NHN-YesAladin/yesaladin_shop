@@ -83,7 +83,7 @@ public class QueryDslPublisherRepository implements QueryPublisherRepository {
                 .from(publisher)
                 .where(publisher.name.contains(name))
                 .fetch();
-        Long count  = queryFactory.select(publisher.count())
+        Long count = queryFactory.select(publisher.count())
                 .from(publisher)
                 .where(publisher.name.contains(name))
                 .fetchFirst();

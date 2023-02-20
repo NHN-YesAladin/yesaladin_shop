@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.dummy.*;
 import shop.yesaladin.shop.publish.domain.model.Publish;
@@ -18,7 +19,8 @@ import java.time.ZoneId;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.*;
 
 class QueryPublishServiceImplTest {
 
@@ -67,5 +69,19 @@ class QueryPublishServiceImplTest {
         assertThat(response).isNotNull();
         assertThat(response.getPublisher().getName()).isEqualTo("출판사");
         assertThat(response.getProduct().getIsbn()).isEqualTo(ISBN);
+    }
+
+    @Test
+    @DisplayName("상품으로 출판 관계 조회 실패")
+    void findByProduct_throwPublishNotFound() {
+        // given
+        Mockito.when(queryPublishRepository.findByProduct(product)).thenReturn(Optional.ofNullable(null));
+
+        // when
+        assertThatThrownBy(() -> service.findByProduct(product))
+                .isInstanceOf(ClientException.class);
+
+        // then
+        verify(queryPublishRepository, times(1)).findByProduct(product);
     }
 }

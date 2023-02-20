@@ -15,7 +15,6 @@ import shop.yesaladin.shop.product.dto.ProductOnlyIdDto;
 import shop.yesaladin.shop.product.dummy.DummyFile;
 import shop.yesaladin.shop.product.dummy.DummyProduct;
 import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
-import shop.yesaladin.shop.product.exception.RelationNotFoundException;
 import shop.yesaladin.shop.product.service.inter.CommandRelationService;
 
 import java.util.ArrayList;
@@ -135,6 +134,6 @@ class CommandRelationServiceImplTest {
         Mockito.when(queryRelationRepository.existsByPk(any())).thenReturn(false);
 
         // when
-        assertThatThrownBy(() -> service.delete(MAIN_ID, SUB_ID)).isInstanceOf(RelationNotFoundException.class);
+        assertThatThrownBy(() -> service.delete(MAIN_ID, SUB_ID)).isInstanceOf(ClientException.class);
     }
 }

@@ -1,7 +1,8 @@
 package shop.yesaladin.shop.product.persistence.converter;
 
+import shop.yesaladin.common.code.ErrorCode;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.product.domain.model.ProductSavingMethodCode;
-import shop.yesaladin.shop.product.exception.ProductSavingMethodCodeNotFoundException;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
@@ -43,6 +44,9 @@ public class ProductSavingMethodCodeConverter implements
         return Arrays.stream(ProductSavingMethodCode.values())
                 .filter(code -> id.equals(code.getId()))
                 .findAny()
-                .orElseThrow(() -> new ProductSavingMethodCodeNotFoundException(id));
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.PRODUCT_SAVING_METHOD_CODE_NOT_FOUND,
+                        "ProductSavingMethodCode " + id + "(ID) is not found."
+                ));
     }
 }
