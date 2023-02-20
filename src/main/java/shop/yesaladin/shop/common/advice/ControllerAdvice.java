@@ -19,28 +19,10 @@ import shop.yesaladin.shop.common.exception.CommonException;
 import shop.yesaladin.shop.common.exception.CustomJsonProcessingException;
 import shop.yesaladin.shop.common.exception.InvalidAuthorityException;
 import shop.yesaladin.shop.common.exception.InvalidPeriodConditionException;
-import shop.yesaladin.shop.file.exception.FileNotFoundException;
 import shop.yesaladin.shop.member.exception.MemberProfileAlreadyExistException;
 import shop.yesaladin.shop.member.exception.MemberRoleNotFoundException;
-import shop.yesaladin.shop.product.exception.AlreadyDeletedProductException;
-import shop.yesaladin.shop.product.exception.ProductAlreadyExistsException;
-import shop.yesaladin.shop.product.exception.ProductNotFoundException;
-import shop.yesaladin.shop.product.exception.ProductSavingMethodCodeNotFoundException;
-import shop.yesaladin.shop.product.exception.ProductTypeCodeNotFoundException;
-import shop.yesaladin.shop.product.exception.RelationAlreadyExistsException;
-import shop.yesaladin.shop.product.exception.RelationNotFoundException;
-import shop.yesaladin.shop.product.exception.SelfRelateException;
-import shop.yesaladin.shop.product.exception.SubscribeProductNotFoundException;
-import shop.yesaladin.shop.product.exception.TotalDiscountRateNotExistsException;
-import shop.yesaladin.shop.publish.exception.PublishNotFoundException;
-import shop.yesaladin.shop.publish.exception.PublisherAlreadyExistsException;
-import shop.yesaladin.shop.publish.exception.PublisherNotFoundException;
-import shop.yesaladin.shop.tag.exception.TagAlreadyExistsException;
-import shop.yesaladin.shop.tag.exception.TagNotFoundException;
 import shop.yesaladin.shop.wishlist.exception.WishlistAlreadyExistsException;
 import shop.yesaladin.shop.wishlist.exception.WishlistNotFoundException;
-import shop.yesaladin.shop.writing.exception.AuthorNotFoundException;
-import shop.yesaladin.shop.writing.exception.WritingNotFoundException;
 
 /**
  * 공용으로 사용하는 예외 처리
@@ -57,18 +39,6 @@ public class ControllerAdvice {
     @ExceptionHandler(value = {
             CategoryNotFoundException.class,
             MemberRoleNotFoundException.class,
-            ProductNotFoundException.class,
-            ProductSavingMethodCodeNotFoundException.class,
-            ProductTypeCodeNotFoundException.class,
-            SubscribeProductNotFoundException.class,
-            TotalDiscountRateNotExistsException.class,
-            PublisherNotFoundException.class,
-            PublishNotFoundException.class,
-            TagNotFoundException.class,
-            AuthorNotFoundException.class,
-            WritingNotFoundException.class,
-            FileNotFoundException.class,
-            RelationNotFoundException.class,
             WishlistNotFoundException.class
     })
     public ResponseEntity<ErrorResponseDto> handleNotFoundException(Exception ex) {
@@ -81,8 +51,6 @@ public class ControllerAdvice {
             MethodArgumentNotValidException.class,
             HttpMessageNotReadableException.class,
             InvalidPeriodConditionException.class,
-            AlreadyDeletedProductException.class,
-            SelfRelateException.class
     })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorResponseDto> handleValidationException(Exception ex) {
@@ -104,10 +72,6 @@ public class ControllerAdvice {
 
     @ExceptionHandler(value = {
             MemberProfileAlreadyExistException.class,
-            ProductAlreadyExistsException.class,
-            PublisherAlreadyExistsException.class,
-            TagAlreadyExistsException.class,
-            RelationAlreadyExistsException.class,
             WishlistAlreadyExistsException.class
     })
     @ResponseStatus(HttpStatus.CONFLICT)

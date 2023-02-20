@@ -33,9 +33,9 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.publish.dto.PublisherRequestDto;
 import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
-import shop.yesaladin.shop.publish.exception.PublisherAlreadyExistsException;
 import shop.yesaladin.shop.publish.service.inter.CommandPublisherService;
 
 @AutoConfigureRestDocs
@@ -103,7 +103,7 @@ class CommandPublisherControllerTest {
         String name = "출판사1";
         PublisherRequestDto createDto = new PublisherRequestDto(name);
 
-        Mockito.when(service.create(any())).thenThrow(PublisherAlreadyExistsException.class);
+        Mockito.when(service.create(any())).thenThrow(ClientException.class);
 
         // when
         ResultActions result = mockMvc.perform(post("/v1/publishers")
@@ -175,7 +175,7 @@ class CommandPublisherControllerTest {
         String name = "출판사1";
         PublisherRequestDto modifyDto = new PublisherRequestDto(name);
 
-        Mockito.when(service.modify(any(), any())).thenThrow(PublisherAlreadyExistsException.class);
+        Mockito.when(service.modify(any(), any())).thenThrow(ClientException.class);
 
         // when
         ResultActions result = mockMvc.perform(put("/v1/publishers/{publisherId}", id)

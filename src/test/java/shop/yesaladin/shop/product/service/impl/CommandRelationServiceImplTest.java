@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
@@ -24,8 +25,6 @@ import shop.yesaladin.shop.product.dto.ProductOnlyIdDto;
 import shop.yesaladin.shop.product.dummy.DummyFile;
 import shop.yesaladin.shop.product.dummy.DummyProduct;
 import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
-import shop.yesaladin.shop.product.exception.RelationAlreadyExistsException;
-import shop.yesaladin.shop.product.exception.RelationNotFoundException;
 import shop.yesaladin.shop.product.service.inter.CommandRelationService;
 
 class CommandRelationServiceImplTest {
@@ -112,7 +111,7 @@ class CommandRelationServiceImplTest {
 
         // when
         assertThatThrownBy(() -> service.create(MAIN_ID, SUB_ID))
-                .isInstanceOf(RelationAlreadyExistsException.class);
+                .isInstanceOf(ClientException.class);
     }
 
     @Test
@@ -136,6 +135,6 @@ class CommandRelationServiceImplTest {
         Mockito.when(queryRelationRepository.existsByPk(any())).thenReturn(false);
 
         // when
-        assertThatThrownBy(() -> service.delete(MAIN_ID, SUB_ID)).isInstanceOf(RelationNotFoundException.class);
+        assertThatThrownBy(() -> service.delete(MAIN_ID, SUB_ID)).isInstanceOf(ClientException.class);
     }
 }
