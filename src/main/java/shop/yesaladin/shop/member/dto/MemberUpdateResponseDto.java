@@ -23,6 +23,7 @@ public class MemberUpdateResponseDto {
     private String nickname;
     private String loginId;
     private MemberGrade memberGrade;
+    private String phone;
 
     /**
      * Member Entity를 MemberUpdateResponse DTO로 변한하기 위한 메서드 입니다.
@@ -38,7 +39,8 @@ public class MemberUpdateResponseDto {
                 member.getName(),
                 member.getNickname(),
                 member.getLoginId(),
-                member.getMemberGrade()
+                member.getMemberGrade(),
+                member.getPhone()
         );
     }
 }

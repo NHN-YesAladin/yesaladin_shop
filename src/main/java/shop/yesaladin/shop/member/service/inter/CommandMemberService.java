@@ -4,8 +4,11 @@ import shop.yesaladin.shop.member.dto.MemberBlockRequestDto;
 import shop.yesaladin.shop.member.dto.MemberBlockResponseDto;
 import shop.yesaladin.shop.member.dto.MemberCreateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberCreateResponseDto;
+import shop.yesaladin.shop.member.dto.MemberEmailUpdateRequestDto;
+import shop.yesaladin.shop.member.dto.MemberNameUpdateRequestDto;
+import shop.yesaladin.shop.member.dto.MemberNicknameUpdateRequestDto;
+import shop.yesaladin.shop.member.dto.MemberPhoneUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberUnblockResponseDto;
-import shop.yesaladin.shop.member.dto.MemberUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateResponseDto;
 import shop.yesaladin.shop.member.dto.MemberWithdrawResponseDto;
 import shop.yesaladin.shop.member.dto.OauthMemberCreateRequestDto;
@@ -39,15 +42,49 @@ public interface CommandMemberService {
     MemberCreateResponseDto createOauth(OauthMemberCreateRequestDto createDto);
 
     /**
-     * 회원 정보 수정을 위한 기능입니다.
+     * 회원의 nickname 수정을 위한 기능입니다.
      *
-     * @param loginId 정보를 수정한 회원 아이디
-     * @param request 수정한 회원 정보 dto
+     * @param loginId 정보를 수정할 회원 아이디
+     * @param request 수정할 회원의 nickname
      * @return 수정된 결과를 반환할 dto
      * @author 최예린
+     * @author 송학현
      * @since 1.0
      */
-    MemberUpdateResponseDto update(String loginId, MemberUpdateRequestDto request);
+    MemberUpdateResponseDto updateNickname(String loginId, MemberNicknameUpdateRequestDto request);
+
+    /**
+     * 회원의 이름을 수정을 위한 기능입니다.
+     *
+     * @param loginId 정보를 수정한 회원 아이디
+     * @param request 수정할 회원의 이름
+     * @return 수정된 결과를 반환할 dto
+     * @author 송학현
+     * @since 1.0
+     */
+    MemberUpdateResponseDto updateName(String loginId, MemberNameUpdateRequestDto request);
+
+    /**
+     * 회원의 전화번호를 수정하기 위한 기능입니다.
+     *
+     * @param loginId 정보를 수정한 회원 아이디
+     * @param request 수정할 회원의 전화번호
+     * @return 수정된 결과를 반환할 dto
+     * @author 송학현
+     * @since 1.0
+     */
+    MemberUpdateResponseDto updatePhone(String loginId, MemberPhoneUpdateRequestDto request);
+
+    /**
+     * 회원의 이메일을 수정하기 위한 기능입니다.
+     *
+     * @param loginId 정보를 수정한 회원 아이디
+     * @param request 수정할 회원의 이메일
+     * @return 수정된 결과를 반환할 dto
+     * @author 송학현
+     * @since 1.0
+     */
+    MemberUpdateResponseDto updateEmail(String loginId, MemberEmailUpdateRequestDto request);
 
     /**
      * 회원을 차단 하기 위한 기능입니다.
