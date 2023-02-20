@@ -29,7 +29,6 @@ import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.product.exception.ProductNotFoundException;
 import shop.yesaladin.shop.wishlist.dto.WishlistSaveResponseDto;
-import shop.yesaladin.shop.wishlist.exception.WishlistNotFoundException;
 import shop.yesaladin.shop.wishlist.service.inter.CommandWishlistService;
 
 @AutoConfigureRestDocs
@@ -139,7 +138,7 @@ class CommandWishlistControllerTest {
     @DisplayName("delete 시 WishlistNotFound")
     void delete_WishlistNotFound() throws Exception {
         //given
-        Mockito.doThrow(new WishlistNotFoundException("NOTFOUND", 1L))
+        Mockito.doThrow(new ClientException(ErrorCode.BAD_REQUEST, ""))
                 .when(commandWishlistService)
                 .delete(any(), any());
         ;
@@ -152,6 +151,6 @@ class CommandWishlistControllerTest {
                 ));
 
         //then
-        resultActions.andExpect(status().isNotFound());
+        resultActions.andExpect(status().isBadRequest());
     }
 }
