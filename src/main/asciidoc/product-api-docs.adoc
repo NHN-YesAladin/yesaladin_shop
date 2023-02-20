@@ -246,16 +246,125 @@ include::{snippets}/find-all-product-type/response-fields.adoc[]
 ===== Example
 include::{snippets}/find-all-product-type/response-body.adoc[]
 
-==== 상품 제목 검색 실패
+==== 상품 제목 최대 길이 초과
+include::{snippets}/search-product-fail-search-title-length-over/response-body.adoc[]
+
+==== 상품 제목 검색
 
 ==== curl
-include::{snippets}/search-product-fail-search-author-length-over/curl-request.adoc[]
+include::{snippets}/search-product-success-search-title/curl-request.adoc[]
 
 ==== request
-include::{snippets}/search-product-fail-search-author-length-over/
+
+===== Example
+include::{snippets}/search-product-success-search-title/http-request.adoc[]
+
+===== response
+
+===== Body
+include::{snippets}/search-product-success-search-title/response-fields.adoc[]
 
 ==== Example
+include::{snippets}/search-product-success-search-title/response-body.adoc[]
 
-==== response
+==== 상품 내용 최대 길이 초과
+include::{snippets}/search-product-fail-search-content-length-over/response-body.adoc[]
 
-====Body
+==== 상품 제목 검색
+
+==== curl
+include::{snippets}/search-product-success-search-content/curl-request.adoc[]
+
+==== request
+
+===== Example
+include::{snippets}/search-product-success-search-content/http-request.adoc[]
+
+===== response
+
+===== Body
+include::{snippets}/search-product-success-search-content/response-fields.adoc[]
+
+==== Example
+include::{snippets}/search-product-success-search-content/response-body.adoc[]
+
+==== 상품 isbn 최대 길이 초과
+include::{snippets}/search-product-fail-search-isbn-length-over/response-body.adoc[]
+
+==== 상품 isbn 검색
+
+==== curl
+include::{snippets}/search-product-success-search-isbn/curl-request.adoc[]
+
+==== request
+
+===== Example
+include::{snippets}/search-product-success-search-isbn/http-request.adoc[]
+
+===== response
+
+===== Body
+include::{snippets}/search-product-success-search-isbn/response-fields.adoc[]
+
+==== Example
+include::{snippets}/search-product-success-search-isbn/response-body.adoc[]
+
+==== 상품 출판사 최대 길이 초과
+include::{snippets}/search-product-fail-search-publisher-length-over/response-body.adoc[]
+
+==== 상품 출판사 검색
+
+==== curl
+include::{snippets}/search-product-success-search-publisher/curl-request.adoc[]
+
+==== request
+
+===== Example
+include::{snippets}/search-product-success-search-publisher/http-request.adoc[]
+
+===== response
+
+===== Body
+include::{snippets}/search-product-success-search-publisher/response-fields.adoc[]
+
+==== Example
+include::{snippets}/search-product-success-search-publisher/response-body.adoc[]
+
+==== 상품 저자 최대 길이 초과
+include::{snippets}/search-product-fail-search-author-length-over/response-body.adoc[]
+
+==== 상품 저자 검색
+
+==== curl
+include::{snippets}/search-product-success-search-author/curl-request.adoc[]
+
+==== request
+
+===== Example
+include::{snippets}/search-product-success-search-author/http-request.adoc[]
+
+===== response
+
+===== Body
+include::{snippets}/search-product-success-search-author/response-fields.adoc[]
+
+==== Example
+include::{snippets}/search-product-success-search-author/response-body.adoc[]
+
+==== 상품 카테고리 id 검색
+
+==== curl
+include::{snippets}/search-product-success-category-id/curl-request.adoc[]
+
+==== request
+
+===== Example
+include::{snippets}/search-product-success-category-id/http-request.adoc[]
+
+===== response
+
+===== Body
+include::{snippets}/search-product-success-category-id/response-fields.adoc[]
+
+==== Example
+include::{snippets}/search-product-success-category-id/response-body.adoc[]

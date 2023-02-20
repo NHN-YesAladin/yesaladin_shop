@@ -248,35 +248,4 @@ public class SearchProductController {
                 .status(HttpStatus.OK)
                 .build();
     }
-
-    /**
-     * 카테고리 이름으로 상품을 검색하는 컨트롤러 메서드
-     *
-     * @param name     검색할 카테고리의 id
-     * @param pageable 페이지정보
-     * @return 요청된 조건에 대한 상품 리스트
-     * @author : 김선홍
-     * @since : 1.0
-     */
-    @GetMapping(params = "categoryname")
-    public ResponseDto<PaginatedResponseDto<SearchedProductResponseDto>> searchProductByCategoryName(
-            @RequestParam(name = "categoryname") String name,
-            @PageableDefault Pageable pageable
-    ) {
-        Page<SearchedProductResponseDto> response = searchProductService.searchProductsByCategoryName(
-                name,
-                pageable
-        );
-
-        return ResponseDto.<PaginatedResponseDto<SearchedProductResponseDto>>builder()
-                .success(true)
-                .data(PaginatedResponseDto.<SearchedProductResponseDto>builder()
-                        .dataList(response.toList())
-                        .totalDataCount(response.getTotalElements())
-                        .currentPage(response.getNumber())
-                        .totalPage(response.getTotalPages())
-                        .build())
-                .status(HttpStatus.OK)
-                .build();
-    }
 }

@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 public class ElasticProductRepository implements SearchProductRepository {
 
     private static final String CATEGORIES_ID = "categories.id";
-    private static final String CATEGORIES_NAME = "categories.name";
     private static final String TITLE = "title^2";
     private static final String CONTENT = "contents^3";
     private static final String DESCRIPTION = "description^2";
@@ -53,17 +52,6 @@ public class ElasticProductRepository implements SearchProductRepository {
             Pageable pageable
     ) {
         return searchResponseProductByTermQuery(String.valueOf(id), pageable, CATEGORIES_ID);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Page<SearchedProductResponseDto> searchProductsByCategoryName(
-            String name,
-            Pageable pageable
-    ) {
-        return searchResponseProductByTermQuery(CATEGORIES_NAME, pageable, name);
     }
 
     /**
