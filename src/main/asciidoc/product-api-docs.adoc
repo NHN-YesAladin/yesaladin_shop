@@ -245,3 +245,17 @@ include::{snippets}/find-all-product-type/response-fields.adoc[]
 
 ===== Example
 include::{snippets}/find-all-product-type/response-body.adoc[]
+
+==== 상품 제목 검색 실패
+
+==== curl
+include::{snippets}/search-product-fail-search-author-length-over/curl-request.adoc[]
+
+==== request
+include::{snippets}/search-product-fail-search-author-length-over/
+
+==== Example
+
+==== response
+
+====Body
