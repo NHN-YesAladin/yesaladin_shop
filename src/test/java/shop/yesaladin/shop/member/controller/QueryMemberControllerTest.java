@@ -486,6 +486,7 @@ class QueryMemberControllerTest {
                 .andExpect(jsonPath("$.data.birthMonth", equalTo(member.getBirthMonth())))
                 .andExpect(jsonPath("$.data.birthDay", equalTo(member.getBirthDay())))
                 .andExpect(jsonPath("$.data.email", equalTo(member.getEmail())))
+                .andExpect(jsonPath("$.data.phone", equalTo(member.getPhone())))
                 .andExpect(jsonPath(
                         "$.data.signUpDate",
                         equalTo(member.getSignUpDate().toString())
@@ -529,6 +530,8 @@ class QueryMemberControllerTest {
                                 .description("회원의 등급"),
                         fieldWithPath("data.gender").type(JsonFieldType.STRING)
                                 .description("회원의 성별"),
+                        fieldWithPath("data.phone").type(JsonFieldType.STRING)
+                                .description("회원의 전화번호"),
                         fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
                                 .description("에러 메세지").optional()
                 )

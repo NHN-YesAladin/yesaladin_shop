@@ -51,7 +51,7 @@ public class OauthMemberCreateRequestDto {
 
     @NotBlank
     @Size(min = 8, max = 8)
-    @Pattern(regexp = "^[0-9]{8}")
+    @Pattern(regexp = "^\\d{8}")
     private String birth;
 
     @NotBlank

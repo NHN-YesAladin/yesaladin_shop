@@ -229,11 +229,9 @@ class CommandProductServiceImplTest {
     void update() {
         // given
         File thumbnailFile = DummyFile.dummy(URL + "/image1.png");
-        File ebookFile = DummyFile.dummy(URL + "/ebook1.pdf");
-        SubscribeProduct subscribeProduct = SubscribeProduct.builder().id(1L).ISSN("00000001").build();
         TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
 
-        Product product = DummyProduct.dummy(ID, ISBN, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate);
+        Product product = DummyProduct.dummy(ID, ISBN, null, thumbnailFile, null, totalDiscountRate);
         Mockito.when(queryProductRepository.findProductById(anyLong())).thenReturn(Optional.ofNullable(product));
 
         File updateThumbnailFile = DummyFile.dummy(URL + "/image2.png");
@@ -246,7 +244,7 @@ class CommandProductServiceImplTest {
         Mockito.when(commandFileService.register(updateEbookFile))
                 .thenReturn(new FileResponseDto(2L, updateEbookFile.getUrl(), updateEbookFile.getUploadDateTime()));
 
-        Mockito.when(querySubscribeProductRepository.findByISSN(any())).thenReturn(Optional.ofNullable(updateSubscribeProduct));
+        Mockito.when(querySubscribeProductRepository.findByISSN(any())).thenReturn(Optional.ofNullable(null));
 
         Mockito.when(queryAuthorService.findById(anyLong())).thenReturn(new AuthorResponseDto(2L, "저자2", null));
 

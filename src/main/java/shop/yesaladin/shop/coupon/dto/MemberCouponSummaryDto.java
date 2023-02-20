@@ -103,7 +103,4 @@ public class MemberCouponSummaryDto {
         }
         return price;
     }
-    //private Integer minOrderAmount;
-    //    private Integer maxDiscountAmount;
-    //    private Boolean canBeOverlapped;
 }

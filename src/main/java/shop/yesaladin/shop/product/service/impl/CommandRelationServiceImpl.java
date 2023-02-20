@@ -12,7 +12,6 @@ import shop.yesaladin.shop.product.domain.repository.CommandRelationRepository;
 import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
 import shop.yesaladin.shop.product.domain.repository.QueryRelationRepository;
 import shop.yesaladin.shop.product.dto.ProductOnlyIdDto;
-import shop.yesaladin.shop.product.exception.RelationNotFoundException;
 import shop.yesaladin.shop.product.service.inter.CommandRelationService;
 
 /**
@@ -41,7 +40,8 @@ public class CommandRelationServiceImpl implements CommandRelationService {
         if (isExistsRelationMain && isExistsRelationSub) {
             throw new ClientException(
                     ErrorCode.PRODUCT_RELATION_ALREADY_EXIST,
-                    "Relation already exists => mainId : " + productMainId + ", subId : " + productSubId
+                    "ProductMain id = " + productMainId + ", ProductSub id = " + productSubId
+                            + " is already exists."
             );
         }
 
@@ -78,7 +78,10 @@ public class CommandRelationServiceImpl implements CommandRelationService {
         boolean isExistsRelationSub = isExistsRelation(productSubId, productMainId);
 
         if (!isExistsRelationMain && !isExistsRelationSub) {
-            throw new RelationNotFoundException(productMainId, productSubId);
+            throw new ClientException(
+                    ErrorCode.PRODUCT_RELATION_NOT_FOUND,
+                    "ProductMain id = " + productMainId + ", ProductSub id = " + productSubId + " is not found."
+            );
         }
 
         if (isExistsRelationMain) {

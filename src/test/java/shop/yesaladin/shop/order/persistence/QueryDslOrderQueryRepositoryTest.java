@@ -447,6 +447,8 @@ class QueryDslOrderQueryRepositoryTest {
         // then
         Assertions.assertThat(actual.get()).hasSize(5);
         Assertions.assertThat(actual.getContent()).hasSize(pageSize);
+        Assertions.assertThat(actual.getContent().get(0).getOrderStatusCode())
+                .isEqualTo(OrderStatusCode.DEPOSIT);
     }
 
     @Test
@@ -469,7 +471,7 @@ class QueryDslOrderQueryRepositoryTest {
 
     @ParameterizedTest
     @ValueSource(ints = {0, 1, 2, 3, 4})
-    @DisplayName("주문상태조회 dto를 조회 성공 ")
+    @DisplayName("주문 상태 조회 성공 ")
     void findStatusResponsesByLoginIdAndStatusCode_ready(int index) throws Exception {
         // given
         Member member = memberList.get(index);
@@ -480,7 +482,7 @@ class QueryDslOrderQueryRepositoryTest {
                 .findFirst()
                 .get();
 
-        Page<OrderStatusResponseDto> responses = queryRepository.findSuccessStatusResponsesByLoginIdAndStatus(
+        Page<OrderStatusResponseDto> responses = queryRepository.findOrderStatusResponsesByLoginIdAndStatus(
                 member.getLoginId(),
                 code,
                 PageRequest.of(2, 2)
@@ -492,13 +494,13 @@ class QueryDslOrderQueryRepositoryTest {
 
     @ParameterizedTest
     @ValueSource(ints = {1, 2, 3, 4})
-    @DisplayName("주문상태조회 dto를 조회 실패 - ORDER 일 때, 맞지않는 코드 값 ")
+    @DisplayName("주문 상태 조회 실패 - ORDER 일 때, 맞지않는 코드 값 ")
     void findStatusResponsesByLoginIdAndStatusCode_notMatchIncrease(int index) throws Exception {
         // given
         Member member = memberList.get(index);
 
         // when
-        Page<OrderStatusResponseDto> responses = queryRepository.findSuccessStatusResponsesByLoginIdAndStatus(
+        Page<OrderStatusResponseDto> responses = queryRepository.findOrderStatusResponsesByLoginIdAndStatus(
                 member.getLoginId(),
                 OrderStatusCode.ORDER,
                 PageRequest.of(0, 300)
@@ -510,13 +512,13 @@ class QueryDslOrderQueryRepositoryTest {
 
     @ParameterizedTest
     @ValueSource(ints = {0, 1, 2, 3})
-    @DisplayName("주문상태조회 dto를 조회 실패 - COMPLETE 일 때, 맞지않는 코드 값 ")
+    @DisplayName("주문 상태 조회 실패 - COMPLETE 일 때, 맞지않는 코드 값 ")
     void findStatusResponsesByLoginIdAndStatusCode_notMatchDecrease(int index) throws Exception {
         // given
         Member member = memberList.get(index);
 
         // when
-        Page<OrderStatusResponseDto> responses = queryRepository.findSuccessStatusResponsesByLoginIdAndStatus(
+        Page<OrderStatusResponseDto> responses = queryRepository.findOrderStatusResponsesByLoginIdAndStatus(
                 member.getLoginId(),
                 OrderStatusCode.COMPLETE,
                 PageRequest.of(0, 300)
@@ -524,6 +526,56 @@ class QueryDslOrderQueryRepositoryTest {
 
         // then
         Assertions.assertThat(responses).isEmpty();
+    }
+
+    @Test
+    @DisplayName("주문 상태 조회 데이터 없음 (실패아님) - CANCEL이 제외이므로")
+    void findOrderStatusResponsesByLoginIdAndStatus_CANCEL() throws Exception {
+        // given
+        Member member = memberList.get(4);
+        for (MemberOrder memberOrder : memberOrderList) {
+            OrderStatusChangeLog log = OrderStatusChangeLog.create(
+                    memberOrder,
+                    LocalDateTime.now(),
+                    OrderStatusCode.REFUND
+            );
+            entityManager.persist(log);
+        }
+
+        // when
+        Page<OrderStatusResponseDto> responses = queryRepository.findOrderStatusResponsesByLoginIdAndStatus(
+                member.getLoginId(),
+                OrderStatusCode.COMPLETE,
+                PageRequest.of(0, 300)
+        );
+
+        // then
+        Assertions.assertThat(responses).hasSize(2); //구독 주문만 존재
+    }
+
+    @Test
+    @DisplayName("주문 상태 조회 데이터 없음 (실패아님) - REFUND이 제외이므로")
+    void findOrderStatusResponsesByLoginIdAndStatus_REFUND() throws Exception {
+        // given
+        Member member = memberList.get(0);
+        for (MemberOrder memberOrder : memberOrderList) {
+            OrderStatusChangeLog log = OrderStatusChangeLog.create(
+                    memberOrder,
+                    LocalDateTime.now(),
+                    OrderStatusCode.CANCEL
+            );
+            entityManager.persist(log);
+        }
+
+        // when
+        Page<OrderStatusResponseDto> responses = queryRepository.findOrderStatusResponsesByLoginIdAndStatus(
+                member.getLoginId(),
+                OrderStatusCode.ORDER,
+                PageRequest.of(0, 300)
+        );
+
+        // then
+        Assertions.assertThat(responses).hasSize(2); //구독 주문만 존재
     }
 
 

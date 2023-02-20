@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.product.controller;
 
+import javax.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -15,8 +16,6 @@ import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.product.dto.SearchedProductResponseDto;
 import shop.yesaladin.shop.product.service.inter.SearchProductService;
-
-import javax.validation.constraints.Size;
 
 /**
  * 상품 검색 컨트롤러
@@ -47,7 +46,6 @@ public class SearchProductController {
             @RequestParam @Size(max = 30) String title,
             @PageableDefault Pageable pageable
     ) {
-
         Page<SearchedProductResponseDto> response = searchProductService.searchProductsByProductTitle(
                 title,
                 pageable
@@ -236,37 +234,6 @@ public class SearchProductController {
     ) {
         Page<SearchedProductResponseDto> response = searchProductService.searchProductsByCategoryId(
                 id,
-                pageable
-        );
-
-        return ResponseDto.<PaginatedResponseDto<SearchedProductResponseDto>>builder()
-                .success(true)
-                .data(PaginatedResponseDto.<SearchedProductResponseDto>builder()
-                        .dataList(response.toList())
-                        .totalDataCount(response.getTotalElements())
-                        .currentPage(response.getNumber())
-                        .totalPage(response.getTotalPages())
-                        .build())
-                .status(HttpStatus.OK)
-                .build();
-    }
-
-    /**
-     * 카테고리 이름으로 상품을 검색하는 컨트롤러 메서드
-     *
-     * @param name     검색할 카테고리의 id
-     * @param pageable 페이지정보
-     * @return 요청된 조건에 대한 상품 리스트
-     * @author : 김선홍
-     * @since : 1.0
-     */
-    @GetMapping(params = "categoryname")
-    public ResponseDto<PaginatedResponseDto<SearchedProductResponseDto>> searchProductByCategoryName(
-            @RequestParam(name = "categoryname") String name,
-            @PageableDefault Pageable pageable
-    ) {
-        Page<SearchedProductResponseDto> response = searchProductService.searchProductsByCategoryName(
-                name,
                 pageable
         );
 

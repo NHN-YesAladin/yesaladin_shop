@@ -1,7 +1,8 @@
 package shop.yesaladin.shop.product.persistence.converter;
 
+import shop.yesaladin.common.code.ErrorCode;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.product.domain.model.ProductTypeCode;
-import shop.yesaladin.shop.product.exception.ProductTypeCodeNotFoundException;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
@@ -42,6 +43,9 @@ public class ProductTypeCodeConverter implements AttributeConverter<ProductTypeC
         return Arrays.stream(ProductTypeCode.values())
                 .filter(code -> id.equals(code.getId()))
                 .findAny()
-                .orElseThrow(() -> new ProductTypeCodeNotFoundException(id));
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.PRODUCT_TYPE_CODE_NOT_FOUND,
+                        "ProductTypeCode is not found with id = " + id
+                ));
     }
 }

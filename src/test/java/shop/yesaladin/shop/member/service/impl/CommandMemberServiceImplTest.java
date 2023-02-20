@@ -27,8 +27,11 @@ import shop.yesaladin.shop.member.dto.MemberBlockRequestDto;
 import shop.yesaladin.shop.member.dto.MemberBlockResponseDto;
 import shop.yesaladin.shop.member.dto.MemberCreateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberCreateResponseDto;
+import shop.yesaladin.shop.member.dto.MemberEmailUpdateRequestDto;
+import shop.yesaladin.shop.member.dto.MemberNameUpdateRequestDto;
+import shop.yesaladin.shop.member.dto.MemberPhoneUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberUnblockResponseDto;
-import shop.yesaladin.shop.member.dto.MemberUpdateRequestDto;
+import shop.yesaladin.shop.member.dto.MemberNicknameUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateResponseDto;
 import shop.yesaladin.shop.member.dto.MemberWithdrawResponseDto;
 import shop.yesaladin.shop.member.dto.OauthMemberCreateRequestDto;
@@ -292,21 +295,21 @@ class CommandMemberServiceImplTest {
     }
 
     @Test
-    @DisplayName("회원 정보 수정 실패-존재하지않는 회원")
-    void update_fail_NotFoundMember() {
+    @DisplayName("회원 닉네임 수정 실패 - 존재하지않는 회원")
+    void updateNickname_fail_NotFoundMember() {
         //given
         String loginId = "loginId";
         String nickname = "nickname";
 
-        MemberUpdateRequestDto request = ReflectionUtils.newInstance(
-                MemberUpdateRequestDto.class,
+        MemberNicknameUpdateRequestDto request = ReflectionUtils.newInstance(
+                MemberNicknameUpdateRequestDto.class,
                 nickname
         );
         Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
                 .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, "Member loginId " + loginId));
 
         //when, then
-        assertThatThrownBy(() -> service.update(loginId, request)).isInstanceOf(
+        assertThatThrownBy(() -> service.updateNickname(loginId, request)).isInstanceOf(
                 ClientException.class);
 
         verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
@@ -314,15 +317,15 @@ class CommandMemberServiceImplTest {
     }
 
     @Test
-    @DisplayName("회원 정보 수정 실패-중복된 닉네임")
-    void update_fail_AlreadyExistNickname() {
+    @DisplayName("회원 닉네임 수정 실패 - 중복된 닉네임")
+    void updateNickname_fail_AlreadyExistNickname() {
         //given
         String loginId = "loginId";
         String nickname = "nickname";
 
         Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
-        MemberUpdateRequestDto request = ReflectionUtils.newInstance(
-                MemberUpdateRequestDto.class,
+        MemberNicknameUpdateRequestDto request = ReflectionUtils.newInstance(
+                MemberNicknameUpdateRequestDto.class,
                 nickname
         );
         Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
@@ -331,7 +334,7 @@ class CommandMemberServiceImplTest {
                 .thenThrow(MemberProfileAlreadyExistException.class);
 
         //when, then
-        assertThatThrownBy(() -> service.update(loginId, request)).isInstanceOf(
+        assertThatThrownBy(() -> service.updateNickname(loginId, request)).isInstanceOf(
                 MemberProfileAlreadyExistException.class);
 
         verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
@@ -339,15 +342,15 @@ class CommandMemberServiceImplTest {
     }
 
     @Test
-    @DisplayName("회원 정보 수정 성공")
-    void update() {
+    @DisplayName("회원 닉네임 수정 성공")
+    void updateNickname() {
         //given
         String loginId = "user@1";
         String nickname = "nickname";
 
         Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
-        MemberUpdateRequestDto request = ReflectionUtils.newInstance(
-                MemberUpdateRequestDto.class,
+        MemberNicknameUpdateRequestDto request = ReflectionUtils.newInstance(
+                MemberNicknameUpdateRequestDto.class,
                 nickname
         );
 
@@ -357,7 +360,7 @@ class CommandMemberServiceImplTest {
                 .thenReturn(Optional.empty());
 
         //when
-        MemberUpdateResponseDto actualMember = service.update(loginId, request);
+        MemberUpdateResponseDto actualMember = service.updateNickname(loginId, request);
 
         //then
         assertThat(actualMember.getLoginId()).isEqualTo(loginId);
@@ -365,6 +368,205 @@ class CommandMemberServiceImplTest {
 
         verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
         verify(queryMemberRepository, times(1)).findMemberByNickname(nickname);
+    }
+
+    @Test
+    @DisplayName("회원 이름 수정 실패 - 존재하지않는 회원")
+    void updateName_fail_NotFoundMember() {
+        //given
+        String loginId = "loginId";
+        String name = "name";
+
+        MemberNameUpdateRequestDto request = ReflectionUtils.newInstance(
+                MemberNameUpdateRequestDto.class,
+                name
+        );
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
+                .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, "Member loginId " + loginId));
+
+        //when, then
+        assertThatThrownBy(() -> service.updateName(loginId, request)).isInstanceOf(
+                ClientException.class);
+
+        verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
+    }
+
+    @Test
+    @DisplayName("회원 이름 수정 성공")
+    void updateName() {
+        //given
+        String loginId = "user@1";
+        String name = "name";
+
+        Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
+        MemberNameUpdateRequestDto request = ReflectionUtils.newInstance(
+                MemberNameUpdateRequestDto.class,
+                name
+        );
+
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
+                .thenReturn(Optional.of(member));
+
+        //when
+        MemberUpdateResponseDto actualMember = service.updateName(loginId, request);
+
+        //then
+        assertThat(actualMember.getLoginId()).isEqualTo(loginId);
+        assertThat(actualMember.getName()).isEqualTo(name);
+
+        verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
+    }
+
+    @Test
+    @DisplayName("회원 이메일 수정 실패 - 존재하지않는 회원")
+    void updateEmail_fail_NotFoundMember() {
+        //given
+        String loginId = "loginId";
+        String email = "email@test.com";
+
+        MemberEmailUpdateRequestDto request = ReflectionUtils.newInstance(
+                MemberEmailUpdateRequestDto.class,
+                email
+        );
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
+                .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, "Member loginId " + loginId));
+
+        //when, then
+        assertThatThrownBy(() -> service.updateEmail(loginId, request)).isInstanceOf(
+                ClientException.class);
+
+        verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
+        verify(queryMemberRepository, never()).findMemberByEmail(email);
+    }
+
+    @Test
+    @DisplayName("회원 이메일 수정 실패 - 중복된 이메일")
+    void updateEmail_fail_AlreadyExistNickname() {
+        //given
+        String loginId = "loginId";
+        String email = "email@test.com";
+
+        Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
+        MemberEmailUpdateRequestDto request = ReflectionUtils.newInstance(
+                MemberEmailUpdateRequestDto.class,
+                email
+        );
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
+                .thenReturn(Optional.of(member));
+        Mockito.when(queryMemberRepository.findMemberByEmail(email))
+                .thenThrow(MemberProfileAlreadyExistException.class);
+
+        //when, then
+        assertThatThrownBy(() -> service.updateEmail(loginId, request)).isInstanceOf(
+                MemberProfileAlreadyExistException.class);
+
+        verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
+        verify(queryMemberRepository, times(1)).findMemberByEmail(email);
+    }
+
+    @Test
+    @DisplayName("회원 이메일 수정 성공")
+    void updateEmail() {
+        //given
+        String loginId = "user@1";
+        String email = "email@test.com";
+
+        Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
+        MemberEmailUpdateRequestDto request = ReflectionUtils.newInstance(
+                MemberEmailUpdateRequestDto.class,
+                email
+        );
+
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
+                .thenReturn(Optional.of(member));
+        Mockito.when(queryMemberRepository.findMemberByEmail(email))
+                .thenReturn(Optional.empty());
+
+        //when
+        MemberUpdateResponseDto actualMember = service.updateEmail(loginId, request);
+
+        //then
+        assertThat(actualMember.getLoginId()).isEqualTo(loginId);
+        assertThat(actualMember.getEmail()).isEqualTo(email);
+
+        verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
+        verify(queryMemberRepository, times(1)).findMemberByEmail(email);
+    }
+
+    @Test
+    @DisplayName("회원 전화번호 수정 실패 - 존재하지않는 회원")
+    void updatePhone_fail_NotFoundMember() {
+        //given
+        String loginId = "loginId";
+        String phone = "01011112222";
+
+        MemberPhoneUpdateRequestDto request = ReflectionUtils.newInstance(
+                MemberPhoneUpdateRequestDto.class,
+                phone
+        );
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
+                .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, "Member loginId " + loginId));
+
+        //when, then
+        assertThatThrownBy(() -> service.updatePhone(loginId, request)).isInstanceOf(
+                ClientException.class);
+
+        verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
+        verify(queryMemberRepository, never()).findMemberByPhone(phone);
+    }
+
+    @Test
+    @DisplayName("회원 전화번호 수정 실패 - 중복된 전화번호")
+    void updatePhone_fail_AlreadyExistNickname() {
+        //given
+        String loginId = "loginId";
+        String phone = "01011112222";
+
+        Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
+        MemberPhoneUpdateRequestDto request = ReflectionUtils.newInstance(
+                MemberPhoneUpdateRequestDto.class,
+                phone
+        );
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
+                .thenReturn(Optional.of(member));
+        Mockito.when(queryMemberRepository.findMemberByPhone(phone))
+                .thenThrow(MemberProfileAlreadyExistException.class);
+
+        //when, then
+        assertThatThrownBy(() -> service.updatePhone(loginId, request)).isInstanceOf(
+                MemberProfileAlreadyExistException.class);
+
+        verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
+        verify(queryMemberRepository, times(1)).findMemberByPhone(phone);
+    }
+
+    @Test
+    @DisplayName("회원 전화번호 수정 성공")
+    void updatePhone() {
+        //given
+        String loginId = "user@1";
+        String phone = "01011112222";
+
+        Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
+        MemberPhoneUpdateRequestDto request = ReflectionUtils.newInstance(
+                MemberPhoneUpdateRequestDto.class,
+                phone
+        );
+
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
+                .thenReturn(Optional.of(member));
+        Mockito.when(queryMemberRepository.findMemberByPhone(phone))
+                .thenReturn(Optional.empty());
+
+        //when
+        MemberUpdateResponseDto actualMember = service.updatePhone(loginId, request);
+
+        //then
+        assertThat(actualMember.getLoginId()).isEqualTo(loginId);
+        assertThat(actualMember.getPhone()).isEqualTo(phone);
+
+        verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
+        verify(queryMemberRepository, times(1)).findMemberByPhone(phone);
     }
 
     @Test

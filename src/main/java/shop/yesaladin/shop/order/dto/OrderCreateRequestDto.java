@@ -39,6 +39,6 @@ public abstract class OrderCreateRequestDto {
     @Length(min = 1, max = 20)
     protected String recipientName;
     @NotBlank
-    @Pattern(regexp = "^01([0|1])([0-9]{8})$")
+    @Pattern(regexp = "^01([0|1])(\\d{8})$")
     protected String recipientPhoneNumber;
 }

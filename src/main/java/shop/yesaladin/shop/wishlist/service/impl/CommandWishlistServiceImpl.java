@@ -3,16 +3,15 @@ package shop.yesaladin.shop.wishlist.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import shop.yesaladin.common.code.ErrorCode;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
-import shop.yesaladin.shop.product.exception.ProductNotFoundException;
 import shop.yesaladin.shop.wishlist.domain.model.Wishlist;
 import shop.yesaladin.shop.wishlist.domain.repository.CommandWishlistRepository;
 import shop.yesaladin.shop.wishlist.dto.WishlistSaveResponseDto;
-import shop.yesaladin.shop.wishlist.exception.WishlistAlreadyExistsException;
-import shop.yesaladin.shop.wishlist.exception.WishlistNotFoundException;
 import shop.yesaladin.shop.wishlist.service.inter.CommandWishlistService;
 import shop.yesaladin.shop.wishlist.service.inter.QueryWishlistService;
 
@@ -38,14 +37,14 @@ public class CommandWishlistServiceImpl implements CommandWishlistService {
     @Transactional
     public WishlistSaveResponseDto save(String loginId, Long productId) {
         Product product = queryProductRepository.findProductById(productId).orElseThrow(() -> {
-            throw new ProductNotFoundException(productId);
+            throw new ClientException(ErrorCode.PRODUCT_NOT_FOUND, "Product is not found: " + productId);
         });
         Member member = queryMemberService.findByLoginId(loginId);
         if (Boolean.TRUE.equals(queryWishlistService.isExists(
                 member.getLoginId(),
                 productId
         ))) {
-            throw new WishlistAlreadyExistsException(loginId, productId);
+            throw new ClientException(ErrorCode.BAD_REQUEST, "Wishlist is exists: " + productId);
         }
         Wishlist wishlist = commandWishlistRepository.save(Wishlist.create(
                 member,
@@ -65,7 +64,7 @@ public class CommandWishlistServiceImpl implements CommandWishlistService {
                 member.getLoginId(),
                 productId
         ))) {
-            throw new WishlistNotFoundException(loginId, productId);
+            throw new ClientException(ErrorCode.BAD_REQUEST, "Wishlist is not exists: " + productId);
         }
         commandWishlistRepository.deleteByMemberIdAndProductId(member.getId(), productId);
     }

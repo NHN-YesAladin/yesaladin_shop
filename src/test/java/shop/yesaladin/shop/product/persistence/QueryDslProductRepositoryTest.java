@@ -1,7 +1,6 @@
 package shop.yesaladin.shop.product.persistence;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.ReflectionUtils;
@@ -107,7 +106,6 @@ class QueryDslProductRepositoryTest {
         assertThat(response.getTitle()).isEqualTo(product1.getTitle());
     }
 
-    @Disabled
     @Test
     @DisplayName("상품 ISBN 존재 여부 조회")
     void existsByIsbn() {
@@ -118,7 +116,7 @@ class QueryDslProductRepositoryTest {
         Boolean response = repository.existsByIsbn(ISBN1);
 
         // then
-        assertThat(response).isFalse();
+        assertThat(response).isTrue();
     }
 
     @Test

@@ -36,7 +36,7 @@ public interface QueryAuthorService {
     /**
      * 저자를 로그인 아이디로 검색
      *
-     * @param loginId 검색할 로그인 아이디
+     * @param loginId  검색할 로그인 아이디
      * @param pageable 페이지 정보
      * @return 검색 결과
      * @author 김선홍
@@ -47,7 +47,7 @@ public interface QueryAuthorService {
     /**
      * 저자를 이름으로 검색
      *
-     * @param name 검색할 이름
+     * @param name     검색할 이름
      * @param pageable 페이지 정보
      * @return 검색 결과
      * @author 김선홍

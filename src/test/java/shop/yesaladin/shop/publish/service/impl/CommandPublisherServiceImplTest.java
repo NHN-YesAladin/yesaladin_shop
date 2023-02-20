@@ -11,7 +11,6 @@ import shop.yesaladin.shop.publish.domain.repository.CommandPublisherRepository;
 import shop.yesaladin.shop.publish.domain.repository.QueryPublisherRepository;
 import shop.yesaladin.shop.publish.dto.PublisherRequestDto;
 import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
-import shop.yesaladin.shop.publish.exception.PublisherNotFoundException;
 import shop.yesaladin.shop.publish.service.inter.CommandPublisherService;
 
 import java.util.Optional;
@@ -125,10 +124,10 @@ class CommandPublisherServiceImplTest {
         String modifiedName = "출판사";
         PublisherRequestDto modifyDto = new PublisherRequestDto(modifiedName);
 
-        Mockito.when(queryPublisherRepository.findById(id)).thenThrow(PublisherNotFoundException.class);
+        Mockito.when(queryPublisherRepository.findById(id)).thenThrow(ClientException.class);
 
         // when
-        assertThatThrownBy(() -> service.modify(id, modifyDto)).isInstanceOf(PublisherNotFoundException.class);
+        assertThatThrownBy(() -> service.modify(id, modifyDto)).isInstanceOf(ClientException.class);
 
         verify(queryPublisherRepository, times(1)).findById(anyLong());
     }

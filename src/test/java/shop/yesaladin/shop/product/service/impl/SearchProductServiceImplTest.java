@@ -1,5 +1,8 @@
 package shop.yesaladin.shop.product.service.impl;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,10 +13,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.product.domain.repository.SearchProductRepository;
 import shop.yesaladin.shop.product.dto.SearchedProductResponseDto;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class SearchProductServiceImplTest {
 
@@ -54,36 +53,6 @@ class SearchProductServiceImplTest {
         //when
         Page<SearchedProductResponseDto> result = searchProductService.searchProductsByCategoryId(
                 1L,
-                pageable
-        );
-
-        //then
-        assertThat(result).hasSize(1);
-        assertThat(result.getContent().get(0).getId()).isEqualTo(responseDto.getId());
-        assertThat(result.getContent().get(0).getTitle()).isEqualTo(responseDto.getTitle());
-        assertThat(result.getContent().get(0).getQuantity()).isEqualTo(responseDto.getQuantity());
-        assertThat(result.getContent().get(0).getSellingPrice()).isEqualTo(responseDto.getSellingPrice());
-        assertThat(result.getContent().get(0).getRate()).isEqualTo(responseDto.getRate());
-        assertThat(result.getContent().get(0).getIsForcedOutOfStock()).isEqualTo(responseDto.getIsForcedOutOfStock());
-        assertThat(result.getContent().get(0).getIsbn()).isEqualTo(responseDto.getIsbn());
-        assertThat(result.getContent().get(0).getPublisher()).isEqualTo(responseDto.getPublisher());
-        assertThat(result.getContent().get(0).getAuthors()).hasSize(responseDto.getAuthors().size());
-        assertThat(result.getContent().get(0).getAuthors().get(0)).isEqualTo(responseDto.getAuthors().get(0));
-        assertThat(result.getContent().get(0).getThumbnailFile()).isEqualTo(responseDto.getThumbnailFile());
-        assertThat(result.getContent().get(0).getTags()).hasSize(responseDto.getTags().size());
-        assertThat(result.getContent().get(0).getTags().get(0)).isEqualTo(responseDto.getTags().get(0));
-    }
-
-    @Test
-    @DisplayName("카테고리 이름 검색 테스트")
-    void testSearchProductsByCategoryName() {
-//given
-        Mockito.when(searchProductRepository.searchProductsByCategoryName("name", pageable))
-                .thenReturn(new PageImpl<>(List.of(responseDto), pageable, 1L));
-
-        //when
-        Page<SearchedProductResponseDto> result = searchProductService.searchProductsByCategoryName(
-                "name",
                 pageable
         );
 
