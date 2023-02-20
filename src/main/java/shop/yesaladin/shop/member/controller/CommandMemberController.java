@@ -1,12 +1,15 @@
 package shop.yesaladin.shop.member.controller;
 
+import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -22,8 +25,11 @@ import shop.yesaladin.shop.member.dto.MemberBlockRequestDto;
 import shop.yesaladin.shop.member.dto.MemberBlockResponseDto;
 import shop.yesaladin.shop.member.dto.MemberCreateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberCreateResponseDto;
+import shop.yesaladin.shop.member.dto.MemberEmailUpdateRequestDto;
+import shop.yesaladin.shop.member.dto.MemberNameUpdateRequestDto;
+import shop.yesaladin.shop.member.dto.MemberPhoneUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberUnblockResponseDto;
-import shop.yesaladin.shop.member.dto.MemberUpdateRequestDto;
+import shop.yesaladin.shop.member.dto.MemberNicknameUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateResponseDto;
 import shop.yesaladin.shop.member.dto.MemberWithdrawResponseDto;
 import shop.yesaladin.shop.member.dto.OauthMemberCreateRequestDto;
@@ -90,17 +96,78 @@ public class CommandMemberController {
      * @param loginId       회원의 아이디
      * @return 수정된 회원 정보를 담은 responseEntity
      * @author 최예린
+     * @author 송학현
      * @since 1.0
      */
-    @PutMapping
-    public ResponseDto<MemberUpdateResponseDto> updateMember(
-            @Valid @RequestBody MemberUpdateRequestDto updateDto,
+    @PutMapping("/nickname")
+    public ResponseDto<MemberUpdateResponseDto> updateMemberNickname(
+            @Valid @RequestBody MemberNicknameUpdateRequestDto updateDto,
             BindingResult bindingResult,
             @LoginId(required = true) String loginId
     ) {
         checkRequestValidation(bindingResult);
 
-        MemberUpdateResponseDto response = commandMemberService.update(loginId, updateDto);
+        MemberUpdateResponseDto response = commandMemberService.updateNickname(loginId, updateDto);
+
+        return ResponseDto.<MemberUpdateResponseDto>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(response)
+                .build();
+    }
+
+    @ExceptionHandler(ClientException.class)
+    public ResponseEntity<ResponseDto<Void>> clientExceptionHandler(ClientException ce) {
+        return ResponseEntity.status(ce.getResponseStatus()).body(ResponseDto.<Void>builder()
+                .success(true)
+                .errorMessages(List.of(ce.getDisplayErrorMessage()))
+                .status(ce.getResponseStatus())
+                .build());
+    }
+
+    @PutMapping("/name")
+    public ResponseDto<MemberUpdateResponseDto> updateMemberName(
+            @Valid @RequestBody MemberNameUpdateRequestDto updateDto,
+            BindingResult bindingResult,
+            @LoginId(required = true) String loginId
+    ) {
+        checkRequestValidation(bindingResult);
+
+        MemberUpdateResponseDto response = commandMemberService.updateName(loginId, updateDto);
+
+        return ResponseDto.<MemberUpdateResponseDto>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(response)
+                .build();
+    }
+
+    @PutMapping("/phone")
+    public ResponseDto<MemberUpdateResponseDto> updateMemberPhone(
+            @Valid @RequestBody MemberPhoneUpdateRequestDto updateDto,
+            BindingResult bindingResult,
+            @LoginId(required = true) String loginId
+    ) {
+        checkRequestValidation(bindingResult);
+
+        MemberUpdateResponseDto response = commandMemberService.updatePhone(loginId, updateDto);
+
+        return ResponseDto.<MemberUpdateResponseDto>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(response)
+                .build();
+    }
+
+    @PutMapping("/email")
+    public ResponseDto<MemberUpdateResponseDto> updateMemberEmail(
+            @Valid @RequestBody MemberEmailUpdateRequestDto updateDto,
+            BindingResult bindingResult,
+            @LoginId(required = true) String loginId
+    ) {
+        checkRequestValidation(bindingResult);
+
+        MemberUpdateResponseDto response = commandMemberService.updateEmail(loginId, updateDto);
 
         return ResponseDto.<MemberUpdateResponseDto>builder()
                 .success(true)

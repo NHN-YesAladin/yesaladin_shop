@@ -61,6 +61,16 @@ public interface QueryMemberRepository {
     Optional<Member> findMemberByEmail(String email);
 
     /**
+     * 회원의 phone 을 통해 회원을 조회 합니다.
+     *
+     * @param phone 회원의 phone 입니다.
+     * @return 조회된 회원
+     * @author 송학현
+     * @since 1.0
+     */
+    Optional<Member> findMemberByPhone(String phone);
+
+    /**
      * 기본 화면을 위한 회원 조회 메서드
      *
      * @param pageable 페이지 정보

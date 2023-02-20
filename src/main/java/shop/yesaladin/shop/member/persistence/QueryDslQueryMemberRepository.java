@@ -84,6 +84,17 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
      * {@inheritDoc}
      */
     @Override
+    public Optional<Member> findMemberByPhone(String phone) {
+        QMember member = QMember.member;
+        return Optional.ofNullable(queryFactory.selectFrom(member)
+                .where(member.phone.eq(phone).and(member.isWithdrawal.isFalse()))
+                .fetchFirst());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Page<MemberManagerResponseDto> findMemberManagers(Pageable pageable) {
         QMember member = QMember.member;
         List<Member> list = queryFactory.selectFrom(member)
