@@ -27,6 +27,25 @@ YesAladin Shop은 애플리케이션 이용에 필요한 API를 제공함으로�
 
 ### [@배수한](https://github.com/shbaeNhnacademy)
 
+- **카테고리** 
+  - 1차, 2차 카테고리와 같이 **자기참조** 형식의 카테고리 구현 
+  - 엔티티의 Pk를 `Auto Increment`가 아닌 static한 값으로 사용 
+    - 생성 : 1차 카테고리 10000만씩 증가, 2차 카테고리 100씩 증가 
+    - 자동으로 생성될 경우, 상품-카테고리간의 관계 맵핑이 힘들어짐??? <- 설명 추가
+  - 카테고리 등록/수정/삭제
+  - 카테고리 단건/다건 `paging` 조회
+  - 카테고리 순서 변경 
+- **결제**
+  - 결제 요청 및 승인 처리 by [Toss](https://docs.tosspayments.com/reference)
+    - 카드 
+    - 간편 결제 
+  - 결제 내역 조회
+- 주문 조회
+  - 기간별 주문 조회 및 일자 지정별 주문 조회 
+  - 주문 상태 별 주문 조회 
+  - 주문 상세 조회 (주문정보+상품정보+배송정보+결제정보)
+
+
 ### [@김홍대](https://github.com/mongmeo-dev)
 
 ### [@서민지](https://github.com/narangd0)
@@ -36,6 +55,11 @@ YesAladin Shop은 애플리케이션 이용에 필요한 API를 제공함으로�
 ## Technical Issue
 ### Kafka (가제)
 ### 주문/결제 (가제)
+- 결제 서비스 메서드 실행 중, RollBack 되어야는 상황에 토스와의 통신이 정상 종료된 경우
+  - 데이터베이스는 트랜잭션이 비정상 종료되어 rollback이 되었다.
+  - 하지만 토스 결제 취소는 HTTP 통신이므로 rollback과는 무관하게 동작하므로 대책이 필요 
+  - **TransactionEventListener** 를 사용하여 해결 
+    - phase를 _TransactionPhase.AFTER_ROLLBACK_ 으로 설정하여 사용 
 ### Web Socket (가제)
 ### Object Storage (가제)
 ### Spring Cache (가제)

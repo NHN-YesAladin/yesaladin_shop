@@ -25,13 +25,15 @@ public interface CommandOrderService {
      *
      * @param request 주문 요청 데이터
      * @param loginId 회원의 아이디
+     * @param type    회원 주문 시 어떤 경로(바로 주문, 장바구니 주문)로 주문하였는지에 대한 유형
      * @return 생성된 회원 주문
      * @author 최예린
      * @since 1.0
      */
     OrderCreateResponseDto createMemberOrders(
             OrderMemberCreateRequestDto request,
-            String loginId
+            String loginId,
+            String type
     );
 
     /**
