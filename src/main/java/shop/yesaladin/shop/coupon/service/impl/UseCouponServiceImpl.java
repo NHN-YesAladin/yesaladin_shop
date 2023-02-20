@@ -102,7 +102,7 @@ public class UseCouponServiceImpl implements UseCouponService {
         }
 
         try {
-            List<MemberCouponSummaryDto> couponSummaryDtoList = queryMemberCouponService.getMemberCouponSummaryList(
+            List<MemberCouponSummaryDto> couponSummaryDtoList = queryMemberCouponService.getMemberCouponSummaryListByCouponCode(
                     couponCodeList);
             checkCouponIsPointCouponType(couponSummaryDtoList, message.getRequestId());
 

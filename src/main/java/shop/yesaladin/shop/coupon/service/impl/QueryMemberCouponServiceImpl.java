@@ -48,7 +48,6 @@ public class QueryMemberCouponServiceImpl implements QueryMemberCouponService {
     /**
      * {@inheritDoc}
      */
-    @Override
     public PaginatedResponseDto<MemberCouponSummaryDto> getMemberCouponSummaryList(
             Pageable pageable, String memberId,
             boolean usable
@@ -80,7 +79,7 @@ public class QueryMemberCouponServiceImpl implements QueryMemberCouponService {
      */
     @Override
     @Transactional(readOnly = true)
-    public List<MemberCouponSummaryDto> getMemberCouponSummaryList(List<String> couponCodes) {
+    public List<MemberCouponSummaryDto> getMemberCouponSummaryListByCouponCode(List<String> couponCodes) {
         return tryGetCouponSummary(couponCodes).getData();
     }
 

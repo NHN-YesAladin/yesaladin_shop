@@ -241,7 +241,7 @@ class UseCouponServiceImplTest {
 
         when(queryMemberCouponRepository.findByCouponCodes(expectedCouponCodes))
                 .thenReturn(expectedMemberCoupons);
-        when(queryMemberCouponService.getMemberCouponSummaryList(Mockito.anyList()))
+        when(queryMemberCouponService.getMemberCouponSummaryListByCouponCode(Mockito.anyList()))
                 .thenReturn(expectedMemberCouponSummaryList);
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
         when(valueOperations.get(Mockito.anyString())).thenReturn(memberId);
@@ -250,7 +250,7 @@ class UseCouponServiceImplTest {
         List<CouponCodeOnlyDto> actual = useCouponService.useCoupon(requestResponseMessage);
 
         // then
-        Mockito.verify(queryMemberCouponService).getMemberCouponSummaryList(Mockito.anyList());
+        Mockito.verify(queryMemberCouponService).getMemberCouponSummaryListByCouponCode(Mockito.anyList());
         Mockito.verify(commandPointHistoryService, times(1)).save(Mockito.any());
     }
 }
