@@ -106,6 +106,17 @@ class QueryDslQueryMemberRepositoryTest {
     }
 
     @Test
+    void findMemberByPhone() throws Exception {
+        //when
+        Optional<Member> optionalMember = queryMemberRepository.findMemberByPhone(member.getPhone());
+
+        //then
+        assertThat(optionalMember).isPresent();
+        assertThat(optionalMember.get().getEmail()).isEqualTo(member.getEmail());
+        assertThat(optionalMember.get().isWithdrawal()).isFalse();
+    }
+
+    @Test
     void findMemberManagers() {
         //when
         Page<MemberManagerResponseDto> memberList = queryMemberRepository.findMemberManagers(
