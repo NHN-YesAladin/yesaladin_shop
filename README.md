@@ -17,9 +17,26 @@ YesAladin Shop은 애플리케이션 이용에 필요한 API를 제공함으로�
 // 이미지 추가할 것
 ![]()
 
+## CI/CD
+(무중단 배포 및 CI/CD flow 첨부할 것)
+
+## Test Coverage
+- 목표 : 라인 커버리지 80% 이상 (2023.02.xx.(?) 기준 xx.x%)  
+  (스크린샷 첨부할 것)
+
 ## Features
 
 ### [@송학현](https://github.com/alanhakhyeonsong)
+
+- **회원 관리**
+  - 회원 가입
+    - 일반 회원 가입
+    - OAuth2 회원 등록 시 추가 정보 입력 후 등록 (Member 테이블 단일화)
+  - 회원 정보 수정
+  - 회원 탈퇴
+  - 회원 통계
+- **Shop API Server 보안** (Co-authored-by: [@김홍대](https://github.com/mongmeo-dev))
+  - Shop API Server 내 Spring Security를 추가하여 각 API 별 Method Security 적용
 
 ### [@이수정](https://github.com/sujeong68)
 
@@ -52,18 +69,31 @@ YesAladin Shop은 애플리케이션 이용에 필요한 API를 제공함으로�
 
 ### [@김선홍](https://github.com/ssun4098)
 
+### 공통
+- SonarQube 및 체크 스타일을 활용한 코드 품질 개선 및 컨벤션 체크
+- Unit Test 수행
+
 ## Technical Issue
 ### Kafka (가제)
+
 ### 주문/결제 (가제)
 - 결제 서비스 메서드 실행 중, RollBack 되어야는 상황에 토스와의 통신이 정상 종료된 경우
   - 데이터베이스는 트랜잭션이 비정상 종료되어 rollback이 되었다.
   - 하지만 토스 결제 취소는 HTTP 통신이므로 rollback과는 무관하게 동작하므로 대책이 필요 
   - **TransactionEventListener** 를 사용하여 해결 
     - phase를 _TransactionPhase.AFTER_ROLLBACK_ 으로 설정하여 사용 
+
 ### Web Socket (가제)
-### Object Storage (가제)
-### Spring Cache (가제)
+
 ### 인증/인가 (가제)
+- JWT 토큰 검증 결과 payload에 포함된 식별 정보를 통해 Shop API Server 내 `OncePerRequestFilter`로 자체 인증 객체 생성
+  - 생성된 `Authentication`에 포함된 `Roles`를 사용하여 API에 Method Security 적용
+  - 생성된 `Authentication`에 포함된 `loginId`를 통해 AOP를 구성하여 회원 자신의 개인정보에 관련된 API 호출 시 개인정보 노출 최소화
+
+### Object Storage (가제)
+
+### Spring Cache (가제)
+
 ### Elastic Search (가제)
 
 ## Tech Stack
@@ -117,6 +147,7 @@ YesAladin Shop은 애플리케이션 이용에 필요한 API를 제공함으로�
 - Hot-Fix: Merge 후 발생한 버그 및 수정 사항 반영 시 사용
 
 #### Dooray 칸반 보드 활용
+(스크린샷 첨부할 것)
 
 ## Contributors
 
