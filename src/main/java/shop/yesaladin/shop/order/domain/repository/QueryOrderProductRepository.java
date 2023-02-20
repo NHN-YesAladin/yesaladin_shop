@@ -12,8 +12,6 @@ import java.util.List;
  */
 public interface QueryOrderProductRepository {
 
-//    Optional<OrderProduct> findById(long id);
-
     /**
      * 주문 번호를 통해 해당하는 모든 주문 상품을 조회합니다.
      *

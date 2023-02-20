@@ -9,7 +9,6 @@ import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberAddressRepository;
 import shop.yesaladin.shop.member.domain.repository.QueryMemberRepository;
-import shop.yesaladin.shop.member.dto.MemberAddressOrderSheetResponseDto;
 import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
 import shop.yesaladin.shop.member.service.inter.QueryMemberAddressService;
 
@@ -26,7 +25,7 @@ public class QueryMemberAddressServiceImpl implements QueryMemberAddressService 
     private final QueryMemberRepository queryMemberRepository;
     private final QueryMemberAddressRepository queryMemberAddressRepository;
 
-    private final String MEMBER_ADDRESS_NOT_FOUND = "MemberAddress not found with id : ";
+    private static final String MEMBER_ADDRESS_NOT_FOUND = "MemberAddress not found with id : ";
 
     /**
      * {@inheritDoc}

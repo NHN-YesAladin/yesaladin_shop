@@ -60,8 +60,8 @@ public class QueryOrderCouponServiceImpl implements QueryOrderCouponService {
 
         //상품의 판매가
         long saleAmount = Math.round((product.getActualPrice() * request.getQuantity()) *
-                (100 - ((product.isSeparatelyDiscount() ? product.getDiscountRate()
-                        : product.getTotalDiscountRate().getDiscountRate()))) / 1000) * 10L;
+                (100 - (product.isSeparatelyDiscount() ? product.getDiscountRate()
+                        : product.getTotalDiscountRate().getDiscountRate())) / 1000) * 10L;
 
         //상품의 실판매가
         long couponAppliedAmount = getCouponAppliedAmount(

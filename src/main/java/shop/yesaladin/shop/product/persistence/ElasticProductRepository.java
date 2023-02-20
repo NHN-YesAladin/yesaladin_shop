@@ -238,21 +238,6 @@ public class ElasticProductRepository implements SearchProductRepository {
     }
 
     /**
-     * 밸류가 String 인 Term 쿼리를 반환하는 메서드
-     *
-     * @param field 필드
-     * @param value 문자열 밸류
-     * @return 쿼리
-     * @author : 김선홍
-     * @since : 1.0
-     */
-    private Query getTermQueryByString(String field, String value) {
-        return NativeQuery.builder()
-                .withQuery(q -> q.term(t -> t.field(field).value(value)))
-                .getQuery();
-    }
-
-    /**
      * 상품의 정가, 할인율을 바탕으로 판매가를 계산해 반환합니다.
      *
      * @param actualPrice 상품의 정가

@@ -45,10 +45,7 @@ public class QueryDslPaymentRepository implements QueryPaymentRepository {
         QPaymentCard paymentCard = QPaymentCard.paymentCard;
         QPaymentCancel paymentCancel = QPaymentCancel.paymentCancel;
         QPaymentEasyPay paymentEasyPay = QPaymentEasyPay.paymentEasyPay;
-        QOrder order = QOrder.order;
         return Optional.ofNullable(queryFactory.selectFrom(payment)
-//                .innerJoin(payment.order, order)
-//                .fetchJoin()
                 .leftJoin(payment.paymentCard, paymentCard)
                 .fetchJoin()
                 .leftJoin(payment.paymentCancel, paymentCancel)

@@ -26,7 +26,7 @@ public class OrderNonMemberCreateRequestDto extends OrderCreateRequestDto {
     @Length(min = 1, max = 20)
     private String ordererName;
     @NotNull
-    @Pattern(regexp = "^01([0|1])([0-9]{8})$")
+    @Pattern(regexp = "^01([0|1])(\\d{8})$")
     private String ordererPhoneNumber;
 
     @NotBlank
