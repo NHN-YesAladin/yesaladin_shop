@@ -64,18 +64,20 @@ public class CommandOrderController {
      * @param request       주문 생성 요청 데이터
      * @param bindingResult 유효성 검사
      * @param loginId       회원의 아이디
+     * @param type          회원 주문 시 어떤 경로(바로 주문, 장바구니 주문)로 주문하였는지에 대한 유형
      * @return 생성된 주문 정보
      */
-    @PostMapping("/member")
+    @PostMapping(value = "/member")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<OrderCreateResponseDto> createMemberOrder(
             @Valid @RequestBody OrderMemberCreateRequestDto request,
             BindingResult bindingResult,
-            @LoginId(required = true) String loginId
+            @LoginId(required = true) String loginId,
+            @RequestParam(value = "type", required = false) String type
     ) {
         checkRequestValidation(bindingResult, "MemberOrder");
 
-        OrderCreateResponseDto response = commandOrderService.createMemberOrders(request, loginId);
+        OrderCreateResponseDto response = commandOrderService.createMemberOrders(request, loginId, type);
 
         return ResponseDto.<OrderCreateResponseDto>builder()
                 .success(true)

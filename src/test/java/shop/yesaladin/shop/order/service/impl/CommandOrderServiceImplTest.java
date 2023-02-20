@@ -241,7 +241,7 @@ class CommandOrderServiceImplTest {
         //when
         ClientException result = assertThrows(
                 ClientException.class,
-                () -> commandOrderService.createMemberOrders(request, loginId)
+                () -> commandOrderService.createMemberOrders(request, loginId, null)
         );
 
         //then
@@ -277,7 +277,7 @@ class CommandOrderServiceImplTest {
         //when
         ClientException result = assertThrows(
                 ClientException.class,
-                () -> commandOrderService.createMemberOrders(request, loginId)
+                () -> commandOrderService.createMemberOrders(request, loginId, null)
         );
 
         //then
@@ -314,7 +314,7 @@ class CommandOrderServiceImplTest {
         //when
         ClientException result = assertThrows(
                 ClientException.class,
-                () -> commandOrderService.createMemberOrders(request, loginId)
+                () -> commandOrderService.createMemberOrders(request, loginId, null)
         );
 
         //then
@@ -357,7 +357,7 @@ class CommandOrderServiceImplTest {
         //when
         ClientException result = assertThrows(
                 ClientException.class,
-                () -> commandOrderService.createMemberOrders(request, loginId)
+                () -> commandOrderService.createMemberOrders(request, loginId, null)
         );
 
         //then
@@ -401,7 +401,7 @@ class CommandOrderServiceImplTest {
         //when
         ClientException result = assertThrows(
                 ClientException.class,
-                () -> commandOrderService.createMemberOrders(request, loginId)
+                () -> commandOrderService.createMemberOrders(request, loginId, null)
         );
 
         //then
@@ -456,7 +456,8 @@ class CommandOrderServiceImplTest {
         //when
         OrderCreateResponseDto result = commandOrderService.createMemberOrders(
                 request,
-                loginId
+                loginId,
+                null
         );
 
         //then
