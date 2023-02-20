@@ -90,7 +90,8 @@ public class CommandOrderServiceImpl implements CommandOrderService {
     @Transactional
     public OrderCreateResponseDto createMemberOrders(
             OrderMemberCreateRequestDto request,
-            String loginId
+            String loginId,
+            String type
     ) {
         if (request.getOrderCoupons() != null) {
             queryMemberCouponService.getValidMemberCouponSummaryListByCouponCodes(
@@ -118,6 +119,10 @@ public class CommandOrderServiceImpl implements CommandOrderService {
                 useCouponService.cancelCouponUse(request.getOrderCoupons());
             }
 
+        }
+
+        if (Objects.isNull(type)) {
+            products.keySet().forEach(key -> redisTemplate.opsForHash().delete(loginId, products.get(key).getId().toString()));
         }
 
         return OrderCreateResponseDto.fromEntity(savedOrder);
