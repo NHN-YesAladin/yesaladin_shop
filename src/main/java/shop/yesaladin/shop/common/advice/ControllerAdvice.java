@@ -22,8 +22,6 @@ import shop.yesaladin.shop.common.exception.InvalidPeriodConditionException;
 import shop.yesaladin.shop.member.exception.MemberProfileAlreadyExistException;
 import shop.yesaladin.shop.member.exception.MemberRoleNotFoundException;
 import shop.yesaladin.shop.product.exception.ProductNotFoundException;
-import shop.yesaladin.shop.wishlist.exception.WishlistAlreadyExistsException;
-import shop.yesaladin.shop.wishlist.exception.WishlistNotFoundException;
 
 /**
  * 공용으로 사용하는 예외 처리
@@ -40,7 +38,6 @@ public class ControllerAdvice {
     @ExceptionHandler(value = {
             CategoryNotFoundException.class,
             MemberRoleNotFoundException.class,
-            WishlistNotFoundException.class,
             ProductNotFoundException.class
     })
     public ResponseEntity<ErrorResponseDto> handleNotFoundException(Exception ex) {
@@ -73,8 +70,7 @@ public class ControllerAdvice {
     }
 
     @ExceptionHandler(value = {
-            MemberProfileAlreadyExistException.class,
-            WishlistAlreadyExistsException.class
+            MemberProfileAlreadyExistException.class
     })
     @ResponseStatus(HttpStatus.CONFLICT)
     public ResponseEntity<ErrorResponseDto> handleAlreadyExistException(Exception ex) {

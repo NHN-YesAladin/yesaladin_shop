@@ -61,7 +61,7 @@ public class QueryDslAuthorRepository implements QueryAuthorRepository {
     }
 
     /**
-     *{@inheritDoc}
+     * {@inheritDoc}
      */
     @Override
     public Page<Author> findAllByLoginIdForManager(String loginId, Pageable pageable) {
@@ -82,7 +82,7 @@ public class QueryDslAuthorRepository implements QueryAuthorRepository {
     }
 
     /**
-     *{@inheritDoc}
+     * {@inheritDoc}
      */
     @Override
     public Page<Author> findAllByNameForManager(String name, Pageable pageable) {

@@ -1,22 +1,12 @@
 package shop.yesaladin.shop.product.service.inter;
 
-import java.util.List;
-import java.util.Map;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
-import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
-import shop.yesaladin.shop.product.dto.ProductModifyDto;
-import shop.yesaladin.shop.product.dto.ProductOnlyTitleDto;
-import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
-import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
-import shop.yesaladin.shop.product.dto.ProductRecentResponseDto;
-import shop.yesaladin.shop.product.dto.ProductResponseDto;
-import shop.yesaladin.shop.product.dto.ProductWithCategoryResponseDto;
-import shop.yesaladin.shop.product.dto.ProductsResponseDto;
-import shop.yesaladin.shop.product.dto.RelationsResponseDto;
-import shop.yesaladin.shop.product.dto.SubscribeProductOrderResponseDto;
-import shop.yesaladin.shop.product.dto.ViewCartDto;
+import shop.yesaladin.shop.product.dto.*;
+
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -122,7 +112,7 @@ public interface QueryProductService {
     /**
      * 관리자용 상품 제목 검색 메서드
      *
-     * @param title 검색할 제목
+     * @param title    검색할 제목
      * @param pageable 페이지 정보
      * @return 검색 결과
      * @author 김선홍
@@ -133,7 +123,7 @@ public interface QueryProductService {
     /**
      * 관리자용 상품 isbn 검색 메서드
      *
-     * @param isbn 검색할 isbn
+     * @param isbn     검색할 isbn
      * @param pageable 페이지 정보
      * @return 검색 결과
      * @author 김선홍
@@ -144,7 +134,7 @@ public interface QueryProductService {
     /**
      * 관리자용 상품 내용 검색 메서드
      *
-     * @param content 검색할 제목
+     * @param content  검색할 제목
      * @param pageable 페이지 정보
      * @return 검색 결과
      * @author 김선홍
@@ -156,7 +146,7 @@ public interface QueryProductService {
      * 관리자용 상품 출판사 검색 메서드
      *
      * @param publisher 검색할 제목
-     * @param pageable 페이지 정보
+     * @param pageable  페이지 정보
      * @return 검색 결과
      * @author 김선홍
      * @since 1, 0
@@ -166,7 +156,7 @@ public interface QueryProductService {
     /**
      * 관리자용 상품 저자 검색 메서드
      *
-     * @param author 검색할 제목
+     * @param author   검색할 제목
      * @param pageable 페이지 정보
      * @return 검색 결과
      * @author 김선홍
