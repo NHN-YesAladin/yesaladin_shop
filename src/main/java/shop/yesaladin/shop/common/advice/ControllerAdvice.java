@@ -21,6 +21,7 @@ import shop.yesaladin.shop.common.exception.InvalidAuthorityException;
 import shop.yesaladin.shop.common.exception.InvalidPeriodConditionException;
 import shop.yesaladin.shop.member.exception.MemberProfileAlreadyExistException;
 import shop.yesaladin.shop.member.exception.MemberRoleNotFoundException;
+import shop.yesaladin.shop.product.exception.ProductNotFoundException;
 import shop.yesaladin.shop.wishlist.exception.WishlistAlreadyExistsException;
 import shop.yesaladin.shop.wishlist.exception.WishlistNotFoundException;
 
@@ -39,7 +40,8 @@ public class ControllerAdvice {
     @ExceptionHandler(value = {
             CategoryNotFoundException.class,
             MemberRoleNotFoundException.class,
-            WishlistNotFoundException.class
+            WishlistNotFoundException.class,
+            ProductNotFoundException.class
     })
     public ResponseEntity<ErrorResponseDto> handleNotFoundException(Exception ex) {
         log.error("[NOT_FOUND] handleNotFoundException", ex);

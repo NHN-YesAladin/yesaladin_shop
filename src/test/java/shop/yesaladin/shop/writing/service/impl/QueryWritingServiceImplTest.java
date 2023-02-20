@@ -1,9 +1,5 @@
 package shop.yesaladin.shop.writing.service.impl;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,6 +15,11 @@ import shop.yesaladin.shop.writing.domain.repository.QueryWritingRepository;
 import shop.yesaladin.shop.writing.dto.WritingResponseDto;
 import shop.yesaladin.shop.writing.dummy.DummyAuthor;
 import shop.yesaladin.shop.writing.service.inter.QueryWritingService;
+
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 class QueryWritingServiceImplTest {
 

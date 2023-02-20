@@ -1,9 +1,5 @@
 package shop.yesaladin.shop.product.persistence;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,15 +9,16 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import shop.yesaladin.shop.file.domain.model.File;
-import shop.yesaladin.shop.product.domain.model.Product;
-import shop.yesaladin.shop.product.domain.model.ProductSavingMethodCode;
-import shop.yesaladin.shop.product.domain.model.ProductTypeCode;
-import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
-import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
+import shop.yesaladin.shop.product.domain.model.*;
 import shop.yesaladin.shop.product.dummy.DummyFile;
 import shop.yesaladin.shop.product.dummy.DummyProduct;
 import shop.yesaladin.shop.product.dummy.DummySubscribeProduct;
 import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @ActiveProfiles("local-test")
