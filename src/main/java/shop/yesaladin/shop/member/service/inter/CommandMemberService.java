@@ -7,6 +7,7 @@ import shop.yesaladin.shop.member.dto.MemberCreateResponseDto;
 import shop.yesaladin.shop.member.dto.MemberEmailUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberNameUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberNicknameUpdateRequestDto;
+import shop.yesaladin.shop.member.dto.MemberPasswordUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberPhoneUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberUnblockResponseDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateResponseDto;
@@ -114,4 +115,15 @@ public interface CommandMemberService {
      * @since 1.0
      */
     MemberWithdrawResponseDto withDraw(String loginId);
+
+    /**
+     * 회원의 패스워드를 수정하기 위한 기능입니다.
+     *
+     * @param loginId 회원의 loginId
+     * @param request 수정할 회원의 패스워드
+     * @return 수정된 결과를 반환할 dto
+     * @author 송학현
+     * @since 1.0
+     */
+    MemberUpdateResponseDto updatePassword(String loginId, MemberPasswordUpdateRequestDto request);
 }

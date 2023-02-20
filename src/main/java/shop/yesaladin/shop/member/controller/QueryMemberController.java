@@ -24,6 +24,7 @@ import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.member.dto.MemberGradeQueryResponseDto;
 import shop.yesaladin.shop.member.dto.MemberIdDto;
 import shop.yesaladin.shop.member.dto.MemberManagerResponseDto;
+import shop.yesaladin.shop.member.dto.MemberPasswordResponseDto;
 import shop.yesaladin.shop.member.dto.MemberProfileExistResponseDto;
 import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
 import shop.yesaladin.shop.member.dto.MemberStatisticsResponseDto;
@@ -394,6 +395,27 @@ public class QueryMemberController {
                 .success(true)
                 .data(data)
                 .status(HttpStatus.OK)
+                .build();
+    }
+
+    /**
+     * 회원의 패스워드 일치 여부를 확인하기 위해 회원의 패스워드를 조회합니다.
+     *
+     * @param loginId 회원의 아이디
+     * @return 조회한 회원의 패스워드
+     * @author 송학현
+     * @since 1.0
+     */
+    @GetMapping("/password-check")
+    public ResponseDto<MemberPasswordResponseDto> getPassword(@LoginId(required = true) String loginId) {
+        MemberQueryResponseDto member = queryMemberService.getByLoginId(loginId);
+
+        MemberPasswordResponseDto response = new MemberPasswordResponseDto(member.getPassword());
+
+        return ResponseDto.<MemberPasswordResponseDto>builder()
+                .success(true)
+                .status(HttpStatus.OK)
+                .data(response)
                 .build();
     }
 }
