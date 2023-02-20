@@ -61,7 +61,7 @@ public class CommandMemberAddressServiceImpl implements CommandMemberAddressServ
         if (queryMemberAddressRepository.countByLoginId(loginId) == 10) {
             throw new ClientException(
                     ErrorCode.ADDRESS_REGISTERED_UP_TO_LIMIT,
-                    "Member(" + loginId + ") already registered address up to limit."
+                    "Member(" + loginId + ") already registered address up to limit 10."
             );
         }
     }
