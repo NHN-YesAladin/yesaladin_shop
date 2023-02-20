@@ -28,7 +28,7 @@ import shop.yesaladin.shop.member.dto.MemberBlockResponseDto;
 import shop.yesaladin.shop.member.dto.MemberCreateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberCreateResponseDto;
 import shop.yesaladin.shop.member.dto.MemberUnblockResponseDto;
-import shop.yesaladin.shop.member.dto.MemberUpdateRequestDto;
+import shop.yesaladin.shop.member.dto.MemberNicknameUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateResponseDto;
 import shop.yesaladin.shop.member.dto.MemberWithdrawResponseDto;
 import shop.yesaladin.shop.member.dto.OauthMemberCreateRequestDto;
@@ -298,15 +298,15 @@ class CommandMemberServiceImplTest {
         String loginId = "loginId";
         String nickname = "nickname";
 
-        MemberUpdateRequestDto request = ReflectionUtils.newInstance(
-                MemberUpdateRequestDto.class,
+        MemberNicknameUpdateRequestDto request = ReflectionUtils.newInstance(
+                MemberNicknameUpdateRequestDto.class,
                 nickname
         );
         Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
                 .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, "Member loginId " + loginId));
 
         //when, then
-        assertThatThrownBy(() -> service.update(loginId, request)).isInstanceOf(
+        assertThatThrownBy(() -> service.updateNickname(loginId, request)).isInstanceOf(
                 ClientException.class);
 
         verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
@@ -321,8 +321,8 @@ class CommandMemberServiceImplTest {
         String nickname = "nickname";
 
         Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
-        MemberUpdateRequestDto request = ReflectionUtils.newInstance(
-                MemberUpdateRequestDto.class,
+        MemberNicknameUpdateRequestDto request = ReflectionUtils.newInstance(
+                MemberNicknameUpdateRequestDto.class,
                 nickname
         );
         Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
@@ -331,7 +331,7 @@ class CommandMemberServiceImplTest {
                 .thenThrow(MemberProfileAlreadyExistException.class);
 
         //when, then
-        assertThatThrownBy(() -> service.update(loginId, request)).isInstanceOf(
+        assertThatThrownBy(() -> service.updateNickname(loginId, request)).isInstanceOf(
                 MemberProfileAlreadyExistException.class);
 
         verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
@@ -346,8 +346,8 @@ class CommandMemberServiceImplTest {
         String nickname = "nickname";
 
         Member member = MemberDummy.dummyWithLoginIdAndId(loginId);
-        MemberUpdateRequestDto request = ReflectionUtils.newInstance(
-                MemberUpdateRequestDto.class,
+        MemberNicknameUpdateRequestDto request = ReflectionUtils.newInstance(
+                MemberNicknameUpdateRequestDto.class,
                 nickname
         );
 
@@ -357,7 +357,7 @@ class CommandMemberServiceImplTest {
                 .thenReturn(Optional.empty());
 
         //when
-        MemberUpdateResponseDto actualMember = service.update(loginId, request);
+        MemberUpdateResponseDto actualMember = service.updateNickname(loginId, request);
 
         //then
         assertThat(actualMember.getLoginId()).isEqualTo(loginId);
