@@ -14,9 +14,9 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.product.dto.ProductOnlyIdDto;
 import shop.yesaladin.shop.product.dto.RelationCreateDto;
-import shop.yesaladin.shop.product.exception.RelationAlreadyExistsException;
 import shop.yesaladin.shop.product.service.inter.CommandRelationService;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -138,7 +138,7 @@ class CommandRelationControllerTest {
         Long subId = 2L;
         RelationCreateDto createDto = new RelationCreateDto(subId);
 
-        Mockito.when(service.create(mainId, subId)).thenThrow(RelationAlreadyExistsException.class);
+        Mockito.when(service.create(mainId, subId)).thenThrow(ClientException.class);
 
         // when
         ResultActions result = mockMvc.perform(post("/v1/products/{productMainId}/relations", mainId)

@@ -14,9 +14,9 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.tag.dto.TagRequestDto;
 import shop.yesaladin.shop.tag.dto.TagResponseDto;
-import shop.yesaladin.shop.tag.exception.TagAlreadyExistsException;
 import shop.yesaladin.shop.tag.service.inter.CommandTagService;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -100,7 +100,7 @@ class CommandTagControllerTest {
         String name = "아름다운";
         TagRequestDto createDto = new TagRequestDto(name);
 
-        Mockito.when(service.create(any())).thenThrow(TagAlreadyExistsException.class);
+        Mockito.when(service.create(any())).thenThrow(ClientException.class);
 
         // when
         ResultActions result = mockMvc.perform(post("/v1/tags")
@@ -172,7 +172,7 @@ class CommandTagControllerTest {
         String name = "아름다운";
         TagRequestDto modifyDto = new TagRequestDto(name);
 
-        Mockito.when(service.modify(any(), any())).thenThrow(TagAlreadyExistsException.class);
+        Mockito.when(service.modify(any(), any())).thenThrow(ClientException.class);
 
         // when
         ResultActions result = mockMvc.perform(put("/v1/tags/{tagId}", id)
