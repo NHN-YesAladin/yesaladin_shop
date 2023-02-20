@@ -47,6 +47,6 @@ public class SearchedCategory {
     public static class Parent {
         private Long id;
         private String name;
-        private Boolean is_shown;
+        private Boolean isShown;
     }
 }

@@ -5,7 +5,6 @@ import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,7 +23,6 @@ import shop.yesaladin.shop.category.dto.CategoryRequestDto;
 import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 import shop.yesaladin.shop.category.dto.ResultCodeDto;
 import shop.yesaladin.shop.category.service.inter.CommandCategoryService;
-import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 
 /**
  * 카테고리 생성,수정,삭제를 api를 통하여 동작하기 위한 rest controller

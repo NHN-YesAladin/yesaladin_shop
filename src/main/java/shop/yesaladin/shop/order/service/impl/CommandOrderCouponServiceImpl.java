@@ -50,11 +50,9 @@ public class CommandOrderCouponServiceImpl implements CommandOrderCouponService 
                 }).collect(Collectors.toList());
 
         //상품에 사용한 쿠폰 생성
-        List<OrderCoupon> orderCoupons = memberCoupons.stream().map(memberCoupon -> {
+        return memberCoupons.stream().map(memberCoupon -> {
             OrderCoupon orderCoupon = OrderCoupon.create(memberOrder, memberCoupon);
             return commandOrderCouponRepository.save(orderCoupon);
         }).collect(Collectors.toList());
-
-        return orderCoupons;
     }
 }
