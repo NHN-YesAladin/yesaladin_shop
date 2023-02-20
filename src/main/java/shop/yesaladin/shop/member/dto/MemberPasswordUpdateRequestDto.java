@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.member.dto;
 
+import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,5 +18,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class MemberPasswordUpdateRequestDto {
 
+    @NotBlank
     private String password;
 }

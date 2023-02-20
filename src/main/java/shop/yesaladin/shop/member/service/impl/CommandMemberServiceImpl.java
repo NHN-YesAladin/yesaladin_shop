@@ -20,6 +20,7 @@ import shop.yesaladin.shop.member.dto.MemberCreateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberCreateResponseDto;
 import shop.yesaladin.shop.member.dto.MemberEmailUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberNameUpdateRequestDto;
+import shop.yesaladin.shop.member.dto.MemberPasswordUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberPhoneUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberUnblockResponseDto;
 import shop.yesaladin.shop.member.dto.MemberNicknameUpdateRequestDto;
@@ -291,5 +292,20 @@ public class CommandMemberServiceImpl implements CommandMemberService {
         member.withdrawMember();
 
         return MemberWithdrawResponseDto.fromEntity(member);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public MemberUpdateResponseDto updatePassword(
+            String loginId, MemberPasswordUpdateRequestDto request
+    ) {
+        Member member = tryGetMemberById(loginId);
+
+        member.changePassword(request.getPassword());
+
+        return MemberUpdateResponseDto.fromEntity(member);
     }
 }
