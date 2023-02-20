@@ -122,6 +122,7 @@ class CommandMemberControllerTest {
                 .loginId(LOGIN_ID)
                 .memberGrade(MemberGrade.WHITE)
                 .phone(PHONE)
+                .email(EMAIL)
                 .build();
         Role role = Role.builder().id(roleId).name("ROLE_MEMBER").build();
         createResponse = MemberCreateResponseDto.fromEntity(member, role);
@@ -573,6 +574,7 @@ class CommandMemberControllerTest {
                 .andExpect(jsonPath("$.data.nickname", equalTo(member.getNickname())))
                 .andExpect(jsonPath("$.data.loginId", equalTo(member.getLoginId())))
                 .andExpect(jsonPath("$.data.phone", equalTo(member.getPhone())))
+                .andExpect(jsonPath("$.data.email", equalTo(member.getEmail())))
                 .andExpect(jsonPath(
                         "$.data.memberGrade",
                         equalTo(member.getMemberGrade().toString())
@@ -608,6 +610,8 @@ class CommandMemberControllerTest {
                                 .description("회원의 등급"),
                         fieldWithPath("data.phone").type(JsonFieldType.STRING)
                                 .description("회원의 전화번호"),
+                        fieldWithPath("data.email").type(JsonFieldType.STRING)
+                                .description("회원의 이메일"),
                         fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
                                 .description("에러 메세지")
                                 .optional()
@@ -800,6 +804,7 @@ class CommandMemberControllerTest {
                 .andExpect(jsonPath("$.data.nickname", equalTo(member.getNickname())))
                 .andExpect(jsonPath("$.data.loginId", equalTo(member.getLoginId())))
                 .andExpect(jsonPath("$.data.phone", equalTo(member.getPhone())))
+                .andExpect(jsonPath("$.data.email", equalTo(member.getEmail())))
                 .andExpect(jsonPath(
                         "$.data.memberGrade",
                         equalTo(member.getMemberGrade().toString())
@@ -835,6 +840,8 @@ class CommandMemberControllerTest {
                                 .description("회원의 등급"),
                         fieldWithPath("data.phone").type(JsonFieldType.STRING)
                                 .description("회원의 전화번호"),
+                        fieldWithPath("data.email").type(JsonFieldType.STRING)
+                                .description("회원의 이메일"),
                         fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
                                 .description("에러 메세지")
                                 .optional()
@@ -1027,6 +1034,7 @@ class CommandMemberControllerTest {
                 .andExpect(jsonPath("$.data.nickname", equalTo(member.getNickname())))
                 .andExpect(jsonPath("$.data.loginId", equalTo(member.getLoginId())))
                 .andExpect(jsonPath("$.data.phone", equalTo(member.getPhone())))
+                .andExpect(jsonPath("$.data.email", equalTo(member.getEmail())))
                 .andExpect(jsonPath(
                         "$.data.memberGrade",
                         equalTo(member.getMemberGrade().toString())
@@ -1062,6 +1070,8 @@ class CommandMemberControllerTest {
                                 .description("회원의 등급"),
                         fieldWithPath("data.phone").type(JsonFieldType.STRING)
                                 .description("회원의 전화번호"),
+                        fieldWithPath("data.email").type(JsonFieldType.STRING)
+                                .description("회원의 이메일"),
                         fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
                                 .description("에러 메세지")
                                 .optional()
@@ -1254,6 +1264,7 @@ class CommandMemberControllerTest {
                 .andExpect(jsonPath("$.data.nickname", equalTo(member.getNickname())))
                 .andExpect(jsonPath("$.data.loginId", equalTo(member.getLoginId())))
                 .andExpect(jsonPath("$.data.phone", equalTo(member.getPhone())))
+                .andExpect(jsonPath("$.data.email", equalTo(member.getEmail())))
                 .andExpect(jsonPath(
                         "$.data.memberGrade",
                         equalTo(member.getMemberGrade().toString())
@@ -1289,6 +1300,8 @@ class CommandMemberControllerTest {
                                 .description("회원의 등급"),
                         fieldWithPath("data.phone").type(JsonFieldType.STRING)
                                 .description("회원의 전화번호"),
+                        fieldWithPath("data.email").type(JsonFieldType.STRING)
+                                .description("회원의 이메일"),
                         fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
                                 .description("에러 메세지")
                                 .optional()
