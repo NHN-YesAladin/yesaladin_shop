@@ -1,9 +1,8 @@
 package shop.yesaladin.shop.writing.domain.repository;
 
+import java.util.List;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.writing.domain.model.Writing;
-
-import java.util.List;
 
 /**
  * 집필 조회 관련 Repository Interface 입니다.

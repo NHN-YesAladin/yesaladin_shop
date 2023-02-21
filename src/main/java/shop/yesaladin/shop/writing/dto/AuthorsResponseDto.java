@@ -1,11 +1,10 @@
 package shop.yesaladin.shop.writing.dto;
 
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.Objects;
 
 /**
  * 저자 전체 조회를 하여 Dto로 반환합니다.

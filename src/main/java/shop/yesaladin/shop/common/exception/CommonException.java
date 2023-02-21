@@ -5,6 +5,7 @@ import shop.yesaladin.common.code.ErrorCode;
 
 @Getter
 public class CommonException extends RuntimeException {
+
     private final ErrorCode errorCode;
 
     public CommonException(ErrorCode errorCode) {

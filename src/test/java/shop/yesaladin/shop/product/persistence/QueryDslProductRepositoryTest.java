@@ -1,5 +1,13 @@
 package shop.yesaladin.shop.product.persistence;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,15 +32,6 @@ import shop.yesaladin.shop.product.dummy.DummySubscribeProduct;
 import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
 import shop.yesaladin.shop.publish.domain.model.Publish;
 import shop.yesaladin.shop.publish.domain.model.Publisher;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Transactional
 @SpringBootTest

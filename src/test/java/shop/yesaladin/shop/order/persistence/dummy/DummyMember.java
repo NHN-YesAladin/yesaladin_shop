@@ -1,10 +1,9 @@
 package shop.yesaladin.shop.order.persistence.dummy;
 
+import java.time.LocalDate;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberGenderCode;
 import shop.yesaladin.shop.member.domain.model.MemberGrade;
-
-import java.time.LocalDate;
 
 public class DummyMember {
 

@@ -1,8 +1,7 @@
 package shop.yesaladin.shop.file.domain.repository;
 
-import shop.yesaladin.shop.file.domain.model.File;
-
 import java.util.Optional;
+import shop.yesaladin.shop.file.domain.model.File;
 
 /**
  * 파일 조회 관련 Repository Interface 입니다.

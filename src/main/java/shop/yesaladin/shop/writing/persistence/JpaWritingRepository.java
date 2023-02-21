@@ -13,4 +13,5 @@ import shop.yesaladin.shop.writing.domain.repository.QueryWritingRepository;
  */
 public interface JpaWritingRepository extends Repository<Writing, Long>,
         CommandWritingRepository, QueryWritingRepository {
+
 }

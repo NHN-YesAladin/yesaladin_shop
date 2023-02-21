@@ -1,8 +1,6 @@
 package shop.yesaladin.shop.delivery.service.event;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import java.time.LocalDateTime;
-import java.util.Base64;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,9 +12,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.event.TransactionPhase;
-import org.springframework.transaction.event.TransactionalEventListener;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -28,9 +23,6 @@ import shop.yesaladin.shop.delivery.dto.DeliveryEventDto;
 import shop.yesaladin.shop.delivery.dto.TransportResponseDto;
 import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
 import shop.yesaladin.shop.order.service.inter.CommandOrderStatusChangeLogService;
-import shop.yesaladin.shop.payment.dto.PaymentCancelDto;
-import shop.yesaladin.shop.payment.dto.PaymentEventDto;
-import shop.yesaladin.shop.payment.exception.PaymentFailException;
 
 /**
  * 결제 진행 중 rollback이 되는 상황에 다른 서비스들에 영향을 주지 않기 위해 사용
@@ -43,13 +35,13 @@ import shop.yesaladin.shop.payment.exception.PaymentFailException;
 @RequiredArgsConstructor
 @Component
 public class DeliveryEventListener {
+
     private final RestTemplate restTemplate;
     private final GatewayProperties gatewayProperties;
     private final CommandOrderStatusChangeLogService commandOrderStatusChangeLogService;
 
     /**
-     * 배송 생성을 위해 통신하는 메서드
-     *  CommandPaymentServiceImpl.confirmTossRequest()에서 event publish
+     * 배송 생성을 위해 통신하는 메서드 CommandPaymentServiceImpl.confirmTossRequest()에서 event publish
      *
      * @param eventDto 주문 id가 들어있는 dto
      */

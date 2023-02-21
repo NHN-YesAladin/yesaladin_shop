@@ -82,7 +82,7 @@ class CommandWishlistServiceImplTest {
 
         //when then
         assertThatThrownBy(() -> commandWishlistService.save("loginId", 1L)).isInstanceOf(
-               ClientException.class);
+                ClientException.class);
     }
 
     @Test

@@ -1,6 +1,14 @@
 package shop.yesaladin.shop.tag.controller;
 
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,24 +27,15 @@ import shop.yesaladin.shop.tag.dto.SearchedTagResponseDto;
 import shop.yesaladin.shop.tag.dto.SearchedTagResponseDto.SearchedTagDto;
 import shop.yesaladin.shop.tag.service.inter.SearchTagService;
 
-import java.util.List;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @AutoConfigureRestDocs
 @WebMvcTest(SearchTagController.class)
 class SearchTagControllerTest {
 
+    private static final String NAME = "스프링";
     @Autowired
     private MockMvc mockMvc;
     @MockBean
     private SearchTagService searchTagService;
-    private static final String NAME = "스프링";
     private SearchedTagResponseDto dummyResponseDto;
 
     @BeforeEach

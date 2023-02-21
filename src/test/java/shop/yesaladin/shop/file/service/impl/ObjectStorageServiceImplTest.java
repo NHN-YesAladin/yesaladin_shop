@@ -1,5 +1,18 @@
 package shop.yesaladin.shop.file.service.impl;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,26 +24,16 @@ import shop.yesaladin.shop.file.dto.FileUploadResponseDto;
 import shop.yesaladin.shop.file.service.inter.ObjectStorageService;
 import shop.yesaladin.shop.file.service.inter.StorageAuthService;
 
-import java.io.IOException;
-import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
-
 class ObjectStorageServiceImplTest {
 
-    private ObjectStorageService service;
-
-    private StorageAuthService storageAuthService;
-    private RestTemplate restTemplate;
-    private ObjectStorageProperties objectStorageProperties;
     private final Clock clock = Clock.fixed(
             Instant.parse("2023-02-01T00:00:00.00Z"),
             ZoneId.of("UTC")
     );
+    private ObjectStorageService service;
+    private StorageAuthService storageAuthService;
+    private RestTemplate restTemplate;
+    private ObjectStorageProperties objectStorageProperties;
 
     @BeforeEach
     void setUp() {

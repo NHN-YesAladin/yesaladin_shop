@@ -1,8 +1,7 @@
 package shop.yesaladin.shop.order.domain.repository;
 
-import shop.yesaladin.shop.order.domain.model.SubscribeOrderList;
-
 import java.util.Optional;
+import shop.yesaladin.shop.order.domain.model.SubscribeOrderList;
 
 /**
  * 정기구독내역 조회 관련 repository 클래스입니다.

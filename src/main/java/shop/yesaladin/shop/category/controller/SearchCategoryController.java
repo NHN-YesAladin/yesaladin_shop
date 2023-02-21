@@ -22,6 +22,7 @@ import shop.yesaladin.shop.category.service.inter.SearchCategoryService;
 @RestController
 @RequestMapping("/v1/search/categories")
 public class SearchCategoryController {
+
     private final SearchCategoryService searchCategoryService;
 
     /**

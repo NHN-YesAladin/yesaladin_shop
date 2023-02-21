@@ -141,37 +141,57 @@ class SearchProductControllerTest {
                         equalTo(responseDto.getTags().get(0))
                 ));
 
-        resultActions.andDo(document("search-product-success-search-title",
+        resultActions.andDo(document(
+                "search-product-success-search-title",
                 getDocumentRequest(),
                 getDocumentResponse(),
                 requestParameters(
                         parameterWithName("title").description("검색할 제목"),
                         parameterWithName("_csrf").description("csrf")
                 ),
-                responseFields(fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                responseFields(
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
                         fieldWithPath("success").type(JsonFieldType.BOOLEAN)
                                 .description("동작 성공 여부"),
                         fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
                                 .description("에러 메세지")
                                 .optional(),
-                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER).description("검색 전체 페이지"),
-                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER).description("현쟈 페이지"),
-                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER).description("전체 데이터 갯수"),
-                        fieldWithPath("data.dataList").type(JsonFieldType.ARRAY).description("검색 결과 상품 리스트"),
-                        fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER).description("상품의 id"),
-                        fieldWithPath("data.dataList.[].title").type(JsonFieldType.STRING).description("상품의 제목"),
-                        fieldWithPath("data.dataList.[].isbn").type(JsonFieldType.STRING).description("상품의 isbn"),
-                        fieldWithPath("data.dataList.[].publisher").type(JsonFieldType.STRING).description("상품의 출판사"),
-                        fieldWithPath("data.dataList.[].quantity").type(JsonFieldType.NUMBER).description("상품의 갯수"),
-                        fieldWithPath("data.dataList.[].sellingPrice").type(JsonFieldType.NUMBER).description("상품의 판매가"),
-                        fieldWithPath("data.dataList.[].rate").type(JsonFieldType.NUMBER).description("상품의 할인율"),
-                        fieldWithPath("data.dataList.[].isForcedOutOfStock").type(JsonFieldType.BOOLEAN).description("상품의 강제 품절 여부"),
-                        fieldWithPath("data.dataList.[].isEbook").type(JsonFieldType.BOOLEAN).description("E-book 여부"),
-                        fieldWithPath("data.dataList.[].isSubscriptionAvailable").type(JsonFieldType.BOOLEAN).description("구독 상품 여부"),
-                        fieldWithPath("data.dataList.[].publishedDate").type(JsonFieldType.STRING).description("출판 날짜"),
-                        fieldWithPath("data.dataList.[].thumbnailFile").type(JsonFieldType.STRING).description("상품의 썸네일 사진"),
-                        fieldWithPath("data.dataList.[].authors").type(JsonFieldType.ARRAY).description("상품의 저자 리스트"),
-                        fieldWithPath("data.dataList.[].tags.[]").type(JsonFieldType.ARRAY).description("상품의 태그 리스트")
+                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER)
+                                .description("검색 전체 페이지"),
+                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER)
+                                .description("현쟈 페이지"),
+                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER)
+                                .description("전체 데이터 갯수"),
+                        fieldWithPath("data.dataList").type(JsonFieldType.ARRAY)
+                                .description("검색 결과 상품 리스트"),
+                        fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER)
+                                .description("상품의 id"),
+                        fieldWithPath("data.dataList.[].title").type(JsonFieldType.STRING)
+                                .description("상품의 제목"),
+                        fieldWithPath("data.dataList.[].isbn").type(JsonFieldType.STRING)
+                                .description("상품의 isbn"),
+                        fieldWithPath("data.dataList.[].publisher").type(JsonFieldType.STRING)
+                                .description("상품의 출판사"),
+                        fieldWithPath("data.dataList.[].quantity").type(JsonFieldType.NUMBER)
+                                .description("상품의 갯수"),
+                        fieldWithPath("data.dataList.[].sellingPrice").type(JsonFieldType.NUMBER)
+                                .description("상품의 판매가"),
+                        fieldWithPath("data.dataList.[].rate").type(JsonFieldType.NUMBER)
+                                .description("상품의 할인율"),
+                        fieldWithPath("data.dataList.[].isForcedOutOfStock").type(JsonFieldType.BOOLEAN)
+                                .description("상품의 강제 품절 여부"),
+                        fieldWithPath("data.dataList.[].isEbook").type(JsonFieldType.BOOLEAN)
+                                .description("E-book 여부"),
+                        fieldWithPath("data.dataList.[].isSubscriptionAvailable").type(JsonFieldType.BOOLEAN)
+                                .description("구독 상품 여부"),
+                        fieldWithPath("data.dataList.[].publishedDate").type(JsonFieldType.STRING)
+                                .description("출판 날짜"),
+                        fieldWithPath("data.dataList.[].thumbnailFile").type(JsonFieldType.STRING)
+                                .description("상품의 썸네일 사진"),
+                        fieldWithPath("data.dataList.[].authors").type(JsonFieldType.ARRAY)
+                                .description("상품의 저자 리스트"),
+                        fieldWithPath("data.dataList.[].tags.[]").type(JsonFieldType.ARRAY)
+                                .description("상품의 태그 리스트")
                 )
         ));
     }
@@ -247,37 +267,59 @@ class SearchProductControllerTest {
                         equalTo(responseDto.getTags().get(0))
                 ));
 
-        resultActions.andDo(document("search-product-success-search-content",
+        resultActions.andDo(document(
+                "search-product-success-search-content",
                 getDocumentRequest(),
                 getDocumentResponse(),
                 requestParameters(
                         parameterWithName("content").description("검색할 내용"),
                         parameterWithName("_csrf").description("csrf")
                 ),
-                responseFields(fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                responseFields(
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
                         fieldWithPath("success").type(JsonFieldType.BOOLEAN)
                                 .description("동작 성공 여부"),
                         fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
                                 .description("에러 메세지")
                                 .optional(),
-                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER).description("검색 전체 페이지"),
-                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER).description("현쟈 페이지"),
-                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER).description("전체 데이터 갯수"),
-                        fieldWithPath("data.dataList").type(JsonFieldType.ARRAY).description("검색 결과 상품 리스트"),
-                        fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER).description("상품의 id"),
-                        fieldWithPath("data.dataList.[].title").type(JsonFieldType.STRING).description("상품의 제목"),
-                        fieldWithPath("data.dataList.[].isbn").type(JsonFieldType.STRING).description("상품의 isbn"),
-                        fieldWithPath("data.dataList.[].publisher").type(JsonFieldType.STRING).description("상품의 출판사"),
-                        fieldWithPath("data.dataList.[].quantity").type(JsonFieldType.NUMBER).description("상품의 갯수"),
-                        fieldWithPath("data.dataList.[].sellingPrice").type(JsonFieldType.NUMBER).description("상품의 판매가"),
-                        fieldWithPath("data.dataList.[].rate").type(JsonFieldType.NUMBER).description("상품의 할인율"),
-                        fieldWithPath("data.dataList.[].isForcedOutOfStock").type(JsonFieldType.BOOLEAN).description("상품의 강제 품절 여부"),
-                        fieldWithPath("data.dataList.[].isEbook").type(JsonFieldType.BOOLEAN).description("E-book 여부"),
-                        fieldWithPath("data.dataList.[].isSubscriptionAvailable").type(JsonFieldType.BOOLEAN).description("구독 상품 여부"),
-                        fieldWithPath("data.dataList.[].publishedDate").type(JsonFieldType.STRING).description("출판 날짜"),
-                        fieldWithPath("data.dataList.[].thumbnailFile").type(JsonFieldType.STRING).description("상품의 썸네일 사진"),
-                        fieldWithPath("data.dataList.[].authors").type(JsonFieldType.ARRAY).description("상품의 저자 리스트"),
-                        fieldWithPath("data.dataList.[].tags.[]").type(JsonFieldType.ARRAY).description("상품의 태그 리스트"))));
+                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER)
+                                .description("검색 전체 페이지"),
+                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER)
+                                .description("현쟈 페이지"),
+                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER)
+                                .description("전체 데이터 갯수"),
+                        fieldWithPath("data.dataList").type(JsonFieldType.ARRAY)
+                                .description("검색 결과 상품 리스트"),
+                        fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER)
+                                .description("상품의 id"),
+                        fieldWithPath("data.dataList.[].title").type(JsonFieldType.STRING)
+                                .description("상품의 제목"),
+                        fieldWithPath("data.dataList.[].isbn").type(JsonFieldType.STRING)
+                                .description("상품의 isbn"),
+                        fieldWithPath("data.dataList.[].publisher").type(JsonFieldType.STRING)
+                                .description("상품의 출판사"),
+                        fieldWithPath("data.dataList.[].quantity").type(JsonFieldType.NUMBER)
+                                .description("상품의 갯수"),
+                        fieldWithPath("data.dataList.[].sellingPrice").type(JsonFieldType.NUMBER)
+                                .description("상품의 판매가"),
+                        fieldWithPath("data.dataList.[].rate").type(JsonFieldType.NUMBER)
+                                .description("상품의 할인율"),
+                        fieldWithPath("data.dataList.[].isForcedOutOfStock").type(JsonFieldType.BOOLEAN)
+                                .description("상품의 강제 품절 여부"),
+                        fieldWithPath("data.dataList.[].isEbook").type(JsonFieldType.BOOLEAN)
+                                .description("E-book 여부"),
+                        fieldWithPath("data.dataList.[].isSubscriptionAvailable").type(JsonFieldType.BOOLEAN)
+                                .description("구독 상품 여부"),
+                        fieldWithPath("data.dataList.[].publishedDate").type(JsonFieldType.STRING)
+                                .description("출판 날짜"),
+                        fieldWithPath("data.dataList.[].thumbnailFile").type(JsonFieldType.STRING)
+                                .description("상품의 썸네일 사진"),
+                        fieldWithPath("data.dataList.[].authors").type(JsonFieldType.ARRAY)
+                                .description("상품의 저자 리스트"),
+                        fieldWithPath("data.dataList.[].tags.[]").type(JsonFieldType.ARRAY)
+                                .description("상품의 태그 리스트")
+                )
+        ));
     }
 
     @WithMockUser
@@ -350,37 +392,59 @@ class SearchProductControllerTest {
                         equalTo(responseDto.getTags().get(0))
                 ));
 
-        resultActions.andDo(document("search-product-success-search-isbn",
+        resultActions.andDo(document(
+                "search-product-success-search-isbn",
                 getDocumentRequest(),
                 getDocumentResponse(),
                 requestParameters(
                         parameterWithName("isbn").description("검색할 isbn"),
                         parameterWithName("_csrf").description("csrf")
                 ),
-                responseFields(fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                responseFields(
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
                         fieldWithPath("success").type(JsonFieldType.BOOLEAN)
                                 .description("동작 성공 여부"),
                         fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
                                 .description("에러 메세지")
                                 .optional(),
-                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER).description("검색 전체 페이지"),
-                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER).description("현쟈 페이지"),
-                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER).description("전체 데이터 갯수"),
-                        fieldWithPath("data.dataList").type(JsonFieldType.ARRAY).description("검색 결과 상품 리스트"),
-                        fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER).description("상품의 id"),
-                        fieldWithPath("data.dataList.[].title").type(JsonFieldType.STRING).description("상품의 제목"),
-                        fieldWithPath("data.dataList.[].isbn").type(JsonFieldType.STRING).description("상품의 isbn"),
-                        fieldWithPath("data.dataList.[].publisher").type(JsonFieldType.STRING).description("상품의 출판사"),
-                        fieldWithPath("data.dataList.[].quantity").type(JsonFieldType.NUMBER).description("상품의 갯수"),
-                        fieldWithPath("data.dataList.[].sellingPrice").type(JsonFieldType.NUMBER).description("상품의 판매가"),
-                        fieldWithPath("data.dataList.[].rate").type(JsonFieldType.NUMBER).description("상품의 할인율"),
-                        fieldWithPath("data.dataList.[].isForcedOutOfStock").type(JsonFieldType.BOOLEAN).description("상품의 강제 품절 여부"),
-                        fieldWithPath("data.dataList.[].isEbook").type(JsonFieldType.BOOLEAN).description("E-book 여부"),
-                        fieldWithPath("data.dataList.[].isSubscriptionAvailable").type(JsonFieldType.BOOLEAN).description("구독 상품 여부"),
-                        fieldWithPath("data.dataList.[].publishedDate").type(JsonFieldType.STRING).description("출판 날짜"),
-                        fieldWithPath("data.dataList.[].thumbnailFile").type(JsonFieldType.STRING).description("상품의 썸네일 사진"),
-                        fieldWithPath("data.dataList.[].authors").type(JsonFieldType.ARRAY).description("상품의 저자 리스트"),
-                        fieldWithPath("data.dataList.[].tags.[]").type(JsonFieldType.ARRAY).description("상품의 태그 리스트"))));
+                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER)
+                                .description("검색 전체 페이지"),
+                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER)
+                                .description("현쟈 페이지"),
+                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER)
+                                .description("전체 데이터 갯수"),
+                        fieldWithPath("data.dataList").type(JsonFieldType.ARRAY)
+                                .description("검색 결과 상품 리스트"),
+                        fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER)
+                                .description("상품의 id"),
+                        fieldWithPath("data.dataList.[].title").type(JsonFieldType.STRING)
+                                .description("상품의 제목"),
+                        fieldWithPath("data.dataList.[].isbn").type(JsonFieldType.STRING)
+                                .description("상품의 isbn"),
+                        fieldWithPath("data.dataList.[].publisher").type(JsonFieldType.STRING)
+                                .description("상품의 출판사"),
+                        fieldWithPath("data.dataList.[].quantity").type(JsonFieldType.NUMBER)
+                                .description("상품의 갯수"),
+                        fieldWithPath("data.dataList.[].sellingPrice").type(JsonFieldType.NUMBER)
+                                .description("상품의 판매가"),
+                        fieldWithPath("data.dataList.[].rate").type(JsonFieldType.NUMBER)
+                                .description("상품의 할인율"),
+                        fieldWithPath("data.dataList.[].isForcedOutOfStock").type(JsonFieldType.BOOLEAN)
+                                .description("상품의 강제 품절 여부"),
+                        fieldWithPath("data.dataList.[].isEbook").type(JsonFieldType.BOOLEAN)
+                                .description("E-book 여부"),
+                        fieldWithPath("data.dataList.[].isSubscriptionAvailable").type(JsonFieldType.BOOLEAN)
+                                .description("구독 상품 여부"),
+                        fieldWithPath("data.dataList.[].publishedDate").type(JsonFieldType.STRING)
+                                .description("출판 날짜"),
+                        fieldWithPath("data.dataList.[].thumbnailFile").type(JsonFieldType.STRING)
+                                .description("상품의 썸네일 사진"),
+                        fieldWithPath("data.dataList.[].authors").type(JsonFieldType.ARRAY)
+                                .description("상품의 저자 리스트"),
+                        fieldWithPath("data.dataList.[].tags.[]").type(JsonFieldType.ARRAY)
+                                .description("상품의 태그 리스트")
+                )
+        ));
     }
 
     @WithMockUser
@@ -454,37 +518,59 @@ class SearchProductControllerTest {
                         equalTo(responseDto.getTags().get(0))
                 ));
 
-        resultActions.andDo(document("search-product-success-search-author",
+        resultActions.andDo(document(
+                "search-product-success-search-author",
                 getDocumentRequest(),
                 getDocumentResponse(),
                 requestParameters(
                         parameterWithName("author").description("검색할 저자"),
                         parameterWithName("_csrf").description("csrf")
                 ),
-                responseFields(fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                responseFields(
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
                         fieldWithPath("success").type(JsonFieldType.BOOLEAN)
                                 .description("동작 성공 여부"),
                         fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
                                 .description("에러 메세지")
                                 .optional(),
-                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER).description("검색 전체 페이지"),
-                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER).description("현쟈 페이지"),
-                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER).description("전체 데이터 갯수"),
-                        fieldWithPath("data.dataList").type(JsonFieldType.ARRAY).description("검색 결과 상품 리스트"),
-                        fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER).description("상품의 id"),
-                        fieldWithPath("data.dataList.[].title").type(JsonFieldType.STRING).description("상품의 제목"),
-                        fieldWithPath("data.dataList.[].isbn").type(JsonFieldType.STRING).description("상품의 isbn"),
-                        fieldWithPath("data.dataList.[].publisher").type(JsonFieldType.STRING).description("상품의 출판사"),
-                        fieldWithPath("data.dataList.[].quantity").type(JsonFieldType.NUMBER).description("상품의 갯수"),
-                        fieldWithPath("data.dataList.[].sellingPrice").type(JsonFieldType.NUMBER).description("상품의 판매가"),
-                        fieldWithPath("data.dataList.[].rate").type(JsonFieldType.NUMBER).description("상품의 할인율"),
-                        fieldWithPath("data.dataList.[].isForcedOutOfStock").type(JsonFieldType.BOOLEAN).description("상품의 강제 품절 여부"),
-                        fieldWithPath("data.dataList.[].isEbook").type(JsonFieldType.BOOLEAN).description("E-book 여부"),
-                        fieldWithPath("data.dataList.[].isSubscriptionAvailable").type(JsonFieldType.BOOLEAN).description("구독 상품 여부"),
-                        fieldWithPath("data.dataList.[].publishedDate").type(JsonFieldType.STRING).description("출판 날짜"),
-                        fieldWithPath("data.dataList.[].thumbnailFile").type(JsonFieldType.STRING).description("상품의 썸네일 사진"),
-                        fieldWithPath("data.dataList.[].authors").type(JsonFieldType.ARRAY).description("상품의 저자 리스트"),
-                        fieldWithPath("data.dataList.[].tags.[]").type(JsonFieldType.ARRAY).description("상품의 태그 리스트"))));
+                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER)
+                                .description("검색 전체 페이지"),
+                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER)
+                                .description("현쟈 페이지"),
+                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER)
+                                .description("전체 데이터 갯수"),
+                        fieldWithPath("data.dataList").type(JsonFieldType.ARRAY)
+                                .description("검색 결과 상품 리스트"),
+                        fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER)
+                                .description("상품의 id"),
+                        fieldWithPath("data.dataList.[].title").type(JsonFieldType.STRING)
+                                .description("상품의 제목"),
+                        fieldWithPath("data.dataList.[].isbn").type(JsonFieldType.STRING)
+                                .description("상품의 isbn"),
+                        fieldWithPath("data.dataList.[].publisher").type(JsonFieldType.STRING)
+                                .description("상품의 출판사"),
+                        fieldWithPath("data.dataList.[].quantity").type(JsonFieldType.NUMBER)
+                                .description("상품의 갯수"),
+                        fieldWithPath("data.dataList.[].sellingPrice").type(JsonFieldType.NUMBER)
+                                .description("상품의 판매가"),
+                        fieldWithPath("data.dataList.[].rate").type(JsonFieldType.NUMBER)
+                                .description("상품의 할인율"),
+                        fieldWithPath("data.dataList.[].isForcedOutOfStock").type(JsonFieldType.BOOLEAN)
+                                .description("상품의 강제 품절 여부"),
+                        fieldWithPath("data.dataList.[].isEbook").type(JsonFieldType.BOOLEAN)
+                                .description("E-book 여부"),
+                        fieldWithPath("data.dataList.[].isSubscriptionAvailable").type(JsonFieldType.BOOLEAN)
+                                .description("구독 상품 여부"),
+                        fieldWithPath("data.dataList.[].publishedDate").type(JsonFieldType.STRING)
+                                .description("출판 날짜"),
+                        fieldWithPath("data.dataList.[].thumbnailFile").type(JsonFieldType.STRING)
+                                .description("상품의 썸네일 사진"),
+                        fieldWithPath("data.dataList.[].authors").type(JsonFieldType.ARRAY)
+                                .description("상품의 저자 리스트"),
+                        fieldWithPath("data.dataList.[].tags.[]").type(JsonFieldType.ARRAY)
+                                .description("상품의 태그 리스트")
+                )
+        ));
     }
 
     @WithMockUser
@@ -558,37 +644,59 @@ class SearchProductControllerTest {
                         equalTo(responseDto.getTags().get(0))
                 ));
 
-        resultActions.andDo(document("search-product-success-search-publisher",
+        resultActions.andDo(document(
+                "search-product-success-search-publisher",
                 getDocumentRequest(),
                 getDocumentResponse(),
                 requestParameters(
                         parameterWithName("publisher").description("검색할 출판사"),
                         parameterWithName("_csrf").description("csrf")
                 ),
-                responseFields(fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                responseFields(
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
                         fieldWithPath("success").type(JsonFieldType.BOOLEAN)
                                 .description("동작 성공 여부"),
                         fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
                                 .description("에러 메세지")
                                 .optional(),
-                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER).description("검색 전체 페이지"),
-                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER).description("현쟈 페이지"),
-                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER).description("전체 데이터 갯수"),
-                        fieldWithPath("data.dataList").type(JsonFieldType.ARRAY).description("검색 결과 상품 리스트"),
-                        fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER).description("상품의 id"),
-                        fieldWithPath("data.dataList.[].title").type(JsonFieldType.STRING).description("상품의 제목"),
-                        fieldWithPath("data.dataList.[].isbn").type(JsonFieldType.STRING).description("상품의 isbn"),
-                        fieldWithPath("data.dataList.[].publisher").type(JsonFieldType.STRING).description("상품의 출판사"),
-                        fieldWithPath("data.dataList.[].quantity").type(JsonFieldType.NUMBER).description("상품의 갯수"),
-                        fieldWithPath("data.dataList.[].sellingPrice").type(JsonFieldType.NUMBER).description("상품의 판매가"),
-                        fieldWithPath("data.dataList.[].rate").type(JsonFieldType.NUMBER).description("상품의 할인율"),
-                        fieldWithPath("data.dataList.[].isForcedOutOfStock").type(JsonFieldType.BOOLEAN).description("상품의 강제 품절 여부"),
-                        fieldWithPath("data.dataList.[].isEbook").type(JsonFieldType.BOOLEAN).description("E-book 여부"),
-                        fieldWithPath("data.dataList.[].isSubscriptionAvailable").type(JsonFieldType.BOOLEAN).description("구독 상품 여부"),
-                        fieldWithPath("data.dataList.[].publishedDate").type(JsonFieldType.STRING).description("출판 날짜"),
-                        fieldWithPath("data.dataList.[].thumbnailFile").type(JsonFieldType.STRING).description("상품의 썸네일 사진"),
-                        fieldWithPath("data.dataList.[].authors").type(JsonFieldType.ARRAY).description("상품의 저자 리스트"),
-                        fieldWithPath("data.dataList.[].tags.[]").type(JsonFieldType.ARRAY).description("상품의 태그 리스트"))));
+                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER)
+                                .description("검색 전체 페이지"),
+                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER)
+                                .description("현쟈 페이지"),
+                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER)
+                                .description("전체 데이터 갯수"),
+                        fieldWithPath("data.dataList").type(JsonFieldType.ARRAY)
+                                .description("검색 결과 상품 리스트"),
+                        fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER)
+                                .description("상품의 id"),
+                        fieldWithPath("data.dataList.[].title").type(JsonFieldType.STRING)
+                                .description("상품의 제목"),
+                        fieldWithPath("data.dataList.[].isbn").type(JsonFieldType.STRING)
+                                .description("상품의 isbn"),
+                        fieldWithPath("data.dataList.[].publisher").type(JsonFieldType.STRING)
+                                .description("상품의 출판사"),
+                        fieldWithPath("data.dataList.[].quantity").type(JsonFieldType.NUMBER)
+                                .description("상품의 갯수"),
+                        fieldWithPath("data.dataList.[].sellingPrice").type(JsonFieldType.NUMBER)
+                                .description("상품의 판매가"),
+                        fieldWithPath("data.dataList.[].rate").type(JsonFieldType.NUMBER)
+                                .description("상품의 할인율"),
+                        fieldWithPath("data.dataList.[].isForcedOutOfStock").type(JsonFieldType.BOOLEAN)
+                                .description("상품의 강제 품절 여부"),
+                        fieldWithPath("data.dataList.[].isEbook").type(JsonFieldType.BOOLEAN)
+                                .description("E-book 여부"),
+                        fieldWithPath("data.dataList.[].isSubscriptionAvailable").type(JsonFieldType.BOOLEAN)
+                                .description("구독 상품 여부"),
+                        fieldWithPath("data.dataList.[].publishedDate").type(JsonFieldType.STRING)
+                                .description("출판 날짜"),
+                        fieldWithPath("data.dataList.[].thumbnailFile").type(JsonFieldType.STRING)
+                                .description("상품의 썸네일 사진"),
+                        fieldWithPath("data.dataList.[].authors").type(JsonFieldType.ARRAY)
+                                .description("상품의 저자 리스트"),
+                        fieldWithPath("data.dataList.[].tags.[]").type(JsonFieldType.ARRAY)
+                                .description("상품의 태그 리스트")
+                )
+        ));
     }
 
     @WithMockUser
@@ -659,37 +767,59 @@ class SearchProductControllerTest {
                         equalTo(responseDto.getTags().get(0))
                 ));
 
-        resultActions.andDo(document("search-product-success-search-tag",
+        resultActions.andDo(document(
+                "search-product-success-search-tag",
                 getDocumentRequest(),
                 getDocumentResponse(),
                 requestParameters(
                         parameterWithName("tag").description("검색할 태그"),
                         parameterWithName("_csrf").description("csrf")
                 ),
-                responseFields(fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                responseFields(
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
                         fieldWithPath("success").type(JsonFieldType.BOOLEAN)
                                 .description("동작 성공 여부"),
                         fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
                                 .description("에러 메세지")
                                 .optional(),
-                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER).description("검색 전체 페이지"),
-                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER).description("현쟈 페이지"),
-                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER).description("전체 데이터 갯수"),
-                        fieldWithPath("data.dataList").type(JsonFieldType.ARRAY).description("검색 결과 상품 리스트"),
-                        fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER).description("상품의 id"),
-                        fieldWithPath("data.dataList.[].title").type(JsonFieldType.STRING).description("상품의 제목"),
-                        fieldWithPath("data.dataList.[].isbn").type(JsonFieldType.STRING).description("상품의 isbn"),
-                        fieldWithPath("data.dataList.[].publisher").type(JsonFieldType.STRING).description("상품의 출판사"),
-                        fieldWithPath("data.dataList.[].quantity").type(JsonFieldType.NUMBER).description("상품의 갯수"),
-                        fieldWithPath("data.dataList.[].sellingPrice").type(JsonFieldType.NUMBER).description("상품의 판매가"),
-                        fieldWithPath("data.dataList.[].rate").type(JsonFieldType.NUMBER).description("상품의 할인율"),
-                        fieldWithPath("data.dataList.[].isForcedOutOfStock").type(JsonFieldType.BOOLEAN).description("상품의 강제 품절 여부"),
-                        fieldWithPath("data.dataList.[].isEbook").type(JsonFieldType.BOOLEAN).description("E-book 여부"),
-                        fieldWithPath("data.dataList.[].isSubscriptionAvailable").type(JsonFieldType.BOOLEAN).description("구독 상품 여부"),
-                        fieldWithPath("data.dataList.[].publishedDate").type(JsonFieldType.STRING).description("출판 날짜"),
-                        fieldWithPath("data.dataList.[].thumbnailFile").type(JsonFieldType.STRING).description("상품의 썸네일 사진"),
-                        fieldWithPath("data.dataList.[].authors").type(JsonFieldType.ARRAY).description("상품의 저자 리스트"),
-                        fieldWithPath("data.dataList.[].tags.[]").type(JsonFieldType.ARRAY).description("상품의 태그 리스트"))));
+                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER)
+                                .description("검색 전체 페이지"),
+                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER)
+                                .description("현쟈 페이지"),
+                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER)
+                                .description("전체 데이터 갯수"),
+                        fieldWithPath("data.dataList").type(JsonFieldType.ARRAY)
+                                .description("검색 결과 상품 리스트"),
+                        fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER)
+                                .description("상품의 id"),
+                        fieldWithPath("data.dataList.[].title").type(JsonFieldType.STRING)
+                                .description("상품의 제목"),
+                        fieldWithPath("data.dataList.[].isbn").type(JsonFieldType.STRING)
+                                .description("상품의 isbn"),
+                        fieldWithPath("data.dataList.[].publisher").type(JsonFieldType.STRING)
+                                .description("상품의 출판사"),
+                        fieldWithPath("data.dataList.[].quantity").type(JsonFieldType.NUMBER)
+                                .description("상품의 갯수"),
+                        fieldWithPath("data.dataList.[].sellingPrice").type(JsonFieldType.NUMBER)
+                                .description("상품의 판매가"),
+                        fieldWithPath("data.dataList.[].rate").type(JsonFieldType.NUMBER)
+                                .description("상품의 할인율"),
+                        fieldWithPath("data.dataList.[].isForcedOutOfStock").type(JsonFieldType.BOOLEAN)
+                                .description("상품의 강제 품절 여부"),
+                        fieldWithPath("data.dataList.[].isEbook").type(JsonFieldType.BOOLEAN)
+                                .description("E-book 여부"),
+                        fieldWithPath("data.dataList.[].isSubscriptionAvailable").type(JsonFieldType.BOOLEAN)
+                                .description("구독 상품 여부"),
+                        fieldWithPath("data.dataList.[].publishedDate").type(JsonFieldType.STRING)
+                                .description("출판 날짜"),
+                        fieldWithPath("data.dataList.[].thumbnailFile").type(JsonFieldType.STRING)
+                                .description("상품의 썸네일 사진"),
+                        fieldWithPath("data.dataList.[].authors").type(JsonFieldType.ARRAY)
+                                .description("상품의 저자 리스트"),
+                        fieldWithPath("data.dataList.[].tags.[]").type(JsonFieldType.ARRAY)
+                                .description("상품의 태그 리스트")
+                )
+        ));
     }
 
     @WithMockUser
@@ -735,36 +865,58 @@ class SearchProductControllerTest {
                         equalTo(responseDto.getTags().get(0))
                 ));
 
-        resultActions.andDo(document("search-product-success-category-id",
+        resultActions.andDo(document(
+                "search-product-success-category-id",
                 getDocumentRequest(),
                 getDocumentResponse(),
                 requestParameters(
                         parameterWithName("categoryid").description("검색할 카테고리 id"),
                         parameterWithName("_csrf").description("csrf")
                 ),
-                responseFields(fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                responseFields(
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
                         fieldWithPath("success").type(JsonFieldType.BOOLEAN)
                                 .description("동작 성공 여부"),
                         fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
                                 .description("에러 메세지")
                                 .optional(),
-                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER).description("검색 전체 페이지"),
-                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER).description("현쟈 페이지"),
-                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER).description("전체 데이터 갯수"),
-                        fieldWithPath("data.dataList").type(JsonFieldType.ARRAY).description("검색 결과 상품 리스트"),
-                        fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER).description("상품의 id"),
-                        fieldWithPath("data.dataList.[].title").type(JsonFieldType.STRING).description("상품의 제목"),
-                        fieldWithPath("data.dataList.[].isbn").type(JsonFieldType.STRING).description("상품의 isbn"),
-                        fieldWithPath("data.dataList.[].publisher").type(JsonFieldType.STRING).description("상품의 출판사"),
-                        fieldWithPath("data.dataList.[].quantity").type(JsonFieldType.NUMBER).description("상품의 갯수"),
-                        fieldWithPath("data.dataList.[].sellingPrice").type(JsonFieldType.NUMBER).description("상품의 판매가"),
-                        fieldWithPath("data.dataList.[].rate").type(JsonFieldType.NUMBER).description("상품의 할인율"),
-                        fieldWithPath("data.dataList.[].isForcedOutOfStock").type(JsonFieldType.BOOLEAN).description("상품의 강제 품절 여부"),
-                        fieldWithPath("data.dataList.[].isEbook").type(JsonFieldType.BOOLEAN).description("E-book 여부"),
-                        fieldWithPath("data.dataList.[].isSubscriptionAvailable").type(JsonFieldType.BOOLEAN).description("구독 상품 여부"),
-                        fieldWithPath("data.dataList.[].publishedDate").type(JsonFieldType.STRING).description("출판 날짜"),
-                        fieldWithPath("data.dataList.[].thumbnailFile").type(JsonFieldType.STRING).description("상품의 썸네일 사진"),
-                        fieldWithPath("data.dataList.[].authors").type(JsonFieldType.ARRAY).description("상품의 저자 리스트"),
-                        fieldWithPath("data.dataList.[].tags.[]").type(JsonFieldType.ARRAY).description("상품의 태그 리스트"))));
+                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER)
+                                .description("검색 전체 페이지"),
+                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER)
+                                .description("현쟈 페이지"),
+                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER)
+                                .description("전체 데이터 갯수"),
+                        fieldWithPath("data.dataList").type(JsonFieldType.ARRAY)
+                                .description("검색 결과 상품 리스트"),
+                        fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER)
+                                .description("상품의 id"),
+                        fieldWithPath("data.dataList.[].title").type(JsonFieldType.STRING)
+                                .description("상품의 제목"),
+                        fieldWithPath("data.dataList.[].isbn").type(JsonFieldType.STRING)
+                                .description("상품의 isbn"),
+                        fieldWithPath("data.dataList.[].publisher").type(JsonFieldType.STRING)
+                                .description("상품의 출판사"),
+                        fieldWithPath("data.dataList.[].quantity").type(JsonFieldType.NUMBER)
+                                .description("상품의 갯수"),
+                        fieldWithPath("data.dataList.[].sellingPrice").type(JsonFieldType.NUMBER)
+                                .description("상품의 판매가"),
+                        fieldWithPath("data.dataList.[].rate").type(JsonFieldType.NUMBER)
+                                .description("상품의 할인율"),
+                        fieldWithPath("data.dataList.[].isForcedOutOfStock").type(JsonFieldType.BOOLEAN)
+                                .description("상품의 강제 품절 여부"),
+                        fieldWithPath("data.dataList.[].isEbook").type(JsonFieldType.BOOLEAN)
+                                .description("E-book 여부"),
+                        fieldWithPath("data.dataList.[].isSubscriptionAvailable").type(JsonFieldType.BOOLEAN)
+                                .description("구독 상품 여부"),
+                        fieldWithPath("data.dataList.[].publishedDate").type(JsonFieldType.STRING)
+                                .description("출판 날짜"),
+                        fieldWithPath("data.dataList.[].thumbnailFile").type(JsonFieldType.STRING)
+                                .description("상품의 썸네일 사진"),
+                        fieldWithPath("data.dataList.[].authors").type(JsonFieldType.ARRAY)
+                                .description("상품의 저자 리스트"),
+                        fieldWithPath("data.dataList.[].tags.[]").type(JsonFieldType.ARRAY)
+                                .description("상품의 태그 리스트")
+                )
+        ));
     }
 }

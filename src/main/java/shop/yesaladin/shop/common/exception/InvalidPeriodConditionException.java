@@ -23,7 +23,7 @@ public class InvalidPeriodConditionException extends RuntimeException {
             return "Cannot query with too past date condition";
         } else if (cause.equals(InvalidPeriodConditionType.LONG_PERIOD_OF_TIME)) {
             return "Cannot query with too long period condition";
-        } else if(cause.equals(InvalidPeriodConditionType.START_OVER_END)) {
+        } else if (cause.equals(InvalidPeriodConditionType.START_OVER_END)) {
             return "Cannot query with start date over end date period condition";
         }
         return "Cannot query with future date condition";

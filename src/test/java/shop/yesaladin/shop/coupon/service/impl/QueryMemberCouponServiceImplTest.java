@@ -55,12 +55,12 @@ class QueryMemberCouponServiceImplTest {
                         .build())));
         List<MemberCouponSummaryDto> expectedData = List.of(Mockito.mock(MemberCouponSummaryDto.class));
         when(restTemplate.exchange(
-                        Mockito.eq(
-                                "http://localhost:8085/v1/coupons?couponCodes=coupon-code"),
-                        Mockito.eq(HttpMethod.GET),
-                        Mockito.eq(null),
-                        Mockito.any(ParameterizedTypeReference.class)
-                ))
+                Mockito.eq(
+                        "http://localhost:8085/v1/coupons?couponCodes=coupon-code"),
+                Mockito.eq(HttpMethod.GET),
+                Mockito.eq(null),
+                Mockito.any(ParameterizedTypeReference.class)
+        ))
                 .thenReturn(ResponseEntity.of(Optional.of(ResponseDto.<List<MemberCouponSummaryDto>>builder()
                         .success(true)
                         .status(HttpStatus.OK)
@@ -74,7 +74,8 @@ class QueryMemberCouponServiceImplTest {
         );
         // then
         Mockito.verify(repository, Mockito.times(1)).findMemberCouponByMemberId(pageable, "member",
-                true);
+                true
+        );
         Mockito.verify(restTemplate, Mockito.times(1))
                 .exchange(
                         Mockito.eq("http://localhost:8085/v1/coupons?couponCodes=coupon-code"),
@@ -104,7 +105,8 @@ class QueryMemberCouponServiceImplTest {
         // when
         // then
         Assertions.assertThatThrownBy(() -> service.getMemberCouponSummaryList(pageable, "member",
-                        true))
+                        true
+                ))
                 .isInstanceOf(ClientException.class);
     }
 
@@ -127,7 +129,8 @@ class QueryMemberCouponServiceImplTest {
         // when
         // then
         Assertions.assertThatThrownBy(() -> service.getMemberCouponSummaryList(pageable, "member",
-                        true))
+                        true
+                ))
                 .isInstanceOf(ServerException.class);
     }
 
@@ -151,7 +154,8 @@ class QueryMemberCouponServiceImplTest {
         // when
         // then
         Assertions.assertThatThrownBy(() -> service.getMemberCouponSummaryList(pageable, "member",
-                        true))
+                        true
+                ))
                 .isInstanceOf(ServerException.class);
     }
 
@@ -163,12 +167,12 @@ class QueryMemberCouponServiceImplTest {
         List<String> couponCodes = List.of(couponCode);
         List<MemberCouponSummaryDto> expectedData = List.of(Mockito.mock(MemberCouponSummaryDto.class));
         when(restTemplate.exchange(
-                        Mockito.eq(
-                                "http://localhost:8085/v1/coupons?couponCodes=coupon-code"),
-                        Mockito.eq(HttpMethod.GET),
-                        Mockito.eq(null),
-                        Mockito.any(ParameterizedTypeReference.class)
-                ))
+                Mockito.eq(
+                        "http://localhost:8085/v1/coupons?couponCodes=coupon-code"),
+                Mockito.eq(HttpMethod.GET),
+                Mockito.eq(null),
+                Mockito.any(ParameterizedTypeReference.class)
+        ))
                 .thenReturn(ResponseEntity.of(Optional.of(ResponseDto.<List<MemberCouponSummaryDto>>builder()
                         .success(true)
                         .status(HttpStatus.OK)
@@ -198,6 +202,7 @@ class QueryMemberCouponServiceImplTest {
                 MemberCoupon.class)));
 
         // when
-        Assertions.assertThatThrownBy(() -> service.findByCouponCodes(couponCodes)).isInstanceOf(ClientException.class);
+        Assertions.assertThatThrownBy(() -> service.findByCouponCodes(couponCodes))
+                .isInstanceOf(ClientException.class);
     }
 }

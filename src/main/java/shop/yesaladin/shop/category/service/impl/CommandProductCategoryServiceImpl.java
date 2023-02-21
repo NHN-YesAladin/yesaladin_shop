@@ -22,7 +22,6 @@ public class CommandProductCategoryServiceImpl implements CommandProductCategory
 
     /**
      * {@inheritDoc}
-     *
      */
     @Transactional
     @Override
@@ -37,7 +36,6 @@ public class CommandProductCategoryServiceImpl implements CommandProductCategory
 
     /**
      * {@inheritDoc}
-     *
      */
     @Transactional
     @Override

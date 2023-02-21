@@ -9,5 +9,6 @@ import shop.yesaladin.shop.publish.dto.SearchPublisherResponseDto;
  * @since : 1.0
  */
 public interface SearchPublisherRepository {
+
     SearchPublisherResponseDto searchPublisherByName(String name, int offset, int size);
 }

@@ -1,12 +1,15 @@
 package shop.yesaladin.shop.product.dto;
 
-import lombok.*;
+import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
 import shop.yesaladin.shop.tag.dto.TagResponseDto;
 import shop.yesaladin.shop.writing.dto.AuthorsResponseDto;
-
-import java.util.List;
 
 /**
  * 상품 수정 View에 들어갈 정보를 받아오기 위한 Dto 입니다.

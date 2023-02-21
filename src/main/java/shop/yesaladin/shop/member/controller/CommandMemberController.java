@@ -129,9 +129,9 @@ public class CommandMemberController {
     /**
      * 회원의 이름 수정을 위한 Put 요청을 처리하는 기능입니다.
      *
-     * @param updateDto 회원의 이름 수정을 위한 요청 파라미터
+     * @param updateDto     회원의 이름 수정을 위한 요청 파라미터
      * @param bindingResult 유효성 검사
-     * @param loginId 회원의 아이디
+     * @param loginId       회원의 아이디
      * @return 수정된 회원 정보를 담은 responseEntity
      * @author 송학현
      * @since 1.0
@@ -156,9 +156,9 @@ public class CommandMemberController {
     /**
      * 회원의 전화번호 수정을 위한 Put 요청을 처리하는 기능입니다.
      *
-     * @param updateDto 회원의 전화번호 수정을 위한 요청 파라미터
+     * @param updateDto     회원의 전화번호 수정을 위한 요청 파라미터
      * @param bindingResult 유효성 검사
-     * @param loginId 회원의 아이디
+     * @param loginId       회원의 아이디
      * @return 수정된 회원 정보를 담은 responseEntity
      * @author 송학현
      * @since 1.0
@@ -183,9 +183,9 @@ public class CommandMemberController {
     /**
      * 회원의 이메일 수정을 위한 Put 요청을 처리하는 기능입니다.
      *
-     * @param updateDto 회원의 이메일 수정을 위한 요청 파라미터
+     * @param updateDto     회원의 이메일 수정을 위한 요청 파라미터
      * @param bindingResult 유효성 검사
-     * @param loginId 회원의 아이디
+     * @param loginId       회원의 아이디
      * @return 수정된 회원 정보를 담은 responseEntity
      * @author 송학현
      * @since 1.0
@@ -210,9 +210,9 @@ public class CommandMemberController {
     /**
      * 회원의 패스워드 수정을 위한 Put 요청을 처리하는 기능입니다.
      *
-     * @param updateDto 회원의 패스워드 수정을 위한 요청 파라미터
+     * @param updateDto     회원의 패스워드 수정을 위한 요청 파라미터
      * @param bindingResult 유효성 검사
-     * @param loginId 회원의 아이디
+     * @param loginId       회원의 아이디
      * @return 수정된 회원 정보를 담은 responseEntity
      * @author 송학현
      * @since 1.0
@@ -240,9 +240,9 @@ public class CommandMemberController {
     /**
      * 회원 차단을 위한 Put 요청을 처리하는 기능입니다.
      *
-     * @param loginId        차단할 회원의 아이디
-     * @param request        회원 차단 사유
-     * @param bindingResult  유효성 검사
+     * @param loginId       차단할 회원의 아이디
+     * @param request       회원 차단 사유
+     * @param bindingResult 유효성 검사
      * @return 차단된 회원 정보
      * @author 최예린
      * @since 1.0

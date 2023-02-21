@@ -33,7 +33,6 @@ public class QueryDslCategoryRepository implements QueryCategoryRepository {
 
     /**
      * {@inheritDoc}
-     *
      */
     @Override
     public Page<Category> findCategoriesByParentId(Pageable pageable, Long parentId) {
@@ -42,13 +41,13 @@ public class QueryDslCategoryRepository implements QueryCategoryRepository {
                 .from(category)
                 .leftJoin(category.parent)
                 .fetchJoin()
-                .where(category.parent.id.eq(parentId),category.isDisable.isFalse())
+                .where(category.parent.id.eq(parentId), category.isDisable.isFalse())
                 .orderBy(category.order.asc().nullsLast())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
         JPAQuery<Long> countQuery = queryFactory.select(category.count())
-                .where(category.parent.id.eq(parentId),category.isDisable.isFalse())
+                .where(category.parent.id.eq(parentId), category.isDisable.isFalse())
                 .from(category);
 
         return PageableExecutionUtils.getPage(categories, pageable, countQuery::fetchFirst);
@@ -57,19 +56,17 @@ public class QueryDslCategoryRepository implements QueryCategoryRepository {
 
     /**
      * {@inheritDoc}
-     *
      */
     @Override
     public Optional<Category> findByName(String name) {
         QCategory category = QCategory.category;
         return Optional.ofNullable(queryFactory.selectFrom(category)
-                .where(category.name.eq(name),category.isDisable.isFalse())
+                .where(category.name.eq(name), category.isDisable.isFalse())
                 .fetchFirst());
     }
 
     /**
      * {@inheritDoc}
-     *
      */
     @Override
     public CategoryOnlyIdDto getLatestChildIdByDepthAndParentId(int depth, Long parentId) {
@@ -87,7 +84,6 @@ public class QueryDslCategoryRepository implements QueryCategoryRepository {
 
     /**
      * {@inheritDoc}
-     *
      */
     @Override
     public CategoryOnlyIdDto getLatestIdByDepth(int depth) {
@@ -106,7 +102,6 @@ public class QueryDslCategoryRepository implements QueryCategoryRepository {
 
     /**
      * {@inheritDoc}
-     *
      */
     @Override
     public int getLatestChildOrderByDepthAndParentId(int depth, Long parentId) {
@@ -124,7 +119,6 @@ public class QueryDslCategoryRepository implements QueryCategoryRepository {
 
     /**
      * {@inheritDoc}
-     *
      */
     @Override
     public int getLatestOrderByDepth(int depth) {
@@ -143,7 +137,6 @@ public class QueryDslCategoryRepository implements QueryCategoryRepository {
 
     /**
      * {@inheritDoc}
-     *
      */
     @Override
     public List<Category> findCategories(Long parentId, Integer depth) {
@@ -152,14 +145,17 @@ public class QueryDslCategoryRepository implements QueryCategoryRepository {
                 .from(category)
                 .leftJoin(category.parent)
                 .fetchJoin()
-                .where(parentIdEq(category, parentId), depthEq(category, depth),category.isDisable.isFalse())
+                .where(
+                        parentIdEq(category, parentId),
+                        depthEq(category, depth),
+                        category.isDisable.isFalse()
+                )
                 .orderBy(category.order.asc().nullsLast())
                 .fetch();
     }
 
     /**
      * {@inheritDoc}
-     *
      */
     private BooleanExpression parentIdEq(QCategory category, Long parentId) {
         if (Objects.isNull(parentId)) {
@@ -170,7 +166,6 @@ public class QueryDslCategoryRepository implements QueryCategoryRepository {
 
     /**
      * {@inheritDoc}
-     *
      */
     private BooleanExpression depthEq(QCategory category, Integer depth) {
 
@@ -183,7 +178,6 @@ public class QueryDslCategoryRepository implements QueryCategoryRepository {
 
     /**
      * {@inheritDoc}
-     *
      */
     @Override
     public Optional<Category> findById(Long id) {

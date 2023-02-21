@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.order.controller;
 
+import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +27,6 @@ import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 import shop.yesaladin.shop.order.dto.SalesStatisticsResponseDto;
 import shop.yesaladin.shop.order.service.inter.QueryOrderService;
-import java.util.List;
 
 /**
  * 전체 주문 조회 관련 rest controller 클래스 입니다.
@@ -137,7 +137,11 @@ public class QueryOrderController {
             Pageable pageable
     ) {
 
-        PaginatedResponseDto<SalesStatisticsResponseDto> response = queryOrderService.getSalesStatistics(start, end, pageable);
+        PaginatedResponseDto<SalesStatisticsResponseDto> response = queryOrderService.getSalesStatistics(
+                start,
+                end,
+                pageable
+        );
 
         return ResponseDto.<PaginatedResponseDto<SalesStatisticsResponseDto>>builder()
                 .success(true)

@@ -29,10 +29,10 @@ import shop.yesaladin.shop.member.dto.MemberCreateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberCreateResponseDto;
 import shop.yesaladin.shop.member.dto.MemberEmailUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberNameUpdateRequestDto;
+import shop.yesaladin.shop.member.dto.MemberNicknameUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberPasswordUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberPhoneUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberUnblockResponseDto;
-import shop.yesaladin.shop.member.dto.MemberNicknameUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateResponseDto;
 import shop.yesaladin.shop.member.dto.MemberWithdrawResponseDto;
 import shop.yesaladin.shop.member.dto.OauthMemberCreateRequestDto;
@@ -307,7 +307,10 @@ class CommandMemberServiceImplTest {
                 nickname
         );
         Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
-                .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, "Member loginId " + loginId));
+                .thenThrow(new ClientException(
+                        ErrorCode.MEMBER_NOT_FOUND,
+                        "Member loginId " + loginId
+                ));
 
         //when, then
         assertThatThrownBy(() -> service.updateNickname(loginId, request)).isInstanceOf(
@@ -383,7 +386,10 @@ class CommandMemberServiceImplTest {
                 name
         );
         Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
-                .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, "Member loginId " + loginId));
+                .thenThrow(new ClientException(
+                        ErrorCode.MEMBER_NOT_FOUND,
+                        "Member loginId " + loginId
+                ));
 
         //when, then
         assertThatThrownBy(() -> service.updateName(loginId, request)).isInstanceOf(
@@ -430,7 +436,10 @@ class CommandMemberServiceImplTest {
                 email
         );
         Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
-                .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, "Member loginId " + loginId));
+                .thenThrow(new ClientException(
+                        ErrorCode.MEMBER_NOT_FOUND,
+                        "Member loginId " + loginId
+                ));
 
         //when, then
         assertThatThrownBy(() -> service.updateEmail(loginId, request)).isInstanceOf(
@@ -506,7 +515,10 @@ class CommandMemberServiceImplTest {
                 phone
         );
         Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
-                .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, "Member loginId " + loginId));
+                .thenThrow(new ClientException(
+                        ErrorCode.MEMBER_NOT_FOUND,
+                        "Member loginId " + loginId
+                ));
 
         //when, then
         assertThatThrownBy(() -> service.updatePhone(loginId, request)).isInstanceOf(
@@ -582,7 +594,10 @@ class CommandMemberServiceImplTest {
                 blockedReason
         );
         Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
-                .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, "Member loginId " + loginId));
+                .thenThrow(new ClientException(
+                        ErrorCode.MEMBER_NOT_FOUND,
+                        "Member loginId " + loginId
+                ));
 
         //when, then
         assertThatThrownBy(() -> service.block(loginId, request)).isInstanceOf(
@@ -655,7 +670,10 @@ class CommandMemberServiceImplTest {
         String loginId = "loginId";
 
         Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
-                .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, "Member loginId " + loginId));
+                .thenThrow(new ClientException(
+                        ErrorCode.MEMBER_NOT_FOUND,
+                        "Member loginId " + loginId
+                ));
 
         //when, then
         assertThatThrownBy(() -> service.unblock(loginId)).isInstanceOf(ClientException.class);
@@ -764,7 +782,10 @@ class CommandMemberServiceImplTest {
                 password
         );
         Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
-                .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, "Member loginId " + loginId));
+                .thenThrow(new ClientException(
+                        ErrorCode.MEMBER_NOT_FOUND,
+                        "Member loginId " + loginId
+                ));
 
         //when, then
         assertThatThrownBy(() -> service.updatePassword(loginId, request)).isInstanceOf(
