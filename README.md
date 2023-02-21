@@ -9,8 +9,8 @@ YesAladin Shop은 애플리케이션 이용에 필요한 API를 제공함으로�
 
 ## ERD
 
-// 이미지 추가할 것
-![]()
+![ERD](http://drive.google.com/uc?export=view&id=1gE5gufiU6RAjOKba50ianKreUAw3hnl9)
+
 
 ## Project Architecture
 
@@ -64,6 +64,12 @@ YesAladin Shop은 애플리케이션 이용에 필요한 API를 제공함으로�
 
 
 ### [@김홍대](https://github.com/mongmeo-dev)
+- **쿠폰**
+  - Kafka를 이용하여 쿠폰 서버와 메시지 기반 비동기 통신 구현
+  - 마이크로서비스의 트랜잭션 보장을 위한 시스템 설계
+- **Project Management**
+  - NHN Cloud Log & Crash를 연동하여 모니터링 환경 구축
+  - Spring Cloud Config를 연동하여 설정 정보 외부화
 
 ### [@서민지](https://github.com/narangd0)
 
@@ -83,7 +89,11 @@ YesAladin Shop은 애플리케이션 이용에 필요한 API를 제공함으로�
   - **TransactionEventListener** 를 사용하여 해결 
     - phase를 _TransactionPhase.AFTER_ROLLBACK_ 으로 설정하여 사용 
 
-### Web Socket (가제)
+### Web Socket
+- 서버가 이중화 되어있어 메시지를 전달하고자 하는 클라이언트에게 메시지가 전달되지 않을 수 있는 문제 발생
+  - Redis의 PUB/SUB을 이용하여 모든 인스턴스에서 메시지를 전달할 수 있도록 구현
+  - 설계 및 flow의 복잡도 증가 및 소켓 연결 유지로 인한 서버 부담 증가
+    - 최종적으로 소켓 서버를 분리하여 해결
 
 ### 인증/인가 (가제)
 - JWT 토큰 검증 결과 payload에 포함된 식별 정보를 통해 Shop API Server 내 `OncePerRequestFilter`로 자체 인증 객체 생성
