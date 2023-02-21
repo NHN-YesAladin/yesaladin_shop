@@ -22,17 +22,6 @@ public class TagResponseDto {
     private String name;
 
     /**
-     * Dto를 바탕으로 태그 엔터티를 생성해 반환합니다.
-     *
-     * @return 생성된 태그 엔터티
-     * @author 이수정
-     * @since 1.0
-     */
-    public Tag toEntity() {
-        return Tag.builder().id(id).name(name).build();
-    }
-
-    /**
      * 태그관계를 바탕으로 태그 Dto를 만들어 반환합니다.
      *
      * @param productTag 바탕이 될 태그관계 Dto
@@ -45,5 +34,16 @@ public class TagResponseDto {
                 .id(productTag.getTag().getId())
                 .name(productTag.getTag().getName())
                 .build();
+    }
+
+    /**
+     * Dto를 바탕으로 태그 엔터티를 생성해 반환합니다.
+     *
+     * @return 생성된 태그 엔터티
+     * @author 이수정
+     * @since 1.0
+     */
+    public Tag toEntity() {
+        return Tag.builder().id(id).name(name).build();
     }
 }

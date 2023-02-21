@@ -1,12 +1,23 @@
 package shop.yesaladin.shop.publish.domain.model;
 
-import lombok.*;
-import shop.yesaladin.shop.product.domain.model.Product;
-
-import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MapsId;
+import javax.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import shop.yesaladin.shop.product.domain.model.Product;
 
 /**
  * 출판의 엔터티 클래스입니다.

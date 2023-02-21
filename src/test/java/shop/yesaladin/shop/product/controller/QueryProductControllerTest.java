@@ -1293,10 +1293,14 @@ class QueryProductControllerTest {
                                 .description("판매가"),
                         fieldWithPath("data.[].rate").type(JsonFieldType.NUMBER)
                                 .description("할인율"),
-                        fieldWithPath("data.[].author").type(JsonFieldType.ARRAY).description("저자명"),
-                        fieldWithPath("data.[].isForcedOutOfStock").type(JsonFieldType.BOOLEAN).description("강제 품절 상태"),
-                        fieldWithPath("data.[].quantity").type(JsonFieldType.NUMBER).description("상품 재고량"),
-                        fieldWithPath("data.[].publisher").type(JsonFieldType.STRING).description("상품 출판사")
+                        fieldWithPath("data.[].author").type(JsonFieldType.ARRAY)
+                                .description("저자명"),
+                        fieldWithPath("data.[].isForcedOutOfStock").type(JsonFieldType.BOOLEAN)
+                                .description("강제 품절 상태"),
+                        fieldWithPath("data.[].quantity").type(JsonFieldType.NUMBER)
+                                .description("상품 재고량"),
+                        fieldWithPath("data.[].publisher").type(JsonFieldType.STRING)
+                                .description("상품 출판사")
                 )
         ));
     }
@@ -1346,8 +1350,10 @@ class QueryProductControllerTest {
                 getDocumentRequest(),
                 getDocumentResponse(),
                 requestFields(
-                        fieldWithPath("totalIds").type(JsonFieldType.ARRAY).description("전체 최근 본 상품의 id 리스트"),
-                        fieldWithPath("pageIds").type(JsonFieldType.ARRAY).description("현재 페이지의 최근 본 상품 id 리스트")
+                        fieldWithPath("totalIds").type(JsonFieldType.ARRAY)
+                                .description("전체 최근 본 상품의 id 리스트"),
+                        fieldWithPath("pageIds").type(JsonFieldType.ARRAY)
+                                .description("현재 페이지의 최근 본 상품 id 리스트")
                 ),
                 requestParameters(
                         parameterWithName("_csrf").description("csrf")
@@ -1376,10 +1382,14 @@ class QueryProductControllerTest {
                                 .description("판매가"),
                         fieldWithPath("data.dataList.[].rate").type(JsonFieldType.NUMBER)
                                 .description("할인율"),
-                        fieldWithPath("data.dataList.[].author").type(JsonFieldType.ARRAY).description("저자명"),
-                        fieldWithPath("data.dataList.[].isForcedOutOfStock").type(JsonFieldType.BOOLEAN).description("강제 품절 상태"),
-                        fieldWithPath("data.dataList.[].quantity").type(JsonFieldType.NUMBER).description("상품 재고량"),
-                        fieldWithPath("data.dataList.[].publisher").type(JsonFieldType.STRING).description("상품 출판사")
+                        fieldWithPath("data.dataList.[].author").type(JsonFieldType.ARRAY)
+                                .description("저자명"),
+                        fieldWithPath("data.dataList.[].isForcedOutOfStock").type(JsonFieldType.BOOLEAN)
+                                .description("강제 품절 상태"),
+                        fieldWithPath("data.dataList.[].quantity").type(JsonFieldType.NUMBER)
+                                .description("상품 재고량"),
+                        fieldWithPath("data.dataList.[].publisher").type(JsonFieldType.STRING)
+                                .description("상품 출판사")
                 )
         ));
     }

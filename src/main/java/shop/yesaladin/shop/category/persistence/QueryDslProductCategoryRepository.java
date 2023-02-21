@@ -26,11 +26,11 @@ import shop.yesaladin.shop.product.domain.model.Product;
 @RequiredArgsConstructor
 @Repository
 public class QueryDslProductCategoryRepository implements QueryProductCategoryRepository {
+
     private final JPAQueryFactory queryFactory;
 
     /**
      * {@inheritDoc}
-     *
      */
     @Override
     public Optional<ProductCategory> findByPk(Pk pk) {
@@ -42,19 +42,20 @@ public class QueryDslProductCategoryRepository implements QueryProductCategoryRe
 
     /**
      * {@inheritDoc}
-     *
      */
     @Override
     public List<CategoryResponseDto> findCategoriesByProduct(Product product) {
         QProductCategory productCategory = QProductCategory.productCategory;
         QCategory category = QCategory.category;
-        return queryFactory.select(Projections.constructor(CategoryResponseDto.class,
+        return queryFactory.select(Projections.constructor(
+                        CategoryResponseDto.class,
                         productCategory.category.id,
                         productCategory.category.name,
                         productCategory.category.isShown,
                         productCategory.category.order,
                         productCategory.category.parent.id,
-                        productCategory.category.parent.name))
+                        productCategory.category.parent.name
+                ))
                 .from(productCategory)
                 .innerJoin(productCategory.category, category)
                 .where(productCategory.product.eq(product))

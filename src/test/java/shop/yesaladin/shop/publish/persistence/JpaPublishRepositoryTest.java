@@ -1,5 +1,12 @@
 package shop.yesaladin.shop.publish.persistence;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,17 +20,13 @@ import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
-import shop.yesaladin.shop.product.dummy.*;
+import shop.yesaladin.shop.product.dummy.DummyFile;
+import shop.yesaladin.shop.product.dummy.DummyProduct;
+import shop.yesaladin.shop.product.dummy.DummyPublisher;
+import shop.yesaladin.shop.product.dummy.DummySubscribeProduct;
+import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
 import shop.yesaladin.shop.publish.domain.model.Publish;
 import shop.yesaladin.shop.publish.domain.model.Publisher;
-
-import java.time.Clock;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @ActiveProfiles("local-test")
@@ -32,18 +35,14 @@ class JpaPublishRepositoryTest {
 
     private final String ISBN = "0000000000001";
     private final String URL = "https://api-storage.cloud.toast.com/v1/AUTH_/container/domain/type";
-
-    @Autowired
-    private TestEntityManager entityManager;
-
-    @Autowired
-    private JpaPublishRepository repository;
-
     private final Clock clock = Clock.fixed(
             Instant.parse("2023-01-20T00:00:00.000Z"),
             ZoneId.of("UTC")
     );
-
+    @Autowired
+    private TestEntityManager entityManager;
+    @Autowired
+    private JpaPublishRepository repository;
     private Product product;
     private Publisher publisher;
     private Publish publish;
@@ -60,13 +59,23 @@ class JpaPublishRepositoryTest {
         entityManager.persist(ebookFile);
         entityManager.persist(totalDiscountRate);
 
-        product = DummyProduct.dummy(ISBN, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate);
+        product = DummyProduct.dummy(
+                ISBN,
+                subscribeProduct,
+                thumbnailFile,
+                ebookFile,
+                totalDiscountRate
+        );
         publisher = DummyPublisher.dummy();
 
         entityManager.persist(product);
         entityManager.persist(publisher);
 
-        publish = Publish.create(product, publisher, LocalDateTime.now(clock).toLocalDate().toString());
+        publish = Publish.create(
+                product,
+                publisher,
+                LocalDateTime.now(clock).toLocalDate().toString()
+        );
     }
 
     @Test

@@ -61,16 +61,27 @@ class SearchProductServiceImplTest {
         assertThat(result.getContent().get(0).getId()).isEqualTo(responseDto.getId());
         assertThat(result.getContent().get(0).getTitle()).isEqualTo(responseDto.getTitle());
         assertThat(result.getContent().get(0).getQuantity()).isEqualTo(responseDto.getQuantity());
-        assertThat(result.getContent().get(0).getSellingPrice()).isEqualTo(responseDto.getSellingPrice());
+        assertThat(result.getContent()
+                .get(0)
+                .getSellingPrice()).isEqualTo(responseDto.getSellingPrice());
         assertThat(result.getContent().get(0).getRate()).isEqualTo(responseDto.getRate());
-        assertThat(result.getContent().get(0).getIsForcedOutOfStock()).isEqualTo(responseDto.getIsForcedOutOfStock());
+        assertThat(result.getContent()
+                .get(0)
+                .getIsForcedOutOfStock()).isEqualTo(responseDto.getIsForcedOutOfStock());
         assertThat(result.getContent().get(0).getIsbn()).isEqualTo(responseDto.getIsbn());
         assertThat(result.getContent().get(0).getPublisher()).isEqualTo(responseDto.getPublisher());
-        assertThat(result.getContent().get(0).getAuthors()).hasSize(responseDto.getAuthors().size());
-        assertThat(result.getContent().get(0).getAuthors().get(0)).isEqualTo(responseDto.getAuthors().get(0));
-        assertThat(result.getContent().get(0).getThumbnailFile()).isEqualTo(responseDto.getThumbnailFile());
+        assertThat(result.getContent().get(0).getAuthors()).hasSize(responseDto.getAuthors()
+                .size());
+        assertThat(result.getContent()
+                .get(0)
+                .getAuthors()
+                .get(0)).isEqualTo(responseDto.getAuthors().get(0));
+        assertThat(result.getContent()
+                .get(0)
+                .getThumbnailFile()).isEqualTo(responseDto.getThumbnailFile());
         assertThat(result.getContent().get(0).getTags()).hasSize(responseDto.getTags().size());
-        assertThat(result.getContent().get(0).getTags().get(0)).isEqualTo(responseDto.getTags().get(0));
+        assertThat(result.getContent().get(0).getTags().get(0)).isEqualTo(responseDto.getTags()
+                .get(0));
     }
 
     @Test
@@ -91,16 +102,27 @@ class SearchProductServiceImplTest {
         assertThat(result.getContent().get(0).getId()).isEqualTo(responseDto.getId());
         assertThat(result.getContent().get(0).getTitle()).isEqualTo(responseDto.getTitle());
         assertThat(result.getContent().get(0).getQuantity()).isEqualTo(responseDto.getQuantity());
-        assertThat(result.getContent().get(0).getSellingPrice()).isEqualTo(responseDto.getSellingPrice());
+        assertThat(result.getContent()
+                .get(0)
+                .getSellingPrice()).isEqualTo(responseDto.getSellingPrice());
         assertThat(result.getContent().get(0).getRate()).isEqualTo(responseDto.getRate());
-        assertThat(result.getContent().get(0).getIsForcedOutOfStock()).isEqualTo(responseDto.getIsForcedOutOfStock());
+        assertThat(result.getContent()
+                .get(0)
+                .getIsForcedOutOfStock()).isEqualTo(responseDto.getIsForcedOutOfStock());
         assertThat(result.getContent().get(0).getIsbn()).isEqualTo(responseDto.getIsbn());
         assertThat(result.getContent().get(0).getPublisher()).isEqualTo(responseDto.getPublisher());
-        assertThat(result.getContent().get(0).getAuthors()).hasSize(responseDto.getAuthors().size());
-        assertThat(result.getContent().get(0).getAuthors().get(0)).isEqualTo(responseDto.getAuthors().get(0));
-        assertThat(result.getContent().get(0).getThumbnailFile()).isEqualTo(responseDto.getThumbnailFile());
+        assertThat(result.getContent().get(0).getAuthors()).hasSize(responseDto.getAuthors()
+                .size());
+        assertThat(result.getContent()
+                .get(0)
+                .getAuthors()
+                .get(0)).isEqualTo(responseDto.getAuthors().get(0));
+        assertThat(result.getContent()
+                .get(0)
+                .getThumbnailFile()).isEqualTo(responseDto.getThumbnailFile());
         assertThat(result.getContent().get(0).getTags()).hasSize(responseDto.getTags().size());
-        assertThat(result.getContent().get(0).getTags().get(0)).isEqualTo(responseDto.getTags().get(0));
+        assertThat(result.getContent().get(0).getTags().get(0)).isEqualTo(responseDto.getTags()
+                .get(0));
     }
 
     @Test
@@ -121,16 +143,27 @@ class SearchProductServiceImplTest {
         assertThat(result.getContent().get(0).getId()).isEqualTo(responseDto.getId());
         assertThat(result.getContent().get(0).getTitle()).isEqualTo(responseDto.getTitle());
         assertThat(result.getContent().get(0).getQuantity()).isEqualTo(responseDto.getQuantity());
-        assertThat(result.getContent().get(0).getSellingPrice()).isEqualTo(responseDto.getSellingPrice());
+        assertThat(result.getContent()
+                .get(0)
+                .getSellingPrice()).isEqualTo(responseDto.getSellingPrice());
         assertThat(result.getContent().get(0).getRate()).isEqualTo(responseDto.getRate());
-        assertThat(result.getContent().get(0).getIsForcedOutOfStock()).isEqualTo(responseDto.getIsForcedOutOfStock());
+        assertThat(result.getContent()
+                .get(0)
+                .getIsForcedOutOfStock()).isEqualTo(responseDto.getIsForcedOutOfStock());
         assertThat(result.getContent().get(0).getIsbn()).isEqualTo(responseDto.getIsbn());
         assertThat(result.getContent().get(0).getPublisher()).isEqualTo(responseDto.getPublisher());
-        assertThat(result.getContent().get(0).getAuthors()).hasSize(responseDto.getAuthors().size());
-        assertThat(result.getContent().get(0).getAuthors().get(0)).isEqualTo(responseDto.getAuthors().get(0));
-        assertThat(result.getContent().get(0).getThumbnailFile()).isEqualTo(responseDto.getThumbnailFile());
+        assertThat(result.getContent().get(0).getAuthors()).hasSize(responseDto.getAuthors()
+                .size());
+        assertThat(result.getContent()
+                .get(0)
+                .getAuthors()
+                .get(0)).isEqualTo(responseDto.getAuthors().get(0));
+        assertThat(result.getContent()
+                .get(0)
+                .getThumbnailFile()).isEqualTo(responseDto.getThumbnailFile());
         assertThat(result.getContent().get(0).getTags()).hasSize(responseDto.getTags().size());
-        assertThat(result.getContent().get(0).getTags().get(0)).isEqualTo(responseDto.getTags().get(0));
+        assertThat(result.getContent().get(0).getTags().get(0)).isEqualTo(responseDto.getTags()
+                .get(0));
     }
 
     @Test
@@ -151,16 +184,27 @@ class SearchProductServiceImplTest {
         assertThat(result.getContent().get(0).getId()).isEqualTo(responseDto.getId());
         assertThat(result.getContent().get(0).getTitle()).isEqualTo(responseDto.getTitle());
         assertThat(result.getContent().get(0).getQuantity()).isEqualTo(responseDto.getQuantity());
-        assertThat(result.getContent().get(0).getSellingPrice()).isEqualTo(responseDto.getSellingPrice());
+        assertThat(result.getContent()
+                .get(0)
+                .getSellingPrice()).isEqualTo(responseDto.getSellingPrice());
         assertThat(result.getContent().get(0).getRate()).isEqualTo(responseDto.getRate());
-        assertThat(result.getContent().get(0).getIsForcedOutOfStock()).isEqualTo(responseDto.getIsForcedOutOfStock());
+        assertThat(result.getContent()
+                .get(0)
+                .getIsForcedOutOfStock()).isEqualTo(responseDto.getIsForcedOutOfStock());
         assertThat(result.getContent().get(0).getIsbn()).isEqualTo(responseDto.getIsbn());
         assertThat(result.getContent().get(0).getPublisher()).isEqualTo(responseDto.getPublisher());
-        assertThat(result.getContent().get(0).getAuthors()).hasSize(responseDto.getAuthors().size());
-        assertThat(result.getContent().get(0).getAuthors().get(0)).isEqualTo(responseDto.getAuthors().get(0));
-        assertThat(result.getContent().get(0).getThumbnailFile()).isEqualTo(responseDto.getThumbnailFile());
+        assertThat(result.getContent().get(0).getAuthors()).hasSize(responseDto.getAuthors()
+                .size());
+        assertThat(result.getContent()
+                .get(0)
+                .getAuthors()
+                .get(0)).isEqualTo(responseDto.getAuthors().get(0));
+        assertThat(result.getContent()
+                .get(0)
+                .getThumbnailFile()).isEqualTo(responseDto.getThumbnailFile());
         assertThat(result.getContent().get(0).getTags()).hasSize(responseDto.getTags().size());
-        assertThat(result.getContent().get(0).getTags().get(0)).isEqualTo(responseDto.getTags().get(0));
+        assertThat(result.getContent().get(0).getTags().get(0)).isEqualTo(responseDto.getTags()
+                .get(0));
     }
 
     @Test
@@ -181,16 +225,27 @@ class SearchProductServiceImplTest {
         assertThat(result.getContent().get(0).getId()).isEqualTo(responseDto.getId());
         assertThat(result.getContent().get(0).getTitle()).isEqualTo(responseDto.getTitle());
         assertThat(result.getContent().get(0).getQuantity()).isEqualTo(responseDto.getQuantity());
-        assertThat(result.getContent().get(0).getSellingPrice()).isEqualTo(responseDto.getSellingPrice());
+        assertThat(result.getContent()
+                .get(0)
+                .getSellingPrice()).isEqualTo(responseDto.getSellingPrice());
         assertThat(result.getContent().get(0).getRate()).isEqualTo(responseDto.getRate());
-        assertThat(result.getContent().get(0).getIsForcedOutOfStock()).isEqualTo(responseDto.getIsForcedOutOfStock());
+        assertThat(result.getContent()
+                .get(0)
+                .getIsForcedOutOfStock()).isEqualTo(responseDto.getIsForcedOutOfStock());
         assertThat(result.getContent().get(0).getIsbn()).isEqualTo(responseDto.getIsbn());
         assertThat(result.getContent().get(0).getPublisher()).isEqualTo(responseDto.getPublisher());
-        assertThat(result.getContent().get(0).getAuthors()).hasSize(responseDto.getAuthors().size());
-        assertThat(result.getContent().get(0).getAuthors().get(0)).isEqualTo(responseDto.getAuthors().get(0));
-        assertThat(result.getContent().get(0).getThumbnailFile()).isEqualTo(responseDto.getThumbnailFile());
+        assertThat(result.getContent().get(0).getAuthors()).hasSize(responseDto.getAuthors()
+                .size());
+        assertThat(result.getContent()
+                .get(0)
+                .getAuthors()
+                .get(0)).isEqualTo(responseDto.getAuthors().get(0));
+        assertThat(result.getContent()
+                .get(0)
+                .getThumbnailFile()).isEqualTo(responseDto.getThumbnailFile());
         assertThat(result.getContent().get(0).getTags()).hasSize(responseDto.getTags().size());
-        assertThat(result.getContent().get(0).getTags().get(0)).isEqualTo(responseDto.getTags().get(0));
+        assertThat(result.getContent().get(0).getTags().get(0)).isEqualTo(responseDto.getTags()
+                .get(0));
     }
 
     @Test
@@ -211,16 +266,27 @@ class SearchProductServiceImplTest {
         assertThat(result.getContent().get(0).getId()).isEqualTo(responseDto.getId());
         assertThat(result.getContent().get(0).getTitle()).isEqualTo(responseDto.getTitle());
         assertThat(result.getContent().get(0).getQuantity()).isEqualTo(responseDto.getQuantity());
-        assertThat(result.getContent().get(0).getSellingPrice()).isEqualTo(responseDto.getSellingPrice());
+        assertThat(result.getContent()
+                .get(0)
+                .getSellingPrice()).isEqualTo(responseDto.getSellingPrice());
         assertThat(result.getContent().get(0).getRate()).isEqualTo(responseDto.getRate());
-        assertThat(result.getContent().get(0).getIsForcedOutOfStock()).isEqualTo(responseDto.getIsForcedOutOfStock());
+        assertThat(result.getContent()
+                .get(0)
+                .getIsForcedOutOfStock()).isEqualTo(responseDto.getIsForcedOutOfStock());
         assertThat(result.getContent().get(0).getIsbn()).isEqualTo(responseDto.getIsbn());
         assertThat(result.getContent().get(0).getPublisher()).isEqualTo(responseDto.getPublisher());
-        assertThat(result.getContent().get(0).getAuthors()).hasSize(responseDto.getAuthors().size());
-        assertThat(result.getContent().get(0).getAuthors().get(0)).isEqualTo(responseDto.getAuthors().get(0));
-        assertThat(result.getContent().get(0).getThumbnailFile()).isEqualTo(responseDto.getThumbnailFile());
+        assertThat(result.getContent().get(0).getAuthors()).hasSize(responseDto.getAuthors()
+                .size());
+        assertThat(result.getContent()
+                .get(0)
+                .getAuthors()
+                .get(0)).isEqualTo(responseDto.getAuthors().get(0));
+        assertThat(result.getContent()
+                .get(0)
+                .getThumbnailFile()).isEqualTo(responseDto.getThumbnailFile());
         assertThat(result.getContent().get(0).getTags()).hasSize(responseDto.getTags().size());
-        assertThat(result.getContent().get(0).getTags().get(0)).isEqualTo(responseDto.getTags().get(0));
+        assertThat(result.getContent().get(0).getTags().get(0)).isEqualTo(responseDto.getTags()
+                .get(0));
     }
 
     @Test
@@ -241,15 +307,26 @@ class SearchProductServiceImplTest {
         assertThat(result.getContent().get(0).getId()).isEqualTo(responseDto.getId());
         assertThat(result.getContent().get(0).getTitle()).isEqualTo(responseDto.getTitle());
         assertThat(result.getContent().get(0).getQuantity()).isEqualTo(responseDto.getQuantity());
-        assertThat(result.getContent().get(0).getSellingPrice()).isEqualTo(responseDto.getSellingPrice());
+        assertThat(result.getContent()
+                .get(0)
+                .getSellingPrice()).isEqualTo(responseDto.getSellingPrice());
         assertThat(result.getContent().get(0).getRate()).isEqualTo(responseDto.getRate());
-        assertThat(result.getContent().get(0).getIsForcedOutOfStock()).isEqualTo(responseDto.getIsForcedOutOfStock());
+        assertThat(result.getContent()
+                .get(0)
+                .getIsForcedOutOfStock()).isEqualTo(responseDto.getIsForcedOutOfStock());
         assertThat(result.getContent().get(0).getIsbn()).isEqualTo(responseDto.getIsbn());
         assertThat(result.getContent().get(0).getPublisher()).isEqualTo(responseDto.getPublisher());
-        assertThat(result.getContent().get(0).getAuthors()).hasSize(responseDto.getAuthors().size());
-        assertThat(result.getContent().get(0).getAuthors().get(0)).isEqualTo(responseDto.getAuthors().get(0));
-        assertThat(result.getContent().get(0).getThumbnailFile()).isEqualTo(responseDto.getThumbnailFile());
+        assertThat(result.getContent().get(0).getAuthors()).hasSize(responseDto.getAuthors()
+                .size());
+        assertThat(result.getContent()
+                .get(0)
+                .getAuthors()
+                .get(0)).isEqualTo(responseDto.getAuthors().get(0));
+        assertThat(result.getContent()
+                .get(0)
+                .getThumbnailFile()).isEqualTo(responseDto.getThumbnailFile());
         assertThat(result.getContent().get(0).getTags()).hasSize(responseDto.getTags().size());
-        assertThat(result.getContent().get(0).getTags().get(0)).isEqualTo(responseDto.getTags().get(0));
+        assertThat(result.getContent().get(0).getTags().get(0)).isEqualTo(responseDto.getTags()
+                .get(0));
     }
 }

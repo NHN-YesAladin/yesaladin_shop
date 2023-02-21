@@ -1,5 +1,13 @@
 package shop.yesaladin.shop.publish.controller;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -16,23 +24,8 @@ import shop.yesaladin.shop.publish.dto.SearchPublisherResponseDto;
 import shop.yesaladin.shop.publish.dto.SearchPublisherResponseDto.SearchedPublisherDto;
 import shop.yesaladin.shop.publish.service.inter.SearchPublisherService;
 
-import java.util.List;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @WebMvcTest(SearchPublisherController.class)
 class SearchPublisherControllerTest {
-
-    @Autowired
-    MockMvc mockMvc;
-
-    @MockBean
-    SearchPublisherService searchPublisherService;
 
     private static final String ZERO = "0";
     private static final String ONE = "1";
@@ -40,6 +33,10 @@ class SearchPublisherControllerTest {
     private static final String NAME = "name";
     private static final String OFFSET = "offset";
     private static final String SIZE = "size";
+    @Autowired
+    MockMvc mockMvc;
+    @MockBean
+    SearchPublisherService searchPublisherService;
 
     @WithMockUser
     @Test
@@ -115,6 +112,9 @@ class SearchPublisherControllerTest {
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.count", equalTo(1)))
                 .andExpect(jsonPath("$.data.searchedPublisherDtoList[0].id", equalTo(1)))
-                .andExpect(jsonPath("$.data.searchedPublisherDtoList[0].name", equalTo("publisher")));
+                .andExpect(jsonPath(
+                        "$.data.searchedPublisherDtoList[0].name",
+                        equalTo("publisher")
+                ));
     }
 }

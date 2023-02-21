@@ -58,20 +58,25 @@ class ElasticCommandProductControllerTest {
                 .andExpect(jsonPath("$.data.id", equalTo(1)));
 
         resultActions.andDo(
-                document("elasticsearch-product-info-update",
-                getDocumentRequest(),
-                getDocumentResponse(),
+                document(
+                        "elasticsearch-product-info-update",
+                        getDocumentRequest(),
+                        getDocumentResponse(),
                         pathParameters(parameterWithName("id").description("수정할 상품의 id")),
-                requestParameters(
-                        parameterWithName("_csrf").description("csrf")
-                ),
-                responseFields(fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
-                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
-                                .description("동작 성공 여부"),
-                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
-                                .description("에러 메세지")
-                                .optional(),
-                        fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("수정된 상품의 id"))
+                        requestParameters(
+                                parameterWithName("_csrf").description("csrf")
+                        ),
+                        responseFields(
+                                fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                        .description("상태"),
+                                fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                        .description("동작 성공 여부"),
+                                fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                        .description("에러 메세지")
+                                        .optional(),
+                                fieldWithPath("data.id").type(JsonFieldType.NUMBER)
+                                        .description("수정된 상품의 id")
+                        )
                 ));
     }
 
@@ -92,20 +97,25 @@ class ElasticCommandProductControllerTest {
                 .andExpect(jsonPath("$.data.id", equalTo(1)));
 
         resultActions.andDo(
-                document("elasticsearch-product-is-Sale-update",
+                document(
+                        "elasticsearch-product-is-Sale-update",
                         getDocumentRequest(),
                         getDocumentResponse(),
                         pathParameters(parameterWithName("id").description("판매여부를 수정할 상품의 id")),
                         requestParameters(
                                 parameterWithName("_csrf").description("csrf")
                         ),
-                        responseFields(fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        responseFields(
+                                fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                        .description("상태"),
                                 fieldWithPath("success").type(JsonFieldType.BOOLEAN)
                                         .description("동작 성공 여부"),
                                 fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
                                         .description("에러 메세지")
                                         .optional(),
-                                fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("판매여부가 수정된 상품의 id"))
+                                fieldWithPath("data.id").type(JsonFieldType.NUMBER)
+                                        .description("판매여부가 수정된 상품의 id")
+                        )
                 ));
     }
 
@@ -129,20 +139,25 @@ class ElasticCommandProductControllerTest {
                 .andExpect(jsonPath("$.data.id", equalTo(1)));
 
         resultActions.andDo(
-                document("elasticsearch-product-IsForcedOutOfStock-update",
+                document(
+                        "elasticsearch-product-IsForcedOutOfStock-update",
                         getDocumentRequest(),
                         getDocumentResponse(),
                         pathParameters(parameterWithName("id").description("강제품절 상태를 수정할 상품의 id")),
                         requestParameters(
                                 parameterWithName("_csrf").description("csrf")
                         ),
-                        responseFields(fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        responseFields(
+                                fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                        .description("상태"),
                                 fieldWithPath("success").type(JsonFieldType.BOOLEAN)
                                         .description("동작 성공 여부"),
                                 fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
                                         .description("에러 메세지")
                                         .optional(),
-                                fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("강제품절 상태가 수정된 상품의 id"))
+                                fieldWithPath("data.id").type(JsonFieldType.NUMBER)
+                                        .description("강제품절 상태가 수정된 상품의 id")
+                        )
                 ));
     }
 
@@ -162,20 +177,24 @@ class ElasticCommandProductControllerTest {
         verify(elasticCommandProductService, atLeastOnce()).delete(1L);
 
         resultActions.andDo(
-                document("elasticsearch-product-delete",
+                document(
+                        "elasticsearch-product-delete",
                         getDocumentRequest(),
                         getDocumentResponse(),
                         pathParameters(parameterWithName("id").description("삭제할 상품의 id")),
                         requestParameters(
                                 parameterWithName("_csrf").description("csrf")
                         ),
-                        responseFields(fieldWithPath("status").type(JsonFieldType.NUMBER).description("삭제 상태"),
+                        responseFields(
+                                fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                        .description("삭제 상태"),
                                 fieldWithPath("success").type(JsonFieldType.BOOLEAN)
                                         .description("동작 성공 여부"),
                                 fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
                                         .description("에러 메세지")
                                         .optional(),
-                                fieldWithPath("data").type(JsonFieldType.NULL).description(""))
+                                fieldWithPath("data").type(JsonFieldType.NULL).description("")
+                        )
                 ));
     }
 }

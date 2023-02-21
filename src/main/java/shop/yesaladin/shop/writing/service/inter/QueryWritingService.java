@@ -1,9 +1,8 @@
 package shop.yesaladin.shop.writing.service.inter;
 
+import java.util.List;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.writing.dto.WritingResponseDto;
-
-import java.util.List;
 
 /**
  * 집필 조회를 위한 Service Interface 입니다.

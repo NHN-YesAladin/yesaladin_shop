@@ -35,7 +35,6 @@ import shop.yesaladin.shop.payment.domain.model.PaymentCode;
 import shop.yesaladin.shop.payment.domain.repository.CommandPaymentRepository;
 import shop.yesaladin.shop.payment.domain.repository.QueryPaymentRepository;
 import shop.yesaladin.shop.payment.dto.PaymentCancelDto;
-import shop.yesaladin.shop.payment.dto.PaymentCommitCouponEventDto;
 import shop.yesaladin.shop.payment.dto.PaymentCompleteSimpleResponseDto;
 import shop.yesaladin.shop.payment.dto.PaymentEventDto;
 import shop.yesaladin.shop.payment.dto.PaymentRequestDto;

@@ -1,5 +1,9 @@
 package shop.yesaladin.shop.file.service.impl;
 
+import static org.mockito.Mockito.mock;
+
+import java.io.FileInputStream;
+import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -11,11 +15,6 @@ import shop.yesaladin.shop.config.ClockConfiguration;
 import shop.yesaladin.shop.config.ObjectStorageProperties;
 import shop.yesaladin.shop.file.service.inter.ObjectStorageService;
 import shop.yesaladin.shop.file.service.inter.StorageAuthService;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-
-import static org.mockito.Mockito.mock;
 
 class FileStorageServiceImplTest {
 
@@ -48,7 +47,10 @@ class FileStorageServiceImplTest {
         // TODO: 테스트 미완성
 
         // when
-        MultipartFile multipartFile = new MockMultipartFile("image", new FileInputStream("src/test/resources/img/yesaladinnotfound.png"));
+        MultipartFile multipartFile = new MockMultipartFile(
+                "image",
+                new FileInputStream("src/test/resources/img/yesaladinnotfound.png")
+        );
 
         // service.fileUpload("domain", "type", multipartFile);
     }

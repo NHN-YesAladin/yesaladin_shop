@@ -99,7 +99,8 @@ class CommandWishlistControllerTest {
         resultActions.andExpect(status().isCreated())
                 .andExpect(jsonPath("$.status", equalTo(201)))
                 .andExpect(jsonPath("$.success", equalTo(true)))
-                .andExpect(jsonPath("$.data.registeredDateTime",
+                .andExpect(jsonPath(
+                        "$.data.registeredDateTime",
                         containsString(localDate.toString()
                                 .substring(0, localDate.toString().length() - 3))
                 ))

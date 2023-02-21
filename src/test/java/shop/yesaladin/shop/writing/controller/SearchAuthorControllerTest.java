@@ -1,5 +1,13 @@
 package shop.yesaladin.shop.writing.controller;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -16,28 +24,19 @@ import shop.yesaladin.shop.writing.dto.SearchedAuthorResponseDto;
 import shop.yesaladin.shop.writing.dto.SearchedAuthorResponseDto.SearchedAuthorDto;
 import shop.yesaladin.shop.writing.service.inter.SearchAuthorService;
 
-import java.util.List;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @WebMvcTest(SearchAuthorController.class)
 class SearchAuthorControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-    @MockBean
-    private SearchAuthorService service;
     private static final String ZERO = "0";
     private static final String ONE = "1";
     private static final String MIN = "-1";
     private static final String NAME = "name";
     private static final String OFFSET = "offset";
     private static final String SIZE = "size";
+    @Autowired
+    private MockMvc mockMvc;
+    @MockBean
+    private SearchAuthorService service;
 
     @WithMockUser
     @Test

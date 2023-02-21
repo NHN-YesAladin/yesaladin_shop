@@ -1,10 +1,9 @@
 package shop.yesaladin.shop.writing.domain.repository;
 
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.writing.domain.model.Author;
-
-import java.util.Optional;
 
 /**
  * 저자 조회 관련 Repository Interface 입니다.

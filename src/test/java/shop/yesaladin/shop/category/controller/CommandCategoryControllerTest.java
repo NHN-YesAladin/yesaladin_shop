@@ -93,7 +93,8 @@ class CommandCategoryControllerTest {
                                 .optional()
                                 .description("에러 메세지"),
                         fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("카테고리 아이디"),
-                        fieldWithPath("data.name").type(JsonFieldType.STRING).description("카테고리 이름"),
+                        fieldWithPath("data.name").type(JsonFieldType.STRING)
+                                .description("카테고리 이름"),
                         fieldWithPath("data.isShown").type(JsonFieldType.BOOLEAN)
                                 .description("카테고리 노출 여부"),
                         fieldWithPath("data.order").type(JsonFieldType.NUMBER)
@@ -137,7 +138,8 @@ class CommandCategoryControllerTest {
                                 .optional()
                                 .description("에러 메세지"),
                         fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("카테고리 아이디"),
-                        fieldWithPath("data.name").type(JsonFieldType.STRING).description("카테고리 이름"),
+                        fieldWithPath("data.name").type(JsonFieldType.STRING)
+                                .description("카테고리 이름"),
                         fieldWithPath("data.isShown").type(JsonFieldType.BOOLEAN)
                                 .description("카테고리 노출 여부"),
                         fieldWithPath("data.order").type(JsonFieldType.NUMBER)

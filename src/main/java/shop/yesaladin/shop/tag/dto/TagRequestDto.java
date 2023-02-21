@@ -1,10 +1,9 @@
 package shop.yesaladin.shop.tag.dto;
 
+import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import javax.validation.constraints.NotBlank;
 
 /**
  * 태그 등록을 위한 Dto 입니다.

@@ -24,7 +24,6 @@ public class QueryProductCategoryServiceImpl implements QueryProductCategoryServ
 
     /**
      * {@inheritDoc}
-     *
      */
     @Transactional(readOnly = true)
     @Override

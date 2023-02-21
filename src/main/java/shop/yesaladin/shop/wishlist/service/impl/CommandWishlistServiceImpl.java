@@ -37,7 +37,10 @@ public class CommandWishlistServiceImpl implements CommandWishlistService {
     @Transactional
     public WishlistSaveResponseDto save(String loginId, Long productId) {
         Product product = queryProductRepository.findProductById(productId).orElseThrow(() -> {
-            throw new ClientException(ErrorCode.PRODUCT_NOT_FOUND, "Product is not found: " + productId);
+            throw new ClientException(
+                    ErrorCode.PRODUCT_NOT_FOUND,
+                    "Product is not found: " + productId
+            );
         });
         Member member = queryMemberService.findByLoginId(loginId);
         if (Boolean.TRUE.equals(queryWishlistService.isExists(
@@ -64,7 +67,10 @@ public class CommandWishlistServiceImpl implements CommandWishlistService {
                 member.getLoginId(),
                 productId
         ))) {
-            throw new ClientException(ErrorCode.BAD_REQUEST, "Wishlist is not exists: " + productId);
+            throw new ClientException(
+                    ErrorCode.BAD_REQUEST,
+                    "Wishlist is not exists: " + productId
+            );
         }
         commandWishlistRepository.deleteByMemberIdAndProductId(member.getId(), productId);
     }

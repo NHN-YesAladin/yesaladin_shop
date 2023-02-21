@@ -1,5 +1,7 @@
 package shop.yesaladin.shop.tag.persistence;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,11 +10,10 @@ import org.springframework.test.context.ActiveProfiles;
 import shop.yesaladin.shop.tag.domain.repository.SearchTagRepository;
 import shop.yesaladin.shop.tag.dto.SearchedTagResponseDto;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 @SpringBootTest
 @ActiveProfiles("local-test")
 class ElasticTagSearchRepositoryTest {
+
     @Autowired
     SearchTagRepository searchTagRepository;
 

@@ -36,11 +36,11 @@ import shop.yesaladin.shop.category.exception.AlreadyDeletedCategoryException;
 @Entity
 public class Category {
 
-    public static final  int DEPTH_PARENT = 0;
-    public static final  int DEPTH_CHILD = 1;
-    public static final  int DEPTH_DISABLE = -1;
-    public static final  long TERM_OF_PARENT_ID = 10000L;
-    public static final  long TERM_OF_CHILD_ID = 100L;
+    public static final int DEPTH_PARENT = 0;
+    public static final int DEPTH_CHILD = 1;
+    public static final int DEPTH_DISABLE = -1;
+    public static final long TERM_OF_PARENT_ID = 10000L;
+    public static final long TERM_OF_CHILD_ID = 100L;
 
     @Id
     private Long id;

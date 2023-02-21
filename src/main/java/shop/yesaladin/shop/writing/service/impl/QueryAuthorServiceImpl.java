@@ -1,5 +1,8 @@
 package shop.yesaladin.shop.writing.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,10 +16,6 @@ import shop.yesaladin.shop.writing.domain.repository.QueryAuthorRepository;
 import shop.yesaladin.shop.writing.dto.AuthorResponseDto;
 import shop.yesaladin.shop.writing.dto.AuthorsResponseDto;
 import shop.yesaladin.shop.writing.service.inter.QueryAuthorService;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 /**
  * 저자 조회를 위한 Service 구현체 입니다.
@@ -39,7 +38,8 @@ public class QueryAuthorServiceImpl implements QueryAuthorService {
         Author author = queryAuthorRepository.findById(id)
                 .orElseThrow(() -> new ClientException(
                         ErrorCode.WRITING_AUTHOR_NOT_FOUND,
-                        "Author is not found with id : " + id));
+                        "Author is not found with id : " + id
+                ));
 
         return new AuthorResponseDto(author.getId(), author.getName(), author.getMember());
     }
@@ -63,7 +63,10 @@ public class QueryAuthorServiceImpl implements QueryAuthorService {
             String loginId,
             Pageable pageable
     ) {
-        return getAuthorsResponseDtoList(queryAuthorRepository.findAllByLoginIdForManager(loginId, pageable));
+        return getAuthorsResponseDtoList(queryAuthorRepository.findAllByLoginIdForManager(
+                loginId,
+                pageable
+        ));
 
     }
 
@@ -76,7 +79,10 @@ public class QueryAuthorServiceImpl implements QueryAuthorService {
             String name,
             Pageable pageable
     ) {
-        return getAuthorsResponseDtoList(queryAuthorRepository.findAllByNameForManager(name, pageable));
+        return getAuthorsResponseDtoList(queryAuthorRepository.findAllByNameForManager(
+                name,
+                pageable
+        ));
     }
 
     private PaginatedResponseDto<AuthorsResponseDto> getAuthorsResponseDtoList(Page<Author> page) {
@@ -85,7 +91,8 @@ public class QueryAuthorServiceImpl implements QueryAuthorService {
             authors.add(AuthorsResponseDto.builder()
                     .id(author.getId())
                     .name(author.getName())
-                    .loginId(Objects.isNull(author.getMember()) ? null : author.getMember().getLoginId())
+                    .loginId(Objects.isNull(author.getMember()) ? null
+                            : author.getMember().getLoginId())
                     .build()
             );
         }

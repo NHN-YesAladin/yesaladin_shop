@@ -22,6 +22,7 @@ import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 @NoArgsConstructor
 @Document(indexName = "yesaladin_category", writeTypeHint = WriteTypeHint.FALSE)
 public class SearchedCategory {
+
     @Id
     @Field(name = "id")
     Long id;
@@ -45,6 +46,7 @@ public class SearchedCategory {
     @Getter
     @AllArgsConstructor
     public static class Parent {
+
         private Long id;
         private String name;
         private Boolean isShown;

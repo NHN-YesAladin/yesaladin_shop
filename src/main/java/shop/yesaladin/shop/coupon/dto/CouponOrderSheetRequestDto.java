@@ -18,6 +18,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class CouponOrderSheetRequestDto {
+
     private String isbn;
     private int quantity;
     private String couponCode;
