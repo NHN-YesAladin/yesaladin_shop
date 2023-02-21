@@ -9,6 +9,8 @@ import shop.yesaladin.shop.product.domain.model.SearchedProduct;
  * @author 김선홍
  * @since 1.0
  */
-public interface ElasticCommandProductRepository extends ElasticsearchRepository<SearchedProduct, Long> {
+public interface ElasticCommandProductRepository extends
+        ElasticsearchRepository<SearchedProduct, Long> {
+
     void deleteByIdEquals(Long id);
 }

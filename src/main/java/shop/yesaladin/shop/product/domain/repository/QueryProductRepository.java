@@ -1,14 +1,13 @@
 package shop.yesaladin.shop.product.domain.repository;
 
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.dto.ProductOnlyTitleDto;
 import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
 import shop.yesaladin.shop.product.dto.ProductWithCategoryResponseDto;
-
-import java.util.List;
-import java.util.Optional;
 
 /**
  * 상품 조회 관련 Repository Interface 입니다.
@@ -236,5 +235,9 @@ public interface QueryProductRepository {
      * @author 김선홍
      * @since 1, 0
      */
-    Page<Product> findRecentViewProductById(List<Long> totalIds, List<Long> pageIds, Pageable pageable);
+    Page<Product> findRecentViewProductById(
+            List<Long> totalIds,
+            List<Long> pageIds,
+            Pageable pageable
+    );
 }

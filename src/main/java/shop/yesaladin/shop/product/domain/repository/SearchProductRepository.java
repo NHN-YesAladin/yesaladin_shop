@@ -1,10 +1,9 @@
 package shop.yesaladin.shop.product.domain.repository;
 
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.product.dto.SearchedProductResponseDto;
-
-import java.util.List;
 
 /**
  * 상품 검색 레포지토리의 인터페이스

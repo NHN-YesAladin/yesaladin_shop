@@ -1,5 +1,8 @@
 package shop.yesaladin.shop.tag.persistence;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,10 +22,6 @@ import shop.yesaladin.shop.product.dummy.DummySubscribeProduct;
 import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
 import shop.yesaladin.shop.tag.domain.model.ProductTag;
 import shop.yesaladin.shop.tag.domain.model.Tag;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @ActiveProfiles("local-test")
@@ -51,7 +50,13 @@ class JpaProductTagRepositoryTest {
         entityManager.persist(ebookFile);
         entityManager.persist(totalDiscountRate);
 
-        product = DummyProduct.dummy(ISBN, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate);
+        product = DummyProduct.dummy(
+                ISBN,
+                subscribeProduct,
+                thumbnailFile,
+                ebookFile,
+                totalDiscountRate
+        );
 
         entityManager.persist(product);
     }
@@ -122,7 +127,8 @@ class JpaProductTagRepositoryTest {
         assertThat(foundProductTags.get(1).getTag().getName()).isEqualTo(name2);
         assertThat(foundProductTags.get(0).getProduct()).isEqualTo(product);
         assertThat(foundProductTags.get(0).getProduct().getIsbn()).isEqualTo(ISBN);
-        assertThat(foundProductTags.get(0).getProduct()).isEqualTo(foundProductTags.get(1).getProduct());
+        assertThat(foundProductTags.get(0).getProduct()).isEqualTo(foundProductTags.get(1)
+                .getProduct());
     }
 
     @Test

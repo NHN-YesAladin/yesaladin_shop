@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.product.dto;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -7,8 +8,6 @@ import lombok.NoArgsConstructor;
 import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
 import shop.yesaladin.shop.tag.dto.TagResponseDto;
 import shop.yesaladin.shop.writing.dto.AuthorsResponseDto;
-
-import java.util.List;
 
 /**
  * 전체 조회 응답을 하기 위한 Dto 입니다.

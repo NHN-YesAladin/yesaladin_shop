@@ -1,11 +1,16 @@
 package shop.yesaladin.shop.product.persistence;
 
 
+import static com.querydsl.core.group.GroupBy.groupBy;
+
 import com.querydsl.core.group.GroupBy;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -26,12 +31,6 @@ import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
 import shop.yesaladin.shop.product.dto.ProductWithCategoryResponseDto;
 import shop.yesaladin.shop.publish.domain.model.querydsl.QPublish;
 import shop.yesaladin.shop.writing.domain.model.querydsl.QWriting;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
-import static com.querydsl.core.group.GroupBy.groupBy;
 
 /**
  * 상품 조회를 위한 Repository QueryDsl 구현체 입니다.

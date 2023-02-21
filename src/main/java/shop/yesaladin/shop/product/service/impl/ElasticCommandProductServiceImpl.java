@@ -1,5 +1,8 @@
 package shop.yesaladin.shop.product.service.impl;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -7,7 +10,13 @@ import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 import shop.yesaladin.shop.category.service.inter.QueryProductCategoryService;
-import shop.yesaladin.shop.product.domain.model.*;
+import shop.yesaladin.shop.product.domain.model.Product;
+import shop.yesaladin.shop.product.domain.model.SearchedProduct;
+import shop.yesaladin.shop.product.domain.model.SearchedProductAuthor;
+import shop.yesaladin.shop.product.domain.model.SearchedProductCategory;
+import shop.yesaladin.shop.product.domain.model.SearchedProductPublisher;
+import shop.yesaladin.shop.product.domain.model.SearchedProductTag;
+import shop.yesaladin.shop.product.domain.model.SearchedProductTotalDiscountRate;
 import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
 import shop.yesaladin.shop.product.persistence.ElasticCommandProductRepository;
 import shop.yesaladin.shop.product.service.inter.ElasticCommandProductService;
@@ -17,10 +26,6 @@ import shop.yesaladin.shop.tag.dto.ProductTagResponseDto;
 import shop.yesaladin.shop.tag.service.inter.QueryProductTagService;
 import shop.yesaladin.shop.writing.dto.WritingResponseDto;
 import shop.yesaladin.shop.writing.service.inter.QueryWritingService;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 엘라스틱서치에 상품을 수정, 삭제하는 서비스 구현체
@@ -60,10 +65,11 @@ public class ElasticCommandProductServiceImpl implements ElasticCommandProductSe
     @Override
     @Transactional(readOnly = true)
     public Long changeIsSale(Long id) {
-        SearchedProduct searchedProduct = elasticCommandProductRepository.findById(id).orElseThrow(() -> new ClientException(
-                ErrorCode.PRODUCT_NOT_FOUND,
-                "Product not found with id : " + id
-        ));
+        SearchedProduct searchedProduct = elasticCommandProductRepository.findById(id)
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.PRODUCT_NOT_FOUND,
+                        "Product not found with id : " + id
+                ));
         searchedProduct.changeIsSale();
         elasticCommandProductRepository.save(searchedProduct);
         return id;
@@ -76,10 +82,11 @@ public class ElasticCommandProductServiceImpl implements ElasticCommandProductSe
     @Transactional(readOnly = true)
     public Long changeIsForcedOutOfStock(Long id) {
 
-        SearchedProduct searchedProduct = elasticCommandProductRepository.findById(id).orElseThrow(() -> new ClientException(
-                ErrorCode.PRODUCT_NOT_FOUND,
-                "Product not found with id : " + id
-        ));
+        SearchedProduct searchedProduct = elasticCommandProductRepository.findById(id)
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.PRODUCT_NOT_FOUND,
+                        "Product not found with id : " + id
+                ));
         searchedProduct.changeIsForcedOutOfStock();
         elasticCommandProductRepository.save(searchedProduct);
         return id;

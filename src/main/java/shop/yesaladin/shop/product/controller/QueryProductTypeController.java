@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.product.controller;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -10,8 +11,6 @@ import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.shop.product.dto.ProductTypeResponseDto;
 import shop.yesaladin.shop.product.service.inter.QueryProductTypeService;
 
-import java.util.List;
-
 /**
  * 상품 유형 조회를 위한 RestController 입니다.
  *
@@ -19,7 +18,8 @@ import java.util.List;
  * @since 1.0
  */
 @RequiredArgsConstructor
-@CrossOrigin(origins = {"http://localhost:9090", "https://www.yesaladin.shop", "https://test.yesaladin.shop"})
+@CrossOrigin(origins = {"http://localhost:9090", "https://www.yesaladin.shop",
+        "https://test.yesaladin.shop"})
 @RestController
 @RequestMapping("/v1/product-types")
 public class QueryProductTypeController {

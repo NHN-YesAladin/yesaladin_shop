@@ -1,14 +1,20 @@
 package shop.yesaladin.shop.tag.controller;
 
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.shop.tag.dto.TagRequestDto;
 import shop.yesaladin.shop.tag.dto.TagResponseDto;
 import shop.yesaladin.shop.tag.service.inter.CommandTagService;
-
-import javax.validation.Valid;
 
 /**
  * 태그 등록을 위한 RestController 입니다.
@@ -17,7 +23,8 @@ import javax.validation.Valid;
  * @since 1.0
  */
 @RequiredArgsConstructor
-@CrossOrigin(origins = {"http://localhost:9090", "https://www.yesaladin.shop", "https://test.yesaladin.shop"})
+@CrossOrigin(origins = {"http://localhost:9090", "https://www.yesaladin.shop",
+        "https://test.yesaladin.shop"})
 @RestController
 @RequestMapping("/v1/tags")
 public class CommandTagController {
@@ -51,7 +58,10 @@ public class CommandTagController {
      * @since 1.0
      */
     @PutMapping("/{id}")
-    public ResponseDto<TagResponseDto> modifyTag(@Valid @RequestBody TagRequestDto modifyDto, @PathVariable Long id) {
+    public ResponseDto<TagResponseDto> modifyTag(
+            @Valid @RequestBody TagRequestDto modifyDto,
+            @PathVariable Long id
+    ) {
         return ResponseDto.<TagResponseDto>builder()
                 .success(true)
                 .status(HttpStatus.OK)

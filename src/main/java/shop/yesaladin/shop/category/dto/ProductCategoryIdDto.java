@@ -28,7 +28,7 @@ public class ProductCategoryIdDto {
     /**
      * 상품, 카테고리 엔티티에서 id를 추출하여 ProductCategoryIdDto를 반환
      *
-     * @param product 상품 엔티티
+     * @param product  상품 엔티티
      * @param category 카테고리 엔티티
      * @return 상품 카테고리 엔티티의 id만 가지고있는 dto
      */

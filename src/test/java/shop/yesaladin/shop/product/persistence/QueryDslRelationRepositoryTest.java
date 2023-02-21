@@ -1,5 +1,11 @@
 package shop.yesaladin.shop.product.persistence;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,13 +24,6 @@ import shop.yesaladin.shop.product.dummy.DummyFile;
 import shop.yesaladin.shop.product.dummy.DummyProduct;
 import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 @Transactional
 @SpringBootTest
 @ActiveProfiles("local-test")
@@ -32,16 +31,12 @@ class QueryDslRelationRepositoryTest {
 
     private final String ISBN = "000000000000";
     private final String URL = "https://api-storage.cloud.toast.com/v1/AUTH_/container/domain/type";
-
+    private final List<Product> products = new ArrayList<>();
     @PersistenceContext
     private EntityManager entityManager;
-
     @Autowired
     private QueryRelationRepository repository;
-
     private TotalDiscountRate totalDiscountRate;
-
-    private final List<Product> products = new ArrayList<>();
 
     @BeforeEach
     void setUp() {
@@ -91,7 +86,10 @@ class QueryDslRelationRepositoryTest {
         }
 
         // when
-        Page<Relation> relations = repository.findAllForManager(products.get(0).getId(), PageRequest.of(0, 5));
+        Page<Relation> relations = repository.findAllForManager(
+                products.get(0).getId(),
+                PageRequest.of(0, 5)
+        );
 
         // then
         assertThat(relations).isNotNull();
@@ -109,7 +107,10 @@ class QueryDslRelationRepositoryTest {
         }
 
         // when
-        Page<Relation> relations = repository.findAll(products.get(0).getId(), PageRequest.of(0, 5));
+        Page<Relation> relations = repository.findAll(
+                products.get(0).getId(),
+                PageRequest.of(0, 5)
+        );
 
         // then
         assertThat(relations).isNotNull();

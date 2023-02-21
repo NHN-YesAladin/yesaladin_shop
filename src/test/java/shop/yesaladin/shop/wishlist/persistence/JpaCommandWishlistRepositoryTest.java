@@ -46,7 +46,7 @@ class JpaCommandWishlistRepositoryTest {
     @BeforeEach
     void setUp() {
         subscribeProduct = DummySubscribeProduct.dummy();
-        thumbnailFile = DummyFile.dummy( "file1/image.png");
+        thumbnailFile = DummyFile.dummy("file1/image.png");
         ebookFile = DummyFile.dummy("file2/ebook.pdf");
         totalDiscountRate = DummyTotalDiscountRate.dummy();
 

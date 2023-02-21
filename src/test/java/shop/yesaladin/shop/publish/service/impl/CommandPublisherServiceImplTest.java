@@ -1,5 +1,15 @@
 package shop.yesaladin.shop.publish.service.impl;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,13 +22,6 @@ import shop.yesaladin.shop.publish.domain.repository.QueryPublisherRepository;
 import shop.yesaladin.shop.publish.dto.PublisherRequestDto;
 import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
 import shop.yesaladin.shop.publish.service.inter.CommandPublisherService;
-
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 class CommandPublisherServiceImplTest {
 
@@ -82,7 +85,8 @@ class CommandPublisherServiceImplTest {
 
         Publisher modifiedPublisher = Publisher.builder().id(id).name(modifiedName).build();
 
-        Mockito.when(queryPublisherRepository.findById(id)).thenReturn(Optional.ofNullable(publisher));
+        Mockito.when(queryPublisherRepository.findById(id))
+                .thenReturn(Optional.ofNullable(publisher));
         Mockito.when(commandPublisherRepository.save(any())).thenReturn(modifiedPublisher);
 
         // when
@@ -106,7 +110,8 @@ class CommandPublisherServiceImplTest {
         PublisherRequestDto modifyDto = new PublisherRequestDto(modifiedName);
         Publisher publisher = Publisher.builder().id(id).name(NAME).build();
 
-        Mockito.when(queryPublisherRepository.findById(id)).thenReturn(Optional.ofNullable(publisher));
+        Mockito.when(queryPublisherRepository.findById(id))
+                .thenReturn(Optional.ofNullable(publisher));
         Mockito.when(queryPublisherRepository.existsByName(anyString())).thenReturn(true);
 
         // when

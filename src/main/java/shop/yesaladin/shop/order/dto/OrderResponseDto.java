@@ -1,11 +1,15 @@
 package shop.yesaladin.shop.order.dto;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import shop.yesaladin.shop.order.domain.model.*;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import shop.yesaladin.shop.order.domain.model.MemberOrder;
+import shop.yesaladin.shop.order.domain.model.NonMemberOrder;
+import shop.yesaladin.shop.order.domain.model.Order;
+import shop.yesaladin.shop.order.domain.model.OrderCode;
+import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
+import shop.yesaladin.shop.order.domain.model.Subscribe;
 
 /**
  * 주문 기본 정보에 관한 dto

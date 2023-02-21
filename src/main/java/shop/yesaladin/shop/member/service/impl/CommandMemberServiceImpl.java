@@ -20,10 +20,10 @@ import shop.yesaladin.shop.member.dto.MemberCreateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberCreateResponseDto;
 import shop.yesaladin.shop.member.dto.MemberEmailUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberNameUpdateRequestDto;
+import shop.yesaladin.shop.member.dto.MemberNicknameUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberPasswordUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberPhoneUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberUnblockResponseDto;
-import shop.yesaladin.shop.member.dto.MemberNicknameUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateResponseDto;
 import shop.yesaladin.shop.member.dto.MemberWithdrawResponseDto;
 import shop.yesaladin.shop.member.dto.OauthMemberCreateRequestDto;
@@ -61,7 +61,8 @@ public class CommandMemberServiceImpl implements CommandMemberService {
                 () -> new MemberRoleNotFoundException(roleId));
 
         checkMemberProfileExist(createDto.getLoginId(), createDto.getNickname(),
-                createDto.getEmail(), createDto.getPhone());
+                createDto.getEmail(), createDto.getPhone()
+        );
 
         Member member = createDto.toEntity();
         Member savedMember = commandMemberRepository.save(member);
@@ -91,7 +92,8 @@ public class CommandMemberServiceImpl implements CommandMemberService {
                 () -> new MemberRoleNotFoundException(roleId));
 
         checkMemberProfileExist(createDto.getLoginId(), createDto.getNickname(),
-                createDto.getEmail(), createDto.getPhone());
+                createDto.getEmail(), createDto.getPhone()
+        );
 
         Member member = createDto.toEntity();
         Member savedMember = commandMemberRepository.save(member);
@@ -112,15 +114,21 @@ public class CommandMemberServiceImpl implements CommandMemberService {
     /**
      * 중복 사항을 체크하는 메소드 입니다.
      *
-     * @param loginId 조회 대상
+     * @param loginId  조회 대상
      * @param nickname 조회 대상
-     * @param email 조회 대상
-     * @param phone 조회 대상
-     * @throws MemberProfileAlreadyExistException loginId, nickname, email, phone 이 기존에 있다면 발생하는 예외입니다.
+     * @param email    조회 대상
+     * @param phone    조회 대상
+     * @throws MemberProfileAlreadyExistException loginId, nickname, email, phone 이 기존에 있다면 발생하는
+     *                                            예외입니다.
      * @author 송학현
      * @since 1.0
      */
-    private void checkMemberProfileExist(String loginId, String nickname, String email, String phone) {
+    private void checkMemberProfileExist(
+            String loginId,
+            String nickname,
+            String email,
+            String phone
+    ) {
         if (queryMemberRepository.existsMemberByLoginId(loginId)) {
             throw new MemberProfileAlreadyExistException(loginId);
         }
@@ -151,7 +159,10 @@ public class CommandMemberServiceImpl implements CommandMemberService {
      */
     @Transactional
     @Override
-    public MemberUpdateResponseDto updateNickname(String loginId, MemberNicknameUpdateRequestDto request) {
+    public MemberUpdateResponseDto updateNickname(
+            String loginId,
+            MemberNicknameUpdateRequestDto request
+    ) {
         Member member = tryGetMemberById(loginId);
 
         checkNewNicknameIsUnique(request);

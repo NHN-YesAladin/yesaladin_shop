@@ -31,6 +31,7 @@ import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
 @ActiveProfiles("local-test")
 class QueryDslQueryMemberCouponRepositoryTest {
 
+    private static final String testCouponGroupCode = "test-coupon-group";
     @Autowired
     private EntityManager em;
     @Autowired
@@ -38,7 +39,6 @@ class QueryDslQueryMemberCouponRepositoryTest {
     @MockBean
     private Clock clock;
     private Member member;
-    private static final String testCouponGroupCode = "test-coupon-group";
 
     @BeforeEach
     void setup() {

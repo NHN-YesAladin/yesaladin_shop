@@ -3,7 +3,11 @@ package shop.yesaladin.shop.product.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
 import shop.yesaladin.shop.product.dto.RelationsResponseDto;
@@ -16,7 +20,8 @@ import shop.yesaladin.shop.product.service.inter.QueryRelationService;
  * @since 1.0
  */
 @RequiredArgsConstructor
-@CrossOrigin(origins = {"http://localhost:9090", "https://www.yesaladin.shop", "https://test.yesaladin.shop"})
+@CrossOrigin(origins = {"http://localhost:9090", "https://www.yesaladin.shop",
+        "https://test.yesaladin.shop"})
 @RestController
 @RequestMapping("/v1/products/{id}/relations")
 public class QueryRelationController {
