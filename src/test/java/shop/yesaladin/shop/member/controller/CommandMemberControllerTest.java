@@ -61,8 +61,12 @@ import shop.yesaladin.shop.member.dto.MemberBlockRequestDto;
 import shop.yesaladin.shop.member.dto.MemberBlockResponseDto;
 import shop.yesaladin.shop.member.dto.MemberCreateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberCreateResponseDto;
+import shop.yesaladin.shop.member.dto.MemberEmailUpdateRequestDto;
+import shop.yesaladin.shop.member.dto.MemberNameUpdateRequestDto;
+import shop.yesaladin.shop.member.dto.MemberNicknameUpdateRequestDto;
+import shop.yesaladin.shop.member.dto.MemberPasswordUpdateRequestDto;
+import shop.yesaladin.shop.member.dto.MemberPhoneUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberUnblockResponseDto;
-import shop.yesaladin.shop.member.dto.MemberUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateResponseDto;
 import shop.yesaladin.shop.member.dto.MemberWithdrawResponseDto;
 import shop.yesaladin.shop.member.dto.OauthMemberCreateRequestDto;
@@ -118,6 +122,8 @@ class CommandMemberControllerTest {
                 .nickname(NICKNAME)
                 .loginId(LOGIN_ID)
                 .memberGrade(MemberGrade.WHITE)
+                .phone(PHONE)
+                .email(EMAIL)
                 .build();
         Role role = Role.builder().id(roleId).name("ROLE_MEMBER").build();
         createResponse = MemberCreateResponseDto.fromEntity(member, role);
@@ -386,30 +392,30 @@ class CommandMemberControllerTest {
 
     @WithMockUser
     @Test
-    @DisplayName("회원 정보 수정 실패 - body 가 null 인 경우")
-    void updateMember_withNull() throws Exception {
+    @DisplayName("회원 닉네임 수정 실패 - body 가 null 인 경우")
+    void updateMemberNickname_withNull() throws Exception {
         //when
-        ResultActions perform = mockMvc.perform(put("/v1/members").with(csrf()));
+        ResultActions perform = mockMvc.perform(put("/v1/members/nickname").with(csrf()));
 
         //then
         perform.andDo(print()).andExpect(status().isBadRequest());
 
-        verify(commandMemberService, never()).update(any(), any());
+        verify(commandMemberService, never()).updateNickname(any(), any());
     }
 
     @WithMockUser
     @ParameterizedTest(name = "{1} : {0}")
     @MethodSource(value = "updateMemberRequestData")
-    @DisplayName("회원정보수정 실패 - @Valid 검증 조건에 맞지 않은 경우")
-    void updateMember_withInvalidInputData_forParametrizedTest(String nickname, String info)
+    @DisplayName("회원 닉네임 수정 실패 - @Valid 검증 조건에 맞지 않은 경우")
+    void updateMemberNickname_withInvalidInputData_forParametrizedTest(String nickname, String info)
             throws Exception {
         //given
-        MemberUpdateRequestDto request = ReflectionUtils.newInstance(
-                MemberUpdateRequestDto.class,
+        MemberNicknameUpdateRequestDto request = ReflectionUtils.newInstance(
+                MemberNicknameUpdateRequestDto.class,
                 nickname
         );
         //when
-        ResultActions result = mockMvc.perform(put("/v1/members").contentType(
+        ResultActions result = mockMvc.perform(put("/v1/members/nickname").contentType(
                         MediaType.APPLICATION_JSON)
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
@@ -418,29 +424,29 @@ class CommandMemberControllerTest {
         //then
         result.andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.success", equalTo(true)))
                 .andExpect(jsonPath("$.status", equalTo(HttpStatus.BAD_REQUEST.value())))
                 .andExpect(jsonPath(
                         "$.errorMessages[0]",
                         equalTo(ErrorCode.BAD_REQUEST.getDisplayName())
                 ));
 
-        verify(commandMemberService, never()).update(anyString(), any());
+        verify(commandMemberService, never()).updateNickname(anyString(), any());
     }
 
     @WithMockUser(username = "testloginid")
     @Test
-    @DisplayName("회원 정보 수정 실패-유효하지 않은 요청")
-    void updateMember_withInvalidInputData() throws Exception {
+    @DisplayName("회원 닉네임 수정 실패 - 유효하지 않은 요청")
+    void updateMemberNickname_withInvalidInputData() throws Exception {
         //given
         String nickname = "";
 
-        MemberUpdateRequestDto request = ReflectionUtils.newInstance(
-                MemberUpdateRequestDto.class,
+        MemberNicknameUpdateRequestDto request = ReflectionUtils.newInstance(
+                MemberNicknameUpdateRequestDto.class,
                 nickname
         );
         //when
-        ResultActions result = mockMvc.perform(put("/v1/members")
+        ResultActions result = mockMvc.perform(put("/v1/members/nickname")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
@@ -448,18 +454,18 @@ class CommandMemberControllerTest {
         //then
         result.andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.success", equalTo(true)))
                 .andExpect(jsonPath("$.status", equalTo(HttpStatus.BAD_REQUEST.value())))
                 .andExpect(jsonPath(
                         "$.errorMessages[0]",
                         equalTo(ErrorCode.BAD_REQUEST.getDisplayName())
                 ));
 
-        verify(commandMemberService, never()).update(anyString(), any());
+        verify(commandMemberService, never()).updateNickname(anyString(), any());
 
         //docs
         result.andDo(document(
-                "update-member-fail-validation-failed",
+                "update-member-nickname-fail-validation-failed",
                 getDocumentRequest(),
                 getDocumentResponse(),
                 requestFields(
@@ -480,23 +486,23 @@ class CommandMemberControllerTest {
 
     @WithMockUser(username = "testloginid")
     @Test
-    @DisplayName("회원정보수정 실패 - 존재하지 않는 회원인 경우")
-    void updateMember_withInvalidMemberId() throws Exception {
+    @DisplayName("회원 닉네임 수정 실패 - 존재하지 않는 회원인 경우")
+    void updateMemberNickname_withInvalidMemberId() throws Exception {
         //given
         String loginId = "testloginid";
 
-        MemberUpdateRequestDto request = ReflectionUtils.newInstance(
-                MemberUpdateRequestDto.class,
+        MemberNicknameUpdateRequestDto request = ReflectionUtils.newInstance(
+                MemberNicknameUpdateRequestDto.class,
                 NICKNAME
         );
-        ArgumentCaptor<MemberUpdateRequestDto> requestArgumentCaptor = ArgumentCaptor.forClass(
-                MemberUpdateRequestDto.class);
+        ArgumentCaptor<MemberNicknameUpdateRequestDto> requestArgumentCaptor = ArgumentCaptor.forClass(
+                MemberNicknameUpdateRequestDto.class);
 
-        Mockito.when(commandMemberService.update(any(), any()))
+        Mockito.when(commandMemberService.updateNickname(any(), any()))
                 .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, ""));
 
         //when
-        ResultActions result = mockMvc.perform(put("/v1/members")
+        ResultActions result = mockMvc.perform(put("/v1/members/nickname")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
@@ -504,19 +510,22 @@ class CommandMemberControllerTest {
         //then
         result.andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.success", equalTo(true)))
                 .andExpect(jsonPath("$.status", equalTo(HttpStatus.NOT_FOUND.value())))
                 .andExpect(jsonPath(
                         "$.errorMessages[0]",
                         equalTo(ErrorCode.MEMBER_NOT_FOUND.getDisplayName())
                 ));
 
-        verify(commandMemberService, times(1)).update(anyString(), requestArgumentCaptor.capture());
+        verify(commandMemberService, times(1)).updateNickname(
+                anyString(),
+                requestArgumentCaptor.capture()
+        );
         assertThat(requestArgumentCaptor.getValue().getNickname()).isEqualTo(request.getNickname());
 
         //docs
         result.andDo(document(
-                "update-member-fail-member-not-found",
+                "update-member-nickname-fail-member-not-found",
                 getDocumentRequest(),
                 getDocumentResponse(),
                 requestFields(
@@ -537,22 +546,22 @@ class CommandMemberControllerTest {
 
     @WithMockUser(username = "testloginid")
     @Test
-    @DisplayName("회원 정보 수정 성공")
-    void updateMember() throws Exception {
+    @DisplayName("회원 닉네임 수정 성공")
+    void updateMemberNickname() throws Exception {
         //given
         String loginId = member.getLoginId();
 
-        MemberUpdateRequestDto request = ReflectionUtils.newInstance(
-                MemberUpdateRequestDto.class,
+        MemberNicknameUpdateRequestDto request = ReflectionUtils.newInstance(
+                MemberNicknameUpdateRequestDto.class,
                 NICKNAME
         );
-        ArgumentCaptor<MemberUpdateRequestDto> requestArgumentCaptor = ArgumentCaptor.forClass(
-                MemberUpdateRequestDto.class);
+        ArgumentCaptor<MemberNicknameUpdateRequestDto> requestArgumentCaptor = ArgumentCaptor.forClass(
+                MemberNicknameUpdateRequestDto.class);
 
-        Mockito.when(commandMemberService.update(any(), any())).thenReturn(updateResponse);
+        Mockito.when(commandMemberService.updateNickname(any(), any())).thenReturn(updateResponse);
 
         //when
-        ResultActions perform = mockMvc.perform(put("/v1/members")
+        ResultActions perform = mockMvc.perform(put("/v1/members/nickname")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
@@ -565,17 +574,22 @@ class CommandMemberControllerTest {
                 .andExpect(jsonPath("$.data.name", equalTo(member.getName())))
                 .andExpect(jsonPath("$.data.nickname", equalTo(member.getNickname())))
                 .andExpect(jsonPath("$.data.loginId", equalTo(member.getLoginId())))
+                .andExpect(jsonPath("$.data.phone", equalTo(member.getPhone())))
+                .andExpect(jsonPath("$.data.email", equalTo(member.getEmail())))
                 .andExpect(jsonPath(
                         "$.data.memberGrade",
                         equalTo(member.getMemberGrade().toString())
                 ));
 
-        verify(commandMemberService, times(1)).update(anyString(), requestArgumentCaptor.capture());
+        verify(commandMemberService, times(1)).updateNickname(
+                anyString(),
+                requestArgumentCaptor.capture()
+        );
         assertThat(requestArgumentCaptor.getValue().getNickname()).isEqualTo(request.getNickname());
 
         //docs
         perform.andDo(document(
-                "update-member-success",
+                "update-member-nickname-success",
                 getDocumentRequest(),
                 getDocumentResponse(),
                 requestFields(
@@ -595,6 +609,888 @@ class CommandMemberControllerTest {
                                 .description("회원의 아이디"),
                         fieldWithPath("data.memberGrade").type(JsonFieldType.STRING)
                                 .description("회원의 등급"),
+                        fieldWithPath("data.phone").type(JsonFieldType.STRING)
+                                .description("회원의 전화번호"),
+                        fieldWithPath("data.email").type(JsonFieldType.STRING)
+                                .description("회원의 이메일"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
+                                .optional()
+                )
+        ));
+    }
+
+    @WithMockUser
+    @Test
+    @DisplayName("회원 이름 수정 실패 - body 가 null 인 경우")
+    void updateMemberName_withNull() throws Exception {
+        //when
+        ResultActions perform = mockMvc.perform(put("/v1/members/name").with(csrf()));
+
+        //then
+        perform.andDo(print()).andExpect(status().isBadRequest());
+
+        verify(commandMemberService, never()).updateNickname(any(), any());
+    }
+
+    @WithMockUser
+    @ParameterizedTest(name = "{1} : {0}")
+    @MethodSource(value = "updateMemberRequestData")
+    @DisplayName("회원 이름 수정 실패 - @Valid 검증 조건에 맞지 않은 경우")
+    void updateMemberName_withInvalidInputData_forParametrizedTest(String name, String info)
+            throws Exception {
+        //given
+        MemberNameUpdateRequestDto request = ReflectionUtils.newInstance(
+                MemberNameUpdateRequestDto.class,
+                name
+        );
+        //when
+        ResultActions result = mockMvc.perform(put("/v1/members/name").contentType(
+                        MediaType.APPLICATION_JSON)
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
+
+        //then
+        result.andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.BAD_REQUEST.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.BAD_REQUEST.getDisplayName())
+                ));
+
+        verify(commandMemberService, never()).updateName(anyString(), any());
+    }
+
+    @WithMockUser(username = "testloginid")
+    @Test
+    @DisplayName("회원 이름 수정 실패 - 유효하지 않은 요청")
+    void updateMemberName_withInvalidInputData() throws Exception {
+        //given
+        String name = "";
+
+        MemberNameUpdateRequestDto request = ReflectionUtils.newInstance(
+                MemberNameUpdateRequestDto.class,
+                name
+        );
+        //when
+        ResultActions result = mockMvc.perform(put("/v1/members/name")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
+
+        //then
+        result.andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.BAD_REQUEST.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.BAD_REQUEST.getDisplayName())
+                ));
+
+        verify(commandMemberService, never()).updateNickname(anyString(), any());
+
+        //docs
+        result.andDo(document(
+                "update-member-name-fail-validation-failed",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                requestFields(
+                        fieldWithPath("name").type(JsonFieldType.STRING).description("변경할 이름")
+                ),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data").type(JsonFieldType.NUMBER)
+                                .description("null")
+                                .optional(),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
+                )
+        ));
+    }
+
+    @WithMockUser(username = "testloginid")
+    @Test
+    @DisplayName("회원 이름 수정 실패 - 존재하지 않는 회원인 경우")
+    void updateMemberName_withInvalidMemberId() throws Exception {
+        //given
+        String loginId = "testloginid";
+
+        MemberNameUpdateRequestDto request = ReflectionUtils.newInstance(
+                MemberNameUpdateRequestDto.class,
+                NAME
+        );
+        ArgumentCaptor<MemberNameUpdateRequestDto> requestArgumentCaptor = ArgumentCaptor.forClass(
+                MemberNameUpdateRequestDto.class);
+
+        Mockito.when(commandMemberService.updateName(any(), any()))
+                .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, ""));
+
+        //when
+        ResultActions result = mockMvc.perform(put("/v1/members/name")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
+
+        //then
+        result.andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.NOT_FOUND.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.MEMBER_NOT_FOUND.getDisplayName())
+                ));
+
+        verify(commandMemberService, times(1)).updateName(
+                anyString(),
+                requestArgumentCaptor.capture()
+        );
+        assertThat(requestArgumentCaptor.getValue().getName()).isEqualTo(request.getName());
+
+        //docs
+        result.andDo(document(
+                "update-member-name-fail-member-not-found",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                requestFields(
+                        fieldWithPath("name").type(JsonFieldType.STRING).description("변경할 이름")
+                ),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data").type(JsonFieldType.NUMBER)
+                                .description("null")
+                                .optional(),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
+                )
+        ));
+    }
+
+    @WithMockUser(username = "testloginid")
+    @Test
+    @DisplayName("회원 이름 수정 성공")
+    void updateMemberName() throws Exception {
+        //given
+        String loginId = member.getLoginId();
+
+        MemberNameUpdateRequestDto request = ReflectionUtils.newInstance(
+                MemberNameUpdateRequestDto.class,
+                NAME
+        );
+        ArgumentCaptor<MemberNameUpdateRequestDto> requestArgumentCaptor = ArgumentCaptor.forClass(
+                MemberNameUpdateRequestDto.class);
+
+        Mockito.when(commandMemberService.updateName(any(), any())).thenReturn(updateResponse);
+
+        //when
+        ResultActions perform = mockMvc.perform(put("/v1/members/name")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
+
+        //then
+        perform.andDo(print()).andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())))
+                .andExpect(jsonPath("$.data.name", equalTo(member.getName())))
+                .andExpect(jsonPath("$.data.nickname", equalTo(member.getNickname())))
+                .andExpect(jsonPath("$.data.loginId", equalTo(member.getLoginId())))
+                .andExpect(jsonPath("$.data.phone", equalTo(member.getPhone())))
+                .andExpect(jsonPath("$.data.email", equalTo(member.getEmail())))
+                .andExpect(jsonPath(
+                        "$.data.memberGrade",
+                        equalTo(member.getMemberGrade().toString())
+                ));
+
+        verify(commandMemberService, times(1)).updateName(
+                anyString(),
+                requestArgumentCaptor.capture()
+        );
+        assertThat(requestArgumentCaptor.getValue().getName()).isEqualTo(request.getName());
+
+        //docs
+        perform.andDo(document(
+                "update-member-name-success",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                requestFields(
+                        fieldWithPath("name").type(JsonFieldType.STRING)
+                                .description("회원의 수정할 이름")
+                ),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("HTTP 상태 코드"),
+                        fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("회원의 Pk"),
+                        fieldWithPath("data.name").type(JsonFieldType.STRING).description("회원의 이름"),
+                        fieldWithPath("data.nickname").type(JsonFieldType.STRING)
+                                .description("회원의 닉네임"),
+                        fieldWithPath("data.loginId").type(JsonFieldType.STRING)
+                                .description("회원의 아이디"),
+                        fieldWithPath("data.memberGrade").type(JsonFieldType.STRING)
+                                .description("회원의 등급"),
+                        fieldWithPath("data.phone").type(JsonFieldType.STRING)
+                                .description("회원의 전화번호"),
+                        fieldWithPath("data.email").type(JsonFieldType.STRING)
+                                .description("회원의 이메일"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
+                                .optional()
+                )
+        ));
+    }
+
+    @WithMockUser
+    @Test
+    @DisplayName("회원 이메일 수정 실패 - body 가 null 인 경우")
+    void updateMemberEmail_withNull() throws Exception {
+        //when
+        ResultActions perform = mockMvc.perform(put("/v1/members/email").with(csrf()));
+
+        //then
+        perform.andDo(print()).andExpect(status().isBadRequest());
+
+        verify(commandMemberService, never()).updateEmail(any(), any());
+    }
+
+    @WithMockUser
+    @ParameterizedTest(name = "{1} : {0}")
+    @MethodSource(value = "updateMemberRequestData")
+    @DisplayName("회원 이메일 수정 실패 - @Valid 검증 조건에 맞지 않은 경우")
+    void updateMemberEmail_withInvalidInputData_forParametrizedTest(String email, String info)
+            throws Exception {
+        //given
+        MemberEmailUpdateRequestDto request = ReflectionUtils.newInstance(
+                MemberEmailUpdateRequestDto.class,
+                email
+        );
+        //when
+        ResultActions result = mockMvc.perform(put("/v1/members/email").contentType(
+                        MediaType.APPLICATION_JSON)
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
+
+        //then
+        result.andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.BAD_REQUEST.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.BAD_REQUEST.getDisplayName())
+                ));
+
+        verify(commandMemberService, never()).updateEmail(anyString(), any());
+    }
+
+    @WithMockUser(username = "testloginid")
+    @Test
+    @DisplayName("회원 이메일 수정 실패 - 유효하지 않은 요청")
+    void updateMemberEmail_withInvalidInputData() throws Exception {
+        //given
+        String email = "";
+
+        MemberEmailUpdateRequestDto request = ReflectionUtils.newInstance(
+                MemberEmailUpdateRequestDto.class,
+                email
+        );
+        //when
+        ResultActions result = mockMvc.perform(put("/v1/members/email")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
+
+        //then
+        result.andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.BAD_REQUEST.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.BAD_REQUEST.getDisplayName())
+                ));
+
+        verify(commandMemberService, never()).updateEmail(anyString(), any());
+
+        //docs
+        result.andDo(document(
+                "update-member-email-fail-validation-failed",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                requestFields(
+                        fieldWithPath("email").type(JsonFieldType.STRING).description("변경할 이메일")
+                ),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data").type(JsonFieldType.NUMBER)
+                                .description("null")
+                                .optional(),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
+                )
+        ));
+    }
+
+    @WithMockUser(username = "testloginid")
+    @Test
+    @DisplayName("회원 이메일 수정 실패 - 존재하지 않는 회원인 경우")
+    void updateMemberEmail_withInvalidMemberId() throws Exception {
+        //given
+        String loginId = "testloginid";
+
+        MemberEmailUpdateRequestDto request = ReflectionUtils.newInstance(
+                MemberEmailUpdateRequestDto.class,
+                EMAIL
+        );
+        ArgumentCaptor<MemberEmailUpdateRequestDto> requestArgumentCaptor = ArgumentCaptor.forClass(
+                MemberEmailUpdateRequestDto.class);
+
+        Mockito.when(commandMemberService.updateEmail(any(), any()))
+                .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, ""));
+
+        //when
+        ResultActions result = mockMvc.perform(put("/v1/members/email")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
+
+        //then
+        result.andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.NOT_FOUND.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.MEMBER_NOT_FOUND.getDisplayName())
+                ));
+
+        verify(commandMemberService, times(1)).updateEmail(
+                anyString(),
+                requestArgumentCaptor.capture()
+        );
+        assertThat(requestArgumentCaptor.getValue().getEmail()).isEqualTo(request.getEmail());
+
+        //docs
+        result.andDo(document(
+                "update-member-email-fail-member-not-found",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                requestFields(
+                        fieldWithPath("email").type(JsonFieldType.STRING).description("변경할 이메일")
+                ),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data").type(JsonFieldType.NUMBER)
+                                .description("null")
+                                .optional(),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
+                )
+        ));
+    }
+
+    @WithMockUser(username = "testloginid")
+    @Test
+    @DisplayName("회원 이메일 수정 성공")
+    void updateMemberEmail() throws Exception {
+        //given
+        String loginId = member.getLoginId();
+
+        MemberEmailUpdateRequestDto request = ReflectionUtils.newInstance(
+                MemberEmailUpdateRequestDto.class,
+                EMAIL
+        );
+        ArgumentCaptor<MemberEmailUpdateRequestDto> requestArgumentCaptor = ArgumentCaptor.forClass(
+                MemberEmailUpdateRequestDto.class);
+
+        Mockito.when(commandMemberService.updateEmail(any(), any())).thenReturn(updateResponse);
+
+        //when
+        ResultActions perform = mockMvc.perform(put("/v1/members/email")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
+
+        //then
+        perform.andDo(print()).andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())))
+                .andExpect(jsonPath("$.data.name", equalTo(member.getName())))
+                .andExpect(jsonPath("$.data.nickname", equalTo(member.getNickname())))
+                .andExpect(jsonPath("$.data.loginId", equalTo(member.getLoginId())))
+                .andExpect(jsonPath("$.data.phone", equalTo(member.getPhone())))
+                .andExpect(jsonPath("$.data.email", equalTo(member.getEmail())))
+                .andExpect(jsonPath(
+                        "$.data.memberGrade",
+                        equalTo(member.getMemberGrade().toString())
+                ));
+
+        verify(commandMemberService, times(1)).updateEmail(
+                anyString(),
+                requestArgumentCaptor.capture()
+        );
+        assertThat(requestArgumentCaptor.getValue().getEmail()).isEqualTo(request.getEmail());
+
+        //docs
+        perform.andDo(document(
+                "update-member-email-success",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                requestFields(
+                        fieldWithPath("email").type(JsonFieldType.STRING)
+                                .description("회원의 수정할 이메일")
+                ),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("HTTP 상태 코드"),
+                        fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("회원의 Pk"),
+                        fieldWithPath("data.name").type(JsonFieldType.STRING).description("회원의 이름"),
+                        fieldWithPath("data.nickname").type(JsonFieldType.STRING)
+                                .description("회원의 닉네임"),
+                        fieldWithPath("data.loginId").type(JsonFieldType.STRING)
+                                .description("회원의 아이디"),
+                        fieldWithPath("data.memberGrade").type(JsonFieldType.STRING)
+                                .description("회원의 등급"),
+                        fieldWithPath("data.phone").type(JsonFieldType.STRING)
+                                .description("회원의 전화번호"),
+                        fieldWithPath("data.email").type(JsonFieldType.STRING)
+                                .description("회원의 이메일"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
+                                .optional()
+                )
+        ));
+    }
+
+    @WithMockUser
+    @Test
+    @DisplayName("회원 전화번호 수정 실패 - body 가 null 인 경우")
+    void updateMemberPhone_withNull() throws Exception {
+        //when
+        ResultActions perform = mockMvc.perform(put("/v1/members/phone").with(csrf()));
+
+        //then
+        perform.andDo(print()).andExpect(status().isBadRequest());
+
+        verify(commandMemberService, never()).updatePhone(any(), any());
+    }
+
+    @WithMockUser
+    @ParameterizedTest(name = "{1} : {0}")
+    @MethodSource(value = "updateMemberRequestData")
+    @DisplayName("회원 전화번호 수정 실패 - @Valid 검증 조건에 맞지 않은 경우")
+    void updateMemberPhone_withInvalidInputData_forParametrizedTest(String phone, String info)
+            throws Exception {
+        //given
+        MemberPhoneUpdateRequestDto request = ReflectionUtils.newInstance(
+                MemberPhoneUpdateRequestDto.class,
+                phone
+        );
+        //when
+        ResultActions result = mockMvc.perform(put("/v1/members/phone").contentType(
+                        MediaType.APPLICATION_JSON)
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
+
+        //then
+        result.andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.BAD_REQUEST.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.BAD_REQUEST.getDisplayName())
+                ));
+
+        verify(commandMemberService, never()).updatePhone(anyString(), any());
+    }
+
+    @WithMockUser(username = "testloginid")
+    @Test
+    @DisplayName("회원 전화번호 수정 실패 - 유효하지 않은 요청")
+    void updateMemberPhone_withInvalidInputData() throws Exception {
+        //given
+        String phone = "";
+
+        MemberPhoneUpdateRequestDto request = ReflectionUtils.newInstance(
+                MemberPhoneUpdateRequestDto.class,
+                phone
+        );
+        //when
+        ResultActions result = mockMvc.perform(put("/v1/members/phone")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
+
+        //then
+        result.andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.BAD_REQUEST.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.BAD_REQUEST.getDisplayName())
+                ));
+
+        verify(commandMemberService, never()).updatePhone(anyString(), any());
+
+        //docs
+        result.andDo(document(
+                "update-member-phone-fail-validation-failed",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                requestFields(
+                        fieldWithPath("phone").type(JsonFieldType.STRING).description("변경할 전화번호")
+                ),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data").type(JsonFieldType.NUMBER)
+                                .description("null")
+                                .optional(),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
+                )
+        ));
+    }
+
+    @WithMockUser(username = "testloginid")
+    @Test
+    @DisplayName("회원 전화번호 수정 실패 - 존재하지 않는 회원인 경우")
+    void updateMemberPhone_withInvalidMemberId() throws Exception {
+        //given
+        String loginId = "testloginid";
+
+        MemberPhoneUpdateRequestDto request = ReflectionUtils.newInstance(
+                MemberPhoneUpdateRequestDto.class,
+                PHONE
+        );
+        ArgumentCaptor<MemberPhoneUpdateRequestDto> requestArgumentCaptor = ArgumentCaptor.forClass(
+                MemberPhoneUpdateRequestDto.class);
+
+        Mockito.when(commandMemberService.updatePhone(any(), any()))
+                .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, ""));
+
+        //when
+        ResultActions result = mockMvc.perform(put("/v1/members/phone")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
+
+        //then
+        result.andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.NOT_FOUND.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.MEMBER_NOT_FOUND.getDisplayName())
+                ));
+
+        verify(commandMemberService, times(1)).updatePhone(
+                anyString(),
+                requestArgumentCaptor.capture()
+        );
+        assertThat(requestArgumentCaptor.getValue().getPhone()).isEqualTo(request.getPhone());
+
+        //docs
+        result.andDo(document(
+                "update-member-phone-fail-member-not-found",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                requestFields(
+                        fieldWithPath("phone").type(JsonFieldType.STRING).description("변경할 전화번호")
+                ),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data").type(JsonFieldType.NUMBER)
+                                .description("null")
+                                .optional(),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
+                )
+        ));
+    }
+
+    @WithMockUser(username = "testloginid")
+    @Test
+    @DisplayName("회원 전화번호 수정 성공")
+    void updateMemberPhone() throws Exception {
+        //given
+        String loginId = member.getLoginId();
+
+        MemberPhoneUpdateRequestDto request = ReflectionUtils.newInstance(
+                MemberPhoneUpdateRequestDto.class,
+                PHONE
+        );
+        ArgumentCaptor<MemberPhoneUpdateRequestDto> requestArgumentCaptor = ArgumentCaptor.forClass(
+                MemberPhoneUpdateRequestDto.class);
+
+        Mockito.when(commandMemberService.updatePhone(any(), any())).thenReturn(updateResponse);
+
+        //when
+        ResultActions perform = mockMvc.perform(put("/v1/members/phone")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
+
+        //then
+        perform.andDo(print()).andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())))
+                .andExpect(jsonPath("$.data.name", equalTo(member.getName())))
+                .andExpect(jsonPath("$.data.nickname", equalTo(member.getNickname())))
+                .andExpect(jsonPath("$.data.loginId", equalTo(member.getLoginId())))
+                .andExpect(jsonPath("$.data.phone", equalTo(member.getPhone())))
+                .andExpect(jsonPath("$.data.email", equalTo(member.getEmail())))
+                .andExpect(jsonPath(
+                        "$.data.memberGrade",
+                        equalTo(member.getMemberGrade().toString())
+                ));
+
+        verify(commandMemberService, times(1)).updatePhone(
+                anyString(),
+                requestArgumentCaptor.capture()
+        );
+        assertThat(requestArgumentCaptor.getValue().getPhone()).isEqualTo(request.getPhone());
+
+        //docs
+        perform.andDo(document(
+                "update-member-phone-success",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                requestFields(
+                        fieldWithPath("phone").type(JsonFieldType.STRING)
+                                .description("회원의 수정할 전화번호")
+                ),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("HTTP 상태 코드"),
+                        fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("회원의 Pk"),
+                        fieldWithPath("data.name").type(JsonFieldType.STRING).description("회원의 이름"),
+                        fieldWithPath("data.nickname").type(JsonFieldType.STRING)
+                                .description("회원의 닉네임"),
+                        fieldWithPath("data.loginId").type(JsonFieldType.STRING)
+                                .description("회원의 아이디"),
+                        fieldWithPath("data.memberGrade").type(JsonFieldType.STRING)
+                                .description("회원의 등급"),
+                        fieldWithPath("data.phone").type(JsonFieldType.STRING)
+                                .description("회원의 전화번호"),
+                        fieldWithPath("data.email").type(JsonFieldType.STRING)
+                                .description("회원의 이메일"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
+                                .optional()
+                )
+        ));
+    }
+
+    @WithMockUser(username = "testloginid")
+    @Test
+    @DisplayName("회원 패스워드 수정 실패 - 유효하지 않은 요청")
+    void updateMemberPassword_withInvalidInputData() throws Exception {
+        //given
+        String password = "";
+
+        MemberPasswordUpdateRequestDto request = ReflectionUtils.newInstance(
+                MemberPasswordUpdateRequestDto.class,
+                password
+        );
+        //when
+        ResultActions result = mockMvc.perform(put("/v1/members/password")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
+
+        //then
+        result.andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.BAD_REQUEST.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.BAD_REQUEST.getDisplayName())
+                ));
+
+        verify(commandMemberService, never()).updatePassword(anyString(), any());
+
+        //docs
+        result.andDo(document(
+                "update-member-password-fail-validation-failed",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                requestFields(
+                        fieldWithPath("password").type(JsonFieldType.STRING).description("변경할 패스워드")
+                ),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data").type(JsonFieldType.NUMBER)
+                                .description("null")
+                                .optional(),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
+                )
+        ));
+    }
+
+    @WithMockUser(username = "testloginid")
+    @Test
+    @DisplayName("회원 패스워드 수정 실패 - 존재하지 않는 회원인 경우")
+    void updateMemberPassword_withInvalidMemberId() throws Exception {
+        //given
+        String loginId = "testloginid";
+        String password = "test";
+
+        MemberPasswordUpdateRequestDto request = ReflectionUtils.newInstance(
+                MemberPasswordUpdateRequestDto.class,
+                password
+        );
+        ArgumentCaptor<MemberPasswordUpdateRequestDto> requestArgumentCaptor = ArgumentCaptor.forClass(
+                MemberPasswordUpdateRequestDto.class);
+
+        Mockito.when(commandMemberService.updatePassword(any(), any()))
+                .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, ""));
+
+        //when
+        ResultActions result = mockMvc.perform(put("/v1/members/password")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
+
+        //then
+        result.andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.NOT_FOUND.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.MEMBER_NOT_FOUND.getDisplayName())
+                ));
+
+        verify(commandMemberService, times(1)).updatePassword(
+                anyString(),
+                requestArgumentCaptor.capture()
+        );
+        assertThat(requestArgumentCaptor.getValue().getPassword()).isEqualTo(request.getPassword());
+
+        //docs
+        result.andDo(document(
+                "update-member-password-fail-member-not-found",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                requestFields(
+                        fieldWithPath("password").type(JsonFieldType.STRING).description("변경할 패스워드")
+                ),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data").type(JsonFieldType.NUMBER)
+                                .description("null")
+                                .optional(),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
+                )
+        ));
+    }
+
+    @WithMockUser(username = "testloginid")
+    @Test
+    @DisplayName("회원 패스워드 수정 성공")
+    void updateMemberPassword() throws Exception {
+        //given
+        String loginId = member.getLoginId();
+        String password = "test";
+
+        MemberPasswordUpdateRequestDto request = ReflectionUtils.newInstance(
+                MemberPasswordUpdateRequestDto.class,
+                password
+        );
+        ArgumentCaptor<MemberPasswordUpdateRequestDto> requestArgumentCaptor = ArgumentCaptor.forClass(
+                MemberPasswordUpdateRequestDto.class);
+
+        Mockito.when(commandMemberService.updatePassword(any(), any())).thenReturn(updateResponse);
+
+        //when
+        ResultActions perform = mockMvc.perform(put("/v1/members/password")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
+
+        //then
+        perform.andDo(print()).andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())))
+                .andExpect(jsonPath("$.data.name", equalTo(member.getName())))
+                .andExpect(jsonPath("$.data.nickname", equalTo(member.getNickname())))
+                .andExpect(jsonPath("$.data.loginId", equalTo(member.getLoginId())))
+                .andExpect(jsonPath("$.data.phone", equalTo(member.getPhone())))
+                .andExpect(jsonPath("$.data.email", equalTo(member.getEmail())))
+                .andExpect(jsonPath(
+                        "$.data.memberGrade",
+                        equalTo(member.getMemberGrade().toString())
+                ));
+
+        verify(commandMemberService, times(1)).updatePassword(
+                anyString(),
+                requestArgumentCaptor.capture()
+        );
+        assertThat(requestArgumentCaptor.getValue().getPassword()).isEqualTo(request.getPassword());
+
+        //docs
+        perform.andDo(document(
+                "update-member-password-success",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                requestFields(
+                        fieldWithPath("password").type(JsonFieldType.STRING)
+                                .description("회원의 수정할 패스워드")
+                ),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("HTTP 상태 코드"),
+                        fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("회원의 Pk"),
+                        fieldWithPath("data.name").type(JsonFieldType.STRING).description("회원의 이름"),
+                        fieldWithPath("data.nickname").type(JsonFieldType.STRING)
+                                .description("회원의 닉네임"),
+                        fieldWithPath("data.loginId").type(JsonFieldType.STRING)
+                                .description("회원의 아이디"),
+                        fieldWithPath("data.memberGrade").type(JsonFieldType.STRING)
+                                .description("회원의 등급"),
+                        fieldWithPath("data.phone").type(JsonFieldType.STRING)
+                                .description("회원의 전화번호"),
+                        fieldWithPath("data.email").type(JsonFieldType.STRING)
+                                .description("회원의 이메일"),
                         fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
                                 .description("에러 메세지")
                                 .optional()
@@ -622,7 +1518,7 @@ class CommandMemberControllerTest {
         //then
         result.andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.success", equalTo(true)))
                 .andExpect(jsonPath("$.status", equalTo(HttpStatus.BAD_REQUEST.value())))
                 .andExpect(jsonPath(
                         "$.errorMessages[0]",
@@ -676,7 +1572,7 @@ class CommandMemberControllerTest {
         //then
         result.andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.success", equalTo(true)))
                 .andExpect(jsonPath("$.status", equalTo(HttpStatus.NOT_FOUND.value())))
                 .andExpect(jsonPath(
                         "$.errorMessages[0]",
@@ -734,7 +1630,7 @@ class CommandMemberControllerTest {
         //then
         result.andExpect(status().isConflict())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.success", equalTo(true)))
                 .andExpect(jsonPath("$.status", equalTo(HttpStatus.CONFLICT.value())))
                 .andExpect(jsonPath(
                         "$.errorMessages[0]",
@@ -866,7 +1762,7 @@ class CommandMemberControllerTest {
         //then
         result.andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.success", equalTo(true)))
                 .andExpect(jsonPath("$.status", equalTo(HttpStatus.NOT_FOUND.value())))
                 .andExpect(jsonPath(
                         "$.errorMessages[0]",
@@ -913,7 +1809,7 @@ class CommandMemberControllerTest {
         //then
         result.andExpect(status().isConflict())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.success", equalTo(true)))
                 .andExpect(jsonPath("$.status", equalTo(HttpStatus.CONFLICT.value())))
                 .andExpect(jsonPath(
                         "$.errorMessages[0]",

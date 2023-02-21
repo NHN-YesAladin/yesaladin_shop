@@ -1,9 +1,9 @@
 package shop.yesaladin.shop.docs;
 
 
-import static org.springframework.restdocs.snippet.Attributes.key;
-
 import org.springframework.restdocs.snippet.Attributes;
+
+import static org.springframework.restdocs.snippet.Attributes.key;
 
 public interface DocumentFormatGenerator {
 

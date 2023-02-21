@@ -90,7 +90,8 @@ public class CommandOrderServiceImpl implements CommandOrderService {
     @Transactional
     public OrderCreateResponseDto createMemberOrders(
             OrderMemberCreateRequestDto request,
-            String loginId
+            String loginId,
+            String type
     ) {
         if (request.getOrderCoupons() != null) {
             queryMemberCouponService.getValidMemberCouponSummaryListByCouponCodes(
@@ -120,7 +121,26 @@ public class CommandOrderServiceImpl implements CommandOrderService {
 
         }
 
+        deleteOrderProductInCart(loginId, type, products);
+
         return OrderCreateResponseDto.fromEntity(savedOrder);
+    }
+
+    /**
+     * 장바구니에서 주문한 상품이라면 Redis 에서 삭제합니다.
+     *
+     * @param loginId   회원 아이디
+     * @param type      장바구니에서 주문했다면 null, 바로 주문이라면 "one"
+     * @param products  주문한 상품 Map
+     * @author 이수정
+     * @since 1.0
+     */
+    private void deleteOrderProductInCart(String loginId, String type, Map<String, Product> products) {
+        if (Objects.isNull(type)) {
+            products.keySet().forEach(key ->
+                redisTemplate.opsForHash().delete(loginId, products.get(key).getId().toString())
+            );
+        }
     }
 
     /**
