@@ -3,6 +3,7 @@ package shop.yesaladin.shop.member.domain.model;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import shop.yesaladin.common.exception.ClientException;
 
@@ -145,5 +146,40 @@ class MemberTest {
 
         //then
         assertThat(member.getPassword()).isEqualTo(newPassword);
+    }
+
+    @Test
+    void withdrawMember() throws Exception {
+        //given
+        String loginId = "id";
+        String name = "name";
+        String phone = "01011112222";
+        String password = "password";
+
+        Member member = Member.builder()
+                .id(1L)
+                .name(name)
+                .loginId(loginId)
+                .nickname(name)
+                .password(password)
+                .birthYear(1996)
+                .birthMonth(1)
+                .birthDay(19)
+                .phone(phone)
+                .build();
+
+        //when
+        member.withdrawMember();
+
+        //then
+        assertThat(member.isWithdrawal()).isTrue();
+        assertThat(member.getWithdrawalDate()).isEqualTo(LocalDate.now());
+        assertThat(member.getName()).isNotEqualTo(name);
+        assertThat(member.getNickname()).isNotEqualTo(name);
+        assertThat(member.getPhone()).isNotEqualTo(phone);
+        assertThat(member.getPassword()).isNotEqualTo(password);
+        assertThat(member.getBirthYear()).isZero();
+        assertThat(member.getBirthMonth()).isZero();
+        assertThat(member.getBirthDay()).isZero();
     }
 }
