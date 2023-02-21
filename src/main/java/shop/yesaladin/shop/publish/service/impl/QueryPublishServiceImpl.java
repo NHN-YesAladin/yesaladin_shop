@@ -32,7 +32,8 @@ public class QueryPublishServiceImpl implements QueryPublishService {
         Publish publish = queryPublishRepository.findByProduct(product)
                 .orElseThrow(() -> new ClientException(
                         ErrorCode.PUBLISH_NOT_FOUND,
-                        "Publish not found with id : " + product.getId()));
+                        "Publish not found with id : " + product.getId()
+                ));
 
         return new PublishResponseDto(
                 publish.getPk(),

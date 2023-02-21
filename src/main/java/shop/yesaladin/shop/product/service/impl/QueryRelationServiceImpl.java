@@ -1,5 +1,8 @@
 package shop.yesaladin.shop.product.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,10 +17,6 @@ import shop.yesaladin.shop.product.service.inter.QueryRelationService;
 import shop.yesaladin.shop.publish.dto.PublishResponseDto;
 import shop.yesaladin.shop.publish.service.inter.QueryPublishService;
 import shop.yesaladin.shop.writing.service.inter.QueryWritingService;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 상품 연관관계 조회를 위한 Service 구현체 입니다.
@@ -41,7 +40,10 @@ public class QueryRelationServiceImpl implements QueryRelationService {
      */
     @Transactional(readOnly = true)
     @Override
-    public PaginatedResponseDto<RelationsResponseDto> findAllForManager(Long productId, Pageable pageable) {
+    public PaginatedResponseDto<RelationsResponseDto> findAllForManager(
+            Long productId,
+            Pageable pageable
+    ) {
         Page<Relation> page = queryRelationRepository.findAllForManager(productId, pageable);
 
         return getRelationsPaginatedResponses(page);

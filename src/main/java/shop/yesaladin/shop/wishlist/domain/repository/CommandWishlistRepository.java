@@ -22,7 +22,7 @@ public interface CommandWishlistRepository {
     /**
      * 위시리스트 삭제 메서드
      *
-     * @param memberId 위시리스트에 물품을 삭제할 유저의 id
+     * @param memberId  위시리스트에 물품을 삭제할 유저의 id
      * @param productId 위시리스트에 삭제될 상품의 id
      * @author 김선홍
      * @since 1.0

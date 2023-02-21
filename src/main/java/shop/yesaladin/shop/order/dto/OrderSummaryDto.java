@@ -1,11 +1,10 @@
 package shop.yesaladin.shop.order.dto;
 
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
-
-import java.time.LocalDateTime;
 
 /**
  * 주문 데이터에 대한 대략적인 정보를 가지는 응답용 DTO

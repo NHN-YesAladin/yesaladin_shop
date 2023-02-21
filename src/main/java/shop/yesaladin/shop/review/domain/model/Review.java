@@ -29,6 +29,7 @@ import shop.yesaladin.shop.order.domain.model.OrderProduct;
 @Table(name = "reviews")
 @Entity
 public class Review {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -39,18 +39,16 @@ import shop.yesaladin.shop.publish.service.inter.SearchPublisherService;
 @WebMvcTest(SearchPublisherController.class)
 class SearchPublisherControllerTest {
 
-    @Autowired
-    MockMvc mockMvc;
-
-    @MockBean
-    SearchPublisherService searchPublisherService;
-
     private static final String ZERO = "0";
     private static final String ONE = "1";
     private static final String MIN = "-1";
     private static final String NAME = "name";
     private static final String OFFSET = "offset";
     private static final String SIZE = "size";
+    @Autowired
+    MockMvc mockMvc;
+    @MockBean
+    SearchPublisherService searchPublisherService;
 
     @WithMockUser
     @Test

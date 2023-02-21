@@ -1,5 +1,13 @@
 package shop.yesaladin.shop.tag.service.impl;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,15 +21,6 @@ import shop.yesaladin.shop.tag.domain.model.Tag;
 import shop.yesaladin.shop.tag.domain.repository.QueryTagRepository;
 import shop.yesaladin.shop.tag.dto.TagResponseDto;
 import shop.yesaladin.shop.tag.service.inter.QueryTagService;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 
 class QueryTagServiceImplTest {
 
@@ -81,7 +80,10 @@ class QueryTagServiceImplTest {
         Mockito.when(queryTagRepository.findAllForManager(any())).thenReturn(page);
 
         // when
-        PaginatedResponseDto<TagResponseDto> response = service.findAllForManager(PageRequest.of(0, 5));
+        PaginatedResponseDto<TagResponseDto> response = service.findAllForManager(PageRequest.of(
+                0,
+                5
+        ));
 
         // then
         assertThat(response.getTotalDataCount()).isEqualTo(10);

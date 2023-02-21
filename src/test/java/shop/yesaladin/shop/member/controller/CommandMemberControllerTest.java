@@ -87,7 +87,7 @@ class CommandMemberControllerTest {
     private final String BIRTH = "20230107";
     private final String EMAIL = "test@test.com";
     private final String GENDER = "MALE";
-
+    private final String ROLE_MEMBER = "ROLE_MEMBER";
     @Autowired
     ObjectMapper objectMapper;
     @Autowired
@@ -108,8 +108,6 @@ class CommandMemberControllerTest {
                 Arguments.of("'hanadoolsetnetdasut'", "15자리 초과한 경우")
         );
     }
-
-    private final String ROLE_MEMBER = "ROLE_MEMBER";
 
     @BeforeEach
     void setUp() {

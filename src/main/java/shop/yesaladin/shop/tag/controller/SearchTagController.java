@@ -1,6 +1,6 @@
 package shop.yesaladin.shop.tag.controller;
 
-import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,12 +17,11 @@ import shop.yesaladin.shop.tag.dto.SearchTagRequestDto;
 import shop.yesaladin.shop.tag.dto.SearchedTagResponseDto;
 import shop.yesaladin.shop.tag.service.inter.SearchTagService;
 
-import javax.validation.Valid;
-
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/v1/search/tags")
 public class SearchTagController {
+
     private final SearchTagService searchTagService;
 
     @GetMapping(params = "name")

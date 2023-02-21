@@ -24,7 +24,10 @@ class ElasticProductRepositoryTest {
     @Test
     @DisplayName("카테고라 id로 검색 테스트")
     void testSearchProductsByCategoryId() {
-        Page<SearchedProductResponseDto> result = searchProductRepository.searchProductsByCategoryId(-1L, pageable);
+        Page<SearchedProductResponseDto> result = searchProductRepository.searchProductsByCategoryId(
+                -1L,
+                pageable
+        );
         assertThat(result.getContent()).isEmpty();
         assertThat(result.getTotalElements()).isZero();
     }
@@ -32,7 +35,10 @@ class ElasticProductRepositoryTest {
     @Test
     @DisplayName("상품 내용으로 검색 테스트")
     void testSearchProductsByProductContent() {
-        Page<SearchedProductResponseDto> result = searchProductRepository.searchProductsByProductContent("논오ㅠㄴ어=asas", pageable);
+        Page<SearchedProductResponseDto> result = searchProductRepository.searchProductsByProductContent(
+                "논오ㅠㄴ어=asas",
+                pageable
+        );
         assertThat(result.getContent()).isEmpty();
         assertThat(result.getTotalElements()).isZero();
     }
@@ -40,7 +46,10 @@ class ElasticProductRepositoryTest {
     @Test
     @DisplayName("상품 isbn으로 검색 테스트")
     void testSearchProductsByISBN() {
-        Page<SearchedProductResponseDto> result = searchProductRepository.searchProductsByProductISBN("isbn", pageable);
+        Page<SearchedProductResponseDto> result = searchProductRepository.searchProductsByProductISBN(
+                "isbn",
+                pageable
+        );
         assertThat(result.getContent()).isEmpty();
         assertThat(result.getTotalElements()).isZero();
     }
@@ -48,7 +57,10 @@ class ElasticProductRepositoryTest {
     @Test
     @DisplayName("작가 이름으로 검색 테스트")
     void testSearchProductsByProductAuthor() {
-        Page<SearchedProductResponseDto> result = searchProductRepository.searchProductsByProductAuthor("ㅓㅗ여!!sdf", pageable);
+        Page<SearchedProductResponseDto> result = searchProductRepository.searchProductsByProductAuthor(
+                "ㅓㅗ여!!sdf",
+                pageable
+        );
         assertThat(result.getContent()).isEmpty();
         assertThat(result.getTotalElements()).isZero();
     }
@@ -56,7 +68,10 @@ class ElasticProductRepositoryTest {
     @Test
     @DisplayName("상품 이름으로 검색 테스트")
     void testSearchProductsByProductTitle() {
-        Page<SearchedProductResponseDto> result = searchProductRepository.searchProductsByProductTitle("!!!!@!@sdsdsdㅁㄴㅁㄴ", pageable);
+        Page<SearchedProductResponseDto> result = searchProductRepository.searchProductsByProductTitle(
+                "!!!!@!@sdsdsdㅁㄴㅁㄴ",
+                pageable
+        );
         assertThat(result.getContent()).isEmpty();
         assertThat(result.getTotalElements()).isZero();
     }
@@ -64,7 +79,10 @@ class ElasticProductRepositoryTest {
     @Test
     @DisplayName("출판사로 검색 테스트")
     void testSearchProductsByPublisher() {
-        Page<SearchedProductResponseDto> result = searchProductRepository.searchProductsByPublisher("아ㅓㅇ라ㅓ", pageable);
+        Page<SearchedProductResponseDto> result = searchProductRepository.searchProductsByPublisher(
+                "아ㅓㅇ라ㅓ",
+                pageable
+        );
         assertThat(result.getContent()).isEmpty();
         assertThat(result.getTotalElements()).isZero();
     }
@@ -72,7 +90,10 @@ class ElasticProductRepositoryTest {
     @Test
     @DisplayName("태그로 검색 테스트")
     void testSearchProductsByTag() {
-        Page<SearchedProductResponseDto> result = searchProductRepository.searchProductsByTag("12ghghsdg!!담ㅇ노ㅓ", pageable);
+        Page<SearchedProductResponseDto> result = searchProductRepository.searchProductsByTag(
+                "12ghghsdg!!담ㅇ노ㅓ",
+                pageable
+        );
         assertThat(result.getContent()).isEmpty();
         assertThat(result.getTotalElements()).isZero();
     }

@@ -38,7 +38,7 @@ public class QueryWishlistServiceImpl implements QueryWishlistService {
     private final QueryWritingService queryWritingService;
 
     /**
-     *{@inheritDoc}
+     * {@inheritDoc}
      */
     @Override
     @Transactional(readOnly = true)
@@ -73,7 +73,7 @@ public class QueryWishlistServiceImpl implements QueryWishlistService {
     }
 
     /**
-     *{@inheritDoc}
+     * {@inheritDoc}
      */
     @Override
     @Transactional(readOnly = true)
@@ -86,7 +86,7 @@ public class QueryWishlistServiceImpl implements QueryWishlistService {
      * 판매가 계산
      *
      * @param actualPrice 실 가격
-     * @param rate 할인율
+     * @param rate        할인율
      * @return 판매가
      * @author 김선홍
      * @since 1.0

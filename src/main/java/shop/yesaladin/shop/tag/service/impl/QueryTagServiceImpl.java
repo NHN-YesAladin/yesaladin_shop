@@ -1,5 +1,7 @@
 package shop.yesaladin.shop.tag.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,9 +14,6 @@ import shop.yesaladin.shop.tag.domain.model.Tag;
 import shop.yesaladin.shop.tag.domain.repository.QueryTagRepository;
 import shop.yesaladin.shop.tag.dto.TagResponseDto;
 import shop.yesaladin.shop.tag.service.inter.QueryTagService;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 태그 조회를 위한 Service 구현체 입니다.
@@ -37,7 +36,8 @@ public class QueryTagServiceImpl implements QueryTagService {
         Tag tag = queryTagRepository.findById(id)
                 .orElseThrow(() -> new ClientException(
                         ErrorCode.TAG_NOT_FOUND,
-                        "Tag not found with id : " + id));
+                        "Tag not found with id : " + id
+                ));
 
         return TagResponseDto.builder().id(tag.getId()).name(tag.getName()).build();
     }

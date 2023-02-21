@@ -57,6 +57,18 @@ class CommandPointHistoryControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    private static PointHistoryRequestDto getPointHistoryRequest(
+            String loginId,
+            Long amount,
+            PointReasonCode pointReasonCode
+    ) {
+        return new PointHistoryRequestDto(
+                loginId,
+                amount,
+                pointReasonCode
+        );
+    }
+
     @WithMockUser(username = "user@1")
     @Test
     @DisplayName("포인트 사용 실패 - 잘못된 파라미터를 요청한 경우")
@@ -166,18 +178,6 @@ class CommandPointHistoryControllerTest {
                                 .description("에러 메세지")
                 )
         ));
-    }
-
-    private static PointHistoryRequestDto getPointHistoryRequest(
-            String loginId,
-            Long amount,
-            PointReasonCode pointReasonCode
-    ) {
-        return new PointHistoryRequestDto(
-                loginId,
-                amount,
-                pointReasonCode
-        );
     }
 
     @WithMockUser(username = "user@1")

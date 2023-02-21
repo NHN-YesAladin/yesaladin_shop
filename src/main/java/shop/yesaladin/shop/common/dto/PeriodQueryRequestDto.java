@@ -15,11 +15,10 @@ import shop.yesaladin.shop.common.exception.type.InvalidPeriodConditionType;
 /**
  * 기간조회를 위한 요청 dto 클래스입니다.
  *
- * @DateTimeFormat : @ModelAttribute를 사용해 query param으로 매칭 하기 위해 사용
- * @JsonFormat : @RequestBody를 사용해 http body로 매칭 하기 위해 사용
- *
  * @author 최예린
  * @author 배수한
+ * @DateTimeFormat : @ModelAttribute를 사용해 query param으로 매칭 하기 위해 사용
+ * @JsonFormat : @RequestBody를 사용해 http body로 매칭 하기 위해 사용
  * @since 1.0
  */
 @Getter

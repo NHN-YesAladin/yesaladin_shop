@@ -22,10 +22,9 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberAddressService;
 @Service
 public class QueryMemberAddressServiceImpl implements QueryMemberAddressService {
 
+    private static final String MEMBER_ADDRESS_NOT_FOUND = "MemberAddress not found with id : ";
     private final QueryMemberRepository queryMemberRepository;
     private final QueryMemberAddressRepository queryMemberAddressRepository;
-
-    private static final String MEMBER_ADDRESS_NOT_FOUND = "MemberAddress not found with id : ";
 
     /**
      * {@inheritDoc}

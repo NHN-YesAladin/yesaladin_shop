@@ -1,11 +1,22 @@
 package shop.yesaladin.shop.order.domain.model;
 
-import lombok.*;
-import shop.yesaladin.shop.order.persistence.converter.OrderStatusCodeConverter;
-
-import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Embeddable;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MapsId;
+import javax.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import shop.yesaladin.shop.order.persistence.converter.OrderStatusCodeConverter;
 
 /**
  * 주문 상태 변경 이력 엔티티입니다.

@@ -9,13 +9,12 @@ YesAladin Shop은 애플리케이션 이용에 필요한 API를 제공함으로�
 
 ## ERD
 
-// 이미지 추가할 것
-![]()
+![ERD](http://drive.google.com/uc?export=view&id=1gE5gufiU6RAjOKba50ianKreUAw3hnl9)
+
 
 ## Project Architecture
 
-// 이미지 추가할 것
-![]()
+![스크린샷 2023-02-21 오후 11 33 40](https://user-images.githubusercontent.com/60968342/220373870-a97ba13d-10ff-4d5b-b139-888919a5db3b.png)
 
 ## CI/CD
 (무중단 배포 및 CI/CD flow 첨부할 것)
@@ -39,6 +38,49 @@ YesAladin Shop은 애플리케이션 이용에 필요한 API를 제공함으로�
   - Shop API Server 내 Spring Security를 추가하여 각 API 별 Method Security 적용
 
 ### [@이수정](https://github.com/sujeong68)
+
+- **Object Storage**
+  - `Object Storage` Properties 설정
+  - 인증 토큰 발급 및 토큰 만료 전까지 `Redis` 내 보관
+  - Front에서 Object Storage 인증 토큰 요청 시 `Redis` 내 토큰 획득 혹은 발급하여 Front에 전달
+  - Front -> Shop 으로 `MultipartFile`을 전달받아 Object Storage 파일 업로드 후 업로드 정보를 Front에 전달
+- **파일 관리**
+  - DB에 업로드한 파일의 정보(URL, 업로드 시간)을 등록 및 조회
+- **상품 관리**
+  - 상품 등록/수정/Soft Delete
+  - 상품의 판매여부, 강제품절여부, 노출여부, 재고수량 수정
+  - 상품 제목, 중복여부, 수량 조회
+  - 상품 상세 조회
+  - 상품 수정용 정보 조회
+  - 관리자용, 일반사용자용 `Paging` 조회
+  - 장바구니 내 상품의 정보 조회
+  - 상품 유형 전체 조회
+  - 전체 할인율 조회/수정
+- **상품 연관관계 관리**
+  - 상품 간 연관관계 생성/삭제
+  - 관리자용, 일반사용자용 `Paging` 조회
+- **출판사, 출판 관리**
+  - 출판사 등록/수정
+  - 출판사 단건 조회
+  - 관리자용 출판사 `Paging` 조회
+  - 출판사와 상품 사이의 관계(=출판) 등록/삭제
+  - 상품으로 출판사와 상품 사이의 관계(=출판) 조회
+- **태그, 태그관계 관리**
+  - 태그 등록/수정
+  - 태그 단건 조회
+  - 관리자용 태그 `Paging` 조회
+  - 태그와 상품 사이의 관계 등록/삭제
+  - 상품으로 태그와 상품 사이의 관계 조회
+- **저자, 집필 관리**
+  - 저자 등록/수정 
+  - 저자 단건 조회
+  - 관리자용 저자 `Paging` 조회
+  - 저자와 상품사이의 관계(=집필) 등록/삭제
+  - 상품으로 저자와 상품 사이의 관계(=집필) 조회
+- **매출 통계 및 베스트셀러**
+  - 정해진 기간의 매출 통계 조회
+  - 1년 기준 베스트셀러 12개 조회
+- **주문 후 장바구니 내 상품 삭제**
 
 ### [@최예린](https://github.com/Yellin36)
 
@@ -64,6 +106,12 @@ YesAladin Shop은 애플리케이션 이용에 필요한 API를 제공함으로�
 
 
 ### [@김홍대](https://github.com/mongmeo-dev)
+- **쿠폰**
+  - Kafka를 이용하여 쿠폰 서버와 메시지 기반 비동기 통신 구현
+  - 마이크로서비스의 트랜잭션 보장을 위한 시스템 설계
+- **Project Management**
+  - NHN Cloud Log & Crash를 연동하여 모니터링 환경 구축
+  - Spring Cloud Config를 연동하여 설정 정보 외부화
 
 ### [@서민지](https://github.com/narangd0)
 
@@ -76,21 +124,23 @@ YesAladin Shop은 애플리케이션 이용에 필요한 API를 제공함으로�
 ## Technical Issue
 ### Kafka (가제)
 
-### 주문/결제 (가제)
+### 주문/결제
 - 결제 서비스 메서드 실행 중, RollBack 되어야는 상황에 토스와의 통신이 정상 종료된 경우
   - 데이터베이스는 트랜잭션이 비정상 종료되어 rollback이 되었다.
   - 하지만 토스 결제 취소는 HTTP 통신이므로 rollback과는 무관하게 동작하므로 대책이 필요 
   - **TransactionEventListener** 를 사용하여 해결 
     - phase를 _TransactionPhase.AFTER_ROLLBACK_ 으로 설정하여 사용 
 
-### Web Socket (가제)
+### Web Socket
+- 서버가 이중화 되어있어 메시지를 전달하고자 하는 클라이언트에게 메시지가 전달되지 않을 수 있는 문제 발생
+  - Redis의 PUB/SUB을 이용하여 모든 인스턴스에서 메시지를 전달할 수 있도록 구현
+  - 설계 및 flow의 복잡도 증가 및 소켓 연결 유지로 인한 서버 부담 증가
+    - 최종적으로 소켓 서버를 분리하여 해결
 
-### 인증/인가 (가제)
+### 인증/인가
 - JWT 토큰 검증 결과 payload에 포함된 식별 정보를 통해 Shop API Server 내 `OncePerRequestFilter`로 자체 인증 객체 생성
   - 생성된 `Authentication`에 포함된 `Roles`를 사용하여 API에 Method Security 적용
   - 생성된 `Authentication`에 포함된 `loginId`를 통해 AOP를 구성하여 회원 자신의 개인정보에 관련된 API 호출 시 개인정보 노출 최소화
-
-### Object Storage (가제)
 
 ### Spring Cache (가제)
 

@@ -51,6 +51,7 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 //@SuppressWarnings("all")
 class GiveCouponServiceImplTest {
 
+    private final static Clock clock = Clock.fixed(Instant.ofEpochSecond(100000), ZoneId.of("UTC"));
     private GatewayProperties gatewayProperties;
     private CouponProducer couponProducer;
     private QueryMemberCouponRepository queryMemberCouponRepository;
@@ -61,7 +62,6 @@ class GiveCouponServiceImplTest {
     private GiveCouponServiceImpl giveCouponService;
     private ValueOperations<String, String> valueOperations = mock(ValueOperations.class);
     private ApplicationEventPublisher applicationEventPublisher;
-    private final static Clock clock = Clock.fixed(Instant.ofEpochSecond(100000), ZoneId.of("UTC"));
 
     @BeforeEach
     @SuppressWarnings("unchecked")
@@ -100,12 +100,12 @@ class GiveCouponServiceImplTest {
                 true
         ));
         when(restTemplate.exchange(
-                        eq(
-                                "http://localhost:8085/v1/coupon-groups?trigger-type=SIGN_UP"),
-                        eq(HttpMethod.GET),
-                        any(),
-                        any(ParameterizedTypeReference.class)
-                ))
+                eq(
+                        "http://localhost:8085/v1/coupon-groups?trigger-type=SIGN_UP"),
+                eq(HttpMethod.GET),
+                any(),
+                any(ParameterizedTypeReference.class)
+        ))
                 .thenReturn(new ResponseEntity<>(ResponseDto.builder()
                         .data(couponGroupAndLimitDtoList)
                         .build(), HttpStatus.OK));
@@ -156,12 +156,12 @@ class GiveCouponServiceImplTest {
                 false
         ));
         when(restTemplate.exchange(
-                        eq(
-                                "http://localhost:8085/v1/coupon-groups?trigger-type=SIGN_UP"),
-                        eq(HttpMethod.GET),
-                        any(),
-                        any(ParameterizedTypeReference.class)
-                ))
+                eq(
+                        "http://localhost:8085/v1/coupon-groups?trigger-type=SIGN_UP"),
+                eq(HttpMethod.GET),
+                any(),
+                any(ParameterizedTypeReference.class)
+        ))
                 .thenReturn(new ResponseEntity<>(ResponseDto.builder()
                         .data(couponGroupAndLimitDtoList)
                         .build(), HttpStatus.OK));
@@ -212,12 +212,12 @@ class GiveCouponServiceImplTest {
                 false
         ));
         when(restTemplate.exchange(
-                        eq(
-                                "http://localhost:8085/v1/coupon-groups?trigger-type=SIGN_UP"),
-                        eq(HttpMethod.GET),
-                        any(),
-                        any(ParameterizedTypeReference.class)
-                ))
+                eq(
+                        "http://localhost:8085/v1/coupon-groups?trigger-type=SIGN_UP"),
+                eq(HttpMethod.GET),
+                any(),
+                any(ParameterizedTypeReference.class)
+        ))
                 .thenReturn(new ResponseEntity<>(ResponseDto.builder()
                         .data(couponGroupAndLimitDtoList)
                         .build(), HttpStatus.OK));
@@ -378,11 +378,13 @@ class GiveCouponServiceImplTest {
 
         // when
         Assertions.assertThatThrownBy(() -> giveCouponService.sendCouponGiveRequest(
-                "memberId",
-                TriggerTypeCode.COUPON_OF_THE_MONTH,
-                1L,
-                LocalDateTime.now()
-        )).isInstanceOf(ClientException.class).hasMessageContaining("Not found any monthly coupon open date time.");
+                        "memberId",
+                        TriggerTypeCode.COUPON_OF_THE_MONTH,
+                        1L,
+                        LocalDateTime.now()
+                ))
+                .isInstanceOf(ClientException.class)
+                .hasMessageContaining("Not found any monthly coupon open date time.");
     }
 
     @Test
@@ -416,7 +418,7 @@ class GiveCouponServiceImplTest {
         Assertions.assertThatThrownBy(() -> giveCouponService.sendCouponGiveRequest(
                 "memberId",
                 TriggerTypeCode.SIGN_UP,
-                    1L,
+                1L,
                 LocalDateTime.now()
         )).isInstanceOf(ClientException.class).hasMessageContaining("이미 처리된 요청입니다.");
     }

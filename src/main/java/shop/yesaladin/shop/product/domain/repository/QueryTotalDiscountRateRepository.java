@@ -1,8 +1,7 @@
 package shop.yesaladin.shop.product.domain.repository;
 
-import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
-
 import java.util.Optional;
+import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
 
 /**
  * 전체 할인율 조회 관련 Repository Interface 입니다.

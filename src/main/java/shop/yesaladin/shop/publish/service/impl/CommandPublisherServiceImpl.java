@@ -34,14 +34,18 @@ public class CommandPublisherServiceImpl implements CommandPublisherService {
         if (queryPublisherRepository.existsByName(createDto.getName())) {
             throw new ClientException(
                     ErrorCode.PUBLISH_ALREADY_EXIST,
-                    "Publisher you are trying to create already exists => publisher name : " + createDto.getName()
+                    "Publisher you are trying to create already exists => publisher name : "
+                            + createDto.getName()
             );
         }
         Publisher publisher = Publisher.builder().name(createDto.getName()).build();
 
         commandPublisherRepository.save(publisher);
 
-        return PublisherResponseDto.builder().id(publisher.getId()).name(publisher.getName()).build();
+        return PublisherResponseDto.builder()
+                .id(publisher.getId())
+                .name(publisher.getName())
+                .build();
     }
 
     /**
@@ -53,21 +57,27 @@ public class CommandPublisherServiceImpl implements CommandPublisherService {
         Publisher publisher = queryPublisherRepository.findById(id)
                 .orElseThrow(() -> new ClientException(
                         ErrorCode.PUBLISH_PUBLISHER_NOT_FOUND,
-                        "Publisher not found with id : " + id));
+                        "Publisher not found with id : " + id
+                ));
 
         String modifyName = modifyDto.getName();
         if (!publisher.getName().equals(modifyName)) {
             if (queryPublisherRepository.existsByName(modifyName)) {
                 throw new ClientException(
                         ErrorCode.PUBLISH_ALREADY_EXIST,
-                        "Publisher you are trying to modify already exists => publisher name : " + modifyDto.getName());
+                        "Publisher you are trying to modify already exists => publisher name : "
+                                + modifyDto.getName()
+                );
             }
             publisher.changeName(modifyName);
         }
 
         commandPublisherRepository.save(publisher);
 
-        return PublisherResponseDto.builder().id(publisher.getId()).name(publisher.getName()).build();
+        return PublisherResponseDto.builder()
+                .id(publisher.getId())
+                .name(publisher.getName())
+                .build();
     }
 }
 
