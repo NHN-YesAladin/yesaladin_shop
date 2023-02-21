@@ -94,7 +94,10 @@ YesAladin Shop은 애플리케이션 이용에 필요한 API를 제공함으로�
 
 ### Spring Cache (가제)
 
-### Elastic Search (가제)
+### Elastic Search
+- ELK 스택을 이용한 상품검색(비정형 데이터에 대한 색인과 검색 제공)
+- 관리자가 데이터 관리를 위한 DB 검색(데이터의 정합성, 무결성을 보장하기 위해)
+
 
 ## Tech Stack
 
