@@ -14,8 +14,7 @@ YesAladin Shop은 애플리케이션 이용에 필요한 API를 제공함으로�
 
 ## Project Architecture
 
-// 이미지 추가할 것
-![]()
+![스크린샷 2023-02-21 오후 11 33 40](https://user-images.githubusercontent.com/60968342/220373870-a97ba13d-10ff-4d5b-b139-888919a5db3b.png)
 
 ## CI/CD
 (무중단 배포 및 CI/CD flow 첨부할 것)
@@ -125,7 +124,7 @@ YesAladin Shop은 애플리케이션 이용에 필요한 API를 제공함으로�
 ## Technical Issue
 ### Kafka (가제)
 
-### 주문/결제 (가제)
+### 주문/결제
 - 결제 서비스 메서드 실행 중, RollBack 되어야는 상황에 토스와의 통신이 정상 종료된 경우
   - 데이터베이스는 트랜잭션이 비정상 종료되어 rollback이 되었다.
   - 하지만 토스 결제 취소는 HTTP 통신이므로 rollback과는 무관하게 동작하므로 대책이 필요 
@@ -138,7 +137,7 @@ YesAladin Shop은 애플리케이션 이용에 필요한 API를 제공함으로�
   - 설계 및 flow의 복잡도 증가 및 소켓 연결 유지로 인한 서버 부담 증가
     - 최종적으로 소켓 서버를 분리하여 해결
 
-### 인증/인가 (가제)
+### 인증/인가
 - JWT 토큰 검증 결과 payload에 포함된 식별 정보를 통해 Shop API Server 내 `OncePerRequestFilter`로 자체 인증 객체 생성
   - 생성된 `Authentication`에 포함된 `Roles`를 사용하여 API에 Method Security 적용
   - 생성된 `Authentication`에 포함된 `loginId`를 통해 AOP를 구성하여 회원 자신의 개인정보에 관련된 API 호출 시 개인정보 노출 최소화
