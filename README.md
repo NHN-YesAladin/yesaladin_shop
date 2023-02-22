@@ -17,7 +17,8 @@ YesAladin Shop은 애플리케이션 이용에 필요한 API를 제공함으로�
 <img width="1055" alt="스크린샷 2023-02-22 오전 10 15 46" src="https://user-images.githubusercontent.com/60968342/220495610-18e516d6-4bae-49b4-bfdb-84f72d890af5.png">
 
 ## CI/CD
-(무중단 배포 및 CI/CD flow 첨부할 것)
+
+<img width="1102" alt="스크린샷 2023-02-22 오후 7 24 08" src="https://user-images.githubusercontent.com/60968342/220593590-58f50bd3-302f-455d-bf99-78371b2a1ba7.png">
 
 ## Test Coverage
 - 목표 : 라인 커버리지 80% 이상 (2023.02.22 기준 83.21%)  
@@ -83,6 +84,25 @@ YesAladin Shop은 애플리케이션 이용에 필요한 API를 제공함으로�
 - **주문 후 장바구니 내 상품 삭제**
 
 ### [@최예린](https://github.com/Yellin36)
+- **주문**
+  - 회원/비회원 일반 주문 생성
+  - 주문 숨김처리
+  - 주문 확정
+  - 쿠폰 사용
+  - 포인트 사용
+- **회원 관리**
+  - 회원 배송지 등록/수정/삭제
+  - 회원 등급 내역 기간별 `Paging` 조회
+  - 회원 등급 조회
+  - 회원 차단/차단해지
+- **포인트 관리**
+  - 포인트 사용/적립/집계 내역 생성
+  - 포인트 사용/적립 `Paging` 내역 조회
+  - 회원의 포인트 조회
+- **주문 변경 상태 내역 관리**
+  - 주문 변경 상태 내역 생성
+- **주문 상품 관리**
+  - 주문 상품 생성
 
 ### [@배수한](https://github.com/shbaeNhnacademy)
 
@@ -186,6 +206,7 @@ YesAladin Shop은 애플리케이션 이용에 필요한 API를 제공함으로�
 ![NHN Cloud](https://img.shields.io/badge/-NHN%20Cloud-blue?style=flat&logo=iCloud&logoColor=white)
 ![Jenkins](http://img.shields.io/badge/Jenkins-D24939?style=flat-square&logo=Jenkins&logoColor=white)
 ![SonarQube](https://img.shields.io/badge/SonarQube-4E98CD?style=flat&logo=SonarQube&logoColor=white)
+![Grafana](https://img.shields.io/badge/Grafana-F46800?style=flat&logo=Grafana&logoColor=white)
 
 ### Web Server
 

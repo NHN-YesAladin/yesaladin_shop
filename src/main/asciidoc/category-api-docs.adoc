@@ -1,4 +1,12 @@
-= Category
+= Category (link:index.html[뒤로가기])
+notification-api-docs
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+:sectnums:
 
 === 카테고리 아이디를 통한 단건 조회
 
@@ -228,28 +236,28 @@ include::{snippets}/delete-category/http-response.adoc[]
 
 ---
 
-==== ES 카테고리 검색 offset min validation
+=== ES 카테고리 검색 offset min validation
 
 ==== Example
 include::{snippets}/search-categories-offset-min-validation/response-body.adoc[]
 
 ---
 
-==== ES 카테고리 검색 size min validation
+=== ES 카테고리 검색 size min validation
 
 ==== Example
 include::{snippets}/search-categories-size-min-validation/response-body.adoc[]
 
 ---
 
-==== ES 카테고리 검색 size max validation
+=== ES 카테고리 검색 size max validation
 
 ==== Example
 include::{snippets}/search-categories-size-max-validation/response-body.adoc[]
 
 ---
 
-==== ES 카테고리 검색
+=== ES 카테고리 검색
 
 ==== curl
 include::{snippets}/search-categories-success/curl-request.adoc[]
