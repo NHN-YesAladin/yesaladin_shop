@@ -38,6 +38,8 @@ import shop.yesaladin.shop.product.dummy.DummySubscribeProduct;
 import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
 import shop.yesaladin.shop.publish.domain.model.Publish;
 import shop.yesaladin.shop.publish.domain.model.Publisher;
+import shop.yesaladin.shop.writing.domain.model.Author;
+import shop.yesaladin.shop.writing.domain.model.Writing;
 
 @Transactional
 @SpringBootTest
@@ -331,6 +333,75 @@ class QueryDslProductRepositoryTest {
     }
 
     @Test
+    @DisplayName("관리자가 상품 제목으로 상품 조회")
+    void findByTitleForManager() {
+        entityManager.persist(product1);
+        entityManager.persist(product2);
+
+        Page<Product> results = repository.findByTitleForManager("title", PageRequest.of(0, 10));
+        assertThat(results).hasSize(2);
+        assertThat(results.getContent().get(0).getTitle()).contains("title");
+        assertThat(results.getContent().get(1).getTitle()).contains("title");
+    }
+
+    @Test
+    @DisplayName("관리자가 상품 ISBN으로 상품 조회")
+    void findByISBNForManager() {
+        entityManager.persist(product1);
+
+        Page<Product> results = repository.findByISBNForManager(product1.getIsbn(), PageRequest.of(0, 10));
+        assertThat(results).hasSize(1);
+        assertThat(results.getContent().get(0).getIsbn()).isEqualTo(product1.getIsbn());
+    }
+
+    @Test
+    @DisplayName("관리자가 상품 내용으로 상품 조회")
+    void findByContentForManager() {
+        entityManager.persist(product1);
+
+        Page<Product> results = repository.findByContentForManager(product1.getContents(), PageRequest.of(0, 10));
+        assertThat(results).hasSize(1);
+        assertThat(results.getContent().get(0).getContents()).isEqualTo(product1.getContents());
+    }
+
+    @Test
+    @DisplayName("관리자가 상품 ISBN으로 상품 조회")
+    void findByPublisherForManager() {
+        Publisher publisher = Publisher.builder().name("name").build();
+        Publish publish = Publish.create(product1, publisher, "2011-11-11");
+
+        entityManager.persist(publisher);
+        entityManager.persist(product1);
+        entityManager.persist(publish);
+        Page<Product> results = repository.findByPublisherForManager(publisher.getName(), PageRequest.of(0, 10));
+        assertThat(results).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("관리자가 상품 ISBN으로 상품 조회")
+    void findByAuthorForManager() {
+        Author author = Author.builder().name("name").build();
+        Writing writing = Writing.create(product1, author);
+        entityManager.persist(author);
+        entityManager.persist(product1);
+        entityManager.persist(writing);
+
+        Page<Product> results = repository.findByAuthorForManager("name", PageRequest.of(0, 10));
+        assertThat(results).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("주문에 필요한 상품 데이터 조회")
+    void getProductForOrder() {
+//        //given
+//        List<OrderProductRequestDto> request = getOrderProductRequestData();
+//        Product product = DummyProduct.dummy()
+//        //when
+//
+//
+//        //then
+    }
+    
     @DisplayName("상품의 isbn 리스트로 주문서에 필요한 상품 데이터를 조회합니다.")
     void getByIsbnList() {
         //given

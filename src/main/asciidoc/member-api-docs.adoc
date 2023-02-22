@@ -1,6 +1,25 @@
-= Member
+= Member (link:index.html[뒤로가기])
+notification-api-docs
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+:sectnums:
 
-=== 회원 정보 수정 (닉네임)
+
+=== 회원 닉네임 수정 실패 - 유효하지 않은 요청
+
+===== Example
+include::{snippets}/update-member-nickname-fail-validation-failed/response-body.adoc[]
+
+=== 회원 닉네임 수정 실패 - 존재하지 않는 회원인 경우
+
+===== Example
+include::{snippets}/update-member-nickname-fail-member-not-found/response-body.adoc[]
+
+=== 회원 닉네임 수정 성공
 
 ==== curl
 include::{snippets}/update-member-nickname-success/curl-request.adoc[]
@@ -10,16 +29,25 @@ include::{snippets}/update-member-nickname-success/curl-request.adoc[]
 ===== Example
 include::{snippets}/update-member-nickname-success/http-request.adoc[]
 
-===== response
+==== response
 
 ===== Body
-
 include::{snippets}/update-member-nickname-success/response-fields.adoc[]
 
 ===== Example
-include::{snippets}/update-member-nickname-success/response-body.adoc[]
+include::{snippets}/update-member-nickname-success/http-response.adoc[]
 
-=== 회원 정보 수정 (이름)
+=== 회원 이름 수정 실패 - 유효하지 않은 요청
+
+==== Example
+include::{snippets}/update-member-name-fail-validation-failed/response-body.adoc[]
+
+=== 회원 이름 수정 실패 - 존재하지 않는 회원인 경우
+
+==== Example
+include::{snippets}/update-member-name-fail-member-not-found/response-body.adoc[]
+
+=== 회원 이름 수정 성공
 
 ==== curl
 include::{snippets}/update-member-name-success/curl-request.adoc[]
@@ -29,35 +57,25 @@ include::{snippets}/update-member-name-success/curl-request.adoc[]
 ===== Example
 include::{snippets}/update-member-name-success/http-request.adoc[]
 
-===== response
+==== response
 
 ===== Body
-
 include::{snippets}/update-member-name-success/response-fields.adoc[]
 
 ===== Example
-include::{snippets}/update-member-name-success/response-body.adoc[]
+include::{snippets}/update-member-name-success/http-response.adoc[]
 
-=== 회원 정보 수정 (전화번호)
+=== 회원 이메일 수정 실패 - 유효하지 않은 요청
 
-==== curl
-include::{snippets}/update-member-phone-success/curl-request.adoc[]
+==== Example
+include::{snippets}/update-member-email-fail-validation-failed/response-body.adoc[]
 
-==== request
+=== 회원 이메일 수정 실패 - 존재하지 않는 회원인 경우
 
-===== Example
-include::{snippets}/update-member-phone-success/http-request.adoc[]
+==== Example
+include::{snippets}/update-member-email-fail-member-not-found/response-body.adoc[]
 
-===== response
-
-===== Body
-
-include::{snippets}/update-member-phone-success/response-fields.adoc[]
-
-===== Example
-include::{snippets}/update-member-phone-success/response-body.adoc[]
-
-=== 회원 정보 수정 (이메일)
+=== 회원 이메일 수정 성공
 
 ==== curl
 include::{snippets}/update-member-email-success/curl-request.adoc[]
@@ -67,16 +85,53 @@ include::{snippets}/update-member-email-success/curl-request.adoc[]
 ===== Example
 include::{snippets}/update-member-email-success/http-request.adoc[]
 
-===== response
+==== response
 
 ===== Body
-
 include::{snippets}/update-member-email-success/response-fields.adoc[]
 
 ===== Example
-include::{snippets}/update-member-email-success/response-body.adoc[]
+include::{snippets}/update-member-email-success/http-response.adoc[]
 
-=== 회원 정보 수정 (패스워드)
+=== 회원 전화번호 수정 실패 - 유효하지 않은 요청
+
+==== Example
+include::{snippets}/update-member-phone-fail-validation-failed/response-body.adoc[]
+
+=== 회원 전화번호 수정 실패 - 존재하지 않는 회원인 경우
+
+==== Example
+include::{snippets}/update-member-phone-fail-member-not-found/response-body.adoc[]
+
+=== 회원 전화번호 수정 성공
+
+==== curl
+include::{snippets}/update-member-phone-success/curl-request.adoc[]
+
+==== request
+
+===== Example
+include::{snippets}/update-member-phone-success/http-request.adoc[]
+
+==== response
+
+===== Body
+include::{snippets}/update-member-phone-success/response-fields.adoc[]
+
+===== Example
+include::{snippets}/update-member-phone-success/http-response.adoc[]
+
+=== 회원 패스워드 수정 실패 - 유효하지 않은 요청
+
+==== Example
+include::{snippets}/update-member-password-fail-validation-failed/response-body.adoc[]
+
+=== 회원 패스워드 수정 실패 - 존재하지 않는 회원인 경우
+
+==== Example
+include::{snippets}/update-member-password-fail-member-not-found/response-body.adoc[]
+
+=== 회원 패스워드 수정 성공
 
 ==== curl
 include::{snippets}/update-member-password-success/curl-request.adoc[]
@@ -86,26 +141,13 @@ include::{snippets}/update-member-password-success/curl-request.adoc[]
 ===== Example
 include::{snippets}/update-member-password-success/http-request.adoc[]
 
-===== response
+==== response
 
 ===== Body
-
 include::{snippets}/update-member-password-success/response-fields.adoc[]
 
 ===== Example
-include::{snippets}/update-member-password-success/response-body.adoc[]
-
-
-=== 회원 정보 수정 실패
-
-==== request
-
-===== Example
-====== 찾을 수 없는 회원
-include::{snippets}/update-member-nickname-fail-member-not-found/response-body.adoc[]
-
-====== Validation 실패
-include::{snippets}/update-member-nickname-fail-validation-failed/response-body.adoc[]
+include::{snippets}/update-member-password-success/http-response.adoc[]
 
 === 회원 탈퇴
 
@@ -140,7 +182,7 @@ include::{snippets}/withdraw-member-fail-member-not-found/response-body.adoc[]
 
 include::{snippets}/get-member-id-list-by-birthday-success/curl-request.adoc[]
 
-=== request
+==== request
 
 ==== Parameters
 
@@ -382,7 +424,7 @@ include::{snippets}/manage-member-info/response-fields.adoc[]
 ===== Example
 include::{snippets}/manage-member-info/response-body.adoc[]
 
-==== 관리자가 로그인 아이디로 회원 조회
+=== 관리자가 로그인 아이디로 회원 조회
 
 ==== curl
 include::{snippets}/manage-member-info-by-login-id/curl-request.adoc[]
@@ -400,7 +442,7 @@ include::{snippets}/manage-member-info-by-login-id/response-fields.adoc[]
 ===== Example
 include::{snippets}/manage-member-info-by-login-id/response-body.adoc[]
 
-==== 관리자가 닉네임으로 회원 조회
+=== 관리자가 닉네임으로 회원 조회
 
 ==== curl
 include::{snippets}/manage-member-info-by-nickname/curl-request.adoc[]
@@ -418,7 +460,7 @@ include::{snippets}/manage-member-info-by-nickname/response-fields.adoc[]
 ===== Example
 include::{snippets}/manage-member-info-by-nickname/response-body.adoc[]
 
-==== 관리자가 이름으로 회원 조회
+=== 관리자가 이름으로 회원 조회
 
 ==== curl
 include::{snippets}/manage-member-info-by-name/curl-request.adoc[]
@@ -436,7 +478,7 @@ include::{snippets}/manage-member-info-by-name/response-fields.adoc[]
 ===== Example
 include::{snippets}/manage-member-info-by-name/response-body.adoc[]
 
-==== 관리자가 핸드폰으로 회원 조회
+=== 관리자가 핸드폰으로 회원 조회
 
 ==== curl
 include::{snippets}/manage-member-info-by-phone/curl-request.adoc[]
@@ -455,7 +497,7 @@ include::{snippets}/manage-member-info-by-phone/response-fields.adoc[]
 ===== Example
 include::{snippets}/manage-member-info-by-phone/response-body.adoc[]
 
-==== 관리자가 회원 가입날로 회원 조회
+=== 관리자가 회원 가입날로 회원 조회
 
 ==== curl
 include::{snippets}/manage-member-info-by-sign-up-date/curl-request.adoc[]

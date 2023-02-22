@@ -106,4 +106,15 @@ class QueryDslTagRepositoryTest {
         // then
         assertThat(isExists).isFalse();
     }
+
+    @Test
+    @DisplayName("")
+    void findByNameForManager() {
+        Tag tag = Tag.builder().name("tag").build();
+        entityManager.persist(tag);
+
+        Page<Tag> result = repository.findByNameForManager("t", PageRequest.of(0, 10));
+        assertThat(result.getTotalElements()).isEqualTo(1L);
+        assertThat(result.getContent().get(0).getName()).contains("t");
+    }
 }

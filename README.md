@@ -17,11 +17,12 @@ YesAladin Shop은 애플리케이션 이용에 필요한 API를 제공함으로�
 <img width="1055" alt="스크린샷 2023-02-22 오전 10 15 46" src="https://user-images.githubusercontent.com/60968342/220495610-18e516d6-4bae-49b4-bfdb-84f72d890af5.png">
 
 ## CI/CD
-(무중단 배포 및 CI/CD flow 첨부할 것)
+
+<img width="1102" alt="스크린샷 2023-02-22 오후 7 24 08" src="https://user-images.githubusercontent.com/60968342/220593590-58f50bd3-302f-455d-bf99-78371b2a1ba7.png">
 
 ## Test Coverage
-- 목표 : 라인 커버리지 80% 이상 (2023.02.xx.(?) 기준 xx.x%)  
-  (스크린샷 첨부할 것)
+- 목표 : 라인 커버리지 80% 이상 (2023.02.22 기준 83.21%)  
+  <img width="971" alt="스크린샷 2023-02-22 오후 12 04 01" src="https://user-images.githubusercontent.com/60968342/220511146-e5976ef3-598a-48a9-aadc-22e464d90046.png">
 
 ## Features
 
@@ -133,6 +134,14 @@ YesAladin Shop은 애플리케이션 이용에 필요한 API를 제공함으로�
   - Spring Cloud Config를 연동하여 설정 정보 외부화
 
 ### [@서민지](https://github.com/narangd0)
+- **쿠폰**
+  - 자동 발행 쿠폰
+    - Batch 서버와의 API 통신을 통해 n일 후 생일인 회원에게 쿠폰 자동 발행 구현
+      - 생일 회원 조회
+      - Batch Insert를 이용한 쿠폰 지급
+  - 선착순 쿠폰
+    - 이벤트 오픈 시간 이전에 발행된 요청 처리
+    - Redis를 사용하여 단시간에 들어오는 중복 발행 요청 정상 처리
 
 ### [@김선홍](https://github.com/ssun4098)
 
@@ -197,6 +206,7 @@ YesAladin Shop은 애플리케이션 이용에 필요한 API를 제공함으로�
 ![NHN Cloud](https://img.shields.io/badge/-NHN%20Cloud-blue?style=flat&logo=iCloud&logoColor=white)
 ![Jenkins](http://img.shields.io/badge/Jenkins-D24939?style=flat-square&logo=Jenkins&logoColor=white)
 ![SonarQube](https://img.shields.io/badge/SonarQube-4E98CD?style=flat&logo=SonarQube&logoColor=white)
+![Grafana](https://img.shields.io/badge/Grafana-F46800?style=flat&logo=Grafana&logoColor=white)
 
 ### Web Server
 

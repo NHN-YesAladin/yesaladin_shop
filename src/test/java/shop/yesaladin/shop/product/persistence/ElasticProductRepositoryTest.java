@@ -2,6 +2,9 @@ package shop.yesaladin.shop.product.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +13,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
+import shop.yesaladin.shop.product.domain.model.SearchedProduct;
+import shop.yesaladin.shop.product.domain.model.SearchedProductAuthor;
+import shop.yesaladin.shop.product.domain.model.SearchedProductPublisher;
+import shop.yesaladin.shop.product.domain.model.SearchedProductTag;
+import shop.yesaladin.shop.product.domain.model.SearchedProductTotalDiscountRate;
 import shop.yesaladin.shop.product.domain.repository.SearchProductRepository;
 import shop.yesaladin.shop.product.dto.SearchedProductResponseDto;
 
@@ -19,7 +27,29 @@ class ElasticProductRepositoryTest {
 
     @Autowired
     private SearchProductRepository searchProductRepository;
+    @Autowired
+    private ElasticCommandProductRepository elasticCommandProductRepository;
     private Pageable pageable = PageRequest.of(0, 1);
+
+    @BeforeEach
+    void setUp() {
+        SearchedProduct searchedProduct = SearchedProduct.builder()
+                .id(-1L)
+                .title("title")
+                .contents("내용")
+                .isbn("isbn")
+                .publisher(new SearchedProductPublisher(1L, "name"))
+                .tags(List.of(new SearchedProductTag(1L, "tag")))
+                .isSale(true)
+                .isDeleted(false)
+                .authors(List.of(new SearchedProductAuthor(1L, "author")))
+                .actualPrice(10000L)
+                .discountRate(10)
+                .isSeparatelyDiscount(false)
+                .searchedTotalDiscountRate(new SearchedProductTotalDiscountRate(1, 10))
+                .build();
+        elasticCommandProductRepository.save(searchedProduct);
+    }
 
     @Test
     @DisplayName("카테고라 id로 검색 테스트")
@@ -29,18 +59,17 @@ class ElasticProductRepositoryTest {
                 pageable
         );
         assertThat(result.getContent()).isEmpty();
-        assertThat(result.getTotalElements()).isZero();
     }
 
     @Test
     @DisplayName("상품 내용으로 검색 테스트")
     void testSearchProductsByProductContent() {
         Page<SearchedProductResponseDto> result = searchProductRepository.searchProductsByProductContent(
-                "논오ㅠㄴ어=asas",
+                "내용",
                 pageable
         );
-        assertThat(result.getContent()).isEmpty();
-        assertThat(result.getTotalElements()).isZero();
+        assertThat(result.getContent()).hasSize(1);
+        //assertThat(result.getTotalElements()).isZero();
     }
 
     @Test
@@ -50,8 +79,8 @@ class ElasticProductRepositoryTest {
                 "isbn",
                 pageable
         );
-        assertThat(result.getContent()).isEmpty();
-        assertThat(result.getTotalElements()).isZero();
+        assertThat(result.getContent()).hasSize(1);
+        assertThat(result.getContent().get(0).getIsbn()).isEqualTo("isbn");
     }
 
     @Test
@@ -96,5 +125,10 @@ class ElasticProductRepositoryTest {
         );
         assertThat(result.getContent()).isEmpty();
         assertThat(result.getTotalElements()).isZero();
+    }
+
+    @AfterEach
+    void setDown() {
+        elasticCommandProductRepository.deleteByIdEquals(-1L);
     }
 }

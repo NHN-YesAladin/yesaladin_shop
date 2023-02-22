@@ -90,4 +90,18 @@ class QueryTagServiceImplTest {
         assertThat(response.getDataList().get(0).getId()).isEqualTo(1L);
         assertThat(response.getDataList().get(9).getId()).isEqualTo(10L);
     }
+
+    @Test
+    @DisplayName("관리자가 태그 이름으로 검색")
+    void findByNameForManager() {
+        Tag tag = Tag.builder().id(1L).name("tag").build();
+
+        Mockito.when(queryTagRepository.findByNameForManager("name", PageRequest.of(0, 10)))
+                .thenReturn(new PageImpl<>(List.of(tag), PageRequest.of(0, 1), 1));
+
+        PaginatedResponseDto<TagResponseDto> response = service.findByNameForManager("name", PageRequest.of(0, 10));
+
+        assertThat(response.getTotalDataCount()).isEqualTo(1);
+        assertThat(response.getDataList().get(0).getName()).contains("tag");
+    }
 }

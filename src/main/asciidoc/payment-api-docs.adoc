@@ -1,4 +1,4 @@
-= Payment
+= Payment(link:index.html[뒤로가기])
 
 === 토스페이먼츠로부터 승인을 받기 위한 요청
 
