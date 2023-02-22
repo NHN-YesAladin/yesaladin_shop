@@ -9,31 +9,31 @@
 * link:member-api-docs.html[기타]
 
 상품::
-* link:product-api-docs.adoc[상품]
-* link:product-realation-api-docs.adoc[연관 상품]
+* link:product-api-docs.html[상품]
+* link:product-realation-api-docs.html[연관 상품]
 
-link:order-api-docs.adoc[주문]
-
-
-link:payment-api-docs.adoc[결제]
-
-link:category-api-docs.adoc[카테고리]
+link:order-api-docs.html[주문]
 
 
-link:publish-api-docs.adoc[출판사]
+link:payment-api-docs.html[결제]
+
+link:category-api-docs.html[카테고리]
 
 
-link:tag-api-docs.adoc[태그]
+link:publish-api-docs.html[출판사]
 
 
-link:writing-api-docs.adoc[저자]
+link:tag-api-docs.html[태그]
 
 
-link:wishlist-api-docs.adoc[위시리스트]
+link:writing-api-docs.html[저자]
 
-link:file-api-docs.adoc[파일]
 
-link:common-api-docs.adoc[공통]
+link:wishlist-api-docs.html[위시리스트]
+
+link:file-api-docs.html[파일]
+
+link:common-api-docs.html[공통]
 
 
 
