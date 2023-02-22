@@ -1,13 +1,26 @@
 package shop.yesaladin.shop.product.domain.model;
 
-import lombok.*;
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import shop.yesaladin.common.code.ErrorCode;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.file.domain.model.File;
-import shop.yesaladin.shop.product.exception.AlreadyDeletedProductException;
-import shop.yesaladin.shop.product.exception.NegativeOrZeroQuantityException;
 import shop.yesaladin.shop.product.persistence.converter.ProductSavingMethodCodeConverter;
 import shop.yesaladin.shop.product.persistence.converter.ProductTypeCodeConverter;
-
-import javax.persistence.*;
 
 /**
  * 상품의 엔터티 클래스입니다.
@@ -96,7 +109,10 @@ public class Product {
      */
     public void deleteProduct() {
         if (this.isDeleted) {
-            throw new AlreadyDeletedProductException(id);
+            throw new ClientException(
+                    ErrorCode.PRODUCT_ALREADY_DELETED,
+                    "Product already deleted with id = " + id
+            );
         }
         this.isDeleted = true;
         this.isSale = false;
@@ -111,7 +127,10 @@ public class Product {
      */
     public void changeQuantity(long quantity) {
         if (quantity < 0) {
-            throw new NegativeOrZeroQuantityException((int) quantity);
+            throw new ClientException(
+                    ErrorCode.PRODUCT_NEGATIVE_OR_ZERO_QUANTITY,
+                    "Entered a Negative or Zero quantity (Input value: " + quantity + ")"
+            );
         }
         this.quantity = quantity;
     }

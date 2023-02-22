@@ -13,6 +13,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class WishlistSaveResponseDto {
+
     private Long productId;
     private LocalDateTime registeredDateTime;
 }

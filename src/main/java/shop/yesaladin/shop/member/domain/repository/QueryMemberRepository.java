@@ -61,6 +61,16 @@ public interface QueryMemberRepository {
     Optional<Member> findMemberByEmail(String email);
 
     /**
+     * 회원의 phone 을 통해 회원을 조회 합니다.
+     *
+     * @param phone 회원의 phone 입니다.
+     * @return 조회된 회원
+     * @author 송학현
+     * @since 1.0
+     */
+    Optional<Member> findMemberByPhone(String phone);
+
+    /**
      * 기본 화면을 위한 회원 조회 메서드
      *
      * @param pageable 페이지 정보
@@ -73,7 +83,7 @@ public interface QueryMemberRepository {
     /**
      * 회원의 LoginId 를 통해 회원 Like 검색
      *
-     * @param loginId 회원의 loginId
+     * @param loginId  회원의 loginId
      * @param pageable 페이징 정보
      * @return 검색된 회원 리스트와 총 갯수
      * @author 김선홍
@@ -95,7 +105,7 @@ public interface QueryMemberRepository {
     /**
      * 회원의 phone 를 통해 회원 Like 검색
      *
-     * @param phone 회원의 phone 입니다.
+     * @param phone    회원의 phone 입니다.
      * @param pageable 페이징 정보
      * @return 검색된 회원 리스트와 총 갯수
      * @author 김선홍
@@ -107,7 +117,7 @@ public interface QueryMemberRepository {
     /**
      * 회원의 name 을 통해 회원 Like 검색
      *
-     * @param name   회원의 name 입니다.
+     * @param name     회원의 name 입니다.
      * @param pageable 페이징 정보
      * @return 검색된 회원 리스트와 총 갯수
      * @author 김선홍
@@ -119,12 +129,15 @@ public interface QueryMemberRepository {
      * 회원의 signUpDate 를 통해 회원 검색
      *
      * @param signUpDate 회원의 signUpDate 입니다.
-     * @param pageable 페이징 정보
+     * @param pageable   페이징 정보
      * @return 검색된 회원 리스트와 총 갯수
      * @author 김선홍
      * @since 1.0
      */
-    Page<MemberManagerResponseDto> findMemberManagersBySignUpDate(LocalDate signUpDate, Pageable pageable);
+    Page<MemberManagerResponseDto> findMemberManagersBySignUpDate(
+            LocalDate signUpDate,
+            Pageable pageable
+    );
 
     /**
      * 회원의 birthMonth, birthDay 를 통해 회원을 조회 합니다.

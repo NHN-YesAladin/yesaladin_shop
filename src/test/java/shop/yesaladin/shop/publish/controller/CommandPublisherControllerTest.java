@@ -1,5 +1,24 @@
 package shop.yesaladin.shop.publish.controller;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentRequest;
+import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,25 +33,11 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import shop.yesaladin.common.code.ErrorCode;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.publish.dto.PublisherRequestDto;
 import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
-import shop.yesaladin.shop.publish.exception.PublisherAlreadyExistsException;
 import shop.yesaladin.shop.publish.service.inter.CommandPublisherService;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentRequest;
-import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
 
 @AutoConfigureRestDocs
 @WebMvcTest(CommandPublisherController.class)
@@ -82,11 +87,15 @@ class CommandPublisherControllerTest {
                         fieldWithPath("name").type(JsonFieldType.STRING).description("출판사명")
                 ),
                 responseFields(
-                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("동작 성공 여부"),
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
                         fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
-                        fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("생성된 출판사 아이디"),
+                        fieldWithPath("data.id").type(JsonFieldType.NUMBER)
+                                .description("생성된 출판사 아이디"),
                         fieldWithPath("data.name").type(JsonFieldType.STRING).description("출판사명"),
-                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY).description("에러 메세지").optional()
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
+                                .optional()
                 )
         ));
     }
@@ -99,7 +108,13 @@ class CommandPublisherControllerTest {
         String name = "출판사1";
         PublisherRequestDto createDto = new PublisherRequestDto(name);
 
-        Mockito.when(service.create(any())).thenThrow(PublisherAlreadyExistsException.class);
+        Mockito.when(service.create(any())).thenThrow(
+                new ClientException(
+                        ErrorCode.PUBLISH_ALREADY_EXIST,
+                        "Publisher you are trying to create already exists => publisher name : "
+                                + createDto.getName()
+                )
+        );
 
         // when
         ResultActions result = mockMvc.perform(post("/v1/publishers")
@@ -109,7 +124,13 @@ class CommandPublisherControllerTest {
 
         // then
         result.andDo(print())
-                .andExpect(status().isConflict());
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.CONFLICT.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.PUBLISH_ALREADY_EXIST.getDisplayName())
+                ));
 
         verify(service, times(1)).create(any());
     }
@@ -153,11 +174,16 @@ class CommandPublisherControllerTest {
                         fieldWithPath("name").type(JsonFieldType.STRING).description("출판사명")
                 ),
                 responseFields(
-                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("동작 성공 여부"),
-                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("HTTP 상태 코드"),
-                        fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("수정된 출판사 아이디"),
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("HTTP 상태 코드"),
+                        fieldWithPath("data.id").type(JsonFieldType.NUMBER)
+                                .description("수정된 출판사 아이디"),
                         fieldWithPath("data.name").type(JsonFieldType.STRING).description("출판사명"),
-                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY).description("에러 메세지").optional()
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
+                                .optional()
                 )
         ));
     }
@@ -171,7 +197,13 @@ class CommandPublisherControllerTest {
         String name = "출판사1";
         PublisherRequestDto modifyDto = new PublisherRequestDto(name);
 
-        Mockito.when(service.modify(any(), any())).thenThrow(PublisherAlreadyExistsException.class);
+        Mockito.when(service.modify(any(), any())).thenThrow(
+                new ClientException(
+                        ErrorCode.PUBLISH_ALREADY_EXIST,
+                        "Publisher you are trying to modify already exists => publisher name : "
+                                + modifyDto.getName()
+                )
+        );
 
         // when
         ResultActions result = mockMvc.perform(put("/v1/publishers/{publisherId}", id)
@@ -181,7 +213,13 @@ class CommandPublisherControllerTest {
 
         // then
         result.andDo(print())
-                .andExpect(status().isConflict());
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.CONFLICT.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.PUBLISH_ALREADY_EXIST.getDisplayName())
+                ));
 
         verify(service, times(1)).modify(any(), any());
     }

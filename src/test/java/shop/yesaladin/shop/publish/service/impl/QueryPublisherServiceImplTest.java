@@ -1,5 +1,13 @@
 package shop.yesaladin.shop.publish.service.impl;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,15 +22,6 @@ import shop.yesaladin.shop.publish.domain.model.Publisher;
 import shop.yesaladin.shop.publish.domain.repository.QueryPublisherRepository;
 import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
 import shop.yesaladin.shop.publish.service.inter.QueryPublisherService;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 
 class QueryPublisherServiceImplTest {
 
@@ -43,7 +42,8 @@ class QueryPublisherServiceImplTest {
         Long id = 1L;
         Publisher publisher = DummyPublisher.dummy();
 
-        Mockito.when(queryPublisherRepository.findById(any())).thenReturn(Optional.ofNullable(publisher));
+        Mockito.when(queryPublisherRepository.findById(any()))
+                .thenReturn(Optional.ofNullable(publisher));
 
         // when
         PublisherResponseDto response = service.findById(id);
@@ -57,7 +57,8 @@ class QueryPublisherServiceImplTest {
     void findById_notFoundId_throwPublisherNotFoundException() {
         // given
         Long id = 1L;
-        Mockito.when(queryPublisherRepository.findById(any())).thenReturn(Optional.ofNullable(null));
+        Mockito.when(queryPublisherRepository.findById(any()))
+                .thenReturn(Optional.ofNullable(null));
 
         // when then
         assertThatThrownBy(() -> service.findById(id)).isInstanceOf(ClientException.class);
@@ -82,7 +83,10 @@ class QueryPublisherServiceImplTest {
         Mockito.when(queryPublisherRepository.findAllForManager(any())).thenReturn(page);
 
         // when
-        PaginatedResponseDto<PublisherResponseDto> response = service.findAllForManager(PageRequest.of(0, 5));
+        PaginatedResponseDto<PublisherResponseDto> response = service.findAllForManager(PageRequest.of(
+                0,
+                5
+        ));
 
         // then
         assertThat(response.getTotalDataCount()).isEqualTo(10);

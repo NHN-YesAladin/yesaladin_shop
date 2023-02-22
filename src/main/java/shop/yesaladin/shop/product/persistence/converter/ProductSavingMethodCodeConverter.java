@@ -1,11 +1,11 @@
 package shop.yesaladin.shop.product.persistence.converter;
 
-import shop.yesaladin.shop.product.domain.model.ProductSavingMethodCode;
-import shop.yesaladin.shop.product.exception.ProductSavingMethodCodeNotFoundException;
-
+import java.util.Arrays;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
-import java.util.Arrays;
+import shop.yesaladin.common.code.ErrorCode;
+import shop.yesaladin.common.exception.ClientException;
+import shop.yesaladin.shop.product.domain.model.ProductSavingMethodCode;
 
 /**
  * Enum 클래스로 만들어진 ProductSavingMethodCode 테이블을 entity와 DB 사이의 변환하기 위한 클래스입니다.
@@ -43,6 +43,9 @@ public class ProductSavingMethodCodeConverter implements
         return Arrays.stream(ProductSavingMethodCode.values())
                 .filter(code -> id.equals(code.getId()))
                 .findAny()
-                .orElseThrow(() -> new ProductSavingMethodCodeNotFoundException(id));
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.PRODUCT_SAVING_METHOD_CODE_NOT_FOUND,
+                        "ProductSavingMethodCode " + id + "(ID) is not found."
+                ));
     }
 }

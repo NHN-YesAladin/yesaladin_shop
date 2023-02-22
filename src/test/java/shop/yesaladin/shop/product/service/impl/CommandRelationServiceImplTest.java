@@ -1,5 +1,15 @@
 package shop.yesaladin.shop.product.service.impl;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,17 +25,7 @@ import shop.yesaladin.shop.product.dto.ProductOnlyIdDto;
 import shop.yesaladin.shop.product.dummy.DummyFile;
 import shop.yesaladin.shop.product.dummy.DummyProduct;
 import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
-import shop.yesaladin.shop.product.exception.RelationNotFoundException;
 import shop.yesaladin.shop.product.service.inter.CommandRelationService;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 class CommandRelationServiceImplTest {
 
@@ -33,16 +33,12 @@ class CommandRelationServiceImplTest {
     private final String URL = "https://api-storage.cloud.toast.com/v1/AUTH_/container/domain/type";
     private final Long MAIN_ID = 1L;
     private final Long SUB_ID = 2L;
-
+    private final List<Product> products = new ArrayList<>();
     private CommandRelationService service;
-
     private CommandRelationRepository commandRelationRepository;
     private QueryRelationRepository queryRelationRepository;
     private QueryProductRepository queryProductRepository;
-
     private TotalDiscountRate totalDiscountRate;
-
-    private final List<Product> products = new ArrayList<>();
 
     @BeforeEach
     void setUp() {
@@ -83,11 +79,15 @@ class CommandRelationServiceImplTest {
 
         Mockito.when(queryRelationRepository.existsByPk(any())).thenReturn(false);
 
-        Mockito.when(queryProductRepository.findProductById(MAIN_ID)).thenReturn(Optional.of(productMain));
-        Mockito.when(queryProductRepository.findProductById(SUB_ID)).thenReturn(Optional.ofNullable(productSub));
+        Mockito.when(queryProductRepository.findProductById(MAIN_ID))
+                .thenReturn(Optional.of(productMain));
+        Mockito.when(queryProductRepository.findProductById(SUB_ID))
+                .thenReturn(Optional.ofNullable(productSub));
 
-        Mockito.when(queryProductRepository.findProductById(MAIN_ID)).thenReturn(Optional.of(productMain));
-        Mockito.when(queryProductRepository.findProductById(SUB_ID)).thenReturn(Optional.of(productSub));
+        Mockito.when(queryProductRepository.findProductById(MAIN_ID))
+                .thenReturn(Optional.of(productMain));
+        Mockito.when(queryProductRepository.findProductById(SUB_ID))
+                .thenReturn(Optional.of(productSub));
 
         // when
         ProductOnlyIdDto productMAIN_ID = service.create(MAIN_ID, SUB_ID);
@@ -135,6 +135,9 @@ class CommandRelationServiceImplTest {
         Mockito.when(queryRelationRepository.existsByPk(any())).thenReturn(false);
 
         // when
-        assertThatThrownBy(() -> service.delete(MAIN_ID, SUB_ID)).isInstanceOf(RelationNotFoundException.class);
+        assertThatThrownBy(() -> service.delete(
+                MAIN_ID,
+                SUB_ID
+        )).isInstanceOf(ClientException.class);
     }
 }

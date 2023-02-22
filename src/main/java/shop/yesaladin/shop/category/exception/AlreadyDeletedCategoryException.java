@@ -6,7 +6,7 @@ package shop.yesaladin.shop.category.exception;
  * @author 배수한
  * @since 1.0
  */
-public class AlreadyDeletedCategoryException extends RuntimeException{
+public class AlreadyDeletedCategoryException extends RuntimeException {
 
     public AlreadyDeletedCategoryException(Long id) {
         super("Already deleted category : " + id);

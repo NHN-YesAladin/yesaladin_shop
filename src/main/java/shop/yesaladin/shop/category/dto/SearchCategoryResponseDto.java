@@ -31,7 +31,7 @@ public class SearchCategoryResponseDto {
             SearchedCategoryDtoBuilder searchedCategoryDto = SearchedCategoryDto.builder()
                     .id(searchedCategory.getId())
                     .name(searchedCategory.getName());
-            if(Objects.isNull(searchedCategory.getParent())) {
+            if (Objects.isNull(searchedCategory.getParent())) {
                 return searchedCategoryDto.build();
             }
             return searchedCategoryDto.parentName(searchedCategory.getParent().getName()).build();

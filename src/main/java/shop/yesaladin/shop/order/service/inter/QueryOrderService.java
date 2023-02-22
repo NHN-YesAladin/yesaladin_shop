@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.order.service.inter;
 
+import java.util.List;
 import java.util.Map;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,9 +9,15 @@ import shop.yesaladin.shop.common.dto.PeriodQueryRequestDto;
 import shop.yesaladin.shop.common.exception.PageOffsetOutOfBoundsException;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
-import shop.yesaladin.shop.order.dto.*;
-import java.util.List;
-import java.util.Map;
+import shop.yesaladin.shop.order.dto.BestsellerResponseDto;
+import shop.yesaladin.shop.order.dto.OrderDetailsResponseDto;
+import shop.yesaladin.shop.order.dto.OrderPaymentResponseDto;
+import shop.yesaladin.shop.order.dto.OrderSheetRequestDto;
+import shop.yesaladin.shop.order.dto.OrderSheetResponseDto;
+import shop.yesaladin.shop.order.dto.OrderStatusResponseDto;
+import shop.yesaladin.shop.order.dto.OrderSummaryDto;
+import shop.yesaladin.shop.order.dto.OrderSummaryResponseDto;
+import shop.yesaladin.shop.order.dto.SalesStatisticsResponseDto;
 
 
 /**
@@ -163,7 +170,11 @@ public interface QueryOrderService {
      * @since 1.0
      */
 
-    PaginatedResponseDto<SalesStatisticsResponseDto> getSalesStatistics(String start, String end, Pageable pageable);
+    PaginatedResponseDto<SalesStatisticsResponseDto> getSalesStatistics(
+            String start,
+            String end,
+            Pageable pageable
+    );
 
     /**
      * 지난 1년동안 가장 매출이 좋은 12개의 상품을 조회합니다.

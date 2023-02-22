@@ -47,6 +47,23 @@ class QueryMemberGradeHistoryServiceImplTest {
 
     String loginId = "user@1";
 
+    public static Stream<Arguments> getPeriodQueryRequestData() {
+        LocalDate date1 = LocalDate.of(2022, 1, 1);
+        LocalDate date2 = LocalDate.of(2023, 1, 1);
+        LocalDate date3 = LocalDate.of(2054, 1, 1);
+
+        return Stream.of(
+                Arguments.of(
+                        ReflectionUtils.newInstance(PeriodQueryRequestDto.class, date2, date1),
+                        "[START_OVER_END] 시작날짜가 끝날짜보다 뒤에 있는 경우"
+                ),
+                Arguments.of(
+                        ReflectionUtils.newInstance(PeriodQueryRequestDto.class, date1, date3),
+                        "[FUTURE] 끝날짜가 오늘보다 미래인 경우"
+                )
+        );
+    }
+
     @BeforeEach
     void setUp() {
         queryMemberRepository = Mockito.mock(QueryMemberRepository.class);
@@ -75,23 +92,6 @@ class QueryMemberGradeHistoryServiceImplTest {
                 any(),
                 any(),
                 any()
-        );
-    }
-
-    public static Stream<Arguments> getPeriodQueryRequestData() {
-        LocalDate date1 = LocalDate.of(2022, 1, 1);
-        LocalDate date2 = LocalDate.of(2023, 1, 1);
-        LocalDate date3 = LocalDate.of(2054, 1, 1);
-
-        return Stream.of(
-                Arguments.of(
-                        ReflectionUtils.newInstance(PeriodQueryRequestDto.class, date2, date1),
-                        "[START_OVER_END] 시작날짜가 끝날짜보다 뒤에 있는 경우"
-                ),
-                Arguments.of(
-                        ReflectionUtils.newInstance(PeriodQueryRequestDto.class, date1, date3),
-                        "[FUTURE] 끝날짜가 오늘보다 미래인 경우"
-                )
         );
     }
 

@@ -18,8 +18,12 @@ import shop.yesaladin.shop.member.dto.MemberBlockRequestDto;
 import shop.yesaladin.shop.member.dto.MemberBlockResponseDto;
 import shop.yesaladin.shop.member.dto.MemberCreateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberCreateResponseDto;
+import shop.yesaladin.shop.member.dto.MemberEmailUpdateRequestDto;
+import shop.yesaladin.shop.member.dto.MemberNameUpdateRequestDto;
+import shop.yesaladin.shop.member.dto.MemberNicknameUpdateRequestDto;
+import shop.yesaladin.shop.member.dto.MemberPasswordUpdateRequestDto;
+import shop.yesaladin.shop.member.dto.MemberPhoneUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberUnblockResponseDto;
-import shop.yesaladin.shop.member.dto.MemberUpdateRequestDto;
 import shop.yesaladin.shop.member.dto.MemberUpdateResponseDto;
 import shop.yesaladin.shop.member.dto.MemberWithdrawResponseDto;
 import shop.yesaladin.shop.member.dto.OauthMemberCreateRequestDto;
@@ -57,7 +61,8 @@ public class CommandMemberServiceImpl implements CommandMemberService {
                 () -> new MemberRoleNotFoundException(roleId));
 
         checkMemberProfileExist(createDto.getLoginId(), createDto.getNickname(),
-                createDto.getEmail(), createDto.getPhone());
+                createDto.getEmail(), createDto.getPhone()
+        );
 
         Member member = createDto.toEntity();
         Member savedMember = commandMemberRepository.save(member);
@@ -87,7 +92,8 @@ public class CommandMemberServiceImpl implements CommandMemberService {
                 () -> new MemberRoleNotFoundException(roleId));
 
         checkMemberProfileExist(createDto.getLoginId(), createDto.getNickname(),
-                createDto.getEmail(), createDto.getPhone());
+                createDto.getEmail(), createDto.getPhone()
+        );
 
         Member member = createDto.toEntity();
         Member savedMember = commandMemberRepository.save(member);
@@ -108,15 +114,21 @@ public class CommandMemberServiceImpl implements CommandMemberService {
     /**
      * 중복 사항을 체크하는 메소드 입니다.
      *
-     * @param loginId 조회 대상
+     * @param loginId  조회 대상
      * @param nickname 조회 대상
-     * @param email 조회 대상
-     * @param phone 조회 대상
-     * @throws MemberProfileAlreadyExistException loginId, nickname, email, phone 이 기존에 있다면 발생하는 예외입니다.
+     * @param email    조회 대상
+     * @param phone    조회 대상
+     * @throws MemberProfileAlreadyExistException loginId, nickname, email, phone 이 기존에 있다면 발생하는
+     *                                            예외입니다.
      * @author 송학현
      * @since 1.0
      */
-    private void checkMemberProfileExist(String loginId, String nickname, String email, String phone) {
+    private void checkMemberProfileExist(
+            String loginId,
+            String nickname,
+            String email,
+            String phone
+    ) {
         if (queryMemberRepository.existsMemberByLoginId(loginId)) {
             throw new MemberProfileAlreadyExistException(loginId);
         }
@@ -147,7 +159,10 @@ public class CommandMemberServiceImpl implements CommandMemberService {
      */
     @Transactional
     @Override
-    public MemberUpdateResponseDto update(String loginId, MemberUpdateRequestDto request) {
+    public MemberUpdateResponseDto updateNickname(
+            String loginId,
+            MemberNicknameUpdateRequestDto request
+    ) {
         Member member = tryGetMemberById(loginId);
 
         checkNewNicknameIsUnique(request);
@@ -157,12 +172,83 @@ public class CommandMemberServiceImpl implements CommandMemberService {
         return MemberUpdateResponseDto.fromEntity(member);
     }
 
-    private void checkNewNicknameIsUnique(MemberUpdateRequestDto request) {
+    private void checkNewNicknameIsUnique(MemberNicknameUpdateRequestDto request) {
         if (queryMemberRepository.findMemberByNickname(request.getNickname()).isPresent()) {
             throw new ClientException(
                     ErrorCode.MEMBER_NICKNAME_ALREADY_EXIST,
                     "Member nickname is already exist with nickname : "
                             + request.getNickname()
+                            + "."
+            );
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public MemberUpdateResponseDto updateName(
+            String loginId, MemberNameUpdateRequestDto request
+    ) {
+        Member member = tryGetMemberById(loginId);
+
+        member.changeName(request.getName());
+
+        return MemberUpdateResponseDto.fromEntity(member);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public MemberUpdateResponseDto updatePhone(
+            String loginId, MemberPhoneUpdateRequestDto request
+    ) {
+        Member member = tryGetMemberById(loginId);
+
+        checkNewPhoneIsUnique(request);
+
+        member.changePhone(request.getPhone());
+
+        return MemberUpdateResponseDto.fromEntity(member);
+    }
+
+    private void checkNewPhoneIsUnique(MemberPhoneUpdateRequestDto request) {
+        if (queryMemberRepository.findMemberByPhone(request.getPhone()).isPresent()) {
+            throw new ClientException(
+                    ErrorCode.MEMBER_PHONE_ALREADY_EXIST,
+                    "Member phone is already exist with phone : "
+                            + request.getPhone()
+                            + "."
+            );
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public MemberUpdateResponseDto updateEmail(
+            String loginId, MemberEmailUpdateRequestDto request
+    ) {
+        Member member = tryGetMemberById(loginId);
+
+        checkNewEmailIsUnique(request);
+
+        member.changeEmail(request.getEmail());
+
+        return MemberUpdateResponseDto.fromEntity(member);
+    }
+
+    private void checkNewEmailIsUnique(MemberEmailUpdateRequestDto request) {
+        if (queryMemberRepository.findMemberByEmail(request.getEmail()).isPresent()) {
+            throw new ClientException(
+                    ErrorCode.MEMBER_EMAIL_ALREADY_EXIST,
+                    "Member email is already exist with email : "
+                            + request.getEmail()
                             + "."
             );
         }
@@ -217,5 +303,20 @@ public class CommandMemberServiceImpl implements CommandMemberService {
         member.withdrawMember();
 
         return MemberWithdrawResponseDto.fromEntity(member);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public MemberUpdateResponseDto updatePassword(
+            String loginId, MemberPasswordUpdateRequestDto request
+    ) {
+        Member member = tryGetMemberById(loginId);
+
+        member.changePassword(request.getPassword());
+
+        return MemberUpdateResponseDto.fromEntity(member);
     }
 }

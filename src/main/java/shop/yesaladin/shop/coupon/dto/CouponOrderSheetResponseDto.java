@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CouponOrderSheetResponseDto {
+
     private String isbn;
     private List<String> memberCoupons;
     private List<String> memberCouponNames;

@@ -15,7 +15,6 @@ import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.category.domain.model.Category;
 import shop.yesaladin.shop.category.domain.repository.QueryCategoryRepository;
 import shop.yesaladin.shop.category.dto.CategoryResponseDto;
-import shop.yesaladin.shop.category.exception.CategoryNotFoundException;
 import shop.yesaladin.shop.category.service.inter.QueryCategoryService;
 
 /**
@@ -33,8 +32,7 @@ public class QueryCategoryServiceImpl implements QueryCategoryService {
     private final QueryCategoryRepository queryCategoryRepository;
 
     /**
-     *  {@inheritDoc}
-     *
+     * {@inheritDoc}
      */
     @Transactional(readOnly = true)
     @Override
@@ -55,7 +53,7 @@ public class QueryCategoryServiceImpl implements QueryCategoryService {
     /**
      * {@inheritDoc}
      */
-    @Cacheable(cacheNames = "parentCategories",key = "'parentCategories'")
+    @Cacheable(cacheNames = "parentCategories", key = "'parentCategories'")
     @Transactional(readOnly = true)
     @Override
     public List<CategoryResponseDto> findParentCategories() {
@@ -97,8 +95,7 @@ public class QueryCategoryServiceImpl implements QueryCategoryService {
 
 
     /**
-     *  {@inheritDoc}
-     *
+     * {@inheritDoc}
      */
     @Transactional(readOnly = true)
     @Override
@@ -106,7 +103,6 @@ public class QueryCategoryServiceImpl implements QueryCategoryService {
         Category category = tryGetCategoryById(id);
         return CategoryResponseDto.fromEntity(category);
     }
-
 
 
     /**

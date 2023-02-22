@@ -233,7 +233,12 @@ class CommandMemberAddressServiceImplTest {
                 .member(member)
                 .build();
     }
-    private MemberAddress getDefaultMemberAddressWithId(long addressId, Member member, boolean isDeleted) {
+
+    private MemberAddress getDefaultMemberAddressWithId(
+            long addressId,
+            Member member,
+            boolean isDeleted
+    ) {
         return MemberAddress.builder()
                 .id(addressId)
                 .address(address)

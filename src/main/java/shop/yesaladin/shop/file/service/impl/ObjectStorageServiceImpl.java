@@ -1,5 +1,8 @@
 package shop.yesaladin.shop.file.service.impl;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
@@ -14,10 +17,6 @@ import shop.yesaladin.shop.config.ObjectStorageProperties;
 import shop.yesaladin.shop.file.dto.FileUploadResponseDto;
 import shop.yesaladin.shop.file.service.inter.ObjectStorageService;
 import shop.yesaladin.shop.file.service.inter.StorageAuthService;
-
-import java.time.Clock;
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 /**
  * Object Storage 파일 업로드/다운로드를 하기 위한 Service 구현체 입니다.
@@ -75,7 +74,8 @@ public class ObjectStorageServiceImpl implements ObjectStorageService {
         );
 
         // API 호출
-        String filename = UUID.randomUUID() + "." + FilenameUtils.getExtension(file.getOriginalFilename());
+        String filename =
+                UUID.randomUUID() + "." + FilenameUtils.getExtension(file.getOriginalFilename());
         String url = getUrl(domainName, typeName, filename);
         restTemplate.execute(url, HttpMethod.PUT, requestCallback, responseExtractor);
 

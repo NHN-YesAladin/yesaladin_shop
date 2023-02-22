@@ -34,16 +34,6 @@ public class SearchProductServiceImpl implements SearchProductService {
      * {@inheritDoc}
      */
     @Override
-    public Page<SearchedProductResponseDto> searchProductsByCategoryName(
-            String name, Pageable pageable
-    ) {
-        return searchProductRepository.searchProductsByCategoryName(name, pageable);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public Page<SearchedProductResponseDto> searchProductsByProductTitle(
             String title, Pageable pageable
     ) {

@@ -1,10 +1,9 @@
 package shop.yesaladin.shop.product.domain.repository;
 
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.product.dto.SearchedProductResponseDto;
-
-import java.util.List;
 
 /**
  * 상품 검색 레포지토리의 인터페이스
@@ -23,20 +22,6 @@ public interface SearchProductRepository {
      * @
      */
     Page<SearchedProductResponseDto> searchProductsByCategoryId(Long id, Pageable pageable);
-
-    /**
-     * 카테고리 이름으로 상품을 검색하는 메서드
-     *
-     * @param name     검색하고 싶은 카테고리 이름
-     * @param pageable 페이지 정보
-     * @return 상품 리스트와 총 갯수
-     * @author : 김선홍
-     * @since : 1.0
-     */
-    Page<SearchedProductResponseDto> searchProductsByCategoryName(
-            String name,
-            Pageable pageable
-    );
 
     /**
      * 상품 이름으로 상품을 검색하는 메서드

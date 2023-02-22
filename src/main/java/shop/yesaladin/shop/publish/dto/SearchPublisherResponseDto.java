@@ -1,12 +1,11 @@
 package shop.yesaladin.shop.publish.dto;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.yesaladin.shop.publish.domain.model.SearchedPublisher;
-
-import java.util.List;
 
 @Getter
 @Builder

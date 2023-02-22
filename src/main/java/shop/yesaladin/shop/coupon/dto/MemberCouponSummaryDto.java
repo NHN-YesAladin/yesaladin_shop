@@ -79,15 +79,15 @@ public class MemberCouponSummaryDto {
     private long getDiscountPrice(long price) {
         if (couponTypeCode.getCode() == 1) {
             log.error("정액 할인 => ");
-            if(price >= minOrderAmount) {
+            if (price >= minOrderAmount) {
                 log.error("{} - {}", price, amount);
                 return price - amount;
             }
         } else if (couponTypeCode.getCode() == 2) {
             log.error("정률 할인 => ");
-            if(price >= minOrderAmount) {
-                long discountAmount = price *(100 - amount) / 100;
-                if(discountAmount > maxDiscountAmount) {
+            if (price >= minOrderAmount) {
+                long discountAmount = price * (100 - amount) / 100;
+                if (discountAmount > maxDiscountAmount) {
                     log.error("{} - 최대할인금액({})", price, maxDiscountAmount);
                     return price - maxDiscountAmount;
                 }
@@ -103,7 +103,4 @@ public class MemberCouponSummaryDto {
         }
         return price;
     }
-    //private Integer minOrderAmount;
-    //    private Integer maxDiscountAmount;
-    //    private Boolean canBeOverlapped;
 }

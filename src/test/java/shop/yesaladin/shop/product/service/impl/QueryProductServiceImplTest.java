@@ -1,5 +1,23 @@
 package shop.yesaladin.shop.product.service.impl;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,7 +35,15 @@ import shop.yesaladin.shop.product.domain.model.ProductTypeCode;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
 import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
-import shop.yesaladin.shop.product.dto.*;
+import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
+import shop.yesaladin.shop.product.dto.ProductModifyDto;
+import shop.yesaladin.shop.product.dto.ProductOnlyTitleDto;
+import shop.yesaladin.shop.product.dto.ProductRecentResponseDto;
+import shop.yesaladin.shop.product.dto.ProductResponseDto;
+import shop.yesaladin.shop.product.dto.ProductWithCategoryResponseDto;
+import shop.yesaladin.shop.product.dto.ProductsResponseDto;
+import shop.yesaladin.shop.product.dto.RelationsResponseDto;
+import shop.yesaladin.shop.product.dto.ViewCartDto;
 import shop.yesaladin.shop.product.dummy.DummyFile;
 import shop.yesaladin.shop.product.dummy.DummyProduct;
 import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
@@ -29,33 +55,20 @@ import shop.yesaladin.shop.publish.service.inter.QueryPublishService;
 import shop.yesaladin.shop.tag.service.inter.QueryProductTagService;
 import shop.yesaladin.shop.writing.service.inter.QueryWritingService;
 
-import java.time.*;
-import java.util.*;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
-
 class QueryProductServiceImplTest {
 
     private final String URL = "https://api-storage.cloud.toast.com/v1/AUTH_/container/domain/type";
-
-    private QueryProductService service;
-
-    // Product
-    private QueryProductRepository queryProductRepository;
-
-    private QueryWritingService queryWritingService;
-    private QueryPublishService queryPublishService;
-    private QueryProductTagService queryProductTagService;
-    private QueryProductCategoryService queryProductCategoryService;
-
     private final Clock clock = Clock.fixed(
             Instant.parse("2023-01-10T00:00:00.000Z"),
             ZoneId.of("UTC")
     );
+    private QueryProductService service;
+    // Product
+    private QueryProductRepository queryProductRepository;
+    private QueryWritingService queryWritingService;
+    private QueryPublishService queryPublishService;
+    private QueryProductTagService queryProductTagService;
+    private QueryProductCategoryService queryProductCategoryService;
 
     @BeforeEach
     void setUp() {
@@ -196,7 +209,8 @@ class QueryProductServiceImplTest {
     @DisplayName("상품 일반 조회 실패_해당 아이디의 상품이 존재하지 않는다면 예외 발생")
     void findProductById_throwProductNotFoundException() {
         // given
-        Mockito.when(queryProductRepository.findProductById(anyLong())).thenReturn(Optional.empty());
+        Mockito.when(queryProductRepository.findProductById(anyLong()))
+                .thenReturn(Optional.empty());
 
         // when then
         assertThatThrownBy(() -> service.findProductById(1L)).isInstanceOf(ClientException.class);
@@ -258,7 +272,8 @@ class QueryProductServiceImplTest {
     @DisplayName("상품 상세 조회 실패_해당 아이디의 상품이 존재하지 않는다면 예외 발생")
     void findDetailProductById_throwProductNotFoundException() {
         // given
-        Mockito.when(queryProductRepository.findProductById(anyLong())).thenReturn(Optional.empty());
+        Mockito.when(queryProductRepository.findProductById(anyLong()))
+                .thenReturn(Optional.empty());
 
         // when then
         assertThatThrownBy(() -> service.findDetailProductById(1L)).isInstanceOf(ClientException.class);

@@ -3,9 +3,9 @@ package shop.yesaladin.shop.file.dto;
 import lombok.Data;
 
 /**
- * curl -X POST -H 'Content-Type:application/json' \
- * https://api-identity.infrastructure.cloud.toast.com/v2.0/tokens \ -d '{"auth": {"tenantId":
- * "*****", "passwordCredentials": {"username": "*****", "password": "*****"}}}' <- 요청 본문
+ * curl -X POST -H 'Content-Type:application/json' \ https://api-identity.infrastructure.cloud.toast.com/v2.0/tokens
+ * \ -d '{"auth": {"tenantId": "*****", "passwordCredentials": {"username": "*****", "password":
+ * "*****"}}}' <- 요청 본문
  * <p>
  * 요청 본문에 들어갈 내용을 담고 있는 객체입니다.
  *

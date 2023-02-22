@@ -2,10 +2,20 @@ package shop.yesaladin.shop.file.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import shop.yesaladin.shop.common.exception.CustomJsonProcessingException;
@@ -14,13 +24,6 @@ import shop.yesaladin.shop.file.dto.TokenDto;
 import shop.yesaladin.shop.file.dto.TokenJsonDto;
 import shop.yesaladin.shop.file.dto.TokenRequest;
 import shop.yesaladin.shop.file.service.inter.StorageAuthService;
-
-import java.time.Duration;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Object Storage 인증 토큰을 발급받기 위한 Service 구현체 입니다.
@@ -38,7 +41,6 @@ public class StorageAuthServiceImpl implements StorageAuthService {
     private final ObjectStorageProperties objectStorage;
     private final RestTemplate restTemplate;
     private final ObjectMapper mapper;
-
     private final RedisTemplate<String, String> redisTemplate;
 
     /**
@@ -48,7 +50,7 @@ public class StorageAuthServiceImpl implements StorageAuthService {
      * @author 이수정
      * @since 1.0
      */
-    public TokenRequest makeTokenRequest() {
+    private TokenRequest makeTokenRequest() {
         TokenRequest tokenRequest = new TokenRequest();
 
         tokenRequest.getAuth().setTenantId(objectStorage.getTenantId());

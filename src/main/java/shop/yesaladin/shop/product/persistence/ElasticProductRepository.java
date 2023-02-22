@@ -3,6 +3,9 @@ package shop.yesaladin.shop.product.persistence;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -15,10 +18,6 @@ import shop.yesaladin.shop.product.domain.model.SearchedProduct;
 import shop.yesaladin.shop.product.domain.repository.SearchProductRepository;
 import shop.yesaladin.shop.product.dto.SearchedProductResponseDto;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
 /**
  * 상품 검색 레포지토리
  *
@@ -30,7 +29,6 @@ import java.util.stream.Collectors;
 public class ElasticProductRepository implements SearchProductRepository {
 
     private static final String CATEGORIES_ID = "categories.id";
-    private static final String CATEGORIES_NAME = "categories.name";
     private static final String TITLE = "title^2";
     private static final String CONTENT = "contents^3";
     private static final String DESCRIPTION = "description^2";
@@ -53,17 +51,6 @@ public class ElasticProductRepository implements SearchProductRepository {
             Pageable pageable
     ) {
         return searchResponseProductByTermQuery(String.valueOf(id), pageable, CATEGORIES_ID);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Page<SearchedProductResponseDto> searchProductsByCategoryName(
-            String name,
-            Pageable pageable
-    ) {
-        return searchResponseProductByTermQuery(CATEGORIES_NAME, pageable, name);
     }
 
     /**
@@ -156,7 +143,8 @@ public class ElasticProductRepository implements SearchProductRepository {
                                 product.getContent(),
                                 calcSellingPrice(
                                         product.getContent().getActualPrice(),
-                                        getRateByProduct(product.getContent())),
+                                        getRateByProduct(product.getContent())
+                                ),
                                 getRateByProduct(product.getContent()),
                                 isEbook(product.getContent())
                         )
@@ -185,7 +173,8 @@ public class ElasticProductRepository implements SearchProductRepository {
                                 product.getContent(),
                                 calcSellingPrice(
                                         product.getContent().getActualPrice(),
-                                        getRateByProduct(product.getContent())),
+                                        getRateByProduct(product.getContent())
+                                ),
                                 getRateByProduct(product.getContent()),
                                 isEbook(product.getContent())
                         )
@@ -234,21 +223,6 @@ public class ElasticProductRepository implements SearchProductRepository {
     private Query getMatchQuery(String field, String value) {
         return NativeQuery.builder()
                 .withQuery(q -> q.match(v -> v.query(value).field(field)))
-                .getQuery();
-    }
-
-    /**
-     * 밸류가 String 인 Term 쿼리를 반환하는 메서드
-     *
-     * @param field 필드
-     * @param value 문자열 밸류
-     * @return 쿼리
-     * @author : 김선홍
-     * @since : 1.0
-     */
-    private Query getTermQueryByString(String field, String value) {
-        return NativeQuery.builder()
-                .withQuery(q -> q.term(t -> t.field(field).value(value)))
                 .getQuery();
     }
 

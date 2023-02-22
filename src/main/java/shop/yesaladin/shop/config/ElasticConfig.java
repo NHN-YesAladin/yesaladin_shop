@@ -8,8 +8,10 @@ import org.springframework.data.elasticsearch.client.elc.ElasticsearchConfigurat
 
 @Configuration
 public class ElasticConfig extends ElasticsearchConfiguration {
+
     @Value("${elastic.host}")
     private String hostIp;
+
     @Override
     public ClientConfiguration clientConfiguration() {
         return ClientConfiguration.builder()

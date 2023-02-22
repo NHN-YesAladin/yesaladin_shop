@@ -1,9 +1,8 @@
 package shop.yesaladin.shop.tag.domain.repository;
 
+import java.util.List;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.tag.domain.model.ProductTag;
-
-import java.util.List;
 
 /**
  * 태그 관계 조회 관련 Repository Interface 입니다.

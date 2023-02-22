@@ -1,5 +1,15 @@
 package shop.yesaladin.shop.product.service.impl;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,37 +35,21 @@ import shop.yesaladin.shop.publish.dto.PublishResponseDto;
 import shop.yesaladin.shop.publish.service.inter.QueryPublishService;
 import shop.yesaladin.shop.writing.service.inter.QueryWritingService;
 
-import java.time.Clock;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-
 class QueryRelationServiceImplTest {
 
     private final Long PRODUCT_ID = 1L;
     private final String ISBN = "000000000000";
     private final String URL = "https://api-storage.cloud.toast.com/v1/AUTH_/container/domain/type";
-
-    private QueryRelationService service;
-
-    private QueryRelationRepository queryRelationRepository;
-    private QueryWritingService queryWritingService;
-    private QueryPublishService queryPublishService;
-
-    private TotalDiscountRate totalDiscountRate;
-
+    private final List<Product> products = new ArrayList<>();
     Clock clock = Clock.fixed(
             Instant.parse("2023-03-10T00:00:00.000Z"),
             ZoneId.of("UTC")
     );
-
-    private final List<Product> products = new ArrayList<>();
+    private QueryRelationService service;
+    private QueryRelationRepository queryRelationRepository;
+    private QueryWritingService queryWritingService;
+    private QueryPublishService queryPublishService;
+    private TotalDiscountRate totalDiscountRate;
 
     @BeforeEach
     void setUp() {
@@ -107,14 +101,20 @@ class QueryRelationServiceImplTest {
         Publisher publisher = DummyPublisher.dummy();
         Mockito.when(queryPublishService.findByProduct(any()))
                 .thenReturn(new PublishResponseDto(
-                        Publish.Pk.builder().productId(PRODUCT_ID).publisherId(publisher.getId()).build(),
+                        Publish.Pk.builder()
+                                .productId(PRODUCT_ID)
+                                .publisherId(publisher.getId())
+                                .build(),
                         LocalDateTime.now(clock).toLocalDate(),
                         products.get(0),
                         publisher
                 ));
 
         // when
-        PaginatedResponseDto<RelationsResponseDto> response = service.findAllForManager(PRODUCT_ID, PageRequest.of(0, 3));
+        PaginatedResponseDto<RelationsResponseDto> response = service.findAllForManager(
+                PRODUCT_ID,
+                PageRequest.of(0, 3)
+        );
 
         // then
         assertThat(response.getTotalDataCount()).isEqualTo(9);
@@ -135,19 +135,26 @@ class QueryRelationServiceImplTest {
                 PageRequest.of(0, 3),
                 relations.size()
         );
-        Mockito.when(queryRelationRepository.findAll(PRODUCT_ID, PageRequest.of(0, 3))).thenReturn(page);
+        Mockito.when(queryRelationRepository.findAll(PRODUCT_ID, PageRequest.of(0, 3)))
+                .thenReturn(page);
 
         Publisher publisher = DummyPublisher.dummy();
         Mockito.when(queryPublishService.findByProduct(any()))
                 .thenReturn(new PublishResponseDto(
-                        Publish.Pk.builder().productId(PRODUCT_ID).publisherId(publisher.getId()).build(),
+                        Publish.Pk.builder()
+                                .productId(PRODUCT_ID)
+                                .publisherId(publisher.getId())
+                                .build(),
                         LocalDateTime.now(clock).toLocalDate(),
                         products.get(0),
                         publisher
                 ));
 
         // when
-        PaginatedResponseDto<RelationsResponseDto> response = service.findAll(PRODUCT_ID, PageRequest.of(0, 3));
+        PaginatedResponseDto<RelationsResponseDto> response = service.findAll(
+                PRODUCT_ID,
+                PageRequest.of(0, 3)
+        );
 
         // then
         assertThat(response.getTotalDataCount()).isEqualTo(4);

@@ -1,5 +1,15 @@
 package shop.yesaladin.shop.tag.service.impl;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,15 +20,7 @@ import shop.yesaladin.shop.tag.domain.repository.CommandTagRepository;
 import shop.yesaladin.shop.tag.domain.repository.QueryTagRepository;
 import shop.yesaladin.shop.tag.dto.TagRequestDto;
 import shop.yesaladin.shop.tag.dto.TagResponseDto;
-import shop.yesaladin.shop.tag.exception.TagNotFoundException;
 import shop.yesaladin.shop.tag.service.inter.CommandTagService;
-
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 class CommandTagServiceImplTest {
 
@@ -127,10 +129,10 @@ class CommandTagServiceImplTest {
         String modifiedName = "슬픈";
         TagRequestDto modifyDto = new TagRequestDto(modifiedName);
 
-        Mockito.when(queryTagRepository.findById(id)).thenThrow(TagNotFoundException.class);
+        Mockito.when(queryTagRepository.findById(id)).thenThrow(ClientException.class);
 
         // when
-        assertThatThrownBy(() -> service.modify(id, modifyDto)).isInstanceOf(TagNotFoundException.class);
+        assertThatThrownBy(() -> service.modify(id, modifyDto)).isInstanceOf(ClientException.class);
 
         verify(queryTagRepository, times(1)).findById(anyLong());
 

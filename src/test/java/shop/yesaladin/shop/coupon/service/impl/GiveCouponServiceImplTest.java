@@ -1,5 +1,14 @@
 package shop.yesaladin.shop.coupon.service.impl;
 
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.argThat;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
@@ -8,13 +17,12 @@ import java.time.ZoneId;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.HttpMethod;
@@ -40,10 +48,10 @@ import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.dto.MemberDto;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 
-@Disabled
-@SuppressWarnings("all")
+//@SuppressWarnings("all")
 class GiveCouponServiceImplTest {
 
+    private final static Clock clock = Clock.fixed(Instant.ofEpochSecond(100000), ZoneId.of("UTC"));
     private GatewayProperties gatewayProperties;
     private CouponProducer couponProducer;
     private QueryMemberCouponRepository queryMemberCouponRepository;
@@ -52,21 +60,20 @@ class GiveCouponServiceImplTest {
     private RestTemplate restTemplate;
     private RedisTemplate<String, String> redisTemplate;
     private GiveCouponServiceImpl giveCouponService;
-    private ValueOperations<String, String> valueOperations = Mockito.mock(ValueOperations.class);
+    private ValueOperations<String, String> valueOperations = mock(ValueOperations.class);
     private ApplicationEventPublisher applicationEventPublisher;
-    private final static Clock clock = Clock.fixed(Instant.ofEpochSecond(100000), ZoneId.of("UTC"));
 
     @BeforeEach
     @SuppressWarnings("unchecked")
     void setup() {
-        gatewayProperties = Mockito.mock(GatewayProperties.class);
-        couponProducer = Mockito.mock(CouponProducer.class);
-        queryMemberCouponRepository = Mockito.mock(QueryMemberCouponRepository.class);
-        commandMemberCouponRepository = Mockito.mock(CommandMemberCouponRepository.class);
-        queryMemberService = Mockito.mock(QueryMemberService.class);
-        restTemplate = Mockito.mock(RestTemplate.class);
-        redisTemplate = Mockito.mock(RedisTemplate.class);
-        applicationEventPublisher = Mockito.mock(ApplicationEventPublisher.class);
+        gatewayProperties = mock(GatewayProperties.class);
+        couponProducer = mock(CouponProducer.class);
+        queryMemberCouponRepository = mock(QueryMemberCouponRepository.class);
+        commandMemberCouponRepository = mock(CommandMemberCouponRepository.class);
+        queryMemberService = mock(QueryMemberService.class);
+        restTemplate = mock(RestTemplate.class);
+        redisTemplate = mock(RedisTemplate.class);
+        applicationEventPublisher = mock(ApplicationEventPublisher.class);
         giveCouponService = new GiveCouponServiceImpl(
                 gatewayProperties,
                 couponProducer,
@@ -78,8 +85,8 @@ class GiveCouponServiceImplTest {
                 applicationEventPublisher,
                 clock
         );
-        Mockito.when(gatewayProperties.getCouponUrl()).thenReturn("http://localhost:8085");
-        Mockito.when(redisTemplate.opsForValue()).thenReturn(valueOperations);
+        when(gatewayProperties.getCouponUrl()).thenReturn("http://localhost:8085");
+        when(redisTemplate.opsForValue()).thenReturn(valueOperations);
     }
 
     @Test
@@ -92,21 +99,21 @@ class GiveCouponServiceImplTest {
                 couponGroupCode,
                 true
         ));
-        Mockito.when(restTemplate.exchange(
-                        Mockito.eq(
-                                "http://localhost:8085/v1/coupon-groups?trigger-type=SIGN_UP"),
-                        Mockito.eq(HttpMethod.GET),
-                        Mockito.any(),
-                        Mockito.any(ParameterizedTypeReference.class)
-                ))
+        when(restTemplate.exchange(
+                eq(
+                        "http://localhost:8085/v1/coupon-groups?trigger-type=SIGN_UP"),
+                eq(HttpMethod.GET),
+                any(),
+                any(ParameterizedTypeReference.class)
+        ))
                 .thenReturn(new ResponseEntity<>(ResponseDto.builder()
                         .data(couponGroupAndLimitDtoList)
                         .build(), HttpStatus.OK));
 
-        Mockito.when(queryMemberCouponRepository.existsByMemberAndCouponGroupCodeList(
-                Mockito.eq(
+        when(queryMemberCouponRepository.existsByMemberAndCouponGroupCodeList(
+                eq(
                         memberId),
-                Mockito.argThat(list -> list.size() == 1 && list.contains(couponGroupCode))
+                argThat(list -> list.size() == 1 && list.contains(couponGroupCode))
         )).thenReturn(false);
 
         // when
@@ -120,17 +127,17 @@ class GiveCouponServiceImplTest {
         // then
         ArgumentCaptor<CouponGiveRequestMessage> requestMessageCaptor = ArgumentCaptor.forClass(
                 CouponGiveRequestMessage.class);
-        Mockito.verify(couponProducer, Mockito.times(1))
+        verify(couponProducer, times(1))
                 .produceGiveRequestLimitMessage(requestMessageCaptor.capture());
-        Mockito.verify(restTemplate, Mockito.times(1))
+        verify(restTemplate, times(1))
                 .exchange(
-                        Mockito.eq("http://localhost:8085/v1/coupon-groups?trigger-type=SIGN_UP"),
-                        Mockito.eq(HttpMethod.GET),
-                        Mockito.any(),
-                        Mockito.any(ParameterizedTypeReference.class)
+                        eq("http://localhost:8085/v1/coupon-groups?trigger-type=SIGN_UP"),
+                        eq(HttpMethod.GET),
+                        any(),
+                        any(ParameterizedTypeReference.class)
                 );
-        Mockito.verify(valueOperations, Mockito.times(1))
-                .set(Mockito.anyString(), Mockito.eq(memberId), Mockito.eq(Duration.ofMinutes(30)));
+        verify(valueOperations, times(1))
+                .set(anyString(), eq(memberId), eq(Duration.ofMinutes(30)));
         CouponGiveRequestMessage actualRequestMessage = requestMessageCaptor.getValue();
         Assertions.assertThat(actualRequestMessage.getRequestId()).isNotBlank();
         Assertions.assertThat(actualRequestMessage.getCouponId()).isNull();
@@ -148,21 +155,21 @@ class GiveCouponServiceImplTest {
                 couponGroupCode,
                 false
         ));
-        Mockito.when(restTemplate.exchange(
-                        Mockito.eq(
-                                "http://localhost:8085/v1/coupon-groups?trigger-type=SIGN_UP"),
-                        Mockito.eq(HttpMethod.GET),
-                        Mockito.any(),
-                        Mockito.any(ParameterizedTypeReference.class)
-                ))
+        when(restTemplate.exchange(
+                eq(
+                        "http://localhost:8085/v1/coupon-groups?trigger-type=SIGN_UP"),
+                eq(HttpMethod.GET),
+                any(),
+                any(ParameterizedTypeReference.class)
+        ))
                 .thenReturn(new ResponseEntity<>(ResponseDto.builder()
                         .data(couponGroupAndLimitDtoList)
                         .build(), HttpStatus.OK));
 
-        Mockito.when(queryMemberCouponRepository.existsByMemberAndCouponGroupCodeList(
-                Mockito.eq(
+        when(queryMemberCouponRepository.existsByMemberAndCouponGroupCodeList(
+                eq(
                         memberId),
-                Mockito.argThat(list -> list.size() == 1 && list.contains(couponGroupCode))
+                argThat(list -> list.size() == 1 && list.contains(couponGroupCode))
         )).thenReturn(false);
 
         // when
@@ -176,17 +183,17 @@ class GiveCouponServiceImplTest {
         // then
         ArgumentCaptor<CouponGiveRequestMessage> requestMessageCaptor = ArgumentCaptor.forClass(
                 CouponGiveRequestMessage.class);
-        Mockito.verify(couponProducer, Mockito.times(1))
+        verify(couponProducer, times(1))
                 .produceGiveRequestMessage(requestMessageCaptor.capture());
-        Mockito.verify(restTemplate, Mockito.times(1))
+        verify(restTemplate, times(1))
                 .exchange(
-                        Mockito.eq("http://localhost:8085/v1/coupon-groups?trigger-type=SIGN_UP"),
-                        Mockito.eq(HttpMethod.GET),
-                        Mockito.any(),
-                        Mockito.any(ParameterizedTypeReference.class)
+                        eq("http://localhost:8085/v1/coupon-groups?trigger-type=SIGN_UP"),
+                        eq(HttpMethod.GET),
+                        any(),
+                        any(ParameterizedTypeReference.class)
                 );
-        Mockito.verify(valueOperations, Mockito.times(1))
-                .set(Mockito.anyString(), Mockito.eq(memberId), Mockito.eq(Duration.ofMinutes(30)));
+        verify(valueOperations, times(1))
+                .set(anyString(), eq(memberId), eq(Duration.ofMinutes(30)));
         CouponGiveRequestMessage actualRequestMessage = requestMessageCaptor.getValue();
         Assertions.assertThat(actualRequestMessage.getRequestId()).isNotBlank();
         Assertions.assertThat(actualRequestMessage.getCouponId()).isNull();
@@ -204,21 +211,21 @@ class GiveCouponServiceImplTest {
                 couponGroupCode,
                 false
         ));
-        Mockito.when(restTemplate.exchange(
-                        Mockito.eq(
-                                "http://localhost:8085/v1/coupon-groups?trigger-type=SIGN_UP"),
-                        Mockito.eq(HttpMethod.GET),
-                        Mockito.any(),
-                        Mockito.any(ParameterizedTypeReference.class)
-                ))
+        when(restTemplate.exchange(
+                eq(
+                        "http://localhost:8085/v1/coupon-groups?trigger-type=SIGN_UP"),
+                eq(HttpMethod.GET),
+                any(),
+                any(ParameterizedTypeReference.class)
+        ))
                 .thenReturn(new ResponseEntity<>(ResponseDto.builder()
                         .data(couponGroupAndLimitDtoList)
                         .build(), HttpStatus.OK));
 
-        Mockito.when(queryMemberCouponRepository.existsByMemberAndCouponGroupCodeList(
-                Mockito.eq(
+        when(queryMemberCouponRepository.existsByMemberAndCouponGroupCodeList(
+                eq(
                         memberId),
-                Mockito.argThat(list -> list.size() == 1 && list.contains(couponGroupCode))
+                argThat(list -> list.size() == 1 && list.contains(couponGroupCode))
         )).thenReturn(true);
 
         // when
@@ -235,12 +242,12 @@ class GiveCouponServiceImplTest {
     void sendCouponGiveRequestFailCauseByCouponGroupNotFoundTest() {
         // given
         String memberId = "mongmeo";
-        Mockito.when(restTemplate.exchange(
-                Mockito.eq(
+        when(restTemplate.exchange(
+                eq(
                         "http://localhost:8085/v1/coupon-groups?trigger-type=SIGN_UP"),
-                Mockito.eq(HttpMethod.GET),
-                Mockito.any(),
-                Mockito.any(ParameterizedTypeReference.class)
+                eq(HttpMethod.GET),
+                any(),
+                any(ParameterizedTypeReference.class)
         )).thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
 
         // when
@@ -257,12 +264,12 @@ class GiveCouponServiceImplTest {
     void sendCouponGiveRequestFailCauseByCouponServerResponseErrorTest() {
         // given
         String memberId = "mongmeo";
-        Mockito.when(restTemplate.exchange(
-                Mockito.eq(
+        when(restTemplate.exchange(
+                eq(
                         "http://localhost:8085/v1/coupon-groups?trigger-type=SIGN_UP"),
-                Mockito.eq(HttpMethod.GET),
-                Mockito.any(),
-                Mockito.any(ParameterizedTypeReference.class)
+                eq(HttpMethod.GET),
+                any(),
+                any(ParameterizedTypeReference.class)
         )).thenThrow(new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
 
         // when
@@ -287,26 +294,26 @@ class GiveCouponServiceImplTest {
                         .couponCodes(List.of("couponCode1"))
                         .build()))
                 .build();
-        MemberDto mockMemberDto = Mockito.mock(MemberDto.class);
-        Member member = Mockito.mock(Member.class);
-        ValueOperations mockValueOperation = Mockito.mock(ValueOperations.class);
-        Mockito.when(redisTemplate.opsForValue()).thenReturn(mockValueOperation);
-        Mockito.when(mockValueOperation.get("requestId")).thenReturn("member");
-        Mockito.when(member.getLoginId()).thenReturn("member");
-        Mockito.when(queryMemberService.findMemberByLoginId("member")).thenReturn(mockMemberDto);
-        Mockito.when(mockMemberDto.toEntity()).thenReturn(member);
+        MemberDto mockMemberDto = mock(MemberDto.class);
+        Member member = mock(Member.class);
+        ValueOperations mockValueOperation = mock(ValueOperations.class);
+        when(redisTemplate.opsForValue()).thenReturn(mockValueOperation);
+        when(mockValueOperation.get("requestId")).thenReturn("member");
+        when(member.getLoginId()).thenReturn("member");
+        when(queryMemberService.findMemberByLoginId("member")).thenReturn(mockMemberDto);
+        when(mockMemberDto.toEntity()).thenReturn(member);
 
         // when
         giveCouponService.giveCouponToMember(responseMessage);
 
         // then
         ArgumentCaptor<MemberCoupon> argumentCaptor = ArgumentCaptor.forClass(MemberCoupon.class);
-        Mockito.verify(mockValueOperation, Mockito.times(1)).get("requestId");
-        Mockito.verify(queryMemberService, Mockito.times(1)).findMemberByLoginId("member");
-        Mockito.verify(commandMemberCouponRepository, Mockito.times(1))
+        verify(mockValueOperation, times(1)).get("requestId");
+        verify(queryMemberService, times(1)).findMemberByLoginId("member");
+        verify(commandMemberCouponRepository, times(1))
                 .save(argumentCaptor.capture());
-        Mockito.verify(couponProducer)
-                .produceGivenResultMessage(Mockito.argThat(CouponCodesAndResultMessage::isSuccess));
+        verify(couponProducer)
+                .produceGivenResultMessage(argThat(CouponCodesAndResultMessage::isSuccess));
 
         MemberCoupon actualMemberCoupon = argumentCaptor.getValue();
         Assertions.assertThat(actualMemberCoupon.getMember()).isEqualTo(member);
@@ -332,8 +339,8 @@ class GiveCouponServiceImplTest {
         // then
         Assertions.assertThatThrownBy(() -> giveCouponService.giveCouponToMember(responseMessage))
                 .isInstanceOf(ClientException.class);
-        Mockito.verify(couponProducer)
-                .produceGivenResultMessage(Mockito.argThat(message -> !message.isSuccess()));
+        verify(couponProducer)
+                .produceGivenResultMessage(argThat(message -> !message.isSuccess()));
     }
 
 
@@ -350,15 +357,69 @@ class GiveCouponServiceImplTest {
                         .couponCodes(List.of("couponCode1"))
                         .build()))
                 .build();
-        ValueOperations mockValueOperation = Mockito.mock(ValueOperations.class);
-        Mockito.when(redisTemplate.opsForValue()).thenReturn(mockValueOperation);
-        Mockito.when(mockValueOperation.get("requestId")).thenReturn(null);
+        ValueOperations mockValueOperation = mock(ValueOperations.class);
+        when(redisTemplate.opsForValue()).thenReturn(mockValueOperation);
+        when(mockValueOperation.get("requestId")).thenReturn(null);
 
         // when
         // then
         Assertions.assertThatThrownBy(() -> giveCouponService.giveCouponToMember(responseMessage))
                 .isInstanceOf(ClientException.class);
-        Mockito.verify(couponProducer)
-                .produceGivenResultMessage(Mockito.argThat(message -> !message.isSuccess()));
+        verify(couponProducer)
+                .produceGivenResultMessage(argThat(message -> !message.isSuccess()));
+    }
+
+    @Test
+    @DisplayName("이달의 쿠폰 지급을 요청할 때 이달의 쿠폰 정책이 존재하지 않아 예외 발생")
+    void checkMonthlyCouponIssueRequestTimeFailCauseByPolicyNotExistTest() {
+        HashOperations hashOperations = mock(HashOperations.class);
+        when(redisTemplate.opsForHash()).thenReturn(hashOperations);
+        when(hashOperations.hasKey(anyString(), any())).thenReturn(Boolean.FALSE);
+
+        // when
+        Assertions.assertThatThrownBy(() -> giveCouponService.sendCouponGiveRequest(
+                        "memberId",
+                        TriggerTypeCode.COUPON_OF_THE_MONTH,
+                        1L,
+                        LocalDateTime.now()
+                ))
+                .isInstanceOf(ClientException.class)
+                .hasMessageContaining("Not found any monthly coupon open date time.");
+    }
+
+    @Test
+    @DisplayName("이달의 쿠폰 지급 요청을 오픈시간 전에 시도할시 예외 발생")
+    void checkMonthlyCouponIssueRequestTimeFailCauseByNotOpenTest() {
+        LocalDateTime openDateTime = LocalDateTime.now().minusDays(1);
+        HashOperations hashOperations = mock(HashOperations.class);
+        when(redisTemplate.opsForHash()).thenReturn(hashOperations);
+        when(hashOperations.hasKey(anyString(), any())).thenReturn(Boolean.TRUE);
+        when(hashOperations.get(any(), any())).thenReturn(openDateTime.toString());
+
+        // when
+        Assertions.assertThatThrownBy(() -> giveCouponService.sendCouponGiveRequest(
+                "memberId",
+                TriggerTypeCode.COUPON_OF_THE_MONTH,
+                1L,
+                LocalDateTime.now()
+        )).isInstanceOf(ClientException.class).hasMessageContaining("before open time");
+    }
+
+    @Test
+    @DisplayName("수동 발행 타입 쿠폰 지급 요청을 10초 내에 여러번 수행한 경우 예외 발생")
+    void checkMonthlyCouponIssueRequestTimeTest() {
+        HashOperations hashOperations = mock(HashOperations.class);
+        when(redisTemplate.opsForHash()).thenReturn(hashOperations);
+        when(hashOperations.hasKey(anyString(), any())).thenReturn(Boolean.TRUE);
+        when(hashOperations.get(anyString(), any())).thenReturn(LocalDateTime.now()
+                .minusDays(1)
+                .toString());
+        when(redisTemplate.hasKey(anyString())).thenReturn(Boolean.TRUE);
+        Assertions.assertThatThrownBy(() -> giveCouponService.sendCouponGiveRequest(
+                "memberId",
+                TriggerTypeCode.SIGN_UP,
+                1L,
+                LocalDateTime.now()
+        )).isInstanceOf(ClientException.class).hasMessageContaining("이미 처리된 요청입니다.");
     }
 }

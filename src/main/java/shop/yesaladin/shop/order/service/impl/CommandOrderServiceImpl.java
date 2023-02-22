@@ -1,5 +1,13 @@
 package shop.yesaladin.shop.order.service.impl;
 
+import java.time.Clock;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.chrono.ChronoLocalDate;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -10,12 +18,23 @@ import shop.yesaladin.shop.coupon.service.inter.QueryMemberCouponService;
 import shop.yesaladin.shop.coupon.service.inter.UseCouponService;
 import shop.yesaladin.shop.member.service.inter.QueryMemberAddressService;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
-import shop.yesaladin.shop.order.domain.model.*;
+import shop.yesaladin.shop.order.domain.model.MemberOrder;
+import shop.yesaladin.shop.order.domain.model.NonMemberOrder;
+import shop.yesaladin.shop.order.domain.model.Order;
+import shop.yesaladin.shop.order.domain.model.OrderProduct;
+import shop.yesaladin.shop.order.domain.model.OrderStatusChangeLog;
+import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
+import shop.yesaladin.shop.order.domain.model.Subscribe;
 import shop.yesaladin.shop.order.domain.repository.CommandOrderProductRepository;
 import shop.yesaladin.shop.order.domain.repository.CommandOrderRepository;
 import shop.yesaladin.shop.order.domain.repository.CommandOrderStatusChangeLogRepository;
 import shop.yesaladin.shop.order.domain.repository.QueryOrderRepository;
-import shop.yesaladin.shop.order.dto.*;
+import shop.yesaladin.shop.order.dto.OrderCreateRequestDto;
+import shop.yesaladin.shop.order.dto.OrderCreateResponseDto;
+import shop.yesaladin.shop.order.dto.OrderMemberCreateRequestDto;
+import shop.yesaladin.shop.order.dto.OrderNonMemberCreateRequestDto;
+import shop.yesaladin.shop.order.dto.OrderSubscribeCreateRequestDto;
+import shop.yesaladin.shop.order.dto.OrderUpdateResponseDto;
 import shop.yesaladin.shop.order.service.inter.CommandOrderCouponService;
 import shop.yesaladin.shop.order.service.inter.CommandOrderService;
 import shop.yesaladin.shop.point.domain.model.PointReasonCode;
@@ -25,15 +44,6 @@ import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.dto.SubscribeProductOrderResponseDto;
 import shop.yesaladin.shop.product.service.inter.CommandProductService;
 import shop.yesaladin.shop.product.service.inter.QueryProductService;
-
-import java.time.Clock;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.chrono.ChronoLocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
 
 /**
  * 주문 생성/수정/삭제와 관련한 서비스 구현체 입니다.
@@ -90,7 +100,8 @@ public class CommandOrderServiceImpl implements CommandOrderService {
     @Transactional
     public OrderCreateResponseDto createMemberOrders(
             OrderMemberCreateRequestDto request,
-            String loginId
+            String loginId,
+            String type
     ) {
         if (request.getOrderCoupons() != null) {
             queryMemberCouponService.getValidMemberCouponSummaryListByCouponCodes(
@@ -120,7 +131,30 @@ public class CommandOrderServiceImpl implements CommandOrderService {
 
         }
 
+        deleteOrderProductInCart(loginId, type, products);
+
         return OrderCreateResponseDto.fromEntity(savedOrder);
+    }
+
+    /**
+     * 장바구니에서 주문한 상품이라면 Redis 에서 삭제합니다.
+     *
+     * @param loginId  회원 아이디
+     * @param type     장바구니에서 주문했다면 null, 바로 주문이라면 "one"
+     * @param products 주문한 상품 Map
+     * @author 이수정
+     * @since 1.0
+     */
+    private void deleteOrderProductInCart(
+            String loginId,
+            String type,
+            Map<String, Product> products
+    ) {
+        if (Objects.isNull(type)) {
+            products.keySet().forEach(key ->
+                    redisTemplate.opsForHash().delete(loginId, products.get(key).getId().toString())
+            );
+        }
     }
 
     /**

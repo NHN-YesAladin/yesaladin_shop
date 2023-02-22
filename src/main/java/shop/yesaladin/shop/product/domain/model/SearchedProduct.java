@@ -1,14 +1,17 @@
 package shop.yesaladin.shop.product.domain.model;
 
-import lombok.*;
+import java.time.LocalDate;
+import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.annotations.WriteTypeHint;
-
-import java.time.LocalDate;
-import java.util.List;
 
 /**
  * 엘라스틱 서치 상품 인덱스

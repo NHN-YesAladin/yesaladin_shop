@@ -1,5 +1,26 @@
 package shop.yesaladin.shop.file.controller;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentRequest;
+import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
+
+import java.io.FileInputStream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -20,26 +41,6 @@ import shop.yesaladin.shop.file.service.inter.ObjectStorageService;
 import shop.yesaladin.shop.file.service.inter.StorageAuthService;
 import shop.yesaladin.shop.product.dummy.DummyFile;
 
-import java.io.FileInputStream;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentRequest;
-import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
-
 @AutoConfigureRestDocs
 @WebMvcTest(ObjectStorageController.class)
 class ObjectStorageControllerTest {
@@ -59,14 +60,24 @@ class ObjectStorageControllerTest {
     @DisplayName("파일 업로드")
     void fileUpload() throws Exception {
         // given
-        MultipartFile multipartFile = new MockMultipartFile("image", new FileInputStream("src/test/resources/img/yesaladinnotfound.png"));
+        MultipartFile multipartFile = new MockMultipartFile(
+                "image",
+                new FileInputStream("src/test/resources/img/yesaladinnotfound.png")
+        );
 
         File file = DummyFile.dummy(URL + "/yesaladinnotfound.png");
         Mockito.when(objectStorageService.fileUpload(anyString(), anyString(), any()))
-                .thenReturn(new FileUploadResponseDto(file.getUrl(), file.getUploadDateTime().toString()));
+                .thenReturn(new FileUploadResponseDto(
+                        file.getUrl(),
+                        file.getUploadDateTime().toString()
+                ));
 
         // when
-        ResultActions result = mockMvc.perform(post("/v1/files/file-upload/{domainName}/{typeName}", "domain", "type")
+        ResultActions result = mockMvc.perform(post(
+                "/v1/files/file-upload/{domainName}/{typeName}",
+                "domain",
+                "type"
+        )
                 .with(csrf())
                 .content(multipartFile.getBytes()));
 
@@ -88,11 +99,16 @@ class ObjectStorageControllerTest {
                         parameterWithName("typeName").description("업로드할 파일의 유형")
                 ),
                 responseFields(
-                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("동작 성공 여부"),
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
                         fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
-                        fieldWithPath("data.url").type(JsonFieldType.STRING).description("업로드한 파일의 URL"),
-                        fieldWithPath("data.fileUploadDateTime").type(JsonFieldType.STRING).description("업로드한 파일의 업로드 시간"),
-                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY).description("에러 메세지").optional()
+                        fieldWithPath("data.url").type(JsonFieldType.STRING)
+                                .description("업로드한 파일의 URL"),
+                        fieldWithPath("data.fileUploadDateTime").type(JsonFieldType.STRING)
+                                .description("업로드한 파일의 업로드 시간"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
+                                .optional()
                 )
         ));
     }
@@ -121,10 +137,14 @@ class ObjectStorageControllerTest {
                 getDocumentRequest(),
                 getDocumentResponse(),
                 responseFields(
-                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("동작 성공 여부"),
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
                         fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
-                        fieldWithPath("data").type(JsonFieldType.STRING).description("Object Storage Auth Token"),
-                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY).description("에러 메세지").optional()
+                        fieldWithPath("data").type(JsonFieldType.STRING)
+                                .description("Object Storage Auth Token"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
+                                .optional()
                 )
         ));
     }

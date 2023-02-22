@@ -1,11 +1,10 @@
 package shop.yesaladin.shop.tag.domain.repository;
 
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.tag.domain.model.Tag;
-
-import java.util.List;
-import java.util.Optional;
 
 /**
  * 태그 조회 관련 Repository Interface 입니다.
@@ -47,7 +46,7 @@ public interface QueryTagRepository {
     /**
      * 태그를 이름으로 검색하는 메서드
      *
-     * @param name 검색할 이름
+     * @param name     검색할 이름
      * @param pageable 페이지 정보
      * @return 검색 결과
      * @author 김선홍

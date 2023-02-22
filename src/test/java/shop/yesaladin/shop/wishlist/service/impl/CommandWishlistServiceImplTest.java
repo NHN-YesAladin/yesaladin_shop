@@ -15,17 +15,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import shop.yesaladin.common.code.ErrorCode;
-import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.common.exception.ClientException;
+import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
-import shop.yesaladin.shop.product.exception.ProductNotFoundException;
 import shop.yesaladin.shop.wishlist.domain.model.Wishlist;
 import shop.yesaladin.shop.wishlist.domain.repository.CommandWishlistRepository;
 import shop.yesaladin.shop.wishlist.dto.WishlistSaveResponseDto;
-import shop.yesaladin.shop.wishlist.exception.WishlistAlreadyExistsException;
-import shop.yesaladin.shop.wishlist.exception.WishlistNotFoundException;
 import shop.yesaladin.shop.wishlist.service.inter.QueryWishlistService;
 
 class CommandWishlistServiceImplTest {
@@ -55,7 +52,7 @@ class CommandWishlistServiceImplTest {
     void save_ProductNotFound() {
         //then when
         assertThatThrownBy(() -> commandWishlistService.save("loginId", 1L)).isInstanceOf(
-                ProductNotFoundException.class);
+                ClientException.class);
     }
 
     @Test
@@ -85,7 +82,7 @@ class CommandWishlistServiceImplTest {
 
         //when then
         assertThatThrownBy(() -> commandWishlistService.save("loginId", 1L)).isInstanceOf(
-                WishlistAlreadyExistsException.class);
+                ClientException.class);
     }
 
     @Test
@@ -128,7 +125,7 @@ class CommandWishlistServiceImplTest {
         Mockito.when(queryWishlistService.isExists(any(), eq(1L)))
                 .thenReturn(false);
         assertThatThrownBy(() -> commandWishlistService.delete("loginId", 1L)).isInstanceOf(
-                WishlistNotFoundException.class);
+                ClientException.class);
     }
 
     @Test

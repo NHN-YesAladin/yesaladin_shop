@@ -1,10 +1,9 @@
 package shop.yesaladin.shop.product.dto;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 /**
  * 주문한 상품의 정보를 반환하기 위한 dto 클래스입니다.
