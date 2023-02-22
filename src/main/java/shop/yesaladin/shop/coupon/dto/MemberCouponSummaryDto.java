@@ -46,20 +46,20 @@ public class MemberCouponSummaryDto {
         long discountPrice = 0;
         switch (couponBoundCode) {
             case PRODUCT:
-                log.error("상품 적용 => ");
+                log.info("상품 적용 => ");
                 if (Objects.equals(product.getIsbn(), couponBound)) {
                     discountPrice = getDiscountPrice(price);
                 }
                 break;
             case CATEGORY:
-                log.error("카테고리 적용 => ");
+                log.info("카테고리 적용 => ");
 
                 if (product.getCategoryList().contains(Long.parseLong(couponBound))) {
                     discountPrice = getDiscountPrice(price);
                 }
                 break;
             case ALL:
-                log.error("전체 적용 => ");
+                log.info("전체 적용 => ");
 
                 discountPrice = getDiscountPrice(price);
                 break;
@@ -80,18 +80,18 @@ public class MemberCouponSummaryDto {
         if (couponTypeCode.getCode() == 1) {
             log.error("정액 할인 => ");
             if (price >= minOrderAmount) {
-                log.error("{} - {}", price, amount);
+                log.info("{} - {}", price, amount);
                 return price - amount;
             }
         } else if (couponTypeCode.getCode() == 2) {
-            log.error("정률 할인 => ");
+            log.info("정률 할인 => ");
             if (price >= minOrderAmount) {
                 long discountAmount = price * (100 - amount) / 100;
                 if (discountAmount > maxDiscountAmount) {
-                    log.error("{} - 최대할인금액({})", price, maxDiscountAmount);
+                    log.info("{} - 최대할인금액({})", price, maxDiscountAmount);
                     return price - maxDiscountAmount;
                 }
-                log.error("{} - {}", price, discountAmount);
+                log.info("{} - {}", price, discountAmount);
 
                 return price - discountAmount;
             }
