@@ -14,7 +14,7 @@ YesAladin Shop은 애플리케이션 이용에 필요한 API를 제공함으로�
 
 ## Project Architecture
 
-![스크린샷 2023-02-21 오후 11 33 40](https://user-images.githubusercontent.com/60968342/220373870-a97ba13d-10ff-4d5b-b139-888919a5db3b.png)
+<img width="1055" alt="스크린샷 2023-02-22 오전 10 15 46" src="https://user-images.githubusercontent.com/60968342/220495610-18e516d6-4bae-49b4-bfdb-84f72d890af5.png">
 
 ## CI/CD
 (무중단 배포 및 CI/CD flow 첨부할 것)
