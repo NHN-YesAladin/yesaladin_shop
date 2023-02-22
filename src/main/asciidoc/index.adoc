@@ -1,0 +1,39 @@
+= YesAladin! Shop Rest Docs
+
+회원::
+* link:member-signup-api-docs.html[회원가입]
+* link:member-login-api-docs.html[로그인]
+* link:member-grade-history-api-docs.html[등급]
+* link:member-address-api-docs.html[주소]
+* link:member-coupon-api-docs.html[쿠폰]
+* link:member-api-docs.html[기타]
+
+상품::
+* link:product-api-docs.adoc[상품]
+* link:product-realation-api-docs.adoc[연관 상품]
+
+link:order-api-docs.adoc[주문]
+
+
+link:payment-api-docs.adoc[결제]
+
+link:category-api-docs.adoc[카테고리]
+
+
+link:publish-api-docs.adoc[출판사]
+
+
+link:tag-api-docs.adoc[태그]
+
+
+link:writing-api-docs.adoc[저자]
+
+
+link:wishlist-api-docs.adoc[위시리스트]
+
+link:file-api-docs.adoc[파일]
+
+link:common-api-docs.adoc[공통]
+
+
+

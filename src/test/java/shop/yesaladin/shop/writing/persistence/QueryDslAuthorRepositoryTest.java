@@ -13,6 +13,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
+import shop.yesaladin.shop.member.domain.model.Member;
+import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
 import shop.yesaladin.shop.writing.domain.model.Author;
 import shop.yesaladin.shop.writing.domain.repository.QueryAuthorRepository;
 import shop.yesaladin.shop.writing.dummy.DummyAuthor;
@@ -61,5 +63,35 @@ class QueryDslAuthorRepositoryTest {
         assertThat(authors).isNotNull();
         assertThat(authors.getTotalElements()).isEqualTo(10);
         assertThat(authors.getTotalPages()).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("관리자가 저자 이름으로 검색")
+    void findAllByNameForManager() {
+        Author author = Author.builder().name("name").member(null).build();
+
+        entityManager.persist(author);
+
+        Page<Author> authors = repository.findAllByNameForManager("name", PageRequest.of(0, 10));
+
+        assertThat(authors).isNotNull();
+        assertThat(authors.getTotalElements()).isEqualTo(1);
+        assertThat(authors.getContent().get(0).getName()).contains("name");
+    }
+
+    @Test
+    @DisplayName("관리자가 저자의 로그인 아이디로 검색")
+    void findAllByLoginIdForManager() {
+        Member member = DummyMember.member();
+        Author author = Author.builder().name("name").member(member).build();
+
+        entityManager.persist(member);
+        entityManager.persist(author);
+
+        Page<Author> authors = repository.findAllByLoginIdForManager("mongmeo", PageRequest.of(0, 10));
+
+        assertThat(authors).isNotNull();
+        assertThat(authors.getTotalElements()).isEqualTo(1);
+        assertThat(authors.getContent().get(0).getMember().getLoginId()).contains("mongmeo");
     }
 }

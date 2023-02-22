@@ -14,14 +14,15 @@ YesAladin Shop은 애플리케이션 이용에 필요한 API를 제공함으로�
 
 ## Project Architecture
 
-![스크린샷 2023-02-21 오후 11 33 40](https://user-images.githubusercontent.com/60968342/220373870-a97ba13d-10ff-4d5b-b139-888919a5db3b.png)
+<img width="1055" alt="스크린샷 2023-02-22 오전 10 15 46" src="https://user-images.githubusercontent.com/60968342/220495610-18e516d6-4bae-49b4-bfdb-84f72d890af5.png">
 
 ## CI/CD
-(무중단 배포 및 CI/CD flow 첨부할 것)
+
+<img width="1102" alt="스크린샷 2023-02-22 오후 7 24 08" src="https://user-images.githubusercontent.com/60968342/220593590-58f50bd3-302f-455d-bf99-78371b2a1ba7.png">
 
 ## Test Coverage
-- 목표 : 라인 커버리지 80% 이상 (2023.02.xx.(?) 기준 xx.x%)  
-  (스크린샷 첨부할 것)
+- 목표 : 라인 커버리지 80% 이상 (2023.02.22 기준 86.48%)  
+  <img width="955" alt="스크린샷 2023-02-22 오후 7 45 17" src="https://user-images.githubusercontent.com/60968342/220600694-4dd36b4a-3aa2-4714-a8c4-cad0dbbb6eef.png">
 
 ## Features
 
@@ -83,6 +84,25 @@ YesAladin Shop은 애플리케이션 이용에 필요한 API를 제공함으로�
 - **주문 후 장바구니 내 상품 삭제**
 
 ### [@최예린](https://github.com/Yellin36)
+- **주문**
+  - 회원/비회원 일반 주문 생성
+  - 주문 숨김처리
+  - 주문 확정
+  - 쿠폰 사용
+  - 포인트 사용
+- **회원 관리**
+  - 회원 배송지 등록/수정/삭제
+  - 회원 등급 내역 기간별 `Paging` 조회
+  - 회원 등급 조회
+  - 회원 차단/차단해지
+- **포인트 관리**
+  - 포인트 사용/적립/집계 내역 생성
+  - 포인트 사용/적립 `Paging` 내역 조회
+  - 회원의 포인트 조회
+- **주문 변경 상태 내역 관리**
+  - 주문 변경 상태 내역 생성
+- **주문 상품 관리**
+  - 주문 상품 생성
 
 ### [@배수한](https://github.com/shbaeNhnacademy)
 
@@ -114,6 +134,14 @@ YesAladin Shop은 애플리케이션 이용에 필요한 API를 제공함으로�
   - Spring Cloud Config를 연동하여 설정 정보 외부화
 
 ### [@서민지](https://github.com/narangd0)
+- **쿠폰**
+  - 자동 발행 쿠폰
+    - Batch 서버와의 API 통신을 통해 n일 후 생일인 회원에게 쿠폰 자동 발행 구현
+      - 생일 회원 조회
+      - MyBatis를 사용하여 쿠폰 지급 Batch Insert 구현
+  - 선착순 쿠폰
+    - 이벤트 오픈 시간 이전에 발행된 요청 처리
+    - Redis를 사용하여 단시간에 들어오는 중복 발행 요청 정상 처리
 
 ### [@김선홍](https://github.com/ssun4098)
 
@@ -178,6 +206,7 @@ YesAladin Shop은 애플리케이션 이용에 필요한 API를 제공함으로�
 ![NHN Cloud](https://img.shields.io/badge/-NHN%20Cloud-blue?style=flat&logo=iCloud&logoColor=white)
 ![Jenkins](http://img.shields.io/badge/Jenkins-D24939?style=flat-square&logo=Jenkins&logoColor=white)
 ![SonarQube](https://img.shields.io/badge/SonarQube-4E98CD?style=flat&logo=SonarQube&logoColor=white)
+![Grafana](https://img.shields.io/badge/Grafana-F46800?style=flat&logo=Grafana&logoColor=white)
 
 ### Web Server
 

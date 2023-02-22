@@ -807,6 +807,371 @@ class QueryProductServiceImplTest {
     }
 
     @Test
+    @DisplayName("관리자가 isbn으로 상품 검색")
+    void findByISBNForManager() {
+        // given
+        List<Product> products = new ArrayList<>();
+        for (long i = 1L; i <= 9L; i++) {
+            String isbn = "000000000000" + i;
+
+            File thumbnailFile = DummyFile.dummy(URL + "/image" + i + ".png");
+            File ebookFile = DummyFile.dummy(URL + "/ebook" + i + ".pdf");
+            SubscribeProduct subscribeProduct = SubscribeProduct.builder()
+                    .id(1L)
+                    .ISSN("00000001")
+                    .build();
+            TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
+
+            Product product = DummyProduct.dummy(
+                    i,
+                    isbn,
+                    subscribeProduct,
+                    thumbnailFile,
+                    ebookFile,
+                    totalDiscountRate
+            );
+            if (i < 5L) {
+                product.deleteProduct();
+            }
+            products.add(product);
+
+            Publish publish = Publish.create(
+                    product,
+                    Publisher.builder().id(1L).name("출판사").build(),
+                    LocalDateTime.now(clock).toLocalDate().toString()
+            );
+            Mockito.when(queryPublishService.findByProduct(any()))
+                    .thenReturn(new PublishResponseDto(
+                            publish.getPk(),
+                            publish.getPublishedDate(),
+                            publish.getProduct(),
+                            publish.getPublisher()
+                    ));
+        }
+
+        Page<Product> page = new PageImpl<>(
+                products,
+                PageRequest.of(0, 5),
+                products.size()
+        );
+
+        Mockito.when(queryProductRepository.findByISBNForManager(any(), any())).thenReturn(page);
+
+        PaginatedResponseDto<ProductsResponseDto> response = service.findByISBNForManager("isbn", PageRequest.of(0, 10));
+
+        assertThat(response.getTotalDataCount()).isEqualTo(9);
+        assertThat(response.getDataList().get(0).getId()).isEqualTo(1L);
+        assertThat(response.getDataList().get(8).getId()).isEqualTo(9L);
+    }
+
+    @Test
+    @DisplayName("관리자가 출판사로 상품 검색")
+    void findByPublisherForManager() {
+        // given
+        List<Product> products = new ArrayList<>();
+        for (long i = 1L; i <= 9L; i++) {
+            String isbn = "000000000000" + i;
+
+            File thumbnailFile = DummyFile.dummy(URL + "/image" + i + ".png");
+            File ebookFile = DummyFile.dummy(URL + "/ebook" + i + ".pdf");
+            SubscribeProduct subscribeProduct = SubscribeProduct.builder()
+                    .id(1L)
+                    .ISSN("00000001")
+                    .build();
+            TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
+
+            Product product = DummyProduct.dummy(
+                    i,
+                    isbn,
+                    subscribeProduct,
+                    thumbnailFile,
+                    ebookFile,
+                    totalDiscountRate
+            );
+            if (i < 5L) {
+                product.deleteProduct();
+            }
+            products.add(product);
+
+            Publish publish = Publish.create(
+                    product,
+                    Publisher.builder().id(1L).name("출판사").build(),
+                    LocalDateTime.now(clock).toLocalDate().toString()
+            );
+            Mockito.when(queryPublishService.findByProduct(any()))
+                    .thenReturn(new PublishResponseDto(
+                            publish.getPk(),
+                            publish.getPublishedDate(),
+                            publish.getProduct(),
+                            publish.getPublisher()
+                    ));
+        }
+
+        Page<Product> page = new PageImpl<>(
+                products,
+                PageRequest.of(0, 5),
+                products.size()
+        );
+
+        Mockito.when(queryProductRepository.findByPublisherForManager(any(), any())).thenReturn(page);
+
+        PaginatedResponseDto<ProductsResponseDto> response = service.findByPublisherForManager("publisher", PageRequest.of(0, 10));
+
+        assertThat(response.getTotalDataCount()).isEqualTo(9);
+        assertThat(response.getDataList().get(0).getId()).isEqualTo(1L);
+        assertThat(response.getDataList().get(8).getId()).isEqualTo(9L);
+    }
+
+    @Test
+    @DisplayName("관리자가 내용으로 상품 검색")
+    void findByContentForManager() {
+        // given
+        List<Product> products = new ArrayList<>();
+        for (long i = 1L; i <= 9L; i++) {
+            String isbn = "000000000000" + i;
+
+            File thumbnailFile = DummyFile.dummy(URL + "/image" + i + ".png");
+            File ebookFile = DummyFile.dummy(URL + "/ebook" + i + ".pdf");
+            SubscribeProduct subscribeProduct = SubscribeProduct.builder()
+                    .id(1L)
+                    .ISSN("00000001")
+                    .build();
+            TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
+
+            Product product = DummyProduct.dummy(
+                    i,
+                    isbn,
+                    subscribeProduct,
+                    thumbnailFile,
+                    ebookFile,
+                    totalDiscountRate
+            );
+            if (i < 5L) {
+                product.deleteProduct();
+            }
+            products.add(product);
+
+            Publish publish = Publish.create(
+                    product,
+                    Publisher.builder().id(1L).name("출판사").build(),
+                    LocalDateTime.now(clock).toLocalDate().toString()
+            );
+            Mockito.when(queryPublishService.findByProduct(any()))
+                    .thenReturn(new PublishResponseDto(
+                            publish.getPk(),
+                            publish.getPublishedDate(),
+                            publish.getProduct(),
+                            publish.getPublisher()
+                    ));
+        }
+
+        Page<Product> page = new PageImpl<>(
+                products,
+                PageRequest.of(0, 5),
+                products.size()
+        );
+
+        Mockito.when(queryProductRepository.findByContentForManager(any(), any())).thenReturn(page);
+
+        PaginatedResponseDto<ProductsResponseDto> response = service.findByContentForManager("publisher", PageRequest.of(0, 10));
+
+        assertThat(response.getTotalDataCount()).isEqualTo(9);
+        assertThat(response.getDataList().get(0).getId()).isEqualTo(1L);
+        assertThat(response.getDataList().get(8).getId()).isEqualTo(9L);
+    }
+
+    @Test
+    @DisplayName("관리자가 저자명으로 상품 검색")
+    void findByAuthorForManager() {
+        // given
+        List<Product> products = new ArrayList<>();
+        for (long i = 1L; i <= 9L; i++) {
+            String isbn = "000000000000" + i;
+
+            File thumbnailFile = DummyFile.dummy(URL + "/image" + i + ".png");
+            File ebookFile = DummyFile.dummy(URL + "/ebook" + i + ".pdf");
+            SubscribeProduct subscribeProduct = SubscribeProduct.builder()
+                    .id(1L)
+                    .ISSN("00000001")
+                    .build();
+            TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
+
+            Product product = DummyProduct.dummy(
+                    i,
+                    isbn,
+                    subscribeProduct,
+                    thumbnailFile,
+                    ebookFile,
+                    totalDiscountRate
+            );
+            if (i < 5L) {
+                product.deleteProduct();
+            }
+            products.add(product);
+
+            Publish publish = Publish.create(
+                    product,
+                    Publisher.builder().id(1L).name("출판사").build(),
+                    LocalDateTime.now(clock).toLocalDate().toString()
+            );
+            Mockito.when(queryPublishService.findByProduct(any()))
+                    .thenReturn(new PublishResponseDto(
+                            publish.getPk(),
+                            publish.getPublishedDate(),
+                            publish.getProduct(),
+                            publish.getPublisher()
+                    ));
+        }
+
+        Page<Product> page = new PageImpl<>(
+                products,
+                PageRequest.of(0, 5),
+                products.size()
+        );
+
+        Mockito.when(queryProductRepository.findByAuthorForManager(any(), any())).thenReturn(page);
+
+        PaginatedResponseDto<ProductsResponseDto> response = service.findByAuthorForManager("author", PageRequest.of(0, 10));
+
+        assertThat(response.getTotalDataCount()).isEqualTo(9);
+        assertThat(response.getDataList().get(0).getId()).isEqualTo(1L);
+        assertThat(response.getDataList().get(8).getId()).isEqualTo(9L);
+    }
+
+    @Test
+    @DisplayName("관리자가 제목으로 상품 검색")
+    void findByTitleForManager() {
+        // given
+        List<Product> products = new ArrayList<>();
+        for (long i = 1L; i <= 9L; i++) {
+            String isbn = "000000000000" + i;
+
+            File thumbnailFile = DummyFile.dummy(URL + "/image" + i + ".png");
+            File ebookFile = DummyFile.dummy(URL + "/ebook" + i + ".pdf");
+            SubscribeProduct subscribeProduct = SubscribeProduct.builder()
+                    .id(1L)
+                    .ISSN("00000001")
+                    .build();
+            TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
+
+            Product product = DummyProduct.dummy(
+                    i,
+                    isbn,
+                    subscribeProduct,
+                    thumbnailFile,
+                    ebookFile,
+                    totalDiscountRate
+            );
+            if (i < 5L) {
+                product.deleteProduct();
+            }
+            products.add(product);
+
+            Publish publish = Publish.create(
+                    product,
+                    Publisher.builder().id(1L).name("출판사").build(),
+                    LocalDateTime.now(clock).toLocalDate().toString()
+            );
+            Mockito.when(queryPublishService.findByProduct(any()))
+                    .thenReturn(new PublishResponseDto(
+                            publish.getPk(),
+                            publish.getPublishedDate(),
+                            publish.getProduct(),
+                            publish.getPublisher()
+                    ));
+        }
+
+        Page<Product> page = new PageImpl<>(
+                products,
+                PageRequest.of(0, 5),
+                products.size()
+        );
+
+        Mockito.when(queryProductRepository.findByTitleForManager(any(), any())).thenReturn(page);
+
+        PaginatedResponseDto<ProductsResponseDto> response = service.findByTitleForManager("title", PageRequest.of(0, 10));
+
+        assertThat(response.getTotalDataCount()).isEqualTo(9);
+        assertThat(response.getDataList().get(0).getId()).isEqualTo(1L);
+        assertThat(response.getDataList().get(8).getId()).isEqualTo(9L);
+    }
+
+    @Test
+    @DisplayName("최근 본 상품 조회")
+    void findRecentViewProductById() {
+        //given
+        List<Product> products = new ArrayList<>();
+        String isbn = "0000000000001";
+        File thumbnailFile = DummyFile.dummy(URL + "/image.png");
+        File ebookFile = DummyFile.dummy(URL + "/ebook.pdf");
+        SubscribeProduct subscribeProduct = SubscribeProduct.builder()
+                .id(1L)
+                .ISSN("00000001")
+                .build();
+        TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
+
+        Product product = DummyProduct.dummy(
+                isbn,
+                subscribeProduct,
+                thumbnailFile,
+                ebookFile,
+                totalDiscountRate
+        );
+        Publish publish = Publish.create(
+                product,
+                Publisher.builder().id(1L).name("출판사").build(),
+                LocalDate.of(2011, 11, 11).toString()
+        );
+        Mockito.when(queryPublishService.findByProduct(any()))
+                .thenReturn(new PublishResponseDto(
+                        publish.getPk(),
+                        publish.getPublishedDate(),
+                        publish.getProduct(),
+                        publish.getPublisher()
+                ));
+
+        String isbn2 = "0000000000002";
+        File thumbnailFile2 = DummyFile.dummy(URL + "/image2.png");
+        File ebookFile2 = DummyFile.dummy(URL + "/ebook2.pdf");
+        SubscribeProduct subscribeProduct2 = SubscribeProduct.builder()
+                .id(2L)
+                .ISSN("0000000000002")
+                .build();
+
+        Product product2 = DummyProduct.dummy(
+                isbn2,
+                subscribeProduct2,
+                thumbnailFile2,
+                ebookFile2,
+                totalDiscountRate
+        );
+
+        products.add(product2);
+        products.add(product);
+
+        Mockito.when(queryProductRepository.findRecentViewProductById(any(), any(), any()))
+                .thenReturn(new PageImpl<>(products, PageRequest.of(0, 2), 2L));
+        Publish publish2 = Publish.create(
+                product2,
+                Publisher.builder().id(1L).name("출판사").build(),
+                LocalDate.of(2011, 12, 12).toString()
+        );
+        Mockito.when(queryPublishService.findByProduct(any()))
+                .thenReturn(new PublishResponseDto(
+                        publish2.getPk(),
+                        publish2.getPublishedDate(),
+                        publish2.getProduct(),
+                        publish2.getPublisher()
+                ));
+        Page<ProductRecentResponseDto> dto = service.findRecentViewProductById(
+                List.of(1L),
+                List.of(1L),
+                PageRequest.of(0, 10)
+        );
+        assertThat(dto).hasSize(2);
+    }
+
+    @Test
     @DisplayName("주문서에 필요한 주문상품의 데이터 조회 실패 - 구매 불가능한 상품")
     void getByOrderProducts_fail_productNotAvailableToOrder_cannotOrder() {
         //given
