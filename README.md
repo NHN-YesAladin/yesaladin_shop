@@ -20,7 +20,7 @@ YesAladin Shop은 애플리케이션 이용에 필요한 API를 제공함으로�
 (무중단 배포 및 CI/CD flow 첨부할 것)
 
 ## Test Coverage
-- 목표 : 라인 커버리지 80% 이상 (2023.02.22.() 기준 83.21%)  
+- 목표 : 라인 커버리지 80% 이상 (2023.02.22 기준 83.21%)  
   <img width="971" alt="스크린샷 2023-02-22 오후 12 04 01" src="https://user-images.githubusercontent.com/60968342/220511146-e5976ef3-598a-48a9-aadc-22e464d90046.png">
 
 ## Features
