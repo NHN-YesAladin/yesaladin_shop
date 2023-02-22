@@ -44,19 +44,6 @@ public class QueryMemberAddressServiceImpl implements QueryMemberAddressService 
      */
     @Override
     @Transactional(readOnly = true)
-    public MemberAddressResponseDto getById(long id) {
-        return queryMemberAddressRepository.getById(id)
-                .orElseThrow(() -> new ClientException(
-                        ErrorCode.ADDRESS_NOT_FOUND,
-                        MEMBER_ADDRESS_NOT_FOUND + id
-                ));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @Transactional(readOnly = true)
     public List<MemberAddressResponseDto> getByLoginId(String loginId) {
         checkLoginIdIsExist(loginId);
 

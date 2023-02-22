@@ -395,17 +395,28 @@ public class CommandProductServiceImpl implements CommandProductService {
                         ProductOrderRequestDto::getQuantity
                 ));
 
-        List<Product> productList = getAvailableProducts(quantities);
+        List<Product> productList = tryGetProductList(quantities);
 
-        productList.forEach(product -> product.changeQuantity(
-                product.getQuantity() - quantities.get(product.getIsbn())));
+        orderProductList(quantities, productList);
 
         return productList
                 .stream()
                 .collect(Collectors.toMap(Product::getIsbn, Function.identity()));
     }
 
-    private List<Product> getAvailableProducts(Map<String, Integer> quantities) {
+    private void orderProductList(Map<String, Integer> quantities, List<Product> productList) {
+        productList.forEach(product -> {
+            if (product.getQuantity() < quantities.get(product.getIsbn())) {
+                throw new ClientException(
+                        ErrorCode.PRODUCT_NOT_AVAILABLE_TO_ORDER,
+                        "Product is not available to order with isbn :" + product.getIsbn()
+                );
+            }
+            product.changeQuantity(product.getQuantity() - quantities.get(product.getIsbn()));
+        });
+    }
+
+    private List<Product> tryGetProductList(Map<String, Integer> quantities) {
         List<String> isbnList = new ArrayList<>(quantities.keySet());
 
         List<Product> productList = queryProductRepository.findByIsbnList(isbnList);
@@ -419,17 +430,14 @@ public class CommandProductServiceImpl implements CommandProductService {
             Map<String, Integer> quantities,
             List<Product> productList
     ) {
-        if (productList.size() != quantities.size()) {
-            throw new ClientException(
-                    ErrorCode.BAD_REQUEST,
-                    "Product is not available to order."
-            );
-        }
-        productList.forEach(product -> {
-            if (product.getQuantity() < quantities.get(product.getIsbn())) {
+        List<String> isbnList = productList.stream()
+                .map(Product::getIsbn)
+                .collect(Collectors.toList());
+        quantities.keySet().forEach(isbn -> {
+            if (!isbnList.contains(isbn)) {
                 throw new ClientException(
                         ErrorCode.PRODUCT_NOT_AVAILABLE_TO_ORDER,
-                        "Product not available to order."
+                        "Product is not available to order with isbn : " + isbn
                 );
             }
         });

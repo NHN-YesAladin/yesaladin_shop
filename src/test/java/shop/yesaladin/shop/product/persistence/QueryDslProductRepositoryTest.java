@@ -19,6 +19,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.common.exception.ClientException;
+import shop.yesaladin.shop.category.domain.model.Category;
+import shop.yesaladin.shop.category.domain.model.ProductCategory;
+import shop.yesaladin.shop.category.dummy.CategoryDummy;
+import shop.yesaladin.shop.category.dummy.ProductCategoryDummy;
 import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.ProductTypeCode;
@@ -26,6 +30,8 @@ import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
 import shop.yesaladin.shop.product.dto.ProductOnlyTitleDto;
 import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
+import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
+import shop.yesaladin.shop.product.dto.ProductWithCategoryResponseDto;
 import shop.yesaladin.shop.product.dummy.DummyFile;
 import shop.yesaladin.shop.product.dummy.DummyProduct;
 import shop.yesaladin.shop.product.dummy.DummySubscribeProduct;
@@ -40,6 +46,7 @@ class QueryDslProductRepositoryTest {
 
     private final String ISBN1 = "0000000000001";
     private final String ISBN2 = "0000000000002";
+    private final String ISBN3 = "0000000000003";
     private final String URL = "https://api-storage.cloud.toast.com/v1/AUTH_/container/domain/type";
 
     @PersistenceContext
@@ -50,10 +57,19 @@ class QueryDslProductRepositoryTest {
 
     private File thumbnailFile1;
     private File thumbnailFile2;
+    private File thumbnailFile3;
     private File ebookFile1;
     private File ebookFile2;
+    private File ebookFile3;
     private Product product1;
     private Product product2;
+    private Product product3;
+    private Category category1;
+    private Category category2;
+    private Category category3;
+    private ProductCategory productCategory1;
+    private ProductCategory productCategory2;
+    private ProductCategory productCategory3;
 
     @BeforeEach
     void setUp() {
@@ -65,13 +81,17 @@ class QueryDslProductRepositoryTest {
 
         thumbnailFile1 = DummyFile.dummy(URL + "/image1.png");
         thumbnailFile2 = DummyFile.dummy(URL + "/image2.png");
+        thumbnailFile3 = DummyFile.dummy(URL + "/image3.png");
         entityManager.persist(thumbnailFile1);
         entityManager.persist(thumbnailFile2);
+        entityManager.persist(thumbnailFile3);
 
         ebookFile1 = DummyFile.dummy(URL + "/ebook1.pdf");
         ebookFile2 = DummyFile.dummy(URL + "/ebook2.pdf");
+        ebookFile3 = DummyFile.dummy(URL + "/ebook3.pdf");
         entityManager.persist(ebookFile1);
         entityManager.persist(ebookFile2);
+        entityManager.persist(ebookFile3);
 
         product1 = DummyProduct.dummy(
                 ISBN1,
@@ -86,6 +106,14 @@ class QueryDslProductRepositoryTest {
                 subscribeProduct,
                 thumbnailFile2,
                 ebookFile2,
+                totalDiscountRate,
+                ProductTypeCode.NEWBOOK
+        );
+        product3 = DummyProduct.dummy(
+                ISBN3,
+                subscribeProduct,
+                thumbnailFile3,
+                ebookFile3,
                 totalDiscountRate,
                 ProductTypeCode.NEWBOOK
         );
@@ -165,6 +193,25 @@ class QueryDslProductRepositoryTest {
         assertThat(optionalProduct.get().getEbookFile()).isEqualTo(ebookFile1);
         assertThat(optionalProduct.get()
                 .getProductTypeCode()).isEqualTo(ProductTypeCode.BESTSELLER);
+    }
+
+    @Test
+    @DisplayName("isbn으로 상품과 카테고리 조회")
+    void getByIsbn() {
+        //given
+        setProductCategoryData();
+
+        //when
+        Optional<ProductWithCategoryResponseDto> result = repository.getByIsbn(ISBN3);
+
+        //then
+        assertThat(result).isPresent();
+        assertThat(result.get().getIsbn()).isEqualTo(ISBN3);
+        assertThat(result.get().getActualPrice()).isEqualTo(10000L);
+        assertThat(result.get().getDiscountRate()).isEqualTo(0);
+        assertThat(result.get().isSeparatelyDiscount()).isEqualTo(false);
+        assertThat(result.get().getGivenPointRate()).isEqualTo(2);
+        assertThat(result.get().getCategoryList()).hasSize(1);
     }
 
     @Test
@@ -284,15 +331,31 @@ class QueryDslProductRepositoryTest {
     }
 
     @Test
-    @DisplayName("주문에 필요한 상품 데이터 조회")
-    void getProductForOrder() {
-//        //given
-//        List<OrderProductRequestDto> request = getOrderProductRequestData();
-//        Product product = DummyProduct.dummy()
-//        //when
-//
-//
-//        //then
+    @DisplayName("상품의 isbn 리스트로 주문서에 필요한 상품 데이터를 조회합니다.")
+    void getByIsbnList() {
+        //given
+        setProductCategoryData();
+        List<String> isbnList = List.of(ISBN1, ISBN2, ISBN3);
+
+        //when
+        List<ProductOrderSheetResponseDto> result = repository.getByIsbnList(isbnList);
+
+        //then
+        assertThat(result).hasSize(3);
+    }
+
+    @Test
+    @DisplayName("상품의 isbn 리스트로 상품 데이터를 조회합니다.")
+    void findByIsbnList() {
+        //given
+        setProductCategoryData();
+        List<String> isbnList = List.of(ISBN1, ISBN2, ISBN3);
+
+        //when
+        List<Product> result = repository.findByIsbnList(isbnList);
+
+        //then
+        assertThat(result).hasSize(3);
     }
 
     @Test
@@ -362,5 +425,22 @@ class QueryDslProductRepositoryTest {
             ));
         }
         return request;
+    }
+    private void setProductCategoryData() {
+        entityManager.persist(product1);
+        entityManager.persist(product2);
+        entityManager.persist(product3);
+        category1 = CategoryDummy.dummyParent();
+        category2 = CategoryDummy.dummyParent2();
+        category3 = CategoryDummy.dummyParent3();
+        entityManager.persist(category1);
+        entityManager.persist(category2);
+        entityManager.persist(category3);
+        productCategory1 = ProductCategoryDummy.dummy(category1, product3);
+        productCategory2 = ProductCategoryDummy.dummy(category2, product3);
+        productCategory3 = ProductCategoryDummy.dummy(category3, product3);
+        entityManager.persist(productCategory1);
+        entityManager.persist(productCategory2);
+        entityManager.persist(productCategory3);
     }
 }

@@ -133,4 +133,31 @@ class QueryDslQueryMemberAddressRepositoryTest {
         //then
         assertThat(result).isTrue();
     }
+
+    @Test
+    void findByLoginId() {
+        //when
+        List<MemberAddress> result = queryMemberAddressRepository.findByLoginId("dfw@q");
+
+        //then
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void findByLoginIdAndMemberAddressId() {
+        //given
+        entityManager.persist(memberAddress);
+
+        String loginId = "user@1";
+        long memberAddressId = memberAddress.getId();
+
+        //when
+        Optional<MemberAddress> result = queryMemberAddressRepository.findByLoginIdAndMemberAddressId(loginId, memberAddressId);
+
+        //then
+        assertThat(result).isPresent();
+        assertThat(result.get().getId()).isEqualTo(memberAddressId);
+        assertThat(result.get().getMember().getLoginId()).isEqualTo(loginId);
+        assertThat(result.get().isDeleted()).isFalse();
+    }
 }

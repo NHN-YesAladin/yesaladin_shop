@@ -15,6 +15,26 @@ public class CategoryDummy {
                 .build();
     }
 
+    public static Category dummyParent2() {
+        return Category.builder()
+                .id(20000L)
+                .name("잡지")
+                .isShown(true)
+                .order(1)
+                .parent(null)
+                .build();
+    }
+
+    public static Category dummyParent3() {
+        return Category.builder()
+                .id(30000L)
+                .name("국외도서")
+                .isShown(true)
+                .order(1)
+                .parent(null)
+                .build();
+    }
+
     public static Category dummyParent(Long id) {
         return Category.builder()
                 .id(id)
