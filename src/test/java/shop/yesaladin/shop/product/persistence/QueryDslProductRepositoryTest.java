@@ -349,7 +349,10 @@ class QueryDslProductRepositoryTest {
     void findByISBNForManager() {
         entityManager.persist(product1);
 
-        Page<Product> results = repository.findByISBNForManager(product1.getIsbn(), PageRequest.of(0, 10));
+        Page<Product> results = repository.findByISBNForManager(
+                product1.getIsbn(),
+                PageRequest.of(0, 10)
+        );
         assertThat(results).hasSize(1);
         assertThat(results.getContent().get(0).getIsbn()).isEqualTo(product1.getIsbn());
     }
@@ -359,7 +362,10 @@ class QueryDslProductRepositoryTest {
     void findByContentForManager() {
         entityManager.persist(product1);
 
-        Page<Product> results = repository.findByContentForManager(product1.getContents(), PageRequest.of(0, 10));
+        Page<Product> results = repository.findByContentForManager(
+                product1.getContents(),
+                PageRequest.of(0, 10)
+        );
         assertThat(results).hasSize(1);
         assertThat(results.getContent().get(0).getContents()).isEqualTo(product1.getContents());
     }
@@ -373,7 +379,10 @@ class QueryDslProductRepositoryTest {
         entityManager.persist(publisher);
         entityManager.persist(product1);
         entityManager.persist(publish);
-        Page<Product> results = repository.findByPublisherForManager(publisher.getName(), PageRequest.of(0, 10));
+        Page<Product> results = repository.findByPublisherForManager(
+                publisher.getName(),
+                PageRequest.of(0, 10)
+        );
         assertThat(results).hasSize(1);
     }
 
@@ -401,7 +410,7 @@ class QueryDslProductRepositoryTest {
 //
 //        //then
     }
-    
+
     @DisplayName("상품의 isbn 리스트로 주문서에 필요한 상품 데이터를 조회합니다.")
     void getByIsbnList() {
         //given
@@ -482,7 +491,7 @@ class QueryDslProductRepositoryTest {
         Optional<Product> result = repository.findOrderProductByIsbn(isbn, quantity);
 
         //then
-        assertThat( result).isEmpty();
+        assertThat(result).isEmpty();
     }
 
     private List<ProductOrderRequestDto> getOrderProductRequestData() {
@@ -497,6 +506,7 @@ class QueryDslProductRepositoryTest {
         }
         return request;
     }
+
     private void setProductCategoryData() {
         entityManager.persist(product1);
         entityManager.persist(product2);

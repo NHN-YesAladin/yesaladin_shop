@@ -501,7 +501,8 @@ class CommandMemberServiceImplTest {
         );
         Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
                 .thenReturn(Optional.of(member));
-        Mockito.when(queryMemberRepository.findMemberByEmail(email)).thenReturn(Optional.of(member));
+        Mockito.when(queryMemberRepository.findMemberByEmail(email))
+                .thenReturn(Optional.of(member));
 
         //when, then
         assertThatThrownBy(() -> service.updateEmail(loginId, request)).isInstanceOf(

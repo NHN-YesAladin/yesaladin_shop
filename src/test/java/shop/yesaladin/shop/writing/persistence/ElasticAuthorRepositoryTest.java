@@ -9,6 +9,7 @@ import shop.yesaladin.shop.writing.dto.SearchedAuthorResponseDto;
 
 @SpringBootTest
 class ElasticAuthorRepositoryTest {
+
     @Autowired
     private ElasticAuthorRepository elasticAuthorRepository;
 

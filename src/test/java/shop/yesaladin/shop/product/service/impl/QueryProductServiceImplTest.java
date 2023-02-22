@@ -857,7 +857,10 @@ class QueryProductServiceImplTest {
 
         Mockito.when(queryProductRepository.findByISBNForManager(any(), any())).thenReturn(page);
 
-        PaginatedResponseDto<ProductsResponseDto> response = service.findByISBNForManager("isbn", PageRequest.of(0, 10));
+        PaginatedResponseDto<ProductsResponseDto> response = service.findByISBNForManager(
+                "isbn",
+                PageRequest.of(0, 10)
+        );
 
         assertThat(response.getTotalDataCount()).isEqualTo(9);
         assertThat(response.getDataList().get(0).getId()).isEqualTo(1L);
@@ -913,9 +916,13 @@ class QueryProductServiceImplTest {
                 products.size()
         );
 
-        Mockito.when(queryProductRepository.findByPublisherForManager(any(), any())).thenReturn(page);
+        Mockito.when(queryProductRepository.findByPublisherForManager(any(), any()))
+                .thenReturn(page);
 
-        PaginatedResponseDto<ProductsResponseDto> response = service.findByPublisherForManager("publisher", PageRequest.of(0, 10));
+        PaginatedResponseDto<ProductsResponseDto> response = service.findByPublisherForManager(
+                "publisher",
+                PageRequest.of(0, 10)
+        );
 
         assertThat(response.getTotalDataCount()).isEqualTo(9);
         assertThat(response.getDataList().get(0).getId()).isEqualTo(1L);
@@ -973,7 +980,10 @@ class QueryProductServiceImplTest {
 
         Mockito.when(queryProductRepository.findByContentForManager(any(), any())).thenReturn(page);
 
-        PaginatedResponseDto<ProductsResponseDto> response = service.findByContentForManager("publisher", PageRequest.of(0, 10));
+        PaginatedResponseDto<ProductsResponseDto> response = service.findByContentForManager(
+                "publisher",
+                PageRequest.of(0, 10)
+        );
 
         assertThat(response.getTotalDataCount()).isEqualTo(9);
         assertThat(response.getDataList().get(0).getId()).isEqualTo(1L);
@@ -1031,7 +1041,10 @@ class QueryProductServiceImplTest {
 
         Mockito.when(queryProductRepository.findByAuthorForManager(any(), any())).thenReturn(page);
 
-        PaginatedResponseDto<ProductsResponseDto> response = service.findByAuthorForManager("author", PageRequest.of(0, 10));
+        PaginatedResponseDto<ProductsResponseDto> response = service.findByAuthorForManager(
+                "author",
+                PageRequest.of(0, 10)
+        );
 
         assertThat(response.getTotalDataCount()).isEqualTo(9);
         assertThat(response.getDataList().get(0).getId()).isEqualTo(1L);
@@ -1089,7 +1102,10 @@ class QueryProductServiceImplTest {
 
         Mockito.when(queryProductRepository.findByTitleForManager(any(), any())).thenReturn(page);
 
-        PaginatedResponseDto<ProductsResponseDto> response = service.findByTitleForManager("title", PageRequest.of(0, 10));
+        PaginatedResponseDto<ProductsResponseDto> response = service.findByTitleForManager(
+                "title",
+                PageRequest.of(0, 10)
+        );
 
         assertThat(response.getTotalDataCount()).isEqualTo(9);
         assertThat(response.getDataList().get(0).getId()).isEqualTo(1L);

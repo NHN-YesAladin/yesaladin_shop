@@ -584,9 +584,12 @@ class QueryMemberControllerTest {
                         fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
                                 .description("null")
                                 .optional(),
-                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER).description("전체 페이지 수"),
-                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER).description("현재 페이지 수"),
-                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER).description("전체 데이터 수"),
+                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER)
+                                .description("전체 페이지 수"),
+                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER)
+                                .description("현재 페이지 수"),
+                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER)
+                                .description("전체 데이터 수"),
                         fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER)
                                 .description("회원 id"),
                         fieldWithPath("data.dataList.[].loginId").type(JsonFieldType.STRING)
@@ -670,9 +673,12 @@ class QueryMemberControllerTest {
                         fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
                                 .description("null")
                                 .optional(),
-                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER).description("전체 페이지 수"),
-                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER).description("현재 페이지 수"),
-                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER).description("전체 데이터 수"),
+                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER)
+                                .description("전체 페이지 수"),
+                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER)
+                                .description("현재 페이지 수"),
+                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER)
+                                .description("전체 데이터 수"),
                         fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER)
                                 .description("회원 id"),
                         fieldWithPath("data.dataList.[].loginId").type(JsonFieldType.STRING)
@@ -760,9 +766,12 @@ class QueryMemberControllerTest {
                         fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
                                 .description("null")
                                 .optional(),
-                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER).description("전체 페이지 수"),
-                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER).description("현재 페이지 수"),
-                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER).description("전체 데이터 수"),
+                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER)
+                                .description("전체 페이지 수"),
+                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER)
+                                .description("현재 페이지 수"),
+                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER)
+                                .description("전체 데이터 수"),
                         fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER)
                                 .description("회원 id"),
                         fieldWithPath("data.dataList.[].loginId").type(JsonFieldType.STRING)
@@ -847,9 +856,12 @@ class QueryMemberControllerTest {
                         fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
                                 .description("null")
                                 .optional(),
-                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER).description("전체 페이지 수"),
-                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER).description("현재 페이지 수"),
-                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER).description("전체 데이터 수"),
+                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER)
+                                .description("전체 페이지 수"),
+                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER)
+                                .description("현재 페이지 수"),
+                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER)
+                                .description("전체 데이터 수"),
                         fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER)
                                 .description("회원 id"),
                         fieldWithPath("data.dataList.[].loginId").type(JsonFieldType.STRING)
@@ -935,9 +947,12 @@ class QueryMemberControllerTest {
                         fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
                                 .description("null")
                                 .optional(),
-                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER).description("전체 페이지 수"),
-                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER).description("현재 페이지 수"),
-                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER).description("전체 데이터 수"),
+                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER)
+                                .description("전체 페이지 수"),
+                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER)
+                                .description("현재 페이지 수"),
+                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER)
+                                .description("전체 데이터 수"),
                         fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER)
                                 .description("회원 id"),
                         fieldWithPath("data.dataList.[].loginId").type(JsonFieldType.STRING)
@@ -1023,9 +1038,12 @@ class QueryMemberControllerTest {
                         fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
                                 .description("null")
                                 .optional(),
-                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER).description("전체 페이지 수"),
-                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER).description("현재 페이지 수"),
-                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER).description("전체 데이터 수"),
+                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER)
+                                .description("전체 페이지 수"),
+                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER)
+                                .description("현재 페이지 수"),
+                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER)
+                                .description("전체 데이터 수"),
                         fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER)
                                 .description("회원 id"),
                         fieldWithPath("data.dataList.[].loginId").type(JsonFieldType.STRING)

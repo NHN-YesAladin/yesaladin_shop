@@ -83,12 +83,17 @@ class SearchPublisherControllerTest {
                                 parameterWithName("offset").description("페이지 위치"),
                                 parameterWithName("_csrf").description("csrf")
                         ),
-                        responseFields(fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                        responseFields(
+                                fieldWithPath("success").type(JsonFieldType.BOOLEAN)
                                         .description("성공 여부"),
                                 fieldWithPath("status").type(JsonFieldType.NUMBER)
                                         .description("상태"),
-                                fieldWithPath("data").type(JsonFieldType.OBJECT).description("null").optional(),
-                                fieldWithPath("errorMessages").type(JsonFieldType.ARRAY).description("에러 메시지"))
+                                fieldWithPath("data").type(JsonFieldType.OBJECT)
+                                        .description("null")
+                                        .optional(),
+                                fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                        .description("에러 메시지")
+                        )
                 ));
     }
 
@@ -125,12 +130,17 @@ class SearchPublisherControllerTest {
                                 parameterWithName("offset").description("페이지 위치"),
                                 parameterWithName("_csrf").description("csrf")
                         ),
-                        responseFields(fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                        responseFields(
+                                fieldWithPath("success").type(JsonFieldType.BOOLEAN)
                                         .description("성공 여부"),
                                 fieldWithPath("status").type(JsonFieldType.NUMBER)
                                         .description("상태"),
-                                fieldWithPath("data").type(JsonFieldType.OBJECT).description("null").optional(),
-                                fieldWithPath("errorMessages").type(JsonFieldType.ARRAY).description("에러 메시지"))
+                                fieldWithPath("data").type(JsonFieldType.OBJECT)
+                                        .description("null")
+                                        .optional(),
+                                fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                        .description("에러 메시지")
+                        )
                 ));
     }
 
@@ -167,12 +177,17 @@ class SearchPublisherControllerTest {
                                 parameterWithName("offset").description("페이지 위치"),
                                 parameterWithName("_csrf").description("csrf")
                         ),
-                        responseFields(fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                        responseFields(
+                                fieldWithPath("success").type(JsonFieldType.BOOLEAN)
                                         .description("성공 여부"),
                                 fieldWithPath("status").type(JsonFieldType.NUMBER)
                                         .description("상태"),
-                                fieldWithPath("data").type(JsonFieldType.OBJECT).description("null").optional(),
-                                fieldWithPath("errorMessages").type(JsonFieldType.ARRAY).description("에러 메시지"))
+                                fieldWithPath("data").type(JsonFieldType.OBJECT)
+                                        .description("null")
+                                        .optional(),
+                                fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                        .description("에러 메시지")
+                        )
                 ));
     }
 
@@ -203,7 +218,10 @@ class SearchPublisherControllerTest {
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.count", equalTo(1)))
                 .andExpect(jsonPath("$.data.searchedPublisherDtoList[0].id", equalTo(1)))
-                .andExpect(jsonPath("$.data.searchedPublisherDtoList[0].name", equalTo("publisher")));
+                .andExpect(jsonPath(
+                        "$.data.searchedPublisherDtoList[0].name",
+                        equalTo("publisher")
+                ));
 
         resultActions.andDo(
                 document(
@@ -216,14 +234,21 @@ class SearchPublisherControllerTest {
                                 parameterWithName("offset").description("페이지 위치"),
                                 parameterWithName("_csrf").description("csrf")
                         ),
-                        responseFields(fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                        responseFields(
+                                fieldWithPath("success").type(JsonFieldType.BOOLEAN)
                                         .description("성공 여부"),
                                 fieldWithPath("status").type(JsonFieldType.NUMBER)
                                         .description("상태"),
-                                fieldWithPath("errorMessages").type(JsonFieldType.ARRAY).description("null").optional(),
-                                fieldWithPath("data.count").type(JsonFieldType.NUMBER).description("총 갯수"),
-                                fieldWithPath("data.searchedPublisherDtoList.[].id").type(JsonFieldType.NUMBER).description("출판사 id"),
-                                fieldWithPath("data.searchedPublisherDtoList.[].name").type(JsonFieldType.STRING).description("출판사 이름"))
+                                fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                        .description("null")
+                                        .optional(),
+                                fieldWithPath("data.count").type(JsonFieldType.NUMBER)
+                                        .description("총 갯수"),
+                                fieldWithPath("data.searchedPublisherDtoList.[].id").type(
+                                        JsonFieldType.NUMBER).description("출판사 id"),
+                                fieldWithPath("data.searchedPublisherDtoList.[].name").type(
+                                        JsonFieldType.STRING).description("출판사 이름")
+                        )
                 ));
     }
 }
