@@ -17,7 +17,6 @@ import shop.yesaladin.shop.category.exception.CategoryNotFoundException;
 import shop.yesaladin.shop.common.dto.ErrorResponseDto;
 import shop.yesaladin.shop.common.exception.CommonException;
 import shop.yesaladin.shop.common.exception.CustomJsonProcessingException;
-import shop.yesaladin.shop.common.exception.InvalidAuthorityException;
 import shop.yesaladin.shop.common.exception.InvalidPeriodConditionException;
 import shop.yesaladin.shop.member.exception.MemberProfileAlreadyExistException;
 import shop.yesaladin.shop.member.exception.MemberRoleNotFoundException;
@@ -56,17 +55,6 @@ public class ControllerAdvice {
         log.error("[BAD_REQUEST] handleValidationException", ex);
         ErrorResponseDto error = new ErrorResponseDto(ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
-    }
-
-    @ExceptionHandler(InvalidAuthorityException.class)
-    public ResponseEntity<ResponseDto<Object>> handleUnauthorizedException(Exception e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-                ResponseDto.builder()
-                        .success(false)
-                        .status(HttpStatus.UNAUTHORIZED)
-                        .errorMessages(List.of("접근권한이 없습니다."))
-                        .build()
-        );
     }
 
     @ExceptionHandler(value = {
