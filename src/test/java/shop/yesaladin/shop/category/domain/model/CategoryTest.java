@@ -1,10 +1,12 @@
 package shop.yesaladin.shop.category.domain.model;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import shop.yesaladin.shop.category.dummy.CategoryDummy;
+import shop.yesaladin.shop.category.exception.AlreadyDeletedCategoryException;
 
 
 class CategoryTest {
@@ -31,6 +33,19 @@ class CategoryTest {
         assertThat(category.isShown()).isEqualTo(isShown);
         assertThat(category.getOrder()).isEqualTo(order);
 
+    }
+
+    @Test
+    void disabledCategoryFailed_whenDisabled() throws Exception {
+        //given
+        String nameBeforeChanging = "기존 이름";
+        Category category = Category.builder()
+                .isDisable(true)
+                .build();
+
+        //when, then
+        assertThatThrownBy(() -> category.disableCategory(nameBeforeChanging))
+                .isInstanceOf(AlreadyDeletedCategoryException.class);
     }
 
     @Test
