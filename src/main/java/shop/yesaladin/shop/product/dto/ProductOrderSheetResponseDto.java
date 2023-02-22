@@ -27,26 +27,6 @@ public class ProductOrderSheetResponseDto {
     private long quantity;
     private List<String> categories;
 
-    public ProductOrderSheetResponseDto(
-            Long productId,
-            String isbn,
-            String title,
-            long actualPrice,
-            int discountRate,
-            Boolean isGivenPoint,
-            int givenPointRate,
-            long quantity
-    ) {
-        this.productId = productId;
-        this.isbn = isbn;
-        this.title = title;
-        this.actualPrice = actualPrice;
-        this.discountRate = discountRate;
-        this.isGivenPoint = isGivenPoint;
-        this.givenPointRate = givenPointRate;
-        this.quantity = quantity;
-    }
-
     public void setQuantity(long quantity) {
         this.quantity = quantity;
     }

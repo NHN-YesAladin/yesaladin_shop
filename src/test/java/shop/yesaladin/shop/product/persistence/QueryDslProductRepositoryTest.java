@@ -341,6 +341,19 @@ class QueryDslProductRepositoryTest {
         assertThat(products.getContent().get(1).getId()).isEqualTo(product1.getId());
     }
 
+    @Test
+    void findOrderProductByIsbn() {
+        //given
+        String isbn = "0000000000001";
+        int quantity = 10;
+
+        //when
+        Optional<Product> result = repository.findOrderProductByIsbn(isbn, quantity);
+
+        //then
+        assertThat( result).isEmpty();
+    }
+
     private List<ProductOrderRequestDto> getOrderProductRequestData() {
         List<ProductOrderRequestDto> request = new ArrayList<>();
 
