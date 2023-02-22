@@ -114,6 +114,14 @@ YesAladin Shop은 애플리케이션 이용에 필요한 API를 제공함으로�
   - Spring Cloud Config를 연동하여 설정 정보 외부화
 
 ### [@서민지](https://github.com/narangd0)
+- **쿠폰**
+  - 자동 발행 쿠폰
+    - Batch 서버와의 API 통신을 통해 n일 후 생일인 회원에게 쿠폰 자동 발행 구현
+      - 생일 회원 조회
+      - Batch Insert를 이용한 쿠폰 지급
+  - 선착순 쿠폰
+    - 이벤트 오픈 시간 이전에 발행된 요청 처리
+    - Redis를 사용하여 단시간에 들어오는 중복 발행 요청 정상 처리
 
 ### [@김선홍](https://github.com/ssun4098)
 
