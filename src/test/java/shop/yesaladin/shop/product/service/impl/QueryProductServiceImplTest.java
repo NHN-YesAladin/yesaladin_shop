@@ -62,21 +62,17 @@ import shop.yesaladin.shop.writing.service.inter.QueryWritingService;
 class QueryProductServiceImplTest {
 
     private final String URL = "https://api-storage.cloud.toast.com/v1/AUTH_/container/domain/type";
-
-    private QueryProductService service;
-
-    // Product
-    private QueryProductRepository queryProductRepository;
-
-    private QueryWritingService queryWritingService;
-    private QueryPublishService queryPublishService;
-    private QueryProductTagService queryProductTagService;
-    private QueryProductCategoryService queryProductCategoryService;
-
     private final Clock clock = Clock.fixed(
             Instant.parse("2023-01-10T00:00:00.000Z"),
             ZoneId.of("UTC")
     );
+    private QueryProductService service;
+    // Product
+    private QueryProductRepository queryProductRepository;
+    private QueryWritingService queryWritingService;
+    private QueryPublishService queryPublishService;
+    private QueryProductTagService queryProductTagService;
+    private QueryProductCategoryService queryProductCategoryService;
 
     @BeforeEach
     void setUp() {

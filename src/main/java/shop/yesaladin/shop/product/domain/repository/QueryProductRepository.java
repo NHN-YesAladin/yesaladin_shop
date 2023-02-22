@@ -121,7 +121,7 @@ public interface QueryProductRepository {
     /**
      * 관리자용 상품 제목 검색 메서드
      *
-     * @param title 검색할 제목
+     * @param title    검색할 제목
      * @param pageable 페이지 정보
      * @return 검색 결과
      * @author 김선홍
@@ -132,7 +132,7 @@ public interface QueryProductRepository {
     /**
      * 관리자용 상품 isbn 검색 메서드
      *
-     * @param isbn 검색할 isbn
+     * @param isbn     검색할 isbn
      * @param pageable 페이지 정보
      * @return 검색 결과
      * @author 김선홍
@@ -143,7 +143,7 @@ public interface QueryProductRepository {
     /**
      * 관리자용 상품 내용 검색 메서드
      *
-     * @param content 검색할 제목
+     * @param content  검색할 제목
      * @param pageable 페이지 정보
      * @return 검색 결과
      * @author 김선홍
@@ -155,7 +155,7 @@ public interface QueryProductRepository {
      * 관리자용 상품 출판사 검색 메서드
      *
      * @param publisher 검색할 제목
-     * @param pageable 페이지 정보
+     * @param pageable  페이지 정보
      * @return 검색 결과
      * @author 김선홍
      * @since 1, 0
@@ -165,7 +165,7 @@ public interface QueryProductRepository {
     /**
      * 관리자용 상품 저자 검색 메서드
      *
-     * @param author 검색할 제목
+     * @param author   검색할 제목
      * @param pageable 페이지 정보
      * @return 검색 결과
      * @author 김선홍
@@ -235,5 +235,9 @@ public interface QueryProductRepository {
      * @author 김선홍
      * @since 1, 0
      */
-    Page<Product> findRecentViewProductById(List<Long> totalIds, List<Long> pageIds, Pageable pageable);
+    Page<Product> findRecentViewProductById(
+            List<Long> totalIds,
+            List<Long> pageIds,
+            Pageable pageable
+    );
 }

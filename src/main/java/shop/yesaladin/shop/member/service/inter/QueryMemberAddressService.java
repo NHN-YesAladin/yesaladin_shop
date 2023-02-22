@@ -2,7 +2,6 @@ package shop.yesaladin.shop.member.service.inter;
 
 import java.util.List;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
-import shop.yesaladin.shop.member.dto.MemberAddressOrderSheetResponseDto;
 import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
 
 /**

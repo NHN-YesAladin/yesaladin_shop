@@ -22,14 +22,13 @@ import shop.yesaladin.shop.member.dummy.MemberDummy;
 @ActiveProfiles("local-test")
 class QueryDslQueryMemberAddressRepositoryTest {
 
-    @PersistenceContext
-    EntityManager entityManager;
-
-    @Autowired
-    QueryDslQueryMemberAddressRepository queryMemberAddressRepository;
     private final String address = "Gwang-ju buk-gu yongbong-dong";
     private final boolean isDefault = false;
     private final String loginId = "user@1";
+    @PersistenceContext
+    EntityManager entityManager;
+    @Autowired
+    QueryDslQueryMemberAddressRepository queryMemberAddressRepository;
     private Member member;
     private MemberAddress memberAddress;
 

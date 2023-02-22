@@ -1,13 +1,12 @@
 package shop.yesaladin.shop.product.dto;
 
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
 import shop.yesaladin.shop.writing.dto.AuthorsResponseDto;
-
-import java.util.List;
 
 /**
  * 간단한 상품 정보를 응답하기 위한 Dto 입니다.

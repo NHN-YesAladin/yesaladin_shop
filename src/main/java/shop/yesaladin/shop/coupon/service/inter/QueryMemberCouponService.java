@@ -35,7 +35,7 @@ public interface QueryMemberCouponService {
      * @return 쿠폰 코드의 요약 정보 리스트
      * @author 서민지
      */
-    List<MemberCouponSummaryDto> getMemberCouponSummaryList(List<String> couponCodes);
+    List<MemberCouponSummaryDto> getMemberCouponSummaryListByCouponCode(List<String> couponCodes);
 
     /**
      * 회원이 사용할 유효한 쿠폰들의 정보를 반환합니다.

@@ -1,0 +1,123 @@
+==== wishlist
+
+==== 위시리스트 등록 시 회원 조회 실패
+
+==== request
+
+===== Example
+include::{snippets}/wishlist-save-member-not-found/response-body.adoc[]
+
+
+==== 위시리스트 등록 시 상품 조회 실패
+
+==== request
+
+===== Example
+include::{snippets}/wishlist-save-product-not-found/response-body.adoc[]
+
+==== 위시리스트 등록
+
+==== curl
+include::{snippets}/wishlist-save-success/curl-request.adoc[]
+
+==== request
+
+===== Example
+include::{snippets}/wishlist-save-success/http-request.adoc[]
+
+==== response
+
+===== Body
+include::{snippets}/wishlist-save-success/response-fields.adoc[]
+
+===== Example
+include::{snippets}/wishlist-save-success/http-response.adoc[]
+
+==== 위시리스트 삭제 시 회원 조회 실패
+
+==== request
+
+===== Example
+include::{snippets}/wishlist-delete-member-not-found/response-body.adoc[]
+
+==== 위시리스트 삭제 시 위시리스트 조회 실패
+
+==== request
+
+==== Example
+include::{snippets}/wishlist-delete-wishlist-not-found/response-body.adoc[]
+
+==== 위시리스트 삭제
+
+==== curl
+include::{snippets}/wishlist-delete-success/curl-request.adoc[]
+
+==== request
+
+===== Example
+include::{snippets}/wishlist-delete-success/http-request.adoc[]
+
+==== response
+
+===== Body
+include::{snippets}/wishlist-delete-success/response-fields.adoc[]
+
+===== Example
+include::{snippets}/wishlist-delete-success/http-response.adoc[]
+
+==== 위시리스트 조회 시 회원 조회 실패
+
+==== request
+
+==== Example
+include::{snippets}/find-wishlist-by-member-id-thr-member-not-found/response-body.adoc[]
+
+==== 위시리스트 조회 시 해당 위시리스트 상품에 대한 출판사 조회 실패
+
+==== request
+
+==== Example
+include::{snippets}/find-wishlist-by-member-id-thr-publisher-not-found/response-body.adoc[]
+
+==== 위시리스트 조회
+
+==== curl
+include::{snippets}/find-wishlist-by-member-id-success/curl-request.adoc[]
+
+==== request
+
+===== Example
+include::{snippets}/find-wishlist-by-member-id-success/http-request.adoc[]
+
+==== response
+
+===== Body
+include::{snippets}/find-wishlist-by-member-id-success/response-fields.adoc[]
+
+===== Example
+include::{snippets}/find-wishlist-by-member-id-success/http-response.adoc[]
+
+==== 위시리스트 등록 확인 시 회원 조회 실패
+
+==== request
+
+==== Example
+include::{snippets}/exists-wishlist-thr-member-not-found/response-body.adoc[]
+
+==== 위시리스트 등록 확인
+
+==== curl
+include::{snippets}/exists-wishlist-success/curl-request.adoc[]
+
+==== request
+
+===== Example
+include::{snippets}/exists-wishlist-success/http-request.adoc[]
+
+==== response
+
+===== Body
+include::{snippets}/exists-wishlist-success/response-fields.adoc[]
+
+===== Example
+include::{snippets}/exists-wishlist-success/http-response.adoc[]

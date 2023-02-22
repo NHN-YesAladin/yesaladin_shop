@@ -289,7 +289,10 @@ public class QueryProductServiceImpl implements QueryProductService {
             String title,
             Pageable pageable
     ) {
-        return getProductPaginatedResponses(queryProductRepository.findByTitleForManager(title, pageable));
+        return getProductPaginatedResponses(queryProductRepository.findByTitleForManager(
+                title,
+                pageable
+        ));
     }
 
     /**
@@ -301,7 +304,10 @@ public class QueryProductServiceImpl implements QueryProductService {
             String isbn,
             Pageable pageable
     ) {
-        return getProductPaginatedResponses(queryProductRepository.findByISBNForManager(isbn, pageable));
+        return getProductPaginatedResponses(queryProductRepository.findByISBNForManager(
+                isbn,
+                pageable
+        ));
     }
 
     /**
@@ -313,7 +319,10 @@ public class QueryProductServiceImpl implements QueryProductService {
             String content,
             Pageable pageable
     ) {
-        return getProductPaginatedResponses(queryProductRepository.findByContentForManager(content, pageable));
+        return getProductPaginatedResponses(queryProductRepository.findByContentForManager(
+                content,
+                pageable
+        ));
     }
 
     /**
@@ -325,7 +334,10 @@ public class QueryProductServiceImpl implements QueryProductService {
             String publisher,
             Pageable pageable
     ) {
-        return getProductPaginatedResponses(queryProductRepository.findByPublisherForManager(publisher, pageable));
+        return getProductPaginatedResponses(queryProductRepository.findByPublisherForManager(
+                publisher,
+                pageable
+        ));
     }
 
     /**
@@ -337,7 +349,10 @@ public class QueryProductServiceImpl implements QueryProductService {
             String author,
             Pageable pageable
     ) {
-        return getProductPaginatedResponses(queryProductRepository.findByAuthorForManager(author, pageable));
+        return getProductPaginatedResponses(queryProductRepository.findByAuthorForManager(
+                author,
+                pageable
+        ));
     }
 
     /**

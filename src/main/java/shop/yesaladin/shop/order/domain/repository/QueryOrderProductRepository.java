@@ -1,8 +1,7 @@
 package shop.yesaladin.shop.order.domain.repository;
 
-import shop.yesaladin.shop.order.dto.OrderProductResponseDto;
-
 import java.util.List;
+import shop.yesaladin.shop.order.dto.OrderProductResponseDto;
 
 /**
  * 주문 상품의 조회 관련 repository interface 입니다.
@@ -11,8 +10,6 @@ import java.util.List;
  * @since 1.0
  */
 public interface QueryOrderProductRepository {
-
-//    Optional<OrderProduct> findById(long id);
 
     /**
      * 주문 번호를 통해 해당하는 모든 주문 상품을 조회합니다.

@@ -157,8 +157,13 @@ class CommandProductServiceImplTest {
         Mockito.when(queryTotalDiscountRateRepository.findById(anyInt()))
                 .thenReturn(Optional.ofNullable(totalDiscountRate));
 
-        Product product = DummyProduct.dummy(ID,
-                ISBN1, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate
+        Product product = DummyProduct.dummy(
+                ID,
+                ISBN1,
+                subscribeProduct,
+                thumbnailFile,
+                ebookFile,
+                totalDiscountRate
         );
         Mockito.when(commandProductRepository.save(any())).thenReturn(product);
 
@@ -231,8 +236,13 @@ class CommandProductServiceImplTest {
         Mockito.when(queryTotalDiscountRateRepository.findById(anyInt()))
                 .thenReturn(Optional.ofNullable(totalDiscountRate));
 
-        Product product = DummyProduct.dummy(ID,
-                ISBN1, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate
+        Product product = DummyProduct.dummy(
+                ID,
+                ISBN1,
+                subscribeProduct,
+                thumbnailFile,
+                ebookFile,
+                totalDiscountRate
         );
         Mockito.when(queryProductRepository.findByIsbn(anyString()))
                 .thenReturn(Optional.ofNullable(product));
@@ -290,8 +300,13 @@ class CommandProductServiceImplTest {
                 .build();
         TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
 
-        Product product = DummyProduct.dummy(ID,
-                ISBN1, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate
+        Product product = DummyProduct.dummy(
+                ID,
+                ISBN1,
+                null,
+                thumbnailFile,
+                null,
+                totalDiscountRate
         );
         Mockito.when(queryProductRepository.findProductById(anyLong()))
                 .thenReturn(Optional.ofNullable(product));
@@ -318,7 +333,8 @@ class CommandProductServiceImplTest {
                 ));
 
         Mockito.when(querySubscribeProductRepository.findByISSN(any()))
-                .thenReturn(Optional.ofNullable(updateSubscribeProduct));
+//                .thenReturn(Optional.ofNullable(updateSubscribeProduct));
+                .thenReturn(Optional.ofNullable(null));
 
         Mockito.when(queryAuthorService.findById(anyLong()))
                 .thenReturn(new AuthorResponseDto(2L, "저자2", null));
@@ -385,8 +401,13 @@ class CommandProductServiceImplTest {
                 .build();
         TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
 
-        Product product = DummyProduct.dummy(ID,
-                ISBN1, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate
+        Product product = DummyProduct.dummy(
+                ID,
+                ISBN1,
+                subscribeProduct,
+                thumbnailFile,
+                ebookFile,
+                totalDiscountRate
         );
         Mockito.when(queryProductRepository.findProductById(anyLong()))
                 .thenReturn(Optional.ofNullable(product));
@@ -414,8 +435,13 @@ class CommandProductServiceImplTest {
                 .build();
         TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
 
-        Product product = DummyProduct.dummy(ID,
-                ISBN1, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate
+        Product product = DummyProduct.dummy(
+                ID,
+                ISBN1,
+                subscribeProduct,
+                thumbnailFile,
+                ebookFile,
+                totalDiscountRate
         );
         Mockito.when(queryProductRepository.findProductById(anyLong()))
                 .thenReturn(Optional.ofNullable(product));
@@ -443,8 +469,13 @@ class CommandProductServiceImplTest {
                 .build();
         TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
 
-        Product product = DummyProduct.dummy(ID,
-                ISBN1, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate
+        Product product = DummyProduct.dummy(
+                ID,
+                ISBN1,
+                subscribeProduct,
+                thumbnailFile,
+                ebookFile,
+                totalDiscountRate
         );
         Mockito.when(queryProductRepository.findProductById(anyLong()))
                 .thenReturn(Optional.ofNullable(product));
@@ -474,8 +505,13 @@ class CommandProductServiceImplTest {
                 .build();
         TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
 
-        Product product = DummyProduct.dummy(ID,
-                ISBN1, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate
+        Product product = DummyProduct.dummy(
+                ID,
+                ISBN1,
+                subscribeProduct,
+                thumbnailFile,
+                ebookFile,
+                totalDiscountRate
         );
         Mockito.when(queryProductRepository.findProductById(anyLong()))
                 .thenReturn(Optional.ofNullable(product));
@@ -518,8 +554,13 @@ class CommandProductServiceImplTest {
                 .build();
         TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
 
-        Product product = DummyProduct.dummy(ID,
-                ISBN1, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate
+        Product product = DummyProduct.dummy(
+                ID,
+                ISBN1,
+                subscribeProduct,
+                thumbnailFile,
+                ebookFile,
+                totalDiscountRate
         );
         Mockito.when(queryProductRepository.findProductById(anyLong()))
                 .thenReturn(Optional.ofNullable(product));

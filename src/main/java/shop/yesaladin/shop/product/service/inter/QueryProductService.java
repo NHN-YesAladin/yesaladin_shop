@@ -122,18 +122,21 @@ public interface QueryProductService {
     /**
      * 관리자용 상품 제목 검색 메서드
      *
-     * @param title 검색할 제목
+     * @param title    검색할 제목
      * @param pageable 페이지 정보
      * @return 검색 결과
      * @author 김선홍
      * @since 1, 0
      */
-    PaginatedResponseDto<ProductsResponseDto> findByTitleForManager(String title, Pageable pageable);
+    PaginatedResponseDto<ProductsResponseDto> findByTitleForManager(
+            String title,
+            Pageable pageable
+    );
 
     /**
      * 관리자용 상품 isbn 검색 메서드
      *
-     * @param isbn 검색할 isbn
+     * @param isbn     검색할 isbn
      * @param pageable 페이지 정보
      * @return 검색 결과
      * @author 김선홍
@@ -144,35 +147,44 @@ public interface QueryProductService {
     /**
      * 관리자용 상품 내용 검색 메서드
      *
-     * @param content 검색할 제목
+     * @param content  검색할 제목
      * @param pageable 페이지 정보
      * @return 검색 결과
      * @author 김선홍
      * @since 1, 0
      */
-    PaginatedResponseDto<ProductsResponseDto> findByContentForManager(String content, Pageable pageable);
+    PaginatedResponseDto<ProductsResponseDto> findByContentForManager(
+            String content,
+            Pageable pageable
+    );
 
     /**
      * 관리자용 상품 출판사 검색 메서드
      *
      * @param publisher 검색할 제목
-     * @param pageable 페이지 정보
+     * @param pageable  페이지 정보
      * @return 검색 결과
      * @author 김선홍
      * @since 1, 0
      */
-    PaginatedResponseDto<ProductsResponseDto> findByPublisherForManager(String publisher, Pageable pageable);
+    PaginatedResponseDto<ProductsResponseDto> findByPublisherForManager(
+            String publisher,
+            Pageable pageable
+    );
 
     /**
      * 관리자용 상품 저자 검색 메서드
      *
-     * @param author 검색할 제목
+     * @param author   검색할 제목
      * @param pageable 페이지 정보
      * @return 검색 결과
      * @author 김선홍
      * @since 1, 0
      */
-    PaginatedResponseDto<ProductsResponseDto> findByAuthorForManager(String author, Pageable pageable);
+    PaginatedResponseDto<ProductsResponseDto> findByAuthorForManager(
+            String author,
+            Pageable pageable
+    );
 
     /**
      * 주문에 사용될 상품 관련 데이터 리스트를 반환합니다.
@@ -236,5 +248,9 @@ public interface QueryProductService {
      * @author 김선홍
      * @since 1, 0
      */
-    Page<ProductRecentResponseDto> findRecentViewProductById(List<Long> totalIds, List<Long> pageIds, Pageable pageable);
+    Page<ProductRecentResponseDto> findRecentViewProductById(
+            List<Long> totalIds,
+            List<Long> pageIds,
+            Pageable pageable
+    );
 }

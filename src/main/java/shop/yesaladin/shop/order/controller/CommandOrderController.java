@@ -1,18 +1,29 @@
 package shop.yesaladin.shop.order.controller;
 
+import java.util.Objects;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.common.aspect.annotation.LoginId;
-import shop.yesaladin.shop.order.dto.*;
+import shop.yesaladin.shop.order.dto.OrderCreateResponseDto;
+import shop.yesaladin.shop.order.dto.OrderMemberCreateRequestDto;
+import shop.yesaladin.shop.order.dto.OrderNonMemberCreateRequestDto;
+import shop.yesaladin.shop.order.dto.OrderSubscribeCreateRequestDto;
+import shop.yesaladin.shop.order.dto.OrderUpdateResponseDto;
 import shop.yesaladin.shop.order.service.inter.CommandOrderService;
-
-import javax.validation.Valid;
-import java.util.Objects;
 
 /**
  * 주문을 생성관련 rest controller 입니다.
@@ -64,18 +75,24 @@ public class CommandOrderController {
      * @param request       주문 생성 요청 데이터
      * @param bindingResult 유효성 검사
      * @param loginId       회원의 아이디
+     * @param type          회원 주문 시 어떤 경로(바로 주문, 장바구니 주문)로 주문하였는지에 대한 유형
      * @return 생성된 주문 정보
      */
-    @PostMapping("/member")
+    @PostMapping(value = "/member")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<OrderCreateResponseDto> createMemberOrder(
             @Valid @RequestBody OrderMemberCreateRequestDto request,
             BindingResult bindingResult,
-            @LoginId(required = true) String loginId
+            @LoginId(required = true) String loginId,
+            @RequestParam(value = "type", required = false) String type
     ) {
         checkRequestValidation(bindingResult, "MemberOrder");
 
-        OrderCreateResponseDto response = commandOrderService.createMemberOrders(request, loginId);
+        OrderCreateResponseDto response = commandOrderService.createMemberOrders(
+                request,
+                loginId,
+                type
+        );
 
         return ResponseDto.<OrderCreateResponseDto>builder()
                 .success(true)

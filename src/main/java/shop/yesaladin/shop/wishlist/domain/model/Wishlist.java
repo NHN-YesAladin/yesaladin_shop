@@ -63,6 +63,7 @@ public class Wishlist {
     @EqualsAndHashCode
     @Embeddable
     public static class Pk implements Serializable {
+
         @Column(name = "product_id")
         Long productId;
         @Column(name = "member_id")

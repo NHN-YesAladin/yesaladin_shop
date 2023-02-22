@@ -2,16 +2,19 @@ package shop.yesaladin.shop.order.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
+import java.time.LocalDate;
+import java.util.List;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
-
-import javax.validation.constraints.*;
-import java.time.LocalDate;
-import java.util.List;
 
 /**
  * 주문 생성을 요청하는 dto 입니다.
@@ -39,6 +42,6 @@ public abstract class OrderCreateRequestDto {
     @Length(min = 1, max = 20)
     protected String recipientName;
     @NotBlank
-    @Pattern(regexp = "^01([0|1])([0-9]{8})$")
+    @Pattern(regexp = "^01([0|1])(\\d{8})$")
     protected String recipientPhoneNumber;
 }

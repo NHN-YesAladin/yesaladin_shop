@@ -26,12 +26,13 @@ import shop.yesaladin.shop.wishlist.service.inter.QueryWishlistService;
 @RestController
 @RequestMapping("/v1/wishlist")
 public class QueryWishlistController {
+
     private final QueryWishlistService queryWishlistService;
 
     /**
      * 위시리스트 조회 메서드
      *
-     * @param loginId 조회할 위시리스트의 회원 로그인 아이디
+     * @param loginId  조회할 위시리스트의 회원 로그인 아이디
      * @param pageable 페이지 정보
      * @return 조회된 위시리스트와 상태 및 페이지 정보
      */
@@ -60,7 +61,7 @@ public class QueryWishlistController {
     /**
      * 위시리스트 등록 유무 확인
      *
-     * @param loginId 해당 위시리스트의 유저 loginId
+     * @param loginId   해당 위시리스트의 유저 loginId
      * @param productId 확인할 상품의 id
      * @return 등록되어 있다면 true 아니면 false
      */

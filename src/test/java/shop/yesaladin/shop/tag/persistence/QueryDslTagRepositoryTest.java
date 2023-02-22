@@ -1,5 +1,11 @@
 package shop.yesaladin.shop.tag.persistence;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.List;
+import java.util.Optional;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,18 +17,12 @@ import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.tag.domain.model.Tag;
 import shop.yesaladin.shop.tag.domain.repository.QueryTagRepository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 
 @Transactional
 @SpringBootTest
 @ActiveProfiles("local-test")
 class QueryDslTagRepositoryTest {
+
     @PersistenceContext
     private EntityManager entityManager;
 

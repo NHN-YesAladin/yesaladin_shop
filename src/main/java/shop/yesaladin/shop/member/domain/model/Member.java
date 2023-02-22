@@ -165,6 +165,50 @@ public class Member {
     }
 
     /**
+     * Member entity 의 name을 수정하기 위한 기능입니다.
+     *
+     * @param newName 새로운 name
+     * @author 송학현
+     * @since 1.0
+     */
+    public void changeName(String newName) {
+        this.name = newName;
+    }
+
+    /**
+     * Member entity 의 email을 수정하기 위한 기능입니다.
+     *
+     * @param newEmail 새로운 email
+     * @author 송학현
+     * @since 1.0
+     */
+    public void changeEmail(String newEmail) {
+        this.email = newEmail;
+    }
+
+    /**
+     * Member entity 의 phone을 수정하기 위한 기능입니다.
+     *
+     * @param newPhone 새로운 phone
+     * @author 송학현
+     * @since 1.0
+     */
+    public void changePhone(String newPhone) {
+        this.phone = newPhone;
+    }
+
+    /**
+     * Member entity 의 password을 수정하기 위한 기능입니다.
+     *
+     * @param newPassword 새로운 password
+     * @author 송학현
+     * @since 1.0
+     */
+    public void changePassword(String newPassword) {
+        this.password = newPassword;
+    }
+
+    /**
      * Member entity를 soft delete 하기 위한 기능 입니다.
      *
      * @author 송학현

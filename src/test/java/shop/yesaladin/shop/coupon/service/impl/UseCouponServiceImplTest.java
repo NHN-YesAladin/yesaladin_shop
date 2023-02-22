@@ -33,6 +33,10 @@ import shop.yesaladin.shop.point.service.inter.CommandPointHistoryService;
 @SuppressWarnings("all")
 class UseCouponServiceImplTest {
 
+    private final static Clock clock = Clock.fixed(
+            Instant.parse("2023-02-01T00:00:00.00Z"),
+            ZoneId.of("UTC")
+    );
     private UseCouponServiceImpl useCouponService;
     private QueryMemberCouponRepository queryMemberCouponRepository;
     private CouponProducer couponProducer;
@@ -43,10 +47,6 @@ class UseCouponServiceImplTest {
     private ApplicationEventPublisher applicationEventPublisher;
     private ValueOperations<String, String> valueOperations;
     private RedisOperations<String, String> redisOperations;
-    private final static Clock clock = Clock.fixed(
-            Instant.parse("2023-02-01T00:00:00.00Z"),
-            ZoneId.of("UTC")
-    );
 
     @BeforeEach
     void setUp() {
@@ -187,7 +187,7 @@ class UseCouponServiceImplTest {
                 true,
                 null
         );
-        when(listOperations.range("1-codes" , 0, -1)).thenReturn(null);
+        when(listOperations.range("1-codes", 0, -1)).thenReturn(null);
 
         // when
         // then
@@ -241,7 +241,7 @@ class UseCouponServiceImplTest {
 
         when(queryMemberCouponRepository.findByCouponCodes(expectedCouponCodes))
                 .thenReturn(expectedMemberCoupons);
-        when(queryMemberCouponService.getMemberCouponSummaryList(Mockito.anyList()))
+        when(queryMemberCouponService.getMemberCouponSummaryListByCouponCode(Mockito.anyList()))
                 .thenReturn(expectedMemberCouponSummaryList);
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
         when(valueOperations.get(Mockito.anyString())).thenReturn(memberId);
@@ -250,7 +250,8 @@ class UseCouponServiceImplTest {
         List<CouponCodeOnlyDto> actual = useCouponService.useCoupon(requestResponseMessage);
 
         // then
-        Mockito.verify(queryMemberCouponService).getMemberCouponSummaryList(Mockito.anyList());
+        Mockito.verify(queryMemberCouponService)
+                .getMemberCouponSummaryListByCouponCode(Mockito.anyList());
         Mockito.verify(commandPointHistoryService, times(1)).save(Mockito.any());
     }
 }

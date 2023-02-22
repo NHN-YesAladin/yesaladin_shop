@@ -220,7 +220,10 @@ class QueryMemberServiceImplTest {
         assertThat(result.getContent()).hasSize(1);
         assertThat(result.getNumber()).isZero();
         assertThat(result.getContent().get(0).getLoginId()).isEqualTo(loginId);
-        verify(queryMemberRepository, atLeastOnce()).findMemberManagersByLoginId(loginId, PageRequest.of(0, 10));
+        verify(queryMemberRepository, atLeastOnce()).findMemberManagersByLoginId(
+                loginId,
+                PageRequest.of(0, 10)
+        );
     }
 
 

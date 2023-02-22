@@ -10,6 +10,7 @@ import shop.yesaladin.shop.member.domain.model.Member;
  * 회원의 정보를 반환하는 dto 클래스 입니다.
  *
  * @author 최예린
+ * @author 송학현
  * @since 1.0
  */
 @Getter
@@ -28,6 +29,7 @@ public class MemberQueryResponseDto {
     private LocalDate signUpDate;
     private String grade;
     private String gender;
+    private String phone;
 
     /**
      * 회원 엔티티 클래스를 회원 조회 dto 클래스로 반환합니다.
@@ -35,6 +37,7 @@ public class MemberQueryResponseDto {
      * @param member 회원 엔티티
      * @return 회원 조회 반환 dto 클래스
      * @author 최예린
+     * @author 송학현
      * @since 1.0
      */
     public static MemberQueryResponseDto fromEntity(Member member) {
@@ -50,7 +53,8 @@ public class MemberQueryResponseDto {
                 member.getEmail(),
                 member.getSignUpDate(),
                 member.getMemberGrade().getName(),
-                member.getMemberGenderCode().getGender() == 1 ? "남" : "여"
+                member.getMemberGenderCode().getGender() == 1 ? "남" : "여",
+                member.getPhone()
         );
     }
 }

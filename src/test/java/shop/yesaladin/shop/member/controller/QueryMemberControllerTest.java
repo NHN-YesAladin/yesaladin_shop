@@ -486,6 +486,7 @@ class QueryMemberControllerTest {
                 .andExpect(jsonPath("$.data.birthMonth", equalTo(member.getBirthMonth())))
                 .andExpect(jsonPath("$.data.birthDay", equalTo(member.getBirthDay())))
                 .andExpect(jsonPath("$.data.email", equalTo(member.getEmail())))
+                .andExpect(jsonPath("$.data.phone", equalTo(member.getPhone())))
                 .andExpect(jsonPath(
                         "$.data.signUpDate",
                         equalTo(member.getSignUpDate().toString())
@@ -529,6 +530,8 @@ class QueryMemberControllerTest {
                                 .description("회원의 등급"),
                         fieldWithPath("data.gender").type(JsonFieldType.STRING)
                                 .description("회원의 성별"),
+                        fieldWithPath("data.phone").type(JsonFieldType.STRING)
+                                .description("회원의 전화번호"),
                         fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
                                 .description("에러 메세지").optional()
                 )
@@ -568,6 +571,54 @@ class QueryMemberControllerTest {
                 .andExpect(jsonPath("$.data.dataList[0].blockedReason", equalTo(null)))
                 .andExpect(jsonPath("$.data.dataList[0].blockedDate", equalTo(null)))
                 .andExpect(jsonPath("$.data.dataList[0].unblockedDate", equalTo(null)));
+
+        resultActions.andDo(document(
+                "manage-member-info",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("상태"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("null")
+                                .optional(),
+                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER).description("전체 페이지 수"),
+                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER).description("현재 페이지 수"),
+                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER).description("전체 데이터 수"),
+                        fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER)
+                                .description("회원 id"),
+                        fieldWithPath("data.dataList.[].loginId").type(JsonFieldType.STRING)
+                                .description("회원 loginId"),
+                        fieldWithPath("data.dataList.[].nickname").type(JsonFieldType.STRING)
+                                .description("회원 닉네임"),
+                        fieldWithPath("data.dataList.[].email").type(JsonFieldType.STRING)
+                                .description("회원 이메일"),
+                        fieldWithPath("data.dataList.[].phone").type(JsonFieldType.STRING)
+                                .description("회원 핸드폰 번호"),
+                        fieldWithPath("data.dataList.[].name").type(JsonFieldType.STRING)
+                                .description("회원 이름"),
+                        fieldWithPath("data.dataList.[].signUpDate").type(JsonFieldType.STRING)
+                                .description("회원의 회원가입날"),
+                        fieldWithPath("data.dataList.[].withdrawalDate").type(JsonFieldType.STRING)
+                                .description("회원의 회원탈퇴날")
+                                .optional(),
+                        fieldWithPath("data.dataList.[].isWithdrawal").type(JsonFieldType.BOOLEAN)
+                                .description("회원의 탈퇴 유무"),
+                        fieldWithPath("data.dataList.[].isBlocked").type(JsonFieldType.BOOLEAN)
+                                .description("회원 차단 유무"),
+                        fieldWithPath("data.dataList.[].blockedReason").type(JsonFieldType.STRING)
+                                .description("회원 차단 사유")
+                                .optional(),
+                        fieldWithPath("data.dataList.[].blockedDate").type(JsonFieldType.STRING)
+                                .description("회원 차단 날짜")
+                                .optional(),
+                        fieldWithPath("data.dataList.[].unblockedDate").type(JsonFieldType.STRING)
+                                .description("회원 차단 해지 날짜")
+                                .optional()
+                )
+        ));
     }
 
     @WithMockUser
@@ -606,6 +657,54 @@ class QueryMemberControllerTest {
                 .andExpect(jsonPath("$.data.dataList[0].blockedReason", equalTo(null)))
                 .andExpect(jsonPath("$.data.dataList[0].blockedDate", equalTo(null)))
                 .andExpect(jsonPath("$.data.dataList[0].unblockedDate", equalTo(null)));
+
+        resultActions.andDo(document(
+                "manage-member-info-by-login-id",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("상태"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("null")
+                                .optional(),
+                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER).description("전체 페이지 수"),
+                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER).description("현재 페이지 수"),
+                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER).description("전체 데이터 수"),
+                        fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER)
+                                .description("회원 id"),
+                        fieldWithPath("data.dataList.[].loginId").type(JsonFieldType.STRING)
+                                .description("회원 loginId"),
+                        fieldWithPath("data.dataList.[].nickname").type(JsonFieldType.STRING)
+                                .description("회원 닉네임"),
+                        fieldWithPath("data.dataList.[].email").type(JsonFieldType.STRING)
+                                .description("회원 이메일"),
+                        fieldWithPath("data.dataList.[].phone").type(JsonFieldType.STRING)
+                                .description("회원 핸드폰 번호"),
+                        fieldWithPath("data.dataList.[].name").type(JsonFieldType.STRING)
+                                .description("회원 이름"),
+                        fieldWithPath("data.dataList.[].signUpDate").type(JsonFieldType.STRING)
+                                .description("회원의 회원가입날"),
+                        fieldWithPath("data.dataList.[].withdrawalDate").type(JsonFieldType.STRING)
+                                .description("회원의 회원탈퇴날")
+                                .optional(),
+                        fieldWithPath("data.dataList.[].isWithdrawal").type(JsonFieldType.BOOLEAN)
+                                .description("회원의 탈퇴 유무"),
+                        fieldWithPath("data.dataList.[].isBlocked").type(JsonFieldType.BOOLEAN)
+                                .description("회원 차단 유무"),
+                        fieldWithPath("data.dataList.[].blockedReason").type(JsonFieldType.STRING)
+                                .description("회원 차단 사유")
+                                .optional(),
+                        fieldWithPath("data.dataList.[].blockedDate").type(JsonFieldType.STRING)
+                                .description("회원 차단 날짜")
+                                .optional(),
+                        fieldWithPath("data.dataList.[].unblockedDate").type(JsonFieldType.STRING)
+                                .description("회원 차단 해지 날짜")
+                                .optional()
+                )
+        ));
     }
 
 
@@ -648,6 +747,54 @@ class QueryMemberControllerTest {
                 .andExpect(jsonPath("$.data.dataList[0].blockedReason", equalTo(null)))
                 .andExpect(jsonPath("$.data.dataList[0].blockedDate", equalTo(null)))
                 .andExpect(jsonPath("$.data.dataList[0].unblockedDate", equalTo(null)));
+
+        resultActions.andDo(document(
+                "manage-member-info-by-nickname",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("상태"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("null")
+                                .optional(),
+                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER).description("전체 페이지 수"),
+                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER).description("현재 페이지 수"),
+                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER).description("전체 데이터 수"),
+                        fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER)
+                                .description("회원 id"),
+                        fieldWithPath("data.dataList.[].loginId").type(JsonFieldType.STRING)
+                                .description("회원 loginId"),
+                        fieldWithPath("data.dataList.[].nickname").type(JsonFieldType.STRING)
+                                .description("회원 닉네임"),
+                        fieldWithPath("data.dataList.[].email").type(JsonFieldType.STRING)
+                                .description("회원 이메일"),
+                        fieldWithPath("data.dataList.[].phone").type(JsonFieldType.STRING)
+                                .description("회원 핸드폰 번호"),
+                        fieldWithPath("data.dataList.[].name").type(JsonFieldType.STRING)
+                                .description("회원 이름"),
+                        fieldWithPath("data.dataList.[].signUpDate").type(JsonFieldType.STRING)
+                                .description("회원의 회원가입날"),
+                        fieldWithPath("data.dataList.[].withdrawalDate").type(JsonFieldType.STRING)
+                                .description("회원의 회원탈퇴날")
+                                .optional(),
+                        fieldWithPath("data.dataList.[].isWithdrawal").type(JsonFieldType.BOOLEAN)
+                                .description("회원의 탈퇴 유무"),
+                        fieldWithPath("data.dataList.[].isBlocked").type(JsonFieldType.BOOLEAN)
+                                .description("회원 차단 유무"),
+                        fieldWithPath("data.dataList.[].blockedReason").type(JsonFieldType.STRING)
+                                .description("회원 차단 사유")
+                                .optional(),
+                        fieldWithPath("data.dataList.[].blockedDate").type(JsonFieldType.STRING)
+                                .description("회원 차단 날짜")
+                                .optional(),
+                        fieldWithPath("data.dataList.[].unblockedDate").type(JsonFieldType.STRING)
+                                .description("회원 차단 해지 날짜")
+                                .optional()
+                )
+        ));
     }
 
     @WithMockUser
@@ -687,6 +834,54 @@ class QueryMemberControllerTest {
                 .andExpect(jsonPath("$.data.dataList[0].blockedReason", equalTo(null)))
                 .andExpect(jsonPath("$.data.dataList[0].blockedDate", equalTo(null)))
                 .andExpect(jsonPath("$.data.dataList[0].unblockedDate", equalTo(null)));
+
+        resultActions.andDo(document(
+                "manage-member-info-by-phone",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("상태"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("null")
+                                .optional(),
+                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER).description("전체 페이지 수"),
+                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER).description("현재 페이지 수"),
+                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER).description("전체 데이터 수"),
+                        fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER)
+                                .description("회원 id"),
+                        fieldWithPath("data.dataList.[].loginId").type(JsonFieldType.STRING)
+                                .description("회원 loginId"),
+                        fieldWithPath("data.dataList.[].nickname").type(JsonFieldType.STRING)
+                                .description("회원 닉네임"),
+                        fieldWithPath("data.dataList.[].email").type(JsonFieldType.STRING)
+                                .description("회원 이메일"),
+                        fieldWithPath("data.dataList.[].phone").type(JsonFieldType.STRING)
+                                .description("회원 핸드폰 번호"),
+                        fieldWithPath("data.dataList.[].name").type(JsonFieldType.STRING)
+                                .description("회원 이름"),
+                        fieldWithPath("data.dataList.[].signUpDate").type(JsonFieldType.STRING)
+                                .description("회원의 회원가입날"),
+                        fieldWithPath("data.dataList.[].withdrawalDate").type(JsonFieldType.STRING)
+                                .description("회원의 회원탈퇴날")
+                                .optional(),
+                        fieldWithPath("data.dataList.[].isWithdrawal").type(JsonFieldType.BOOLEAN)
+                                .description("회원의 탈퇴 유무"),
+                        fieldWithPath("data.dataList.[].isBlocked").type(JsonFieldType.BOOLEAN)
+                                .description("회원 차단 유무"),
+                        fieldWithPath("data.dataList.[].blockedReason").type(JsonFieldType.STRING)
+                                .description("회원 차단 사유")
+                                .optional(),
+                        fieldWithPath("data.dataList.[].blockedDate").type(JsonFieldType.STRING)
+                                .description("회원 차단 날짜")
+                                .optional(),
+                        fieldWithPath("data.dataList.[].unblockedDate").type(JsonFieldType.STRING)
+                                .description("회원 차단 해지 날짜")
+                                .optional()
+                )
+        ));
     }
 
     @WithMockUser
@@ -727,6 +922,54 @@ class QueryMemberControllerTest {
                 .andExpect(jsonPath("$.data.dataList[0].blockedReason", equalTo(null)))
                 .andExpect(jsonPath("$.data.dataList[0].blockedDate", equalTo(null)))
                 .andExpect(jsonPath("$.data.dataList[0].unblockedDate", equalTo(null)));
+
+        resultActions.andDo(document(
+                "manage-member-info-by-name",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("상태"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("null")
+                                .optional(),
+                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER).description("전체 페이지 수"),
+                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER).description("현재 페이지 수"),
+                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER).description("전체 데이터 수"),
+                        fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER)
+                                .description("회원 id"),
+                        fieldWithPath("data.dataList.[].loginId").type(JsonFieldType.STRING)
+                                .description("회원 loginId"),
+                        fieldWithPath("data.dataList.[].nickname").type(JsonFieldType.STRING)
+                                .description("회원 닉네임"),
+                        fieldWithPath("data.dataList.[].email").type(JsonFieldType.STRING)
+                                .description("회원 이메일"),
+                        fieldWithPath("data.dataList.[].phone").type(JsonFieldType.STRING)
+                                .description("회원 핸드폰 번호"),
+                        fieldWithPath("data.dataList.[].name").type(JsonFieldType.STRING)
+                                .description("회원 이름"),
+                        fieldWithPath("data.dataList.[].signUpDate").type(JsonFieldType.STRING)
+                                .description("회원의 회원가입날"),
+                        fieldWithPath("data.dataList.[].withdrawalDate").type(JsonFieldType.STRING)
+                                .description("회원의 회원탈퇴날")
+                                .optional(),
+                        fieldWithPath("data.dataList.[].isWithdrawal").type(JsonFieldType.BOOLEAN)
+                                .description("회원의 탈퇴 유무"),
+                        fieldWithPath("data.dataList.[].isBlocked").type(JsonFieldType.BOOLEAN)
+                                .description("회원 차단 유무"),
+                        fieldWithPath("data.dataList.[].blockedReason").type(JsonFieldType.STRING)
+                                .description("회원 차단 사유")
+                                .optional(),
+                        fieldWithPath("data.dataList.[].blockedDate").type(JsonFieldType.STRING)
+                                .description("회원 차단 날짜")
+                                .optional(),
+                        fieldWithPath("data.dataList.[].unblockedDate").type(JsonFieldType.STRING)
+                                .description("회원 차단 해지 날짜")
+                                .optional()
+                )
+        ));
     }
 
     @WithMockUser
@@ -767,6 +1010,54 @@ class QueryMemberControllerTest {
                 .andExpect(jsonPath("$.data.dataList[0].blockedReason", equalTo(null)))
                 .andExpect(jsonPath("$.data.dataList[0].blockedDate", equalTo(null)))
                 .andExpect(jsonPath("$.data.dataList[0].unblockedDate", equalTo(null)));
+
+        resultActions.andDo(document(
+                "manage-member-info-by-sign-up-date",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("상태"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("null")
+                                .optional(),
+                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER).description("전체 페이지 수"),
+                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER).description("현재 페이지 수"),
+                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER).description("전체 데이터 수"),
+                        fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER)
+                                .description("회원 id"),
+                        fieldWithPath("data.dataList.[].loginId").type(JsonFieldType.STRING)
+                                .description("회원 loginId"),
+                        fieldWithPath("data.dataList.[].nickname").type(JsonFieldType.STRING)
+                                .description("회원 닉네임"),
+                        fieldWithPath("data.dataList.[].email").type(JsonFieldType.STRING)
+                                .description("회원 이메일"),
+                        fieldWithPath("data.dataList.[].phone").type(JsonFieldType.STRING)
+                                .description("회원 핸드폰 번호"),
+                        fieldWithPath("data.dataList.[].name").type(JsonFieldType.STRING)
+                                .description("회원 이름"),
+                        fieldWithPath("data.dataList.[].signUpDate").type(JsonFieldType.STRING)
+                                .description("회원의 회원가입날"),
+                        fieldWithPath("data.dataList.[].withdrawalDate").type(JsonFieldType.STRING)
+                                .description("회원의 회원탈퇴날")
+                                .optional(),
+                        fieldWithPath("data.dataList.[].isWithdrawal").type(JsonFieldType.BOOLEAN)
+                                .description("회원의 탈퇴 유무"),
+                        fieldWithPath("data.dataList.[].isBlocked").type(JsonFieldType.BOOLEAN)
+                                .description("회원 차단 유무"),
+                        fieldWithPath("data.dataList.[].blockedReason").type(JsonFieldType.STRING)
+                                .description("회원 차단 사유")
+                                .optional(),
+                        fieldWithPath("data.dataList.[].blockedDate").type(JsonFieldType.STRING)
+                                .description("회원 차단 날짜")
+                                .optional(),
+                        fieldWithPath("data.dataList.[].unblockedDate").type(JsonFieldType.STRING)
+                                .description("회원 차단 해지 날짜")
+                                .optional()
+                )
+        ));
     }
 
     @WithMockUser
@@ -898,6 +1189,84 @@ class QueryMemberControllerTest {
                                 .description("골드 등급의 회원 수"),
                         fieldWithPath("data.totalPlatinumGrades").type(JsonFieldType.NUMBER)
                                 .description("플래티넘 등급의 회원 수"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지").optional()
+                )
+        ));
+    }
+
+    @WithMockUser(username = "user@1")
+    @Test
+    void getPassword_fail_memberNotFound() throws Exception {
+        //given
+        String loginId = "user@1";
+
+        Mockito.when(queryMemberService.getByLoginId(any()))
+                .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, ""));
+
+        //when
+        ResultActions result = mockMvc.perform(get("/v1/members/password-check"));
+
+        //then
+        result.andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.NOT_FOUND.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages[0]",
+                        equalTo(ErrorCode.MEMBER_NOT_FOUND.getDisplayName())
+                ));
+
+        //docs
+        result.andDo(document(
+                "get-member-password-fail-member-not-found",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data").type(JsonFieldType.NUMBER)
+                                .description("null")
+                                .optional(),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
+                )
+        ));
+    }
+
+    @WithMockUser(username = "user@1")
+    @Test
+    void getPassword_success() throws Exception {
+        //given
+        String loginId = "user@1";
+        Member member = MemberDummy.dummyWithLoginId(loginId);
+
+        MemberQueryResponseDto response = MemberQueryResponseDto.fromEntity(member);
+
+        Mockito.when(queryMemberService.getByLoginId(any())).thenReturn(response);
+
+        //when
+        ResultActions result = mockMvc.perform(get("/v1/members/password-check"));
+
+        //then
+        result.andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())))
+                .andExpect(jsonPath("$.data.password", equalTo(member.getPassword())));
+
+        //docs
+        result.andDo(document(
+                "get-member-password-success",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data.password").type(JsonFieldType.STRING)
+                                .description("회원의 비밀번호"),
                         fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
                                 .description("에러 메세지").optional()
                 )

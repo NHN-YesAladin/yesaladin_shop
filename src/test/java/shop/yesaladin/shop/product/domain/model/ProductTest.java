@@ -1,18 +1,17 @@
 package shop.yesaladin.shop.product.domain.model;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.file.domain.model.File;
 import shop.yesaladin.shop.product.dummy.DummyFile;
 import shop.yesaladin.shop.product.dummy.DummyProduct;
 import shop.yesaladin.shop.product.dummy.DummySubscribeProduct;
 import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
-import shop.yesaladin.shop.product.exception.AlreadyDeletedProductException;
-import shop.yesaladin.shop.product.exception.NegativeOrZeroQuantityException;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ProductTest {
 
@@ -28,7 +27,13 @@ class ProductTest {
         File ebookFile = DummyFile.dummy(URL + "/ebook.pdf");
         TotalDiscountRate totalDiscountRate = DummyTotalDiscountRate.dummy();
 
-        product = DummyProduct.dummy(ISBN, subscribeProduct, thumbnailFile, ebookFile, totalDiscountRate);
+        product = DummyProduct.dummy(
+                ISBN,
+                subscribeProduct,
+                thumbnailFile,
+                ebookFile,
+                totalDiscountRate
+        );
     }
 
     @Test
@@ -49,7 +54,7 @@ class ProductTest {
 
         // when then
         assertThatThrownBy(() -> product.deleteProduct())
-                .isInstanceOf(AlreadyDeletedProductException.class);
+                .isInstanceOf(ClientException.class);
     }
 
     @Test
@@ -67,7 +72,7 @@ class ProductTest {
     void changeQuantity_negativeQuantity_throwNegativeOrZeroQuantityException() {
         // when then
         assertThatThrownBy(() -> product.changeQuantity(-1))
-                .isInstanceOf(NegativeOrZeroQuantityException.class);
+                .isInstanceOf(ClientException.class);
     }
 
     @Test

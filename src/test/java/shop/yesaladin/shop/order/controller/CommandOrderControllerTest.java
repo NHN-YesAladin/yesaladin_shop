@@ -1,6 +1,23 @@
 package shop.yesaladin.shop.order.controller;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentRequest;
+import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,20 +41,6 @@ import shop.yesaladin.shop.order.dto.OrderNonMemberCreateRequestDto;
 import shop.yesaladin.shop.order.dto.OrderSubscribeCreateRequestDto;
 import shop.yesaladin.shop.order.service.inter.CommandOrderService;
 import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentRequest;
-import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
 
 @AutoConfigureRestDocs
 @WebMvcTest(CommandOrderController.class)
@@ -382,7 +385,7 @@ class CommandOrderControllerTest {
         //given
         OrderMemberCreateRequestDto request = getMemberOrderRequest();
 
-        Mockito.when(commandOrderService.createMemberOrders(any(), any()))
+        Mockito.when(commandOrderService.createMemberOrders(any(), any(), any()))
                 .thenThrow(new ClientException(ErrorCode.BAD_REQUEST, ""));
 
         //when
@@ -455,7 +458,7 @@ class CommandOrderControllerTest {
         //given
         OrderMemberCreateRequestDto request = getMemberOrderRequest();
 
-        Mockito.when(commandOrderService.createMemberOrders(any(), any()))
+        Mockito.when(commandOrderService.createMemberOrders(any(), any(), any()))
                 .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, ""));
 
         //when
@@ -528,7 +531,7 @@ class CommandOrderControllerTest {
         //given
         OrderMemberCreateRequestDto request = getMemberOrderRequest();
 
-        Mockito.when(commandOrderService.createMemberOrders(any(), any()))
+        Mockito.when(commandOrderService.createMemberOrders(any(), any(), any()))
                 .thenThrow(new ClientException(ErrorCode.ADDRESS_NOT_FOUND, ""));
 
         //when
@@ -601,7 +604,7 @@ class CommandOrderControllerTest {
         //given
         OrderMemberCreateRequestDto request = getMemberOrderRequest();
 
-        Mockito.when(commandOrderService.createMemberOrders(any(), any()))
+        Mockito.when(commandOrderService.createMemberOrders(any(), any(), any()))
                 .thenThrow(new ClientException(ErrorCode.POINT_OVER_USE, ""));
 
         //when
@@ -675,7 +678,7 @@ class CommandOrderControllerTest {
         OrderMemberCreateRequestDto request = getMemberOrderRequest();
         OrderCreateResponseDto response = getMemberResponse();
 
-        Mockito.when(commandOrderService.createMemberOrders(any(), any()))
+        Mockito.when(commandOrderService.createMemberOrders(any(), any(), any()))
                 .thenReturn(response);
 
         //when

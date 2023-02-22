@@ -1,5 +1,9 @@
 package shop.yesaladin.shop.order.service.impl;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -11,11 +15,6 @@ import shop.yesaladin.shop.coupon.service.inter.QueryMemberCouponService;
 import shop.yesaladin.shop.order.service.inter.QueryOrderCouponService;
 import shop.yesaladin.shop.product.dto.ProductWithCategoryResponseDto;
 import shop.yesaladin.shop.product.service.inter.QueryProductService;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * 주문에 사용한 쿠폰 조호 관련 service 구현체 입니다.
@@ -60,8 +59,8 @@ public class QueryOrderCouponServiceImpl implements QueryOrderCouponService {
 
         //상품의 판매가
         long saleAmount = Math.round((product.getActualPrice() * request.getQuantity()) *
-                (100 - ((product.isSeparatelyDiscount() ? product.getDiscountRate()
-                        : product.getTotalDiscountRate().getDiscountRate()))) / 1000) * 10L;
+                (100 - (product.isSeparatelyDiscount() ? product.getDiscountRate()
+                        : product.getTotalDiscountRate().getDiscountRate())) / (float) 1000) * 10L;
 
         //상품의 실판매가
         long couponAppliedAmount = getCouponAppliedAmount(

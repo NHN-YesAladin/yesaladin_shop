@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.tag.persistence;
 
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
@@ -11,8 +12,6 @@ import shop.yesaladin.shop.tag.domain.repository.SearchTagRepository;
 import shop.yesaladin.shop.tag.dto.SearchedTagResponseDto;
 import shop.yesaladin.shop.tag.dto.SearchedTagResponseDto.SearchedTagDto;
 
-import java.util.stream.Collectors;
-
 /**
  * 엘라스틱 서치 태그 검색 구현체
  *
@@ -23,8 +22,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ElasticTagSearchRepository implements SearchTagRepository {
 
-    private final ElasticsearchOperations elasticsearchOperations;
     private static final String NAME = "name";
+    private final ElasticsearchOperations elasticsearchOperations;
 
     /**
      * {@inheritDoc}
