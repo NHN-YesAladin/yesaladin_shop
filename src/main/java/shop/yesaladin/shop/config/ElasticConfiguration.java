@@ -7,7 +7,7 @@ import org.springframework.data.elasticsearch.client.ClientConfiguration;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchConfiguration;
 
 @Configuration
-public class ElasticConfig extends ElasticsearchConfiguration {
+public class ElasticConfiguration extends ElasticsearchConfiguration {
 
     @Value("${elastic.host}")
     private String hostIp;
