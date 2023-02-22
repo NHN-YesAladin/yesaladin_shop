@@ -1,4 +1,4 @@
-package shop.yesaladin.shop.member.service.inter;
+package shop.yesaladin.shop.coupon.service.inter;
 
 import java.util.List;
 import shop.yesaladin.shop.member.dto.MemberCouponRequestDto;
