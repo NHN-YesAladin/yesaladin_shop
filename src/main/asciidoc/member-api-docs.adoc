@@ -364,6 +364,114 @@ include::{snippets}/get-member-info-success/response-body.adoc[]
 ===== 찾을 수 없는 회원인 경우
 include::{snippets}/get-member-info-fail-member-not-found/response-body.adoc[]
 
+==== 관리자가 회원 조회
+
+==== curl
+include::{snippets}/manage-member-info/curl-request.adoc[]
+
+==== request
+
+===== Example
+include::{snippets}/manage-member-info/http-request.adoc[]
+
+==== response
+
+===== Body
+include::{snippets}/manage-member-info/response-fields.adoc[]
+
+===== Example
+include::{snippets}/manage-member-info/response-body.adoc[]
+
+==== 관리자가 로그인 아이디로 회원 조회
+
+==== curl
+include::{snippets}/manage-member-info-by-login-id/curl-request.adoc[]
+
+==== request
+
+===== Example
+include::{snippets}/manage-member-info-by-login-id/http-request.adoc[]
+
+==== response
+
+===== Body
+include::{snippets}/manage-member-info-by-login-id/response-fields.adoc[]
+
+===== Example
+include::{snippets}/manage-member-info-by-login-id/response-body.adoc[]
+
+==== 관리자가 닉네임으로 회원 조회
+
+==== curl
+include::{snippets}/manage-member-info-by-nickname/curl-request.adoc[]
+
+==== request
+
+===== Example
+include::{snippets}/manage-member-info-by-nickname/http-request.adoc[]
+
+==== response
+
+===== Body
+include::{snippets}/manage-member-info-by-nickname/response-fields.adoc[]
+
+===== Example
+include::{snippets}/manage-member-info-by-nickname/response-body.adoc[]
+
+==== 관리자가 이름으로 회원 조회
+
+==== curl
+include::{snippets}/manage-member-info-by-name/curl-request.adoc[]
+
+==== request
+
+===== Example
+include::{snippets}/manage-member-info-by-name/http-request.adoc[]
+
+==== response
+
+===== Body
+include::{snippets}/manage-member-info-by-name/response-fields.adoc[]
+
+===== Example
+include::{snippets}/manage-member-info-by-name/response-body.adoc[]
+
+==== 관리자가 핸드폰으로 회원 조회
+
+==== curl
+include::{snippets}/manage-member-info-by-phone/curl-request.adoc[]
+
+==== request
+
+===== Example
+
+include::{snippets}/manage-member-info-by-phone/http-request.adoc[]
+
+==== response
+
+===== Body
+include::{snippets}/manage-member-info-by-phone/response-fields.adoc[]
+
+===== Example
+include::{snippets}/manage-member-info-by-phone/response-body.adoc[]
+
+==== 관리자가 회원 가입날로 회원 조회
+
+==== curl
+include::{snippets}/manage-member-info-by-sign-up-date/curl-request.adoc[]
+
+==== request
+
+===== Example
+include::{snippets}/manage-member-info-by-sign-up-date/http-request.adoc[]
+
+==== response
+
+===== Body
+include::{snippets}/manage-member-info-by-sign-up-date/response-fields.adoc[]
+
+===== Example
+include::{snippets}/manage-member-info-by-sign-up-date/response-body.adoc[]
 
 === 회원 본인의 패스워드 조회
 

@@ -110,4 +110,73 @@ class QueryPublisherControllerTest {
                 )
         ));
     }
+
+    @WithMockUser
+    @Test
+    @DisplayName("관리자용 출판사 이름으로 검색 성공")
+    void getPublishersByNameForManager() throws Exception {
+        // given
+        List<PublisherResponseDto> publishers = new ArrayList<>();
+        for (long i = 1L; i <= 10L; i++) {
+            publishers.add(new PublisherResponseDto(i, "출판사" + i));
+        }
+
+        Page<PublisherResponseDto> page = new PageImpl<>(
+                publishers,
+                PageRequest.of(0, 5),
+                publishers.size()
+        );
+        PaginatedResponseDto<PublisherResponseDto> paginated = PaginatedResponseDto.<PublisherResponseDto>builder()
+                .totalPage(page.getTotalPages())
+                .currentPage(page.getNumber())
+                .totalDataCount(page.getTotalElements())
+                .dataList(publishers)
+                .build();
+        Mockito.when(service.findByNameForManager("name", PageRequest.of(0, 5)))
+                .thenReturn(paginated);
+
+        // when
+        ResultActions result = mockMvc.perform(get("/v1/publishers/manager")
+                .param("page", "0")
+                .param("size", "5")
+                .param("name", "name")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+
+        verify(service, times(1)).findByNameForManager("name", PageRequest.of(0, 5));
+
+        // docs
+        result.andDo(document(
+                "find-by-name-for-manager-publisher",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                requestParameters(
+                        parameterWithName("size").description("페이지네이션 사이즈"),
+                        parameterWithName("page").description("페이지네이션 페이지 번호"),
+                        parameterWithName("name").description("출판사 이름")
+                ),
+                responseFields(
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER)
+                                .description("전체페이지"),
+                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER)
+                                .description("현재 페이지"),
+                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER)
+                                .description("데이터 개수"),
+                        fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER)
+                                .description("출판사 아이디"),
+                        fieldWithPath("data.dataList.[].name").type(JsonFieldType.STRING)
+                                .description("출판사명"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
+                                .optional()
+                )
+        ));
+    }
 }

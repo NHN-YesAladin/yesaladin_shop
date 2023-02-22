@@ -59,3 +59,74 @@ include::{snippets}/modify-author/response-fields.adoc[]
 ===== Example
 include::{snippets}/modify-author/response-body.adoc[]
 
+==== 관리자가 저자명으로 조회
+
+==== curl
+include::{snippets}/find-by-name-for-manager-author/curl-request.adoc[]
+
+==== request
+
+===== Example
+include::{snippets}/find-by-name-for-manager-author/http-request.adoc[]
+
+===== response
+
+===== Body
+
+include::{snippets}/find-by-name-for-manager-author/response-fields.adoc[]
+
+===== Example
+include::{snippets}/find-by-name-for-manager-author/response-body.adoc[]
+
+==== 관리자가 저자의 로그인 아이디로 조회
+
+==== curl
+include::{snippets}/find-by-loginid-for-manager-author/curl-request.adoc[]
+
+==== request
+
+===== Example
+include::{snippets}/find-by-loginid-for-manager-author/http-request.adoc[]
+
+===== response
+
+===== Body
+
+include::{snippets}/find-by-loginid-for-manager-author/response-fields.adoc[]
+
+===== Example
+include::{snippets}/find-by-loginid-for-manager-author/response-body.adoc[]
+
+==== ES 저자 검색 offset min validation
+
+===== Example
+include::{snippets}/search-author-offset-min-validation/response-body.adoc[]
+
+==== ES 저자 검색 size min validation
+
+===== Example
+include::{snippets}/search-author-size-min-validation/response-body.adoc[]
+
+==== ES 저자 검색 size min validation
+
+===== Example
+include::{snippets}/search-author-size-max-validation/response-body.adoc[]
+
+==== ES 저자 검색
+
+==== curl
+include::{snippets}/search-author-success/curl-request.adoc
+
+==== request
+
+===== Example
+include::{snippets}/search-author-success/http-request.adoc[]
+
+===== response
+
+===== Body
+
+include::{snippets}/search-author-success/response-fields.adoc[]
+
+===== Example
+include::{snippets}/search-author-success/response-body.adoc[]

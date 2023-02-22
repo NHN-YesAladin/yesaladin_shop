@@ -40,7 +40,7 @@ include::{snippets}/register-publisher/response-fields.adoc[]
 include::{snippets}/register-publisher/response-body.adoc[]
 
 
-=== 출판사 수정
+==== 출판사 수정
 
 ==== curl
 include::{snippets}/modify-publisher/curl-request.adoc[]
@@ -59,3 +59,55 @@ include::{snippets}/modify-publisher/response-fields.adoc[]
 ===== Example
 include::{snippets}/modify-publisher/response-body.adoc[]
 
+==== DB 관리자가 이름으로 출판사 조회
+
+==== curl
+include::{snippets}/find-by-name-for-manager-publisher/curl-request.adoc
+
+==== request
+
+===== Example
+include::{snippets}/find-by-name-for-manager-publisher/http-request.adoc[]
+
+===== response
+
+===== Body
+
+include::{snippets}/find-by-name-for-manager-publisher/response-fields.adoc[]
+
+===== Example
+include::{snippets}/find-by-name-for-manager-publisher/response-body.adoc[]
+
+==== ES 출판사 검색 offset min validation
+
+==== Example
+include::{snippets}/search-publisher-offset-min-validation/response-body.adoc[]
+
+==== ES 출판사 검색 size min validation
+
+==== Example
+include::{snippets}/search-publisher-size-min-validation/response-body.adoc[]
+
+==== ES 출판사 검색 size max validation
+
+==== Example
+include::{snippets}/search-publisher-size-max-validation/response-body.adoc[]
+
+==== ES 출판사 검색
+
+==== curl
+include::{snippets}/search-publisher-success/curl-request.adoc
+
+==== request
+
+===== Example
+include::{snippets}/search-publisher-success/http-request.adoc[]
+
+===== response
+
+===== Body
+
+include::{snippets}/search-publisher-success/response-fields.adoc[]
+
+===== Example
+include::{snippets}/search-publisher-success/response-body.adoc[]

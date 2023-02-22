@@ -58,3 +58,56 @@ include::{snippets}/modify-tag/response-fields.adoc[]
 
 ===== Example
 include::{snippets}/modify-tag/response-body.adoc[]
+
+==== 관리자가 이름으로 태그 조회
+
+==== curl
+include::{snippets}/find-by-name-for-manager-tag/curl-request.adoc
+
+==== request
+
+===== Example
+include::{snippets}/find-by-name-for-manager-tag/http-request.adoc[]
+
+===== response
+
+===== Body
+
+include::{snippets}/find-by-name-for-manager-tag/response-fields.adoc[]
+
+==== Example
+include::{snippets}/find-by-name-for-manager-tag/response-body.adoc[]
+
+==== ES 태그 검색 offset min validation
+
+==== Example
+include::{snippets}/search-tag-offset-min-validation/response-body.adoc[]
+
+==== ES 태그 검색 size min validation
+
+==== Example
+include::{snippets}/search-tag-size-min-validation/response-body.adoc[]
+
+==== ES 태그 검색 size min validation
+
+==== Example
+include::{snippets}/search-tag-size-max-validation/response-body.adoc[]
+
+==== ES 태그 검색
+
+==== curl
+include::{snippets}/search-tag-success/curl-request.adoc
+
+==== request
+
+===== Example
+include::{snippets}/search-tag-success/http-request.adoc[]
+
+===== response
+
+===== Body
+
+include::{snippets}/search-tag-success/response-fields.adoc[]
+
+===== Example
+include::{snippets}/search-tag-success/response-body.adoc[]
