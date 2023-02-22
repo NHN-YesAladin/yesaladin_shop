@@ -144,7 +144,8 @@ class QueryAuthorControllerTest {
                 .param("size", "5")
                 .param("name", "name")
                 .contentType(MediaType.APPLICATION_JSON));
-        Mockito.when(service.findAllByNameForManager("name", PageRequest.of(0, 5))).thenReturn(paginated);
+        Mockito.when(service.findAllByNameForManager("name", PageRequest.of(0, 5)))
+                .thenReturn(paginated);
 
         // then
         result.andDo(print())
@@ -164,15 +165,24 @@ class QueryAuthorControllerTest {
                         parameterWithName("name").description("저자명")
                 ),
                 responseFields(
-                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("동작 성공 여부"),
-                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("HTTP 상태 코드"),
-                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER).description("전체 페이지"),
-                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER).description("현재 페이지"),
-                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER).description("데이터 개수"),
-                        fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER).description("저자 아이디"),
-                        fieldWithPath("data.dataList.[].name").type(JsonFieldType.STRING).description("저자명"),
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("HTTP 상태 코드"),
+                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER)
+                                .description("전체 페이지"),
+                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER)
+                                .description("현재 페이지"),
+                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER)
+                                .description("데이터 개수"),
+                        fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER)
+                                .description("저자 아이디"),
+                        fieldWithPath("data.dataList.[].name").type(JsonFieldType.STRING)
+                                .description("저자명"),
                         fieldWithPath("data.dataList.[].loginId").description("저자 로그인 아이디"),
-                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY).description("에러 메세지").optional()
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
+                                .optional()
                 )
         ));
     }
@@ -226,15 +236,24 @@ class QueryAuthorControllerTest {
                         parameterWithName("loginid").description("저자 로그인아이디")
                 ),
                 responseFields(
-                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("동작 성공 여부"),
-                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("HTTP 상태 코드"),
-                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER).description("전체 페이지"),
-                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER).description("현재 페이지"),
-                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER).description("데이터 개수"),
-                        fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER).description("저자 아이디"),
-                        fieldWithPath("data.dataList.[].name").type(JsonFieldType.STRING).description("저자명"),
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("HTTP 상태 코드"),
+                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER)
+                                .description("전체 페이지"),
+                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER)
+                                .description("현재 페이지"),
+                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER)
+                                .description("데이터 개수"),
+                        fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER)
+                                .description("저자 아이디"),
+                        fieldWithPath("data.dataList.[].name").type(JsonFieldType.STRING)
+                                .description("저자명"),
                         fieldWithPath("data.dataList.[].loginId").description("저자 로그인 아이디"),
-                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY).description("에러 메세지").optional()
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
+                                .optional()
                 )
         ));
     }

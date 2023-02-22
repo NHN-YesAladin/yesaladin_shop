@@ -80,14 +80,18 @@ class CommandWishlistControllerTest {
                         parameterWithName("productid").description("위시리스트에 등록할 상품 id"),
                         parameterWithName("_csrf").description("csrf")
                 ),
-                responseFields(fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                responseFields(
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
                         fieldWithPath("success").type(JsonFieldType.BOOLEAN)
                                 .description("동작 성공 여부"),
                         fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
                                 .description("에러 메세지")
                                 .optional(),
-                        fieldWithPath("data").type(JsonFieldType.OBJECT).description("null").optional())
-                ));
+                        fieldWithPath("data").type(JsonFieldType.OBJECT)
+                                .description("null")
+                                .optional()
+                )
+        ));
     }
 
     @WithMockUser
@@ -114,8 +118,10 @@ class CommandWishlistControllerTest {
                         parameterWithName("productid").description("위시리스트에 등록할 상품 id"),
                         parameterWithName("_csrf").description("csrf")
                 ),
-                responseFields(fieldWithPath("message").type(JsonFieldType.STRING).description("에러메시지")
-        )));
+                responseFields(fieldWithPath("message").type(JsonFieldType.STRING)
+                        .description("에러메시지")
+                )
+        ));
     }
 
     @WithMockUser
@@ -151,14 +157,18 @@ class CommandWishlistControllerTest {
                         parameterWithName("productid").description("위시리스트에 등록할 상품 id"),
                         parameterWithName("_csrf").description("csrf")
                 ),
-                responseFields(fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                responseFields(
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
                         fieldWithPath("success").type(JsonFieldType.BOOLEAN)
                                 .description("동작 성공 여부"),
                         fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
                                 .description("null")
                                 .optional(),
-                        fieldWithPath("data.productId").type(JsonFieldType.NUMBER).description("위시리스트에 등록된 상품 id"),
-                        fieldWithPath("data.registeredDateTime").type(JsonFieldType.STRING).description("위시르스트에 등록된 날짜"))
+                        fieldWithPath("data.productId").type(JsonFieldType.NUMBER)
+                                .description("위시리스트에 등록된 상품 id"),
+                        fieldWithPath("data.registeredDateTime").type(JsonFieldType.STRING)
+                                .description("위시르스트에 등록된 날짜")
+                )
         ));
     }
 
@@ -196,13 +206,17 @@ class CommandWishlistControllerTest {
                         parameterWithName("productid").description("위시리스트에 삭제할 상품 id"),
                         parameterWithName("_csrf").description("csrf")
                 ),
-                responseFields(fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                responseFields(
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
                         fieldWithPath("success").type(JsonFieldType.BOOLEAN)
                                 .description("동작 성공 여부"),
                         fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
                                 .description("에러메시지")
                                 .optional(),
-                        fieldWithPath("data").type(JsonFieldType.OBJECT).description("null").optional())
+                        fieldWithPath("data").type(JsonFieldType.OBJECT)
+                                .description("null")
+                                .optional()
+                )
         ));
     }
 
@@ -234,13 +248,17 @@ class CommandWishlistControllerTest {
                         parameterWithName("productid").description("위시리스트에 삭제할 상품 id"),
                         parameterWithName("_csrf").description("csrf")
                 ),
-                responseFields(fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                responseFields(
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
                         fieldWithPath("success").type(JsonFieldType.BOOLEAN)
                                 .description("동작 성공 여부"),
                         fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
                                 .description("에러메시지")
                                 .optional(),
-                        fieldWithPath("data").type(JsonFieldType.OBJECT).description("null").optional())
+                        fieldWithPath("data").type(JsonFieldType.OBJECT)
+                                .description("null")
+                                .optional()
+                )
         ));
     }
 
@@ -266,13 +284,17 @@ class CommandWishlistControllerTest {
                         parameterWithName("productid").description("위시리스트에 삭제할 상품 id"),
                         parameterWithName("_csrf").description("csrf")
                 ),
-                responseFields(fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                responseFields(
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
                         fieldWithPath("success").type(JsonFieldType.BOOLEAN)
                                 .description("동작 성공 여부"),
                         fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
                                 .description("null")
                                 .optional(),
-                        fieldWithPath("data").type(JsonFieldType.OBJECT).description("null").optional())
+                        fieldWithPath("data").type(JsonFieldType.OBJECT)
+                                .description("null")
+                                .optional()
+                )
         ));
     }
 }

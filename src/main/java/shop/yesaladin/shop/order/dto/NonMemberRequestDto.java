@@ -1,7 +1,7 @@
 package shop.yesaladin.shop.order.dto;
 
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

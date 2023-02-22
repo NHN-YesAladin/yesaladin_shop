@@ -88,7 +88,10 @@ class QueryDslAuthorRepositoryTest {
         entityManager.persist(member);
         entityManager.persist(author);
 
-        Page<Author> authors = repository.findAllByLoginIdForManager("mongmeo", PageRequest.of(0, 10));
+        Page<Author> authors = repository.findAllByLoginIdForManager(
+                "mongmeo",
+                PageRequest.of(0, 10)
+        );
 
         assertThat(authors).isNotNull();
         assertThat(authors.getTotalElements()).isEqualTo(1);

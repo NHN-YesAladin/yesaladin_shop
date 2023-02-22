@@ -99,7 +99,10 @@ class QueryTagServiceImplTest {
         Mockito.when(queryTagRepository.findByNameForManager("name", PageRequest.of(0, 10)))
                 .thenReturn(new PageImpl<>(List.of(tag), PageRequest.of(0, 1), 1));
 
-        PaginatedResponseDto<TagResponseDto> response = service.findByNameForManager("name", PageRequest.of(0, 10));
+        PaginatedResponseDto<TagResponseDto> response = service.findByNameForManager(
+                "name",
+                PageRequest.of(0, 10)
+        );
 
         assertThat(response.getTotalDataCount()).isEqualTo(1);
         assertThat(response.getDataList().get(0).getName()).contains("tag");
