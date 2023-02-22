@@ -308,7 +308,7 @@ public class QueryProductController {
      * @param pageable 페이지 정보
      * @return 최근 본 상품 리스트
      * @author 김선홍
-     * @since 1, 0
+     * @since 1.0
      */
     @PostMapping("/recentview/product")
     public ResponseDto<PaginatedResponseDto<ProductRecentResponseDto>> findRecentViewProductById(
