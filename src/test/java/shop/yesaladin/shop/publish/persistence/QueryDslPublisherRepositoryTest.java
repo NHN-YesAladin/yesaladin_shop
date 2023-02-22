@@ -1,5 +1,11 @@
 package shop.yesaladin.shop.publish.persistence;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.List;
+import java.util.Optional;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,13 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.product.dummy.DummyPublisher;
 import shop.yesaladin.shop.publish.domain.model.Publisher;
 import shop.yesaladin.shop.publish.domain.repository.QueryPublisherRepository;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 
 @Transactional
@@ -105,5 +104,17 @@ class QueryDslPublisherRepositoryTest {
 
         // then
         assertThat(isExists).isFalse();
+    }
+
+    @Test
+    @DisplayName("츨판사 이름으로 검색")
+    void findByNameForManager() {
+        Publisher publisher = DummyPublisher.dummy();
+        entityManager.persist(publisher);
+
+        Page<Publisher> result = repository.findByNameForManager(publisher.getName(), PageRequest.of(0, 10));
+
+        assertThat(result.getTotalElements()).isEqualTo(1);
+        assertThat(result.getContent().get(0).getName()).contains(publisher.getName());
     }
 }

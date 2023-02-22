@@ -1,5 +1,11 @@
 package shop.yesaladin.shop.tag.persistence;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.List;
+import java.util.Optional;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,13 +16,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.tag.domain.model.Tag;
 import shop.yesaladin.shop.tag.domain.repository.QueryTagRepository;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 
 @Transactional
@@ -105,5 +104,16 @@ class QueryDslTagRepositoryTest {
 
         // then
         assertThat(isExists).isFalse();
+    }
+
+    @Test
+    @DisplayName("")
+    void findByNameForManager() {
+        Tag tag = Tag.builder().name("tag").build();
+        entityManager.persist(tag);
+
+        Page<Tag> result = repository.findByNameForManager("t", PageRequest.of(0, 10));
+        assertThat(result.getTotalElements()).isEqualTo(1L);
+        assertThat(result.getContent().get(0).getName()).contains("t");
     }
 }
