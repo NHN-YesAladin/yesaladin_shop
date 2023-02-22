@@ -16,6 +16,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -72,7 +73,7 @@ public class GiveCouponServiceImpl implements GiveCouponService {
     private final Clock clock;
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public RequestIdOnlyDto sendCouponGiveRequest(
             String memberId,
             TriggerTypeCode triggerTypeCode,
@@ -122,13 +123,13 @@ public class GiveCouponServiceImpl implements GiveCouponService {
         CouponCodesAndResultMessageBuilder resultBuilder = CouponCodesAndResultMessage.builder();
         try {
             checkRequestSucceeded(responseMessage);
-            String memberId = getMemberIdFromRequestId(responseMessage.getRequestId());
+//            String memberId = getMemberIdFromRequestId(responseMessage.getRequestId());
 
             resultBuilder.couponCodes(responseMessage.getCoupons()
                     .stream()
                     .flatMap(coupon -> coupon.getCouponCodes().stream())
                     .collect(Collectors.toList()));
-            tryGiveCouponToMember(responseMessage, memberId);
+            tryGiveCouponToMember(responseMessage, "member0001");
             couponProducer.produceGivenResultMessage(resultBuilder.success(true).build());
 
             CouponResultDto resultMessage = new CouponResultDto(
@@ -139,9 +140,12 @@ public class GiveCouponServiceImpl implements GiveCouponService {
                             : responseMessage.getErrorMessage(),
                     LocalDateTime.now(clock)
             );
+//            RequestEntity<CouponCodesAndResultMessage> body = RequestEntity.post(
+//                            gatewayProperties.getCouponUrl() + "/give/given")
+//                    .body(resultBuilder.success(true).build());
+//            restTemplate.exchange(body, Void.class);
 //            eventPublisher.publishEvent(new CouponRequestProcessEndEvent(this, resultMessage));
         } catch (Exception e) {
-            couponProducer.produceGivenResultMessage(resultBuilder.success(false).build());
             CouponResultDto resultMessage = new CouponResultDto(
                     CouponSocketRequestKind.GIVE,
                     responseMessage.getRequestId(),
@@ -149,6 +153,10 @@ public class GiveCouponServiceImpl implements GiveCouponService {
                     responseMessage.getErrorMessage(),
                     LocalDateTime.now(clock)
             );
+//            RequestEntity<CouponCodesAndResultMessage> body = RequestEntity.post(
+//                            gatewayProperties.getCouponUrl() + "/give/given")
+//                    .body(resultBuilder.success(false).build());
+//            restTemplate.exchange(body, Void.class);
 //            eventPublisher.publishEvent(new CouponRequestProcessEndEvent(this, resultMessage));
             throw e;
         }
@@ -252,17 +260,19 @@ public class GiveCouponServiceImpl implements GiveCouponService {
                 .couponId(couponId)
                 .build();
 
-        if (isLimited) {
-            couponProducer.produceGiveRequestLimitMessage(giveRequestMessage);
-            return;
-        }
-        couponProducer.produceGiveRequestMessage(giveRequestMessage);
+        RequestEntity<CouponGiveRequestMessage> body = RequestEntity.post(
+                        gatewayProperties.getCouponUrl() + "/give/request")
+                .body(giveRequestMessage);
+
+        ResponseEntity<CouponGiveRequestResponseMessage> response = restTemplate.exchange(
+                body,
+                CouponGiveRequestResponseMessage.class
+        );
+
+        giveCouponToMember(response.getBody());
     }
 
     private void checkRequestSucceeded(CouponGiveRequestResponseMessage responseMessage) {
-        if (!responseMessage.isSuccess()) {
-            throw new ClientException(ErrorCode.BAD_REQUEST, responseMessage.getErrorMessage());
-        }
     }
 
     private String getMemberIdFromRequestId(String requestId) {
