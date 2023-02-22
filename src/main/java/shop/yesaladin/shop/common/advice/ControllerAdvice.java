@@ -15,7 +15,6 @@ import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.category.exception.CategoryNotFoundException;
 import shop.yesaladin.shop.common.dto.ErrorResponseDto;
-import shop.yesaladin.shop.common.exception.CommonException;
 import shop.yesaladin.shop.common.exception.CustomJsonProcessingException;
 import shop.yesaladin.shop.common.exception.InvalidPeriodConditionException;
 import shop.yesaladin.shop.product.exception.ProductNotFoundException;
@@ -60,29 +59,6 @@ public class ControllerAdvice {
         log.error("[INTERNAL_SERVER_ERROR] handleJsonProcessingException", ex);
         ErrorResponseDto error = new ErrorResponseDto(ex.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
-    }
-
-    /**
-     * 에러를 반환합니다.
-     *
-     * @param e 에러
-     * @return 에러
-     */
-    @ExceptionHandler(CommonException.class)
-    public ResponseEntity<ResponseDto<Object>> handleCommonException(CommonException e) {
-        log.error(
-                "[{}] handleCommonException : {}",
-                e.getErrorCode().getResponseStatus(),
-                e.getMessage()
-        );
-        ResponseDto<Object> response = ResponseDto.builder()
-                .success(false)
-                .status(e.getErrorCode().getResponseStatus())
-                .errorMessages(
-                        List.of(e.getMessage()))
-                .build();
-
-        return ResponseEntity.status(e.getErrorCode().getResponseStatus()).body(response);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
