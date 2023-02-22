@@ -1,4 +1,12 @@
-= 회원 등급 변경 이력
+= 회원 등급 변경 이력(link:index.html[뒤로가기])
+notification-api-docs
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+:sectnums:
 
 === 회원의 등급 변경 이력 조회
 

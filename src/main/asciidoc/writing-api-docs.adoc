@@ -1,4 +1,12 @@
-= Writing
+= Writing(link:index.html[뒤로가기])
+notification-api-docs
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+:sectnums:
 
 === 관리자용 저자 전체 조회
 
@@ -59,7 +67,7 @@ include::{snippets}/modify-author/response-fields.adoc[]
 ===== Example
 include::{snippets}/modify-author/response-body.adoc[]
 
-==== 관리자가 저자명으로 조회
+=== 관리자가 저자명으로 조회
 
 ==== curl
 include::{snippets}/find-by-name-for-manager-author/curl-request.adoc[]
@@ -78,7 +86,7 @@ include::{snippets}/find-by-name-for-manager-author/response-fields.adoc[]
 ===== Example
 include::{snippets}/find-by-name-for-manager-author/response-body.adoc[]
 
-==== 관리자가 저자의 로그인 아이디로 조회
+=== 관리자가 저자의 로그인 아이디로 조회
 
 ==== curl
 include::{snippets}/find-by-loginid-for-manager-author/curl-request.adoc[]
@@ -97,22 +105,22 @@ include::{snippets}/find-by-loginid-for-manager-author/response-fields.adoc[]
 ===== Example
 include::{snippets}/find-by-loginid-for-manager-author/response-body.adoc[]
 
-==== ES 저자 검색 offset min validation
+=== ES 저자 검색 offset min validation
 
 ===== Example
 include::{snippets}/search-author-offset-min-validation/response-body.adoc[]
 
-==== ES 저자 검색 size min validation
+=== ES 저자 검색 size min validation
 
 ===== Example
 include::{snippets}/search-author-size-min-validation/response-body.adoc[]
 
-==== ES 저자 검색 size min validation
+=== ES 저자 검색 size min validation
 
 ===== Example
 include::{snippets}/search-author-size-max-validation/response-body.adoc[]
 
-==== ES 저자 검색
+=== ES 저자 검색
 
 ==== curl
 include::{snippets}/search-author-success/curl-request.adoc
