@@ -21,10 +21,10 @@ import shop.yesaladin.shop.category.dto.SearchCategoryResponseDto.SearchedCatego
 @Repository
 public class ElasticCategoryRepository implements SearchCategoryRepository {
 
-    private final ElasticsearchOperations elasticsearchOperations;
     private static final String NAME = "name";
     private static final String CATEGORIES_DISABLE = "disable";
     private static final String CATEGORIES_IS_SHOWN = "is_shown";
+    private final ElasticsearchOperations elasticsearchOperations;
 
     /**
      * {@inheritDoc}

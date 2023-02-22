@@ -39,16 +39,16 @@ import shop.yesaladin.shop.writing.service.inter.SearchAuthorService;
 @WebMvcTest(SearchAuthorController.class)
 class SearchAuthorControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-    @MockBean
-    private SearchAuthorService service;
     private static final String ZERO = "0";
     private static final String ONE = "1";
     private static final String MIN = "-1";
     private static final String NAME = "name";
     private static final String OFFSET = "offset";
     private static final String SIZE = "size";
+    @Autowired
+    private MockMvc mockMvc;
+    @MockBean
+    private SearchAuthorService service;
 
     @WithMockUser
     @Test

@@ -1,11 +1,11 @@
 package shop.yesaladin.shop.order.dto;
 
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import javax.validation.constraints.NotBlank;
 
 /**
  * 비회원의 정보를 담아 요청하는 dto 클래스입니다.
@@ -22,5 +22,6 @@ public class NonMemberRequestDto {
     private String name;
 
     @NotBlank
+    @Pattern(regexp = "/^01([0|1])([0-9]{4})([0-9]{4})$/")
     private String phoneNumber;
 }

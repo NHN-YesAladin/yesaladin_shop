@@ -1,12 +1,22 @@
 package shop.yesaladin.shop.product.service.inter;
 
+import java.util.List;
+import java.util.Map;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import shop.yesaladin.shop.common.dto.PaginatedResponseDto;
-import shop.yesaladin.shop.product.dto.*;
-
-import java.util.List;
-import java.util.Map;
+import shop.yesaladin.shop.product.dto.ProductDetailResponseDto;
+import shop.yesaladin.shop.product.dto.ProductModifyDto;
+import shop.yesaladin.shop.product.dto.ProductOnlyTitleDto;
+import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
+import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
+import shop.yesaladin.shop.product.dto.ProductRecentResponseDto;
+import shop.yesaladin.shop.product.dto.ProductResponseDto;
+import shop.yesaladin.shop.product.dto.ProductWithCategoryResponseDto;
+import shop.yesaladin.shop.product.dto.ProductsResponseDto;
+import shop.yesaladin.shop.product.dto.RelationsResponseDto;
+import shop.yesaladin.shop.product.dto.SubscribeProductOrderResponseDto;
+import shop.yesaladin.shop.product.dto.ViewCartDto;
 
 
 /**
@@ -118,7 +128,10 @@ public interface QueryProductService {
      * @author 김선홍
      * @since 1, 0
      */
-    PaginatedResponseDto<ProductsResponseDto> findByTitleForManager(String title, Pageable pageable);
+    PaginatedResponseDto<ProductsResponseDto> findByTitleForManager(
+            String title,
+            Pageable pageable
+    );
 
     /**
      * 관리자용 상품 isbn 검색 메서드
@@ -140,7 +153,10 @@ public interface QueryProductService {
      * @author 김선홍
      * @since 1, 0
      */
-    PaginatedResponseDto<ProductsResponseDto> findByContentForManager(String content, Pageable pageable);
+    PaginatedResponseDto<ProductsResponseDto> findByContentForManager(
+            String content,
+            Pageable pageable
+    );
 
     /**
      * 관리자용 상품 출판사 검색 메서드
@@ -151,7 +167,10 @@ public interface QueryProductService {
      * @author 김선홍
      * @since 1, 0
      */
-    PaginatedResponseDto<ProductsResponseDto> findByPublisherForManager(String publisher, Pageable pageable);
+    PaginatedResponseDto<ProductsResponseDto> findByPublisherForManager(
+            String publisher,
+            Pageable pageable
+    );
 
     /**
      * 관리자용 상품 저자 검색 메서드
@@ -162,7 +181,10 @@ public interface QueryProductService {
      * @author 김선홍
      * @since 1, 0
      */
-    PaginatedResponseDto<ProductsResponseDto> findByAuthorForManager(String author, Pageable pageable);
+    PaginatedResponseDto<ProductsResponseDto> findByAuthorForManager(
+            String author,
+            Pageable pageable
+    );
 
     /**
      * 주문에 사용될 상품 관련 데이터 리스트를 반환합니다.
@@ -226,5 +248,9 @@ public interface QueryProductService {
      * @author 김선홍
      * @since 1, 0
      */
-    Page<ProductRecentResponseDto> findRecentViewProductById(List<Long> totalIds, List<Long> pageIds, Pageable pageable);
+    Page<ProductRecentResponseDto> findRecentViewProductById(
+            List<Long> totalIds,
+            List<Long> pageIds,
+            Pageable pageable
+    );
 }

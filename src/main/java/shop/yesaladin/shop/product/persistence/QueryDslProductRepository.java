@@ -1,11 +1,16 @@
 package shop.yesaladin.shop.product.persistence;
 
 
+import static com.querydsl.core.group.GroupBy.groupBy;
+
 import com.querydsl.core.group.GroupBy;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -26,12 +31,6 @@ import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
 import shop.yesaladin.shop.product.dto.ProductWithCategoryResponseDto;
 import shop.yesaladin.shop.publish.domain.model.querydsl.QPublish;
 import shop.yesaladin.shop.writing.domain.model.querydsl.QWriting;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
-import static com.querydsl.core.group.GroupBy.groupBy;
 
 /**
  * 상품 조회를 위한 Repository QueryDsl 구현체 입니다.
@@ -126,13 +125,13 @@ public class QueryDslProductRepository implements QueryProductRepository {
         QProductCategory productCategory = QProductCategory.productCategory;
 
         return Optional.ofNullable(
-                queryFactory.from(product)
-                        .leftJoin(productCategory)
+                queryFactory.from(productCategory)
+                        .rightJoin(productCategory.product, product)
                         .on(product.id.eq(productCategory.product.id))
-                        .where(productCategory.product.isbn.eq(isbn)
-                                .and(productCategory.product.isSale.isTrue())
-                                .and(productCategory.product.isForcedOutOfStock.isFalse())
-                                .and(productCategory.product.isDeleted.isFalse()))
+                        .where(product.isbn.eq(isbn)
+                                .and(product.isSale.isTrue())
+                                .and(product.isForcedOutOfStock.isFalse())
+                                .and(product.isDeleted.isFalse()))
                         .transform(
                                 groupBy(product.id).list(
                                         Projections.constructor(
@@ -423,7 +422,7 @@ public class QueryDslProductRepository implements QueryProductRepository {
                 .otherwise(product.totalDiscountRate.discountRate);
 
         return queryFactory.from(product)
-                .innerJoin(productCategory).on(product.id.eq(productCategory.product.id))
+                .leftJoin(productCategory).on(product.id.eq(productCategory.product.id))
                 .where(product.isbn.in(isbnList)
                         .and(product.isDeleted.isFalse())
                         .and(product.isForcedOutOfStock.isFalse())

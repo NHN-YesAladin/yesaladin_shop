@@ -42,11 +42,11 @@ import shop.yesaladin.shop.tag.service.inter.SearchTagService;
 @WebMvcTest(SearchTagController.class)
 class SearchTagControllerTest {
 
+    private static final String NAME = "스프링";
     @Autowired
     private MockMvc mockMvc;
     @MockBean
     private SearchTagService searchTagService;
-    private static final String NAME = "스프링";
     private SearchedTagResponseDto dummyResponseDto;
 
     @BeforeEach

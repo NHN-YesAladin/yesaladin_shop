@@ -1,5 +1,14 @@
 package shop.yesaladin.shop.product.service.impl;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.verify;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,7 +18,15 @@ import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.category.dto.CategoryResponseDto;
 import shop.yesaladin.shop.category.service.inter.QueryProductCategoryService;
 import shop.yesaladin.shop.file.domain.model.File;
-import shop.yesaladin.shop.product.domain.model.*;
+import shop.yesaladin.shop.product.domain.model.Product;
+import shop.yesaladin.shop.product.domain.model.SearchedProduct;
+import shop.yesaladin.shop.product.domain.model.SearchedProductAuthor;
+import shop.yesaladin.shop.product.domain.model.SearchedProductCategory;
+import shop.yesaladin.shop.product.domain.model.SearchedProductPublisher;
+import shop.yesaladin.shop.product.domain.model.SearchedProductTag;
+import shop.yesaladin.shop.product.domain.model.SearchedProductTotalDiscountRate;
+import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
+import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
 import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
 import shop.yesaladin.shop.product.dummy.DummyProduct;
 import shop.yesaladin.shop.product.persistence.ElasticCommandProductRepository;
@@ -24,16 +41,6 @@ import shop.yesaladin.shop.tag.service.inter.QueryProductTagService;
 import shop.yesaladin.shop.writing.domain.model.Author;
 import shop.yesaladin.shop.writing.dto.WritingResponseDto;
 import shop.yesaladin.shop.writing.service.inter.QueryWritingService;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.verify;
 
 class ElasticCommandProductServiceImplTest {
 
@@ -176,8 +183,10 @@ class ElasticCommandProductServiceImplTest {
         );
         Mockito.when(queryProductRepository.findProductById(1L)).thenReturn(Optional.of(product));
         Mockito.when(queryPublishService.findByProduct(product)).thenReturn(publishResponseDto);
-        Mockito.when(queryProductTagService.findByProduct(product)).thenReturn(productTagResponseDtos);
-        Mockito.when(queryProductCategoryService.findCategoriesByProduct(product)).thenReturn(categoryResponseDtos);
+        Mockito.when(queryProductTagService.findByProduct(product))
+                .thenReturn(productTagResponseDtos);
+        Mockito.when(queryProductCategoryService.findCategoriesByProduct(product))
+                .thenReturn(categoryResponseDtos);
         Mockito.when(queryWritingService.findByProduct(product)).thenReturn(writingResponseDtos);
 
         Long result = elasticCommandProductService.update(1L);
@@ -191,7 +200,8 @@ class ElasticCommandProductServiceImplTest {
                 "Original product not found with id : " + 1
         ));
 
-        assertThatThrownBy(() -> elasticCommandProductService.changeIsSale(1L)).isInstanceOf(ClientException.class);
+        assertThatThrownBy(() -> elasticCommandProductService.changeIsSale(1L)).isInstanceOf(
+                ClientException.class);
     }
 
     @Test
@@ -210,7 +220,8 @@ class ElasticCommandProductServiceImplTest {
                 "Original product not found with id : " + 1
         ));
 
-        assertThatThrownBy(() -> elasticCommandProductService.changeIsForcedOutOfStock(1L)).isInstanceOf(ClientException.class);
+        assertThatThrownBy(() -> elasticCommandProductService.changeIsForcedOutOfStock(1L)).isInstanceOf(
+                ClientException.class);
     }
 
     @Test

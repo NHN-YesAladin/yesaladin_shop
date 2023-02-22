@@ -1,10 +1,9 @@
 package shop.yesaladin.shop.publish.dto;
 
+import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import javax.validation.constraints.NotBlank;
 
 /**
  * 출판사 등록/수정을 위한 Dto 입니다.

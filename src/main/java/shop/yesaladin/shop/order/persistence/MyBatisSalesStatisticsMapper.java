@@ -1,7 +1,6 @@
 package shop.yesaladin.shop.order.persistence;
 
 import org.apache.ibatis.annotations.Mapper;
-
 import shop.yesaladin.shop.order.domain.repository.QuerySalesStatisticsRepository;
 
 

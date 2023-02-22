@@ -25,7 +25,7 @@ public interface QueryWishlistRepository {
     /**
      * 해당 유저의 위시리스트에 상품이 있는지 확인
      *
-     * @param memberId 확인할 유저의 id
+     * @param memberId  확인할 유저의 id
      * @param productId 상품 id
      * @return 위시리스트에 해당 상품 존재 유무
      */

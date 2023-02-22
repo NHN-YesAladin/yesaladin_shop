@@ -22,14 +22,13 @@ import shop.yesaladin.shop.member.dummy.MemberDummy;
 @ActiveProfiles("local-test")
 class QueryDslQueryMemberAddressRepositoryTest {
 
-    @PersistenceContext
-    EntityManager entityManager;
-
-    @Autowired
-    QueryDslQueryMemberAddressRepository queryMemberAddressRepository;
     private final String address = "Gwang-ju buk-gu yongbong-dong";
     private final boolean isDefault = false;
     private final String loginId = "user@1";
+    @PersistenceContext
+    EntityManager entityManager;
+    @Autowired
+    QueryDslQueryMemberAddressRepository queryMemberAddressRepository;
     private Member member;
     private MemberAddress memberAddress;
 
@@ -133,5 +132,32 @@ class QueryDslQueryMemberAddressRepositoryTest {
 
         //then
         assertThat(result).isTrue();
+    }
+
+    @Test
+    void findByLoginId() {
+        //when
+        List<MemberAddress> result = queryMemberAddressRepository.findByLoginId("dfw@q");
+
+        //then
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void findByLoginIdAndMemberAddressId() {
+        //given
+        entityManager.persist(memberAddress);
+
+        String loginId = "user@1";
+        long memberAddressId = memberAddress.getId();
+
+        //when
+        Optional<MemberAddress> result = queryMemberAddressRepository.findByLoginIdAndMemberAddressId(loginId, memberAddressId);
+
+        //then
+        assertThat(result).isPresent();
+        assertThat(result.get().getId()).isEqualTo(memberAddressId);
+        assertThat(result.get().getMember().getLoginId()).isEqualTo(loginId);
+        assertThat(result.get().isDeleted()).isFalse();
     }
 }

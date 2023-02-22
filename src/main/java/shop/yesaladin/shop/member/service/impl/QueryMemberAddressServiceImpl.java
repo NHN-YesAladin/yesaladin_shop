@@ -22,10 +22,9 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberAddressService;
 @Service
 public class QueryMemberAddressServiceImpl implements QueryMemberAddressService {
 
+    private static final String MEMBER_ADDRESS_NOT_FOUND = "MemberAddress not found with id : ";
     private final QueryMemberRepository queryMemberRepository;
     private final QueryMemberAddressRepository queryMemberAddressRepository;
-
-    private static final String MEMBER_ADDRESS_NOT_FOUND = "MemberAddress not found with id : ";
 
     /**
      * {@inheritDoc}
@@ -34,19 +33,6 @@ public class QueryMemberAddressServiceImpl implements QueryMemberAddressService 
     @Transactional(readOnly = true)
     public MemberAddress findById(long id) {
         return queryMemberAddressRepository.findById(id)
-                .orElseThrow(() -> new ClientException(
-                        ErrorCode.ADDRESS_NOT_FOUND,
-                        MEMBER_ADDRESS_NOT_FOUND + id
-                ));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public MemberAddressResponseDto getById(long id) {
-        return queryMemberAddressRepository.getById(id)
                 .orElseThrow(() -> new ClientException(
                         ErrorCode.ADDRESS_NOT_FOUND,
                         MEMBER_ADDRESS_NOT_FOUND + id

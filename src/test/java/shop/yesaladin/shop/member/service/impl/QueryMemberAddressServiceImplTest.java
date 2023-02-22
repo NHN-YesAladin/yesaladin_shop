@@ -5,9 +5,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
@@ -36,6 +38,39 @@ class QueryMemberAddressServiceImplTest {
                 queryMemberRepository,
                 queryMemberAddressRepository
         );
+    }
+
+    @Test
+    void findById_fial_memberNotFound() {
+        //given
+        long id = 1L;
+
+        Mockito.when(queryMemberAddressRepository.findById(id))
+                .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, ""));
+
+        //when
+        assertThatThrownBy(() -> queryMemberAddressService.findById(id)).isInstanceOf(
+                ClientException.class);
+    }
+
+    @Test
+    void findById() {
+        //given
+        long id = 1L;
+
+        Mockito.when(queryMemberAddressRepository.findById(id))
+                .thenReturn(Optional.ofNullable(MemberAddress.builder()
+                        .address(address)
+                        .member(MemberDummy.dummy())
+                        .isDeleted(false)
+                        .isDefault(false)
+                        .build()));
+
+        //when
+        MemberAddress result = queryMemberAddressService.findById(id);
+
+        //then
+        assertThat(result.getAddress()).isEqualTo(address);
     }
 
     @Test

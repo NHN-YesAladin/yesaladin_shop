@@ -1,5 +1,26 @@
 package shop.yesaladin.shop.product.controller;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentRequest;
+import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -21,23 +42,6 @@ import shop.yesaladin.shop.product.dto.ProductUpdateDto;
 import shop.yesaladin.shop.product.dummy.DummyProductCreateDto;
 import shop.yesaladin.shop.product.dummy.DummyProductUpdateDto;
 import shop.yesaladin.shop.product.service.inter.CommandProductService;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentRequest;
-import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
 
 @AutoConfigureRestDocs
 @WebMvcTest(CommandProductController.class)
@@ -101,30 +105,48 @@ class CommandProductControllerTest {
                         fieldWithPath("authors").type(JsonFieldType.ARRAY).description("작가"),
                         fieldWithPath("publisherId").type(JsonFieldType.NUMBER).description("출판사"),
                         fieldWithPath("actualPrice").type(JsonFieldType.NUMBER).description("정가"),
-                        fieldWithPath("discountRate").type(JsonFieldType.NUMBER).description("개별할인율"),
-                        fieldWithPath("isSeparatelyDiscount").type(JsonFieldType.BOOLEAN).description("개별 할인 적용여부"),
-                        fieldWithPath("givenPointRate").type(JsonFieldType.NUMBER).description("포인트 적립율"),
-                        fieldWithPath("isGivenPoint").type(JsonFieldType.BOOLEAN).description("포인트 적립여부"),
+                        fieldWithPath("discountRate").type(JsonFieldType.NUMBER)
+                                .description("개별할인율"),
+                        fieldWithPath("isSeparatelyDiscount").type(JsonFieldType.BOOLEAN)
+                                .description("개별 할인 적용여부"),
+                        fieldWithPath("givenPointRate").type(JsonFieldType.NUMBER)
+                                .description("포인트 적립율"),
+                        fieldWithPath("isGivenPoint").type(JsonFieldType.BOOLEAN)
+                                .description("포인트 적립여부"),
                         fieldWithPath("issn").type(JsonFieldType.STRING).description("ISSN"),
-                        fieldWithPath("isSubscriptionAvailable").type(JsonFieldType.BOOLEAN).description("구독 가능여부"),
+                        fieldWithPath("isSubscriptionAvailable").type(JsonFieldType.BOOLEAN)
+                                .description("구독 가능여부"),
                         fieldWithPath("isSale").type(JsonFieldType.BOOLEAN).description("상품 판매여부"),
                         fieldWithPath("quantity").type(JsonFieldType.NUMBER).description("수량"),
-                        fieldWithPath("publishedDate").type(JsonFieldType.STRING).description("출간일"),
-                        fieldWithPath("preferentialShowRanking").type(JsonFieldType.NUMBER).description("노출우선순위"),
-                        fieldWithPath("thumbnailFileUrl").type(JsonFieldType.STRING).description("썸네일 파일 URL"),
-                        fieldWithPath("thumbnailFileUploadDateTime").type(JsonFieldType.STRING).description("썸네일 파일 업로드 시간"),
-                        fieldWithPath("ebookFileUrl").type(JsonFieldType.STRING).description("E-Book 파일 URL"),
-                        fieldWithPath("ebookFileUploadDateTime").type(JsonFieldType.STRING).description("E-Book 파일 업로드 시간"),
-                        fieldWithPath("productTypeCode").type(JsonFieldType.STRING).description("상품 유형"),
-                        fieldWithPath("productSavingMethodCode").type(JsonFieldType.STRING).description("상품 적립 방식"),
+                        fieldWithPath("publishedDate").type(JsonFieldType.STRING)
+                                .description("출간일"),
+                        fieldWithPath("preferentialShowRanking").type(JsonFieldType.NUMBER)
+                                .description("노출우선순위"),
+                        fieldWithPath("thumbnailFileUrl").type(JsonFieldType.STRING)
+                                .description("썸네일 파일 URL"),
+                        fieldWithPath("thumbnailFileUploadDateTime").type(JsonFieldType.STRING)
+                                .description("썸네일 파일 업로드 시간"),
+                        fieldWithPath("ebookFileUrl").type(JsonFieldType.STRING)
+                                .description("E-Book 파일 URL"),
+                        fieldWithPath("ebookFileUploadDateTime").type(JsonFieldType.STRING)
+                                .description("E-Book 파일 업로드 시간"),
+                        fieldWithPath("productTypeCode").type(JsonFieldType.STRING)
+                                .description("상품 유형"),
+                        fieldWithPath("productSavingMethodCode").type(JsonFieldType.STRING)
+                                .description("상품 적립 방식"),
                         fieldWithPath("tags").type(JsonFieldType.ARRAY).description("태그"),
                         fieldWithPath("categories").type(JsonFieldType.ARRAY).description("카테고리")
                 ),
                 responseFields(
-                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("동작 성공 여부"),
-                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("HTTP 상태 코드"),
-                        fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("생성된 상품 아이디"),
-                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY).description("에러 메세지").optional()
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("HTTP 상태 코드"),
+                        fieldWithPath("data.id").type(JsonFieldType.NUMBER)
+                                .description("생성된 상품 아이디"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
+                                .optional()
                 )
         ));
     }
@@ -161,29 +183,47 @@ class CommandProductControllerTest {
                         fieldWithPath("authors").type(JsonFieldType.ARRAY).description("작가"),
                         fieldWithPath("publisherId").type(JsonFieldType.NUMBER).description("출판사"),
                         fieldWithPath("actualPrice").type(JsonFieldType.NUMBER).description("정가"),
-                        fieldWithPath("discountRate").type(JsonFieldType.NUMBER).description("개별할인율"),
-                        fieldWithPath("isSeparatelyDiscount").type(JsonFieldType.BOOLEAN).description("개별 할인 적용여부"),
-                        fieldWithPath("givenPointRate").type(JsonFieldType.NUMBER).description("포인트 적립율"),
-                        fieldWithPath("isGivenPoint").type(JsonFieldType.BOOLEAN).description("포인트 적립여부"),
+                        fieldWithPath("discountRate").type(JsonFieldType.NUMBER)
+                                .description("개별할인율"),
+                        fieldWithPath("isSeparatelyDiscount").type(JsonFieldType.BOOLEAN)
+                                .description("개별 할인 적용여부"),
+                        fieldWithPath("givenPointRate").type(JsonFieldType.NUMBER)
+                                .description("포인트 적립율"),
+                        fieldWithPath("isGivenPoint").type(JsonFieldType.BOOLEAN)
+                                .description("포인트 적립여부"),
                         fieldWithPath("issn").type(JsonFieldType.STRING).description("ISSN"),
-                        fieldWithPath("isSubscriptionAvailable").type(JsonFieldType.BOOLEAN).description("구독 가능여부"),
+                        fieldWithPath("isSubscriptionAvailable").type(JsonFieldType.BOOLEAN)
+                                .description("구독 가능여부"),
                         fieldWithPath("quantity").type(JsonFieldType.NUMBER).description("수량"),
-                        fieldWithPath("publishedDate").type(JsonFieldType.STRING).description("출간일"),
-                        fieldWithPath("preferentialShowRanking").type(JsonFieldType.NUMBER).description("노출우선순위"),
-                        fieldWithPath("thumbnailFileUrl").type(JsonFieldType.STRING).description("썸네일 파일 URL"),
-                        fieldWithPath("thumbnailFileUploadDateTime").type(JsonFieldType.STRING).description("썸네일 파일 업로드 시간"),
-                        fieldWithPath("ebookFileUrl").type(JsonFieldType.STRING).description("E-Book 파일 URL"),
-                        fieldWithPath("ebookFileUploadDateTime").type(JsonFieldType.STRING).description("E-Book 파일 업로드 시간"),
-                        fieldWithPath("productTypeCode").type(JsonFieldType.STRING).description("상품 유형"),
-                        fieldWithPath("productSavingMethodCode").type(JsonFieldType.STRING).description("상품 적립 방식"),
+                        fieldWithPath("publishedDate").type(JsonFieldType.STRING)
+                                .description("출간일"),
+                        fieldWithPath("preferentialShowRanking").type(JsonFieldType.NUMBER)
+                                .description("노출우선순위"),
+                        fieldWithPath("thumbnailFileUrl").type(JsonFieldType.STRING)
+                                .description("썸네일 파일 URL"),
+                        fieldWithPath("thumbnailFileUploadDateTime").type(JsonFieldType.STRING)
+                                .description("썸네일 파일 업로드 시간"),
+                        fieldWithPath("ebookFileUrl").type(JsonFieldType.STRING)
+                                .description("E-Book 파일 URL"),
+                        fieldWithPath("ebookFileUploadDateTime").type(JsonFieldType.STRING)
+                                .description("E-Book 파일 업로드 시간"),
+                        fieldWithPath("productTypeCode").type(JsonFieldType.STRING)
+                                .description("상품 유형"),
+                        fieldWithPath("productSavingMethodCode").type(JsonFieldType.STRING)
+                                .description("상품 적립 방식"),
                         fieldWithPath("tags").type(JsonFieldType.ARRAY).description("태그"),
                         fieldWithPath("categories").type(JsonFieldType.ARRAY).description("카테고리")
                 ),
                 responseFields(
-                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("동작 성공 여부"),
-                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("HTTP 상태 코드"),
-                        fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("수정된 상품 아이디"),
-                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY).description("에러 메세지").optional()
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("HTTP 상태 코드"),
+                        fieldWithPath("data.id").type(JsonFieldType.NUMBER)
+                                .description("수정된 상품 아이디"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
+                                .optional()
                 )
         ));
     }

@@ -13,9 +13,9 @@ public interface SearchCategoryRepository {
     /**
      * 카테고리의 이름으로 검색하는 메서드
      *
-     * @param name 검색할 카테고리의 이름
+     * @param name   검색할 카테고리의 이름
      * @param offset 검색할 페이지 위치
-     * @param size 데이터 갯수
+     * @param size   데이터 갯수
      * @return 검색 결과 카테고리 리스트
      */
     SearchCategoryResponseDto searchCategoryByName(String name, int offset, int size);

@@ -22,6 +22,7 @@ import shop.yesaladin.shop.tag.domain.repository.QueryTagRepository;
 @SpringBootTest
 @ActiveProfiles("local-test")
 class QueryDslTagRepositoryTest {
+
     @PersistenceContext
     private EntityManager entityManager;
 

@@ -1,5 +1,14 @@
 package shop.yesaladin.shop.product.service.impl;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
@@ -16,7 +25,11 @@ import shop.yesaladin.shop.file.service.inter.CommandFileService;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
-import shop.yesaladin.shop.product.domain.repository.*;
+import shop.yesaladin.shop.product.domain.repository.CommandProductRepository;
+import shop.yesaladin.shop.product.domain.repository.CommandSubscribeProductRepository;
+import shop.yesaladin.shop.product.domain.repository.QueryProductRepository;
+import shop.yesaladin.shop.product.domain.repository.QuerySubscribeProductRepository;
+import shop.yesaladin.shop.product.domain.repository.QueryTotalDiscountRateRepository;
 import shop.yesaladin.shop.product.dto.ProductCreateDto;
 import shop.yesaladin.shop.product.dto.ProductOnlyIdDto;
 import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
@@ -34,16 +47,6 @@ import shop.yesaladin.shop.writing.domain.model.Author;
 import shop.yesaladin.shop.writing.domain.model.Writing;
 import shop.yesaladin.shop.writing.service.inter.CommandWritingService;
 import shop.yesaladin.shop.writing.service.inter.QueryAuthorService;
-
-import javax.transaction.Transactional;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * 상품 생성을 위한 Service 구현체 입니다.
@@ -392,17 +395,28 @@ public class CommandProductServiceImpl implements CommandProductService {
                         ProductOrderRequestDto::getQuantity
                 ));
 
-        List<Product> productList = getAvailableProducts(quantities);
+        List<Product> productList = tryGetProductList(quantities);
 
-        productList.forEach(product -> product.changeQuantity(
-                product.getQuantity() - quantities.get(product.getIsbn())));
+        orderProductList(quantities, productList);
 
         return productList
                 .stream()
                 .collect(Collectors.toMap(Product::getIsbn, Function.identity()));
     }
 
-    private List<Product> getAvailableProducts(Map<String, Integer> quantities) {
+    private void orderProductList(Map<String, Integer> quantities, List<Product> productList) {
+        productList.forEach(product -> {
+            if (product.getQuantity() < quantities.get(product.getIsbn())) {
+                throw new ClientException(
+                        ErrorCode.PRODUCT_NOT_AVAILABLE_TO_ORDER,
+                        "Product is not available to order with isbn :" + product.getIsbn()
+                );
+            }
+            product.changeQuantity(product.getQuantity() - quantities.get(product.getIsbn()));
+        });
+    }
+
+    private List<Product> tryGetProductList(Map<String, Integer> quantities) {
         List<String> isbnList = new ArrayList<>(quantities.keySet());
 
         List<Product> productList = queryProductRepository.findByIsbnList(isbnList);
@@ -416,17 +430,14 @@ public class CommandProductServiceImpl implements CommandProductService {
             Map<String, Integer> quantities,
             List<Product> productList
     ) {
-        if (productList.size() != quantities.size()) {
-            throw new ClientException(
-                    ErrorCode.BAD_REQUEST,
-                    "Product is not available to order."
-            );
-        }
-        productList.forEach(product -> {
-            if (product.getQuantity() < quantities.get(product.getIsbn())) {
+        List<String> isbnList = productList.stream()
+                .map(Product::getIsbn)
+                .collect(Collectors.toList());
+        quantities.keySet().forEach(isbn -> {
+            if (!isbnList.contains(isbn)) {
                 throw new ClientException(
                         ErrorCode.PRODUCT_NOT_AVAILABLE_TO_ORDER,
-                        "Product not available to order."
+                        "Product is not available to order with isbn : " + isbn
                 );
             }
         });

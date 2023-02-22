@@ -2,6 +2,8 @@ package shop.yesaladin.shop.writing.persistence;
 
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -11,9 +13,6 @@ import org.springframework.stereotype.Repository;
 import shop.yesaladin.shop.writing.domain.model.Author;
 import shop.yesaladin.shop.writing.domain.model.querydsl.QAuthor;
 import shop.yesaladin.shop.writing.domain.repository.QueryAuthorRepository;
-
-import java.util.List;
-import java.util.Optional;
 
 /**
  * 저자 조회를 위한 Repository QueryDsl 구현체 입니다.

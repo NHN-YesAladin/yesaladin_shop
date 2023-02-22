@@ -30,13 +30,14 @@ public class UseMemberCouponController {
      *
      * @param memberId 회원 아이디
      * @param dto      사용할 쿠폰 코드 리스트가 담긴 dto
-     * @return         쿠폰 사용 요청 메시지에 대한 응답
+     * @return 쿠폰 사용 요청 메시지에 대한 응답
      */
     @PostMapping
     public ResponseDto<RequestIdOnlyDto> sendCouponUseRequest(
             @LoginId(required = true) String memberId, @RequestBody CouponUseRequestDto dto
     ) {
-        RequestIdOnlyDto requestIdOnlyDto = useCouponService.sendCouponUseRequest(memberId,
+        RequestIdOnlyDto requestIdOnlyDto = useCouponService.sendCouponUseRequest(
+                memberId,
                 dto.getCouponCodes()
         );
 

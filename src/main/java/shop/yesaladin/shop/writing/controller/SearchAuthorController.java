@@ -2,6 +2,7 @@ package shop.yesaladin.shop.writing.controller;
 
 
 import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,8 +18,6 @@ import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.writing.dto.SearchAuthorRequestDto;
 import shop.yesaladin.shop.writing.dto.SearchedAuthorResponseDto;
 import shop.yesaladin.shop.writing.service.inter.SearchAuthorService;
-
-import javax.validation.Valid;
 
 /**
  * 엘라스틱서치 저자 검색 컨트롤러

@@ -1,6 +1,14 @@
 package shop.yesaladin.shop.file.service.impl;
 
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,10 +24,6 @@ import shop.yesaladin.shop.file.dto.AccessDto;
 import shop.yesaladin.shop.file.dto.TokenDto;
 import shop.yesaladin.shop.file.dto.TokenJsonDto;
 import shop.yesaladin.shop.file.service.inter.StorageAuthService;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 class StorageAuthServiceImplTest {
 

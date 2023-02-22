@@ -367,7 +367,7 @@ public class QueryMemberController {
      * @author 서민지
      * @since 1.0
      */
-    @GetMapping(params = {"type=birthday", "laterDays"})
+    @GetMapping(value = "/birthday", params = {"laterDays"})
     public ResponseDto<List<MemberIdDto>> getBirthdayMember(
             @RequestParam(value = "laterDays", defaultValue = "0") int laterDays
     ) {

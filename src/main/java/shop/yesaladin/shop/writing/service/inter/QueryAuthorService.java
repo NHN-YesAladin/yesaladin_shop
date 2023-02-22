@@ -42,7 +42,10 @@ public interface QueryAuthorService {
      * @author 김선홍
      * @since 1.0
      */
-    PaginatedResponseDto<AuthorsResponseDto> findAllByLoginIdForManager(String loginId, Pageable pageable);
+    PaginatedResponseDto<AuthorsResponseDto> findAllByLoginIdForManager(
+            String loginId,
+            Pageable pageable
+    );
 
     /**
      * 저자를 이름으로 검색
@@ -53,5 +56,8 @@ public interface QueryAuthorService {
      * @author 김선홍
      * @since 1.0
      */
-    PaginatedResponseDto<AuthorsResponseDto> findAllByNameForManager(String name, Pageable pageable);
+    PaginatedResponseDto<AuthorsResponseDto> findAllByNameForManager(
+            String name,
+            Pageable pageable
+    );
 }

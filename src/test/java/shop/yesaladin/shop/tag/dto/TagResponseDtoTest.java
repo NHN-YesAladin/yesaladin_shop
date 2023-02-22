@@ -13,13 +13,23 @@ class TagResponseDtoTest {
     @Test
     void getTagFromProductTag() {
         // given
-        Product product = DummyProduct.dummy("0000000000001", null, DummyFile.dummy("thumbnail"), null, DummyTotalDiscountRate.dummy());
+        Product product = DummyProduct.dummy(
+                "0000000000001",
+                null,
+                DummyFile.dummy("thumbnail"),
+                null,
+                DummyTotalDiscountRate.dummy()
+        );
         Tag tag = Tag.builder().id(1L).name("아름다운").build();
         ProductTag productTag = ProductTag.create(product, tag);
 
         // when
         TagResponseDto.getTagFromProductTag(
-                new ProductTagResponseDto(productTag.getPk(), productTag.getProduct(), productTag.getTag())
+                new ProductTagResponseDto(
+                        productTag.getPk(),
+                        productTag.getProduct(),
+                        productTag.getTag()
+                )
         );
     }
 }

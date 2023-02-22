@@ -22,17 +22,6 @@ public class PublisherResponseDto {
     private String name;
 
     /**
-     * Dto를 바탕으로 출판사 엔터티를 생성해 반환합니다.
-     *
-     * @return 출판사 엔터티
-     * @author 이수정
-     * @since 1.0
-     */
-    public Publisher toEntity() {
-        return Publisher.builder().id(id).name(name).build();
-    }
-
-    /**
      * 출판을 바탕으로 출판사 Dto를 만들어 반환합니다.
      *
      * @param publish 바탕이 될 출판 Dto
@@ -45,5 +34,16 @@ public class PublisherResponseDto {
                 .id(publish.getPublisher().getId())
                 .name(publish.getPublisher().getName())
                 .build();
+    }
+
+    /**
+     * Dto를 바탕으로 출판사 엔터티를 생성해 반환합니다.
+     *
+     * @return 출판사 엔터티
+     * @author 이수정
+     * @since 1.0
+     */
+    public Publisher toEntity() {
+        return Publisher.builder().id(id).name(name).build();
     }
 }

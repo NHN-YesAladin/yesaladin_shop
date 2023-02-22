@@ -57,7 +57,6 @@ public class CommandRelationServiceImpl implements CommandRelationService {
                         "ProductSub not found with id : " + productSubId
                 ));
 
-
         if (!isExistsRelationMain) {
             commandRelationRepository.save(Relation.create(productMain, productSub));
         }
@@ -80,7 +79,8 @@ public class CommandRelationServiceImpl implements CommandRelationService {
         if (!isExistsRelationMain && !isExistsRelationSub) {
             throw new ClientException(
                     ErrorCode.PRODUCT_RELATION_NOT_FOUND,
-                    "ProductMain id = " + productMainId + ", ProductSub id = " + productSubId + " is not found."
+                    "ProductMain id = " + productMainId + ", ProductSub id = " + productSubId
+                            + " is not found."
             );
         }
 

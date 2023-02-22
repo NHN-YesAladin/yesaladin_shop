@@ -1,9 +1,8 @@
 package shop.yesaladin.shop.order.domain.repository;
 
+import java.util.Optional;
 import shop.yesaladin.shop.order.domain.model.OrderStatusChangeLog;
 import shop.yesaladin.shop.order.domain.model.OrderStatusChangeLog.Pk;
-
-import java.util.Optional;
 
 /**
  * 주문상태 변경내역 조회 관련 repository 클래스입니다.
