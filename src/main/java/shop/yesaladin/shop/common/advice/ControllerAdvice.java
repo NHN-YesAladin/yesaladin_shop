@@ -18,8 +18,6 @@ import shop.yesaladin.shop.common.dto.ErrorResponseDto;
 import shop.yesaladin.shop.common.exception.CommonException;
 import shop.yesaladin.shop.common.exception.CustomJsonProcessingException;
 import shop.yesaladin.shop.common.exception.InvalidPeriodConditionException;
-import shop.yesaladin.shop.member.exception.MemberProfileAlreadyExistException;
-import shop.yesaladin.shop.member.exception.MemberRoleNotFoundException;
 import shop.yesaladin.shop.product.exception.ProductNotFoundException;
 
 /**
@@ -36,7 +34,6 @@ public class ControllerAdvice {
 
     @ExceptionHandler(value = {
             CategoryNotFoundException.class,
-            MemberRoleNotFoundException.class,
             ProductNotFoundException.class
     })
     public ResponseEntity<ErrorResponseDto> handleNotFoundException(Exception ex) {
@@ -55,16 +52,6 @@ public class ControllerAdvice {
         log.error("[BAD_REQUEST] handleValidationException", ex);
         ErrorResponseDto error = new ErrorResponseDto(ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
-    }
-
-    @ExceptionHandler(value = {
-            MemberProfileAlreadyExistException.class
-    })
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ResponseEntity<ErrorResponseDto> handleAlreadyExistException(Exception ex) {
-        log.error("[CONFLICT] handleAlreadyExistException", ex);
-        ErrorResponseDto error = new ErrorResponseDto(ex.getMessage());
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 
     @ExceptionHandler({CustomJsonProcessingException.class})

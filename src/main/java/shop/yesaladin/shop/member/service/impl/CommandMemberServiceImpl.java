@@ -28,8 +28,6 @@ import shop.yesaladin.shop.member.dto.MemberUpdateResponseDto;
 import shop.yesaladin.shop.member.dto.MemberWithdrawResponseDto;
 import shop.yesaladin.shop.member.dto.OauthMemberCreateRequestDto;
 import shop.yesaladin.shop.member.event.SignUpEvent;
-import shop.yesaladin.shop.member.exception.MemberProfileAlreadyExistException;
-import shop.yesaladin.shop.member.exception.MemberRoleNotFoundException;
 import shop.yesaladin.shop.member.service.inter.CommandMemberService;
 
 /**
@@ -58,7 +56,10 @@ public class CommandMemberServiceImpl implements CommandMemberService {
         int roleId = 1;
 
         Role roleMember = queryRoleRepository.findById(roleId).orElseThrow(
-                () -> new MemberRoleNotFoundException(roleId));
+                () -> new ClientException(
+                        ErrorCode.MEMBER_ROLE_NOT_FOUND,
+                        "Member Role not found : " + roleId
+                ));
 
         checkMemberProfileExist(createDto.getLoginId(), createDto.getNickname(),
                 createDto.getEmail(), createDto.getPhone()
@@ -89,7 +90,10 @@ public class CommandMemberServiceImpl implements CommandMemberService {
         int roleId = 1;
 
         Role roleMember = queryRoleRepository.findById(roleId).orElseThrow(
-                () -> new MemberRoleNotFoundException(roleId));
+                () -> new ClientException(
+                        ErrorCode.MEMBER_ROLE_NOT_FOUND,
+                        "Member Role not found : " + roleId
+                ));
 
         checkMemberProfileExist(createDto.getLoginId(), createDto.getNickname(),
                 createDto.getEmail(), createDto.getPhone()
@@ -118,8 +122,7 @@ public class CommandMemberServiceImpl implements CommandMemberService {
      * @param nickname 조회 대상
      * @param email    조회 대상
      * @param phone    조회 대상
-     * @throws MemberProfileAlreadyExistException loginId, nickname, email, phone 이 기존에 있다면 발생하는
-     *                                            예외입니다.
+     * @throws ClientException loginId, nickname, email, phone 이 기존에 있다면 발생하는 예외입니다.
      * @author 송학현
      * @since 1.0
      */
@@ -130,19 +133,31 @@ public class CommandMemberServiceImpl implements CommandMemberService {
             String phone
     ) {
         if (queryMemberRepository.existsMemberByLoginId(loginId)) {
-            throw new MemberProfileAlreadyExistException(loginId);
+            throw new ClientException(
+                    ErrorCode.MEMBER_ID_ALREADY_EXIST,
+                    "Member Login Id already exist : " + loginId
+            );
         }
 
         if (queryMemberRepository.existsMemberByNickname(nickname)) {
-            throw new MemberProfileAlreadyExistException(nickname);
+            throw new ClientException(
+                    ErrorCode.MEMBER_NICKNAME_ALREADY_EXIST,
+                    "Member Nickname already exist : " + nickname
+            );
         }
 
         if (queryMemberRepository.existsMemberByEmail(email)) {
-            throw new MemberProfileAlreadyExistException(email);
+            throw new ClientException(
+                    ErrorCode.MEMBER_EMAIL_ALREADY_EXIST,
+                    "Member Email already exist : " + email
+            );
         }
 
         if (queryMemberRepository.existsMemberByPhone(phone)) {
-            throw new MemberProfileAlreadyExistException(phone);
+            throw new ClientException(
+                    ErrorCode.MEMBER_PHONE_ALREADY_EXIST,
+                    "Member Phone already exist : " + phone
+            );
         }
     }
 
