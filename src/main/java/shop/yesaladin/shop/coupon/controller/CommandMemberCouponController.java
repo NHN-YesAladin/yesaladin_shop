@@ -1,4 +1,4 @@
-package shop.yesaladin.shop.member.controller;
+package shop.yesaladin.shop.coupon.controller;
 
 import java.util.List;
 import javax.validation.Valid;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.shop.member.dto.MemberCouponRequestDto;
 import shop.yesaladin.shop.member.dto.MemberCouponResponseDto;
-import shop.yesaladin.shop.member.service.inter.CommandMemberCouponService;
+import shop.yesaladin.shop.coupon.service.inter.CommandMemberCouponService;
 
 /**
  * 회원 쿠폰을 등록하는 Rest controller 입니다.

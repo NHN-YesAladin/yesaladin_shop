@@ -7,10 +7,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
+ * ObjectMapper 설정 클래스 입니다.
  *
+ * @author 송학현
+ * @since 1.0
  */
 @Configuration
-public class ObjectMapperConfig {
+public class ObjectMapperConfiguration {
 
     @Bean
     public ObjectMapper objectMapper() {

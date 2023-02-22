@@ -39,7 +39,6 @@ import shop.yesaladin.shop.member.dto.OauthMemberCreateRequestDto;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
 import shop.yesaladin.shop.member.dummy.MemberRoleDummy;
 import shop.yesaladin.shop.member.dummy.RoleDummy;
-import shop.yesaladin.shop.member.exception.MemberProfileAlreadyExistException;
 
 class CommandMemberServiceImplTest {
 
@@ -65,6 +64,24 @@ class CommandMemberServiceImplTest {
                 commandMemberRoleRepository,
                 applicationEventPublisher
         );
+    }
+
+    @Test
+    @DisplayName("회원의 권한이 존재하지 않는 경우 회원가입에 실패한다.")
+    void create_fail_whenMemberRoleNotExists() throws Exception {
+        //given
+        int roleId = 1;
+
+        MemberCreateRequestDto createDto = Mockito.mock(MemberCreateRequestDto.class);
+
+        Mockito.when(queryRoleRepository.findById(roleId)).thenReturn(Optional.empty());
+
+        //when then
+        assertThatThrownBy(() -> service.create(createDto))
+                .isInstanceOf(ClientException.class)
+                .hasMessageContaining("Member Role not found : ");
+
+        verify(commandMemberRoleRepository, never()).save(any());
     }
 
     @Test
@@ -94,7 +111,8 @@ class CommandMemberServiceImplTest {
 
         //when then
         assertThatThrownBy(() -> service.create(createDto))
-                .isInstanceOf(MemberProfileAlreadyExistException.class);
+                .isInstanceOf(ClientException.class)
+                .hasMessageContaining("Member Login Id already exist : ");
 
         verify(commandMemberRoleRepository, never()).save(any());
     }
@@ -126,7 +144,8 @@ class CommandMemberServiceImplTest {
 
         //when then
         assertThatThrownBy(() -> service.create(createDto))
-                .isInstanceOf(MemberProfileAlreadyExistException.class);
+                .isInstanceOf(ClientException.class)
+                .hasMessageContaining("Member Nickname already exist : ");
 
         verify(commandMemberRoleRepository, never()).save(any());
     }
@@ -158,7 +177,8 @@ class CommandMemberServiceImplTest {
 
         //when then
         assertThatThrownBy(() -> service.create(createDto))
-                .isInstanceOf(MemberProfileAlreadyExistException.class);
+                .isInstanceOf(ClientException.class)
+                .hasMessageContaining("Member Phone already exist : ");
 
         verify(commandMemberRoleRepository, never()).save(any());
     }
@@ -190,7 +210,8 @@ class CommandMemberServiceImplTest {
 
         //when then
         assertThatThrownBy(() -> service.create(createDto))
-                .isInstanceOf(MemberProfileAlreadyExistException.class);
+                .isInstanceOf(ClientException.class)
+                .hasMessageContaining("Member Email already exist : ");
 
         verify(commandMemberRoleRepository, never()).save(any());
     }
@@ -243,6 +264,23 @@ class CommandMemberServiceImplTest {
         verify(queryRoleRepository, times(1)).findById(roleId);
         verify(commandMemberRoleRepository, times(1)).save(any());
         verify(commandMemberRepository, times(1)).save(member);
+    }
+
+    @Test
+    @DisplayName("회원의 권한이 존재하지 않는 경우 OAuth 회원가입에 실패한다.")
+    void createOauth_fail_whenMemberRoleNotExists() throws Exception {
+        //given
+        int roleId = 1;
+
+        OauthMemberCreateRequestDto createDto = Mockito.mock(OauthMemberCreateRequestDto.class);
+
+        Mockito.when(queryRoleRepository.findById(roleId)).thenReturn(Optional.empty());
+        //when then
+        assertThatThrownBy(() -> service.createOauth(createDto))
+                .isInstanceOf(ClientException.class)
+                .hasMessageContaining("Member Role not found : ");
+
+        verify(commandMemberRoleRepository, never()).save(any());
     }
 
     @Test
@@ -335,11 +373,11 @@ class CommandMemberServiceImplTest {
         Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
                 .thenReturn(Optional.of(member));
         Mockito.when(queryMemberRepository.findMemberByNickname(nickname))
-                .thenThrow(MemberProfileAlreadyExistException.class);
+                .thenReturn(Optional.of(member));
 
         //when, then
         assertThatThrownBy(() -> service.updateNickname(loginId, request)).isInstanceOf(
-                MemberProfileAlreadyExistException.class);
+                ClientException.class);
 
         verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
         verify(queryMemberRepository, times(1)).findMemberByNickname(nickname);
@@ -463,12 +501,11 @@ class CommandMemberServiceImplTest {
         );
         Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
                 .thenReturn(Optional.of(member));
-        Mockito.when(queryMemberRepository.findMemberByEmail(email))
-                .thenThrow(MemberProfileAlreadyExistException.class);
+        Mockito.when(queryMemberRepository.findMemberByEmail(email)).thenReturn(Optional.of(member));
 
         //when, then
         assertThatThrownBy(() -> service.updateEmail(loginId, request)).isInstanceOf(
-                MemberProfileAlreadyExistException.class);
+                ClientException.class);
 
         verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
         verify(queryMemberRepository, times(1)).findMemberByEmail(email);
@@ -543,11 +580,11 @@ class CommandMemberServiceImplTest {
         Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
                 .thenReturn(Optional.of(member));
         Mockito.when(queryMemberRepository.findMemberByPhone(phone))
-                .thenThrow(MemberProfileAlreadyExistException.class);
+                .thenReturn(Optional.of(member));
 
         //when, then
         assertThatThrownBy(() -> service.updatePhone(loginId, request)).isInstanceOf(
-                MemberProfileAlreadyExistException.class);
+                ClientException.class);
 
         verify(queryMemberRepository, times(1)).findMemberByLoginId(loginId);
         verify(queryMemberRepository, times(1)).findMemberByPhone(phone);

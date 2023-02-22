@@ -13,7 +13,7 @@ import org.springframework.web.client.RestTemplate;
  * @since : 1.0
  */
 @Configuration
-public class RestTemplateConfig {
+public class RestTemplateConfiguration {
 
     /**
      * client와 server간 요청, 응답을 위한 RestTemplate Bean 설정.

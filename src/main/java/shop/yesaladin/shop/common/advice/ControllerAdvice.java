@@ -15,12 +15,8 @@ import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.category.exception.CategoryNotFoundException;
 import shop.yesaladin.shop.common.dto.ErrorResponseDto;
-import shop.yesaladin.shop.common.exception.CommonException;
 import shop.yesaladin.shop.common.exception.CustomJsonProcessingException;
-import shop.yesaladin.shop.common.exception.InvalidAuthorityException;
 import shop.yesaladin.shop.common.exception.InvalidPeriodConditionException;
-import shop.yesaladin.shop.member.exception.MemberProfileAlreadyExistException;
-import shop.yesaladin.shop.member.exception.MemberRoleNotFoundException;
 import shop.yesaladin.shop.product.exception.ProductNotFoundException;
 
 /**
@@ -37,7 +33,6 @@ public class ControllerAdvice {
 
     @ExceptionHandler(value = {
             CategoryNotFoundException.class,
-            MemberRoleNotFoundException.class,
             ProductNotFoundException.class
     })
     public ResponseEntity<ErrorResponseDto> handleNotFoundException(Exception ex) {
@@ -58,56 +53,12 @@ public class ControllerAdvice {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
-    @ExceptionHandler(InvalidAuthorityException.class)
-    public ResponseEntity<ResponseDto<Object>> handleUnauthorizedException(Exception e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-                ResponseDto.builder()
-                        .success(false)
-                        .status(HttpStatus.UNAUTHORIZED)
-                        .errorMessages(List.of("접근권한이 없습니다."))
-                        .build()
-        );
-    }
-
-    @ExceptionHandler(value = {
-            MemberProfileAlreadyExistException.class
-    })
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ResponseEntity<ErrorResponseDto> handleAlreadyExistException(Exception ex) {
-        log.error("[CONFLICT] handleAlreadyExistException", ex);
-        ErrorResponseDto error = new ErrorResponseDto(ex.getMessage());
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
-    }
-
     @ExceptionHandler({CustomJsonProcessingException.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<ErrorResponseDto> handleJsonProcessingException(Exception ex) {
         log.error("[INTERNAL_SERVER_ERROR] handleJsonProcessingException", ex);
         ErrorResponseDto error = new ErrorResponseDto(ex.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
-    }
-
-    /**
-     * 에러를 반환합니다.
-     *
-     * @param e 에러
-     * @return 에러
-     */
-    @ExceptionHandler(CommonException.class)
-    public ResponseEntity<ResponseDto<Object>> handleCommonException(CommonException e) {
-        log.error(
-                "[{}] handleCommonException : {}",
-                e.getErrorCode().getResponseStatus(),
-                e.getMessage()
-        );
-        ResponseDto<Object> response = ResponseDto.builder()
-                .success(false)
-                .status(e.getErrorCode().getResponseStatus())
-                .errorMessages(
-                        List.of(e.getMessage()))
-                .build();
-
-        return ResponseEntity.status(e.getErrorCode().getResponseStatus()).body(response);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
