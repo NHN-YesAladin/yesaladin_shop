@@ -128,7 +128,6 @@ public class CommandOrderServiceImpl implements CommandOrderService {
             } catch (Exception e) {
                 useCouponService.cancelCouponUse(request.getOrderCoupons());
             }
-
         }
 
         deleteOrderProductInCart(loginId, type, products);
@@ -179,7 +178,15 @@ public class CommandOrderServiceImpl implements CommandOrderService {
 
         createOrderStatusChangeLog(orderDateTime, savedOrder);
 
-        requestUseCoupon(request, loginId, savedOrder);
+        if (request.getOrderCoupons() != null) {
+            try {
+                requestUseCoupon(request, loginId, savedOrder);
+
+                createOrderCoupon(request, savedOrder);
+            } catch (Exception e) {
+                useCouponService.cancelCouponUse(request.getOrderCoupons());
+            }
+        }
 
         return OrderCreateResponseDto.fromEntity(savedOrder);
     }

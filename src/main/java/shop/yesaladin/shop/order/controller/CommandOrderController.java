@@ -1,6 +1,5 @@
 package shop.yesaladin.shop.order.controller;
 
-import java.util.Objects;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -42,7 +41,6 @@ public class CommandOrderController {
      * 비회원 주문을 생성합니다.
      *
      * @param bindingResult 유효성 검사
-     * @param loginId       회원의 아이디
      * @return 생성된 주문 정보
      */
     @CrossOrigin(origins = {"http://localhost:9090", "https://www.yesaladin.shop"})
@@ -50,14 +48,9 @@ public class CommandOrderController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<OrderCreateResponseDto> createNonMemberOrder(
             @Valid @RequestBody OrderNonMemberCreateRequestDto request,
-            BindingResult bindingResult,
-            @LoginId String loginId
+            BindingResult bindingResult
     ) {
         checkRequestValidation(bindingResult, "NonMemberOrder");
-
-        if (Objects.nonNull(loginId)) {
-            throw new ClientException(ErrorCode.UNAUTHORIZED, "Only unauthorized user can access.");
-        }
 
         OrderCreateResponseDto response = commandOrderService.createNonMemberOrders(request);
 

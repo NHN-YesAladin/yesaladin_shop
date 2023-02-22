@@ -205,4 +205,101 @@ class QueryMemberCouponServiceImplTest {
         Assertions.assertThatThrownBy(() -> service.findByCouponCodes(couponCodes))
                 .isInstanceOf(ClientException.class);
     }
+
+    @Test
+    @DisplayName("쿠폰 코드 목록으로 유효한 회원의 쿠폰 조회 실패 - api 오류")
+    void getValidMemberCouponSummaryListByCouponCodes_fail_serverException() {
+        //given
+        List<String> couponCodes = List.of("code");
+        List<MemberCoupon> memberCoupons = List.of(Mockito.mock(MemberCoupon.class));
+
+        Mockito.when(repository.findByCouponCodes(couponCodes)).thenReturn(memberCoupons);
+
+        when(restTemplate.exchange(
+                Mockito.eq(
+                        "http://localhost:8085/v1/coupons?couponCodes=code"),
+                Mockito.eq(HttpMethod.GET),
+                Mockito.eq(null),
+                Mockito.any(ParameterizedTypeReference.class)
+        ))
+                .thenReturn(ResponseEntity.of(Optional.empty()));
+        //when, then
+        Assertions.assertThatThrownBy(() -> service.getValidMemberCouponSummaryListByCouponCodes(
+                        "user@1",
+                        couponCodes
+                ))
+                .isInstanceOf(ServerException.class);
+    }
+
+    @Test
+    @DisplayName("쿠폰 코드 목록으로 유효한 회원의 쿠폰 조회 실패 - api 오류")
+    void getValidMemberCouponSummaryListByCouponCodes_fail_invalidCouponData() {
+        //given
+        List<String> couponCodes = List.of("code");
+        List<MemberCoupon> memberCoupons = List.of(Mockito.mock(MemberCoupon.class));
+        List<MemberCouponSummaryDto> expectedData = List.of(
+                Mockito.mock(MemberCouponSummaryDto.class),
+                Mockito.mock(MemberCouponSummaryDto.class)
+        );
+
+        Mockito.when(repository.findByCouponCodes(couponCodes)).thenReturn(memberCoupons);
+
+        when(restTemplate.exchange(
+                Mockito.eq(
+                        "http://localhost:8085/v1/coupons?couponCodes=code"),
+                Mockito.eq(HttpMethod.GET),
+                Mockito.eq(null),
+                Mockito.any(ParameterizedTypeReference.class)
+        ))
+                .thenReturn(ResponseEntity.of(Optional.of(ResponseDto.<List<MemberCouponSummaryDto>>builder()
+                        .success(true)
+                        .status(HttpStatus.OK)
+                        .data(expectedData)
+                        .build())));
+        //when, then
+        Assertions.assertThatThrownBy(() -> service.getValidMemberCouponSummaryListByCouponCodes(
+                "user@1",
+                couponCodes
+        )).isInstanceOf(ClientException.class);
+    }
+
+    @Test
+    @DisplayName("쿠폰 코드 목록으로 유효한 회원의 쿠폰 조회 성공")
+    void getValidMemberCouponSummaryListByCouponCodes_success() {
+        //given
+        List<String> couponCodes = List.of("code");
+        List<MemberCoupon> memberCoupons = List.of(Mockito.mock(MemberCoupon.class));
+
+        Mockito.when(repository.findByCouponCodes(couponCodes)).thenReturn(memberCoupons);
+
+        List<MemberCouponSummaryDto> expectedData = List.of(Mockito.mock(MemberCouponSummaryDto.class));
+        when(restTemplate.exchange(
+                Mockito.eq(
+                        "http://localhost:8085/v1/coupons?couponCodes=code"),
+                Mockito.eq(HttpMethod.GET),
+                Mockito.eq(null),
+                Mockito.any(ParameterizedTypeReference.class)
+        ))
+                .thenReturn(ResponseEntity.of(Optional.of(ResponseDto.<List<MemberCouponSummaryDto>>builder()
+                        .success(true)
+                        .status(HttpStatus.OK)
+                        .data(expectedData)
+                        .build())));
+
+        // when
+        List<MemberCouponSummaryDto> list = service.getValidMemberCouponSummaryListByCouponCodes(
+                "user@1",
+                couponCodes
+        );
+
+        // then
+        Mockito.verify(restTemplate, Mockito.times(1))
+                .exchange(
+                        Mockito.eq("http://localhost:8085/v1/coupons?couponCodes=code"),
+                        Mockito.eq(HttpMethod.GET),
+                        Mockito.eq(null),
+                        Mockito.any(ParameterizedTypeReference.class)
+                );
+        Assertions.assertThat(list).isEqualTo(expectedData);
+    }
 }
