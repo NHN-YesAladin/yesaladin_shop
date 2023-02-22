@@ -1,13 +1,19 @@
 package shop.yesaladin.shop.publish.controller;
 
+import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.dto.ResponseDto;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.publish.dto.SearchPublisherRequestDto;
 import shop.yesaladin.shop.publish.dto.SearchPublisherResponseDto;
 import shop.yesaladin.shop.publish.service.inter.SearchPublisherService;
@@ -35,13 +41,30 @@ public class SearchPublisherController {
      */
     @GetMapping(params = "name")
     public ResponseDto<SearchPublisherResponseDto> searchPublisherByName(
-            @ModelAttribute @Valid
-                    SearchPublisherRequestDto dto
+            @ModelAttribute @Valid SearchPublisherRequestDto dto,
+            BindingResult bindingResult
+
     ) {
+        if (bindingResult.hasErrors()) {
+            throw new ClientException(
+                    ErrorCode.BAD_REQUEST,
+                    "Validation Error in publisher search request." + bindingResult.getAllErrors()
+            );
+        }
+
         return ResponseDto.<SearchPublisherResponseDto>builder()
                 .status(HttpStatus.OK)
                 .success(true)
                 .data(searchPublisherService.searchPublisherByName(dto))
                 .build();
+    }
+
+    @ExceptionHandler(ClientException.class)
+    public ResponseEntity<ResponseDto<Void>> clientExceptionHandler(ClientException ce) {
+        return ResponseEntity.status(ce.getResponseStatus()).body(ResponseDto.<Void>builder()
+                .success(true)
+                .errorMessages(List.of(ce.getDisplayErrorMessage()))
+                .status(ce.getResponseStatus())
+                .build());
     }
 }

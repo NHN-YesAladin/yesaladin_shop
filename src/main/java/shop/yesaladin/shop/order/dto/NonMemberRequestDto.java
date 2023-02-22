@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.order.dto;
 
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -21,5 +22,6 @@ public class NonMemberRequestDto {
     private String name;
 
     @NotBlank
+    @Pattern(regexp = "/^01([0|1])([0-9]{4})([0-9]{4})$/")
     private String phoneNumber;
 }

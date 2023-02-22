@@ -125,13 +125,13 @@ public class QueryDslProductRepository implements QueryProductRepository {
         QProductCategory productCategory = QProductCategory.productCategory;
 
         return Optional.ofNullable(
-                queryFactory.from(product)
-                        .leftJoin(productCategory)
+                queryFactory.from(productCategory)
+                        .rightJoin(productCategory.product, product)
                         .on(product.id.eq(productCategory.product.id))
-                        .where(productCategory.product.isbn.eq(isbn)
-                                .and(productCategory.product.isSale.isTrue())
-                                .and(productCategory.product.isForcedOutOfStock.isFalse())
-                                .and(productCategory.product.isDeleted.isFalse()))
+                        .where(product.isbn.eq(isbn)
+                                .and(product.isSale.isTrue())
+                                .and(product.isForcedOutOfStock.isFalse())
+                                .and(product.isDeleted.isFalse()))
                         .transform(
                                 groupBy(product.id).list(
                                         Projections.constructor(
@@ -422,7 +422,7 @@ public class QueryDslProductRepository implements QueryProductRepository {
                 .otherwise(product.totalDiscountRate.discountRate);
 
         return queryFactory.from(product)
-                .innerJoin(productCategory).on(product.id.eq(productCategory.product.id))
+                .leftJoin(productCategory).on(product.id.eq(productCategory.product.id))
                 .where(product.isbn.in(isbnList)
                         .and(product.isDeleted.isFalse())
                         .and(product.isForcedOutOfStock.isFalse())
