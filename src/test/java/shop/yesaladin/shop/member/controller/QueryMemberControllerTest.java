@@ -1071,8 +1071,7 @@ class QueryMemberControllerTest {
                 memberId)));
 
         // when
-        ResultActions resultActions = mockMvc.perform(get("/v1/members")
-                .queryParam("type", "birthday")
+        ResultActions resultActions = mockMvc.perform(get("/v1/members/birthday")
                 .queryParam("laterDays", String.valueOf(laterDays))
                 .contentType(MediaType.APPLICATION_JSON)).andDo(print());
 
@@ -1089,8 +1088,6 @@ class QueryMemberControllerTest {
                 getDocumentRequest(),
                 getDocumentResponse(),
                 requestParameters(
-                        parameterWithName("type")
-                                .description("조회 조건을 생일(birthday)으로 지정 필수"),
                         parameterWithName("laterDays")
                                 .description("오늘 날짜를 기준으로 생일을 계산할 일수")
 

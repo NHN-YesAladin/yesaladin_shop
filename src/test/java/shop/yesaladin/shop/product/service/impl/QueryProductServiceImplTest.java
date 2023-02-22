@@ -1163,9 +1163,15 @@ class QueryProductServiceImplTest {
                         publish2.getProduct(),
                         publish2.getPublisher()
                 ));
-        Page<ProductRecentResponseDto> dto = service.findRecentViewProductById(List.of(1L), List.of(1L), PageRequest.of(0, 10));
+        Page<ProductRecentResponseDto> dto = service.findRecentViewProductById(
+                List.of(1L),
+                List.of(1L),
+                PageRequest.of(0, 10)
+        );
         assertThat(dto).hasSize(2);
+    }
 
+    @Test
     @DisplayName("주문서에 필요한 주문상품의 데이터 조회 실패 - 구매 불가능한 상품")
     void getByOrderProducts_fail_productNotAvailableToOrder_cannotOrder() {
         //given
