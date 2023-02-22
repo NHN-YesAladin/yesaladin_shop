@@ -1,4 +1,4 @@
-= 인증 서버 용 member 조회
+= 인증 서버 용 member 조회(link:index.html[뒤로가기])
 
 === loginId 기준 member 조회
 

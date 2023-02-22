@@ -1,4 +1,12 @@
-= Tag
+= Tag(link:index.html[뒤로가기])
+notification-api-docs
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+:sectnums:
 
 === 관리자용 태그 전체 조회
 

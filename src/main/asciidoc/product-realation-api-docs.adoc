@@ -1,4 +1,12 @@
-= Product Relation
+= Product Relation(link:index.html[뒤로가기])
+notification-api-docs
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+:sectnums:
 
 
 === 일반 사용자용 상품의 연관관계 전체 조회
