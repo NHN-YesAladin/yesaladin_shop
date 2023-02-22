@@ -83,12 +83,17 @@ class SearchAuthorControllerTest {
                                 parameterWithName("offset").description("페이지 위치"),
                                 parameterWithName("_csrf").description("csrf")
                         ),
-                        responseFields(fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                        responseFields(
+                                fieldWithPath("success").type(JsonFieldType.BOOLEAN)
                                         .description("성공 여부"),
                                 fieldWithPath("status").type(JsonFieldType.NUMBER)
                                         .description("상태"),
-                                fieldWithPath("data").type(JsonFieldType.OBJECT).description("null").optional(),
-                                fieldWithPath("errorMessages").type(JsonFieldType.ARRAY).description("에러 메시지"))
+                                fieldWithPath("data").type(JsonFieldType.OBJECT)
+                                        .description("null")
+                                        .optional(),
+                                fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                        .description("에러 메시지")
+                        )
                 ));
     }
 
@@ -124,12 +129,17 @@ class SearchAuthorControllerTest {
                                 parameterWithName("offset").description("페이지 위치"),
                                 parameterWithName("_csrf").description("csrf")
                         ),
-                        responseFields(fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                        responseFields(
+                                fieldWithPath("success").type(JsonFieldType.BOOLEAN)
                                         .description("성공 여부"),
                                 fieldWithPath("status").type(JsonFieldType.NUMBER)
                                         .description("상태"),
-                                fieldWithPath("data").type(JsonFieldType.OBJECT).description("null").optional(),
-                                fieldWithPath("errorMessages").type(JsonFieldType.ARRAY).description("에러 메시지"))
+                                fieldWithPath("data").type(JsonFieldType.OBJECT)
+                                        .description("null")
+                                        .optional(),
+                                fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                        .description("에러 메시지")
+                        )
                 ));
     }
 
@@ -165,12 +175,17 @@ class SearchAuthorControllerTest {
                                 parameterWithName("offset").description("페이지 위치"),
                                 parameterWithName("_csrf").description("csrf")
                         ),
-                        responseFields(fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                        responseFields(
+                                fieldWithPath("success").type(JsonFieldType.BOOLEAN)
                                         .description("성공 여부"),
                                 fieldWithPath("status").type(JsonFieldType.NUMBER)
                                         .description("상태"),
-                                fieldWithPath("data").type(JsonFieldType.OBJECT).description("null").optional(),
-                                fieldWithPath("errorMessages").type(JsonFieldType.ARRAY).description("에러 메시지"))
+                                fieldWithPath("data").type(JsonFieldType.OBJECT)
+                                        .description("null")
+                                        .optional(),
+                                fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                        .description("에러 메시지")
+                        )
                 ));
     }
 
@@ -216,15 +231,23 @@ class SearchAuthorControllerTest {
                                 parameterWithName("offset").description("페이지 위치"),
                                 parameterWithName("_csrf").description("csrf")
                         ),
-                        responseFields(fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                        responseFields(
+                                fieldWithPath("success").type(JsonFieldType.BOOLEAN)
                                         .description("성공 여부"),
                                 fieldWithPath("status").type(JsonFieldType.NUMBER)
                                         .description("상태"),
-                                fieldWithPath("errorMessages").type(JsonFieldType.ARRAY).description("null").optional(),
-                                fieldWithPath("data.count").type(JsonFieldType.NUMBER).description("총 갯수"),
-                                fieldWithPath("data.searchedAuthorDtoList.[].id").type(JsonFieldType.NUMBER).description("저자 id"),
-                                fieldWithPath("data.searchedAuthorDtoList.[].name").type(JsonFieldType.STRING).description("저자 이름"),
-                                fieldWithPath("data.searchedAuthorDtoList.[].loginId").type(JsonFieldType.STRING).description("저자 loginId"))
+                                fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                        .description("null")
+                                        .optional(),
+                                fieldWithPath("data.count").type(JsonFieldType.NUMBER)
+                                        .description("총 갯수"),
+                                fieldWithPath("data.searchedAuthorDtoList.[].id").type(JsonFieldType.NUMBER)
+                                        .description("저자 id"),
+                                fieldWithPath("data.searchedAuthorDtoList.[].name").type(
+                                        JsonFieldType.STRING).description("저자 이름"),
+                                fieldWithPath("data.searchedAuthorDtoList.[].loginId").type(
+                                        JsonFieldType.STRING).description("저자 loginId")
+                        )
                 ));
     }
 }

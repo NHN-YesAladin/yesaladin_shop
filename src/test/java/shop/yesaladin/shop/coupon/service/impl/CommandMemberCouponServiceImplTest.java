@@ -38,7 +38,8 @@ class CommandMemberCouponServiceImplTest {
                 List.of(LocalDate.now())
         );
 
-        when(insertMemberCouponRepository.insertMemberCoupon(List.of(couponRequestDto))).thenReturn(1);
+        when(insertMemberCouponRepository.insertMemberCoupon(List.of(couponRequestDto))).thenReturn(
+                1);
 
         //when
         MemberCouponResponseDto memberCoupons = commandMemberCouponService.createMemberCoupons(List.of(

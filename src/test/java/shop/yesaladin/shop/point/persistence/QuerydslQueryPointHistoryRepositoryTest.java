@@ -211,7 +211,9 @@ class QuerydslQueryPointHistoryRepositoryTest {
     }
 
     void setPointHistory(int save, int use, boolean sum) {
-        if(sum) entityManager.persist(createPointHistory(member, PointCode.SUM, PointReasonCode.SUM));
+        if (sum) {
+            entityManager.persist(createPointHistory(member, PointCode.SUM, PointReasonCode.SUM));
+        }
         for (int i = 0; i < save; i++) {
             entityManager.persist(createPointHistory(
                     member,

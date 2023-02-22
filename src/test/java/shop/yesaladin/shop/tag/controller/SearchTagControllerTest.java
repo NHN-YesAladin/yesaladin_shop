@@ -86,12 +86,17 @@ class SearchTagControllerTest {
                                 parameterWithName("offset").description("페이지 위치"),
                                 parameterWithName("_csrf").description("csrf")
                         ),
-                        responseFields(fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                        responseFields(
+                                fieldWithPath("success").type(JsonFieldType.BOOLEAN)
                                         .description("성공 여부"),
                                 fieldWithPath("status").type(JsonFieldType.NUMBER)
                                         .description("상태"),
-                                fieldWithPath("data").type(JsonFieldType.OBJECT).description("null").optional(),
-                                fieldWithPath("errorMessages").type(JsonFieldType.ARRAY).description("에러 메시지"))
+                                fieldWithPath("data").type(JsonFieldType.OBJECT)
+                                        .description("null")
+                                        .optional(),
+                                fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                        .description("에러 메시지")
+                        )
                 ));
     }
 
@@ -127,12 +132,17 @@ class SearchTagControllerTest {
                                 parameterWithName("offset").description("페이지 위치"),
                                 parameterWithName("_csrf").description("csrf")
                         ),
-                        responseFields(fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                        responseFields(
+                                fieldWithPath("success").type(JsonFieldType.BOOLEAN)
                                         .description("성공 여부"),
                                 fieldWithPath("status").type(JsonFieldType.NUMBER)
                                         .description("상태"),
-                                fieldWithPath("data").type(JsonFieldType.OBJECT).description("null").optional(),
-                                fieldWithPath("errorMessages").type(JsonFieldType.ARRAY).description("에러 메시지"))
+                                fieldWithPath("data").type(JsonFieldType.OBJECT)
+                                        .description("null")
+                                        .optional(),
+                                fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                        .description("에러 메시지")
+                        )
                 ));
     }
 
@@ -168,12 +178,17 @@ class SearchTagControllerTest {
                                 parameterWithName("offset").description("페이지 위치"),
                                 parameterWithName("_csrf").description("csrf")
                         ),
-                        responseFields(fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                        responseFields(
+                                fieldWithPath("success").type(JsonFieldType.BOOLEAN)
                                         .description("성공 여부"),
                                 fieldWithPath("status").type(JsonFieldType.NUMBER)
                                         .description("상태"),
-                                fieldWithPath("data").type(JsonFieldType.OBJECT).description("null").optional(),
-                                fieldWithPath("errorMessages").type(JsonFieldType.ARRAY).description("에러 메시지"))
+                                fieldWithPath("data").type(JsonFieldType.OBJECT)
+                                        .description("null")
+                                        .optional(),
+                                fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                        .description("에러 메시지")
+                        )
                 ));
     }
 
@@ -217,14 +232,21 @@ class SearchTagControllerTest {
                                 parameterWithName("offset").description("페이지 위치"),
                                 parameterWithName("_csrf").description("csrf")
                         ),
-                        responseFields(fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                        responseFields(
+                                fieldWithPath("success").type(JsonFieldType.BOOLEAN)
                                         .description("성공 여부"),
                                 fieldWithPath("status").type(JsonFieldType.NUMBER)
                                         .description("상태"),
-                                fieldWithPath("errorMessages").type(JsonFieldType.ARRAY).description("null").optional(),
-                                fieldWithPath("data.count").type(JsonFieldType.NUMBER).description("총 갯수"),
-                                fieldWithPath("data.searchedTagDtoList.[].id").type(JsonFieldType.NUMBER).description("태그 id"),
-                                fieldWithPath("data.searchedTagDtoList.[].name").type(JsonFieldType.STRING).description("태그 이름"))
+                                fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                        .description("null")
+                                        .optional(),
+                                fieldWithPath("data.count").type(JsonFieldType.NUMBER)
+                                        .description("총 갯수"),
+                                fieldWithPath("data.searchedTagDtoList.[].id").type(JsonFieldType.NUMBER)
+                                        .description("태그 id"),
+                                fieldWithPath("data.searchedTagDtoList.[].name").type(JsonFieldType.STRING)
+                                        .description("태그 이름")
+                        )
                 ));
     }
 }

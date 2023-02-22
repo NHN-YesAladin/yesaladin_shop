@@ -112,7 +112,10 @@ class QueryDslPublisherRepositoryTest {
         Publisher publisher = DummyPublisher.dummy();
         entityManager.persist(publisher);
 
-        Page<Publisher> result = repository.findByNameForManager(publisher.getName(), PageRequest.of(0, 10));
+        Page<Publisher> result = repository.findByNameForManager(
+                publisher.getName(),
+                PageRequest.of(0, 10)
+        );
 
         assertThat(result.getTotalElements()).isEqualTo(1);
         assertThat(result.getContent().get(0).getName()).contains(publisher.getName());

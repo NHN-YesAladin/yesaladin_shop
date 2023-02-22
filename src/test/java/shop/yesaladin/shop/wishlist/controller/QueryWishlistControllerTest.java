@@ -166,7 +166,8 @@ class QueryWishlistControllerTest {
                 getDocumentRequest(),
                 getDocumentResponse(),
                 requestParameters(parameterWithName("_csrf").description("csrf")),
-                responseFields(fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
+                responseFields(
+                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
                         fieldWithPath("success").type(JsonFieldType.BOOLEAN)
                                 .description("동작 성공 여부"),
                         fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
@@ -174,18 +175,30 @@ class QueryWishlistControllerTest {
                                 .optional(),
                         fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER)
                                 .description("전체페이지 수"),
-                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER).description("현재 페이지"),
-                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER).description("전체 데이터 수"),
-                        fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER).description("위시리스트에 등록된 상품의 id"),
-                        fieldWithPath("data.dataList.[].title").type(JsonFieldType.STRING).description("위시리스트에 등록된 상품의 제목"),
-                        fieldWithPath("data.dataList.[].thumbnailFileUrl").type(JsonFieldType.STRING).description("위시리스트에 등록된 상품의 썸네일 파일 url"),
-                        fieldWithPath("data.dataList.[].sellingPrice").type(JsonFieldType.NUMBER).description("위시리스트에 등록된 상품의 판매가"),
-                        fieldWithPath("data.dataList.[].rate").type(JsonFieldType.NUMBER).description("위시리스트에 등록된 상품의 할인율"),
-                        fieldWithPath("data.dataList.[].publisher").type(JsonFieldType.STRING).description("위시리스트에 등록된 상품의 출판사명"),
-                        fieldWithPath("data.dataList.[].author").type(JsonFieldType.ARRAY).description("위시리스트에 등록된 상품의 저자명 리스트"),
-                        fieldWithPath("data.dataList.[].isForcedOutOfStock").type(JsonFieldType.BOOLEAN).description("위시리스트에 등록된 상품의 강제 품절 상태"),
-                        fieldWithPath("data.dataList.[].quantity").type(JsonFieldType.NUMBER).description("위시리스트에 등록된 상품의 재고량"),
-                        fieldWithPath("data.dataList.[].registeredDateTime").type(JsonFieldType.STRING).description("위시리스트에 등록된 날짜")
+                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER)
+                                .description("현재 페이지"),
+                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER)
+                                .description("전체 데이터 수"),
+                        fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER)
+                                .description("위시리스트에 등록된 상품의 id"),
+                        fieldWithPath("data.dataList.[].title").type(JsonFieldType.STRING)
+                                .description("위시리스트에 등록된 상품의 제목"),
+                        fieldWithPath("data.dataList.[].thumbnailFileUrl").type(JsonFieldType.STRING)
+                                .description("위시리스트에 등록된 상품의 썸네일 파일 url"),
+                        fieldWithPath("data.dataList.[].sellingPrice").type(JsonFieldType.NUMBER)
+                                .description("위시리스트에 등록된 상품의 판매가"),
+                        fieldWithPath("data.dataList.[].rate").type(JsonFieldType.NUMBER)
+                                .description("위시리스트에 등록된 상품의 할인율"),
+                        fieldWithPath("data.dataList.[].publisher").type(JsonFieldType.STRING)
+                                .description("위시리스트에 등록된 상품의 출판사명"),
+                        fieldWithPath("data.dataList.[].author").type(JsonFieldType.ARRAY)
+                                .description("위시리스트에 등록된 상품의 저자명 리스트"),
+                        fieldWithPath("data.dataList.[].isForcedOutOfStock").type(JsonFieldType.BOOLEAN)
+                                .description("위시리스트에 등록된 상품의 강제 품절 상태"),
+                        fieldWithPath("data.dataList.[].quantity").type(JsonFieldType.NUMBER)
+                                .description("위시리스트에 등록된 상품의 재고량"),
+                        fieldWithPath("data.dataList.[].registeredDateTime").type(JsonFieldType.STRING)
+                                .description("위시리스트에 등록된 날짜")
                 )
         ));
     }
@@ -221,8 +234,10 @@ class QueryWishlistControllerTest {
                 "exists-wishlist-thr-member-not-found",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                requestParameters(parameterWithName("_csrf").description("csrf"),
-                        parameterWithName("productid").description("상품 id")),
+                requestParameters(
+                        parameterWithName("_csrf").description("csrf"),
+                        parameterWithName("productid").description("상품 id")
+                ),
                 responseFields(
                         fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
                         fieldWithPath("success").type(JsonFieldType.BOOLEAN)
@@ -265,8 +280,10 @@ class QueryWishlistControllerTest {
                 "exists-wishlist-success",
                 getDocumentRequest(),
                 getDocumentResponse(),
-                requestParameters(parameterWithName("_csrf").description("csrf"),
-                        parameterWithName("productid").description("상품 id")),
+                requestParameters(
+                        parameterWithName("_csrf").description("csrf"),
+                        parameterWithName("productid").description("상품 id")
+                ),
                 responseFields(
                         fieldWithPath("status").type(JsonFieldType.NUMBER).description("상태"),
                         fieldWithPath("success").type(JsonFieldType.BOOLEAN)
