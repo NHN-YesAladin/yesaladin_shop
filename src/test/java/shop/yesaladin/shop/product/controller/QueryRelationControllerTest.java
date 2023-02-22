@@ -1,5 +1,25 @@
 package shop.yesaladin.shop.product.controller;
 
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentRequest;
+import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
+
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,27 +47,6 @@ import shop.yesaladin.shop.product.dummy.DummyProduct;
 import shop.yesaladin.shop.product.dummy.DummyTotalDiscountRate;
 import shop.yesaladin.shop.product.service.inter.QueryRelationService;
 
-import java.time.Clock;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentRequest;
-import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
-
 @AutoConfigureRestDocs
 @WebMvcTest(QueryRelationController.class)
 class QueryRelationControllerTest {
@@ -55,19 +54,16 @@ class QueryRelationControllerTest {
     private final Long PRODUCT_ID = 1L;
     private final String ISBN = "000000000000";
     private final String URL = "https://api-storage.cloud.toast.com/v1/AUTH_/container/domain/type";
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @MockBean
-    private QueryRelationService service;
-
+    private final List<Product> products = new ArrayList<>();
     Clock clock = Clock.fixed(
             Instant.parse("2023-03-10T00:00:00.000Z"),
             ZoneId.of("UTC")
     );
+    @Autowired
+    private MockMvc mockMvc;
+    @MockBean
+    private QueryRelationService service;
     private TotalDiscountRate totalDiscountRate;
-    private final List<Product> products = new ArrayList<>();
 
     @BeforeEach
     void setUp() {
@@ -122,10 +118,14 @@ class QueryRelationControllerTest {
                 .totalDataCount(page.getTotalElements())
                 .dataList(relations)
                 .build();
-        Mockito.when(service.findAllForManager(PRODUCT_ID, PageRequest.of(0, 5))).thenReturn(paginated);
+        Mockito.when(service.findAllForManager(PRODUCT_ID, PageRequest.of(0, 5)))
+                .thenReturn(paginated);
 
         // when
-        ResultActions result = mockMvc.perform(get("/v1/products/{productId}/relations/manager", PRODUCT_ID)
+        ResultActions result = mockMvc.perform(get(
+                "/v1/products/{productId}/relations/manager",
+                PRODUCT_ID
+        )
                 .param("page", "0")
                 .param("size", "5")
                 .contentType(MediaType.APPLICATION_JSON));
@@ -147,20 +147,35 @@ class QueryRelationControllerTest {
                         parameterWithName("page").description("페이지네이션 페이지 번호")
                 ),
                 responseFields(
-                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("동작 성공 여부"),
-                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("HTTP 상태 코드"),
-                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER).description("전체 페이지"),
-                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER).description("현재 페이지"),
-                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER).description("데이터 개수"),
-                        fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER).description("Sub 상품의 아이디"),
-                        fieldWithPath("data.dataList.[].thumbnailFileUrl").type(JsonFieldType.STRING).description("Sub 상품의 썸네일"),
-                        fieldWithPath("data.dataList.[].title").type(JsonFieldType.STRING).description("Sub 상품의 제목"),
-                        fieldWithPath("data.dataList.[].authors").type(JsonFieldType.ARRAY).description("Sub 상품의 저자"),
-                        fieldWithPath("data.dataList.[].publisher").type(JsonFieldType.STRING).description("Sub 상품의 출판사"),
-                        fieldWithPath("data.dataList.[].publishedDate").type(JsonFieldType.STRING).description("Sub 상품의 출판일"),
-                        fieldWithPath("data.dataList.[].sellingPrice").type(JsonFieldType.NUMBER).description("Sub 상품의 판매가"),
-                        fieldWithPath("data.dataList.[].rate").type(JsonFieldType.NUMBER).description("Sub 상품의 할인율"),
-                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY).description("에러 메세지").optional()
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("HTTP 상태 코드"),
+                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER)
+                                .description("전체 페이지"),
+                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER)
+                                .description("현재 페이지"),
+                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER)
+                                .description("데이터 개수"),
+                        fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER)
+                                .description("Sub 상품의 아이디"),
+                        fieldWithPath("data.dataList.[].thumbnailFileUrl").type(JsonFieldType.STRING)
+                                .description("Sub 상품의 썸네일"),
+                        fieldWithPath("data.dataList.[].title").type(JsonFieldType.STRING)
+                                .description("Sub 상품의 제목"),
+                        fieldWithPath("data.dataList.[].authors").type(JsonFieldType.ARRAY)
+                                .description("Sub 상품의 저자"),
+                        fieldWithPath("data.dataList.[].publisher").type(JsonFieldType.STRING)
+                                .description("Sub 상품의 출판사"),
+                        fieldWithPath("data.dataList.[].publishedDate").type(JsonFieldType.STRING)
+                                .description("Sub 상품의 출판일"),
+                        fieldWithPath("data.dataList.[].sellingPrice").type(JsonFieldType.NUMBER)
+                                .description("Sub 상품의 판매가"),
+                        fieldWithPath("data.dataList.[].rate").type(JsonFieldType.NUMBER)
+                                .description("Sub 상품의 할인율"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
+                                .optional()
                 )
         ));
     }
@@ -223,20 +238,35 @@ class QueryRelationControllerTest {
                         parameterWithName("page").description("페이지네이션 페이지 번호")
                 ),
                 responseFields(
-                        fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("동작 성공 여부"),
-                        fieldWithPath("status").type(JsonFieldType.NUMBER).description("HTTP 상태 코드"),
-                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER).description("전체 페이지"),
-                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER).description("현재 페이지"),
-                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER).description("데이터 개수"),
-                        fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER).description("Sub 상품의 아이디"),
-                        fieldWithPath("data.dataList.[].thumbnailFileUrl").type(JsonFieldType.STRING).description("Sub 상품의 썸네일"),
-                        fieldWithPath("data.dataList.[].title").type(JsonFieldType.STRING).description("Sub 상품의 제목"),
-                        fieldWithPath("data.dataList.[].authors").type(JsonFieldType.ARRAY).description("Sub 상품의 저자"),
-                        fieldWithPath("data.dataList.[].publisher").type(JsonFieldType.STRING).description("Sub 상품의 출판사"),
-                        fieldWithPath("data.dataList.[].publishedDate").type(JsonFieldType.STRING).description("Sub 상품의 출판일"),
-                        fieldWithPath("data.dataList.[].sellingPrice").type(JsonFieldType.NUMBER).description("Sub 상품의 판매가"),
-                        fieldWithPath("data.dataList.[].rate").type(JsonFieldType.NUMBER).description("Sub 상품의 할인율"),
-                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY).description("에러 메세지").optional()
+                        fieldWithPath("success").type(JsonFieldType.BOOLEAN)
+                                .description("동작 성공 여부"),
+                        fieldWithPath("status").type(JsonFieldType.NUMBER)
+                                .description("HTTP 상태 코드"),
+                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER)
+                                .description("전체 페이지"),
+                        fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER)
+                                .description("현재 페이지"),
+                        fieldWithPath("data.totalDataCount").type(JsonFieldType.NUMBER)
+                                .description("데이터 개수"),
+                        fieldWithPath("data.dataList.[].id").type(JsonFieldType.NUMBER)
+                                .description("Sub 상품의 아이디"),
+                        fieldWithPath("data.dataList.[].thumbnailFileUrl").type(JsonFieldType.STRING)
+                                .description("Sub 상품의 썸네일"),
+                        fieldWithPath("data.dataList.[].title").type(JsonFieldType.STRING)
+                                .description("Sub 상품의 제목"),
+                        fieldWithPath("data.dataList.[].authors").type(JsonFieldType.ARRAY)
+                                .description("Sub 상품의 저자"),
+                        fieldWithPath("data.dataList.[].publisher").type(JsonFieldType.STRING)
+                                .description("Sub 상품의 출판사"),
+                        fieldWithPath("data.dataList.[].publishedDate").type(JsonFieldType.STRING)
+                                .description("Sub 상품의 출판일"),
+                        fieldWithPath("data.dataList.[].sellingPrice").type(JsonFieldType.NUMBER)
+                                .description("Sub 상품의 판매가"),
+                        fieldWithPath("data.dataList.[].rate").type(JsonFieldType.NUMBER)
+                                .description("Sub 상품의 할인율"),
+                        fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
+                                .description("에러 메세지")
+                                .optional()
                 )
         ));
     }

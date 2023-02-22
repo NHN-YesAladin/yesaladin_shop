@@ -42,7 +42,8 @@ public class CommandMemberCouponController {
             for (int j = 0; j < requestDtoList.get(i).getCouponCodes().size(); j++) {
                 log.info(
                         "==== [COUPON] register member coupon {} to {} ====",
-                        requestDtoList.get(i).getCouponCodes().get(j), requestDtoList.get(i).getMemberId()
+                        requestDtoList.get(i).getCouponCodes().get(j),
+                        requestDtoList.get(i).getMemberId()
                 );
             }
         }

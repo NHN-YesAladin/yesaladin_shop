@@ -41,6 +41,8 @@ import shop.yesaladin.shop.coupon.service.inter.QueryMemberCouponService;
 @Service
 public class QueryMemberCouponServiceImpl implements QueryMemberCouponService {
 
+    private static final ParameterizedTypeReference<ResponseDto<List<MemberCouponSummaryDto>>> COUPON_SUMMARY = new ParameterizedTypeReference<>() {
+    };
     private final QueryMemberCouponRepository memberCouponRepository;
     private final GatewayProperties gatewayProperties;
     private final RestTemplate restTemplate;
@@ -130,9 +132,6 @@ public class QueryMemberCouponServiceImpl implements QueryMemberCouponService {
                 .collect(Collectors.toList());
         return new PageImpl<>(couponCodes, pageable, memberCouponList.getTotalElements());
     }
-
-    private static final ParameterizedTypeReference<ResponseDto<List<MemberCouponSummaryDto>>> COUPON_SUMMARY = new ParameterizedTypeReference<>() {
-    };
 
     private ResponseDto<List<MemberCouponSummaryDto>> tryGetCouponSummary(List<String> memberCouponCodeList) {
 

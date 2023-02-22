@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.writing.service.impl;
 
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,8 +14,6 @@ import shop.yesaladin.shop.writing.domain.repository.QueryAuthorRepository;
 import shop.yesaladin.shop.writing.dto.AuthorRequestDto;
 import shop.yesaladin.shop.writing.dto.AuthorResponseDto;
 import shop.yesaladin.shop.writing.service.inter.CommandAuthorService;
-
-import java.util.Objects;
 
 /**
  * 저자 생성/수정/삭제를 위한 Service 구현체 입니다.
@@ -77,9 +76,8 @@ public class CommandAuthorServiceImpl implements CommandAuthorService {
     }
 
     /**
-     * loginId에 해당하는 멤버 엔터티를 조회해 반환하며,
-     * 존재하지 않는 아이디인 경우 MemberNotFoundException를 던지고,
-     * loginId가 null인 경우 멤버 엔터티를 null로 반환합니다.
+     * loginId에 해당하는 멤버 엔터티를 조회해 반환하며, 존재하지 않는 아이디인 경우 MemberNotFoundException를 던지고, loginId가 null인
+     * 경우 멤버 엔터티를 null로 반환합니다.
      *
      * @param loginId 찾을 로그인 아이디
      * @return 조회한 멤버 엔터티

@@ -14,6 +14,7 @@ import org.mockito.Mockito;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberGrade;
@@ -23,6 +24,7 @@ import shop.yesaladin.shop.member.dto.MemberDto;
 import shop.yesaladin.shop.member.dto.MemberGradeQueryResponseDto;
 import shop.yesaladin.shop.member.dto.MemberLoginResponseDto;
 import shop.yesaladin.shop.member.dto.MemberManagerResponseDto;
+import shop.yesaladin.shop.member.dto.MemberOrderSheetResponseDto;
 import shop.yesaladin.shop.member.dto.MemberQueryResponseDto;
 import shop.yesaladin.shop.member.dto.MemberStatisticsResponseDto;
 import shop.yesaladin.shop.member.dummy.MemberDummy;
@@ -75,6 +77,33 @@ class QueryMemberServiceImplTest {
         //then
         assertThat(actualMember.getId()).isEqualTo(expectedMember.getId());
     }
+
+    @Test
+    void findByLoginId_fail_memberNotFound() {
+        //given
+        String loginId = "user@1";
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
+                .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, ""));
+
+        //when, then
+        assertThatThrownBy(() -> service.findByLoginId(loginId)).isInstanceOf(ClientException.class);
+    }
+
+    @Test
+    void findByLoginId_success() {
+        //given
+        String loginId = "user@1";
+        Mockito.when(queryMemberRepository.findMemberByLoginId(loginId))
+                .thenReturn(Optional.of(MemberDummy.dummyWithLoginIdAndId(loginId)));
+
+        //when
+        Member result = service.findByLoginId(loginId);
+
+        //then
+        assertThat(result).isNotNull();
+        assertThat(result.getLoginId()).isEqualTo(loginId);
+    }
+
 
     @Test
     void findMemberByNickname_failed_whenMemberNotFound() throws Exception {
@@ -220,7 +249,10 @@ class QueryMemberServiceImplTest {
         assertThat(result.getContent()).hasSize(1);
         assertThat(result.getNumber()).isZero();
         assertThat(result.getContent().get(0).getLoginId()).isEqualTo(loginId);
-        verify(queryMemberRepository, atLeastOnce()).findMemberManagersByLoginId(loginId, PageRequest.of(0, 10));
+        verify(queryMemberRepository, atLeastOnce()).findMemberManagersByLoginId(
+                loginId,
+                PageRequest.of(0, 10)
+        );
     }
 
 
@@ -492,6 +524,40 @@ class QueryMemberServiceImplTest {
         assertThat(result.getGrade()).isEqualTo(member.getMemberGrade().getName());
         assertThat(result.getGender()).isEqualTo(
                 member.getMemberGenderCode().getGender() == 1 ? "남" : "여");
+    }
+
+    @Test
+    void getMemberForOrder_fail_memberNotFound() {
+        //given
+        String loginId = "user@1";
+        Mockito.when(queryMemberRepository.getMemberOrderData(loginId))
+                .thenThrow(new ClientException(ErrorCode.MEMBER_NOT_FOUND, ""));
+
+        //when, then
+        assertThatThrownBy(() -> service.getMemberForOrder(loginId)).isInstanceOf(ClientException.class);
+    }
+
+    @Test
+    void getMemberForOrder_success() {
+        //given
+        String name = "user";
+        String phoneNumber = "01012341234";
+        int count = 4;
+
+        String loginId = "user@1";
+
+        Mockito.when(queryMemberRepository.getMemberOrderData(loginId))
+                .thenReturn(Optional.of(new MemberOrderSheetResponseDto(name, phoneNumber, count)));
+
+        //when
+        MemberOrderSheetResponseDto result = service.getMemberForOrder(loginId);
+
+        // then
+        assertThat(result).isNotNull();
+        assertThat(result.getName()).isEqualTo(name);
+        assertThat(result.getPhoneNumber()).isEqualTo(phoneNumber);
+        assertThat(result.getCouponCount()).isEqualTo(count);
+
     }
 
     @Test

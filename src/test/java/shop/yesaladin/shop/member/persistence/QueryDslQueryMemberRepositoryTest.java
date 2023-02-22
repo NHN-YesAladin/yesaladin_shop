@@ -125,7 +125,10 @@ class QueryDslQueryMemberRepositoryTest {
         //then
         assertThat(memberList.getTotalElements()).isEqualTo(2);
         assertThat(memberList.getContent()).hasSize(1);
-        assertThat(memberList.getContent().get(0).getLoginId().contains(member.getLoginId())).isTrue();
+        assertThat(memberList.getContent()
+                .get(0)
+                .getLoginId()
+                .contains(member.getLoginId())).isTrue();
     }
 
     @Test
@@ -138,7 +141,10 @@ class QueryDslQueryMemberRepositoryTest {
         //then
         assertThat(memberList.getTotalElements()).isEqualTo(1);
         assertThat(memberList.getContent()).hasSize(1);
-        assertThat(memberList.getContent().get(0).getLoginId().contains(member.getLoginId())).isTrue();
+        assertThat(memberList.getContent()
+                .get(0)
+                .getLoginId()
+                .contains(member.getLoginId())).isTrue();
     }
 
     @Test
@@ -151,7 +157,10 @@ class QueryDslQueryMemberRepositoryTest {
         //then
         assertThat(memberList.getTotalElements()).isEqualTo(1);
         assertThat(memberList.getContent()).hasSize(1);
-        assertThat(memberList.getContent().get(0).getNickname().contains(member.getNickname())).isTrue();
+        assertThat(memberList.getContent()
+                .get(0)
+                .getNickname()
+                .contains(member.getNickname())).isTrue();
     }
 
     @Test
@@ -173,7 +182,7 @@ class QueryDslQueryMemberRepositoryTest {
         Page<MemberManagerResponseDto> memberList = queryMemberRepository.findMemberManagersByName(
                 member.getName().substring(0, 1),
                 PageRequest.of(0, 1)
-                );
+        );
         //then
         assertThat(memberList.getTotalElements()).isEqualTo(1);
         assertThat(memberList.getContent()).hasSize(1);

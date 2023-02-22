@@ -1,12 +1,11 @@
 package shop.yesaladin.shop.order.domain.model;
 
+import java.util.Arrays;
+import java.util.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.exception.ClientException;
-
-import java.util.Arrays;
-import java.util.Optional;
 
 /**
  * 주문 상태 코드입니다.

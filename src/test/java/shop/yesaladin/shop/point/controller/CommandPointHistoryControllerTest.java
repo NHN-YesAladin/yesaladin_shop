@@ -41,7 +41,6 @@ import shop.yesaladin.shop.point.domain.model.PointCode;
 import shop.yesaladin.shop.point.domain.model.PointReasonCode;
 import shop.yesaladin.shop.point.dto.PointHistoryRequestDto;
 import shop.yesaladin.shop.point.dto.PointHistoryResponseDto;
-import shop.yesaladin.shop.point.exception.OverPointUseException;
 import shop.yesaladin.shop.point.service.inter.CommandPointHistoryService;
 
 @AutoConfigureRestDocs
@@ -56,6 +55,18 @@ class CommandPointHistoryControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    private static PointHistoryRequestDto getPointHistoryRequest(
+            String loginId,
+            Long amount,
+            PointReasonCode pointReasonCode
+    ) {
+        return new PointHistoryRequestDto(
+                loginId,
+                amount,
+                pointReasonCode
+        );
+    }
 
     @WithMockUser(username = "user@1")
     @Test
@@ -168,18 +179,6 @@ class CommandPointHistoryControllerTest {
         ));
     }
 
-    private static PointHistoryRequestDto getPointHistoryRequest(
-            String loginId,
-            Long amount,
-            PointReasonCode pointReasonCode
-    ) {
-        return new PointHistoryRequestDto(
-                loginId,
-                amount,
-                pointReasonCode
-        );
-    }
-
     @WithMockUser(username = "user@1")
     @Test
     @DisplayName("포인트 사용 실패 - 존재하지 않는 회원 아이디인 경우")
@@ -259,7 +258,8 @@ class CommandPointHistoryControllerTest {
 
         PointHistoryRequestDto request = getPointHistoryRequest(loginId, amount, pointReasonCode);
 
-        Mockito.when(commandPointHistoryService.use(any())).thenThrow(new OverPointUseException());
+        Mockito.when(commandPointHistoryService.use(any()))
+                .thenThrow(new ClientException(ErrorCode.POINT_OVER_USE, ""));
 
         //when
         ResultActions result = mockMvc.perform(post("/v1/points")

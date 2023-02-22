@@ -3,12 +3,21 @@
 === 파일 업로드
 
 ==== curl
-include::{snippets}/file-upload/curl-request.adoc[]
+```bash
+$ curl 'https://api.yesaladin.shop/v1/files/file-upload/domain/type?_csrf=0433e470-49a9-4f07-b0ec-fcd380be7153' -i -X POST \
+    -d '�PNG
+```
 
 ==== request
 
 ===== Example
-include::{snippets}/file-upload/http-request.adoc[]
+```
+POST /v1/files/file-upload/domain/type?_csrf=0433e470-49a9-4f07-b0ec-fcd380be7153 HTTP/1.1
+Content-Length: 1359445
+Host: api.yesaladin.shop
+
+�PNG
+```
 
 ===== response
 

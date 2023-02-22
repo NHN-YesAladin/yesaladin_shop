@@ -1,5 +1,6 @@
 package shop.yesaladin.shop.writing.persistence;
 
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
@@ -12,14 +13,12 @@ import shop.yesaladin.shop.writing.domain.repository.SearchAuthorRepository;
 import shop.yesaladin.shop.writing.dto.SearchedAuthorResponseDto;
 import shop.yesaladin.shop.writing.dto.SearchedAuthorResponseDto.SearchedAuthorDto;
 
-import java.util.stream.Collectors;
-
 @RequiredArgsConstructor
 @Repository
 public class ElasticAuthorRepository implements SearchAuthorRepository {
 
-    private final ElasticsearchOperations elasticsearchOperations;
     private static final String NAME = "name";
+    private final ElasticsearchOperations elasticsearchOperations;
 
     @Override
     public SearchedAuthorResponseDto searchAuthorByName(String name, int offset, int size) {

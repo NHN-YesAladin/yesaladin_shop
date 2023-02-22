@@ -30,6 +30,7 @@ import shop.yesaladin.shop.file.domain.model.File;
 @Table(name = "review_images")
 @Entity
 public class ReviewImage {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -120,7 +120,7 @@ class QueryCategoryServiceTest {
 
         Category category = CategoryDummy.dummyParent(id);
 
-        String errorMessage =  "Category not found with id : " + category.getId();
+        String errorMessage = "Category not found with id : " + category.getId();
         when(queryCategoryRepository.findById(any())).thenThrow(new ClientException(
                 ErrorCode.CATEGORY_NOT_FOUND,
                 errorMessage
@@ -128,8 +128,6 @@ class QueryCategoryServiceTest {
 
         //when
         assertThatCode(() -> queryCategoryService.findCategoryById(id)).isInstanceOf(ClientException.class);
-
-
 
         //then
         verify(queryCategoryRepository, times(1)).findById(longArgumentCaptor.capture());

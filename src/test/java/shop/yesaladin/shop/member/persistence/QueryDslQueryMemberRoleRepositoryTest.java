@@ -26,13 +26,11 @@ class QueryDslQueryMemberRoleRepositoryTest {
 
     @PersistenceContext
     EntityManager entityManager;
-
-    @Autowired
-    private QueryDslQueryMemberRoleRepository queryMemberRoleRepository;
-
     Member member;
     Role role;
     MemberRole memberRole;
+    @Autowired
+    private QueryDslQueryMemberRoleRepository queryMemberRoleRepository;
 
     @BeforeEach
     void setUp() {

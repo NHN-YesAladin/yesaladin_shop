@@ -1,14 +1,14 @@
 package shop.yesaladin.shop.publish.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
 public class SearchPublisherRequestDto {
+
     String name;
 
     @Min(value = 0)

@@ -50,7 +50,8 @@ public class CommandPublishServiceImpl implements CommandPublishService {
         if (!queryPublishRepository.existsByProduct(product)) {
             throw new ClientException(
                     ErrorCode.PUBLISH_NOT_FOUND,
-                    "Publish not found with id : " + product.getId());
+                    "Publish not found with id : " + product.getId()
+            );
         }
         commandPublishRepository.deleteByProduct(product);
     }

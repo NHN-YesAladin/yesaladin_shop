@@ -29,9 +29,8 @@ public class MemberCreateResponseDto {
      * Member Entity를 MemberCreateResponse DTO로 변한하기 위한 메서드 입니다.
      *
      * @param member Repository에서 등록된 결과 엔티티 입니다.
-     * @return 결과로 반환된 엔티티의 일부 데이터를 사용하여 Response DTO로 반환합니다.
-     *          회원 가입 시 회원의 등급은 WHITE 등급으로 고정되는 결과 입니다.
-     *          이 Dto는 회원 가입 기능에만 사용되는 dto 입니다.
+     * @return 결과로 반환된 엔티티의 일부 데이터를 사용하여 Response DTO로 반환합니다. 회원 가입 시 회원의 등급은 WHITE 등급으로 고정되는 결과
+     * 입니다. 이 Dto는 회원 가입 기능에만 사용되는 dto 입니다.
      * @author 송학현
      * @since 1.0
      */

@@ -137,7 +137,10 @@ public interface QueryMemberService {
      * @author 김선홍
      * @since 1.0
      */
-    Page<MemberManagerResponseDto> findMemberManagesBySignUpDate(LocalDate signUpDate, Pageable pageable);
+    Page<MemberManagerResponseDto> findMemberManagesBySignUpDate(
+            LocalDate signUpDate,
+            Pageable pageable
+    );
 
     /**
      * n 일 후가 생일인 회원의 목록을 조회합니다.

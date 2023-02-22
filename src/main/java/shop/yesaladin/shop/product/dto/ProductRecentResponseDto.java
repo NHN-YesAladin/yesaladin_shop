@@ -1,12 +1,11 @@
 package shop.yesaladin.shop.product.dto;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.yesaladin.shop.product.domain.model.Product;
-
-import java.util.List;
 
 /**
  * 최근 본 상품과 신간 상품 Response Dto
@@ -30,7 +29,13 @@ public class ProductRecentResponseDto {
     private Boolean isForcedOutOfStock;
     private Long quantity;
 
-    public static ProductRecentResponseDto fromEntity(Product product, Long sellingPrice, int rate, String publisher, List<String> author) {
+    public static ProductRecentResponseDto fromEntity(
+            Product product,
+            Long sellingPrice,
+            int rate,
+            String publisher,
+            List<String> author
+    ) {
         return ProductRecentResponseDto.builder()
                 .id(product.getId())
                 .title(product.getTitle())

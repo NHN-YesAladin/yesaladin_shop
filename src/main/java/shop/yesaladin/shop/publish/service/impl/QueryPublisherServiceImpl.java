@@ -1,5 +1,7 @@
 package shop.yesaladin.shop.publish.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,9 +14,6 @@ import shop.yesaladin.shop.publish.domain.model.Publisher;
 import shop.yesaladin.shop.publish.domain.repository.QueryPublisherRepository;
 import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
 import shop.yesaladin.shop.publish.service.inter.QueryPublisherService;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 출판사 조회를 위한 Service 구현체 입니다.
@@ -37,9 +36,13 @@ public class QueryPublisherServiceImpl implements QueryPublisherService {
         Publisher publisher = queryPublisherRepository.findById(id)
                 .orElseThrow(() -> new ClientException(
                         ErrorCode.PUBLISH_PUBLISHER_NOT_FOUND,
-                        "Publisher not found with id : " + id));
+                        "Publisher not found with id : " + id
+                ));
 
-        return PublisherResponseDto.builder().id(publisher.getId()).name(publisher.getName()).build();
+        return PublisherResponseDto.builder()
+                .id(publisher.getId())
+                .name(publisher.getName())
+                .build();
     }
 
     /**
@@ -60,13 +63,19 @@ public class QueryPublisherServiceImpl implements QueryPublisherService {
             String name,
             Pageable pageable
     ) {
-        return getPublisherResponseDto(queryPublisherRepository.findByNameForManager(name, pageable));
+        return getPublisherResponseDto(queryPublisherRepository.findByNameForManager(
+                name,
+                pageable
+        ));
     }
 
     private PaginatedResponseDto<PublisherResponseDto> getPublisherResponseDto(Page<Publisher> page) {
         List<PublisherResponseDto> publishers = new ArrayList<>();
         for (Publisher publisher : page.getContent()) {
-            publishers.add(PublisherResponseDto.builder().id(publisher.getId()).name(publisher.getName()).build());
+            publishers.add(PublisherResponseDto.builder()
+                    .id(publisher.getId())
+                    .name(publisher.getName())
+                    .build());
         }
 
         return PaginatedResponseDto.<PublisherResponseDto>builder()

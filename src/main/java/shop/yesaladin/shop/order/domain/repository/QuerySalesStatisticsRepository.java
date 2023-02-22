@@ -1,9 +1,8 @@
 package shop.yesaladin.shop.order.domain.repository;
 
+import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import shop.yesaladin.shop.order.dto.SalesStatisticsMyBatisResponseDto;
-
-import java.util.List;
 
 /**
  * 매출 통계 정보를 조회하기 위한 MyBatis Repository 입니다.
@@ -28,7 +27,8 @@ public interface QuerySalesStatisticsRepository {
             @Param("start") String start,
             @Param("end") String end,
             @Param("limit") int limit,
-            @Param("offset") long offset);
+            @Param("offset") long offset
+    );
 
     /**
      * 기간에 따른 매출 통계의 총 데이터 개수를 조회합니다.
