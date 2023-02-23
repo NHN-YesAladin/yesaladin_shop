@@ -75,38 +75,43 @@ public class CommandPaymentServiceImpl implements CommandPaymentService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public PaymentCompleteSimpleResponseDto confirmTossRequest(PaymentRequestDto requestDto) {
-        // 이미 입력되어있지 않은 주문이라면 결제 승인 처리를 할 필요가 없으므로 예외처리
-        Order order = queryOrderService.getOrderByNumber(requestDto.getOrderId());
-
-        applicationEventPublisher.publishEvent(new PaymentEventDto(requestDto.getPaymentKey()));
-        JsonNode responseFromToss = getResponseFromToss(requestDto);
-
-        // 결제 정보 insert
-        Payment payment = commandPaymentRepository.save(Payment.toEntity(responseFromToss, order));
-
+        Order order = null;
         PaymentCompleteSimpleResponseDto responseDto;
-        if (payment.getMethod().equals(PaymentCode.EASY_PAY)) {
-            responseDto = PaymentCompleteSimpleResponseDto.fromEntityByEasyPay(payment);
-        } else {
-            responseDto = PaymentCompleteSimpleResponseDto.fromEntityByCard(payment);
+        try {
+            // 이미 입력되어있지 않은 주문이라면 결제 승인 처리를 할 필요가 없으므로 예외처리
+            order = queryOrderService.getOrderByNumber(requestDto.getOrderId());
+
+            JsonNode responseFromToss = getResponseFromToss(requestDto);
+
+            // 결제 정보 insert
+            Payment payment = commandPaymentRepository.save(Payment.toEntity(responseFromToss, order));
+
+            if (payment.getMethod().equals(PaymentCode.EASY_PAY)) {
+                responseDto = PaymentCompleteSimpleResponseDto.fromEntityByEasyPay(payment);
+            } else {
+                responseDto = PaymentCompleteSimpleResponseDto.fromEntityByCard(payment);
+            }
+
+            // 주문 상태 로그 추가 - 입금 완료 상태
+            commandOrderStatusChangeLogService.appendOrderStatusChangeLog(
+                    LocalDateTime.now(),
+                    order,
+                    OrderStatusCode.DEPOSIT
+            );
+
+            // 배송 요청
+            applicationEventPublisher.publishEvent(new DeliveryEventDto(order.getId()));
+
+            // 주문 상태 로그 추가 - 배송 준비 상태
+            commandOrderStatusChangeLogService.appendOrderStatusChangeLog(
+                    LocalDateTime.now().plusSeconds(1L),
+                    order,
+                    OrderStatusCode.READY
+            );
+        } catch (Exception e) {
+            applicationEventPublisher.publishEvent(new PaymentEventDto(requestDto.getPaymentKey()));
+            throw new PaymentFailException(e.getMessage(), "ERROR");
         }
-
-        // 주문 상태 로그 추가 - 입금 완료 상태
-        commandOrderStatusChangeLogService.appendOrderStatusChangeLog(
-                LocalDateTime.now(),
-                order,
-                OrderStatusCode.DEPOSIT
-        );
-
-        // 배송 요청
-        applicationEventPublisher.publishEvent(new DeliveryEventDto(order.getId()));
-
-        // 주문 상태 로그 추가 - 배송 준비 상태
-        commandOrderStatusChangeLogService.appendOrderStatusChangeLog(
-                LocalDateTime.now().plusSeconds(1L),
-                order,
-                OrderStatusCode.READY
-        );
 
         return getPaymentResponseDto(order, responseDto);
     }
