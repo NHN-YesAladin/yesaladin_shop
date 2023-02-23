@@ -15,7 +15,7 @@
     <name>shop</name>
     <description>shop</description>
     <build>
-        <finalName>yesaladin-shop-rest</finalName>
+        <finalName>yesaladin-shop-rest-event</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

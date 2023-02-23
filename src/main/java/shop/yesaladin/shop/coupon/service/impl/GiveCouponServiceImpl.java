@@ -16,7 +16,6 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,6 +40,7 @@ import shop.yesaladin.shop.coupon.domain.repository.CommandMemberCouponRepositor
 import shop.yesaladin.shop.coupon.domain.repository.QueryMemberCouponRepository;
 import shop.yesaladin.shop.coupon.dto.CouponGroupAndLimitDto;
 import shop.yesaladin.shop.coupon.dto.RequestIdOnlyDto;
+import shop.yesaladin.shop.coupon.event.SendGiveMessageEvent;
 import shop.yesaladin.shop.coupon.service.inter.GiveCouponService;
 import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
@@ -260,16 +260,7 @@ public class GiveCouponServiceImpl implements GiveCouponService {
                 .couponId(couponId)
                 .build();
 
-        RequestEntity<CouponGiveRequestMessage> body = RequestEntity.post(
-                        gatewayProperties.getCouponUrl() + "/give/request")
-                .body(giveRequestMessage);
-
-        ResponseEntity<CouponGiveRequestResponseMessage> response = restTemplate.exchange(
-                body,
-                CouponGiveRequestResponseMessage.class
-        );
-
-        giveCouponToMember(response.getBody());
+        eventPublisher.publishEvent(new SendGiveMessageEvent(this, giveRequestMessage));
     }
 
     private void checkRequestSucceeded(CouponGiveRequestResponseMessage responseMessage) {
