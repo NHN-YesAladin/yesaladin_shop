@@ -19,7 +19,7 @@ public class SignUpEventHandler implements ApplicationListener<SignUpEvent> {
     @Override
     public void onApplicationEvent(@NonNull SignUpEvent event) {
         try {
-            giveCouponService.sendCouponGiveRequest(
+            giveCouponService.requestGiveCoupon(
                     event.getMemberId(),
                     TriggerTypeCode.SIGN_UP,
                     null, LocalDateTime.now()
