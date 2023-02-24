@@ -84,19 +84,10 @@ public class GiveCouponServiceImpl implements GiveCouponService {
                 checkMonthlyCouponIssueRequestTime(requestDateTime);
             }
 
-            if (Objects.nonNull(couponId)) {    // 수동 발행 타입 쿠폰을 요청하는 경우
-                registerIssueRequest(memberId, triggerTypeCode.name(), couponId.toString());
-            }
             List<CouponGroupAndLimitDto> couponGroupAndLimitList = getCouponGroupAndLimit(
                     triggerTypeCode,
                     couponId
             );
-
-            List<String> couponGroupCodeList = couponGroupAndLimitList.stream()
-                    .map(CouponGroupAndLimitDto::getCouponGroupCode)
-                    .collect(Collectors.toList());
-
-            checkMemberAlreadyHasCoupon(memberId, triggerTypeCode, couponId, couponGroupCodeList);
 
             List<CouponGiveRequestResponseMessage> responseMessageList = new ArrayList<>();
 
