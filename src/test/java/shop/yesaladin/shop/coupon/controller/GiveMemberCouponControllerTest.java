@@ -65,7 +65,7 @@ class GiveMemberCouponControllerTest {
                 .andExpect(jsonPath("$.data").isEmpty())
                 .andExpect(jsonPath("$.errorMessages").isEmpty());
         Mockito.verify(giveCouponService, Mockito.times(1))
-                .sendCouponGiveRequest("mongmeo", TriggerTypeCode.MEMBER_GRADE_BRONZE, 1L,
+                .requestGiveCoupon("mongmeo", TriggerTypeCode.MEMBER_GRADE_BRONZE, 1L,
                         LocalDateTime.parse("2023-02-14T17:16:38.858927")
                 );
 
