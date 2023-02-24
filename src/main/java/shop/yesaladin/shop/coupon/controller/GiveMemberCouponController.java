@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.common.dto.ResponseDto;
+import shop.yesaladin.coupon.message.CouponResultDto;
 import shop.yesaladin.shop.common.aspect.annotation.LoginId;
 import shop.yesaladin.shop.coupon.dto.CouponGiveRequestDto;
-import shop.yesaladin.shop.coupon.dto.RequestIdOnlyDto;
 import shop.yesaladin.shop.coupon.service.inter.GiveCouponService;
 
 /**
@@ -33,17 +33,17 @@ public class GiveMemberCouponController {
      * @return 성공 여부를 담은 ResponseDto
      */
     @PostMapping
-    public ResponseDto<RequestIdOnlyDto> sendCouponGiveRequest(
+    public ResponseDto<CouponResultDto> sendCouponGiveRequest(
             @LoginId(required = true) String memberId, @RequestBody CouponGiveRequestDto requestDto
     ) {
-        RequestIdOnlyDto response = giveCouponService.sendCouponGiveRequest(
+        CouponResultDto response = giveCouponService.requestGiveCoupon(
                 memberId,
                 requestDto.getTriggerTypeCode(),
                 requestDto.getCouponId(),
                 requestDto.getRequestDateTime()
         );
 
-        return ResponseDto.<RequestIdOnlyDto>builder()
+        return ResponseDto.<CouponResultDto>builder()
                 .success(true)
                 .status(HttpStatus.OK)
                 .data(response)

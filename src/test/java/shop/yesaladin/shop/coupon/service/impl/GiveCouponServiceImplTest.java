@@ -20,7 +20,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -35,11 +34,9 @@ import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.common.exception.ServerException;
 import shop.yesaladin.coupon.code.TriggerTypeCode;
 import shop.yesaladin.coupon.dto.CouponGiveDto;
-import shop.yesaladin.coupon.message.CouponCodesAndResultMessage;
 import shop.yesaladin.coupon.message.CouponGiveRequestMessage;
 import shop.yesaladin.coupon.message.CouponGiveRequestResponseMessage;
 import shop.yesaladin.shop.config.GatewayProperties;
-import shop.yesaladin.shop.coupon.adapter.kafka.CouponProducer;
 import shop.yesaladin.shop.coupon.domain.model.MemberCoupon;
 import shop.yesaladin.shop.coupon.domain.repository.CommandMemberCouponRepository;
 import shop.yesaladin.shop.coupon.domain.repository.QueryMemberCouponRepository;
@@ -53,7 +50,6 @@ class GiveCouponServiceImplTest {
 
     private final static Clock clock = Clock.fixed(Instant.ofEpochSecond(100000), ZoneId.of("UTC"));
     private GatewayProperties gatewayProperties;
-    private CouponProducer couponProducer;
     private QueryMemberCouponRepository queryMemberCouponRepository;
     private CommandMemberCouponRepository commandMemberCouponRepository;
     private QueryMemberService queryMemberService;
@@ -61,28 +57,23 @@ class GiveCouponServiceImplTest {
     private RedisTemplate<String, String> redisTemplate;
     private GiveCouponServiceImpl giveCouponService;
     private ValueOperations<String, String> valueOperations = mock(ValueOperations.class);
-    private ApplicationEventPublisher applicationEventPublisher;
 
     @BeforeEach
     @SuppressWarnings("unchecked")
     void setup() {
         gatewayProperties = mock(GatewayProperties.class);
-        couponProducer = mock(CouponProducer.class);
         queryMemberCouponRepository = mock(QueryMemberCouponRepository.class);
         commandMemberCouponRepository = mock(CommandMemberCouponRepository.class);
         queryMemberService = mock(QueryMemberService.class);
         restTemplate = mock(RestTemplate.class);
         redisTemplate = mock(RedisTemplate.class);
-        applicationEventPublisher = mock(ApplicationEventPublisher.class);
         giveCouponService = new GiveCouponServiceImpl(
                 gatewayProperties,
-                couponProducer,
                 queryMemberCouponRepository,
                 commandMemberCouponRepository,
                 queryMemberService,
                 restTemplate,
                 redisTemplate,
-                applicationEventPublisher,
                 clock
         );
         when(gatewayProperties.getCouponUrl()).thenReturn("http://localhost:8085");
@@ -117,7 +108,7 @@ class GiveCouponServiceImplTest {
         )).thenReturn(false);
 
         // when
-        giveCouponService.sendCouponGiveRequest(
+        giveCouponService.requestGiveCoupon(
                 memberId,
                 TriggerTypeCode.SIGN_UP,
                 null,
@@ -127,8 +118,6 @@ class GiveCouponServiceImplTest {
         // then
         ArgumentCaptor<CouponGiveRequestMessage> requestMessageCaptor = ArgumentCaptor.forClass(
                 CouponGiveRequestMessage.class);
-        verify(couponProducer, times(1))
-                .produceGiveRequestLimitMessage(requestMessageCaptor.capture());
         verify(restTemplate, times(1))
                 .exchange(
                         eq("http://localhost:8085/v1/coupon-groups?trigger-type=SIGN_UP"),
@@ -173,7 +162,7 @@ class GiveCouponServiceImplTest {
         )).thenReturn(false);
 
         // when
-        giveCouponService.sendCouponGiveRequest(
+        giveCouponService.requestGiveCoupon(
                 memberId,
                 TriggerTypeCode.SIGN_UP,
                 null,
@@ -183,8 +172,6 @@ class GiveCouponServiceImplTest {
         // then
         ArgumentCaptor<CouponGiveRequestMessage> requestMessageCaptor = ArgumentCaptor.forClass(
                 CouponGiveRequestMessage.class);
-        verify(couponProducer, times(1))
-                .produceGiveRequestMessage(requestMessageCaptor.capture());
         verify(restTemplate, times(1))
                 .exchange(
                         eq("http://localhost:8085/v1/coupon-groups?trigger-type=SIGN_UP"),
@@ -230,7 +217,7 @@ class GiveCouponServiceImplTest {
 
         // when
         // then
-        Assertions.assertThatThrownBy(() -> giveCouponService.sendCouponGiveRequest(
+        Assertions.assertThatThrownBy(() -> giveCouponService.requestGiveCoupon(
                 memberId,
                 TriggerTypeCode.SIGN_UP,
                 null, LocalDateTime.now()
@@ -252,7 +239,7 @@ class GiveCouponServiceImplTest {
 
         // when
         // then
-        Assertions.assertThatThrownBy(() -> giveCouponService.sendCouponGiveRequest(
+        Assertions.assertThatThrownBy(() -> giveCouponService.requestGiveCoupon(
                 memberId,
                 TriggerTypeCode.SIGN_UP,
                 null, LocalDateTime.now()
@@ -274,100 +261,14 @@ class GiveCouponServiceImplTest {
 
         // when
         // then
-        Assertions.assertThatThrownBy(() -> giveCouponService.sendCouponGiveRequest(
+        Assertions.assertThatThrownBy(() -> giveCouponService.requestGiveCoupon(
                 memberId,
                 TriggerTypeCode.SIGN_UP,
                 null, LocalDateTime.now()
         )).isInstanceOf(ServerException.class);
     }
 
-    @Test
-    @DisplayName("멤버에게 쿠폰을 지급한다.")
-    void giveCouponToMemberSuccessTest() {
-        // given
-        CouponGiveRequestResponseMessage responseMessage = CouponGiveRequestResponseMessage.builder()
-                .requestId("requestId")
-                .success(true)
-                .errorMessage(null)
-                .coupons(List.of(CouponGiveDto.builder()
-                        .couponGroupCode("couponGroup")
-                        .couponCodes(List.of("couponCode1"))
-                        .build()))
-                .build();
-        MemberDto mockMemberDto = mock(MemberDto.class);
-        Member member = mock(Member.class);
-        ValueOperations mockValueOperation = mock(ValueOperations.class);
-        when(redisTemplate.opsForValue()).thenReturn(mockValueOperation);
-        when(mockValueOperation.get("requestId")).thenReturn("member");
-        when(member.getLoginId()).thenReturn("member");
-        when(queryMemberService.findMemberByLoginId("member")).thenReturn(mockMemberDto);
-        when(mockMemberDto.toEntity()).thenReturn(member);
 
-        // when
-        giveCouponService.giveCouponToMember(responseMessage);
-
-        // then
-        ArgumentCaptor<MemberCoupon> argumentCaptor = ArgumentCaptor.forClass(MemberCoupon.class);
-        verify(mockValueOperation, times(1)).get("requestId");
-        verify(queryMemberService, times(1)).findMemberByLoginId("member");
-        verify(commandMemberCouponRepository, times(1))
-                .save(argumentCaptor.capture());
-        verify(couponProducer)
-                .produceGivenResultMessage(argThat(CouponCodesAndResultMessage::isSuccess));
-
-        MemberCoupon actualMemberCoupon = argumentCaptor.getValue();
-        Assertions.assertThat(actualMemberCoupon.getMember()).isEqualTo(member);
-        Assertions.assertThat(actualMemberCoupon.getCouponCode()).isEqualTo("couponCode1");
-        Assertions.assertThat(actualMemberCoupon.getCouponGroupCode()).isEqualTo("couponGroup");
-    }
-
-    @Test
-    @DisplayName("쿠폰 서버에서 지급 요청 처리에 실패하면 쿠폰을 지급하지 않고 예외를 던진다.")
-    void giveCouponToMemberFailCauseByRequestNotSucceededTest() {
-        // given
-        CouponGiveRequestResponseMessage responseMessage = CouponGiveRequestResponseMessage.builder()
-                .requestId("requestId")
-                .success(false)
-                .errorMessage(null)
-                .coupons(List.of(CouponGiveDto.builder()
-                        .couponGroupCode("couponGroup")
-                        .couponCodes(List.of("couponCode1"))
-                        .build()))
-                .build();
-
-        // when
-        // then
-        Assertions.assertThatThrownBy(() -> giveCouponService.giveCouponToMember(responseMessage))
-                .isInstanceOf(ClientException.class);
-        verify(couponProducer)
-                .produceGivenResultMessage(argThat(message -> !message.isSuccess()));
-    }
-
-
-    @Test
-    @DisplayName("request id가 존재하지 않으면 쿠폰을 지급하지 않고 예외를 던진다.")
-    void giveCouponToMemberFailCauseByRequestIdNotFound() {
-        // given
-        CouponGiveRequestResponseMessage responseMessage = CouponGiveRequestResponseMessage.builder()
-                .requestId("requestId")
-                .success(true)
-                .errorMessage(null)
-                .coupons(List.of(CouponGiveDto.builder()
-                        .couponGroupCode("couponGroup")
-                        .couponCodes(List.of("couponCode1"))
-                        .build()))
-                .build();
-        ValueOperations mockValueOperation = mock(ValueOperations.class);
-        when(redisTemplate.opsForValue()).thenReturn(mockValueOperation);
-        when(mockValueOperation.get("requestId")).thenReturn(null);
-
-        // when
-        // then
-        Assertions.assertThatThrownBy(() -> giveCouponService.giveCouponToMember(responseMessage))
-                .isInstanceOf(ClientException.class);
-        verify(couponProducer)
-                .produceGivenResultMessage(argThat(message -> !message.isSuccess()));
-    }
 
     @Test
     @DisplayName("이달의 쿠폰 지급을 요청할 때 이달의 쿠폰 정책이 존재하지 않아 예외 발생")
@@ -377,7 +278,7 @@ class GiveCouponServiceImplTest {
         when(hashOperations.hasKey(anyString(), any())).thenReturn(Boolean.FALSE);
 
         // when
-        Assertions.assertThatThrownBy(() -> giveCouponService.sendCouponGiveRequest(
+        Assertions.assertThatThrownBy(() -> giveCouponService.requestGiveCoupon(
                         "memberId",
                         TriggerTypeCode.COUPON_OF_THE_MONTH,
                         1L,
@@ -397,7 +298,7 @@ class GiveCouponServiceImplTest {
         when(hashOperations.get(any(), any())).thenReturn(openDateTime.toString());
 
         // when
-        Assertions.assertThatThrownBy(() -> giveCouponService.sendCouponGiveRequest(
+        Assertions.assertThatThrownBy(() -> giveCouponService.requestGiveCoupon(
                 "memberId",
                 TriggerTypeCode.COUPON_OF_THE_MONTH,
                 1L,
@@ -415,7 +316,7 @@ class GiveCouponServiceImplTest {
                 .minusDays(1)
                 .toString());
         when(redisTemplate.hasKey(anyString())).thenReturn(Boolean.TRUE);
-        Assertions.assertThatThrownBy(() -> giveCouponService.sendCouponGiveRequest(
+        Assertions.assertThatThrownBy(() -> giveCouponService.requestGiveCoupon(
                 "memberId",
                 TriggerTypeCode.SIGN_UP,
                 1L,

@@ -18,17 +18,14 @@ import shop.yesaladin.common.exception.ServerException;
 import shop.yesaladin.coupon.code.CouponSocketRequestKind;
 import shop.yesaladin.coupon.code.CouponTypeCode;
 import shop.yesaladin.coupon.message.CouponCodesAndResultMessage;
-import shop.yesaladin.coupon.message.CouponCodesMessage;
 import shop.yesaladin.coupon.message.CouponResultDto;
 import shop.yesaladin.coupon.message.CouponUseRequestMessage;
 import shop.yesaladin.coupon.message.CouponUseRequestResponseMessage;
-import shop.yesaladin.shop.coupon.adapter.kafka.CouponProducer;
 import shop.yesaladin.shop.coupon.domain.model.MemberCoupon;
 import shop.yesaladin.shop.coupon.domain.repository.QueryMemberCouponRepository;
 import shop.yesaladin.shop.coupon.dto.CouponCodeOnlyDto;
 import shop.yesaladin.shop.coupon.dto.MemberCouponSummaryDto;
 import shop.yesaladin.shop.coupon.dto.RequestIdOnlyDto;
-import shop.yesaladin.shop.coupon.event.CouponRequestProcessEndEvent;
 import shop.yesaladin.shop.coupon.service.inter.QueryMemberCouponService;
 import shop.yesaladin.shop.coupon.service.inter.UseCouponService;
 import shop.yesaladin.shop.point.domain.model.PointReasonCode;
@@ -47,7 +44,6 @@ public class UseCouponServiceImpl implements UseCouponService {
 
     private static final String COUPON_CODE_SUFFIX = "-codes";
     private final QueryMemberCouponRepository queryMemberCouponRepository;
-    private final CouponProducer couponProducer;
     private final QueryMemberCouponService queryMemberCouponService;
     private final CommandPointHistoryService commandPointHistoryService;
     private final ApplicationEventPublisher eventPublisher;
@@ -78,8 +74,6 @@ public class UseCouponServiceImpl implements UseCouponService {
                 couponCodeList,
                 LocalDateTime.now(clock)
         );
-
-        couponProducer.produceUseRequestMessage(requestMessage);
 
         return new RequestIdOnlyDto(requestId);
     }
@@ -131,7 +125,6 @@ public class UseCouponServiceImpl implements UseCouponService {
      */
     @Override
     public List<CouponCodeOnlyDto> cancelCouponUse(List<String> couponCodeList) {
-        couponProducer.produceUseRequestCancelMessage(new CouponCodesMessage(couponCodeList));
 
         return couponCodeList.stream().map(CouponCodeOnlyDto::new).collect(Collectors.toList());
     }
@@ -150,7 +143,6 @@ public class UseCouponServiceImpl implements UseCouponService {
                 success ? "사용이 완료되었습니다." : message.getErrorMessage(),
                 LocalDateTime.now(clock)
         );
-        eventPublisher.publishEvent(new CouponRequestProcessEndEvent(this, resultMessage));
     }
 
     private void checkCouponIsPointCouponType(
@@ -216,7 +208,6 @@ public class UseCouponServiceImpl implements UseCouponService {
                 .success(success)
                 .build();
 
-        couponProducer.produceUsedResultMessage(couponUseResultMessage);
     }
 
 }
