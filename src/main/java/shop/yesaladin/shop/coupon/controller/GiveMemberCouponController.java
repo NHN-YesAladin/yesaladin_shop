@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.coupon.message.CouponResultDto;
-import shop.yesaladin.shop.common.aspect.annotation.LoginId;
 import shop.yesaladin.shop.coupon.dto.CouponGiveRequestDto;
 import shop.yesaladin.shop.coupon.service.inter.GiveCouponService;
 
@@ -28,16 +27,15 @@ public class GiveMemberCouponController {
     /**
      * 쿠폰 지급 요청 메시지를 발행합니다.
      *
-     * @param memberId   로그인한 회원의 로그인 아이디
      * @param requestDto 쿠폰 지급 요청 정보
      * @return 성공 여부를 담은 ResponseDto
      */
     @PostMapping
     public ResponseDto<CouponResultDto> sendCouponGiveRequest(
-            @LoginId(required = true) String memberId, @RequestBody CouponGiveRequestDto requestDto
+            @RequestBody CouponGiveRequestDto requestDto
     ) {
         CouponResultDto response = giveCouponService.requestGiveCoupon(
-                memberId,
+                "member0001",
                 requestDto.getTriggerTypeCode(),
                 requestDto.getCouponId(),
                 requestDto.getRequestDateTime()
