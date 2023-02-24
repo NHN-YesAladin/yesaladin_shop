@@ -23,6 +23,14 @@ YesAladin Shop은 애플리케이션 이용에 필요한 API를 제공함으로�
 ## Test Coverage
 - 목표 : 라인 커버리지 80% 이상 (2023.02.22 기준 86.48%)  
   <img width="955" alt="스크린샷 2023-02-22 오후 7 45 17" src="https://user-images.githubusercontent.com/60968342/220600694-4dd36b4a-3aa2-4714-a8c4-cad0dbbb6eef.png">
+  
+## Scheduling
+- NHN Dooray!의 칸반 활용
+<img width="1037" alt="image" src="https://user-images.githubusercontent.com/115197142/221077112-ba7e882f-6fa8-4994-b382-6550f1d91577.png">
+
+- [@WBS(Work Breakdown Structure)](https://docs.google.com/spreadsheets/d/14DnQZrjOVgyu7F5QVFmUu2sGo3URppLTPhmdjCfbmiQ/edit#gid=537092179)를 구글 스프레드시트로 관리
+<img width="1042" alt="image" src="https://user-images.githubusercontent.com/115197142/221077360-daaf6cdc-d0a6-4d1b-ba81-a3c2b672f87c.png">
+
 
 ## Features
 
