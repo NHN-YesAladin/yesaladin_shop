@@ -5,7 +5,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -82,9 +81,6 @@ public class GiveCouponServiceImpl implements GiveCouponService {
             checkMonthlyCouponIssueRequestTime(requestDateTime);
         }
 
-        if (Objects.nonNull(couponId)) {    // 수동 발행 타입 쿠폰을 요청하는 경우
-            registerIssueRequest(memberId, triggerTypeCode.name(), couponId.toString());
-        }
         List<CouponGroupAndLimitDto> couponGroupAndLimitList = getCouponGroupAndLimit(
                 triggerTypeCode,
                 couponId
@@ -94,9 +90,9 @@ public class GiveCouponServiceImpl implements GiveCouponService {
                 .map(CouponGroupAndLimitDto::getCouponGroupCode)
                 .collect(Collectors.toList());
 
-        checkMemberAlreadyHasCoupon(memberId, triggerTypeCode, couponId, couponGroupCodeList);
-
         String requestId = generateRequestId(memberId);
+
+        sendGiveRequestMessage(triggerTypeCode, couponId, requestId);
 
         return new RequestIdOnlyDto(requestId);
     }

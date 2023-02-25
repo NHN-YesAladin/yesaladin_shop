@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.shop.coupon.dto.CouponGiveRequestDto;
 import shop.yesaladin.shop.coupon.dto.RequestIdOnlyDto;
-import shop.yesaladin.shop.coupon.queue.GiveCouponMessageQueue;
 import shop.yesaladin.shop.coupon.service.inter.GiveCouponService;
 
 /**
@@ -24,6 +23,7 @@ import shop.yesaladin.shop.coupon.service.inter.GiveCouponService;
 public class GiveMemberCouponController {
 
     private final GiveCouponService giveCouponService;
+
     /**
      * 쿠폰 지급 요청 메시지를 발행합니다.
      *

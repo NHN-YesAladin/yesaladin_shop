@@ -17,6 +17,9 @@ public class GiveCouponMessageQueue {
     }
 
     public CouponGiveRequestResponseMessage dequeueGiveResponseMessage() {
-        return ((LinkedList<CouponGiveRequestResponseMessage>) giveResponseMessageQueue).removeFirst();
+        if (giveResponseMessageQueue.isEmpty()) {
+            return null;
+        }
+        return giveResponseMessageQueue.remove(0);
     }
 }
