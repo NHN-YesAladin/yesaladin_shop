@@ -4,7 +4,6 @@ import java.util.Objects;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -79,7 +78,6 @@ public class CommandOrderController {
      * @param type          회원 주문 시 어떤 경로(바로 주문, 장바구니 주문)로 주문하였는지에 대한 유형
      * @return 생성된 주문 정보
      */
-    @PreAuthorize("hasAnyRole({'ROLE_ADMIN', 'ROLE_USER'})")
     @PostMapping(value = "/member")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<OrderCreateResponseDto> createMemberOrder(
@@ -111,7 +109,6 @@ public class CommandOrderController {
      * @param loginId       회원의 아이디
      * @return 생성된 주문 정보
      */
-    @PreAuthorize("hasAnyRole({'ROLE_ADMIN', 'ROLE_USER'})")
     @PostMapping("/subscribe")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<OrderCreateResponseDto> createSubscribeOrder(
@@ -143,7 +140,6 @@ public class CommandOrderController {
      * @author 최예린
      * @since 1.0
      */
-    @PreAuthorize("hasAnyRole({'ROLE_ADMIN', 'ROLE_USER'})")
     @PutMapping(path = "/{orderId}", params = "hide")
     public ResponseDto<OrderUpdateResponseDto> hide(
             @PathVariable Long orderId,
