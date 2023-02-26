@@ -21,8 +21,16 @@ YesAladin Shop은 애플리케이션 이용에 필요한 API를 제공함으로�
 <img width="1102" alt="스크린샷 2023-02-22 오후 7 24 08" src="https://user-images.githubusercontent.com/60968342/220593590-58f50bd3-302f-455d-bf99-78371b2a1ba7.png">
 
 ## Test Coverage
-- 목표 : 라인 커버리지 80% 이상 (2023.02.22 기준 87.01%)  
-  ![스크린샷 2023-02-22 오후 11 44 27](https://user-images.githubusercontent.com/60968342/220658791-502cdb98-7de3-47e4-81b9-14551445f025.png)
+- 목표 : 라인 커버리지 80% 이상 (2023.02.22 기준 86.48%)  
+  <img width="955" alt="스크린샷 2023-02-22 오후 7 45 17" src="https://user-images.githubusercontent.com/60968342/220600694-4dd36b4a-3aa2-4714-a8c4-cad0dbbb6eef.png">
+  
+## Scheduling
+- NHN Dooray!의 칸반 활용
+<img width="1037" alt="image" src="https://user-images.githubusercontent.com/115197142/221077112-ba7e882f-6fa8-4994-b382-6550f1d91577.png">
+
+- [@WBS(Work Breakdown Structure)](https://docs.google.com/spreadsheets/d/14DnQZrjOVgyu7F5QVFmUu2sGo3URppLTPhmdjCfbmiQ/edit#gid=537092179)를 구글 스프레드시트로 관리
+![image](https://user-images.githubusercontent.com/115197142/221396723-6053e24b-7d46-4d43-804a-0085e8648c6f.png)
+
 
 ## Features
 
@@ -144,6 +152,10 @@ YesAladin Shop은 애플리케이션 이용에 필요한 API를 제공함으로�
     - Redis를 사용하여 단시간에 들어오는 중복 발행 요청 정상 처리
 
 ### [@김선홍](https://github.com/ssun4098)
+- **검색**
+  - 메인 상품 검색
+    - ES의 Nori Plugin을 이용한 상품 검색 구현
+  - 메인 상품 등록을 위한 태그, 카테고리, 출판사, 저자 검색(ES)
 
 ### 공통
 - SonarQube 및 체크 스타일을 활용한 코드 품질 개선 및 컨벤션 체크
