@@ -3,6 +3,7 @@ package shop.yesaladin.shop.product.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,6 +38,7 @@ public class QueryRelationController {
      * @author 이수정
      * @since 1.0
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/manager")
     public ResponseDto<PaginatedResponseDto<RelationsResponseDto>> getRelationsForManager(
             @PathVariable Long id,

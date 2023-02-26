@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +19,7 @@ import shop.yesaladin.shop.publish.service.inter.QueryPublisherService;
  * 출판사 조회를 위한 RestController 입니다.
  *
  * @author 이수정
+ * @author 김선홍
  * @since 1.0
  */
 @RequiredArgsConstructor
@@ -37,6 +39,7 @@ public class QueryPublisherController {
      * @author 이수정
      * @since 1.0
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/manager")
     public ResponseDto<PaginatedResponseDto<PublisherResponseDto>> getPublishersForManager(Pageable pageable) {
         return ResponseDto.<PaginatedResponseDto<PublisherResponseDto>>builder()
@@ -55,6 +58,7 @@ public class QueryPublisherController {
      * @author 김선홍
      * @since 1.0
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/manager", params = "name")
     public ResponseDto<PaginatedResponseDto<PublisherResponseDto>> getPublishersByNameForManager(
             @RequestParam String name,

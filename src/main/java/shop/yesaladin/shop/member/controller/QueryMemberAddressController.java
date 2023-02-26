@@ -3,6 +3,7 @@ package shop.yesaladin.shop.member.controller;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,6 +33,7 @@ public class QueryMemberAddressController {
      * @author 최예린
      * @since 1.0
      */
+    @PreAuthorize("hasAnyRole({'ROLE_ADMIN', 'ROLE_USER'})")
     @GetMapping
     public ResponseDto<List<MemberAddressResponseDto>> getMemberAddressByMemberId(@LoginId(required = true) String loginId) {
         List<MemberAddressResponseDto> response = queryMemberAddressService.getByLoginId(loginId);

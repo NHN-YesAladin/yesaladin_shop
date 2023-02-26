@@ -4,6 +4,7 @@ import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,6 +43,7 @@ public class CommandProductController {
      * @author 이수정
      * @since 1.0
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public ResponseDto<ProductOnlyIdDto> registerProduct(@Valid @RequestBody ProductCreateDto createDto) {
@@ -61,6 +63,7 @@ public class CommandProductController {
      * @author 이수정
      * @since 1.0
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/{id}")
     public ResponseDto<ProductOnlyIdDto> updateProduct(
             @PathVariable("id") long id,
@@ -80,6 +83,7 @@ public class CommandProductController {
      * @author 이수정
      * @since 1.0
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/{id}")
     public ResponseDto<Void> deleteProduct(@PathVariable("id") long id) {
         commandProductService.softDelete(id);
@@ -97,6 +101,7 @@ public class CommandProductController {
      * @author 이수정
      * @since 1.0
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/{id}/is-sale")
     public ResponseDto<Void> changeProductIsSale(@PathVariable("id") long id) {
         commandProductService.changeIsSale(id);
@@ -114,6 +119,7 @@ public class CommandProductController {
      * @author 이수정
      * @since 1.0
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/{id}/is-forced-out-of-stock")
     public ResponseDto<Void> changeProductIsForcedOutOfStock(@PathVariable("id") long id) {
         commandProductService.changeIsForcedOutOfStock(id);
