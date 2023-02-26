@@ -5,6 +5,7 @@ import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -45,6 +46,7 @@ public class CommandMemberAddressController {
      * @author 최예린
      * @since 1.0
      */
+    @PreAuthorize("hasAnyRole({'ROLE_ADMIN', 'ROLE_USER'})")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<MemberAddressResponseDto> createMemberAddress(
@@ -71,6 +73,7 @@ public class CommandMemberAddressController {
      * @author 최예린
      * @since 1.0
      */
+    @PreAuthorize("hasAnyRole({'ROLE_ADMIN', 'ROLE_USER'})")
     @PutMapping("/{addressId}")
     public ResponseDto<MemberAddressResponseDto> markAsDefaultAddress(
             @PathVariable Long addressId,
@@ -96,6 +99,7 @@ public class CommandMemberAddressController {
      * @author 최예린
      * @since 1.0
      */
+    @PreAuthorize("hasAnyRole({'ROLE_ADMIN', 'ROLE_USER'})")
     @DeleteMapping("/{addressId}")
     public ResponseDto<Void> deleteMemberAddress(
             @PathVariable Long addressId,

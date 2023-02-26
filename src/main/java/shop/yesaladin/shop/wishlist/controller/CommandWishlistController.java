@@ -2,6 +2,7 @@ package shop.yesaladin.shop.wishlist.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,6 +36,7 @@ public class CommandWishlistController {
      * @author 김선홍
      * @since 1.0
      */
+    @PreAuthorize("hasAnyRole({'ROLE_ADMIN', 'ROLE_USER'})")
     @GetMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<WishlistSaveResponseDto> save(
@@ -55,6 +57,7 @@ public class CommandWishlistController {
      * @param productId 삭제할 위시리스트 상품
      * @return 삭제 결과
      */
+    @PreAuthorize("hasAnyRole({'ROLE_ADMIN', 'ROLE_USER'})")
     @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseDto<Void> delete(

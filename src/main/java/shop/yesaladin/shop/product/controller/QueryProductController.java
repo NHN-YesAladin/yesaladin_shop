@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -139,6 +140,7 @@ public class QueryProductController {
      * @author 이수정
      * @since 1.0
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/{id}/manager")
     public ResponseDto<ProductModifyDto> findProductByIdForForm(@PathVariable long id) {
         return ResponseDto.<ProductModifyDto>builder()
@@ -176,6 +178,7 @@ public class QueryProductController {
      * @author 이수정
      * @since 1.0
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/manager")
     public ResponseDto<PaginatedResponseDto<ProductsResponseDto>> getProductsForManager(
             Pageable pageable,
@@ -188,6 +191,7 @@ public class QueryProductController {
                 .build();
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/manager", params = "title")
     public ResponseDto<PaginatedResponseDto<ProductsResponseDto>> getProductsByTitleForManager(
             @PageableDefault Pageable pageable,
@@ -200,6 +204,7 @@ public class QueryProductController {
                 .build();
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/manager", params = "content")
     public ResponseDto<PaginatedResponseDto<ProductsResponseDto>> getProductsByContentForManager(
             @PageableDefault Pageable pageable,
@@ -212,6 +217,7 @@ public class QueryProductController {
                 .build();
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/manager", params = "publisher")
     public ResponseDto<PaginatedResponseDto<ProductsResponseDto>> getProductsByPublisherForManager(
             @PageableDefault Pageable pageable,
@@ -224,6 +230,7 @@ public class QueryProductController {
                 .build();
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/manager", params = "author")
     public ResponseDto<PaginatedResponseDto<ProductsResponseDto>> getProductsByAuthorForManager(
             @PageableDefault Pageable pageable,
@@ -236,6 +243,7 @@ public class QueryProductController {
                 .build();
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/manager", params = "isbn")
     public ResponseDto<PaginatedResponseDto<ProductsResponseDto>> getProductsByISBNForManager(
             @PageableDefault Pageable pageable,
@@ -255,6 +263,7 @@ public class QueryProductController {
      * @param pageable 페이지 정보
      * @return 검색된 상품 정보와 페이지 정보 그리고 응답 메시지
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/{id}/relation", params = "title")
     public ResponseDto<PaginatedResponseDto<RelationsResponseDto>> findProductRelationByTitle(
             @PathVariable Long id,
