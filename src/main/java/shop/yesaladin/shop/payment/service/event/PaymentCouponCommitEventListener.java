@@ -50,7 +50,6 @@ public class PaymentCouponCommitEventListener {
 
 
     private String getRequestIdForCouponsToRedis(String orderNumber) {
-        //TODO test용이라 put 지워야함
         redisTemplate.opsForHash().put(REQUEST_KEY, orderNumber, "temp" + orderNumber);
         return Objects.requireNonNull(redisTemplate.opsForHash().get(REQUEST_KEY, orderNumber))
                 .toString();
