@@ -24,6 +24,7 @@ import shop.yesaladin.shop.member.domain.model.Member;
 import shop.yesaladin.shop.member.domain.model.MemberAddress;
 import shop.yesaladin.shop.member.domain.model.MemberGenderCode;
 import shop.yesaladin.shop.member.domain.model.MemberGrade;
+import shop.yesaladin.shop.member.dummy.MemberDummy;
 import shop.yesaladin.shop.order.domain.model.MemberOrder;
 import shop.yesaladin.shop.order.domain.model.NonMemberOrder;
 import shop.yesaladin.shop.order.domain.model.Order;
@@ -37,6 +38,8 @@ import shop.yesaladin.shop.order.dto.OrderPaymentResponseDto;
 import shop.yesaladin.shop.order.dto.OrderStatusResponseDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryDto;
 import shop.yesaladin.shop.order.dto.OrderSummaryResponseDto;
+import shop.yesaladin.shop.order.persistence.dummy.DummyMemberAddress;
+import shop.yesaladin.shop.order.persistence.dummy.DummyOrder;
 import shop.yesaladin.shop.product.domain.model.Product;
 import shop.yesaladin.shop.product.domain.model.SubscribeProduct;
 import shop.yesaladin.shop.product.domain.model.TotalDiscountRate;
@@ -60,7 +63,7 @@ class QueryDslOrderQueryRepositoryTest {
     private List<Subscribe> subscribeList;
     private List<Member> memberList;
     private List<MemberAddress> memberAddressList;
-    private List<OrderStatusChangeLog> logList = new ArrayList<>();
+    private final List<OrderStatusChangeLog> logList = new ArrayList<>();
 
 
     @BeforeEach
@@ -233,6 +236,32 @@ class QueryDslOrderQueryRepositoryTest {
         );
         entityManager.persist(orderStatusChangeLogComplete);
 
+    }
+
+    @Test
+    @DisplayName("회원의 주문 조회 성공")
+    void findByIdAndLoginId() {
+        //given
+        String loginId = "user@1";
+        long id = getMemberOrderId(loginId);
+
+        //when
+        Optional<MemberOrder> result = queryRepository.findMemberOrderByIdAndLoginId(id, loginId);
+
+        //then
+        Assertions.assertThat(result).isPresent();
+        Assertions.assertThat(result.get().getId()).isEqualTo(id);
+        Assertions.assertThat(result.get().getMember().getLoginId()).isEqualTo(loginId);
+    }
+
+    private long getMemberOrderId(String loginId) {
+        Member member = MemberDummy.dummyWithLoginId(loginId);
+        MemberAddress memberAddress = DummyMemberAddress.address(member);
+        entityManager.persist(member);
+        entityManager.persist(memberAddress);
+        MemberOrder memberOrder = DummyOrder.memberOrder(member, memberAddress);
+        entityManager.persist(memberOrder);
+        return memberOrder.getId();
     }
 
     @Test

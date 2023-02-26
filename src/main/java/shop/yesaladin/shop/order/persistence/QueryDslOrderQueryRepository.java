@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
+import shop.yesaladin.shop.order.domain.model.MemberOrder;
 import shop.yesaladin.shop.order.domain.model.Order;
 import shop.yesaladin.shop.order.domain.model.OrderCode;
 import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
@@ -63,6 +64,16 @@ public class QueryDslOrderQueryRepository implements QueryOrderRepository {
         return Optional.ofNullable(queryFactory.select(orderDetails)
                 .from(orderDetails)
                 .where(orderDetails.get("id").eq(id))
+                .fetchFirst());
+    }
+
+    @Override
+    public Optional<MemberOrder> findMemberOrderByIdAndLoginId(Long id, String loginId) {
+        QMemberOrder memberOrder = QMemberOrder.memberOrder;
+
+        return Optional.ofNullable(queryFactory.select(memberOrder)
+                .from(memberOrder)
+                .where(memberOrder.id.eq(id).and(memberOrder.member.loginId.eq(loginId)))
                 .fetchFirst());
     }
 
