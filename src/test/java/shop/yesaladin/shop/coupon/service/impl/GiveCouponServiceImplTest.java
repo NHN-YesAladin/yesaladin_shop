@@ -21,6 +21,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -33,16 +34,11 @@ import shop.yesaladin.common.dto.ResponseDto;
 import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.common.exception.ServerException;
 import shop.yesaladin.coupon.code.TriggerTypeCode;
-import shop.yesaladin.coupon.dto.CouponGiveDto;
 import shop.yesaladin.coupon.message.CouponGiveRequestMessage;
-import shop.yesaladin.coupon.message.CouponGiveRequestResponseMessage;
 import shop.yesaladin.shop.config.GatewayProperties;
-import shop.yesaladin.shop.coupon.domain.model.MemberCoupon;
 import shop.yesaladin.shop.coupon.domain.repository.CommandMemberCouponRepository;
 import shop.yesaladin.shop.coupon.domain.repository.QueryMemberCouponRepository;
 import shop.yesaladin.shop.coupon.dto.CouponGroupAndLimitDto;
-import shop.yesaladin.shop.member.domain.model.Member;
-import shop.yesaladin.shop.member.dto.MemberDto;
 import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 
 //@SuppressWarnings("all")
@@ -67,6 +63,7 @@ class GiveCouponServiceImplTest {
         queryMemberService = mock(QueryMemberService.class);
         restTemplate = mock(RestTemplate.class);
         redisTemplate = mock(RedisTemplate.class);
+        MongoTemplate mongoTemplate = mock(MongoTemplate.class);
         giveCouponService = new GiveCouponServiceImpl(
                 gatewayProperties,
                 queryMemberCouponRepository,
@@ -74,6 +71,7 @@ class GiveCouponServiceImplTest {
                 queryMemberService,
                 restTemplate,
                 redisTemplate,
+                mongoTemplate,
                 clock
         );
         when(gatewayProperties.getCouponUrl()).thenReturn("http://localhost:8085");
@@ -267,7 +265,6 @@ class GiveCouponServiceImplTest {
                 null, LocalDateTime.now()
         )).isInstanceOf(ServerException.class);
     }
-
 
 
     @Test

@@ -3,8 +3,8 @@ package shop.yesaladin.shop.coupon.service.inter;
 import java.time.LocalDateTime;
 import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.coupon.code.TriggerTypeCode;
-import shop.yesaladin.coupon.message.CouponGiveRequestResponseMessage;
 import shop.yesaladin.coupon.message.CouponResultDto;
+import shop.yesaladin.shop.coupon.domain.model.CouponGiveRequestResponseMessage;
 import shop.yesaladin.shop.coupon.dto.RequestIdOnlyDto;
 
 /**

@@ -13,10 +13,13 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,13 +33,14 @@ import shop.yesaladin.common.exception.ServerException;
 import shop.yesaladin.coupon.code.CouponSocketRequestKind;
 import shop.yesaladin.coupon.code.TriggerTypeCode;
 import shop.yesaladin.coupon.dto.CouponGiveDto;
-import shop.yesaladin.coupon.message.CouponCodesAndResultMessage;
-import shop.yesaladin.coupon.message.CouponCodesMessage;
-import shop.yesaladin.coupon.message.CouponGiveRequestMessage;
-import shop.yesaladin.coupon.message.CouponGiveRequestResponseMessage;
 import shop.yesaladin.coupon.message.CouponResultDto;
 import shop.yesaladin.shop.config.GatewayProperties;
+import shop.yesaladin.shop.coupon.domain.model.CouponCodesMessage;
+import shop.yesaladin.shop.coupon.domain.model.CouponGiveRequestMessage;
+import shop.yesaladin.shop.coupon.domain.model.CouponGiveRequestResponseMessage;
+import shop.yesaladin.shop.coupon.domain.model.CouponGivenResultMessage;
 import shop.yesaladin.shop.coupon.domain.model.MemberCoupon;
+import shop.yesaladin.shop.coupon.domain.model.ProcessingStatus;
 import shop.yesaladin.shop.coupon.domain.repository.CommandMemberCouponRepository;
 import shop.yesaladin.shop.coupon.domain.repository.QueryMemberCouponRepository;
 import shop.yesaladin.shop.coupon.dto.CouponGroupAndLimitDto;
@@ -68,6 +72,7 @@ public class GiveCouponServiceImpl implements GiveCouponService {
     private final QueryMemberService queryMemberService;
     private final RestTemplate restTemplate;
     private final RedisTemplate<String, String> redisTemplate;
+    private final MongoTemplate mongoTemplate;
     private final Clock clock;
 
     @Override
@@ -98,6 +103,8 @@ public class GiveCouponServiceImpl implements GiveCouponService {
 
         String requestId = generateRequestId(memberId);
 
+        sendGiveRequestMessage(triggerTypeCode, couponId, requestId);
+
         return new RequestIdOnlyDto(requestId);
     }
 
@@ -124,7 +131,13 @@ public class GiveCouponServiceImpl implements GiveCouponService {
 
             tryGiveCouponToMember(responseMessage, memberId);
 
-            sendGivenMessage(new CouponCodesMessage(couponCodeList));
+            sendGivenResultMessage(responseMessage.getRequestId(), new CouponCodesMessage(
+                    null,
+                    couponCodeList,
+                    LocalDateTime.now(clock),
+                    null,
+                    ProcessingStatus.NOT_PROCESSED
+            ), true);
 
             return new CouponResultDto(
                     CouponSocketRequestKind.GIVE,
@@ -135,7 +148,13 @@ public class GiveCouponServiceImpl implements GiveCouponService {
                     LocalDateTime.now(clock)
             );
         } catch (Exception e) {
-            sendGiveCancelMessage(new CouponCodesMessage(couponCodeList));
+            sendGivenResultMessage(responseMessage.getRequestId(), new CouponCodesMessage(
+                    null,
+                    couponCodeList,
+                    LocalDateTime.now(clock),
+                    null,
+                    ProcessingStatus.NOT_PROCESSED
+            ), false);
 
             return new CouponResultDto(
                     CouponSocketRequestKind.GIVE,
@@ -165,35 +184,21 @@ public class GiveCouponServiceImpl implements GiveCouponService {
         redisTemplate.opsForValue().set(issueRequestKey, "", 10, TimeUnit.SECONDS);
     }
 
-    private void sendGivenMessage(CouponCodesMessage couponCodesMessage) {
-        String requestUri = UriComponentsBuilder.fromUriString(gatewayProperties.getCouponUrl())
-                .pathSegment("v1", "messages", "give", "given")
-                .toUriString();
-
-        CouponCodesAndResultMessage resultMessage = new CouponCodesAndResultMessage(
+    private void sendGivenResultMessage(
+            String requestId, CouponCodesMessage couponCodesMessage, boolean success
+    ) {
+        CouponGivenResultMessage resultMessage = new CouponGivenResultMessage(
+                null,
                 couponCodesMessage.getCouponCodes(),
-                true
+                success,
+                LocalDateTime.now(clock),
+                null,
+                ProcessingStatus.NOT_PROCESSED
         );
 
-        RequestEntity<CouponCodesAndResultMessage> requestEntity = RequestEntity.post(requestUri)
-                .body(resultMessage);
-        restTemplate.exchange(requestEntity, Void.class);
-    }
+        markAsProcessed(requestId);
 
-    private void sendGiveCancelMessage(CouponCodesMessage couponCodesMessage) {
-        String requestUri = UriComponentsBuilder.fromUriString(gatewayProperties.getCouponUrl())
-                .pathSegment("v1", "messages", "give", "cancel")
-                .toUriString();
-
-        CouponCodesAndResultMessage resultMessage = new CouponCodesAndResultMessage(
-                couponCodesMessage.getCouponCodes(),
-                false
-        );
-
-        RequestEntity<CouponCodesAndResultMessage> requestEntity = RequestEntity.post(requestUri)
-                .body(resultMessage);
-
-        restTemplate.exchange(requestEntity, Void.class);
+        mongoTemplate.insert(resultMessage);
     }
 
     private List<CouponGroupAndLimitDto> getCouponGroupAndLimit(
@@ -275,16 +280,10 @@ public class GiveCouponServiceImpl implements GiveCouponService {
                 .requestId(requestId)
                 .triggerTypeCode(triggerTypeCode)
                 .couponId(couponId)
+                .createdDateTime(LocalDateTime.now(clock))
                 .build();
 
-        String requestUri = UriComponentsBuilder.fromUriString(gatewayProperties.getCouponUrl())
-                .pathSegment("v1", "messages", "give")
-                .toUriString();
-
-        RequestEntity<CouponGiveRequestMessage> requestEntity = RequestEntity.post(requestUri)
-                .body(giveRequestMessage);
-
-        restTemplate.exchange(requestEntity, Void.class);
+        mongoTemplate.insert(giveRequestMessage);
     }
 
     private void checkRequestSucceeded(CouponGiveRequestResponseMessage responseMessage) {
@@ -360,5 +359,13 @@ public class GiveCouponServiceImpl implements GiveCouponService {
      */
     private boolean isMonthlyCoupon(TriggerTypeCode triggerTypeCode) {
         return triggerTypeCode.equals(TriggerTypeCode.COUPON_OF_THE_MONTH);
+    }
+
+    private void markAsProcessed(String requestId) {
+        Query query = new Query(Criteria.where("_id").is(requestId));
+        Update update = new Update();
+        update.set("processed", ProcessingStatus.PROCESSING);
+        update.set("updatedDateTime", LocalDateTime.now(clock));
+        mongoTemplate.updateFirst(query, update, CouponGiveRequestResponseMessage.class);
     }
 }

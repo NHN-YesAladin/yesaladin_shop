@@ -2,7 +2,7 @@ package shop.yesaladin.shop.coupon.event;
 
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
-import shop.yesaladin.coupon.message.CouponGiveRequestResponseMessage;
+import shop.yesaladin.shop.coupon.domain.model.CouponGiveRequestResponseMessage;
 
 @Getter
 public class CouponGiveResponseEvent extends ApplicationEvent {
