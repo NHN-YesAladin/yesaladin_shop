@@ -445,7 +445,7 @@ class CommandPaymentServiceImplTest {
 
         // when
         assertThatCode(() -> paymentService.confirmTossRequest(requestDto)).isInstanceOf(
-                ClientException.class).hasMessageContaining("잘못된 주문 상태 변경 요청입니다.");
+                PaymentFailException.class).hasMessageContaining("잘못된 주문 상태 변경 요청입니다.");
 
         // then
         verify(orderService, times(1)).getOrderByNumber(stringArgumentCaptor.capture());
