@@ -120,15 +120,7 @@ public class CommandOrderServiceImpl implements CommandOrderService {
 
         createOrderStatusChangeLog(orderDateTime, savedOrder);
 
-        if (request.getOrderCoupons() != null) {
-            try {
-                requestUseCoupon(request, loginId, savedOrder);
-
-                createOrderCoupon(request, savedOrder);
-            } catch (Exception e) {
-                useCouponService.cancelCouponUse(request.getOrderCoupons());
-            }
-        }
+        createMemberCoupon(request.getOrderCoupons(), loginId, savedOrder);
 
         deleteOrderProductInCart(loginId, type, products);
 
@@ -178,17 +170,26 @@ public class CommandOrderServiceImpl implements CommandOrderService {
 
         createOrderStatusChangeLog(orderDateTime, savedOrder);
 
-        if (request.getOrderCoupons() != null) {
-            try {
-                requestUseCoupon(request, loginId, savedOrder);
-
-                createOrderCoupon(request, savedOrder);
-            } catch (Exception e) {
-                useCouponService.cancelCouponUse(request.getOrderCoupons());
-            }
-        }
+        createMemberCoupon(request.getOrderCoupons(), loginId, savedOrder);
 
         return OrderCreateResponseDto.fromEntity(savedOrder);
+    }
+
+    private void createMemberCoupon(List<String> request, String loginId, Order savedOrder) {
+        if (request != null) {
+            try {
+                String requestId = useCouponService.sendCouponUseRequest(loginId, request).getRequestId();
+                putRequestIdForCouponsToRedis(savedOrder.getOrderNumber(), requestId);
+
+                commandOrderCouponService.createOrderCoupons(savedOrder.getId(), request);
+            } catch (Exception e) {
+                useCouponService.cancelCouponUse(request);
+            }
+        }
+    }
+
+    private void putRequestIdForCouponsToRedis(String orderNumber, String requestId) {
+        redisTemplate.opsForHash().put("USE_COUPON_REQ_ID", orderNumber, requestId);
     }
 
     /**
@@ -196,10 +197,8 @@ public class CommandOrderServiceImpl implements CommandOrderService {
      */
     @Override
     @Transactional
-    public OrderUpdateResponseDto hideOnOrder(String loginId, Long orderId, boolean hide) {
-        MemberOrder order = tryGetMemberOrderById(orderId);
-
-        checkUserIsOwnerOfOrder(loginId, orderId, order);
+    public OrderUpdateResponseDto hideOrder(String loginId, Long orderId, boolean hide) {
+        MemberOrder order = tryGetMemberOrderByIdAndLoginId(orderId, loginId);
 
         if (hide) {
             order.hiddenOn();
@@ -210,21 +209,12 @@ public class CommandOrderServiceImpl implements CommandOrderService {
         return OrderUpdateResponseDto.fromEntity(order);
     }
 
-    private MemberOrder tryGetMemberOrderById(Long orderId) {
-        return (MemberOrder) queryOrderRepository.findById(orderId)
+    private MemberOrder tryGetMemberOrderByIdAndLoginId(Long orderId, String loginId) {
+        return queryOrderRepository.findMemberOrderByIdAndLoginId(orderId, loginId)
                 .orElseThrow(() -> new ClientException(
                         ErrorCode.ORDER_NOT_FOUND,
                         "Order not found with id : " + orderId
                 ));
-    }
-
-    private void checkUserIsOwnerOfOrder(String loginId, Long orderId, MemberOrder order) {
-        if (!Objects.equals(order.getMember().getLoginId(), (loginId))) {
-            throw new ClientException(
-                    ErrorCode.ORDER_BAD_REQUEST,
-                    loginId + " is not a owner of order(" + orderId + ")."
-            );
-        }
     }
 
     private Order createNonMemberOrder(
@@ -304,15 +294,6 @@ public class CommandOrderServiceImpl implements CommandOrderService {
         }
     }
 
-    private void createOrderCoupon(OrderMemberCreateRequestDto request, Order savedOrder) {
-        if (!request.getOrderCoupons().isEmpty()) {
-            commandOrderCouponService.createOrderCoupons(
-                    savedOrder.getId(),
-                    request.getOrderCoupons()
-            );
-        }
-    }
-
     private void createOrderStatusChangeLog(LocalDateTime orderDateTime, Order savedOrder) {
         OrderStatusChangeLog orderStatusChangeLog = OrderStatusChangeLog.create(
                 savedOrder,
@@ -320,20 +301,6 @@ public class CommandOrderServiceImpl implements CommandOrderService {
                 OrderStatusCode.ORDER
         );
         commandOrderStatusChangeLogRepository.save(orderStatusChangeLog);
-    }
-
-    private void requestUseCoupon(
-            OrderMemberCreateRequestDto request,
-            String loginId,
-            Order savedOrder
-    ) {
-        String requestId = useCouponService.sendCouponUseRequest(loginId, request.getOrderCoupons())
-                .getRequestId();
-        putRequestIdForCouponsToRedis(savedOrder.getOrderNumber(), requestId);
-    }
-
-    private void putRequestIdForCouponsToRedis(String orderNumber, String requestId) {
-        redisTemplate.opsForHash().put("USE_COUPON_REQ_ID", orderNumber, requestId);
     }
 
     private LocalDate generateNextRenewalDate(

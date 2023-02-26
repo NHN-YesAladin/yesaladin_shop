@@ -139,7 +139,7 @@ public class CommandOrderController {
             @RequestParam Boolean hide,
             @LoginId(required = true) String loginId
     ) {
-        OrderUpdateResponseDto response = commandOrderService.hideOnOrder(loginId, orderId, hide);
+        OrderUpdateResponseDto response = commandOrderService.hideOrder(loginId, orderId, hide);
 
         return ResponseDto.<OrderUpdateResponseDto>builder()
                 .success(true)

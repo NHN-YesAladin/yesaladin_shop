@@ -1,7 +1,6 @@
 package shop.yesaladin.shop.order.controller;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,7 +15,6 @@ import shop.yesaladin.shop.order.service.inter.QueryOrderCouponService;
  * @author 최예린
  * @since 1.0
  */
-@Slf4j
 @RequiredArgsConstructor
 @RestController
 public class QueryOrderCouponController {
@@ -37,7 +35,6 @@ public class QueryOrderCouponController {
             @LoginId(required = true) String loginId,
             @ModelAttribute CouponOrderSheetRequestDto request
     ) {
-
         return queryOrderCouponService.calculateCoupons(
                 loginId,
                 request
