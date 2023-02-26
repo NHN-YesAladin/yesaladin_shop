@@ -5,7 +5,6 @@ import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -50,7 +49,6 @@ public class CommandCategoryController {
      * @param categoryRequest 생성시 필요한 이름, 노출 여부, 상위 카테고리 id가 존재
      * @return ResponseEntity로 카테고리 생성 성공시 생성된 카테고리의 일부 데이터를 반환
      */
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<CategoryResponseDto> createCategory(
@@ -122,7 +120,6 @@ public class CommandCategoryController {
      * @param categoryId 삭제하고자하는 카테고리의 id
      * @return 결과를 출력해주는 String result를 가지는  객체
      */
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{categoryId}")
     @ResponseStatus(HttpStatus.OK)
     public ResponseDto<ResultCodeDto> deleteCategory(@PathVariable Long categoryId) {
