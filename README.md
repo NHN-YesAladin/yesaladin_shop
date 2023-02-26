@@ -29,7 +29,7 @@ YesAladin Shop은 애플리케이션 이용에 필요한 API를 제공함으로�
 <img width="1037" alt="image" src="https://user-images.githubusercontent.com/115197142/221077112-ba7e882f-6fa8-4994-b382-6550f1d91577.png">
 
 - [@WBS(Work Breakdown Structure)](https://docs.google.com/spreadsheets/d/14DnQZrjOVgyu7F5QVFmUu2sGo3URppLTPhmdjCfbmiQ/edit#gid=537092179)를 구글 스프레드시트로 관리
-<img width="1042" alt="image" src="https://user-images.githubusercontent.com/115197142/221077360-daaf6cdc-d0a6-4d1b-ba81-a3c2b672f87c.png">
+![image](https://user-images.githubusercontent.com/115197142/221396723-6053e24b-7d46-4d43-804a-0085e8648c6f.png)
 
 
 ## Features
