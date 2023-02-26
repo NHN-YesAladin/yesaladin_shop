@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,6 +45,7 @@ public class QueryMemberOrderController {
      * @param pageable 페이징 객체
      * @return 페이징 된 주문 정보
      */
+    @PreAuthorize("hasAnyRole({'ROLE_ADMIN', 'ROLE_USER'})")
     @GetMapping
     public ResponseDto<PaginatedResponseDto<OrderSummaryResponseDto>> getAllOrdersByMemberId(
             @LoginId(required = true) String loginId,
@@ -78,6 +80,7 @@ public class QueryMemberOrderController {
      * @param pageable 페이징 객체
      * @return 페이징된 주문 상태를 기반하는 주문 정보
      */
+    @PreAuthorize("hasAnyRole({'ROLE_ADMIN', 'ROLE_USER'})")
     @GetMapping(params = "status")
     public ResponseDto<PaginatedResponseDto<OrderStatusResponseDto>> getOrdersByStatusAndLoginId(
             @LoginId(required = true) String loginId,
@@ -113,6 +116,7 @@ public class QueryMemberOrderController {
      * @param loginId 로그인 id
      * @return 주문 상태 코드 & 그에 기반한 주문 개수
      */
+    @PreAuthorize("hasAnyRole({'ROLE_ADMIN', 'ROLE_USER'})")
     @GetMapping(params = "status-count")
     public ResponseDto<Map<OrderStatusCode, Long>> getOrderCountsByStatusAndLoginId(@LoginId(required = true) String loginId) {
 
@@ -135,6 +139,7 @@ public class QueryMemberOrderController {
      * @author 최예린
      * @since 1.0
      */
+    @PreAuthorize("hasAnyRole({'ROLE_ADMIN', 'ROLE_USER'})")
     @GetMapping(params = "hidden")
     public ResponseDto<PaginatedResponseDto<OrderSummaryResponseDto>> getHiddenOrderByLoginId(
             @PageableDefault Pageable pageable,

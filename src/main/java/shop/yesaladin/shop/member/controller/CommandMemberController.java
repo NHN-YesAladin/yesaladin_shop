@@ -100,6 +100,7 @@ public class CommandMemberController {
      * @author 송학현
      * @since 1.0
      */
+    @PreAuthorize("hasAnyRole({'ROLE_ADMIN', 'ROLE_USER'})")
     @PutMapping("/nickname")
     public ResponseDto<MemberUpdateResponseDto> updateMemberNickname(
             @Valid @RequestBody MemberNicknameUpdateRequestDto updateDto,
@@ -136,6 +137,7 @@ public class CommandMemberController {
      * @author 송학현
      * @since 1.0
      */
+    @PreAuthorize("hasAnyRole({'ROLE_ADMIN', 'ROLE_USER'})")
     @PutMapping("/name")
     public ResponseDto<MemberUpdateResponseDto> updateMemberName(
             @Valid @RequestBody MemberNameUpdateRequestDto updateDto,
@@ -163,6 +165,7 @@ public class CommandMemberController {
      * @author 송학현
      * @since 1.0
      */
+    @PreAuthorize("hasAnyRole({'ROLE_ADMIN', 'ROLE_USER'})")
     @PutMapping("/phone")
     public ResponseDto<MemberUpdateResponseDto> updateMemberPhone(
             @Valid @RequestBody MemberPhoneUpdateRequestDto updateDto,
@@ -190,6 +193,7 @@ public class CommandMemberController {
      * @author 송학현
      * @since 1.0
      */
+    @PreAuthorize("hasAnyRole({'ROLE_ADMIN', 'ROLE_USER'})")
     @PutMapping("/email")
     public ResponseDto<MemberUpdateResponseDto> updateMemberEmail(
             @Valid @RequestBody MemberEmailUpdateRequestDto updateDto,
@@ -217,6 +221,7 @@ public class CommandMemberController {
      * @author 송학현
      * @since 1.0
      */
+    @PreAuthorize("hasAnyRole({'ROLE_ADMIN', 'ROLE_USER'})")
     @PutMapping("/password")
     public ResponseDto<MemberUpdateResponseDto> updateMemberPassword(
             @Valid @RequestBody MemberPasswordUpdateRequestDto updateDto,
@@ -304,6 +309,7 @@ public class CommandMemberController {
      * @author 송학현
      * @since 1.0
      */
+    @PreAuthorize("hasAnyRole({'ROLE_ADMIN', 'ROLE_USER'})")
     @DeleteMapping("/withdraw/{loginId}")
     @ResponseStatus(HttpStatus.OK)
     public ResponseDto<MemberWithdrawResponseDto> deleteMember(@PathVariable String loginId) {

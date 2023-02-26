@@ -3,6 +3,7 @@ package shop.yesaladin.shop.product.controller;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,6 +42,7 @@ public class CommandRelationController {
      * @author 이수정
      * @since 1.0
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public ResponseDto<ProductOnlyIdDto> registerRelation(
@@ -69,6 +71,7 @@ public class CommandRelationController {
      * @author 이수정
      * @since 1.0
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{productSubId}")
     public ResponseDto<Void> deleteRelation(
             @PathVariable Long productMainId,

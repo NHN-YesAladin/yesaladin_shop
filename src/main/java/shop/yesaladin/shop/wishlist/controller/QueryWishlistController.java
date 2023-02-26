@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,6 +37,7 @@ public class QueryWishlistController {
      * @param pageable 페이지 정보
      * @return 조회된 위시리스트와 상태 및 페이지 정보
      */
+    @PreAuthorize("hasAnyRole({'ROLE_ADMIN', 'ROLE_USER'})")
     @PostMapping
     public ResponseDto<PaginatedResponseDto<WishlistResponseDto>> findWishlistByMemberId(
             @LoginId(required = true) String loginId,
@@ -65,6 +67,7 @@ public class QueryWishlistController {
      * @param productId 확인할 상품의 id
      * @return 등록되어 있다면 true 아니면 false
      */
+    @PreAuthorize("hasAnyRole({'ROLE_ADMIN', 'ROLE_USER'})")
     @GetMapping("/existence")
     public ResponseDto<Boolean> isExist(
             @LoginId(required = true) String loginId,

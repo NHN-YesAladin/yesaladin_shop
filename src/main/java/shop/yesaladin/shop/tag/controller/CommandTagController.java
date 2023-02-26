@@ -3,6 +3,7 @@ package shop.yesaladin.shop.tag.controller;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,6 +40,7 @@ public class CommandTagController {
      * @author 이수정
      * @since 1.0
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public ResponseDto<TagResponseDto> registerTag(@Valid @RequestBody TagRequestDto createDto) {
@@ -57,6 +59,7 @@ public class CommandTagController {
      * @author 이수정
      * @since 1.0
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/{id}")
     public ResponseDto<TagResponseDto> modifyTag(
             @Valid @RequestBody TagRequestDto modifyDto,
