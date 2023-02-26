@@ -15,7 +15,7 @@
     <name>shop</name>
     <description>shop</description>
     <build>
-        <finalName>yesaladin-shop-myqueue</finalName>
+        <finalName>yesaladin-shop-db</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
