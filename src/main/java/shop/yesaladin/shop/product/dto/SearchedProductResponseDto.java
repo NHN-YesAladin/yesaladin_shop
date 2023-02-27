@@ -53,6 +53,7 @@ public class SearchedProductResponseDto {
                 .quantity(searchedProduct.getQuantity())
                 .sellingPrice(sellingPrice)
                 .rate(rate)
+                .publisher(searchedProduct.getPublisher().getName())
                 .isForcedOutOfStock(searchedProduct.getIsForcedOutOfStock())
                 .isSubscriptionAvailable(searchedProduct.getIsSubscriptionAvailable())
                 .isEbook(isEbook)
