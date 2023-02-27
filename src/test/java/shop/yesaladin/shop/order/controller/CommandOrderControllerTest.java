@@ -1,12 +1,19 @@
 package shop.yesaladin.shop.order.controller;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
+import static org.springframework.restdocs.payload.PayloadDocumentation.beneathPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -16,6 +23,7 @@ import static shop.yesaladin.shop.docs.ApiDocumentUtils.getDocumentResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,6 +47,7 @@ import shop.yesaladin.shop.order.dto.OrderCreateResponseDto;
 import shop.yesaladin.shop.order.dto.OrderMemberCreateRequestDto;
 import shop.yesaladin.shop.order.dto.OrderNonMemberCreateRequestDto;
 import shop.yesaladin.shop.order.dto.OrderSubscribeCreateRequestDto;
+import shop.yesaladin.shop.order.dto.OrderUpdateResponseDto;
 import shop.yesaladin.shop.order.service.inter.CommandOrderService;
 import shop.yesaladin.shop.product.dto.ProductOrderRequestDto;
 
@@ -1303,6 +1312,165 @@ class CommandOrderControllerTest {
                         fieldWithPath("errorMessages").type(JsonFieldType.ARRAY)
                                 .description("에러 메세지")
                                 .optional()
+                )
+        ));
+    }
+
+    @Test
+    @WithMockUser(username = "user@1", authorities = "ROLE_USER")
+    @DisplayName("주문 숨김 실패 - 존재하지 않는 주문")
+    void hideOn_fail_orderNotFound() throws Exception {
+        //given
+        long orderId = 1L;
+        boolean hide = true;
+
+        Mockito.when(commandOrderService.hideOrder(any(), eq(orderId), eq(hide)))
+                .thenThrow(new ClientException(ErrorCode.ORDER_NOT_FOUND, ""));
+
+        //when
+        ResultActions result = mockMvc.perform(put("/v1/orders/{orderId}", orderId)
+                .param("hide", "true")
+                .with(csrf()));
+
+        //then
+        result.andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(false)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.NOT_FOUND.value())))
+                .andExpect(jsonPath(
+                        "$.errorMessages",
+                        contains(ErrorCode.ORDER_NOT_FOUND.getDisplayName())
+                ));
+
+        //docs
+        result.andDo(document(
+                "hide-on-fail-order-not-found",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                pathParameters(
+                        parameterWithName("orderId").description("주문의 pk")
+                ),
+                requestParameters(
+                        parameterWithName("hide").description("숨김 여부"),
+                        parameterWithName("_csrf").description("csrf")
+                )
+        ));
+    }
+
+    @Test
+    @WithMockUser(username = "user@1", authorities = "ROLE_USER")
+    @DisplayName("주문 숨김 성공")
+    void hideOn_success() throws Exception {
+        //given
+        long orderId = 1L;
+        boolean hide = true;
+
+        LocalDateTime changedDateTime = LocalDateTime.now();
+
+        OrderUpdateResponseDto response = ReflectionUtils.newInstance(
+                OrderUpdateResponseDto.class,
+                orderNumber,
+                orderName,
+                hide,
+                changedDateTime
+        );
+        Mockito.when(commandOrderService.hideOrder(any(), eq(orderId), eq(hide)))
+                .thenReturn(response);
+
+        //when
+        ResultActions result = mockMvc.perform(put("/v1/orders/{orderId}", orderId)
+                .param("hide", "true")
+                .with(csrf()));
+
+        //then
+        result.andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())))
+                .andExpect(jsonPath("$.data.orderNumber", equalTo(orderNumber)))
+                .andExpect(jsonPath("$.data.name", equalTo(orderName)))
+                .andExpect(jsonPath("$.data.isHidden", equalTo(hide)));
+
+        //docs
+        result.andDo(document(
+                "hide-on-success",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                pathParameters(
+                        parameterWithName("orderId").description("주문의 pk")
+                ),
+                requestParameters(
+                        parameterWithName("hide").description("숨김 여부"),
+                        parameterWithName("_csrf").description("csrf")
+                ),
+                responseFields(
+                        beneathPath("data").withSubsectionId("data"),
+                        fieldWithPath("orderNumber").type(JsonFieldType.STRING)
+                                .description("주문 번호"),
+                        fieldWithPath("name").type(JsonFieldType.STRING).description("주문명"),
+                        fieldWithPath("isHidden").type(JsonFieldType.BOOLEAN)
+                                .description("주문 숨김 여부"),
+                        fieldWithPath("changedDateTime").type(JsonFieldType.STRING)
+                                .description("주문 변경 시간")
+                )
+        ));
+    }
+
+    @Test
+    @WithMockUser(username = "user@1", authorities = "ROLE_USER")
+    @DisplayName("주문 숨김 해제 성공")
+    void hideOff_success() throws Exception {
+        //given
+        long orderId = 1L;
+        boolean hide = false;
+
+        LocalDateTime changedDateTime = LocalDateTime.now();
+
+        OrderUpdateResponseDto response = ReflectionUtils.newInstance(
+                OrderUpdateResponseDto.class,
+                orderNumber,
+                orderName,
+                hide,
+                changedDateTime
+        );
+        Mockito.when(commandOrderService.hideOrder(any(), eq(orderId), eq(hide)))
+                .thenReturn(response);
+
+        //when
+        ResultActions result = mockMvc.perform(put("/v1/orders/{orderId}", orderId)
+                .param("hide", "false")
+                .with(csrf()));
+
+        //then
+        result.andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success", equalTo(true)))
+                .andExpect(jsonPath("$.status", equalTo(HttpStatus.OK.value())))
+                .andExpect(jsonPath("$.data.orderNumber", equalTo(orderNumber)))
+                .andExpect(jsonPath("$.data.name", equalTo(orderName)))
+                .andExpect(jsonPath("$.data.isHidden", equalTo(hide)));
+
+        //docs
+        result.andDo(document(
+                "hide-off-success",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                pathParameters(
+                        parameterWithName("orderId").description("주문의 pk")
+                ),
+                requestParameters(
+                        parameterWithName("hide").description("숨김 여부"),
+                        parameterWithName("_csrf").description("csrf")
+                ),
+                responseFields(
+                        beneathPath("data").withSubsectionId("data"),
+                        fieldWithPath("orderNumber").type(JsonFieldType.STRING)
+                                .description("주문 번호"),
+                        fieldWithPath("name").type(JsonFieldType.STRING).description("주문명"),
+                        fieldWithPath("isHidden").type(JsonFieldType.BOOLEAN)
+                                .description("주문 숨김 여부"),
+                        fieldWithPath("changedDateTime").type(JsonFieldType.STRING)
+                                .description("주문 변경 시간")
                 )
         ));
     }

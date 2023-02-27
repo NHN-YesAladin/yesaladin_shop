@@ -160,6 +160,28 @@ public class DummyOrder {
                 .build();
     }
 
+    public static MemberOrder hiddenMemberOrderWithId(Member member, MemberAddress memberAddress) {
+        return MemberOrder.builder()
+                .id(1L)
+                .orderNumber(orderNumber + "m")
+                .name("memberOrder")
+                .orderDateTime(orderDateTime)
+                .expectedTransportDate(expectedTransportDate)
+                .isHidden(false)
+                .usedPoint(1000L)
+                .savedPoint(500L)
+                .shippingFee(3000)
+                .wrappingFee(0)
+                .totalAmount(9000L)
+                .isHidden(true)
+                .orderCode(OrderCode.MEMBER_ORDER)
+                .memberAddress(memberAddress)
+                .member(member)
+                .recipientName("수령인 이름")
+                .recipientPhoneNumber("수령인 폰번호")
+                .build();
+    }
+
     public static Subscribe subscribeWithId(
             Member member,
             MemberAddress memberAddress,

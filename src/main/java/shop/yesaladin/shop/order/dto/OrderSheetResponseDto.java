@@ -1,6 +1,8 @@
 package shop.yesaladin.shop.order.dto;
 
 import java.util.List;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import shop.yesaladin.shop.coupon.dto.MemberCouponSummaryDto;
 import shop.yesaladin.shop.member.dto.MemberAddressResponseDto;
@@ -14,6 +16,7 @@ import shop.yesaladin.shop.product.dto.ProductOrderSheetResponseDto;
  * @since 1.0
  */
 @Getter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class OrderSheetResponseDto {
 
     private final List<ProductOrderSheetResponseDto> orderProducts;

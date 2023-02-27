@@ -1,6 +1,7 @@
 package shop.yesaladin.shop.order.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -17,9 +18,9 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -29,6 +30,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.exception.ClientException;
+import shop.yesaladin.shop.coupon.domain.model.MemberCoupon;
 import shop.yesaladin.shop.coupon.dto.RequestIdOnlyDto;
 import shop.yesaladin.shop.coupon.service.inter.QueryMemberCouponService;
 import shop.yesaladin.shop.coupon.service.inter.UseCouponService;
@@ -39,6 +41,7 @@ import shop.yesaladin.shop.member.service.inter.QueryMemberService;
 import shop.yesaladin.shop.order.domain.model.MemberOrder;
 import shop.yesaladin.shop.order.domain.model.NonMemberOrder;
 import shop.yesaladin.shop.order.domain.model.Order;
+import shop.yesaladin.shop.order.domain.model.OrderCoupon;
 import shop.yesaladin.shop.order.domain.model.OrderProduct;
 import shop.yesaladin.shop.order.domain.model.OrderStatusChangeLog;
 import shop.yesaladin.shop.order.domain.model.OrderStatusCode;
@@ -51,6 +54,7 @@ import shop.yesaladin.shop.order.dto.OrderCreateResponseDto;
 import shop.yesaladin.shop.order.dto.OrderMemberCreateRequestDto;
 import shop.yesaladin.shop.order.dto.OrderNonMemberCreateRequestDto;
 import shop.yesaladin.shop.order.dto.OrderSubscribeCreateRequestDto;
+import shop.yesaladin.shop.order.dto.OrderUpdateResponseDto;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMember;
 import shop.yesaladin.shop.order.persistence.dummy.DummyMemberAddress;
 import shop.yesaladin.shop.order.persistence.dummy.DummyOrder;
@@ -96,6 +100,7 @@ class CommandOrderServiceImplTest {
     MemberAddress memberAddress;
     NonMemberOrder nonMemberOrder;
     MemberOrder memberOrder;
+    MemberOrder hiddenMemberOrder;
     Subscribe subscribe;
     SubscribeProduct subscribeProduct;
     SubscribeProductOrderResponseDto subscribeProductOrder;
@@ -122,7 +127,7 @@ class CommandOrderServiceImplTest {
     List<Product> nonSubscribeProducts;
 
     @Mock
-    private HashOperations hashOperations;
+    HashOperations hashOperations;
 
     @BeforeEach
     void setUp() {
@@ -174,6 +179,7 @@ class CommandOrderServiceImplTest {
 
         nonMemberOrder = DummyOrder.nonMemberOrderWithId();
         memberOrder = DummyOrder.memberOrderWithId(member, memberAddress);
+        hiddenMemberOrder = DummyOrder.hiddenMemberOrderWithId(member, memberAddress);
         subscribe = DummyOrder.subscribeWithId(member, memberAddress, subscribeProduct);
 
         setRequiredData();
@@ -430,8 +436,6 @@ class CommandOrderServiceImplTest {
         verify(commandOrderStatusChangeLogRepository, never()).save(any());
     }
 
-    // TODO : Redis null 수정
-    @Disabled
     @Test
     @DisplayName("회원 주문 생성 성공")
     void createMemberOrders_success() {
@@ -465,12 +469,21 @@ class CommandOrderServiceImplTest {
                 .thenReturn(orderStatusChangeLog);
         Mockito.when(useCouponService.sendCouponUseRequest(anyString(), any()))
                 .thenReturn(new RequestIdOnlyDto("13"));
-        Mockito.when(redisTemplate.opsForHash()).thenReturn(hashOperations);
+        Mockito.when(commandOrderStatusChangeLogRepository.save(any()))
+                .thenReturn(Mockito.mock(OrderStatusChangeLog.class));
+        RequestIdOnlyDto requestId = new RequestIdOnlyDto("requestId");
+        Mockito.when(useCouponService.sendCouponUseRequest(any(), any())).thenReturn(requestId);
+        List<OrderCoupon> orderCouponList = List.of(OrderCoupon.create(
+                memberOrder,
+                MemberCoupon.builder().id(1L).member(member).build()
+        ));
+        Mockito.when(commandOrderCouponService.createOrderCoupons(any(), any()))
+                .thenReturn(orderCouponList);
         //when
         OrderCreateResponseDto result = commandOrderService.createMemberOrders(
                 request,
                 loginId,
-                null
+                "type"
         );
 
         //then
@@ -708,7 +721,6 @@ class CommandOrderServiceImplTest {
     }
 
     // TODO : Redis null 수정
-    @Disabled
     @Test
     @DisplayName("정기구독 생성 성공")
     void createSubscribeOrders_success() {
@@ -735,7 +747,6 @@ class CommandOrderServiceImplTest {
                 .thenReturn(orderStatusChangeLog);
         Mockito.when(useCouponService.sendCouponUseRequest(anyString(), any()))
                 .thenReturn(new RequestIdOnlyDto("13"));
-        Mockito.when(redisTemplate.opsForHash()).thenReturn(hashOperations);
 
         //when
         OrderCreateResponseDto result = commandOrderService.createSubscribeOrders(
@@ -755,6 +766,52 @@ class CommandOrderServiceImplTest {
         verify(commandOrderStatusChangeLogRepository, times(1)).save(any());
     }
 
+    @Test
+    @DisplayName("주문 숨김 실패 - 존재하지 않는 주문")
+    void hideOrder_fail_orderNotFound() {
+        //given
+        String loginId = "user@2";
+        long orderId = 1L;
+
+        //when, then
+        assertThatThrownBy(() -> commandOrderService.hideOrder(
+                loginId,
+                orderId,
+                true
+        )).isInstanceOf(ClientException.class);
+    }
+
+    @Test
+    @DisplayName("주문 숨김 성공")
+    void hideOnOrder_success() {
+        //given
+        String loginId = member.getLoginId();
+        long orderId = memberOrder.getId();
+
+        Mockito.when(queryOrderRepository.findMemberOrderByIdAndLoginId(orderId, loginId))
+                .thenReturn(Optional.of(memberOrder));
+        //when
+        OrderUpdateResponseDto response = commandOrderService.hideOrder(loginId, orderId, true);
+
+        //then
+        assertThat(response.getIsHidden()).isTrue();
+    }
+
+    @Test
+    @DisplayName("주문 숨김해제 성공")
+    void hideOffOrder_success() {
+        //given
+        String loginId = member.getLoginId();
+        long orderId = hiddenMemberOrder.getId();
+
+        Mockito.when(queryOrderRepository.findMemberOrderByIdAndLoginId(orderId, loginId))
+                .thenReturn(Optional.of(hiddenMemberOrder));
+        //when
+        OrderUpdateResponseDto response = commandOrderService.hideOrder(loginId, orderId, false);
+
+        //then
+        assertThat(response.getIsHidden()).isFalse();
+    }
 
     private OrderNonMemberCreateRequestDto getNonMemberOrderRequest() {
         return new OrderNonMemberCreateRequestDto(
