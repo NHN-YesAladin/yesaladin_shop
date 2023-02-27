@@ -43,6 +43,6 @@ public class ReviewImage {
     @JoinColumn(name = "review_id", nullable = false)
     private Review review;
 
-    @Column(name = "`order`", nullable = false)
+    @Column(name = "order", nullable = false)
     private int order;
 }

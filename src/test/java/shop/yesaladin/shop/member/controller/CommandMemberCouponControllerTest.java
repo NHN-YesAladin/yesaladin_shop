@@ -30,8 +30,9 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import shop.yesaladin.shop.coupon.controller.CommandMemberCouponController;
+import shop.yesaladin.shop.coupon.service.inter.CommandMemberCouponService;
 import shop.yesaladin.shop.member.dto.MemberCouponResponseDto;
-import shop.yesaladin.shop.member.service.inter.CommandMemberCouponService;
 
 @AutoConfigureRestDocs
 @WebMvcTest(CommandMemberCouponController.class)

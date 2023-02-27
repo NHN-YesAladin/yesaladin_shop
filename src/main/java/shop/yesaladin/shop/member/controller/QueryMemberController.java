@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -144,6 +145,7 @@ public class QueryMemberController {
      * @author 최예린
      * @since 1.0
      */
+    @PreAuthorize("hasAnyRole({'ROLE_ADMIN', 'ROLE_USER'})")
     @GetMapping(params = "type")
     @CrossOrigin(origins = {"http://localhost:9090", "https://www.yesaladin.shop"})
     public ResponseDto<MemberGradeQueryResponseDto> getMemberGrade(
@@ -169,6 +171,7 @@ public class QueryMemberController {
      * @author 최예린
      * @since 1.0
      */
+    @PreAuthorize("hasAnyRole({'ROLE_ADMIN', 'ROLE_USER'})")
     @GetMapping
     public ResponseDto<MemberQueryResponseDto> getMemberInfo(@LoginId(required = true) String loginId) {
         MemberQueryResponseDto response = queryMemberService.getByLoginId(loginId);
@@ -188,6 +191,7 @@ public class QueryMemberController {
      * @author 김선홍
      * @since 1.0
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/manage")
     public ResponseDto<PaginatedResponseDto<MemberManagerResponseDto>> mangeMemberInfo(@PageableDefault Pageable pageable) {
         Page<MemberManagerResponseDto> members = queryMemberService.findMemberManages(pageable);
@@ -213,6 +217,7 @@ public class QueryMemberController {
      * @author 김선홍
      * @since 1.0
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/manage", params = "loginid")
     public ResponseDto<PaginatedResponseDto<MemberManagerResponseDto>> manageMemberInfoByLoginId(
             @RequestParam(name = "loginid") String loginId,
@@ -244,6 +249,7 @@ public class QueryMemberController {
      * @author 김선홍
      * @since 1.0
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/manage", params = "nickname")
     public ResponseDto<PaginatedResponseDto<MemberManagerResponseDto>> manageMemberInfoByNickname(
             @RequestParam String nickname,
@@ -275,6 +281,7 @@ public class QueryMemberController {
      * @author 김선홍
      * @since 1.0
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/manage", params = "phone")
     public ResponseDto<PaginatedResponseDto<MemberManagerResponseDto>> manageMemberInfoByPhone(
             @RequestParam String phone,
@@ -306,6 +313,7 @@ public class QueryMemberController {
      * @author 김선홍
      * @since 1.0
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/manage", params = "name")
     public ResponseDto<PaginatedResponseDto<MemberManagerResponseDto>> manageMembersInfoByName(
             @RequestParam String name,
@@ -337,6 +345,7 @@ public class QueryMemberController {
      * @author 김선홍
      * @since 1.0
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/manage", params = "signupdate")
     public ResponseDto<PaginatedResponseDto<MemberManagerResponseDto>> manageMembersInfoBySignUpDate(
             @RequestParam(name = "signupdate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate signUpDate,
@@ -387,6 +396,7 @@ public class QueryMemberController {
      * @author 송학현
      * @since 1.0
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/statistics")
     public ResponseDto<MemberStatisticsResponseDto> getMemberStatistics() {
         MemberStatisticsResponseDto data = queryMemberService.getMemberStatistics();
@@ -406,6 +416,7 @@ public class QueryMemberController {
      * @author 송학현
      * @since 1.0
      */
+    @PreAuthorize("hasAnyRole({'ROLE_ADMIN', 'ROLE_USER'})")
     @GetMapping("/password-check")
     public ResponseDto<MemberPasswordResponseDto> getPassword(@LoginId(required = true) String loginId) {
         MemberQueryResponseDto member = queryMemberService.getByLoginId(loginId);

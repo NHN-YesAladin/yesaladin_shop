@@ -26,8 +26,10 @@ public class SearchTagController {
     private final SearchTagService searchTagService;
 
     @GetMapping(params = "name")
-    public ResponseDto<SearchedTagResponseDto> searchByName(@ModelAttribute @Valid SearchTagRequestDto dto,
-            BindingResult bindingResult) {
+    public ResponseDto<SearchedTagResponseDto> searchByName(
+            @ModelAttribute @Valid SearchTagRequestDto dto,
+            BindingResult bindingResult
+    ) {
         if (bindingResult.hasErrors()) {
             throw new ClientException(
                     ErrorCode.BAD_REQUEST,

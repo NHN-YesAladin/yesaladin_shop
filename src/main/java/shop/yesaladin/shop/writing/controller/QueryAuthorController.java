@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +19,7 @@ import shop.yesaladin.shop.writing.service.inter.QueryAuthorService;
  * 저자 조회를 위한 RestController 입니다.
  *
  * @author 이수정
+ * @author 김선홍
  * @since 1.0
  */
 @RequiredArgsConstructor
@@ -37,6 +39,7 @@ public class QueryAuthorController {
      * @author 이수정
      * @since 1.0
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/manager")
     public ResponseDto<PaginatedResponseDto<AuthorsResponseDto>> getAuthorsForManager(Pageable pageable) {
         return ResponseDto.<PaginatedResponseDto<AuthorsResponseDto>>builder()
@@ -55,6 +58,7 @@ public class QueryAuthorController {
      * @author 김선홍
      * @since 1.0
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/manager", params = "loginid")
     public ResponseDto<PaginatedResponseDto<AuthorsResponseDto>> getAuthorsByLoginIdForManager(
             @RequestParam(name = "loginid") String loginId,
@@ -76,6 +80,7 @@ public class QueryAuthorController {
      * @author 김선홍
      * @since 1.0
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/manager", params = "name")
     public ResponseDto<PaginatedResponseDto<AuthorsResponseDto>> getAuthorsByNameForManager(
             @RequestParam(name = "name") String name,

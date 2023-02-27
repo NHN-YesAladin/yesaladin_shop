@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Base64;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.event.EventListener;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -39,7 +40,7 @@ public class PaymentEventListener {
      *
      * @param eventDto
      */
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_ROLLBACK)
+    @EventListener
     public void handleCancelPayment(PaymentEventDto eventDto) {
         String paymentKey = eventDto.getPaymentKey();
         log.warn("TransactionalEventListener : {}", paymentKey);

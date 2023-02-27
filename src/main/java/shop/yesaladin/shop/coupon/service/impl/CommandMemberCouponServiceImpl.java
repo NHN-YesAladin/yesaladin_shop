@@ -1,4 +1,4 @@
-package shop.yesaladin.shop.member.service.impl;
+package shop.yesaladin.shop.coupon.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,9 +6,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.yesaladin.shop.coupon.domain.repository.InsertMemberCouponRepository;
+import shop.yesaladin.shop.coupon.service.inter.CommandMemberCouponService;
 import shop.yesaladin.shop.member.dto.MemberCouponRequestDto;
 import shop.yesaladin.shop.member.dto.MemberCouponResponseDto;
-import shop.yesaladin.shop.member.service.inter.CommandMemberCouponService;
 
 /**
  * 회원 쿠폰 등록 관련 서비스 구현 클래스 입니다.

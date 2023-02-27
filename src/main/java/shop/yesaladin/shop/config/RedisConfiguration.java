@@ -22,7 +22,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @RequiredArgsConstructor
 @Configuration
-public class RedisConfig {
+public class RedisConfiguration {
 
     private final ObjectMapper objectMapper;
 

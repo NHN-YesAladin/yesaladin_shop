@@ -152,7 +152,10 @@ class QueryDslQueryMemberAddressRepositoryTest {
         long memberAddressId = memberAddress.getId();
 
         //when
-        Optional<MemberAddress> result = queryMemberAddressRepository.findByLoginIdAndMemberAddressId(loginId, memberAddressId);
+        Optional<MemberAddress> result = queryMemberAddressRepository.findByLoginIdAndMemberAddressId(
+                loginId,
+                memberAddressId
+        );
 
         //then
         assertThat(result).isPresent();

@@ -103,24 +103,31 @@ public class CommandOrderServiceImpl implements CommandOrderService {
             String loginId,
             String type
     ) {
-        if (request.getOrderCoupons() != null) {
+        if (!request.getOrderCoupons().isEmpty()) {
             queryMemberCouponService.getValidMemberCouponSummaryListByCouponCodes(
                     loginId,
                     request.getOrderCoupons()
             );
         }
 
+
         LocalDateTime orderDateTime = LocalDateTime.now(clock);
         Map<String, Product> products = commandProductService.orderProducts(request.getOrderProducts());
 
         Order savedOrder = createMemberOrder(request, orderDateTime, products, loginId);
-        createOrderProduct(request, products, savedOrder);
 
         createUsePointHistory(request.getUsePoint(), loginId);
 
         createOrderStatusChangeLog(orderDateTime, savedOrder);
 
         createMemberCoupon(request.getOrderCoupons(), loginId, savedOrder);
+
+        createOrderProduct(request, products, savedOrder);
+
+        createUsePointHistory(request.getUsePoint(), loginId);
+
+        createOrderStatusChangeLog(orderDateTime, savedOrder);
+
 
         deleteOrderProductInCart(loginId, type, products);
 
