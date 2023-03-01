@@ -279,8 +279,8 @@ public class QueryMemberServiceImpl implements QueryMemberService {
     public MemberOrderSheetResponseDto getMemberForOrder(String loginId) {
         return queryMemberRepository.getMemberOrderData(loginId)
                 .orElseThrow(() -> new ClientException(
-                        ErrorCode.MEMBER_NOT_FOUND,
-                        "Member not found with loginId : " + loginId
+                        ErrorCode.COUPON_NOT_FOUND,
+                        "Member Coupon not found with loginId : " + loginId
                 ));
     }
 

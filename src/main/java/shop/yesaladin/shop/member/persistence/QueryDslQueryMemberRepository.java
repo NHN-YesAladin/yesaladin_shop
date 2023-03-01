@@ -1,10 +1,12 @@
 package shop.yesaladin.shop.member.persistence;
 
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -287,13 +289,7 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
         QMember member = QMember.member;
         QMemberCoupon memberCoupon = QMemberCoupon.memberCoupon;
 
-        return Optional.ofNullable(queryFactory.select(
-                        Projections.constructor(
-                                MemberOrderSheetResponseDto.class,
-                                member.name,
-                                member.phone,
-                                memberCoupon.count().intValue()
-                        ))
+        Integer memberCouponCount = queryFactory.select(memberCoupon.count().intValue())
                 .from(member)
                 .leftJoin(memberCoupon)
                 .on(member.id.eq(memberCoupon.member.id))
@@ -301,7 +297,37 @@ public class QueryDslQueryMemberRepository implements QueryMemberRepository {
                 .where(member.loginId.eq(loginId)
                         .and(memberCoupon.isUsed.isFalse())
                         .and(memberCoupon.expirationDate.goe(LocalDate.now(clock))))
-                .fetchFirst());
+                .fetchFirst();
+        if (Objects.isNull(memberCouponCount) || memberCouponCount.equals(0)) {
+            return Optional.ofNullable(
+                    queryFactory.select(
+                                    Projections.constructor(
+                                            MemberOrderSheetResponseDto.class,
+                                            member.name,
+                                            member.phone,
+                                            Expressions.asNumber(0)
+                                    ))
+                            .from(member)
+                            .where(member.loginId.eq(loginId))
+                            .fetchFirst());
+        }
+
+        return Optional.ofNullable(
+                queryFactory.select(
+                                Projections.constructor(
+                                        MemberOrderSheetResponseDto.class,
+                                        member.name,
+                                        member.phone,
+                                        memberCoupon.count().intValue()
+                                ))
+                        .from(member)
+                        .leftJoin(memberCoupon)
+                        .on(member.id.eq(memberCoupon.member.id))
+                        .groupBy(member)
+                        .where(member.loginId.eq(loginId)
+                                .and(memberCoupon.isUsed.isFalse())
+                                .and(memberCoupon.expirationDate.goe(LocalDate.now(clock))))
+                        .fetchFirst());
     }
 
     /**
