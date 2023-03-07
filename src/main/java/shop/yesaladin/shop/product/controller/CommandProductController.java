@@ -4,6 +4,7 @@ import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.dto.ResponseDto;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.product.dto.ProductCreateDto;
 import shop.yesaladin.shop.product.dto.ProductOnlyIdDto;
 import shop.yesaladin.shop.product.dto.ProductUpdateDto;
@@ -44,7 +47,17 @@ public class CommandProductController {
      */
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ResponseDto<ProductOnlyIdDto> registerProduct(@Valid @RequestBody ProductCreateDto createDto) {
+    public ResponseDto<ProductOnlyIdDto> registerProduct(
+            @Valid @RequestBody ProductCreateDto createDto,
+            BindingResult bindingResult
+    ) {
+        if (bindingResult.hasErrors()) {
+            throw new ClientException(
+                    ErrorCode.BAD_REQUEST,
+                    "Validation error in product create request." + bindingResult.getAllErrors()
+            );
+        }
+
         return ResponseDto.<ProductOnlyIdDto>builder()
                 .success(true)
                 .status(HttpStatus.CREATED)
@@ -64,8 +77,16 @@ public class CommandProductController {
     @PutMapping("/{id}")
     public ResponseDto<ProductOnlyIdDto> updateProduct(
             @PathVariable("id") long id,
-            @Valid @RequestBody ProductUpdateDto updateDto
+            @Valid @RequestBody ProductUpdateDto updateDto,
+            BindingResult bindingResult
     ) {
+        if (bindingResult.hasErrors()) {
+            throw new ClientException(
+                    ErrorCode.BAD_REQUEST,
+                    "Validation error in product update request." + bindingResult.getAllErrors()
+            );
+        }
+
         return ResponseDto.<ProductOnlyIdDto>builder()
                 .success(true)
                 .status(HttpStatus.OK)

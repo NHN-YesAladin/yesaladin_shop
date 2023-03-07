@@ -3,6 +3,7 @@ package shop.yesaladin.shop.publish.controller;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.dto.ResponseDto;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.publish.dto.PublisherRequestDto;
 import shop.yesaladin.shop.publish.dto.PublisherResponseDto;
 import shop.yesaladin.shop.publish.service.inter.CommandPublisherService;
@@ -41,7 +44,17 @@ public class CommandPublisherController {
      */
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ResponseDto<PublisherResponseDto> registerPublisher(@Valid @RequestBody PublisherRequestDto createDto) {
+    public ResponseDto<PublisherResponseDto> registerPublisher(
+            @Valid @RequestBody PublisherRequestDto createDto,
+            BindingResult bindingResult
+    ) {
+        if (bindingResult.hasErrors()) {
+            throw new ClientException(
+                    ErrorCode.BAD_REQUEST,
+                    "Validation error in publisher create request." + bindingResult.getAllErrors()
+            );
+        }
+
         return ResponseDto.<PublisherResponseDto>builder()
                 .success(true)
                 .status(HttpStatus.CREATED)
@@ -61,8 +74,16 @@ public class CommandPublisherController {
     @PutMapping("/{id}")
     public ResponseDto<PublisherResponseDto> modifyPublisher(
             @Valid @RequestBody PublisherRequestDto modifyDto,
-            @PathVariable Long id
+            @PathVariable Long id,
+            BindingResult bindingResult
     ) {
+        if (bindingResult.hasErrors()) {
+            throw new ClientException(
+                    ErrorCode.BAD_REQUEST,
+                    "Validation error in publisher modify request." + bindingResult.getAllErrors()
+            );
+        }
+
         return ResponseDto.<PublisherResponseDto>builder()
                 .success(true)
                 .status(HttpStatus.OK)

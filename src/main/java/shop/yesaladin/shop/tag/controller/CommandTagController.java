@@ -3,6 +3,7 @@ package shop.yesaladin.shop.tag.controller;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import shop.yesaladin.common.code.ErrorCode;
 import shop.yesaladin.common.dto.ResponseDto;
+import shop.yesaladin.common.exception.ClientException;
 import shop.yesaladin.shop.tag.dto.TagRequestDto;
 import shop.yesaladin.shop.tag.dto.TagResponseDto;
 import shop.yesaladin.shop.tag.service.inter.CommandTagService;
@@ -41,7 +44,17 @@ public class CommandTagController {
      */
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ResponseDto<TagResponseDto> registerTag(@Valid @RequestBody TagRequestDto createDto) {
+    public ResponseDto<TagResponseDto> registerTag(
+            @Valid @RequestBody TagRequestDto createDto,
+            BindingResult bindingResult
+    ) {
+        if (bindingResult.hasErrors()) {
+            throw new ClientException(
+                    ErrorCode.BAD_REQUEST,
+                    "Validation error in tag create request." + bindingResult.getAllErrors()
+            );
+        }
+
         return ResponseDto.<TagResponseDto>builder()
                 .success(true)
                 .status(HttpStatus.CREATED)
@@ -60,8 +73,16 @@ public class CommandTagController {
     @PutMapping("/{id}")
     public ResponseDto<TagResponseDto> modifyTag(
             @Valid @RequestBody TagRequestDto modifyDto,
-            @PathVariable Long id
+            @PathVariable Long id,
+            BindingResult bindingResult
     ) {
+        if (bindingResult.hasErrors()) {
+            throw new ClientException(
+                    ErrorCode.BAD_REQUEST,
+                    "Validation error in tag modify request." + bindingResult.getAllErrors()
+            );
+        }
+
         return ResponseDto.<TagResponseDto>builder()
                 .success(true)
                 .status(HttpStatus.OK)
