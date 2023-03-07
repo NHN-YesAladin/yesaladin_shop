@@ -3,6 +3,7 @@ package shop.yesaladin.shop.product.controller;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,8 +46,16 @@ public class CommandRelationController {
     @PostMapping
     public ResponseDto<ProductOnlyIdDto> registerRelation(
             @PathVariable Long productMainId,
-            @Valid @RequestBody RelationCreateDto createDto
+            @Valid @RequestBody RelationCreateDto createDto,
+            BindingResult bindingResult
     ) {
+        if (bindingResult.hasErrors()) {
+            throw new ClientException(
+                    ErrorCode.BAD_REQUEST,
+                    "Validation error in product relation register request." + bindingResult.getAllErrors()
+            );
+        }
+
         if (productMainId.equals(createDto.getProductSubId())) {
             throw new ClientException(
                     ErrorCode.PRODUCT_SELF_RELATE,
