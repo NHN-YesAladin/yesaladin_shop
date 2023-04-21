@@ -9,8 +9,7 @@ YesAladin Shop은 애플리케이션 이용에 필요한 API를 제공함으로�
 
 ## ERD
 
-![ERD](http://drive.google.com/uc?export=view&id=1gE5gufiU6RAjOKba50ianKreUAw3hnl9)
-
+![예스알라딘-쇼핑몰-3 2 2](https://user-images.githubusercontent.com/60968342/233526675-fb3c116c-fccf-45b3-ba6e-cb6e98924ef4.png)
 
 ## Project Architecture
 
